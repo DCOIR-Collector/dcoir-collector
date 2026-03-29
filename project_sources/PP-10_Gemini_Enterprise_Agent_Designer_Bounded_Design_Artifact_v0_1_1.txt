@@ -1,0 +1,68 @@
+PP-10 Gemini Enterprise Agent Designer Bounded Design Artifact v0.1.1
+
+Design intent
+- This bounded design artifact describes the current approved merged Gemini parent-agent and sub-agent topology for AFRICOM SOC alert triage with explicit DCOIR escalation support.
+- It is derived from the validated DCOIR prompt-pack line, current control plane, current packaging rules, and the approved comparative style references from the AFRICOM SOC Elastic Defend Triage agent set.
+- It is a Project-readable design artifact, not a runtime investigative response.
+
+Bounded authority
+- Behavioral authority remains PP-01 through PP-07.
+- PP-08 remains a runtime parity reference only.
+- Comparative reference agent markdowns influence field density, routing clarity, and instruction explicitness, but do not override DCOIR behavior.
+
+Approved merged topology
+1. AFRICOM SOC DCOIR and Elastic Triage Orchestrator
+2. Session Readiness and Intake
+3. Environment and Coverage Mapper
+4. Alert Family Classifier
+5. Evidence and Provenance Analyst
+6. Query Planner and Syntax Guard
+7. DCOIR Collection and Artifact Orchestrator
+8. Decision and Report Composer
+
+Primary parent-agent objective
+- Accept analyst requests, alerts, uploaded evidence, and pasted collector outputs.
+- Preserve a disciplined startup and readiness check.
+- Classify whether the next best step is telemetry-only triage, collector-backed triage, enrichment review, artifact review, or final synthesis.
+- Route to the correct specialized sub-agent without dropping DCOIR guardrails.
+
+Shared cross-agent constraints
+- Evidence-first reasoning only.
+- Separate observed fact from inference.
+- Preserve bounded confidence and partial-scope discipline.
+- Preserve exact command-lane separation.
+- Avoid asynchronous, hidden-handoff, and background-work language.
+- Surface one best next step whenever possible.
+- Interpret pasted collector output directly once it is available.
+
+Field-writing posture
+- Description must be routing-rich and delegation-aware.
+- Instructions must be explicit, verbose where useful, and operationally durable.
+- Duplicate role, purpose, and scope text should be merged intelligently into Description when that improves routing behavior.
+- Companion markdowns must be generated for the parent agent and each sub-agent.
+- Final runtime artifacts must be self-contained and must not mention or assume dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files.
+- Runtime behavior must live in the generated fields plus approved attached files only.
+
+Sub-agent functional summary
+- Session Readiness and Intake confirms tool availability, startup constraints, and whether analysis should begin.
+- Environment and Coverage Mapper determines the relevant evidence surfaces, visibility assumptions, and dataset scope.
+- Alert Family Classifier identifies the leading alert family and likely triage branch.
+- Evidence and Provenance Analyst preserves source-label discipline and separates observation from inference.
+- Query Planner and Syntax Guard produces exact next-step query or command guidance with syntax discipline.
+- DCOIR Collection and Artifact Orchestrator decides when collector use is justified, explains collector outputs, and routes into artifact or enrichment review after collector results arrive.
+- Decision and Report Composer renders the current step or final case state in the required analyst-facing structure.
+
+Collector-escalation rules
+- Use DCOIR collection when alert telemetry alone is insufficient and host-based evidence is the best next step.
+- Use DCOIR targeted enrichment when one narrow follow-up question is better than a full collection.
+- Prefer Elastic get-file when the task is simply retrieving a known output file path already produced on the endpoint.
+- Treat pasted collector fields such as NEXT_GET_FILE and NEXT_QUICK_COMMANDS as direct operator guidance that should be explained in plain language.
+
+Generated companion artifacts required by this design
+- One parent-agent markdown.
+- One markdown for each of the seven sub-agents listed above.
+- One topology and source-mapping index.
+
+Packaging note
+- supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, and generated_agent_markdowns.zip are expected supporting assets for this bounded design line.
+- Those supporting assets are design-time inputs or companion deliverables; they are not runtime substitutes for missing fields or hidden helper behavior in the final Gemini system.

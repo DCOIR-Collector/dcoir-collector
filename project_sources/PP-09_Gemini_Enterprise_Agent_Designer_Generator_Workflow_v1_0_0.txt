@@ -1,0 +1,120 @@
+PP-09 Gemini Enterprise Agent Designer Generator Workflow v1.0.0
+
+Purpose
+- This file defines the current approved workflow for designing, refreshing, validating, and packaging Gemini parent-agent and sub-agent field sets for the DCOIR project line.
+- It exists to keep Gemini design work bounded by the validated DCOIR prompt-pack, current control plane, approved comparative references, and current packaging rules.
+- It is a design-and-generation workflow source, not a runtime investigative prompt.
+
+Primary outcome
+- Produce high-quality Gemini parent-agent and sub-agent field sets that preserve DCOIR evidence discipline, incorporate the approved alert-triage-to-collector merge path, exploit Gemini field space fully and intentionally, and emit companion markdown artifacts that are readable, reviewable, and reusable.
+
+Authority order
+1. Project Instructions
+2. CP-01_DCOIR_Version_Manifest.txt
+3. CP-02_DCOIR_Change_Log.txt
+4. PP-01 through PP-07 as the authoritative behavioral source line
+5. PP-08 as a runtime parity reference only
+6. DOC-01, DOC-03, LOG-01, LOG-02, LOG-03, and Knowledge guidance as secondary supporting references
+7. Approved comparative reference agent markdowns as field-style and routing-language exemplars only
+
+Non-negotiable source rules
+- PP-01 through PP-07 remain the design-time authority for DCOIR behavior and guardrails.
+- PP-08 may be used only as a parity check after design extraction; it must never override contradictory modular-source authority.
+- The AFRICOM SOC Elastic Defend Triage parent and sub-agent markdowns are approved comparative design references for field style, routing density, instruction explicitness, startup behavior richness, and delegation-aware Description writing.
+- Comparative references do not override DCOIR behavior, schema, or guardrails. They do influence how Gemini fields should be written and optimized.
+- If the control plane, modular prompt-pack, and comparative references conflict, preserve the DCOIR behavioral authority and absorb only the style or structural lessons that do not break it.
+
+Field optimization rules
+- Treat Gemini Description as a routing-critical field used for automatic delegation and routing.
+- Treat Gemini Instructions as the primary field for preserving workflow, tool usage, scope discipline, error handling, stop conditions, and output contract.
+- Do not waste field budget by leaving core role, scope, and routing behavior implicit when it can be stated explicitly.
+- Use the available field budget aggressively enough to preserve operational fidelity.
+- Merge the strongest useful material from purpose, role summary, description, duplicated scope text, and equivalent fields into Gemini Description when that improves routing clarity.
+- Do not preserve weak duplication for its own sake. Merge for runtime effectiveness.
+- Preserve intentional repetition only when repetition reinforces routing boundaries, startup behavior, tool limits, or safety constraints.
+- Write Instructions as if they must stand alone under operational pressure.
+- Prefer documentation-maximal field writing when fuller wording materially improves routing, continuity, operator understanding, validation fidelity, or future maintenance.
+
+Required design goals for every Gemini refresh
+- Preserve DCOIR evidence-first discipline.
+- Preserve partial-scope discipline and bounded confidence.
+- Preserve command-lane separation between Elastic endpoint syntax and analyst workstation syntax.
+- Preserve one-best-next-step behavior where the workflow expects it.
+- Add an explicit escalation path from alert triage into DCOIR collection when host-based evidence is justified.
+- Preserve clear behavior after collector output is pasted back into chat.
+- Avoid asynchronous, hidden-handoff, or background-work language.
+- Final standalone combined-prompt outputs and generated Gemini parent/sub-agent outputs must be runtime-self-sufficient and must not mention or assume dcoir-* skills, hidden project helper workflows, hidden memory, or unattached workspace files.
+- Required runtime behavior must live in the generated fields plus approved attached files, not in unstated project-side helpers.
+- Produce human-readable companion markdowns for every generated agent.
+- Preserve rationale, assumptions, evidence boundaries, workflow explanations, validation notes, and source-mapping detail in generated artifacts whenever that context would help a future worker or operator understand the design.
+
+Approved merged topology target
+- The default generated topology should now be a merged parent-agent design that combines:
+  - Elastic alert triage readiness and evidence planning
+  - explicit escalation into DCOIR collection or enrichment when warranted
+  - DCOIR artifact review, enrichment review, and final synthesis discipline
+- The default merged parent/sub-agent topology is:
+  1. Parent orchestrator / entry agent
+  2. Session Readiness and Intake
+  3. Environment and Coverage Mapper
+  4. Alert Family Classifier
+  5. Evidence and Provenance Analyst
+  6. Query Planner and Syntax Guard
+  7. DCOIR Collection and Artifact Orchestrator
+  8. Decision and Report Composer
+- A future design may expand this topology only when the bounded design artifact explicitly records the reason.
+
+Collector-awareness requirements
+- The generated design must understand what the collector can and cannot do.
+- The generated design must distinguish collector actions from Elastic response actions such as get-file.
+- The generated design must interpret pasted collector outputs in human terms.
+- The generated design must explain fields such as STATUS, RUN_ID, SESSION_STATUS, ENRICH_BUNDLE_PATH, COLLECT_BUNDLE_PATH, NEXT_GET_FILE, DELETE_SCRIPT_COMMAND, and NEXT_QUICK_COMMANDS.
+- The generated design must surface exact next-step guidance once pasted collector output is available.
+
+Knowledge and packaging rules
+- The standard uploaded supporting-Knowledge delivery form is supporting_knowledge_docs.zip.
+- Do not assume individual Knowledge docs are uploaded into the Project workspace.
+- If Knowledge content is required during generation, unzip or otherwise reference supporting_knowledge_docs.zip.
+- Full-refresh bundles must place Knowledge docs inside supporting_knowledge_docs.zip and ship that zip as a supporting asset.
+- Full-refresh bundles must also place comparative reference agent markdowns and generated DCOIR agent markdowns in supporting_assets/.
+
+Required outputs from a compliant generation pass
+1. One bounded design artifact source file suitable for Project upload.
+2. One parent-agent markdown.
+3. One markdown per generated sub-agent.
+4. One agent index or topology map.
+5. One verbose source-mapping and rationale artifact that explains which project sources, comparative references, and design choices informed each generated field set.
+6. Exact packaging instructions for the generated markdown assets.
+7. If supporting Knowledge guidance changed materially, a regenerated supporting_knowledge_docs.zip.
+
+Required validation checks
+- Control-plane alignment check
+- Behavioral-authority check against PP-01 through PP-07
+- Runtime parity spot-check against PP-08
+- Description richness check for routing quality
+- Instructions explicitness check for operational fidelity
+- Collector-awareness check
+- Command-lane separation check
+- Partial-scope and bounded-confidence check
+- Generated markdown presence check
+- Packaging conformance check
+- Documentation-maximalism check for generated fields, companion markdowns, topology maps, and release instructions
+- Runtime self-sufficiency and helper-leakage check
+- Reject any generated output that mentions or depends on dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files
+
+Stop conditions
+- Stop if CP-01 and CP-02 do not clearly establish the current working set.
+- Stop if the modular prompt-pack line is missing or internally contradictory.
+- Stop if a requested design would bypass DCOIR evidence discipline, command-lane separation, or safety constraints.
+- Stop if the requested bundle structure conflicts with the current repo-layout spec and the operator has not approved changing the layout spec.
+
+Packaging rules for generated deliverables
+- Full-refresh bundles should use project_sources/, supporting_assets/, release_notes/, and optional project_settings/.
+- Generated agent markdowns belong in a supporting asset package such as generated_agent_markdowns.zip unless the operator explicitly wants them uploaded individually.
+- Comparative reference markdowns may be normalized and repackaged as a supporting asset for future reuse.
+- supporting_knowledge_docs.zip belongs in supporting_assets/.
+- RELEASE_INSTRUCTIONS.txt must state exact DELETE and UPLOAD actions.
+
+Delivery posture
+- Prefer full-refresh bundles for structural Gemini design work.
+- Present the bounded design artifact and supporting generated agent markdowns together so the operator can update both the Project and the Gemini environment with aligned materials.

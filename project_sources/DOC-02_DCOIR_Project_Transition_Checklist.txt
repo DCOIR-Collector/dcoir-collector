@@ -1,0 +1,50 @@
+DCOIR Project Transition Checklist
+
+Purpose
+- This is the evergreen checklist for applying Project updates.
+- Use it together with release_notes/RELEASE_INSTRUCTIONS.txt from the current update bundle.
+- Do not rewrite this checklist for every normal release.
+
+Before applying an update
+- Confirm which Project version is currently authoritative by reading CP-01_DCOIR_Version_Manifest.txt.
+- Confirm the change intent by reading CP-02_DCOIR_Change_Log.txt.
+- Download and extract the current update ZIP bundle.
+- Open release_notes/RELEASE_INSTRUCTIONS.txt.
+- If the bundle includes project_settings/, plan to apply those settings updates in the Project settings surface after uploaded file replacement is complete.
+
+Apply the update
+1. If a settings update is included, read it first so you understand any changed collaboration, workflow, or generation behavior.
+2. Delete the currently uploaded Project files listed for deletion in RELEASE_INSTRUCTIONS.txt.
+3. Delete the currently uploaded supporting assets listed for deletion in RELEASE_INSTRUCTIONS.txt.
+4. Upload every file from project_sources/.
+5. Upload every file from supporting_assets/.
+6. Apply any project_settings/ content manually where required.
+7. Verify that the uploaded working set now matches CP-01_DCOIR_Version_Manifest.txt.
+
+Specific checks for this Project
+- Confirm the current readable collector source filename matches the manifest.
+- Confirm the current emitted runtime collector filename rule still maps to DCOIR_Collector.ps1.
+- Confirm the current supporting_knowledge_docs.zip file is present when the bundle says Knowledge docs were refreshed.
+- Confirm any comparative reference or generated agent-markdown zip assets named in the manifest are present.
+- Confirm the current Project settings baseline name in the manifest matches the applied settings text.
+- If the refresh depends on updated external helper skills, replace those external skill packages separately after the file upload step.
+- Verify icon/metadata are present where expected for any helper skills refreshed outside chat.
+- Rerun post-update invocation/accessibility regression where the refresh materially changed helper-skill behavior, routing expectations, or required-use points.
+
+After applying the update
+- Open a fresh Project chat.
+- Resume from CP-01_DCOIR_Version_Manifest.txt and CP-02_DCOIR_Change_Log.txt.
+- Verify that the next planned work item in the manifest, todo log, and session handoff brief all point to the same active work line.
+- If the update included Gemini workflow or bounded design artifact changes, use the refreshed files as the authoritative Project-readable design references before editing Gemini fields in the separate Gemini environment.
+- If the update included Knowledge-doc changes, treat supporting_knowledge_docs.zip as the uploaded source of truth for those docs and unzip/reference it as needed.
+- If the update included substantive helper-skill operationalization changes, ensure a governed project refresh followed the skill changes so the control plane, logs, and evergreen workflow docs still describe the live workflow accurately.
+
+When to stop and resolve a mismatch
+- Stop if the uploaded Project source set does not match the manifest after the update.
+- Stop if RELEASE_INSTRUCTIONS.txt and the manifest disagree about what should be current.
+- Stop if the current readable collector source filename, current settings baseline, or current supporting assets do not match the manifest.
+- Stop if the bundle is missing release_notes/RELEASE_INSTRUCTIONS.txt.
+
+Default reminder
+- Exact sync actions for any given bundle belong in release_notes/RELEASE_INSTRUCTIONS.txt.
+- This checklist remains evergreen and should only change when the evergreen update process materially changes.
