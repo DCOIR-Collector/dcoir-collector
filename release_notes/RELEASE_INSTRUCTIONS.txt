@@ -1,0 +1,100 @@
+DCOIR FULL-REFRESH RELEASE INSTRUCTIONS
+
+Bundle class
+- Full refresh
+
+Why this bundle is full refresh
+- The control plane, situational logs, evergreen workflow docs, Gemini design sources, collector readable source, and settings baseline changed together.
+- Use one clean replace cycle rather than mixing old and new files.
+
+Apply order
+1. Extract this ZIP locally.
+2. Read and keep this file open during the update.
+3. Delete the currently uploaded Project-readable sources listed below.
+4. Delete the currently uploaded supporting assets listed below.
+5. Upload every file from project_sources/.
+6. Upload every file from supporting_assets/.
+7. Paste project_settings/SET-05_AFRICOM_SOC_IR_Project_Instructions_v14.txt into the Project settings surface.
+8. Verify the uploaded working set matches CP-01_DCOIR_Version_Manifest.txt.
+9. Open a fresh Project chat and resume from CP-01 then CP-02.
+
+DELETE current uploaded Project-readable sources
+- CP-01_DCOIR_Version_Manifest.txt
+- CP-02_DCOIR_Change_Log.txt
+- DCOIR_Collector.314.ps1.txt
+- DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
+- DOC-02_DCOIR_Project_Transition_Checklist.txt
+- DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
+- LOG-01_DCOIR_Todo_Log.txt
+- LOG-02_DCOIR_Lessons_Learned_Log.txt
+- LOG-03_DCOIR_Session_Handoff_Brief.txt
+- PP-01_System_Prompt_v1_0_1.txt
+- PP-02_Output_Schema_v1_0_0.txt
+- PP-03_Baseline_Triage_Prompt_v1_0_0.txt
+- PP-04_Enrichment_Review_Prompt_v0_1_1.txt
+- PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt
+- PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt
+- PP-07_Agent_Guardrails_v1_0_0.txt
+- PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt
+- PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
+- PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt
+- RB-01_DCOIR_Collector_refinement_2_1_3.txt
+- run_DCOIR_Tests.cmd.txt
+- run_DCOIR_Tests.ps1.txt
+
+DELETE current uploaded supporting assets
+- DCOIR_Collector.zip
+- DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip
+- comparative_reference_agent_markdowns.zip
+- generated_agent_markdowns.zip
+- original_alert_triage_gemini_agents.zip
+- original_collector_artifact_gemini_agents.zip
+- supporting_knowledge_docs.zip
+
+UPLOAD from project_sources/
+- CP-01_DCOIR_Version_Manifest.txt
+- CP-02_DCOIR_Change_Log.txt
+- DCOIR_Collector.314.ps1.txt
+- DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
+- DOC-02_DCOIR_Project_Transition_Checklist.txt
+- DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
+- LOG-01_DCOIR_Todo_Log.txt
+- LOG-02_DCOIR_Lessons_Learned_Log.txt
+- LOG-03_DCOIR_Session_Handoff_Brief.txt
+- PP-01_System_Prompt_v1_0_1.txt
+- PP-02_Output_Schema_v1_0_0.txt
+- PP-03_Baseline_Triage_Prompt_v1_0_0.txt
+- PP-04_Enrichment_Review_Prompt_v0_1_1.txt
+- PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt
+- PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt
+- PP-07_Agent_Guardrails_v1_0_0.txt
+- PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt
+- PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
+- PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt
+- RB-01_DCOIR_Collector_refinement_2_1_3.txt
+- run_DCOIR_Tests.cmd.txt
+- run_DCOIR_Tests.ps1.txt
+
+UPLOAD from supporting_assets/
+- DCOIR_Collector.zip
+- DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip
+- comparative_reference_agent_markdowns.zip
+- generated_agent_markdowns.zip
+- original_alert_triage_gemini_agents.zip
+- original_collector_artifact_gemini_agents.zip
+- supporting_knowledge_docs.zip
+
+APPLY manually from project_settings/
+- SET-05_AFRICOM_SOC_IR_Project_Instructions_v14.txt
+
+LEAVE UNCHANGED / NOT INCLUDED IN THIS BUNDLE
+- External dcoir-* helper-skill packages are managed separately from this Project upload bundle.
+- Historical or rollback-only references not listed in CP-01 as current should remain out of the authoritative upload set.
+- The preserved Gemini collector execution-error replay lane remains a tracked placeholder, not a bundled artifact.
+
+Post-apply checks
+- Confirm CP-01 now points to SET-05_AFRICOM_SOC_IR_Project_Instructions_v14.txt as the current settings baseline.
+- Confirm LOG-01 and LOG-03 now align on the same active next-step line.
+- Confirm PP-09 and PP-10 now carry the runtime-self-sufficiency / no-helper-leakage rule.
+- Confirm DCOIR_Collector.314.ps1.txt includes file-level help and targeted function-level maintenance documentation.
+- If refreshed external helper skills are also being applied outside chat, verify icon/metadata where expected and rerun any relevant invocation/accessibility regression.
