@@ -1,0 +1,56 @@
+AFRICOM_SOC_IR Project Instructions v14
+
+Purpose
+- Treat AFRICOM_SOC_IR as the current DCOIR workspace, not the full archive.
+- Use it for the DCOIR workflow, prompt-pack line, collector line, Gemini design workflow, governed logs, and related supporting assets.
+
+Authority
+- Use only files marked CURRENT in CP-01_DCOIR_Version_Manifest.txt as authoritative uploaded Project-readable sources.
+- If files conflict or the manifest/change log are missing or inconsistent, stop and report the exact conflict.
+- Do not assume the newest upload is authoritative unless the manifest says it is current.
+
+Control plane
+- Default control plane: Project Instructions, CP-01_DCOIR_Version_Manifest.txt, CP-02_DCOIR_Change_Log.txt.
+- Read CP-01 first and CP-02 second when resuming or reporting current state.
+- Any Project Instructions refresh must stay within 8000 characters.
+
+Source classes and assets
+- Distinguish uploaded Project-readable sources, supporting uploaded assets, settings-applied content, and local-only operator files.
+- supporting_knowledge_docs.zip is the standard supporting-Knowledge delivery form; do not assume individual Knowledge docs are uploaded separately.
+- Comparative reference agent markdowns, preserved original Gemini baseline bundles, generated agent markdowns, and collector build bundles are supporting assets, not control-plane authority.
+
+Collector line
+- Treat DCOIR_Collector.314.ps1.txt as the current stable readable collector source unless the manifest changes.
+- Treat DCOIR_Collector.ps1 as the canonical emitted runtime filename for execution examples.
+- Keep Windows PowerShell 5.1 as a hard requirement for local test instructions unless explicitly changed.
+- Use Elastic Defend response-action syntax for endpoint instructions and PowerShell 5.1 syntax for local workstation/test instructions.
+
+Project-side helper-skill boundary
+- dcoir-* helper skills are Project-side authoring, QA, packaging, workflow, and maintenance aids.
+- Use the relevant dcoir-* helper skill when a Project task clearly matches it.
+- Final standalone combined prompt and final Gemini outputs must be runtime-self-sufficient and must not mention or assume dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files.
+- Required runtime behavior must live in the generated fields plus approved attached files.
+
+Workflow and documentation posture
+- Preserve evidence, rationale, assumptions, constraints, validation notes, workflow explanations, and downstream implications unless a narrower form is explicitly required.
+- Promote substantive test-session lessons into governed logs and control-plane files instead of leaving them only in PDFs, side artifacts, or chat history.
+- Prefer full-refresh bundles for structural, authority-adjacent, or broad multi-file changes.
+- Multi-file deliverables should default to one ZIP bundle with release_notes/RELEASE_INSTRUCTIONS.txt.
+
+Gemini design posture
+- Preserve DCOIR evidence-first discipline, bounded confidence, and exact command-lane separation.
+- Description should be routing-rich and may absorb the strongest useful content from purpose/role/scope when that improves delegation.
+- Instructions should be explicit enough to preserve workflow, error handling, tool usage, output contracts, and stop conditions.
+- Preserve the approved merged default topology of 1 parent plus 7 sub-agents unless the bounded design artifact records a reason to change it.
+- Preserve the original alert-triage, original collector-artifact, and collector email/build bundles as governed design-reference baselines unless the operator approves another baseline.
+
+Operationalization rules
+- Required attention-signaler use points are first substantive DCOIR response, major milestone, action-required or approval-needed, blocked state, and major completion.
+- Treat attention-signaler under-triggering as a behavior defect, not a cosmetic issue.
+- When a helper skill changes materially, replace the external skill package separately, verify icon/metadata where expected, rerun invocation/accessibility regression where relevant, and then refresh governed project sources if the durable workflow changed.
+- Keep rollback handling manual and local-only unless the operator later changes that decision.
+- Do not add a separate multi-skill packaging helper unless the operator later approves it.
+
+Resume behavior
+- When asked to resume or report what is current, summarize the stable baseline, current uploaded Project-readable sources, supporting assets, governance state, current validated status, next planned work item, refresh watchlist, and one recommended next move.
+- Use LOG-01 and LOG-03 as supporting context after reading CP-01 and CP-02.
