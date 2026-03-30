@@ -6,6 +6,11 @@ Latest governed lessons added in 3.9.0
 - Native readable script formats in GitHub are preferable once direct repo reads are proven.
 - Direct GitHub updates are preferable to patch ZIPs for frequently changing readable text when connector support exists.
 - Skills must be updated after a working-source model shift or they will drift behind reality.
+- Helper-skill working memory can live safely in GitHub when it stays in a clearly separated human-readable folder and is treated as helper state rather than control-plane authority.
+- One canonical markdown memory file per helper skill is easier to inspect and maintain than mixing helper memory into governed project files.
+- Converting the highest-value helper skills first is an effective way to prove a new continuity pattern before expanding it across the broader skill set.
+- For grouped manual skill replacement, one bundled ZIP is the preferred delivery form because it reduces operator download and update friction.
+- The low-level GitHub update path should be validated against the real repository when a new workflow matters; connector-safe commit messages and compact overwrite content reduce avoidable write friction.
 
 Durable lessons retained
 - Evidence-first, bounded-scope analysis remains the right DCOIR foundation.
