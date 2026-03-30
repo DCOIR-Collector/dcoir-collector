@@ -2,7 +2,7 @@
 artifact_type: dcoir-session-state
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-03-30T12:55:00Z
+exported_at_utc: 2026-03-30T13:10:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -16,17 +16,17 @@ imports_merged:
 # DCOIR Session State
 
 ## Current phase
-GitHub-backed helper-memory rollout completed for the current high-value skill set.
+Prepare to resume design of the project-scoped GitHub super-skill after the helper-skill memory rollout and manual skill updates.
 
 ## Best next move
-After the operator updates the bundled skills locally, verify the replacements in use before resuming the next todo item.
+Resume the project-scoped GitHub super-skill in design mode only, then keep the follow-on adoption work staged behind it.
 
 ## Open items
 ### session_only
-- [ST-001] Verify the newly bundled skill replacements after manual update (status: open; provenance: current_chat)
-  - why: The GitHub-backed memory rollout is not fully closed until the updated skills are confirmed in use.
-  - next_action: After manual update, verify the five updated skills in use.
-  - related: dcoir-decision-policy, dcoir-collector-qa, dcoir-validation-orchestrator, dcoir-skill-regression-auditor, dcoir-live-test-remediation-planner
+- [ST-010] Resume design of the project-scoped GitHub super-skill (status: open; provenance: current_chat)
+  - why: The helper-skill GitHub-memory rollout is complete enough to move back to the super-skill line.
+  - next_action: Start the design pass for the project-scoped GitHub super-skill.
+  - related: skill-creator, malwaredevil/dcoir-collector
 
 ### durable_preference_candidate
 - [ST-002] Keep helper-skill memory separate in GitHub (status: open; provenance: current_chat)
@@ -39,16 +39,20 @@ After the operator updates the bundled skills locally, verify the replacements i
   - related: dcoir-decision-policy
 
 ### follow_on_validation
-- [ST-004] Review other helper skills for GitHub-backed memory after install verification (status: open; provenance: current_chat)
-  - why: The same pattern may benefit additional helper skills.
-  - next_action: Reassess the broader helper-skill set after the current bundle is installed and verified.
-  - related: dcoir-session-tracker
+- [ST-011] Update dependent skills to use the GitHub super-skill after it is designed, tested, and implemented (status: open; provenance: current_chat)
+  - why: The super-skill will not deliver full value unless the dependent helper skills adopt it where appropriate.
+  - next_action: After the super-skill is complete, review and update the skills that should use it.
+  - related: dcoir-*
+- [ST-012] Update project sources, workflows, controls, and instructions to use the GitHub super-skill after it is designed, tested, and implemented (status: open; provenance: current_chat)
+  - why: The governed project documentation and workflow surface must reflect the new capability once it becomes real.
+  - next_action: After the super-skill is complete, refresh the affected project sources, workflow docs, control-plane references, and instructions.
+  - related: project_sources/, project_settings/
 
 ## Completed or resolved this session
 - [ST-005] Implement GitHub-backed memory for the current high-value five-skill set (status: done; provenance: current_chat)
   - why: The requested rollout was completed and packaged.
-  - next_action: Verify the bundled replacements after manual update.
+  - next_action: Proceed to the next todo item.
   - related: dcoir-decision-policy, dcoir-collector-qa, dcoir-validation-orchestrator, dcoir-skill-regression-auditor, dcoir-live-test-remediation-planner
 
 ## Provenance notes
-- Updated after retrying the single-bundle handoff and GitHub tracker sync.
+- Updated after operator confirmation that the manually updated skills are in place and after capturing the post-super-skill follow-on reminder.
