@@ -2,7 +2,7 @@
 artifact_type: dcoir-session-state
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-03-30T12:00:00Z
+exported_at_utc: 2026-03-30T12:55:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -10,59 +10,45 @@ authority_basis:
 merge_mode: merge
 imports_merged:
   - current_chat
+  - github_skill_memory
 ---
 
 # DCOIR Session State
 
 ## Current phase
-GitHub-primary helper-skill refresh and tracker-memory design
+GitHub-backed helper-memory rollout completed for the current high-value skill set.
 
 ## Best next move
-Persist the merged tracker state to the GitHub skill-memory path.
+After the operator updates the bundled skills locally, verify the replacements in use before resuming the next todo item.
 
 ## Open items
 ### session_only
-- [ST-001] Review skills that could benefit from GitHub-backed memory (status: open; provenance: current_chat)
-  - why: The operator wants skill memory separated from direct project files and stored in a clearly named repo folder.
-  - next_action: After validating dcoir-session-tracker, review other dcoir-* skills for the same pattern.
-  - related: dcoir-session-tracker, dcoir-decision-policy, dcoir-live-test-remediation-planner
-
-### candidate_log01
-- none
-
-### candidate_log02
-- none
-
-### candidate_log03
-- none
+- [ST-001] Verify the newly bundled skill replacements after manual update (status: open; provenance: current_chat)
+  - why: The GitHub-backed memory rollout is not fully closed until the updated skills are confirmed in use.
+  - next_action: After manual update, verify the five updated skills in use.
+  - related: dcoir-decision-policy, dcoir-collector-qa, dcoir-validation-orchestrator, dcoir-skill-regression-auditor, dcoir-live-test-remediation-planner
 
 ### durable_preference_candidate
 - [ST-002] Keep helper-skill memory separate in GitHub (status: open; provenance: current_chat)
-  - why: The operator wants a human-readable folder that separates helper-skill memory from governed project files.
-  - next_action: Use dcoir_skill_memory/ as the repo root for helper memory files.
-  - related: dcoir-session-tracker, malwaredevil/dcoir-collector
-
-### new_skill_idea
-- none
+  - why: Helper memory should remain separate from governed project files.
+  - next_action: Continue using dcoir_skill_memory/ as the helper-memory root.
+  - related: dcoir_skill_memory/
+- [ST-003] Bundle multi-skill updates into one zip (status: open; provenance: current_chat)
+  - why: The operator prefers one download for grouped manual skill updates.
+  - next_action: Keep providing one bundle zip when multiple skills are updated together.
+  - related: dcoir-decision-policy
 
 ### follow_on_validation
-- none
-
-### blocked_or_needs_authority
-- none
+- [ST-004] Review other helper skills for GitHub-backed memory after install verification (status: open; provenance: current_chat)
+  - why: The same pattern may benefit additional helper skills.
+  - next_action: Reassess the broader helper-skill set after the current bundle is installed and verified.
+  - related: dcoir-session-tracker
 
 ## Completed or resolved this session
-- none
-
-## Promotion-ready notes
-### LOG01 candidate text
-none
-
-### LOG02 candidate text
-none
-
-### LOG03 candidate text
-none
+- [ST-005] Implement GitHub-backed memory for the current high-value five-skill set (status: done; provenance: current_chat)
+  - why: The requested rollout was completed and packaged.
+  - next_action: Verify the bundled replacements after manual update.
+  - related: dcoir-decision-policy, dcoir-collector-qa, dcoir-validation-orchestrator, dcoir-skill-regression-auditor, dcoir-live-test-remediation-planner
 
 ## Provenance notes
-- Rendered for GitHub-backed tracker-memory proof-of-design.
+- Updated after retrying the single-bundle handoff and GitHub tracker sync.
