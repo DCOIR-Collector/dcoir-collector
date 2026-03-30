@@ -9,12 +9,11 @@ Current stable pointers
 - Settings baseline to apply: project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt
 
 Current next planned work item
-- Test the manually updated connector-backed dcoir-github-operator skill against malwaredevil/dcoir-collector, then use the validated result to update dependent dcoir-* skills and the affected project sources, workflows, controls, and instructions.
+- Take the next approved roadmap branch from the remaining prioritized stack, with second-wave GitHub-operator adoption and collector all-path testing at the top of the remaining work.
 
 Priority stack
-1. Test connector-backed dcoir-github-operator against the working repository and validate repo-state, readable-text update, helper-memory update, branch-safe write, and git-object batch lanes.
-2. Update dependent dcoir-* skills to use the validated GitHub operator where appropriate.
-3. Update project sources, workflows, controls, and instructions to use the validated GitHub operator.
-4. Expand collector all-path testing.
-5. Clean up knowledge-doc delivery posture.
-6. Preserve Gemini and helper-skill operationalization work.
+1. Expand validated dcoir-github-operator adoption into second-wave skills and any remaining governed workflow sources that benefit from it.
+2. Expand collector all-path testing.
+3. Clean up knowledge-doc delivery posture.
+4. Preserve Gemini and helper-skill operationalization work.
+5. Explore whether a project skill can safely use a direct API-auth GitHub lane from this chat interface for more automated create, read, and update behavior, while keeping the cleanest workflow and security posture.

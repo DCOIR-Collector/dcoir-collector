@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.0
+DCOIR Version Manifest 3.9.1
 
 CURRENT GOVERNED GITHUB READABLE SOURCES
 - Manifest_Current: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -61,8 +61,8 @@ STATUS NOTES
 - Knowledge markdown now exists as extracted editable content in knowledge/ and should be treated as the working readable source set for knowledge maintenance.
 - supporting_knowledge_docs.zip may still be retained as a delivery or reference asset, but it is not the editable working source when the extracted markdown exists in GitHub.
 - The current settings baseline advances to project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt.
-- Connector-backed dcoir-github-operator was rebuilt, repackaged, and manually updated; live functional testing against malwaredevil/dcoir-collector is the current gate.
-- Dependent skill updates remain a required follow-on work item after dcoir-github-operator live validation.
+- Connector-backed dcoir-github-operator now has a validated existing-file update lane through the low-level git-object path.
+- First-wave dependent helper skills and governed workflow text are refreshed to use the validated dcoir-github-operator behavior.
 
 CURRENT NEXT PLANNED WORK ITEM
-- Test the manually updated connector-backed dcoir-github-operator skill against malwaredevil/dcoir-collector, then use the validated result to update dependent dcoir-* skills and the affected project sources, workflows, controls, and instructions.
+- Take the next approved roadmap branch from the remaining prioritized stack, with second-wave GitHub-operator adoption and collector all-path testing at the top of the remaining work.

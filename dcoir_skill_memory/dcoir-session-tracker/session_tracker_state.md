@@ -2,7 +2,7 @@
 artifact_type: dcoir-session-state
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-03-30T16:05:00Z
+exported_at_utc: 2026-03-30T19:35:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -16,18 +16,12 @@ imports_merged:
 # DCOIR Session State
 
 ## Current phase
-Connector-backed dcoir-github-operator was rebuilt, repackaged, and manually updated. The next session should start by live-testing it against malwaredevil/dcoir-collector.
+Connector-backed dcoir-github-operator existing-file updates are now live-validated through the low-level git-object lane, and the first-wave dependent helper-skill set has been refreshed to use that validated behavior.
 
 ## Best next move
-Test the manually updated connector-backed dcoir-github-operator against malwaredevil/dcoir-collector, then use the validated result to update dependent skills and governed project text.
+Choose the next roadmap branch from the remaining prioritized stack, starting with either second-wave dcoir-github-operator adoption or collector all-path testing.
 
 ## Open items
-### session_only
-- [ST-010] Test the connector-backed dcoir-github-operator against malwaredevil/dcoir-collector (status: open; provenance: current_chat)
-  - why: The rebuilt super-skill is now manually updated and needs live validation from the project chat environment.
-  - next_action: Validate repo-state resolution, readable-text update planning, helper-memory update flow, branch-safe write flow, and git-object batch flow.
-  - related: dcoir-github-operator, malwaredevil/dcoir-collector
-
 ### durable_preference_candidate
 - [ST-002] Keep helper-skill memory separate in GitHub (status: open; provenance: current_chat)
   - why: Helper memory should remain separate from governed project files.
@@ -47,24 +41,46 @@ Test the manually updated connector-backed dcoir-github-operator against malware
   - related: dcoir-github-operator, project_sources/, knowledge/, project_settings/, release_notes/
 
 ### follow_on_validation
-- [ST-011] Update dependent skills to use the GitHub super-skill after it is validated (status: open; provenance: current_chat)
-  - why: The super-skill will not deliver full value unless the dependent helper skills adopt it where appropriate.
-  - next_action: After live validation, review and update the skills that should use it.
-  - related: dcoir-*
-- [ST-012] Update project sources, workflows, controls, and instructions to use the GitHub super-skill after it is validated (status: open; provenance: current_chat)
-  - why: The governed project documentation and workflow surface must reflect the new capability once it is validated.
-  - next_action: After live validation, refresh the affected project sources, workflow docs, control-plane references, and instructions.
-  - related: project_sources/, project_settings/
+- [ST-020] Expand validated dcoir-github-operator adoption into second-wave skills and remaining governed workflow sources as needed (status: open; provenance: grounded_inference)
+  - why: First-wave adoption is complete, but the operator line still has remaining candidate adopters.
+  - next_action: Review second-wave adoption targets and decide whether to continue that line now or defer it.
+  - related: dcoir-github-operator, dcoir-knowledge-doc-maintainer, dcoir-session-resume, dcoir-change-impact-analyzer, dcoir-repo-packager
+- [ST-021] Expand collector all-path testing (status: open; provenance: project_log)
+  - why: Collector regression expansion remains near the top of the remaining prioritized stack.
+  - next_action: Resume the collector all-path regression lane when selected as the next roadmap branch.
+  - related: project_sources/DCOIR_Collector.ps1, project_sources/run_DCOIR_Tests.ps1, project_sources/run_DCOIR_Tests.cmd
+
+### new_skill_idea
+- [ST-022] Explore whether a project skill could use a direct API-auth GitHub lane from this chat interface for more automated create, read, and update behavior (status: open; provenance: current_chat)
+  - why: The operator wants to revisit whether a skill could programmatically use a direct GitHub API path in this project chat environment for cleaner automation.
+  - next_action: Brainstorm feasible direct-auth patterns, environment handling, container implications, and security/workflow tradeoffs before deciding whether this should become a real implementation line.
+  - related: dcoir-github-operator, GitHub API auth, .env handling
 
 ## Completed or resolved this session
 - [ST-005] Implement GitHub-backed memory for the current high-value five-skill set (status: done; provenance: current_chat)
   - why: The requested rollout was completed and packaged.
   - next_action: Continue using the GitHub-backed memory pattern where appropriate.
   - related: dcoir-decision-policy, dcoir-collector-qa, dcoir-validation-orchestrator, dcoir-skill-regression-auditor, dcoir-live-test-remediation-planner
+- [ST-010] Test the connector-backed dcoir-github-operator against malwaredevil/dcoir-collector (status: done; provenance: current_chat)
+  - why: The rebuilt super-skill is now validated against the real repository from the project chat environment.
+  - next_action: Use the validated operator behavior for dependent-skill and governed-text adoption.
+  - related: dcoir-github-operator, malwaredevil/dcoir-collector
+- [ST-011] Update dependent skills to use the GitHub super-skill after it is validated (status: done; provenance: current_chat)
+  - why: The first-wave dependent helper-skill set was refreshed to use the validated operator behavior.
+  - next_action: Continue into second-wave adopters only if the operator selects that branch.
+  - related: dcoir-*
+- [ST-012] Update project sources, workflows, controls, and instructions to use the GitHub super-skill after it is validated (status: done; provenance: current_chat)
+  - why: The governed workflow and log surface was refreshed to describe the live validated operator behavior.
+  - next_action: Keep the control plane aligned if the operator chooses another GitHub-operator adoption wave.
+  - related: project_sources/, project_settings/
 - [ST-016] Rebuild dcoir-github-operator as a connector-backed full first release and manually update it (status: done; provenance: current_chat)
   - why: The direct-API-first model was replaced with the connector-backed design that matches the project-chat runtime.
-  - next_action: Live-test the manually updated skill from the project chat.
+  - next_action: Keep the patched package as the validated baseline.
+  - related: dcoir-github-operator
+- [ST-018] Patch dcoir-github-operator to use the validated existing-file update lane, remove obsolete auth-placeholder assets, and refresh icon/metadata (status: done; provenance: current_chat)
+  - why: The original existing-file update path did not reflect the connector-backed runtime reality.
+  - next_action: Keep future operator changes aligned to the validated connector execution model.
   - related: dcoir-github-operator
 
 ## Provenance notes
-- Updated for end-of-session handoff after governed log refresh and connector-backed super-skill rebuild.
+- Updated after live validation of the patched existing-file update lane, first-wave adopter refresh, governed workflow refresh, and test-artifact cleanup.

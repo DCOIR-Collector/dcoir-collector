@@ -56,6 +56,11 @@ How to apply a future bootstrap update
 
 Packaging convention
 - For GitHub-maintained readable text updates, prefer direct GitHub edits over patch ZIPs when the connector path supports them.
+- Use dcoir-github-operator as the default GitHub execution layer when DCOIR skills or workflows need to read, create, or update governed readable text in malwaredevil/dcoir-collector.
+- Use the high-level create path only for bounded new-file creates when the target is in writable readable-text scope and overwrite friction is not present.
+- For existing-file updates, prefer the validated low-level git-object lane through create_blob, create_tree, create_commit, update_ref, and connector readback.
+- Treat the high-level existing-file wrapper as unsuitable for governed text modifications unless the runtime wrapper behavior changes and is revalidated.
+- Always read back the changed file, commit, or branch state after a GitHub write.
 - Use ZIP bundles for Project bootstrap/application steps, multi-file delivery, or retained binary/supporting assets when needed.
 - If a bundle contains more than one file, include release_notes/RELEASE_INSTRUCTIONS.txt.
 - Do not use Project refresh bundles to reintroduce duplicate readable source mirrors unless an explicit temporary exception is declared.
@@ -66,6 +71,7 @@ Operational content rules
 - Use PowerShell commands for local workstation and local test instructions.
 - Use the runtime or native GitHub filename when discussing execution where applicable.
 - When a helper skill changes materially, replace the external skill package separately, verify icon or metadata where expected, rerun post-update invocation or accessibility regression where relevant, and then refresh governed project sources if the durable workflow changed.
+- When a helper skill uses GitHub-backed helper memory, keep one canonical human-readable memory file per skill under dcoir_skill_memory/ unless an explicit exception is approved.
 
 Knowledge handling
 - Knowledge docs are authored and maintained as normal markdown in GitHub knowledge/.

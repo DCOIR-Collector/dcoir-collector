@@ -29,6 +29,7 @@ Specific checks for this Project
 - Confirm the current Project settings baseline name in the manifest matches the applied settings text.
 - If the refresh depends on updated external helper skills, replace those external skill packages separately after the file upload step.
 - Verify icon/metadata are present where expected for any helper skills refreshed outside chat.
+- If dcoir-github-operator is part of the refresh, verify the installed package reflects the validated write model: high-level create for bounded new-file creates and low-level git-object lane for existing-file updates.
 - Rerun post-update invocation/accessibility regression where the refresh materially changed helper-skill behavior, routing expectations, or required-use points.
 
 After applying the update
@@ -38,6 +39,7 @@ After applying the update
 - If the update included Gemini workflow or bounded design artifact changes, use the refreshed files as the authoritative Project-readable design references before editing Gemini fields in the separate Gemini environment.
 - If the update included Knowledge-doc changes, treat supporting_knowledge_docs.zip as the uploaded source of truth for those docs and unzip/reference it as needed.
 - If the update included substantive helper-skill operationalization changes, ensure a governed project refresh followed the skill changes so the control plane, logs, and evergreen workflow docs still describe the live workflow accurately.
+- If the update included dcoir-github-operator or first-wave adopter skills, rerun the formerly failing existing-file update case or an equivalent bounded helper-memory modification case before treating the refresh as live.
 
 When to stop and resolve a mismatch
 - Stop if the uploaded Project source set does not match the manifest after the update.

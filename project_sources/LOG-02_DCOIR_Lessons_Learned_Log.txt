@@ -1,6 +1,14 @@
 DCOIR Lessons Learned Log
 
-Latest governed lessons added in 3.9.0
+Latest governed lessons added in 3.9.1
+- In this chat environment, the high-level existing-file wrapper is not the reliable write path for governed text updates; the validated existing-file path is the low-level git-object lane.
+- A connector-backed GitHub super-skill should be aligned to the actual connector execution surface instead of assuming overwrite behavior the wrapper does not reliably expose.
+- The clean model is: bounded new-file creates can use the high-level create path, while existing-file updates should use create_blob, create_tree, create_commit, update_ref, and connector readback.
+- Live validation should rerun the exact failing case after a patch, not just package validation or design-time inspection.
+- First-wave helper-skill adoption is a practical way to propagate a validated operator behavior before expanding to broader workflow surfaces.
+- Test artifacts should be cleaned from the working repository once the validation evidence is captured.
+
+Durable lessons retained
 - GitHub-primary / Project-bootstrap is cleaner than duplicating readable governed text in both GitHub and Project space.
 - Resume reliability improves when the rule is explicit: Project Instructions first, then the GitHub connector against the named repository.
 - Native readable script formats in GitHub are preferable once direct repo reads are proven.
@@ -14,8 +22,6 @@ Latest governed lessons added in 3.9.0
 - From this project chat, connector-backed GitHub is the primary viable runtime model; direct API auth is not the primary in-chat execution path.
 - GitHub persistence is an intended feature for this project, so optimization should focus on batching, branch-safe validation, bounded operations, and fewer fragile retries rather than avoiding writes altogether.
 - The connector-backed GitHub operator should expose as much feasible repo, git-object, branch, review, issue, comment, and helper-memory capability as the in-chat GitHub tool surface supports in one release, while leaving unsupported management surfaces deferred.
-
-Durable lessons retained
 - Evidence-first, bounded-scope analysis remains the right DCOIR foundation.
 - Deep regression should be the default for anything testable before live use and after every patch.
 - Good knowledge management has no practical substitute in this project.
