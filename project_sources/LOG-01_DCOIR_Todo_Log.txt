@@ -1,51 +1,18 @@
 DCOIR Todo Log
 
 Current stable pointers
-- Collector readable source: DCOIR_Collector.314.ps1.txt
-- Collector emitted runtime file: DCOIR_Collector.ps1
-- Harness PS1 mirror: run_DCOIR_Tests.ps1.txt
-- Harness CMD mirror: run_DCOIR_Tests.cmd.txt
-- Rollback reference: RB-01_DCOIR_Collector_refinement_2_1_3.txt
-- Supporting assets: DCOIR_Collector.zip, supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, original_alert_triage_gemini_agents.zip, original_collector_artifact_gemini_agents.zip, DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip, generated_agent_markdowns.zip
-- Gemini workflow line: PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt and PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt
-- Settings baseline now to be applied in the next full-refresh upload: project_settings/SET-05_AFRICOM_SOC_IR_Project_Instructions_v14.txt
-- DCOIR skill line now includes session resume, prompt-pack assembler, knowledge-doc maintainer, repo packager, decision policy, change-impact analyzer, validation orchestration, live-test remediation planning, operator workflow hardening, release-scope builder, source-authority auditor, promotion-readiness reviewer, skill-regression auditor, large-file intake manager, triage-to-collector escalation designer, structural rename coordinator, attention signaler, session tracker, and collector QA.
+- Working GitHub repository: malwaredevil/dcoir-collector
+- GitHub control-plane files: project_sources/CP-01_DCOIR_Version_Manifest.txt and project_sources/CP-02_DCOIR_Change_Log.txt
+- Collector readable source: project_sources/DCOIR_Collector.ps1
+- Harness readable sources: project_sources/run_DCOIR_Tests.ps1 and project_sources/run_DCOIR_Tests.cmd
+- Knowledge readable working set: knowledge/*.md
+- Settings baseline to apply: project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt
 
 Current next planned work item
-- Continue operationalizing and right-sizing the dcoir-* skill line, preserve the Gemini field-definition and 500000-character guidance in governed form, and keep the collector/Gemini regression lanes active before later merged Gemini regeneration.
+- Update the affected dcoir-* skills so they follow the GitHub-primary / Project-bootstrap model.
 
 Priority stack
-1. Cement required-use points and invocation-regression coverage for the helper-skill line.
-   - Treat attention-signaler required-use at first substantive DCOIR response, major milestone, action-required / approval-needed, blocked state, and major completion as a governed expectation.
-   - Add or preserve should-have-invoked fixtures for at least dcoir-attention-signaler, dcoir-decision-policy, dcoir-session-resume, dcoir-session-tracker, and dcoir-collector-qa.
-2. Continue the overlap / under-invocation review cluster.
-   - Exercise dcoir-decision-policy, dcoir-release-scope-builder, and dcoir-promotion-readiness-reviewer in real conversational contexts.
-   - Decide whether any remaining misses are trigger-clarity issues, overlap confusion, insufficient hard-gating, or genuinely missing capability.
-3. Preserve the runtime-self-sufficiency boundary for final runtime artifacts.
-   - Final standalone combined prompt and final Gemini outputs must not mention or assume dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files.
-   - Keep the boundary in design/generation/governance layers rather than injecting project-helper assumptions into runtime prompts.
-4. Preserve the exact Gemini field-definition and field-limit work.
-   - Carry forward the current guidance to use 500000-character limits for both Gemini Description and Instructions.
-   - Preserve that Description is used for routing/delegation and Instructions should remain detailed enough to carry workflow, error handling, and stop conditions.
-5. Keep the collector revalidation line alive.
-   - Preserve the Gemini collector execution error as a placeholder regression lane until the exact failing excerpt is recovered.
-   - Use collector QA audit/report/repair mode for future collector or harness defects, and rerun a motivating lane plus at least one control lane before calling a repair validated.
-6. Maintain the helper-skill operationalization rules.
-   - When a helper skill changes materially, replace the external skill package, verify icon/metadata where expected, and rerun post-update invocation/accessibility regression where relevant.
-   - Follow substantive helper-skill changes with a governed project refresh when the live workflow, control plane, or durable next-step line changed.
-7. Preserve already-completed milestones as baseline evidence.
-   - dcoir-change-impact-analyzer hard-stop remediation was completed and rerun.
-   - dcoir-session-tracker exists and its help-path regression was repaired.
-   - dcoir-collector-qa exists, now supports explicit repair/doc posture, and the collector documentation patch plus one local Core control lane have been validated.
-   - A later bounded all-skills pass preserved 19/19 project gates present, 19/19 icon/metadata presence, and 19/19 Python help checks passing.
-8. Keep explicit non-goals stable unless the operator reverses them.
-   - Keep rollback handling manual and local-only rather than promoting it into the normal governed workflow.
-   - Do not add a new separate multi-skill packaging helper yet; let decision-policy, release-scope, and existing packaging flow own that behavior.
-
-Implementation notes now approved in the project working posture
-- The merged architecture pass remains substantively settled at 1 parent + 7 sub-agents with the reviewed boundary decisions.
-- The broader operationalization branch now follows the earlier skills-first audit rather than replacing it.
-- Evergreen DOC files now explicitly encode the project-side-helper versus runtime-artifact boundary and the helper-skill replacement / transition checks because those process changes are durable.
-- PP-09 and PP-10 now carry the no-runtime-helper-assumption rule; PP-01, PP-07, and PP-08 were intentionally not altered for that specific boundary change.
-- Full-refresh packaging remains the correct promotion posture for this governed refresh because control-plane, situational-log, evergreen-doc, Gemini-design, and settings layers changed together.
-- Multi-file deliverables should continue to default to a single ZIP bundle.
+1. Update affected skills for GitHub-primary behavior.
+2. Expand collector all-path testing.
+3. Clean up knowledge-doc delivery posture.
+4. Preserve Gemini and helper-skill operationalization work.
