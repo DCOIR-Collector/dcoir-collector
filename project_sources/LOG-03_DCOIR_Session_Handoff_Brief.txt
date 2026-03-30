@@ -1,49 +1,22 @@
 DCOIR Session Handoff Brief
 
 Current stable artifacts
-- Collector readable source: DCOIR_Collector.314.ps1.txt
-- Collector runtime filename: DCOIR_Collector.ps1
-- Local regression harness mirrors: run_DCOIR_Tests.ps1.txt and run_DCOIR_Tests.cmd.txt
-- Engine rollback reference: RB-01_DCOIR_Collector_refinement_2_1_3.txt
-- Supporting assets: DCOIR_Collector.zip, supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, original_alert_triage_gemini_agents.zip, original_collector_artifact_gemini_agents.zip, DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip, generated_agent_markdowns.zip
-- Prompt-pack and AI workflow line: PP-01 through PP-10 current files
-- Current verified DCOIR skill line includes session resume, prompt-pack assembler, knowledge-doc maintainer, repo packager, decision policy, change-impact analyzer, validation orchestration, live-test remediation planning, operator workflow hardening, release-scope builder, source-authority auditor, promotion-readiness reviewer, skill-regression auditor, large-file intake manager, triage-to-collector escalation designer, structural rename coordinator, attention signaler, session tracker, and collector QA.
+- Working GitHub repository: malwaredevil/dcoir-collector
+- GitHub control-plane files: project_sources/CP-01_DCOIR_Version_Manifest.txt and project_sources/CP-02_DCOIR_Change_Log.txt
+- Collector readable source: project_sources/DCOIR_Collector.ps1
+- Harness readable sources: project_sources/run_DCOIR_Tests.ps1 and project_sources/run_DCOIR_Tests.cmd
+- Knowledge readable working set: knowledge/*.md
 
 Current governance state
-- The control plane remains Project Instructions, CP-01_DCOIR_Version_Manifest.txt, and CP-02_DCOIR_Change_Log.txt.
-- DOC-01, DOC-02, and DOC-03 remain evergreen documents.
-- Supporting assets do not override the control plane.
-- Knowledge docs are tracked as one supporting asset zip rather than as individually uploaded supporting files.
-- Comparative reference agent markdowns, preserved original Gemini baseline bundles, the collector Gemini email/build bundle, and generated DCOIR agent markdowns are tracked supporting assets for Gemini design work.
-- generated_agent_markdowns.zip remains a draft merged reference and not an approved live Gemini field baseline.
-- Final standalone combined prompt and final Gemini outputs must be runtime-self-sufficient and must not mention or assume dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files.
-- Required attention-signaler use points are now first substantive DCOIR response, major milestone, action-required / approval-needed, blocked state, and major completion.
-- For this refresh, full refresh remains the correct promotion posture because the control plane, situational logs, evergreen workflow docs, Gemini design sources, collector readable source, and settings baseline all changed together.
+- Project Instructions are the first bootstrap anchor.
+- After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
+- GitHub is the working repository and review surface for readable governed text.
+- Project space is the bootstrap/runtime anchor and should not carry duplicate editable readable governed text.
 
 Current validated status
-- The merged Gemini architecture pass remains preserved as substantively settled at 1 parent + 7 sub-agents with the reviewed boundary decisions carried in project logs.
-- dcoir-change-impact-analyzer remediation was completed later in chat and is no longer the live first blocker.
-- dcoir-session-tracker now exists and its help-path regression was fixed in the later bounded all-skills pass.
-- dcoir-collector-qa now exists, supports explicit repair/doc posture, and has been used to validate the bounded collector documentation patch.
-- A later bounded all-skills pass preserved 19/19 project gates present, 19/19 icon/metadata presence, and 19/19 Python help checks passing.
-- One local Windows PowerShell 5.1 Core control lane passed end-to-end after the collector documentation patch.
-- The preserved Gemini collector execution error remains a placeholder regression lane until the exact failing excerpt is recovered.
-- The current likely under-invocation / overlap review cluster remains dcoir-decision-policy, dcoir-release-scope-builder, and dcoir-promotion-readiness-reviewer.
+- Direct GitHub reads are validated for the real collector and harness files in native formats.
+- Direct GitHub updates are validated on main for governed readable text.
+- The duplicate-heavy Project-mirror model has been superseded.
 
 Current next planned work item
-- Continue operationalizing and right-sizing the dcoir-* skill line, preserve the Gemini field-definition and 500000-character guidance in governed form, and keep the collector/Gemini regression lanes active before later merged Gemini regeneration.
-
-Operator-environment constraints
-- Gemini agent field edits and live Gemini testing occur in a separate Gemini window.
-- Elastic Defend response-action execution and collector output capture occur in a separate browser window.
-- The assistant cannot see those separate windows directly; it depends on pasted output or uploaded artifacts from the operator.
-- Project source upload and replacement are performed later from the home environment.
-- Skill upload or replacement for refreshed helper skills also occurs outside this chat after operator review.
-
-Immediate follow-up focus
-- Apply the governed full-refresh bundle and the SET-05_AFRICOM_SOC_IR_Project_Instructions_v14.txt settings text.
-- Verify manifest alignment after upload, then resume from CP-01 and CP-02 in a fresh Project chat.
-- Continue helper-skill operationalization, especially attention-signaler required-use enforcement and invocation-regression coverage.
-- Continue overlap review for dcoir-decision-policy, dcoir-release-scope-builder, and dcoir-promotion-readiness-reviewer.
-- Preserve the exact Gemini Description / Instructions field definitions and 500000-character guidance in governed form.
-- Keep the collector execution-error replay lane alive until the exact excerpt is recovered and converted into a concrete fixture.
+- Update the affected dcoir-* skills for the GitHub-primary readable-source model, then continue collector all-path testing and knowledge workflow cleanup.
