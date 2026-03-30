@@ -1,4 +1,31 @@
 [CURRENT]
+Version: GitHub_Primary_Bootstrap_and_No_Duplicate_Readable_Sources_3_9_0
+Type: Governance model change, GitHub-primary working-source shift, and Project bootstrap minimization
+Summary:
+- DCOIR now shifts to a GitHub-primary working-source model for readable governed text files.
+- The repository malwaredevil/dcoir-collector is now the sole working source for readable text updates, review, and resume-side source access.
+- Project space is no longer treated as a duplicate readable text repository. It is now the bootstrap and applied runtime anchor.
+- Resume behavior now starts with Project Instructions and then uses the GitHub connector to read CP-01, CP-02, and the remaining governed readable source set from malwaredevil/dcoir-collector.
+- The no-duplicate working-source rule is now explicit: do not keep duplicate editable readable text files in both GitHub and Project space.
+- The collector and harness readable sources are now governed in GitHub native formats: DCOIR_Collector.ps1, run_DCOIR_Tests.ps1, and run_DCOIR_Tests.cmd.
+- Knowledge markdown in knowledge/ is now the readable working source for knowledge maintenance when present; supporting_knowledge_docs.zip may still be retained as a delivery or reference asset.
+- The settings baseline advances to project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt to make the GitHub-primary bootstrap rule durable in future resume flows.
+- Skill updates remain a required follow-on work item after the GitHub-primary bootstrap model is applied.
+
+Validation summary:
+- GitHub native reads were directly validated for the real imported collector and harness files.
+- The low-level GitHub direct-update path was validated and then used on main, proving that frequently changing governed text can be updated directly in the repository instead of via patch ZIPs.
+- The repo inventory confirmed that extracted knowledge markdown exists alongside supporting assets, enabling a readable-source versus delivery-asset distinction.
+- The earlier duplicate-heavy Project refresh approach was intentionally superseded because it preserved the exact source-location ambiguity the operator wanted removed.
+
+Operational intent:
+- Eliminate confusion about whether GitHub or Project space holds the current readable source.
+- Preserve one readable working source for text while keeping Project space useful as a bootstrap/runtime anchor.
+- Ensure future resume behavior knows where to go first without relying on hidden memory or ambiguous mirrors.
+- Keep binary or infrequently changed assets separable from readable governed text.
+- Make future skill updates and workflow updates target the GitHub-primary model instead of the older mirrored-text model.
+
+[PRIOR]
 Version: Governed_Full_Refresh_Operationalization_and_Collector_Doc_Baseline_3_8_0
 Type: Governed full-refresh, evergreen workflow refresh, Gemini boundary refresh, collector documentation validation, and settings baseline condensation
 Summary:
@@ -11,66 +38,3 @@ Summary:
 - The later helper-skill line progress is now preserved in governed form: dcoir-change-impact-analyzer remediation completed, dcoir-session-tracker added and help-path regression fixed, dcoir-collector-qa added and expanded into repair/doc mode, and the broader operationalization / invocation-coverage branch is now the live next-step line.
 - The collector documentation patch has now been validated with one local Windows PowerShell 5.1 Core control lane passing end-to-end after the bounded documentation update.
 - The preserved Gemini collector execution error remains a placeholder regression lane until the exact failing excerpt is recovered and turned into a concrete replay fixture.
-
-Validation summary:
-- The later bounded all-skills pass preserved 19/19 project gates present, 19/19 icon/metadata presence, and 19/19 Python help checks passing after the session-tracker help-path repair.
-- The collector QA static audit and repair loop confirmed the documentation defect, validated the bounded documentation patch, and preserved the known Gemini collector error as a placeholder lane rather than silently dropping it.
-- A local Windows PowerShell 5.1 Core harness control lane passed through collect, enrich start, enrich add, finalize, and cleanup, satisfying the bounded known-good control-lane requirement for the collector documentation change.
-- Full-refresh packaging remains the correct posture because control-plane files, situational logs, evergreen workflow documents, Gemini design sources, and the settings baseline all changed together.
-
-Operational intent:
-- Keep future resume flows grounded in the same later work line that was actually completed, rather than forcing another transcript reconstruction step.
-- Preserve the runtime-self-sufficiency boundary so final standalone prompt and Gemini outputs do not assume project-only dcoir-* helper skills, hidden memory, or unattached files.
-- Preserve the later operationalization branch as the active line: required-use points for attention signaling, invocation-regression coverage for the helper-skill line, overlap review for the decision-policy / release-scope-builder / promotion-readiness cluster, and continued Gemini field-definition preservation work.
-- Keep collector QA on an explicit audit/report/repair/validate posture and treat in-code documentation plus maintained command blocks as part of the maintained surface.
-- Package the governed state as one full-refresh bundle so the operator can replace the workspace cleanly instead of managing a fragile partial file mix.
-
-[PRIOR]
-Version: Skills_First_Control_Plane_Refresh_and_Skill_Audit_Baseline_3_7_2
-Type: Control-plane refresh, situational-log refresh, architecture-pass promotion, and skills-first audit baseline
-Summary:
-- The merged Gemini architecture pass is now recorded as substantively settled at 1 parent + 7 sub-agents with the reviewed boundary decisions preserved through the situational logs rather than left only in chat history.
-- The current next planned work item now advances to a skills-first phase: audit all dcoir-* skills, run deep regression, and right-size the skill line before broader project refresh or merged Gemini regeneration.
-- CP-01_DCOIR_Version_Manifest.txt, CP-02_DCOIR_Change_Log.txt, LOG-01_DCOIR_Todo_Log.txt, LOG-02_DCOIR_Lessons_Learned_Log.txt, and LOG-03_DCOIR_Session_Handoff_Brief.txt were refreshed to eliminate source-authority drift between the promoted project state and the crashed-session findings.
-- Evergreen DOC files were not changed because the enduring setup, transition, and layout process did not materially change.
-- The first skills-first audit and deep-regression pass is now preserved as governed project knowledge instead of living only in the transcript PDF.
-- The current recorded skill-audit baseline is: 17/17 dcoir-* skills present, 16/16 scripted skills passing CLI help checks, 25/26 representative regression checks passing after one harness-read correction, and dcoir-repo-packager passing a real both-mode packaging run against the refreshed 3.7.2 workspace.
-- The one concrete behavior gap preserved from that audit is dcoir-change-impact-analyzer classifying an unknown target instead of hard-stopping, which remains the first remediation item in the skills-first line.
-- The current likely under-invocation / overlap review cluster is dcoir-decision-policy, dcoir-release-scope-builder, and dcoir-promotion-readiness-reviewer.
-- Project-only activation normalization across the dcoir-* skill line is now an explicit right-sizing objective rather than an implied preference.
-- A session-only todo-helper skill remains deferred pending completion of the current gating and overlap/right-sizing pass.
-
-Validation summary:
-- The changed-target impact analysis for this refresh recommends full-refresh packaging because CP-01 and CP-02 are authority-adjacent and the live work line changed.
-- The skills-first audit evidence now preserved in the governed state is: 17/17 dcoir-* skills present, 16/16 scripted skills passing CLI help checks, 25/26 representative regression checks passing after a harness-read correction, and dcoir-repo-packager passing a real both-mode packaging run.
-- The refreshed control plane and situational logs now align on the same active work line, removing the prior source-authority conflict where the authoritative uploaded state still pointed to the older Gemini design-first sequence.
-- No evergreen workflow, transition, or layout process defect was found that required DOC-01, DOC-02, or DOC-03 changes for this refresh.
-
-Operational intent:
-- Make the crashed-session conclusions resumable from the normal control-plane path instead of depending on a transcript PDF or chat memory.
-- Let future resume flows surface the skills-first phase, the first deep-regression baseline, the known behavior gap, and the next right-sizing tasks directly from CP-01, CP-02, LOG-01, LOG-02, and LOG-03.
-- Remove repeat source-authority conflict by ensuring the authoritative uploaded state now points to the same work line the operator directed and the crashed session had already treated as current.
-- Keep broader project refresh, merged Gemini regeneration, and any later collector revalidation deliberately sequenced behind the current skill-line right-sizing work.
-
-DCOIR Change Log 3.7.2
-
-[PRIOR]
-Version: Repo_Packager_Repair_and_Project_Instruction_Hard_Limit_3_7_1
-Type: Helper-skill repair, settings/control-plane follow-on, and guardrail hardening
-Summary:
-- The repo-packager helper skill was repaired so current supporting assets and current settings baselines can be derived from the manifest when the layout spec keeps them in stable path classes.
-- The repaired repo-packager was revalidated against the current 3.7 workspace and no longer fails on the preserved Gemini supporting-asset expansion.
-- The current settings-applied Project instructions baseline now advances to SET-04_AFRICOM_SOC_IR_Project_Instructions_v13.txt.
-- The Project Instructions layer now carries a hard 8000-character limit for any future settings-text refresh so over-limit candidates must be condensed before promotion.
-- CP-01_DCOIR_Version_Manifest.txt, DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt, DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt, LOG-01_DCOIR_Todo_Log.txt, LOG-02_DCOIR_Lessons_Learned_Log.txt, and LOG-03_DCOIR_Session_Handoff_Brief.txt were refreshed where needed to reflect the new settings baseline and the completed repo-packager repair.
-- The current next planned work item remains the merged Gemini development-strategy review path; this refresh does not reopen direct merged-agent writing or Gemini testing.
-
-Validation summary:
-- The repaired repo-packager successfully emitted repo-mode and update-mode bundles against the current preserved-asset workspace model.
-- The helper skill now tolerates future settings-baseline filename advances without needing another hardcoded settings-list repair when the manifest/layout assumptions still hold.
-- The refreshed settings baseline text fits within the 8000-character platform limit while preserving the core governance, preservation, and workflow rules.
-
-Operational intent:
-- Keep helper packaging aligned with the actual governed workspace model so future bundle generation does not drift after supporting-asset or settings-baseline changes.
-- Prevent future Project settings refreshes from failing on platform limits by making the 8000-character ceiling an explicit governed rule.
-- Preserve the current design-first merged-agent work line without letting helper-skill or settings drift divert future sessions back into improvisation.
