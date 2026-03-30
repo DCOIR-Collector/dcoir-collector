@@ -1,167 +1,35 @@
-DCOIR Repository Layout Spec 1.0.0
+DCOIR Repository Layout Spec 1.1.0
 
 Purpose
-- This file defines the canonical repo and deployment layout for DCOIR_Project deliverables.
-- It exists to make offline repo generation, deployment packaging, and repeatable local testing deterministic.
-- It is separate from the Project control plane so layout changes do not overload the manifest or change log.
+- This file defines the canonical GitHub-primary repository and Project-bootstrap layout for DCOIR.
 
-Scope
-- This spec defines one authoritative layout blueprint with two output modes:
-  - Repo mode
-  - Full-refresh update mode
-- It defines the canonical directory tree for generated repo bundles.
-- It defines the full-refresh update-bundle structure for delete-and-reupload syncs.
-- It defines mapping rules from uploaded Project-readable sources to native output filenames.
-- It defines how supporting package assets such as DCOIR_Collector.zip, supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, original_alert_triage_gemini_agents.zip, original_collector_artifact_gemini_agents.zip, DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip, and generated_agent_markdowns.zip are placed in runtime-friendly layouts.
-- It records the class-prefix naming model for the uploaded Project-readable source set.
-
-Output modes
-- Repo mode
-  - Use for git-like, offline, local-testing, or deployment-style repo bundles.
-  - Generate the canonical hierarchical DCOIR_Project/ tree.
-  - Emit native runtime filenames where this spec explicitly requires native emission.
-- Full-refresh update mode
-  - Use for broad Project refreshes, structural changes, renames, or multi-file syncs where the operator will replace the uploaded source set.
-  - Generate a flat uploaded-source refresh bundle using project_sources/, supporting_assets/, release_notes/, and optional project_settings/.
-  - Keep uploaded Project-readable source filenames unchanged in project_sources/.
-  - Keep supporting assets unchanged in supporting_assets/.
-  - Treat files omitted from the relevant full-refresh folders as intentionally excluded from the refreshed uploaded workspace set.
-
-Canonical repo-mode layout
-- DCOIR_Project/
-  - stable/
-    - assets/
-  - rollback/
-  - control_plane/
-  - docs/
-  - logs/
-  - prompts/
-  - bundles/
-
-Canonical full-refresh update-bundle layout
-- update_bundle/
+Layout
+- GitHub repository malwaredevil/dcoir-collector is the sole readable working-source location for governed text.
+- Current readable governed text lives in:
   - project_sources/
-  - supporting_assets/
+  - knowledge/
+  - project_settings/
   - release_notes/
-  - optional project_settings/
-  - optional local_prompts/
+- Retained binary or reference assets live in supporting_assets/.
 
-Folder intent in repo mode
-- stable/
-  - current stable operational files needed for local harness testing or deployment packaging
-- stable/assets/
-  - supporting runtime package assets
-- rollback/
-  - rollback or engine-reference files retained for fallback or comparison
-- control_plane/
-  - the small governance control plane for the current workspace
-- docs/
-  - evergreen process and workflow documents
-- logs/
-  - situational status, handoff, lessons learned, and planning logs
-- prompts/
-  - modular prompt-pack source files, the promoted combined analyst-facing master prompt runtime source, and related AI workflow source material
-- bundles/
-  - generated update bundles, offline repo ZIPs, and deployment packages
+Project bootstrap layout
+- Project space should contain bootstrap material only:
+  - current Project Instructions text
+  - release instructions
+  - intentionally retained supporting assets when needed
+- Do not place duplicate editable readable governed text files in Project space.
 
-Stored-source naming rules
-- Uploaded Project-readable sources remain flat uploaded files in the Project workspace.
-- In full-refresh update mode, uploaded Project-readable sources are emitted flat into project_sources/.
-- Supporting uploaded assets are emitted into supporting_assets/ in full-refresh update mode.
-- Settings-applied content is emitted into project_settings/ when it must be updated alongside uploaded source changes.
-- Uploaded Project-readable source files use class-prefixed naming for the major authoritative source classes:
-  - CP = control plane
-  - DOC = evergreen workflow docs
-  - LOG = situational logs
-  - PP = modular prompt-pack and AI workflow sources
-  - RB = rollback reference text source
-- When a source file is meant to stay Project-readable but also map cleanly to a native runtime type, use a double extension.
-- Current double-extension examples:
-  - DCOIR_Collector.314.ps1.txt
-  - run_DCOIR_Tests.ps1.txt
-  - run_DCOIR_Tests.cmd.txt
-- Plain-text control files, logs, prompts, and docs remain single-extension .txt files.
-- Native package assets such as .zip remain native and are not converted.
+Readable-source rules
+- Native readable script sources in GitHub are:
+  - project_sources/DCOIR_Collector.ps1
+  - project_sources/run_DCOIR_Tests.ps1
+  - project_sources/run_DCOIR_Tests.cmd
+- Knowledge markdown in knowledge/ is the readable working source when present.
+- supporting_knowledge_docs.zip may remain a delivery/reference asset, but not the preferred editable readable source when extracted markdown exists.
 
-Native output emission rules
-- If a filename ends with .ps1.txt, emit the native runtime file by stripping only the terminal .txt.
-- If a filename ends with .cmd.txt, emit the native runtime file by stripping only the terminal .txt.
-- If a filename ends with .json.txt or .xml.txt in a future sync, emit the native runtime file by stripping only the terminal .txt.
-- If a file does not use a double extension, keep the filename unchanged unless this spec explicitly maps it to a native runtime alias.
-- Binary or packaged files such as .zip remain unchanged.
-
-Canonical source-to-layout mapping for repo mode
-- DCOIR_Collector.314.ps1.txt
-  - generated path: stable/DCOIR_Collector.ps1
-  - emit mode: strip terminal .txt and drop version token from runtime filename by explicit alias rule
-- run_DCOIR_Tests.ps1.txt
-  - generated path: stable/run_DCOIR_Tests.ps1
-  - emit mode: strip terminal .txt
-- run_DCOIR_Tests.cmd.txt
-  - generated path: stable/run_DCOIR_Tests.cmd
-  - emit mode: strip terminal .txt
-- DCOIR_Collector.zip
-  - generated path: stable/assets/DCOIR_Collector.zip
-  - emit mode: unchanged native asset
-- supporting_knowledge_docs.zip
-  - generated path: stable/assets/supporting_knowledge_docs.zip
-  - emit mode: unchanged native asset
-- comparative_reference_agent_markdowns.zip
-  - generated path: stable/assets/comparative_reference_agent_markdowns.zip
-  - emit mode: unchanged native asset
-- original_alert_triage_gemini_agents.zip
-  - generated path: stable/assets/original_alert_triage_gemini_agents.zip
-  - emit mode: unchanged native asset
-- original_collector_artifact_gemini_agents.zip
-  - generated path: stable/assets/original_collector_artifact_gemini_agents.zip
-  - emit mode: unchanged native asset
-- DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip
-  - generated path: stable/assets/DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip
-  - emit mode: unchanged native asset
-- generated_agent_markdowns.zip
-  - generated path: stable/assets/generated_agent_markdowns.zip
-  - emit mode: unchanged native asset
-- RB-01_DCOIR_Collector_refinement_2_1_3.txt
-  - generated path: rollback/RB-01_DCOIR_Collector_refinement_2_1_3.txt
-  - emit mode: unchanged by default
-- CP-01_DCOIR_Version_Manifest.txt
-  - generated path: control_plane/CP-01_DCOIR_Version_Manifest.txt
-  - emit mode: unchanged
-- CP-02_DCOIR_Change_Log.txt
-  - generated path: control_plane/CP-02_DCOIR_Change_Log.txt
-  - emit mode: unchanged
-- DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
-  - generated path: docs/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
-  - emit mode: unchanged
-- DOC-02_DCOIR_Project_Transition_Checklist.txt
-  - generated path: docs/DOC-02_DCOIR_Project_Transition_Checklist.txt
-  - emit mode: unchanged
-- DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
-  - generated path: docs/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
-  - emit mode: unchanged
-- LOG-01_DCOIR_Todo_Log.txt
-  - generated path: logs/LOG-01_DCOIR_Todo_Log.txt
-  - emit mode: unchanged
-- LOG-02_DCOIR_Lessons_Learned_Log.txt
-  - generated path: logs/LOG-02_DCOIR_Lessons_Learned_Log.txt
-  - emit mode: unchanged
-- LOG-03_DCOIR_Session_Handoff_Brief.txt
-  - generated path: logs/LOG-03_DCOIR_Session_Handoff_Brief.txt
-  - emit mode: unchanged
-- PP-01 through PP-10 current files
-  - generated path: prompts/<same filename>
-  - emit mode: unchanged
-
-Canonical source handling for full-refresh update mode
-- project_sources/
-  - include the complete uploaded Project-readable source set for the refreshed workspace
-  - keep uploaded Project-readable filenames unchanged
-- supporting_assets/
-  - include supporting uploaded assets such as DCOIR_Collector.zip, supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, original_alert_triage_gemini_agents.zip, original_collector_artifact_gemini_agents.zip, DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip, and generated_agent_markdowns.zip
-  - do not place supporting assets in project_sources/ unless a future workflow explicitly changes that rule
-- project_settings/
-  - include settings-applied content such as SET-04_AFRICOM_SOC_IR_Project_Instructions_v13.txt when the settings baseline must be refreshed alongside uploaded source changes
-- release_notes/
-  - include RELEASE_INSTRUCTIONS.txt when the bundle contains more than one file
-- optional local_prompts/
-  - use only when local-only operator prompts are intentionally included in the bundle
+Resume rules
+- Resume from Project Instructions first.
+- Then use the GitHub connector against malwaredevil/dcoir-collector.
+- Read project_sources/CP-01_DCOIR_Version_Manifest.txt first and project_sources/CP-02_DCOIR_Change_Log.txt second.
+- Treat GitHub as the working repository and review surface.
+- Treat Project space as bootstrap/runtime anchor, not a second readable-source repository.
