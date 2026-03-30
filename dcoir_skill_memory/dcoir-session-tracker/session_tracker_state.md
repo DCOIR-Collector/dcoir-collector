@@ -2,7 +2,7 @@
 artifact_type: dcoir-session-state
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-03-30T13:35:00Z
+exported_at_utc: 2026-03-30T13:50:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -19,7 +19,7 @@ imports_merged:
 Design the project-scoped GitHub super-skill after helper-memory rollout, with broader GitHub control surfaces deferred behind the MVP.
 
 ## Best next move
-Finish the concrete phased build spec for the project-scoped GitHub super-skill and keep broader GitHub management surfaces explicitly deferred to later phases.
+Finalize the phased build spec for the project-scoped GitHub super-skill with explicit MVP support for updating readable governed repo text files.
 
 ## Open items
 ### session_only
@@ -41,6 +41,10 @@ Finish the concrete phased build spec for the project-scoped GitHub super-skill 
   - why: The MVP should stay focused, but the long-term goal is a full GitHub interface.
   - next_action: Keep wiki, projects, and other broader GitHub control surfaces in the later-phase map, not the MVP.
   - related: dcoir-github-operator
+- [ST-014] Ensure the GitHub super-skill MVP can update readable governed repo text files across the project, excluding zip and other binary assets (status: open; provenance: current_chat)
+  - why: The MVP must be able to update all relevant readable project sources without waiting for a later release.
+  - next_action: Treat readable text updates in project_sources/, knowledge/, project_settings/, and release_notes/ as MVP scope, while keeping zip/binary assets out of MVP write scope.
+  - related: dcoir-github-operator, project_sources/, knowledge/, project_settings/, release_notes/
 
 ### follow_on_validation
 - [ST-011] Update dependent skills to use the GitHub super-skill after it is designed, tested, and implemented (status: open; provenance: current_chat)
@@ -59,4 +63,4 @@ Finish the concrete phased build spec for the project-scoped GitHub super-skill 
   - related: dcoir-decision-policy, dcoir-collector-qa, dcoir-validation-orchestrator, dcoir-skill-regression-auditor, dcoir-live-test-remediation-planner
 
 ## Provenance notes
-- Updated after capturing the phased-scope rule for the GitHub super-skill design.
+- Updated after clarifying the GitHub super-skill MVP write scope.
