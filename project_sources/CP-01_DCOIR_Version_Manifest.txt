@@ -1,83 +1,67 @@
-DCOIR Version Manifest 3.8.0
+DCOIR Version Manifest 3.9.0
 
-CURRENT UPLOADED PROJECT SOURCES
-- Change_Log_Current: CP-02_DCOIR_Change_Log.txt
-- Collector_Current: DCOIR_Collector.314.ps1.txt
-- Collector_Engine_Rollback: RB-01_DCOIR_Collector_refinement_2_1_3.txt
-- Harness_CMD_Project_Readable_Current: run_DCOIR_Tests.cmd.txt
-- Harness_PS1_Project_Readable_Current: run_DCOIR_Tests.ps1.txt
-- Lessons_Learned_Log_Current: LOG-02_DCOIR_Lessons_Learned_Log.txt
-- Manifest_Current: CP-01_DCOIR_Version_Manifest.txt
-- Project_Setup_Guide_Current: DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
-- PromptPack_Agent_Guardrails_Current: PP-07_Agent_Guardrails_v1_0_0.txt
-- PromptPack_Combined_Master_Prompt_Current: PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt
-- PromptPack_Gemini_Generator_Workflow_Current: PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
-- PromptPack_Gemini_Bounded_Design_Artifact_Current: PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt
-- PromptPack_Baseline_Triage_Current: PP-03_Baseline_Triage_Prompt_v1_0_0.txt
-- PromptPack_Enrichment_Review_Current: PP-04_Enrichment_Review_Prompt_v0_1_1.txt
-- PromptPack_Final_Case_Synthesis_Current: PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt
-- PromptPack_Output_Schema_Current: PP-02_Output_Schema_v1_0_0.txt
-- PromptPack_Retrieved_Artifact_Review_Current: PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt
-- PromptPack_System_Current: PP-01_System_Prompt_v1_0_1.txt
-- Repository_Layout_Spec_Current: DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
-- Session_Handoff_Current: LOG-03_DCOIR_Session_Handoff_Brief.txt
-- Todo_Log_Current: LOG-01_DCOIR_Todo_Log.txt
-- Transition_Checklist_Current: DOC-02_DCOIR_Project_Transition_Checklist.txt
+CURRENT GOVERNED GITHUB READABLE SOURCES
+- Manifest_Current: project_sources/CP-01_DCOIR_Version_Manifest.txt
+- Change_Log_Current: project_sources/CP-02_DCOIR_Change_Log.txt
+- Project_Setup_Guide_Current: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
+- Transition_Checklist_Current: project_sources/DOC-02_DCOIR_Project_Transition_Checklist.txt
+- Repository_Layout_Spec_Current: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
+- Todo_Log_Current: project_sources/LOG-01_DCOIR_Todo_Log.txt
+- Lessons_Learned_Log_Current: project_sources/LOG-02_DCOIR_Lessons_Learned_Log.txt
+- Session_Handoff_Current: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
+- PromptPack_System_Current: project_sources/PP-01_System_Prompt_v1_0_1.txt
+- PromptPack_Output_Schema_Current: project_sources/PP-02_Output_Schema_v1_0_0.txt
+- PromptPack_Baseline_Triage_Current: project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt
+- PromptPack_Enrichment_Review_Current: project_sources/PP-04_Enrichment_Review_Prompt_v0_1_1.txt
+- PromptPack_Retrieved_Artifact_Review_Current: project_sources/PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt
+- PromptPack_Final_Case_Synthesis_Current: project_sources/PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt
+- PromptPack_Agent_Guardrails_Current: project_sources/PP-07_Agent_Guardrails_v1_0_0.txt
+- PromptPack_Combined_Master_Prompt_Current: project_sources/PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt
+- PromptPack_Gemini_Generator_Workflow_Current: project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
+- PromptPack_Gemini_Bounded_Design_Artifact_Current: project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt
+- Collector_Current: project_sources/DCOIR_Collector.ps1
+- Harness_PS1_Current: project_sources/run_DCOIR_Tests.ps1
+- Harness_CMD_Current: project_sources/run_DCOIR_Tests.cmd
+- Collector_Engine_Rollback_Current: project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt
 
-CURRENT UPLOADED SUPPORTING PACKAGE ASSETS
-- Collector_Gemini_Email_Build_Bundle_Baseline_Zip_Current: DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip
-- Collector_Zip_Supporting_Asset_Current: DCOIR_Collector.zip
-- Comparative_Gemini_Agent_Markdowns_Zip_Current: comparative_reference_agent_markdowns.zip
-- Generated_DCOIR_Gemini_Agent_Markdowns_Zip_Draft_Current: generated_agent_markdowns.zip
-- Knowledge_Docs_Zip_Supporting_Asset_Current: supporting_knowledge_docs.zip
-- Original_Alert_Triage_Gemini_Agent_Baseline_Zip_Current: original_alert_triage_gemini_agents.zip
-- Original_Collector_Artifact_Gemini_Agent_Baseline_Zip_Current: original_collector_artifact_gemini_agents.zip
+CURRENT GOVERNED KNOWLEDGE SOURCES IN GITHUB
+- knowledge/*.md
 
-CURRENT SETTINGS-APPLIED, NOT REQUIRED AS UPLOADED SOURCES
-- Project_Instructions_Current: SET-05_AFRICOM_SOC_IR_Project_Instructions_v14.txt
+CURRENT GOVERNED SETTINGS MIRRORS IN GITHUB
+- project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt
+- project_settings/GITHUB_WORKING_REPOSITORY_NOTE.md
 
-CURRENT LOCAL-ONLY OPERATOR PROMPTS, NOT REQUIRED AS UPLOADED SOURCES
-- None currently tracked in the authoritative working set.
+CURRENT SUPPORTING ASSETS IN GITHUB
+- supporting_assets/DCOIR_Collector.zip
+- supporting_assets/supporting_knowledge_docs.zip
+- supporting_assets/comparative_reference_agent_markdowns.zip
+- supporting_assets/original_alert_triage_gemini_agents.zip
+- supporting_assets/original_collector_artifact_gemini_agents.zip
+- supporting_assets/DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip
+- supporting_assets/generated_agent_markdowns.zip
+
+CURRENT PROJECT-SPACE BOOTSTRAP MODEL
+- Project space should contain the current Project Instructions text and release instructions needed to bootstrap or refresh the workspace.
+- Project space should not contain duplicate editable readable governed text files that already live in GitHub.
+- Resume flows should read Project Instructions first, then use the GitHub connector against malwaredevil/dcoir-collector to read CP-01, CP-02, and the remaining governed readable source set.
+- GitHub is the sole working source for readable text updates.
+- Project space remains the bootstrap and applied runtime anchor, not a second editable text repository.
 
 GOVERNANCE MODEL
-- Class-prefixed filenames remain the authoritative uploaded Project-readable source model.
-- The default control-plane files remain Project Instructions, CP-01_DCOIR_Version_Manifest.txt, and CP-02_DCOIR_Change_Log.txt.
-- DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt and DOC-02_DCOIR_Project_Transition_Checklist.txt remain evergreen documents and should change only when their evergreen process materially changes.
-- DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt remains the canonical repo and deployment layout blueprint and should change only when the layout or emit rules materially change.
-- Exact multi-file release actions belong in release_notes/RELEASE_INSTRUCTIONS.txt inside the release ZIP.
-- LOG-01_DCOIR_Todo_Log.txt, LOG-02_DCOIR_Lessons_Learned_Log.txt, and LOG-03_DCOIR_Session_Handoff_Brief.txt should be refreshed only when their own substance changes.
-- Supporting Knowledge docs are maintained as one uploaded package asset named supporting_knowledge_docs.zip to reduce Project delete/upload count.
-- Workflows, execution steps, and helper skills that need Knowledge content must unzip or otherwise reference supporting_knowledge_docs.zip as needed rather than assuming individual Knowledge docs are uploaded into the Project workspace.
-- Comparative reference agent markdowns, preserved original Gemini baseline bundles, generated agent markdowns, and Gemini email/build bundles are supporting assets, not control-plane authority.
-- Substantive test sessions that materially change active direction, packaging, design strategy, or confidence discipline must be distilled into governed logs and, when they change the live work line, promoted through a control-plane refresh rather than left only in side artifacts or chat history.
-- Hard-limit project-instructions rule: any Project Instructions update must fit within 8000 characters before it is promoted into the settings baseline.
-- Project-side dcoir-* helper skills are authoring, QA, packaging, workflow, and maintenance aids for this Project; they are not runtime capabilities of the final combined prompt or Gemini outputs.
-- Final standalone combined-prompt and Gemini artifacts must be runtime-self-sufficient and must not mention or assume dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files.
-- Required attention-signaler use points are first substantive DCOIR response, major milestone, action-required / approval-needed, blocked state, and major completion.
-- Multi-file deliverables should default to one ZIP bundle unless release notes explicitly declare a narrower targeted update.
+- Default resume anchor order: Project Instructions, then GitHub CP-01, then GitHub CP-02.
+- Use GitHub repository malwaredevil/dcoir-collector as the working repository and review surface.
+- Do not keep duplicate editable readable text files in both GitHub and Project space.
+- Supporting assets do not override the control plane.
+- Final standalone combined prompt and final Gemini outputs must remain runtime-self-sufficient and must not mention or assume dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached files.
+- Required attention-signaler use points remain first substantive DCOIR response, major milestone, action-required or approval-needed, blocked state, and major completion.
 
 STATUS NOTES
-- DCOIR_Collector.314.ps1.txt is the current stable operator-facing readable collector source and now includes bounded file-level and targeted function-level maintenance documentation.
-- The canonical emitted runtime collector filename remains DCOIR_Collector.ps1.
-- run_DCOIR_Tests.ps1.txt is the current Project-readable harness source for analysis.
-- run_DCOIR_Tests.cmd.txt is the current Project-readable harness command-wrapper source for analysis.
-- RB-01_DCOIR_Collector_refinement_2_1_3.txt is the single intentional rollback reference.
-- DCOIR_Collector.zip is the current supporting uploaded package asset for bundle, repo, and harness packaging work; it is not part of the control plane.
-- comparative_reference_agent_markdowns.zip remains the current supporting uploaded comparative design-reference package for Gemini field style, routing density, and delegation language.
-- original_alert_triage_gemini_agents.zip is now the preserved minimum-density and minimum-verbosity baseline for future Gemini parent-agent and sub-agent field generation unless the operator explicitly approves a different baseline.
-- original_collector_artifact_gemini_agents.zip is now the preserved baseline for the original collector-side prime-agent and sub-agent structure, logical file layout, and heading/value field-presentation style.
-- DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip is now the preserved baseline for the broader collector-agent attachment package, build-bundle layout, and prime-agent supporting-file set.
-- generated_agent_markdowns.zip is retained as the current generated merged Gemini draft-reference package, but it is not an approved live Gemini field baseline and must not be treated as sufficient simply because it exists.
-- supporting_knowledge_docs.zip is the current supporting uploaded Knowledge-doc package and replaces per-file Knowledge uploads for full-refresh updates.
-- PP-01 through PP-08 remain the current validated modular/runtime prompt-pack line.
-- PP-09 remains the current approved Gemini generator workflow source and PP-10 remains the current bounded Gemini design artifact source.
-- The merged architecture pass remains substantively settled at 1 parent + 7 sub-agents with the reviewed boundary decisions carried in the situational logs.
-- dcoir-change-impact-analyzer hard-stop remediation was completed later in chat and is no longer the immediate pending blocker.
-- dcoir-session-tracker and dcoir-collector-qa now exist in the active project helper-skill line, and the session-tracker help-path regression was corrected in the later bounded all-skills pass.
-- The later bounded all-skills pass preserved 19/19 project gates present, 19/19 icon/metadata presence, and 19/19 Python help checks passing.
-- The collector documentation patch is complete and one local Windows PowerShell 5.1 Core control lane has now passed end-to-end.
-- The preserved Gemini collector execution error remains a required placeholder regression lane until the exact failing excerpt is recovered.
-- The current settings baseline advances to SET-05_AFRICOM_SOC_IR_Project_Instructions_v14.txt.
-- Promotion bundles should default to full-refresh workspace replacement unless RELEASE_INSTRUCTIONS.txt explicitly declares a targeted update.
-- Actionable file lists shown to the operator should be alphabetized within each action group.
-- The current next planned work item is to continue operationalizing and right-sizing the dcoir-* skill line, preserve the Gemini field-definition and 500000-character guidance in governed form, and keep the collector/Gemini regression lanes active before later merged Gemini regeneration.
+- The current readable collector source is project_sources/DCOIR_Collector.ps1 in GitHub native format.
+- The current readable harness sources are project_sources/run_DCOIR_Tests.ps1 and project_sources/run_DCOIR_Tests.cmd in GitHub native format.
+- Knowledge markdown now exists as extracted editable content in knowledge/ and should be treated as the working readable source set for knowledge maintenance.
+- supporting_knowledge_docs.zip may still be retained as a delivery or reference asset, but it is not the editable working source when the extracted markdown exists in GitHub.
+- The current settings baseline advances to project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt.
+- Skills still require a later GitHub-aware update pass after the bootstrap model is applied.
+
+CURRENT NEXT PLANNED WORK ITEM
+- Apply and validate the GitHub-primary bootstrap model, then update the affected dcoir-* skills, expand collector all-path regression coverage, and continue the current Gemini and helper-skill operationalization line.
