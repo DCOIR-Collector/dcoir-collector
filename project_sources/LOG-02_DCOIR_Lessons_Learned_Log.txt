@@ -1,65 +1,13 @@
 DCOIR Lessons Learned Log
 
-Latest governed lessons added in 3.8.0
-- Attention-signaler under-triggering is a workflow defect, not a cosmetic issue. Required-use points should be governed and regression-tested.
-- Passive preference capture needs explicit regression coverage when preferences affect naming, packaging, or other durable workflow choices.
-- Session-tracker export / continuity support is operationally useful enough to preserve in the helper-skill line once the skill exists.
-- Project-side dcoir-* helper skills must not leak into final runtime assumptions for the standalone combined prompt or Gemini outputs.
-- Collector QA should default to audit/report/validate with repair/doc mode explicit, not silent mutation.
-- In-code documentation and maintained command blocks are part of the maintained collector surface, not optional extras.
-- External helper-skill updates should include icon/metadata presence checks and post-update invocation/accessibility regression where relevant.
-- A bounded local Windows PowerShell 5.1 control lane is high-value evidence for collector changes even when broader environment-specific replay remains pending.
-- Full-refresh bundles are the safer promotion vehicle when control-plane files, evergreen workflow docs, Gemini design sources, and settings text all move together.
-
+Latest governed lessons added in 3.9.0
+- GitHub-primary / Project-bootstrap is cleaner than duplicating readable governed text in both GitHub and Project space.
+- Resume reliability improves when the rule is explicit: Project Instructions first, then the GitHub connector against the named repository.
+- Native readable script formats in GitHub are preferable once direct repo reads are proven.
+- Direct GitHub updates are preferable to patch ZIPs for frequently changing readable text when connector support exists.
+- Skills must be updated after a working-source model shift or they will drift behind reality.
 
 Durable lessons retained
-- Evidence-first, bounded-scope analysis remains the right foundation for the DCOIR workflow.
-- Rich, explicit agent instructions outperform thin field population when the target platform relies on Description for routing and Instructions for behavior shaping.
-- Comparative reference agents that already work well should be treated as design benchmarks rather than lightly acknowledged examples.
-- Gemini Description should absorb the strongest useful material from purpose, role, description, and duplicated scope text when that improves routing and delegation.
-- Gemini Instructions should use the available field budget aggressively enough to preserve workflow, safety, tool-lane, error-handling, and output-contract expectations.
-- A parent-agent design should orchestrate specialized sub-agents rather than bury all operating rules in one monolith when the workflow naturally breaks into intake, classification, evidence control, planning, escalation, and reporting stages.
-- Alert triage and DCOIR collection should connect through a formal escalation decision gate rather than ad hoc workflow switching.
-- Collector-emitted output should be translated into clear operator language once pasted into chat.
-- Knowledge-doc packaging can be consolidated into one zip when lowering Project upload friction is more important than per-file Project visibility, but workflows that depend on that content must then explicitly unzip/reference it.
-- Double-extension readable script-source names remain the cleanest long-term way to keep Project-readable sources and native runtime emission aligned with low manual overhead.
-- Collaborative assistant behavior should default to implementing operator-directed improvements unless governance, packaging integrity, or safety are genuinely at risk.
-- Deep regression catches latent defects that light validation can miss; it should be the default for anything testable before live use and after every patch.
-- Token economy should not dominate DCOIR engineering decisions when more testing or deeper analysis materially improves reliability, confidence, or end-product quality.
-- A policy skill that learns from direct answers, passive preference statements, and repeated corrections can reduce future clarification overhead without pretending to persist changes silently.
-- Visually conspicuous attention banners in the chat output are useful for completion, review, blocked, and action-required states even when browser popups or audio alerts are unavailable.
-- Living skill-managed references are a better fit than hard static notes for operator intent matrices, regression fixture catalogs, validation scenario libraries, release instruction templates, skill test harness definitions, large-file intake playbooks, and Gemini routing guidance that need to evolve over time.
-- The class-prefix naming model now makes grouped targeted updates practical when the changed set is one visually sortable source class; full refresh remains the preferred default for mixed-source updates over two files or for structural changes.
-- After applying a targeted preservation update, verify semantic next-step alignment in LOG-01 and LOG-03 rather than assuming filename replacement alone preserved the live working posture correctly.
-- A grouped LOG-class targeted bundle is an effective low-friction preservation mechanism when only situational logs changed and the control plane, evergreen docs, prompt-pack line, and supporting assets remain stable.
-- Good knowledge management has no practical substitute in this project. Under-documentation creates avoidable ambiguity, continuity loss, and rework.
-- When the project depends on future resume quality, cross-window testing, operator handoff, or later structural redesign, exhaustive documentation is safer than summary-only capture.
-- Settings, manifest notes, change-log entries, todo items, handoff notes, release instructions, source explanations, and generated companion markdowns should all preserve enough evidence, rationale, assumptions, constraints, and downstream implications that a later worker can reconstruct why the current state exists.
-- Over-documentation is a quality-control mechanism for AFRICOM_SOC_IR, not merely a stylistic preference. It reduces forgotten context, repeated debate, and preventable redesign loops.
-- If a durable operator preference materially affects workflow quality, continuity, or packaging choices, carry it in both the project control path and the relevant decision skill so future sessions and branch choices align automatically.
-- Original working Gemini bundles that define the preferred field-density baseline, attachment-package layout, or logical file-organization pattern should be preserved as governed supporting assets rather than left as disposable side uploads.
-- original_alert_triage_gemini_agents.zip is now the minimum acceptable baseline for Gemini parent-agent and sub-agent field density, verbosity, routing richness, and instruction explicitness unless the operator explicitly approves a different baseline.
-- original_collector_artifact_gemini_agents.zip and DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip preserve the preferred collector-side structure, file layout, and prime-agent attachment baseline and should remain available during future combined-agent design work.
-- Every substantive test session provides vital lessons learned and key evidence that should be remembered and preserved. Distill those findings into governed lessons and, when they change the active work line, promote them into the control plane instead of leaving them only in attachments, PDFs, or chat memory.
-- When merged-agent architecture, attachment strategy, or knowledge-file boundaries remain unsettled, do design-first review before generating or testing new merged Gemini bundles.
-- The assistant cannot see the separate Elastic or Gemini browser windows directly. It must rely on the operator to paste emitted collector output, Gemini behavior, or other external-window results into chat. Once that pasted data exists in chat, it should be treated as first-class workflow input rather than paraphrased away.
-- The highest-friction usability failure in collector-assisted workflows is usually the exact operator sequence in Elastic, not the abstract analytic phase order. Guidance should therefore explicitly cover staging, execution, retrieval, and cleanup in the correct lane.
-- When collector output includes STATUS, RUN_ID, SESSION_STATUS, COLLECT_BUNDLE_PATH, ENRICH_BUNDLE_PATH, NEXT_GET_FILE, CLEANUP_COMMAND, DELETE_SCRIPT_COMMAND, NEXT_OPTIONS, or NEXT_QUICK_COMMANDS, those emitted fields should be surfaced directly and translated into exact next operator actions once pasted into chat.
-- After a successful collect or finalized enrichment where NEXT_GET_FILE is present, the next operator action should normally be to run the emitted get-file command and retrieve the bundle before drifting into abstract discussion.
-- When SESSION_STATUS=OPEN after enrichment, the operator guidance must make the decision point explicit: continue the session, retrieve the current artifact if it is needed now, or finalize if the session is complete. Do not leave the immediate next step ambiguous.
-- Prefer collector-emitted commands over speculative hand-built commands whenever those emitted commands already exist.
-- When the desired file already exists at a known endpoint path and the immediate need is simply to download that file, prefer plain Elastic Defend get-file over collector-side retrieval actions.
-- Command examples must be syntax-safe for quoted Windows paths, .\DCOIR_Collector.ps1 invocation, enrichment actions, and response-action usage. Broken quoting or malformed argument order damages trust quickly and should be treated as a serious defect.
-- Remove background-work, handoff, deferment, standby, or delegated-agent language from this workflow. The agent should confirm receipt, wait only when the user is still uploading, and then analyze immediately once the user says the upload set is complete.
-- Large-file failure should trigger a defined fallback path rather than a dead-end. Preferred fallback order is metadata first, then selected flat artifacts, then focused excerpts from oversized reports if needed.
-- Triage, enrichment review, retrieved artifact review, and final synthesis should preserve a hard distinction between observed facts, grounded inference, and unreviewed evidence.
-- Confidence should remain bounded when important artifacts are missing. Prefer wording such as likely benign within reviewed scope, no malicious evidence identified in the provided artifacts, or residual uncertainty remains due to missing artifacts rather than blanket false-positive closure when key data was not reviewed.
-- Signature-based legitimacy claims should only be stated as verified when the validation artifact or equivalent direct evidence was actually reviewed. A signed binary can establish file legitimacy but does not by itself prove that the broader execution context was benign.
-- Preserve the good parts of the tested workflow while fixing the defects: merged baseline first when available, metadata as the next fallback, staged flat-artifact intake for large cases, immediate analysis once uploads are complete, and a coherent progression from baseline triage to artifact review, enrichment review, and final synthesis.
-- Mapping-sensitive helper skills must be revalidated after supporting-asset expansions or settings-baseline changes; otherwise packaging logic can drift behind the governed workspace model.
-- When Project Instructions are refreshed, the promoted settings text must be 8000 characters or fewer. Condense over-limit candidates before promotion rather than treating an over-limit draft as ready.
-- When a substantive session changes the active work line, refresh the control plane and situational logs before ending the branch when practical; otherwise later resume flows can raise avoidable source-authority conflicts.
-- A skill-line audit should preserve not only pass/fail counts but also the known behavior gap, the likely under-invocation cluster, and the current narrative-only validation needs so later sessions resume the right remediation order.
-- Narrative-only skills such as session resume and decision policy require live conversational exercise in addition to script or packaging checks.
-- Project-only activation expectations should be normalized across the dcoir-* skill line instead of relying on soft thematic scoping.
-- A viable session todo helper for this project would be session-local only; it would not provide durable cross-session memory unless it wrote to a governed or otherwise durable artifact.
+- Evidence-first, bounded-scope analysis remains the right DCOIR foundation.
+- Deep regression should be the default for anything testable before live use and after every patch.
+- Good knowledge management has no practical substitute in this project.
