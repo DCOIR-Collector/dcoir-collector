@@ -2,7 +2,7 @@
 artifact_type: dcoir-session-state
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-03-30T13:10:00Z
+exported_at_utc: 2026-03-30T13:35:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -16,16 +16,16 @@ imports_merged:
 # DCOIR Session State
 
 ## Current phase
-Prepare to resume design of the project-scoped GitHub super-skill after the helper-skill memory rollout and manual skill updates.
+Design the project-scoped GitHub super-skill after helper-memory rollout, with broader GitHub control surfaces deferred behind the MVP.
 
 ## Best next move
-Resume the project-scoped GitHub super-skill in design mode only, then keep the follow-on adoption work staged behind it.
+Finish the concrete phased build spec for the project-scoped GitHub super-skill and keep broader GitHub management surfaces explicitly deferred to later phases.
 
 ## Open items
 ### session_only
-- [ST-010] Resume design of the project-scoped GitHub super-skill (status: open; provenance: current_chat)
-  - why: The helper-skill GitHub-memory rollout is complete enough to move back to the super-skill line.
-  - next_action: Start the design pass for the project-scoped GitHub super-skill.
+- [ST-010] Design the project-scoped GitHub super-skill (status: in_progress; provenance: current_chat)
+  - why: This is now the active next line of work.
+  - next_action: Finalize the phased MVP and later-phase capability map.
   - related: skill-creator, malwaredevil/dcoir-collector
 
 ### durable_preference_candidate
@@ -37,6 +37,10 @@ Resume the project-scoped GitHub super-skill in design mode only, then keep the 
   - why: The operator prefers one download for grouped manual skill updates.
   - next_action: Keep providing one bundle zip when multiple skills are updated together.
   - related: dcoir-decision-policy
+- [ST-013] Defer broader GitHub project-control and management surfaces to later phases while keeping full GitHub coverage as the ideal endstate (status: open; provenance: current_chat)
+  - why: The MVP should stay focused, but the long-term goal is a full GitHub interface.
+  - next_action: Keep wiki, projects, and other broader GitHub control surfaces in the later-phase map, not the MVP.
+  - related: dcoir-github-operator
 
 ### follow_on_validation
 - [ST-011] Update dependent skills to use the GitHub super-skill after it is designed, tested, and implemented (status: open; provenance: current_chat)
@@ -55,4 +59,4 @@ Resume the project-scoped GitHub super-skill in design mode only, then keep the 
   - related: dcoir-decision-policy, dcoir-collector-qa, dcoir-validation-orchestrator, dcoir-skill-regression-auditor, dcoir-live-test-remediation-planner
 
 ## Provenance notes
-- Updated after operator confirmation that the manually updated skills are in place and after capturing the post-super-skill follow-on reminder.
+- Updated after capturing the phased-scope rule for the GitHub super-skill design.
