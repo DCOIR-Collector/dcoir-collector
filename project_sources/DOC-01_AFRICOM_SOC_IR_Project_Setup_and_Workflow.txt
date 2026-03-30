@@ -1,130 +1,81 @@
 AFRICOM_SOC_IR Project Setup and Workflow
 
 Purpose
-- This document is the evergreen setup and workflow guide for the AFRICOM_SOC_IR Project.
-- It describes how the Project is structured, how full-refresh updates are applied, and how supporting assets should be handled.
+- This document is the evergreen setup and workflow guide for the AFRICOM_SOC_IR / DCOIR project.
+- It describes how the project is structured, how resume works under the GitHub-primary model, and how bootstrap updates should be applied.
 - It should not be rewritten for every normal release.
 
 Project model
-- The Project is the current operational workspace, not the full historical archive.
-- Uploaded Project-readable sources remain the authoritative working set.
-- Project Instructions are applied in settings and are authoritative even though they are not uploaded as normal Project source files. Any promoted Project Instructions refresh must fit within a hard 8000-character limit.
-- Supporting uploaded assets can exist alongside uploaded Project sources when they are needed for packaging, repo generation, deployment, local execution, design-reference preservation, or generated companion artifacts.
+- The project is the current operational workspace, not the full historical archive.
+- GitHub repository malwaredevil/dcoir-collector is the sole working source for readable governed text files.
+- Project space is the bootstrap and applied runtime anchor, not a second editable readable text repository.
+- Project Instructions are applied in settings and remain the first resume anchor.
+- When readable governed files are needed after that, use the GitHub connector against malwaredevil/dcoir-collector.
+- Do not keep duplicate editable readable text files in both GitHub and Project space.
+- Supporting assets can still exist in GitHub and optionally in Project space when they are intentionally retained there.
 - Supporting assets do not override the control plane.
-- Project-side dcoir-* helper skills are authoring, QA, packaging, workflow, and maintenance aids for this Project.
+- Project-side dcoir-* helper skills are authoring, QA, packaging, workflow, and maintenance aids for this project.
 - Final standalone combined prompt and final Gemini outputs must be runtime-self-sufficient and must not mention or assume dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files.
-- Preserved original Gemini bundles may be governed supporting assets when they define the operator-preferred baseline for field density, routing language, instruction richness, logical file layout, or prime-agent attachment packaging.
-- Supporting Knowledge docs are no longer uploaded one file at a time by default. They are now maintained as one supporting package asset named supporting_knowledge_docs.zip to reduce Project delete/upload count.
-- Any workflow, execution step, or helper skill that needs Knowledge content must unzip or otherwise reference supporting_knowledge_docs.zip as needed.
-- Exhaustive documentation is the default project-facing knowledge-management posture. Preserve materially useful rationale, evidence, provenance, assumptions, constraints, validation notes, and downstream implications unless a narrower form is explicitly required.
-- Substantive test sessions must be distilled into LOG-02_DCOIR_Lessons_Learned_Log.txt and, when they materially change the active next-step line, packaging expectations, or design strategy, promoted through the control plane and situational logs rather than left only in attachments, PDFs, or chat history.
-- When Gemini architecture, sub-agent boundaries, main-agent attachment expectations, or knowledge-file boundaries remain unsettled, use a design-first review sequence before generating or testing a new merged Gemini bundle.
 
 Current control-plane model
-- The default control plane is:
+- The default resume anchor is:
   - Project Instructions
-  - CP-01_DCOIR_Version_Manifest.txt
-  - CP-02_DCOIR_Change_Log.txt
-- Use CP-01_DCOIR_Version_Manifest.txt to identify what is CURRENT.
-- Use CP-02_DCOIR_Change_Log.txt to understand what changed and why.
+  - GitHub CP-01_DCOIR_Version_Manifest.txt
+  - GitHub CP-02_DCOIR_Change_Log.txt
+- Use CP-01 to identify what is current.
+- Use CP-02 to understand what changed and why.
 
-Naming convention
-- Uploaded Project-readable source files use class-prefixed naming so each major source class sorts logically without forcing one brittle global number spine.
-- Current class prefixes are:
-  - CP = control plane
-  - DOC = evergreen workflow docs
-  - LOG = situational logs
-  - PP = modular prompt-pack and AI workflow sources
-  - RB = rollback reference text source
-- Current readable script-source exceptions remain:
-  - DCOIR_Collector.314.ps1.txt
-  - run_DCOIR_Tests.ps1.txt
-  - run_DCOIR_Tests.cmd.txt
-- Supporting package assets such as DCOIR_Collector.zip, supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, original_alert_triage_gemini_agents.zip, original_collector_artifact_gemini_agents.zip, DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip, and generated_agent_markdowns.zip remain native assets and are not renamed into the class-prefix scheme.
-
-Evergreen documents
-- DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt is the evergreen setup and workflow guide.
-- DOC-02_DCOIR_Project_Transition_Checklist.txt is the evergreen update checklist.
-- DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt is the evergreen repo and deployment layout blueprint.
-- These should be updated only when the setup, transition, or layout process itself materially changes.
-
-Situational logs
-- LOG-01_DCOIR_Todo_Log.txt tracks current and upcoming work.
-- LOG-02_DCOIR_Lessons_Learned_Log.txt tracks durable lessons.
-- LOG-03_DCOIR_Session_Handoff_Brief.txt tracks handoff context for the current phase.
-- Refresh these logs only when their own content actually changes.
+Readable-source rule
+- Readable governed text files live in GitHub, not duplicated in Project space.
+- Native readable script formats are preferred in GitHub when the connector can read them.
+- Current readable script-source working files are:
+  - project_sources/DCOIR_Collector.ps1
+  - project_sources/run_DCOIR_Tests.ps1
+  - project_sources/run_DCOIR_Tests.cmd
+- Prompt-pack, docs, logs, control-plane files, rollback references, and settings mirrors also live in GitHub as the readable working set.
+- Knowledge markdown in knowledge/ is the readable working source when present.
+- supporting_knowledge_docs.zip may be retained as a delivery or reference asset, but not as the preferred editable readable source when extracted knowledge markdown exists.
 
 How to start or resume work
-- Upload or maintain the current uploaded Project sources listed in CP-01_DCOIR_Version_Manifest.txt.
-- Upload or maintain the current supporting assets listed in CP-01_DCOIR_Version_Manifest.txt.
-- Paste the current Project Instructions text from project_settings/SET-05_AFRICOM_SOC_IR_Project_Instructions_v14.txt into the Project settings field when applying the current full-refresh bundle.
-- For resume, re-anchor from CP-01_DCOIR_Version_Manifest.txt first, then CP-02_DCOIR_Change_Log.txt, then the current todo log and session handoff brief.
-- If a workflow needs Knowledge-doc content and only supporting_knowledge_docs.zip is present, unzip or reference that asset before treating the workspace as fully informed on Knowledge guidance.
-- If preserved original Gemini baseline bundles are present, use them as governed design-reference assets for density, layout, and attachment expectations rather than as control-plane authority.
+- Apply the current Project Instructions text from project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt to the Project settings field.
+- In a fresh project chat, resume from Project Instructions first.
+- Then use the GitHub connector against malwaredevil/dcoir-collector to read:
+  - project_sources/CP-01_DCOIR_Version_Manifest.txt
+  - project_sources/CP-02_DCOIR_Change_Log.txt
+  - other governed readable sources as needed
+- Do not assume duplicate readable Project uploads exist for those files.
+- If binary or retained supporting assets are needed and intentionally present in Project space, treat them as supporting assets rather than control-plane authority.
 
-How to apply a future update bundle
+How to apply a future bootstrap update
 1. Download the update ZIP bundle and extract it locally.
 2. Open release_notes/RELEASE_INSTRUCTIONS.txt inside that bundle.
-3. Follow the exact settings-update, DELETE, UPLOAD, LEAVE UNCHANGED, and supporting-assets instructions in that file.
-4. Use DOC-02_DCOIR_Project_Transition_Checklist.txt as the evergreen checklist while applying the release instructions.
-5. In a new Project chat, resume the project and continue with the next planned work item.
+3. Apply the updated Project Instructions text to the Project settings field.
+4. Delete obsolete duplicate readable text files from Project space when release instructions say to do so.
+5. Retain only the intentionally kept bootstrap or binary assets in Project space.
+6. Resume from Project Instructions in a fresh chat and let the project read the readable governed sources from GitHub.
 
 Packaging convention
-- If there is more than one downloadable file, the default delivery is one ZIP bundle.
-- ZIP bundles should separate uploaded Project sources from settings-only files using folders such as project_sources and project_settings.
-- If a bundle includes supporting assets, place them in supporting_assets.
-- Include release_notes/RELEASE_INSTRUCTIONS.txt whenever the bundle contains more than one file.
-- For structural changes, renames, or broad multi-file syncs, prefer a full refresh bundle that contains the complete uploaded source set for the Project workspace.
-- Unless explicitly told otherwise, delivered bundles should include the full uploaded Project source set, supporting assets, and required settings-applied files rather than a reduced subset chosen by assumption.
-- Promotion bundles should default to full-refresh upload bundles unless a targeted update is explicitly requested or explicitly declared in release_notes/RELEASE_INSTRUCTIONS.txt.
-- In the default promotion workflow, the operator deletes the current uploaded Project sources and current supporting assets, then uploads the complete refreshed contents from project_sources/ and supporting_assets/.
-- supporting_knowledge_docs.zip is the authoritative refresh-bundle delivery form for Knowledge docs.
-- When preserved original Gemini baseline bundles or prime-agent build-reference packages are part of the governed working set, include them in supporting_assets/ for full-refresh delivery so future design work starts from the same baseline.
-
-Repo and deployment layout convention
-- The canonical generated repo and deployment layout is maintained in DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt.
-- Generated repo and deployment bundles should use the canonical DCOIR_Project/ tree defined in that layout spec.
-- The layout spec is not part of the control plane, but it is the authoritative blueprint for generated folder hierarchy and source-to-native mapping.
+- For GitHub-maintained readable text updates, prefer direct GitHub edits over patch ZIPs when the connector path supports them.
+- Use ZIP bundles for Project bootstrap/application steps, multi-file delivery, or retained binary/supporting assets when needed.
+- If a bundle contains more than one file, include release_notes/RELEASE_INSTRUCTIONS.txt.
+- Do not use Project refresh bundles to reintroduce duplicate readable source mirrors unless an explicit temporary exception is declared.
 
 Operational content rules
-- Prefer uploaded .txt mirrors when the Project needs to read or reason over scripts.
-- When a script-like source needs to remain Project-readable and also emit cleanly to a native runtime type, prefer a double extension such as .ps1.txt or .cmd.txt.
-- During bundle generation, strip only the final .txt from known double-extension script or config mirrors to emit the native runtime file.
 - Keep Windows PowerShell 5.1 compatibility as a hard requirement unless explicitly changed.
 - Use Elastic Defend response-action syntax for endpoint instructions.
 - Use PowerShell commands for local workstation and local test instructions.
-- Keep supporting package assets separate from the control plane even when they are uploaded for packaging, deployment, or reference work.
-- When documenting or discussing execution, use the runtime or downloaded filename where applicable even when the authoritative uploaded source uses a .txt readability suffix.
-- During Project-side work, prefer the relevant dcoir-* helper skill when one clearly matches the task, but treat those skills as Project-only workflow helpers rather than runtime capabilities of the final delivered artifacts.
-- When a helper skill changes materially, replace the external skill package separately, verify icon/metadata where expected, rerun post-update invocation/accessibility regression where relevant, and then refresh governed project sources if the durable workflow or active work line changed.
+- Use the runtime or native GitHub filename when discussing execution where applicable.
+- When a helper skill changes materially, replace the external skill package separately, verify icon or metadata where expected, rerun post-update invocation or accessibility regression where relevant, and then refresh governed project sources if the durable workflow changed.
 
 Knowledge handling
-- Knowledge docs remain authored as markdown stored with .md.txt filenames.
-- Knowledge docs remain supporting human-readable documents for operator use.
-- The standard uploaded Project delivery form for Knowledge docs is now one supporting asset named supporting_knowledge_docs.zip.
-- Knowledge docs must not override Project Instructions, CP-01_DCOIR_Version_Manifest.txt, CP-02_DCOIR_Change_Log.txt, or other authoritative workflow sources.
-- When the Knowledge-doc existence set changes, regenerate supporting_knowledge_docs.zip and refresh any affected manifest, workflow, or situational-log files before treating the workspace as aligned.
+- Knowledge docs are authored and maintained as normal markdown in GitHub knowledge/.
+- supporting_knowledge_docs.zip may remain a delivery or reference asset, but it is not the preferred editable readable source when extracted markdown exists.
+- Knowledge docs must not override Project Instructions, CP-01, CP-02, or other authoritative workflow sources.
 
 Current stable artifacts
-- Collector stable readable source baseline: DCOIR_Collector.314.ps1.txt
-- Collector emitted runtime filename: DCOIR_Collector.ps1
-- Local regression harness source mirrors: run_DCOIR_Tests.ps1.txt and run_DCOIR_Tests.cmd.txt
-- Engine rollback reference: RB-01_DCOIR_Collector_refinement_2_1_3.txt
-- Supporting uploaded package assets: DCOIR_Collector.zip, supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, original_alert_triage_gemini_agents.zip, original_collector_artifact_gemini_agents.zip, DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip, generated_agent_markdowns.zip
-- original_alert_triage_gemini_agents.zip is the preserved minimum-density and minimum-verbosity baseline for future Gemini field generation unless the operator explicitly chooses a different baseline.
-- original_collector_artifact_gemini_agents.zip and DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip preserve the original collector-side structure and main-agent attachment expectations for future combined-agent design work.
-- generated_agent_markdowns.zip is retained as a draft merged reference and should not be treated as an approved live Gemini field baseline until a future reviewed build reaches the preserved standard.
-- Uploaded prompt-pack and AI-workflow Project sources:
-  - PP-01_System_Prompt_v1_0_1.txt
-  - PP-02_Output_Schema_v1_0_0.txt
-  - PP-03_Baseline_Triage_Prompt_v1_0_0.txt
-  - PP-04_Enrichment_Review_Prompt_v0_1_1.txt
-  - PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt
-  - PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt
-  - PP-07_Agent_Guardrails_v1_0_0.txt
-  - PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt
-  - PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
-  - PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt
-- The current prompt-pack operating model remains dual-form: the modular prompt-pack files remain the authoritative build set and the promoted combined analyst-facing master prompt is the current generated runtime source for AI-assistant use.
-- The approved Gemini generator workflow is a companion AI-workflow source that derives future Gemini Enterprise Agent Designer outputs from the validated PP-01 through PP-08 line without replacing modular prompt-pack authority.
-- The promoted bounded Gemini design artifact is the current Project-readable generated design reference derived under PP-09 workflow control from the validated PP-01 through PP-08 line.
+- Collector readable source baseline in GitHub: project_sources/DCOIR_Collector.ps1
+- Collector runtime filename: DCOIR_Collector.ps1
+- Local regression harness readable sources in GitHub: project_sources/run_DCOIR_Tests.ps1 and project_sources/run_DCOIR_Tests.cmd
+- Engine rollback reference: project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt
+- Supporting assets in GitHub: DCOIR_Collector.zip, supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, original_alert_triage_gemini_agents.zip, original_collector_artifact_gemini_agents.zip, DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip, generated_agent_markdowns.zip
+- The prompt-pack and AI workflow line remains PP-01 through PP-10 in project_sources/.
