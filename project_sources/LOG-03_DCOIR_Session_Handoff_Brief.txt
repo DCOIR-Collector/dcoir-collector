@@ -6,17 +6,20 @@ Current stable artifacts
 - Collector readable source: project_sources/DCOIR_Collector.ps1
 - Harness readable sources: project_sources/run_DCOIR_Tests.ps1 and project_sources/run_DCOIR_Tests.cmd
 - Knowledge readable working set: knowledge/*.md
+- Connector-backed GitHub operator package was rebuilt as dcoir-github-operator and manually updated in the skill library.
 
 Current governance state
 - Project Instructions are the first bootstrap anchor.
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - GitHub is the working repository and review surface for readable governed text.
 - Project space is the bootstrap/runtime anchor and should not carry duplicate editable readable governed text.
+- Connector-backed GitHub is the intended in-chat runtime model for the GitHub super-skill.
 
 Current validated status
 - Direct GitHub reads are validated for the real collector and harness files in native formats.
 - Direct GitHub updates are validated on main for governed readable text.
-- The duplicate-heavy Project-mirror model has been superseded.
+- GitHub-backed helper-memory pattern is validated on main.
+- Connector-backed dcoir-github-operator was rebuilt, repackaged, and manually updated; live functional testing against malwaredevil/dcoir-collector is the next gate.
 
 Current next planned work item
-- Update the affected dcoir-* skills for the GitHub-primary readable-source model, then continue collector all-path testing and knowledge workflow cleanup.
+- Test connector-backed dcoir-github-operator against malwaredevil/dcoir-collector, then update dependent dcoir-* skills and affected project sources, workflows, controls, and instructions to use it.

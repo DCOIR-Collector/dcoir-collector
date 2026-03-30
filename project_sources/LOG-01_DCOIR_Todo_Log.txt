@@ -9,10 +9,12 @@ Current stable pointers
 - Settings baseline to apply: project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt
 
 Current next planned work item
-- Update the affected dcoir-* skills so they follow the GitHub-primary / Project-bootstrap model.
+- Test the manually updated connector-backed dcoir-github-operator skill against malwaredevil/dcoir-collector, then use the validated result to update dependent dcoir-* skills and the affected project sources, workflows, controls, and instructions.
 
 Priority stack
-1. Update affected skills for GitHub-primary behavior.
-2. Expand collector all-path testing.
-3. Clean up knowledge-doc delivery posture.
-4. Preserve Gemini and helper-skill operationalization work.
+1. Test connector-backed dcoir-github-operator against the working repository and validate repo-state, readable-text update, helper-memory update, branch-safe write, and git-object batch lanes.
+2. Update dependent dcoir-* skills to use the validated GitHub operator where appropriate.
+3. Update project sources, workflows, controls, and instructions to use the validated GitHub operator.
+4. Expand collector all-path testing.
+5. Clean up knowledge-doc delivery posture.
+6. Preserve Gemini and helper-skill operationalization work.

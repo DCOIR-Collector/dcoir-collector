@@ -11,6 +11,9 @@ Latest governed lessons added in 3.9.0
 - Converting the highest-value helper skills first is an effective way to prove a new continuity pattern before expanding it across the broader skill set.
 - For grouped manual skill replacement, one bundled ZIP is the preferred delivery form because it reduces operator download and update friction.
 - The low-level GitHub update path should be validated against the real repository when a new workflow matters; connector-safe commit messages and compact overwrite content reduce avoidable write friction.
+- From this project chat, connector-backed GitHub is the primary viable runtime model; direct API auth is not the primary in-chat execution path.
+- GitHub persistence is an intended feature for this project, so optimization should focus on batching, branch-safe validation, bounded operations, and fewer fragile retries rather than avoiding writes altogether.
+- The connector-backed GitHub operator should expose as much feasible repo, git-object, branch, review, issue, comment, and helper-memory capability as the in-chat GitHub tool surface supports in one release, while leaving unsupported management surfaces deferred.
 
 Durable lessons retained
 - Evidence-first, bounded-scope analysis remains the right DCOIR foundation.
