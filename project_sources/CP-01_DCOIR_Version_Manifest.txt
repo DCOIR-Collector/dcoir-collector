@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.2
+DCOIR Version Manifest 3.9.3
 
 CURRENT GOVERNED GITHUB READABLE SOURCES
 - Manifest_Current: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -65,6 +65,7 @@ STATUS NOTES
 - In the endpoint lane, response_actions\DCOIR_Collector.zip should be treated as a transient working zip, while assets\DCOIR_Collector.zip remains the intended master restage source for the harness.
 - The harness summary layer previously flattened collector-reported PARTIAL_SUCCESS into PASS when exit code was 0; run_DCOIR_Tests.ps1 is now patched to preserve PARTIAL_SUCCESS in summary output and JSON results.
 - Full absolute paths under the response_actions working directory should be used for get-file retrieval of harness outputs in the endpoint lane.
+- The bounded endpoint rerun for the harness reporting patch remains a deferred validation item and should not be resumed until the operator has sent the needed files to himself outside the current work environment.
 
 CURRENT NEXT PLANNED WORK ITEM
-- Rerun the bounded endpoint validation lane for the harness reporting patch: QuickAliases Strings and Streams plus one Core control lane; if that patch holds, resume second-wave GitHub-operator adoption.
+- Resume the next active roadmap branch: second-wave GitHub-operator adoption, while holding the bounded harness rerun as deferred until the operator has sent himself the required files.

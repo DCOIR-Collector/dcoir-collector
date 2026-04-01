@@ -1,4 +1,24 @@
 [CURRENT]
+Version: Collector_Harness_Rerun_Deferred_and_Second_Wave_Adoption_Activated_3_9_3
+Type: Deferred endpoint harness rerun, continuity update, and active-branch switch to second-wave GitHub-operator adoption
+Summary:
+- The bounded endpoint rerun for the harness partial-success reporting patch is no longer the active work item.
+- The rerun remains on the todo list as a deferred validation gate and should not be resumed until the operator has sent the needed files to himself outside the current work environment.
+- The harness patch itself remains in place in `project_sources/run_DCOIR_Tests.ps1`; only the active branch sequencing changed.
+- The active roadmap branch now advances to second-wave GitHub-operator adoption.
+- Governed continuity sources were refreshed so the manifest, todo log, session handoff, collector QA memory, and session tracker all preserve the deferment condition explicitly.
+
+Validation summary:
+- The deferment is operator-directed and not a rollback of the harness patch.
+- Existing endpoint evidence for QuickAliases, Core, and Retrieval remains preserved from the prior branch.
+- The remaining collector-harness rerun is now a held validation item with a concrete resume condition: resume only after the operator has sent himself the needed files.
+
+Operational intent:
+- Avoid losing the collector-harness rerun work item while stopping it from blocking unrelated roadmap progress.
+- Keep the deferred collector validation lane visible and bounded.
+- Move active project effort back onto second-wave GitHub-operator adoption without ambiguity about what is paused and why.
+
+[PRIOR]
 Version: Collector_Harness_Endpoint_QA_and_Partial_Success_Repair_3_9_2
 Type: Elastic Defend endpoint collector QA findings, harness reporting repair, and workflow-note refinement
 Summary:
@@ -11,41 +31,3 @@ Summary:
 - The operator observation refined the zip-handling interpretation: `assets\DCOIR_Collector.zip` is the intended master restage source, while `response_actions\DCOIR_Collector.zip` should be treated as a transient working zip.
 - `project_sources/run_DCOIR_Tests.ps1` is now patched so the harness preserves collector-reported `PARTIAL_SUCCESS` in step status, summary text, and JSON results instead of flattening it into `PASS` when exit code is 0.
 - The current patch is bounded to the harness reporting defect only; broader zip-handling behavior is documented but not yet treated as a collector-code defect.
-
-Validation summary:
-- Evidence basis now includes the operator log plus six retrieved summary artifacts: QuickAliases summary txt/json, Core summary txt/json, and Retrieval summary txt/json.
-- The motivating defect is bounded and reproduced from real endpoint evidence: collector console status versus harness summary mismatch for QuickAliases Strings and Streams.
-- The patch was applied to `run_DCOIR_Tests.ps1` only, with governed workflow/log/memory refreshes aligned to the new interpretation.
-- A bounded endpoint rerun is still required before the harness reporting patch should be treated as validated live: QuickAliases Strings and Streams plus one Core control lane.
-
-Operational intent:
-- Keep the harness summary layer trustworthy enough to support later regression decisions.
-- Preserve the endpoint-lane operator rules that were actually proven: use full absolute get-file paths, keep `assets\DCOIR_Collector.zip` as the master restage source, and treat the root working zip as transient.
-- Avoid over-calling the transient root-zip disappearance as a collector defect until a narrower code-backed failure lane is proven.
-- Finish the bounded rerun quickly, then return to the next roadmap branch instead of expanding collector work indefinitely.
-
-[PRIOR]
-Version: Validated_DCOIR_GitHub_Operator_Existing_File_Update_Lane_3_9_1
-Type: Existing-file update validation, first-wave operator adoption, and governed workflow alignment
-Summary:
-- The connector-backed dcoir-github-operator now has a validated existing-file update lane that uses the GitHub connector low-level git-object path instead of the brittle high-level existing-file wrapper.
-- Live project-chat validation proved the operator can create helper-memory files, update an existing file through the low-level lane, read back the result, remove the test marker, and verify cleanup on main.
-- The high-level existing-file wrapper remains unsuitable for governed text modifications in this chat environment because overwrite calls require SHA-aware semantics that the exposed wrapper path does not handle reliably.
-- The dcoir-github-operator skill package was refreshed to route new-file creates to the high-level create path and existing-file updates to the low-level git-object lane.
-- Obsolete .env-style auth placeholder artifacts were removed from the skill package because the project runtime model is connector-backed rather than direct-API-first in chat.
-- The dcoir-github-operator icon and metadata were refreshed so the skill more accurately represents its GitHub execution-layer role.
-- First-wave dependent helper skills were refreshed to use dcoir-github-operator as the default GitHub execution layer for helper-memory continuity.
-- Governing workflow and log files were refreshed so the live project workflow now describes the validated operator behavior instead of the earlier testing gate.
-
-Validation summary:
-- Direct connector create_file remains valid for bounded new-file creates.
-- Existing-file update through the high-level wrapper reproduced the same blocker: overwrite semantics required SHA-aware handling that the exposed wrapper path did not complete reliably.
-- The low-level git-object lane was validated on both branch-safe and direct-main workflows using create_blob, create_tree, create_commit, update_ref, and fetch_file readback.
-- A live probe file in dcoir_skill_memory/dcoir-github-operator/ confirmed create, update, readback, cleanup, and final readback on main.
-- The patched dcoir-github-operator package was then live-validated against the real repository using the formerly failing existing-file update case.
-
-Operational intent:
-- Keep dcoir-github-operator as the default GitHub execution layer for this project while aligning its write behavior to the validated connector reality.
-- Preserve a clean operator workflow: high-level create for safe new files, low-level git-object lane for existing-file updates, connector readback after writes, and branch-safe use when risk is higher.
-- Reduce future ambiguity about whether a skill-layer plan or the connector execution path should be trusted for governed text writes.
-- Carry the validated operator behavior into dependent helper skills and evergreen workflow documentation.

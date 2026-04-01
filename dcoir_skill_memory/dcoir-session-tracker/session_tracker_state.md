@@ -2,7 +2,7 @@
 artifact_type: dcoir-session-state
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-04-01T10:45:00Z
+exported_at_utc: 2026-04-01T14:10:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -16,10 +16,10 @@ imports_merged:
 # DCOIR Session State
 
 ## Current phase
-Collector all-path testing has been executed through Elastic Defend response actions, the harness partial-success reporting defect is now patched, and a bounded endpoint rerun is the current gate before moving on.
+Collector all-path testing has been executed through Elastic Defend response actions, the harness partial-success reporting defect is patched, and the bounded endpoint rerun is now a deferred validation item until the operator has sent himself the needed files. The active branch returns to second-wave GitHub-operator adoption.
 
 ## Best next move
-Rerun the bounded endpoint validation lane for the harness reporting patch: QuickAliases Strings and Streams plus one Core control lane. If the patch holds, resume second-wave dcoir-github-operator adoption.
+Resume the next active roadmap branch: second-wave GitHub-operator adoption. Hold the bounded harness rerun until the operator has sent himself the required files.
 
 ## Open items
 ### durable_preference_candidate
@@ -41,17 +41,17 @@ Rerun the bounded endpoint validation lane for the harness reporting patch: Quic
   - related: dcoir-github-operator, project_sources/, knowledge/, project_settings/, release_notes/
 
 ### follow_on_validation
-- [ST-020] Expand validated dcoir-github-operator adoption into second-wave skills and remaining governed workflow sources as needed (status: open; provenance: grounded_inference)
-  - why: First-wave adoption is complete, but the operator line still has remaining candidate adopters.
-  - next_action: Resume that line after the bounded collector-harness rerun passes.
+- [ST-020] Expand validated dcoir-github-operator adoption into second-wave skills and remaining governed workflow sources as needed (status: in_progress; provenance: grounded_inference)
+  - why: First-wave adoption is complete, and this is now the active roadmap branch.
+  - next_action: Identify the second-wave adopter set and update them against the validated operator behavior.
   - related: dcoir-github-operator, dcoir-knowledge-doc-maintainer, dcoir-session-resume, dcoir-change-impact-analyzer, dcoir-repo-packager
 - [ST-022] Explore whether a project skill could use a direct API-auth GitHub lane from this chat interface for more automated create, read, and update behavior (status: open; provenance: current_chat)
   - why: The operator wants to revisit whether a skill could programmatically use a direct GitHub API path in this project chat environment for cleaner automation.
   - next_action: Brainstorm feasible direct-auth patterns, environment handling, container implications, and security/workflow tradeoffs before deciding whether this should become a real implementation line.
   - related: dcoir-github-operator, GitHub API auth, .env handling
-- [ST-023] Validate the harness partial-success reporting patch in the endpoint lane (status: open; provenance: current_chat)
-  - why: The patch was applied after endpoint evidence showed QuickAliases Strings and Streams being flattened from collector `PARTIAL_SUCCESS` into harness `PASS`.
-  - next_action: Rerun QuickAliases Strings and Streams plus one Core control lane and preserve both operator log output and summary artifacts.
+- [ST-023] Validate the harness partial-success reporting patch in the endpoint lane (status: deferred; provenance: current_chat)
+  - why: The patch was applied after endpoint evidence showed QuickAliases Strings and Streams being flattened from collector `PARTIAL_SUCCESS` into harness `PASS`, but the rerun should wait until the operator has sent himself the needed files.
+  - next_action: Resume QuickAliases Strings and Streams plus one Core control lane only after the operator has sent himself the required files.
   - related: project_sources/run_DCOIR_Tests.ps1, project_sources/DCOIR_Collector.ps1
 
 ## Completed or resolved this session
@@ -85,4 +85,4 @@ Rerun the bounded endpoint validation lane for the harness reporting patch: Quic
   - related: project_sources/DCOIR_Collector.ps1, project_sources/run_DCOIR_Tests.ps1, project_sources/run_DCOIR_Tests.cmd
 
 ## Provenance notes
-- Updated after collector endpoint execution evidence, harness reporting patch application, and governed workflow/log refresh planning.
+- Updated after the operator explicitly deferred the harness rerun and directed the project to move on to the next task.

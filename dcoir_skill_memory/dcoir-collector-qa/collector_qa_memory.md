@@ -2,7 +2,7 @@
 artifact_type: dcoir-collector-qa-memory
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-04-01T10:45:00Z
+exported_at_utc: 2026-04-01T14:10:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -12,15 +12,15 @@ authority_basis:
 # DCOIR Collector QA Memory
 
 ## Current focus
-Bounded repair and endpoint rerun for the collector harness partial-success reporting defect.
+Hold the bounded endpoint rerun for the harness partial-success reporting patch until the operator has sent himself the needed files outside the current work environment.
 
 ## Known failure lanes
 - **Gemini collector transcript error** (status: open)
   - details: Preserved placeholder regression lane until the exact failing excerpt is recovered.
   - next_action: Capture the exact failing excerpt and turn it into a concrete replay fixture.
-- **QuickAliases partial-success flattening in harness summaries** (status: patched-awaiting-rerun)
+- **QuickAliases partial-success flattening in harness summaries** (status: patched-deferred-rerun)
   - details: Endpoint evidence showed `24_EnrichStartStrings` and `26_EnrichStartStreams` reporting `STATUS=PARTIAL_SUCCESS` in collector output while summary txt/json flattened both steps to `PASS` because exit code remained 0.
-  - next_action: Rerun QuickAliases Strings and Streams plus one Core control lane after the harness patch and confirm summary artifacts now preserve `PARTIAL_SUCCESS`.
+  - next_action: Do not resume the bounded endpoint rerun until the operator has sent himself the needed files; after that, rerun QuickAliases Strings and Streams plus one Core control lane and confirm summary artifacts now preserve `PARTIAL_SUCCESS`.
 - **Endpoint working-zip restage/access lane** (status: open)
   - details: A prior Core attempt failed around the transient root working zip `response_actions\DCOIR_Collector.zip`; current interpretation is a restage/access issue around a transient root copy, not yet a bounded collector-code defect.
   - next_action: Keep `assets\DCOIR_Collector.zip` as the master restage source and only escalate this lane if a narrower code-backed failure is reproduced.
@@ -42,10 +42,10 @@ Bounded repair and endpoint rerun for the collector harness partial-success repo
 - The rollback reference remains available for bounded regression comparison.
 
 ## Next actions
-- Rerun the bounded endpoint validation lane for the harness reporting patch: QuickAliases Strings and Streams plus one Core control lane.
-- Preserve the exact rerun results for summary txt/json and operator log output.
-- Update this file after the bounded rerun completes.
+- Hold the bounded endpoint rerun for the harness reporting patch until the operator has sent himself the needed files.
+- Keep the exact rerun target unchanged for later: QuickAliases Strings and Streams plus one Core control lane.
+- Update this file after the deferred rerun completes.
 - Add concrete replay details when the Gemini collector failure excerpt is recovered.
 
 ## Provenance notes
-- Updated after review of the operator log plus six retrieved summary artifacts from endpoint execution.
+- Updated after the operator explicitly deferred the rerun until he can send himself the needed files.

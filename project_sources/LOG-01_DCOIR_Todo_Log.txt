@@ -9,11 +9,11 @@ Current stable pointers
 - Settings baseline to apply: project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt
 
 Current next planned work item
-- Rerun the bounded endpoint validation lane for the harness reporting patch: QuickAliases Strings and Streams plus one Core control lane; if that patch holds, resume second-wave GitHub-operator adoption.
+- Resume the next active roadmap branch: second-wave GitHub-operator adoption, while holding the bounded harness rerun as deferred until the operator has sent himself the required files.
 
 Priority stack
-1. Validate the run_DCOIR_Tests.ps1 harness reporting patch in the endpoint lane.
-2. Expand validated dcoir-github-operator adoption into second-wave skills and any remaining governed workflow sources that benefit from it.
+1. Expand validated dcoir-github-operator adoption into second-wave skills and any remaining governed workflow sources that benefit from it.
+2. Validate the run_DCOIR_Tests.ps1 harness reporting patch in the endpoint lane after the operator has sent himself the required files.
 3. Clean up knowledge-doc delivery posture.
 4. Preserve Gemini and helper-skill operationalization work.
 5. Explore whether a project skill can safely use a direct API-auth GitHub lane from this chat interface for more automated create, read, and update behavior, while keeping the cleanest workflow and security posture.

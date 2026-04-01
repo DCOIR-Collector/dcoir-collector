@@ -22,7 +22,7 @@ Current validated status
 - The previously failing existing-file update case for dcoir-github-operator is now live-validated through the low-level git-object lane.
 - First-wave dependent helper skills are refreshed to use the validated dcoir-github-operator behavior.
 - Collector all-path testing is now evidenced through Elastic Defend response actions across QuickAliases, Core, and Retrieval.
-- The harness reporting defect is now patched in `project_sources/run_DCOIR_Tests.ps1`, but the bounded endpoint rerun is still pending before the patch should be treated as validated live.
+- The harness reporting defect remains patched in `project_sources/run_DCOIR_Tests.ps1`, but the bounded endpoint rerun is now explicitly deferred until the operator has sent himself the needed files.
 
 Current next planned work item
-- Rerun the bounded endpoint validation lane for the harness reporting patch: QuickAliases Strings and Streams plus one Core control lane; if that patch holds, resume second-wave GitHub-operator adoption.
+- Resume the next active roadmap branch: second-wave GitHub-operator adoption, while holding the bounded harness rerun as deferred until the operator has sent himself the required files.
