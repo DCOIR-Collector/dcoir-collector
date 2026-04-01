@@ -1,4 +1,4 @@
-DCOIR Repository Layout Spec 1.1.0
+DCOIR Repository Layout Spec 1.1.1
 
 Purpose
 - This file defines the canonical GitHub-primary repository and Project-bootstrap layout for DCOIR.
@@ -23,7 +23,6 @@ Readable-source rules
 - Native readable script sources in GitHub are:
   - project_sources/DCOIR_Collector.ps1
   - project_sources/run_DCOIR_Tests.ps1
-  - project_sources/run_DCOIR_Tests.cmd
 - Knowledge markdown in knowledge/ is the readable working source when present.
 - supporting_knowledge_docs.zip may remain a delivery/reference asset, but not the preferred editable readable source when extracted markdown exists.
 

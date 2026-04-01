@@ -4,25 +4,27 @@ Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
 - GitHub control-plane files: project_sources/CP-01_DCOIR_Version_Manifest.txt and project_sources/CP-02_DCOIR_Change_Log.txt
 - Collector readable source: project_sources/DCOIR_Collector.ps1
-- Harness readable sources: project_sources/run_DCOIR_Tests.ps1 and project_sources/run_DCOIR_Tests.cmd
+- Harness readable source: project_sources/run_DCOIR_Tests.ps1
 - Knowledge readable working set: knowledge/*.md
-- Connector-backed GitHub operator package is now patched, repackaged, manually updated, and live-validated for existing-file updates through the low-level git-object lane.
+- GitHub connector direct execution is now the preferred project execution surface for governed readable-text updates when available.
 
 Current governance state
 - Project Instructions are the first bootstrap anchor.
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - GitHub is the working repository and review surface for readable governed text.
 - Project space is the bootstrap/runtime anchor and should not carry duplicate editable readable governed text.
-- dcoir-github-operator is the default GitHub execution layer for this project within the connector-backed runtime model.
+- Use the GitHub connector directly as the preferred execution surface for governed readable-text updates when available; use helper skills for planning, analysis, and workflow support rather than as the default GitHub write lane.
 
 Current validated status
 - Direct GitHub reads are validated for the real collector and harness files in native formats.
-- Direct GitHub updates are validated on main for governed readable text.
-- GitHub-backed helper-memory pattern is validated on main.
-- The previously failing existing-file update case for dcoir-github-operator is now live-validated through the low-level git-object lane.
-- First-wave dependent helper skills are refreshed to use the validated dcoir-github-operator behavior.
-- Collector all-path testing is now evidenced through Elastic Defend response actions across QuickAliases, Core, and Retrieval.
-- The harness reporting defect remains patched in `project_sources/run_DCOIR_Tests.ps1`, but the bounded endpoint rerun is now explicitly deferred until the operator has sent himself the needed files.
+- Direct GitHub new-file writes are validated on main for governed readable text.
+- Local full regression is complete for the current collector and harness line.
+- QuickAliases preserved the two expected PARTIAL_SUCCESS cases correctly.
+- Core passed.
+- Retrieval passed.
+- FullRegression passed.
+- The harness reporting defect remains patched in `project_sources/run_DCOIR_Tests.ps1`.
+- The original deferred endpoint rerun remains a distinct optional endpoint reconfirmation lane rather than the sole remaining validation statement for the harness patch.
 
 Current next planned work item
-- Resume the next active roadmap branch: second-wave GitHub-operator adoption, while holding the bounded harness rerun as deferred until the operator has sent himself the required files.
+- Patch operator-facing output in project_sources/DCOIR_Collector.ps1 and project_sources/run_DCOIR_Tests.ps1 so displayed paths are full absolute paths instead of relative paths, then continue the connector-first governed-source cleanup and the separate IOC online-enrichment design branch.

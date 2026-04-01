@@ -1,4 +1,26 @@
 [CURRENT]
+Version: Connector_First_Local_Full_Regression_Recorded_and_CMD_Harness_Removed_3_9_4
+Type: Local full-regression completion, connector-first governance update, and CMD harness source removal
+Summary:
+- Local collector and harness full regression is complete on the operator home-computer lane.
+- QuickAliases preserved the expected `PARTIAL_SUCCESS` status for `24_EnrichStartStrings` and `26_EnrichStartStreams` instead of flattening those steps to `PASS`.
+- Core passed, Retrieval passed, and FullRegression passed.
+- The current governed harness source set now removes `project_sources/run_DCOIR_Tests.cmd`; `project_sources/run_DCOIR_Tests.ps1` is the sole readable harness source.
+- Governance sources now treat the GitHub connector directly as the preferred execution surface for governed readable-text updates when available.
+- The active next branch now shifts to operator-facing full-path cleanup in the collector and harness scripts, followed by the separate IOC online-enrichment design branch.
+
+Validation summary:
+- The harness reporting patch is locally validated through QuickAliases, Core, Retrieval, and FullRegression.
+- The known QuickAliases partial-success behavior is now preserved correctly in the local harness lane.
+- Retrieval completed cleanly, including raw Security log export and finalize.
+- The current change does not claim that the original deferred endpoint rerun has been superseded automatically; it preserves that lane as a distinct optional endpoint reconfirmation path.
+
+Operational intent:
+- Record the completed local validation so the control plane no longer treats the deferred endpoint rerun as the only live validation state for the harness patch.
+- Remove the redundant `.cmd` harness wrapper from the governed readable source set and cleanup the affected project docs.
+- Shift project workflow toward direct GitHub-connector execution instead of helper-skill-mediated GitHub write handling where the connector can perform the work more simply and reliably.
+
+[PRIOR]
 Version: Collector_Harness_Rerun_Deferred_and_Second_Wave_Adoption_Activated_3_9_3
 Type: Deferred endpoint harness rerun, continuity update, and active-branch switch to second-wave GitHub-operator adoption
 Summary:
@@ -17,17 +39,3 @@ Operational intent:
 - Avoid losing the collector-harness rerun work item while stopping it from blocking unrelated roadmap progress.
 - Keep the deferred collector validation lane visible and bounded.
 - Move active project effort back onto second-wave GitHub-operator adoption without ambiguity about what is paused and why.
-
-[PRIOR]
-Version: Collector_Harness_Endpoint_QA_and_Partial_Success_Repair_3_9_2
-Type: Elastic Defend endpoint collector QA findings, harness reporting repair, and workflow-note refinement
-Summary:
-- Endpoint-lane collector QA was executed through Elastic Defend response actions across QuickAliases, Core, and Retrieval using the current readable collector and harness sources.
-- QuickAliases completed functionally, but the operator log proved that `24_EnrichStartStrings` and `26_EnrichStartStreams` reported `STATUS=PARTIAL_SUCCESS` even though the harness summary artifacts flattened those steps to `PASS` because exit code remained 0.
-- Core completed successfully on rerun after an earlier endpoint-lane failure around the transient working copy `response_actions\DCOIR_Collector.zip`; the better interpretation is not permanent zip deletion but a working-zip restage/access failure around a transient root copy.
-- Retrieval completed successfully in the endpoint lane, including raw Security log export and finalize.
-- Elastic Defend `get-file` retrieval for harness outputs required full absolute paths under the response-actions working directory rather than `.
-` relative paths.
-- The operator observation refined the zip-handling interpretation: `assets\DCOIR_Collector.zip` is the intended master restage source, while `response_actions\DCOIR_Collector.zip` should be treated as a transient working zip.
-- `project_sources/run_DCOIR_Tests.ps1` is now patched so the harness preserves collector-reported `PARTIAL_SUCCESS` in step status, summary text, and JSON results instead of flattening it into `PASS` when exit code is 0.
-- The current patch is bounded to the harness reporting defect only; broader zip-handling behavior is documented but not yet treated as a collector-code defect.
