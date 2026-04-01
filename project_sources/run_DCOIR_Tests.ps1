@@ -19,10 +19,19 @@ $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent (Resolve-Path -LiteralPath $CollectorPath)
 $CollectorFullPath = (Resolve-Path -LiteralPath $CollectorPath).Path
 $Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-$RunOutputRoot = Join-Path $OutputRoot ("DCOIR_TestRun_{0}" -f $Timestamp)
+$OutputRootFullPath = if ([System.IO.Path]::IsPathRooted($OutputRoot)) {
+  [System.IO.Path]::GetFullPath($OutputRoot)
+} else {
+  [System.IO.Path]::GetFullPath((Join-Path $ProjectRoot $OutputRoot))
+}
+$RunOutputRoot = Join-Path $OutputRootFullPath ("DCOIR_TestRun_{0}" -f $Timestamp)
 $LogsDir = Join-Path $RunOutputRoot "logs"
-$WorkingZipPath = Join-Path $ProjectRoot "DCOIR_Collector.zip"
-$MasterZipFullPath = Join-Path $ProjectRoot ($MasterZipPath -replace '^[.\\]+','')
+$WorkingZipPath = [System.IO.Path]::GetFullPath((Join-Path $ProjectRoot "DCOIR_Collector.zip"))
+$MasterZipFullPath = if ([System.IO.Path]::IsPathRooted($MasterZipPath)) {
+  [System.IO.Path]::GetFullPath($MasterZipPath)
+} else {
+  [System.IO.Path]::GetFullPath((Join-Path $ProjectRoot $MasterZipPath))
+}
 
 $script:CollectorRunId = $null
 $script:CollectorSessionId = $null
