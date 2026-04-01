@@ -3,28 +3,22 @@ DCOIR Session Handoff Brief
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
 - GitHub control-plane files: project_sources/CP-01_DCOIR_Version_Manifest.txt and project_sources/CP-02_DCOIR_Change_Log.txt
-- Collector readable source: project_sources/DCOIR_Collector.ps1
+- Collector runtime file: project_sources/DCOIR_Collector.ps1
+- Collector readable source set: project_sources/collector_parts/*.ps1
 - Harness readable source: project_sources/run_DCOIR_Tests.ps1
 - Knowledge readable working set: knowledge/*.md
-- GitHub connector direct execution is now the preferred project execution surface for governed readable-text updates when available.
+- GitHub connector direct execution remains the preferred project execution surface for governed readable-text updates when available.
 
 Current governance state
-- Project Instructions are the first bootstrap anchor.
+- Project Instructions remain the first bootstrap anchor.
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - GitHub is the working repository and review surface for readable governed text.
 - Project space is the bootstrap/runtime anchor and should not carry duplicate editable readable governed text.
-- Use the GitHub connector directly as the preferred execution surface for governed readable-text updates when available; use helper skills for planning, analysis, and workflow support rather than as the default GitHub write lane.
 
 Current validated status
-- Direct GitHub reads are validated for the real collector and harness files in native formats.
-- Direct GitHub new-file writes are validated on main for governed readable text.
 - Local full regression is complete for the current collector and harness line.
-- QuickAliases preserved the two expected PARTIAL_SUCCESS cases correctly.
-- Core passed.
-- Retrieval passed.
-- FullRegression passed.
-- The harness reporting defect remains patched in `project_sources/run_DCOIR_Tests.ps1`.
-- The original deferred endpoint rerun remains a distinct optional endpoint reconfirmation lane rather than the sole remaining validation statement for the harness patch.
+- The harness path-output cleanup is complete.
+- The collector is now split into smaller governed source files, with DCOIR_Collector.ps1 preserved as the runtime wrapper.
 
 Current next planned work item
-- Patch operator-facing output in project_sources/DCOIR_Collector.ps1 and project_sources/run_DCOIR_Tests.ps1 so displayed paths are full absolute paths instead of relative paths, then continue the connector-first governed-source cleanup and the separate IOC online-enrichment design branch.
+- Audit and update any affected helper skills for the collector split and connector-first GitHub execution model, then complete the queued GitHub connector permanent-memory task.

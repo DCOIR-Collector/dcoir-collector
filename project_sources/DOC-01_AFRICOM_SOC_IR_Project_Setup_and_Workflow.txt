@@ -2,90 +2,27 @@ AFRICOM_SOC_IR Project Setup and Workflow
 
 Purpose
 - This document is the evergreen setup and workflow guide for the AFRICOM_SOC_IR / DCOIR project.
-- It describes how the project is structured, how resume works under the GitHub-primary model, and how bootstrap updates should be applied.
-- It should not be rewritten for every normal release.
 
 Project model
-- The project is the current operational workspace, not the full historical archive.
 - GitHub repository malwaredevil/dcoir-collector is the sole working source for readable governed text files.
 - Project space is the bootstrap and applied runtime anchor, not a second editable readable text repository.
 - Project Instructions are applied in settings and remain the first resume anchor.
 - When readable governed files are needed after that, use the GitHub connector against malwaredevil/dcoir-collector.
-- Do not keep duplicate editable readable text files in both GitHub and Project space.
-- Supporting assets can still exist in GitHub and optionally in Project space when they are intentionally retained there.
-- Supporting assets do not override the control plane.
-- Project-side dcoir-* helper skills are authoring, QA, packaging, workflow, and maintenance aids for this project.
-- Final standalone combined prompt and final Gemini outputs must be runtime-self-sufficient and must not mention or assume dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files.
-
-Current control-plane model
-- The default resume anchor is:
-  - Project Instructions
-  - GitHub CP-01_DCOIR_Version_Manifest.txt
-  - GitHub CP-02_DCOIR_Change_Log.txt
-- Use CP-01 to identify what is current.
-- Use CP-02 to understand what changed and why.
 
 Readable-source rule
-- Readable governed text files live in GitHub, not duplicated in Project space.
-- Native readable script formats are preferred in GitHub when the connector can read them.
-- Current readable script-source working files are:
-  - project_sources/DCOIR_Collector.ps1
-  - project_sources/run_DCOIR_Tests.ps1
-- Prompt-pack, docs, logs, control-plane files, rollback references, and settings mirrors also live in GitHub as the readable working set.
-- Knowledge markdown in knowledge/ is the readable working source when present.
-- supporting_knowledge_docs.zip may be retained as a delivery or reference asset, but not as the preferred editable readable source when extracted knowledge markdown exists.
-
-How to start or resume work
-- Apply the current Project Instructions text from project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt to the Project settings field.
-- In a fresh project chat, resume from Project Instructions first.
-- Then use the GitHub connector against malwaredevil/dcoir-collector to read:
-  - project_sources/CP-01_DCOIR_Version_Manifest.txt
-  - project_sources/CP-02_DCOIR_Change_Log.txt
-  - other governed readable sources as needed
-- Do not assume duplicate readable Project uploads exist for those files.
-- If binary or retained supporting assets are needed and intentionally present in Project space, treat them as supporting assets rather than control-plane authority.
-
-How to apply a future bootstrap update
-1. Download the update ZIP bundle and extract it locally.
-2. Open release_notes/RELEASE_INSTRUCTIONS.txt inside that bundle.
-3. Apply the updated Project Instructions text to the Project settings field.
-4. Delete obsolete duplicate readable text files from Project space when release instructions say to do so.
-5. Retain only the intentionally kept bootstrap or binary assets in Project space.
-6. Resume from Project Instructions in a fresh chat and let the project read the readable governed sources from GitHub.
+- Readable governed collector text now uses a split-source model.
+- The canonical emitted runtime collector filename remains project_sources/DCOIR_Collector.ps1.
+- The readable governed collector source set is project_sources/collector_parts/*.ps1.
+- The runtime collector is a thin loader wrapper that dot-sources the numbered collector parts.
+- The harness readable source remains project_sources/run_DCOIR_Tests.ps1.
 
 Packaging convention
 - For GitHub-maintained readable text updates, prefer direct GitHub edits over patch ZIPs when the connector path supports them.
 - Use the GitHub connector directly as the preferred execution surface when DCOIR work needs to read, create, or update governed readable text in malwaredevil/dcoir-collector.
 - Use dcoir-* helper skills for planning, analysis, impact review, validation support, and workflow support rather than as the default GitHub write lane.
-- Use the high-level create path only for bounded new-file creates when the target is in writable readable-text scope and overwrite friction is not present.
 - For existing-file updates, prefer the validated low-level git-object lane through create_blob, create_tree, create_commit, update_ref, and connector readback.
-- Treat the high-level existing-file wrapper as unsuitable for governed text modifications unless the runtime wrapper behavior changes and is revalidated.
-- Always read back the changed file, commit, or branch state after a GitHub write.
-- If a connector limitation prevents full in-chat completion, reduce operator burden to the smallest bounded manual action rather than requiring broad manual file editing.
-- Use ZIP bundles for Project bootstrap/application steps, multi-file delivery, or retained binary/supporting assets when needed.
-- If a bundle contains more than one file, include release_notes/RELEASE_INSTRUCTIONS.txt.
-- Do not use Project refresh bundles to reintroduce duplicate readable source mirrors unless an explicit temporary exception is declared.
-
-Operational content rules
-- Keep Windows PowerShell 5.1 compatibility as a hard requirement unless explicitly changed.
-- Use Elastic Defend response-action syntax for endpoint instructions.
-- Use PowerShell commands for local workstation and local test instructions.
-- Use the runtime or native GitHub filename when discussing execution where applicable.
-- When a helper skill changes materially, replace the external skill package separately, verify icon or metadata where expected, rerun post-update invocation or accessibility regression where relevant, and then refresh governed project sources if the durable workflow changed.
-- When a helper skill uses GitHub-backed helper memory, keep one canonical human-readable memory file per skill under dcoir_skill_memory/ unless an explicit exception is approved.
-- For Elastic Defend response-action retrieval of harness outputs, use full absolute paths under the response-actions working directory rather than `.`-relative get-file paths.
-- In the endpoint harness lane, treat `response_actions\DCOIR_Collector.zip` as a transient working copy and `response_actions\assets\DCOIR_Collector.zip` as the intended master restage source.
-- If a subsequent suite fails around the working zip, restage or re-upload the master zip and rerun the bounded suite before treating the condition as a collector-code defect.
-
-Knowledge handling
-- Knowledge docs are authored and maintained as normal markdown in GitHub knowledge/.
-- supporting_knowledge_docs.zip may remain a delivery or reference asset, but it is not the preferred editable readable source when extracted markdown exists.
-- Knowledge docs must not override Project Instructions, CP-01, CP-02, or other authoritative workflow sources.
 
 Current stable artifacts
-- Collector readable source baseline in GitHub: project_sources/DCOIR_Collector.ps1
-- Collector runtime filename: DCOIR_Collector.ps1
-- Local regression harness readable source in GitHub: project_sources/run_DCOIR_Tests.ps1
-- Engine rollback reference: project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt
-- Supporting assets in GitHub: DCOIR_Collector.zip, supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, original_alert_triage_gemini_agents.zip, original_collector_artifact_gemini_agents.zip, DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip, generated_agent_markdowns.zip
-- The prompt-pack and AI workflow line remains PP-01 through PP-10 in project_sources/.
+- Collector runtime wrapper: project_sources/DCOIR_Collector.ps1
+- Collector readable source set: project_sources/collector_parts/*.ps1
+- Local regression harness readable source: project_sources/run_DCOIR_Tests.ps1

@@ -1,71 +1,24 @@
-DCOIR Version Manifest 3.9.4
+DCOIR Version Manifest 3.9.5
 
-CURRENT GOVERNED GITHUB READABLE SOURCES
-- Manifest_Current: project_sources/CP-01_DCOIR_Version_Manifest.txt
-- Change_Log_Current: project_sources/CP-02_DCOIR_Change_Log.txt
-- Project_Setup_Guide_Current: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
-- Transition_Checklist_Current: project_sources/DOC-02_DCOIR_Project_Transition_Checklist.txt
-- Repository_Layout_Spec_Current: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
-- Todo_Log_Current: project_sources/LOG-01_DCOIR_Todo_Log.txt
-- Lessons_Learned_Log_Current: project_sources/LOG-02_DCOIR_Lessons_Learned_Log.txt
-- Session_Handoff_Current: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
-- PromptPack_System_Current: project_sources/PP-01_System_Prompt_v1_0_1.txt
-- PromptPack_Output_Schema_Current: project_sources/PP-02_Output_Schema_v1_0_0.txt
-- PromptPack_Baseline_Triage_Current: project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt
-- PromptPack_Enrichment_Review_Current: project_sources/PP-04_Enrichment_Review_Prompt_v0_1_1.txt
-- PromptPack_Retrieved_Artifact_Review_Current: project_sources/PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt
-- PromptPack_Final_Case_Synthesis_Current: project_sources/PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt
-- PromptPack_Agent_Guardrails_Current: project_sources/PP-07_Agent_Guardrails_v1_0_0.txt
-- PromptPack_Combined_Master_Prompt_Current: project_sources/PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt
-- PromptPack_Gemini_Generator_Workflow_Current: project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
-- PromptPack_Gemini_Bounded_Design_Artifact_Current: project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt
-- Collector_Current: project_sources/DCOIR_Collector.ps1
-- Harness_PS1_Current: project_sources/run_DCOIR_Tests.ps1
-- Collector_Engine_Rollback_Current: project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt
+Current control plane
+- Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
+- Change log: project_sources/CP-02_DCOIR_Change_Log.txt
+- Setup guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
+- Layout spec: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
+- Todo log: project_sources/LOG-01_DCOIR_Todo_Log.txt
+- Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 
-CURRENT GOVERNED KNOWLEDGE SOURCES IN GITHUB
-- knowledge/*.md
+Current collector files
+- Runtime wrapper: project_sources/DCOIR_Collector.ps1
+- Source part 01: project_sources/collector_parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1
+- Source part 02: project_sources/collector_parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1
+- Source part 03A: project_sources/collector_parts/DCOIR_Collector.03A_Enrich_Session_State.ps1
+- Source part 03B: project_sources/collector_parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1
+- Source part 03C: project_sources/collector_parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1
+- Source part 04: project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1
+- Source part 05: project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1
+- Harness: project_sources/run_DCOIR_Tests.ps1
 
-CURRENT GOVERNED SETTINGS MIRRORS IN GITHUB
-- project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt
-- project_settings/GITHUB_WORKING_REPOSITORY_NOTE.md
-
-CURRENT SUPPORTING ASSETS IN GITHUB
-- supporting_assets/DCOIR_Collector.zip
-- supporting_assets/supporting_knowledge_docs.zip
-- supporting_assets/comparative_reference_agent_markdowns.zip
-- supporting_assets/original_alert_triage_gemini_agents.zip
-- supporting_assets/original_collector_artifact_gemini_agents.zip
-- supporting_assets/DCOIR_Gemini_Email_Build_Bundle_v1_1_0.zip
-- supporting_assets/generated_agent_markdowns.zip
-
-CURRENT PROJECT-SPACE BOOTSTRAP MODEL
-- Project space should contain the current Project Instructions text and release instructions needed to bootstrap or refresh the workspace.
-- Project space should not contain duplicate editable readable governed text files that already live in GitHub.
-- Resume flows should read Project Instructions first, then use the GitHub connector against malwaredevil/dcoir-collector to read CP-01, CP-02, and the remaining governed readable source set.
-- GitHub is the sole working source for readable text updates.
-- Project space remains the bootstrap and applied runtime anchor, not a second editable text repository.
-
-GOVERNANCE MODEL
-- Default resume anchor order: Project Instructions, then GitHub CP-01, then GitHub CP-02.
-- Use GitHub repository malwaredevil/dcoir-collector as the working repository and review surface.
-- Do not keep duplicate editable readable text files in both GitHub and Project space.
-- Supporting assets do not override the control plane.
-- Final standalone combined prompt and final Gemini outputs must remain runtime-self-sufficient and must not mention or assume dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached files.
-- Required attention-signaler use points remain first substantive DCOIR response, major milestone, action-required or approval-needed, blocked state, and major completion.
-
-STATUS NOTES
-- The current readable collector source is project_sources/DCOIR_Collector.ps1 in GitHub native format.
-- The current readable harness source is project_sources/run_DCOIR_Tests.ps1 in GitHub native format.
-- Knowledge markdown now exists as extracted editable content in knowledge/ and should be treated as the working readable source set for knowledge maintenance.
-- supporting_knowledge_docs.zip may still be retained as a delivery or reference asset, but it is not the editable working source when the extracted markdown exists in GitHub.
-- The current settings baseline advances to project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt.
-- Endpoint-lane collector QA is now evidenced through Elastic Defend response actions across QuickAliases, Core, and Retrieval.
-- In the endpoint lane, response_actions\DCOIR_Collector.zip should be treated as a transient working zip, while assets\DCOIR_Collector.zip remains the intended master restage source for the harness.
-- The harness summary layer previously flattened collector-reported PARTIAL_SUCCESS into PASS when exit code was 0; run_DCOIR_Tests.ps1 is now patched to preserve PARTIAL_SUCCESS in summary output and JSON results.
-- Local full regression is now complete: QuickAliases preserved the two expected PARTIAL_SUCCESS cases, Core passed, Retrieval passed, and FullRegression passed.
-- The original bounded endpoint rerun remains a distinct endpoint-lane validation item and should be resumed only if endpoint-lane reconfirmation is still desired after the completed local full-regression result.
-- GitHub connector direct execution is now the preferred project execution surface for governed readable-text updates when available; helper skills should use the connector for GitHub access rather than routing governed repo writes through dcoir-github-operator.
-
-CURRENT NEXT PLANNED WORK ITEM
-- Patch operator-facing output in project_sources/DCOIR_Collector.ps1 and project_sources/run_DCOIR_Tests.ps1 so displayed paths are full absolute paths instead of relative paths, continue the connector-first governed-source cleanup, and advance the separate IOC online-enrichment design branch.
+Current next work item
+- Audit and update affected helper skills for the collector split and connector-first GitHub execution model.
+- Then complete the GitHub connector permanent-memory task.

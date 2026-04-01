@@ -1,41 +1,26 @@
+DCOIR Change Log
+
 [CURRENT]
-Version: Connector_First_Local_Full_Regression_Recorded_and_CMD_Harness_Removed_3_9_4
-Type: Local full-regression completion, connector-first governance update, and CMD harness source removal
-Summary:
-- Local collector and harness full regression is complete on the operator home-computer lane.
-- QuickAliases preserved the expected `PARTIAL_SUCCESS` status for `24_EnrichStartStrings` and `26_EnrichStartStreams` instead of flattening those steps to `PASS`.
-- Core passed, Retrieval passed, and FullRegression passed.
-- The current governed harness source set now removes `project_sources/run_DCOIR_Tests.cmd`; `project_sources/run_DCOIR_Tests.ps1` is the sole readable harness source.
-- Governance sources now treat the GitHub connector directly as the preferred execution surface for governed readable-text updates when available.
-- The active next branch now shifts to operator-facing full-path cleanup in the collector and harness scripts, followed by the separate IOC online-enrichment design branch.
+Version: 3.9.5
+Change class: Collector split source model and wrapper preservation
 
-Validation summary:
-- The harness reporting patch is locally validated through QuickAliases, Core, Retrieval, and FullRegression.
-- The known QuickAliases partial-success behavior is now preserved correctly in the local harness lane.
-- Retrieval completed cleanly, including raw Security log export and finalize.
-- The current change does not claim that the original deferred endpoint rerun has been superseded automatically; it preserves that lane as a distinct optional endpoint reconfirmation path.
+What changed
+- The collector readable source was split into smaller governed files under project_sources/collector_parts/.
+- project_sources/DCOIR_Collector.ps1 remains the runtime filename.
+- project_sources/DCOIR_Collector.ps1 is now a thin loader wrapper that dot-sources the numbered collector parts.
+- The next active item is the affected-skill audit for the collector split and connector-first GitHub workflow.
+- The next queued item after that is the GitHub connector permanent-memory task.
 
-Operational intent:
-- Record the completed local validation so the control plane no longer treats the deferred endpoint rerun as the only live validation state for the harness patch.
-- Remove the redundant `.cmd` harness wrapper from the governed readable source set and cleanup the affected project docs.
-- Shift project workflow toward direct GitHub-connector execution instead of helper-skill-mediated GitHub write handling where the connector can perform the work more simply and reliably.
+Why
+- The monolithic collector was too large and brittle for efficient GitHub maintenance.
+- Splitting by functional role reduces timeout risk and makes targeted updates easier.
+- The runtime filename had to stay stable for operator workflow compatibility.
+
+Validation notes
+- The split files were created before the runtime wrapper switched.
+- The wrapper now points to the collector_parts files on main.
+- The harness remains on the already-patched full-path output model.
 
 [PRIOR]
-Version: Collector_Harness_Rerun_Deferred_and_Second_Wave_Adoption_Activated_3_9_3
-Type: Deferred endpoint harness rerun, continuity update, and active-branch switch to second-wave GitHub-operator adoption
-Summary:
-- The bounded endpoint rerun for the harness partial-success reporting patch is no longer the active work item.
-- The rerun remains on the todo list as a deferred validation gate and should not be resumed until the operator has sent the needed files to himself outside the current work environment.
-- The harness patch itself remains in place in `project_sources/run_DCOIR_Tests.ps1`; only the active branch sequencing changed.
-- The active roadmap branch now advances to second-wave GitHub-operator adoption.
-- Governed continuity sources were refreshed so the manifest, todo log, session handoff, collector QA memory, and session tracker all preserve the deferment condition explicitly.
-
-Validation summary:
-- The deferment is operator-directed and not a rollback of the harness patch.
-- Existing endpoint evidence for QuickAliases, Core, and Retrieval remains preserved from the prior branch.
-- The remaining collector-harness rerun is now a held validation item with a concrete resume condition: resume only after the operator has sent himself the needed files.
-
-Operational intent:
-- Avoid losing the collector-harness rerun work item while stopping it from blocking unrelated roadmap progress.
-- Keep the deferred collector validation lane visible and bounded.
-- Move active project effort back onto second-wave GitHub-operator adoption without ambiguity about what is paused and why.
+Version: 3.9.4
+Change class: Local validation recorded and CMD harness removed
