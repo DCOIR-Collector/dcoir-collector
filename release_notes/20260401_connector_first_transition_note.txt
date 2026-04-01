@@ -1,0 +1,32 @@
+DCOIR Connector-First Transition Note
+Date: 2026-04-01
+
+Purpose
+- Preserve the operator-approved transition state while broader governed-text updates are pending.
+
+Approved durable project preference
+- For governed readable-text updates in malwaredevil/dcoir-collector, prefer the GitHub connector directly as the primary execution surface.
+- Use dcoir-* helper skills for planning, analysis, impact review, and workflow support, but do not rely on helper-skill-mediated repo writes when the direct GitHub connector can perform the operation more simply and reliably.
+- If a connector limitation prevents full in-chat completion, reduce the operator burden to the smallest bounded manual action rather than requiring broad manual file editing.
+
+Approved IOC-source rule for future online enrichment work
+- Before suggesting or standardizing an online IOC enrichment source, live-test it with a representative IOC of the intended type.
+- Do not recommend or standardize sources that require API keys or special handling beyond what Gemini Enterprise and its agents can easily reach.
+- Prefer directly reachable sources that can return useful context in the target Gemini Enterprise workflow.
+
+Current validation state
+- Local full regression is complete.
+- QuickAliases preserved the two expected PARTIAL_SUCCESS cases in the patched harness output.
+- Core passed.
+- Retrieval passed.
+- FullRegression passed.
+- This is sufficient to treat the harness reporting patch as locally validated.
+
+Next active governed branch
+- Patch project_sources/DCOIR_Collector.ps1 and project_sources/run_DCOIR_Tests.ps1 so operator-facing output displays full paths instead of relative paths.
+- Remove project_sources/run_DCOIR_Tests.cmd from the governed source set and clean up all impacted governed references.
+- Refresh the control-plane and log files so they reflect the completed local validation and the connector-first project preference.
+
+Separate structural follow-on
+- Evaluate whether dcoir-github-operator should be deprecated or removed from the project after the current harness/docs cleanup branch is settled.
+- Treat that as a separate structural review because current governed docs still name dcoir-github-operator as the default GitHub execution layer and other project-side workflow assets may still depend on it.
