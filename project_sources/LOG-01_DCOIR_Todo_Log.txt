@@ -1,19 +1,11 @@
 DCOIR Todo Log
 
 Current stable pointers
-- Working GitHub repository: malwaredevil/dcoir-collector
-- GitHub control-plane files: project_sources/CP-01_DCOIR_Version_Manifest.txt and project_sources/CP-02_DCOIR_Change_Log.txt
-- Collector readable source: project_sources/DCOIR_Collector.ps1
-- Harness readable source: project_sources/run_DCOIR_Tests.ps1
-- Knowledge readable working set: knowledge/*.md
-- Settings baseline to apply: project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt
+- Repo: malwaredevil/dcoir-collector
+- Collector runtime: project_sources/DCOIR_Collector.ps1
+- Collector source set: project_sources/collector_parts/*.ps1
+- Harness: project_sources/run_DCOIR_Tests.ps1
 
-Current next planned work item
-- Patch operator-facing output in project_sources/DCOIR_Collector.ps1 and project_sources/run_DCOIR_Tests.ps1 so displayed paths are full absolute paths instead of relative paths, then continue the connector-first governed-source cleanup and the separate IOC online-enrichment design branch.
-
-Priority stack
-1. Patch the collector and harness scripts so operator-facing output uses full absolute paths instead of relative paths.
-2. Refresh any remaining governed docs and helper skills that still imply dcoir-github-operator is the default GitHub execution layer when the direct GitHub connector can do the work more simply.
-3. Evaluate whether dcoir-github-operator can be deprecated or removed after the affected skills and governed docs are fully rewired away from it.
-4. Design the IOC online-enrichment branch with live-tested directly reachable sources only.
-5. Preserve Gemini and helper-skill operationalization work that remains outside the GitHub execution-layer transition.
+Current next work item
+- Audit affected skills for the collector split.
+- Then document the GitHub connector workflow.
