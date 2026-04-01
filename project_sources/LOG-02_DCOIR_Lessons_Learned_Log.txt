@@ -1,5 +1,13 @@
 DCOIR Lessons Learned Log
 
+Latest governed lessons added in 3.9.2
+- In the collector harness, process exit code alone is not sufficient to summarize step health; collector-reported `PARTIAL_SUCCESS` must be preserved distinctly rather than flattened into `PASS`.
+- Endpoint-lane operator logs plus retrieved summary artifacts are sufficient to bound a real harness reporting defect even when later cleanup removes working files from the endpoint.
+- For Elastic Defend response actions, `get-file` should use full absolute paths under the response-actions working directory for harness outputs.
+- In the endpoint harness lane, `response_actions\DCOIR_Collector.zip` should be treated as a transient working copy while `response_actions\assets\DCOIR_Collector.zip` remains the intended master restage source.
+- A subsequent suite failure around the working zip should first be interpreted as a restage/access issue around a transient root copy, not automatically as a collector-code defect or permanent zip deletion bug.
+- Collector all-path testing can be considered functionally complete for the current branch once QuickAliases, Core, and Retrieval all execute successfully in the endpoint lane, even if a narrow harness-reporting rerun still remains.
+
 Latest governed lessons added in 3.9.1
 - In this chat environment, the high-level existing-file wrapper is not the reliable write path for governed text updates; the validated existing-file path is the low-level git-object lane.
 - A connector-backed GitHub super-skill should be aligned to the actual connector execution surface instead of assuming overwrite behavior the wrapper does not reliably expose.

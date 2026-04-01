@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.1
+DCOIR Version Manifest 3.9.2
 
 CURRENT GOVERNED GITHUB READABLE SOURCES
 - Manifest_Current: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -61,8 +61,10 @@ STATUS NOTES
 - Knowledge markdown now exists as extracted editable content in knowledge/ and should be treated as the working readable source set for knowledge maintenance.
 - supporting_knowledge_docs.zip may still be retained as a delivery or reference asset, but it is not the editable working source when the extracted markdown exists in GitHub.
 - The current settings baseline advances to project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt.
-- Connector-backed dcoir-github-operator now has a validated existing-file update lane through the low-level git-object path.
-- First-wave dependent helper skills and governed workflow text are refreshed to use the validated dcoir-github-operator behavior.
+- Endpoint-lane collector QA is now evidenced through Elastic Defend response actions across QuickAliases, Core, and Retrieval.
+- In the endpoint lane, response_actions\DCOIR_Collector.zip should be treated as a transient working zip, while assets\DCOIR_Collector.zip remains the intended master restage source for the harness.
+- The harness summary layer previously flattened collector-reported PARTIAL_SUCCESS into PASS when exit code was 0; run_DCOIR_Tests.ps1 is now patched to preserve PARTIAL_SUCCESS in summary output and JSON results.
+- Full absolute paths under the response_actions working directory should be used for get-file retrieval of harness outputs in the endpoint lane.
 
 CURRENT NEXT PLANNED WORK ITEM
-- Take the next approved roadmap branch from the remaining prioritized stack, with second-wave GitHub-operator adoption and collector all-path testing at the top of the remaining work.
+- Rerun the bounded endpoint validation lane for the harness reporting patch: QuickAliases Strings and Streams plus one Core control lane; if that patch holds, resume second-wave GitHub-operator adoption.

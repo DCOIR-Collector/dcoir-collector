@@ -72,6 +72,9 @@ Operational content rules
 - Use the runtime or native GitHub filename when discussing execution where applicable.
 - When a helper skill changes materially, replace the external skill package separately, verify icon or metadata where expected, rerun post-update invocation or accessibility regression where relevant, and then refresh governed project sources if the durable workflow changed.
 - When a helper skill uses GitHub-backed helper memory, keep one canonical human-readable memory file per skill under dcoir_skill_memory/ unless an explicit exception is approved.
+- For Elastic Defend response-action retrieval of harness outputs, use full absolute paths under the response-actions working directory rather than `.`-relative get-file paths.
+- In the endpoint harness lane, treat `response_actions\DCOIR_Collector.zip` as a transient working copy and `response_actions\assets\DCOIR_Collector.zip` as the intended master restage source.
+- If a subsequent suite fails around the working zip, restage or re-upload the master zip and rerun the bounded suite before treating the condition as a collector-code defect.
 
 Knowledge handling
 - Knowledge docs are authored and maintained as normal markdown in GitHub knowledge/.

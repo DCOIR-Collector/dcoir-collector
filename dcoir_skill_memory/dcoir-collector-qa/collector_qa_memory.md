@@ -2,7 +2,7 @@
 artifact_type: dcoir-collector-qa-memory
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-03-30T18:35:00Z
+exported_at_utc: 2026-04-01T10:45:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -12,33 +12,40 @@ authority_basis:
 # DCOIR Collector QA Memory
 
 ## Current focus
-Collector all-path testing under the GitHub-primary working model.
+Bounded repair and endpoint rerun for the collector harness partial-success reporting defect.
 
 ## Known failure lanes
 - **Gemini collector transcript error** (status: open)
   - details: Preserved placeholder regression lane until the exact failing excerpt is recovered.
   - next_action: Capture the exact failing excerpt and turn it into a concrete replay fixture.
+- **QuickAliases partial-success flattening in harness summaries** (status: patched-awaiting-rerun)
+  - details: Endpoint evidence showed `24_EnrichStartStrings` and `26_EnrichStartStreams` reporting `STATUS=PARTIAL_SUCCESS` in collector output while summary txt/json flattened both steps to `PASS` because exit code remained 0.
+  - next_action: Rerun QuickAliases Strings and Streams plus one Core control lane after the harness patch and confirm summary artifacts now preserve `PARTIAL_SUCCESS`.
+- **Endpoint working-zip restage/access lane** (status: open)
+  - details: A prior Core attempt failed around the transient root working zip `response_actions\DCOIR_Collector.zip`; current interpretation is a restage/access issue around a transient root copy, not yet a bounded collector-code defect.
+  - next_action: Keep `assets\DCOIR_Collector.zip` as the master restage source and only escalate this lane if a narrower code-backed failure is reproduced.
 
 ## Active repair candidates
 - **Collector file-level comment-based help** (status: open)
   - details: The readable source begins directly with `param()` and still appears to lack file-level comment-based help.
   - next_action: Consider a bounded maintenance-doc pass before the next maintenance-heavy patch cycle.
-- **Representative Windows execution evidence** (status: open)
-  - details: Static and workflow-surface review passed in chat, but representative harness execution remains blocked in the Linux container because the collector requires Windows PowerShell 5.1 and Windows-native utilities.
-  - next_action: Run at least `Core`, `Retrieval`, and `QuickAliases` locally on Windows PowerShell 5.1 and record results back into QA memory.
+- **Endpoint-lane workflow note preservation** (status: open)
+  - details: The endpoint lane now has two durable operator rules: absolute get-file paths for harness outputs and transient-root-zip handling.
+  - next_action: Keep those rules synchronized in governed workflow docs and later skill guidance.
 
 ## Recently validated paths
 - GitHub-primary collector QA source re-anchor completed against CP-01, CP-02, collector source, harness mirrors, rollback reference, and layout spec.
 - Runtime alias alignment is currently correct: manifest/layout/harness all point to `DCOIR_Collector.ps1` as the runtime filename.
 - Harness suite surface is currently correct: `Core`, `Retrieval`, `QuickAliases`, and `FullRegression` remain present.
-- Collector output-contract markers and quick-command surface remain present in the readable source.
+- Collector all-path execution is evidenced through Elastic Defend response actions across QuickAliases, Core, and Retrieval.
+- Retrieval of harness summary files is validated when full absolute response-actions paths are used.
 - The rollback reference remains available for bounded regression comparison.
 
 ## Next actions
-- Run representative local/manual harness checks on Windows PowerShell 5.1.
-- Preserve the exact results for `Core`, `Retrieval`, and `QuickAliases` as passed, failed, blocked, or planned-not-executed.
-- Update this file after the next real collector QA execution cycle.
+- Rerun the bounded endpoint validation lane for the harness reporting patch: QuickAliases Strings and Streams plus one Core control lane.
+- Preserve the exact rerun results for summary txt/json and operator log output.
+- Update this file after the bounded rerun completes.
 - Add concrete replay details when the Gemini collector failure excerpt is recovered.
 
 ## Provenance notes
-- Updated after a hybrid collector QA pass that completed static and workflow-surface review in chat and marked execution-heavy lanes blocked in the Linux environment.
+- Updated after review of the operator log plus six retrieved summary artifacts from endpoint execution.

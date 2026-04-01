@@ -2,7 +2,7 @@
 artifact_type: dcoir-session-state
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-03-30T19:35:00Z
+exported_at_utc: 2026-04-01T10:45:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -16,10 +16,10 @@ imports_merged:
 # DCOIR Session State
 
 ## Current phase
-Connector-backed dcoir-github-operator existing-file updates are now live-validated through the low-level git-object lane, and the first-wave dependent helper-skill set has been refreshed to use that validated behavior.
+Collector all-path testing has been executed through Elastic Defend response actions, the harness partial-success reporting defect is now patched, and a bounded endpoint rerun is the current gate before moving on.
 
 ## Best next move
-Choose the next roadmap branch from the remaining prioritized stack, starting with either second-wave dcoir-github-operator adoption or collector all-path testing.
+Rerun the bounded endpoint validation lane for the harness reporting patch: QuickAliases Strings and Streams plus one Core control lane. If the patch holds, resume second-wave dcoir-github-operator adoption.
 
 ## Open items
 ### durable_preference_candidate
@@ -43,18 +43,16 @@ Choose the next roadmap branch from the remaining prioritized stack, starting wi
 ### follow_on_validation
 - [ST-020] Expand validated dcoir-github-operator adoption into second-wave skills and remaining governed workflow sources as needed (status: open; provenance: grounded_inference)
   - why: First-wave adoption is complete, but the operator line still has remaining candidate adopters.
-  - next_action: Review second-wave adoption targets and decide whether to continue that line now or defer it.
+  - next_action: Resume that line after the bounded collector-harness rerun passes.
   - related: dcoir-github-operator, dcoir-knowledge-doc-maintainer, dcoir-session-resume, dcoir-change-impact-analyzer, dcoir-repo-packager
-- [ST-021] Expand collector all-path testing (status: open; provenance: project_log)
-  - why: Collector regression expansion remains near the top of the remaining prioritized stack.
-  - next_action: Resume the collector all-path regression lane when selected as the next roadmap branch.
-  - related: project_sources/DCOIR_Collector.ps1, project_sources/run_DCOIR_Tests.ps1, project_sources/run_DCOIR_Tests.cmd
-
-### new_skill_idea
 - [ST-022] Explore whether a project skill could use a direct API-auth GitHub lane from this chat interface for more automated create, read, and update behavior (status: open; provenance: current_chat)
   - why: The operator wants to revisit whether a skill could programmatically use a direct GitHub API path in this project chat environment for cleaner automation.
   - next_action: Brainstorm feasible direct-auth patterns, environment handling, container implications, and security/workflow tradeoffs before deciding whether this should become a real implementation line.
   - related: dcoir-github-operator, GitHub API auth, .env handling
+- [ST-023] Validate the harness partial-success reporting patch in the endpoint lane (status: open; provenance: current_chat)
+  - why: The patch was applied after endpoint evidence showed QuickAliases Strings and Streams being flattened from collector `PARTIAL_SUCCESS` into harness `PASS`.
+  - next_action: Rerun QuickAliases Strings and Streams plus one Core control lane and preserve both operator log output and summary artifacts.
+  - related: project_sources/run_DCOIR_Tests.ps1, project_sources/DCOIR_Collector.ps1
 
 ## Completed or resolved this session
 - [ST-005] Implement GitHub-backed memory for the current high-value five-skill set (status: done; provenance: current_chat)
@@ -81,6 +79,10 @@ Choose the next roadmap branch from the remaining prioritized stack, starting wi
   - why: The original existing-file update path did not reflect the connector-backed runtime reality.
   - next_action: Keep future operator changes aligned to the validated connector execution model.
   - related: dcoir-github-operator
+- [ST-021] Execute collector all-path testing through the Elastic Defend endpoint lane and preserve the findings (status: done; provenance: current_chat)
+  - why: QuickAliases, Core, and Retrieval all executed successfully, and the bounded findings were captured from the operator log plus six summary artifacts.
+  - next_action: Use the bounded rerun only for harness-reporting validation rather than re-opening broad collector execution scope.
+  - related: project_sources/DCOIR_Collector.ps1, project_sources/run_DCOIR_Tests.ps1, project_sources/run_DCOIR_Tests.cmd
 
 ## Provenance notes
-- Updated after live validation of the patched existing-file update lane, first-wave adopter refresh, governed workflow refresh, and test-artifact cleanup.
+- Updated after collector endpoint execution evidence, harness reporting patch application, and governed workflow/log refresh planning.

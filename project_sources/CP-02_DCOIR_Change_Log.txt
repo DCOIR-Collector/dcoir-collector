@@ -1,4 +1,30 @@
 [CURRENT]
+Version: Collector_Harness_Endpoint_QA_and_Partial_Success_Repair_3_9_2
+Type: Elastic Defend endpoint collector QA findings, harness reporting repair, and workflow-note refinement
+Summary:
+- Endpoint-lane collector QA was executed through Elastic Defend response actions across QuickAliases, Core, and Retrieval using the current readable collector and harness sources.
+- QuickAliases completed functionally, but the operator log proved that `24_EnrichStartStrings` and `26_EnrichStartStreams` reported `STATUS=PARTIAL_SUCCESS` even though the harness summary artifacts flattened those steps to `PASS` because exit code remained 0.
+- Core completed successfully on rerun after an earlier endpoint-lane failure around the transient working copy `response_actions\DCOIR_Collector.zip`; the better interpretation is not permanent zip deletion but a working-zip restage/access failure around a transient root copy.
+- Retrieval completed successfully in the endpoint lane, including raw Security log export and finalize.
+- Elastic Defend `get-file` retrieval for harness outputs required full absolute paths under the response-actions working directory rather than `.
+` relative paths.
+- The operator observation refined the zip-handling interpretation: `assets\DCOIR_Collector.zip` is the intended master restage source, while `response_actions\DCOIR_Collector.zip` should be treated as a transient working zip.
+- `project_sources/run_DCOIR_Tests.ps1` is now patched so the harness preserves collector-reported `PARTIAL_SUCCESS` in step status, summary text, and JSON results instead of flattening it into `PASS` when exit code is 0.
+- The current patch is bounded to the harness reporting defect only; broader zip-handling behavior is documented but not yet treated as a collector-code defect.
+
+Validation summary:
+- Evidence basis now includes the operator log plus six retrieved summary artifacts: QuickAliases summary txt/json, Core summary txt/json, and Retrieval summary txt/json.
+- The motivating defect is bounded and reproduced from real endpoint evidence: collector console status versus harness summary mismatch for QuickAliases Strings and Streams.
+- The patch was applied to `run_DCOIR_Tests.ps1` only, with governed workflow/log/memory refreshes aligned to the new interpretation.
+- A bounded endpoint rerun is still required before the harness reporting patch should be treated as validated live: QuickAliases Strings and Streams plus one Core control lane.
+
+Operational intent:
+- Keep the harness summary layer trustworthy enough to support later regression decisions.
+- Preserve the endpoint-lane operator rules that were actually proven: use full absolute get-file paths, keep `assets\DCOIR_Collector.zip` as the master restage source, and treat the root working zip as transient.
+- Avoid over-calling the transient root-zip disappearance as a collector defect until a narrower code-backed failure lane is proven.
+- Finish the bounded rerun quickly, then return to the next roadmap branch instead of expanding collector work indefinitely.
+
+[PRIOR]
 Version: Validated_DCOIR_GitHub_Operator_Existing_File_Update_Lane_3_9_1
 Type: Existing-file update validation, first-wave operator adoption, and governed workflow alignment
 Summary:
@@ -23,30 +49,3 @@ Operational intent:
 - Preserve a clean operator workflow: high-level create for safe new files, low-level git-object lane for existing-file updates, connector readback after writes, and branch-safe use when risk is higher.
 - Reduce future ambiguity about whether a skill-layer plan or the connector execution path should be trusted for governed text writes.
 - Carry the validated operator behavior into dependent helper skills and evergreen workflow documentation.
-
-[PRIOR]
-Version: GitHub_Primary_Bootstrap_and_No_Duplicate_Readable_Sources_3_9_0
-Type: Governance model change, GitHub-primary working-source shift, and Project bootstrap minimization
-Summary:
-- DCOIR now shifts to a GitHub-primary working-source model for readable governed text files.
-- The repository malwaredevil/dcoir-collector is now the sole working source for readable text updates, review, and resume-side source access.
-- Project space is no longer treated as a duplicate readable text repository. It is now the bootstrap and applied runtime anchor.
-- Resume behavior now starts with Project Instructions and then uses the GitHub connector to read CP-01, CP-02, and the remaining governed readable source set from malwaredevil/dcoir-collector.
-- The no-duplicate working-source rule is now explicit: do not keep duplicate editable readable text files in both GitHub and Project space.
-- The collector and harness readable sources are now governed in GitHub native formats: DCOIR_Collector.ps1, run_DCOIR_Tests.ps1, and run_DCOIR_Tests.cmd.
-- Knowledge markdown in knowledge/ is now the readable working source for knowledge maintenance when present; supporting_knowledge_docs.zip may still be retained as a delivery or reference asset.
-- The settings baseline advances to project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt to make the GitHub-primary bootstrap rule durable in future resume flows.
-- Skill updates remain a required follow-on work item after the GitHub-primary bootstrap model is applied.
-
-Validation summary:
-- GitHub native reads were directly validated for the real imported collector and harness files.
-- The low-level GitHub direct-update path was validated and then used on main, proving that frequently changing governed text can be updated directly in the repository instead of via patch ZIPs.
-- The repo inventory confirmed that extracted knowledge markdown exists alongside supporting assets, enabling a readable-source versus delivery-asset distinction.
-- The earlier duplicate-heavy Project refresh approach was intentionally superseded because it preserved the exact source-location ambiguity the operator wanted removed.
-
-Operational intent:
-- Eliminate confusion about whether GitHub or Project space holds the current readable source.
-- Preserve one readable working source for text while keeping Project space useful as a bootstrap/runtime anchor.
-- Ensure future resume behavior knows where to go first without relying on hidden memory or ambiguous mirrors.
-- Keep binary or infrequently changed assets separable from readable governed text.
-- Make future skill updates and workflow updates target the GitHub-primary model instead of the older mirrored-text model.

@@ -64,6 +64,7 @@ function Add-Result {
     [int]$ExitCode,
     [string]$RunId,
     [string]$EnrichSessionId,
+    [string]$CollectorReportedStatus,
     [string]$LogPath,
     [datetime]$Start,
     [datetime]$End
@@ -74,6 +75,7 @@ function Add-Result {
     ExitCode = $ExitCode
     RunId = $RunId
     EnrichSessionId = $EnrichSessionId
+    CollectorReportedStatus = $CollectorReportedStatus
     LogPath = $LogPath
     Start = $Start.ToString("o")
     End = $End.ToString("o")
@@ -114,7 +116,7 @@ function Restore-WorkingZip {
       "MASTER_ZIP=$MasterZipFullPath",
       "WORKING_ZIP=$WorkingZipPath"
     )
-    Add-Result -StepName $stepName -Status "FAIL" -ExitCode 1 -RunId $null -EnrichSessionId $null -LogPath $logPath -Start $start -End $end
+    Add-Result -StepName $stepName -Status "FAIL" -ExitCode 1 -RunId $null -EnrichSessionId $null -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
     throw ("Master zip not found: {0}" -f $MasterZipFullPath)
   }
 
@@ -132,7 +134,7 @@ function Restore-WorkingZip {
     "MASTER_SHA256=$masterHash",
     "WORKING_SHA256=$workingHash"
   )
-  Add-Result -StepName $stepName -Status $status -ExitCode ($(if($status -eq "PASS"){0}else{1})) -RunId $null -EnrichSessionId $null -LogPath $logPath -Start $start -End $end
+  Add-Result -StepName $stepName -Status $status -ExitCode ($(if($status -eq "PASS"){0}else{1})) -RunId $null -EnrichSessionId $null -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
 
   Write-Host ""
   Write-Host ("[{0}] {1}" -f $status, $stepName)
@@ -145,6 +147,22 @@ function Restore-WorkingZip {
   }
 }
 
+function Resolve-CollectorStepStatus {
+  param(
+    [int]$ExitCode,
+    [string]$CollectorReportedStatus
+  )
+
+  if ($ExitCode -ne 0) {
+    return "FAIL"
+  }
+
+  if ($CollectorReportedStatus -eq "PARTIAL_SUCCESS") {
+    return "PARTIAL_SUCCESS"
+  }
+
+  return "PASS"
+}
 
 function Invoke-CollectorStep {
   param(
@@ -171,43 +189,47 @@ function Invoke-CollectorStep {
     if ($null -eq $_) { "" } else { $_.ToString() }
   }) -join [Environment]::NewLine
   $stderr = ""
+  $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
 
-  $logPath = Write-HarnessLog -StepName $StepName -Lines @(
-    "STEP=$StepName",
-    "START=$($start.ToString('o'))",
-    "END=$($end.ToString('o'))",
-    ("DURATION_MS={0}" -f [int][Math]::Round(($end - $start).TotalMilliseconds)),
-    "EXIT_CODE=$exitCode",
-    ("COMMAND=powershell.exe {0}" -f $displayArgs),
-    "",
-    "STDOUT:",
-    $stdout,
-    "",
-    "STDERR:",
-    $stderr
-  )
+  $logLines = New-Object System.Collections.ArrayList
+  [void]$logLines.Add("STEP=$StepName")
+  [void]$logLines.Add("START=$($start.ToString('o'))")
+  [void]$logLines.Add("END=$($end.ToString('o'))")
+  [void]$logLines.Add(("DURATION_MS={0}" -f [int][Math]::Round(($end - $start).TotalMilliseconds)))
+  [void]$logLines.Add("EXIT_CODE=$exitCode")
+  if ($collectorReportedStatus) {
+    [void]$logLines.Add("COLLECTOR_STATUS=$collectorReportedStatus")
+  }
+  [void]$logLines.Add(("COMMAND=powershell.exe {0}" -f $displayArgs))
+  [void]$logLines.Add("")
+  [void]$logLines.Add("STDOUT:")
+  [void]$logLines.Add($stdout)
+  [void]$logLines.Add("")
+  [void]$logLines.Add("STDERR:")
+  [void]$logLines.Add($stderr)
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $logLines
 
-  $status = if ($exitCode -eq 0) { "PASS" } else { "FAIL" }
+  $status = Resolve-CollectorStepStatus -ExitCode $exitCode -CollectorReportedStatus $collectorReportedStatus
   $runId = Parse-OutputValue -Text $stdout -Key "RUN_ID"
   $sessionId = Parse-OutputValue -Text $stdout -Key "ENRICH_SESSION_ID"
 
   if ($runId) { $script:CollectorRunId = $runId }
   if ($sessionId) { $script:CollectorSessionId = $sessionId }
 
-  Add-Result -StepName $StepName -Status $status -ExitCode $exitCode -RunId $runId -EnrichSessionId $sessionId -LogPath $logPath -Start $start -End $end
+  Add-Result -StepName $StepName -Status $status -ExitCode $exitCode -RunId $runId -EnrichSessionId $sessionId -CollectorReportedStatus $collectorReportedStatus -LogPath $logPath -Start $start -End $end
 
   Write-Host ""
   Write-Host ("[{0}] {1}" -f $status, $StepName)
   Write-Host ("Log: {0}" -f $logPath)
   if ($runId) { Write-Host ("RUN_ID={0}" -f $runId) }
   if ($sessionId) { Write-Host ("ENRICH_SESSION_ID={0}" -f $sessionId) }
+  if ($collectorReportedStatus) { Write-Host ("COLLECTOR_STATUS={0}" -f $collectorReportedStatus) }
   Write-Host $stdout
 
   if ($exitCode -ne 0 -and -not $ContinueOnError) {
     throw ("Step failed: {0}" -f $StepName)
   }
 }
-
 
 function Save-Summary {
   Ensure-Directory -Path $RunOutputRoot
@@ -225,7 +247,11 @@ function Save-Summary {
   $lines += ("LATEST_ENRICH_SESSION_ID={0}" -f $script:CollectorSessionId)
   $lines += ""
   foreach ($r in $script:Results) {
-    $lines += ("STEP={0} STATUS={1} EXIT_CODE={2} LOG={3}" -f $r.StepName, $r.Status, $r.ExitCode, $r.LogPath)
+    if ($r.CollectorReportedStatus) {
+      $lines += ("STEP={0} STATUS={1} EXIT_CODE={2} COLLECTOR_STATUS={3} LOG={4}" -f $r.StepName, $r.Status, $r.ExitCode, $r.CollectorReportedStatus, $r.LogPath)
+    } else {
+      $lines += ("STEP={0} STATUS={1} EXIT_CODE={2} LOG={3}" -f $r.StepName, $r.Status, $r.ExitCode, $r.LogPath)
+    }
   }
   Set-Content -Path $summaryTxtPath -Value $lines -Encoding UTF8
 
