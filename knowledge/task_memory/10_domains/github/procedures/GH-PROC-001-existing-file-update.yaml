@@ -16,6 +16,10 @@ step_sequence:
   - step: prepare_replacement
     action: generate exact replacement content locally
     purpose: avoid partial edit drift
+  - step: resolve_head_sha
+    action: compare_commits
+    purpose: recover the current head commit sha when it is needed for parent_sha or base_tree_sha
+    note: compare_commits with base=main and head=main was accepted as a reliable way to recover current head sha when fetch_commit was flaky upstream
   - step: create_blob
     action: create_blob
     purpose: create immutable content object for replacement text
@@ -41,6 +45,7 @@ anti_patterns:
   - do not treat commit creation alone as success
   - do not continue with dependent work before readback succeeds
 known_good_signatures:
+  - compare_commits base=head=main returned current head sha
   - create_tree accepted replacement path and blob
   - create_commit returned new sha
   - update_ref returned success true
@@ -48,5 +53,5 @@ known_good_signatures:
 fallbacks:
   - GH-PROC-004
   - GH-PROC-005
-last_validated: 2026-04-01
+last_validated: 2026-04-02
 confidence: high
