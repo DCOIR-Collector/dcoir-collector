@@ -5,7 +5,9 @@ Current stable pointers
 - Collector runtime: project_sources/DCOIR_Collector.ps1
 - Collector source set: project_sources/collector_parts/*.ps1
 - Harness: project_sources/run_DCOIR_Tests.ps1
+- Task memory bank root: knowledge/task_memory
+- Task memory manifest: knowledge/task_memory/00_registry/task_memory_manifest.yaml
 
 Current next work item
 - Audit affected skills for the collector split.
-- Then document the GitHub connector workflow.
+- Then maintain and extend the GitHub task-memory bank as new validated procedures and limitations are learned.

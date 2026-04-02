@@ -6,8 +6,9 @@ Current stable artifacts
 - Collector runtime file: project_sources/DCOIR_Collector.ps1
 - Collector readable source set: project_sources/collector_parts/*.ps1
 - Harness readable source: project_sources/run_DCOIR_Tests.ps1
-- Knowledge readable working set: knowledge/*.md
-- GitHub connector direct execution remains the preferred project execution surface for governed readable-text updates when available.
+- Task memory bank root: knowledge/task_memory
+- Task memory manifest: knowledge/task_memory/00_registry/task_memory_manifest.yaml
+- Compiled lookup: knowledge/task_memory/30_compiled/fast_lookup.json
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
@@ -18,7 +19,9 @@ Current governance state
 Current validated status
 - Local full regression is complete for the current collector and harness line.
 - The harness path-output cleanup is complete.
-- The collector is now split into smaller governed source files, with DCOIR_Collector.ps1 preserved as the runtime wrapper.
+- The collector is split into smaller governed source files, with DCOIR_Collector.ps1 preserved as the runtime wrapper.
+- The task-memory bank is implemented in GitHub using a canonical registry plus compiled indexes.
 
 Current next planned work item
-- Audit and update any affected helper skills for the collector split and connector-first GitHub execution model, then complete the queued GitHub connector permanent-memory task.
+- Audit and update any affected helper skills for the collector split and connector-first GitHub execution model.
+- Continue maintaining the task-memory bank as new validated procedures, limits, and failure signatures are discovered.

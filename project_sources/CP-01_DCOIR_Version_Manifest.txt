@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.5
+DCOIR Version Manifest 3.9.6
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -19,6 +19,11 @@ Current collector files
 - Source part 05: project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1
 - Harness: project_sources/run_DCOIR_Tests.ps1
 
+Current task-memory bank
+- Root: knowledge/task_memory
+- Canonical registry: knowledge/task_memory/00_registry/task_memory_manifest.yaml
+- Compiled lookup: knowledge/task_memory/30_compiled/fast_lookup.json
+
 Current next work item
 - Audit and update affected helper skills for the collector split and connector-first GitHub execution model.
-- Then complete the GitHub connector permanent-memory task.
+- Use knowledge/task_memory as the canonical GitHub memory bank for validated connector and task procedures, limitations, failure signatures, and session promotions.

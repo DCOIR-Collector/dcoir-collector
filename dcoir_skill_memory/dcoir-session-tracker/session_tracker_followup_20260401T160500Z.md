@@ -14,15 +14,15 @@ provenance:
 # DCOIR Session Follow-up Queue
 
 ## Highest priority active item
-- Collector split implementation for `project_sources/DCOIR_Collector.ps1`
-  - intent: break the large collector source into no more than 10 smaller governed source files that can be reassembled into the full collector.
-  - constraints: preserve `DCOIR_Collector.ps1` as the canonical runtime filename; update control-plane references if the readable-source model changes.
-  - required follow-on immediately after split: verify and update any affected skills that rely on the collector readable-source path or assumptions.
+- Audit and update affected helper skills for the collector split and connector-first GitHub execution model.
 
-## Next item after the split and skill audit
-- GitHub connector permanent-memory workflow capture
-  - intent: preserve the validated GitHub connector write/update process in a durable GitHub-readable location so it is not lost again.
-  - notes: this is the operator-designated emergency task and should be the next queued item after the collector split and affected-skill refresh.
+## Current durable memory location
+- Root: `knowledge/task_memory`
+- Manifest: `knowledge/task_memory/00_registry/task_memory_manifest.yaml`
+- Compiled lookup: `knowledge/task_memory/30_compiled/fast_lookup.json`
+
+## Next item after the skill audit
+- Maintain and extend the GitHub task-memory bank with new validated procedures, limits, failure signatures, and promoted session lessons as future connector or workflow issues are solved.
 
 ## Affected skills already identified for post-split audit
 - `dcoir-collector-qa`
