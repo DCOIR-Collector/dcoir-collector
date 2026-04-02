@@ -1,0 +1,45 @@
+record_id: GH-PROC-003
+domain: github
+record_type: procedure
+operation: large_file_refactor
+object_type: monolithic_source_file
+problem_signature: a large existing source file is too brittle for efficient direct maintenance
+primary_lane: dependency_first_split_then_wrapper_cutover
+preconditions:
+  - runtime entrypoint that must remain stable is known
+  - functional split boundaries are defined by role, not line count
+step_sequence:
+  - step: define_split
+    action: separate source into bounded functional segments
+    purpose: enable targeted future maintenance
+  - step: add_dependencies_first
+    action: create each new part file before runtime cutover
+    purpose: avoid breaking main
+  - step: verify_parts
+    action: fetch_file and/or search
+    purpose: confirm every required part exists
+  - step: replace_runtime_wrapper
+    action: existing-file update on runtime entrypoint
+    purpose: preserve runtime filename while loading split source set
+  - step: verify_runtime
+    action: fetch_file
+    purpose: confirm wrapper points only at live part files
+  - step: refresh_control_plane
+    action: update manifest, change log, setup/layout docs, handoff/todo files
+    purpose: eliminate authority drift
+  - step: audit_dependents
+    action: inspect affected skills and helper workflows
+    purpose: keep downstream assumptions aligned
+verification_steps:
+  - all part files exist before wrapper cutover
+  - wrapper content is live on main
+  - control-plane docs reflect the split source model
+anti_patterns:
+  - do not split by arbitrary line ranges
+  - do not replace the runtime wrapper first
+  - do not leave docs describing the old monolithic layout
+related_records:
+  - GEN-PROC-001
+  - GH-PROC-005
+last_validated: 2026-04-01
+confidence: high
