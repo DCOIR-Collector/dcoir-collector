@@ -1,0 +1,43 @@
+DCOIR Documentation And Knowledge Lane
+
+1. Improve the main README.md with mission, deliverables, repo map, and navigation guidance.
+   Why it matters:
+   - The root README should explain the project as a framework, not only as a bootstrap pointer.
+   Next action:
+   - Add mission, working model, core deliverables, and documentation direction.
+
+2. Improve each major folder README so it acts as a useful local guide.
+   Why it matters:
+   - Future workers should be able to understand each major folder without hidden context.
+   Next action:
+   - Add purpose, contents, authority notes, and navigation links.
+
+3. Expand knowledge/ into a fuller wiki-style documentation structure rooted in its README.
+   Why it matters:
+   - Human-readable knowledge is a first-class project asset.
+   Next action:
+   - Create a stronger knowledge index and topic-specific documents.
+
+4. Explicitly document the analyst-facing DCOIR master prompt as a core deliverable.
+   Why it matters:
+   - The combined prompt-pack output is one of the major end products of the project.
+   Next action:
+   - Add it to README deliverables and documentation map.
+
+5. Explicitly document the Gemini parent-plus-sub-agent system as a core deliverable.
+   Why it matters:
+   - The merged Gemini design line is a major project output and should be visible at the top level.
+   Next action:
+   - Add it to README deliverables and documentation map.
+
+6. Add documentation for IOC/external-context enrichment posture, authoritative-source priority, and DFIR operating principles.
+   Why it matters:
+   - These are already part of the governed design and should be easier to discover.
+   Next action:
+   - Surface the prompt-pack authoritative-source model in human-readable documentation.
+
+7. Extract text-bearing supporting zip contents other than DCOIR_Collector.zip once available, place the readable text into appropriate governed GitHub locations, and update repo awareness/docs so their existence and value are preserved.
+   Why it matters:
+   - Important readable knowledge should not remain trapped inside zip files when it has long-term project value.
+   Next action:
+   - After operator-side extraction is available, place the files in appropriate GitHub-readable locations and refresh documentation and control-plane awareness as needed.
