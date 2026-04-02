@@ -1,0 +1,17 @@
+record_id: GH-FSIG-002
+domain: github
+record_type: failure_signature
+signature: runtime wrapper or entrypoint update attempted before dependency files are live
+likely_causes:
+  - cutover sequencing error
+  - dependency-first refactor not followed
+first_response:
+  - stop further wrapper changes
+  - verify all required part files exist on main
+  - pivot to GH-PROC-003 and GEN-PROC-001
+known_good_alternative:
+  - add all dependency files first
+  - verify them
+  - replace wrapper last
+last_validated: 2026-04-01
+confidence: high
