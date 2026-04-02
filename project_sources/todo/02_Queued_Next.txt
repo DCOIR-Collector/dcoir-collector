@@ -1,16 +1,16 @@
 DCOIR Queued Next
 
-1. Define a sustainable split standard for growth-prone governed files.
+1. Add a governed workflow note for the validated GitHub operating process once the conduit decision is settled.
+   Why it matters:
+   - Future sessions should not have to rediscover how approval-gated chat-bound GitHub work is supposed to operate.
+   Next action:
+   - If @dcoir-github-api validates, document the operating process; if it does not, document the approved alternate path and explicit authorization rule.
+
+2. Define a sustainable split standard for growth-prone governed files.
    Why it matters:
    - The project should not keep recreating oversized files that are difficult to update safely.
    Next action:
    - Define index-plus-child-file patterns, naming rules, and traceability requirements.
-
-2. Rebuild the todo/log structure using that split standard.
-   Why it matters:
-   - The current todo line is a likely split candidate and should become easier to maintain.
-   Next action:
-   - Replace one growing todo file with a short index and bounded child files.
 
 3. Continue maintaining and extending knowledge/task_memory as validated procedures, limitations, and failure signatures are learned.
    Why it matters:

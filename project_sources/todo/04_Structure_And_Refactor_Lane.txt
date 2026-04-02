@@ -8,10 +8,14 @@ DCOIR Structure And Refactor Lane
    Why it matters:
    - Consistent naming reduces confusion and eases future updates.
 
-3. Preserve cross-file traceability whenever governed files are split.
+3. Review any remaining legacy or orphaned split-attempt artifacts before cleanup.
+   Why it matters:
+   - Old partial structures should not be removed until dependency checks confirm nothing still relies on them.
+
+4. Preserve cross-file traceability whenever governed files are split.
    Why it matters:
    - Resume and governance must remain clean even after structural refactors.
 
-4. Review whether any remaining repo delivery artifacts still lag the current split todo and task-memory posture.
+5. Review whether any remaining repo delivery artifacts still lag the current split todo and task-memory posture.
    Why it matters:
    - Packaging and delivery artifacts should not quietly drift behind the live control plane.

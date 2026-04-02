@@ -1,6 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.9
+Change class: todo and handoff refresh for dcoir-github-api operational validation and GitHub conduit decision
+
+What changed
+- Refreshed CP-01, LOG-01, LOG-03, the todo index, and key split todo lanes so the unfinished dcoir-github-api validation effort from the failing session is preserved in the live work line.
+- Elevated phased operational validation of @dcoir-github-api to the top active work item, including read-path, convenience-write-path, and grouped low-level Git-path testing.
+- Added follow-on todo items for deciding whether @dcoir-github-api is a viable project GitHub conduit and for documenting the approval-gated operating process only after full validation succeeds.
+- Added continuity notes that chat-bound GitHub writes may be approval-gated or runtime-unstable, that the conduit should not be treated as validated until phased testing completes, and that alternate GitHub paths require explicit operator authorization.
+- Added structural and deferred reminders for orphaned split-attempt artifact review and for documenting an approved alternate GitHub path if the intended conduit remains unavailable or unreliable after testing.
+
+Why
+- The project should not lose the unfinished GitHub-conduit validation work behind a broader main-deliverables summary.
+- The next resume point should reflect the operator's decision to test @dcoir-github-api fully before treating it as a preferred repo execution surface.
+- Continuity-critical GitHub execution rules should be visible in the governed todo and handoff line so they are not rediscovered only after another unstable session.
+
+Validation notes
+- CP-01, LOG-01, LOG-03, the todo index, and the refreshed split todo lanes point at the same next work line.
+- The active todo line now captures the phased @dcoir-github-api validation plan, conduit-decision follow-on, and the no-unauthorized-fallback rule.
+- Existing documentation, knowledge-expansion, task-memory, and zip-ingestion work remains preserved in the split todo structure.
+
+[PRIOR]
 Version: 3.9.8
 Change class: task-memory preflight expansion, grouped GitHub transaction rule, and post-alignment state refresh
 

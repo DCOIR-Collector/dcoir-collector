@@ -1,18 +1,34 @@
 DCOIR Active Now
 
-1. Resume main project deliverables and reprioritize remaining todo items from the split todo structure.
+1. Conduct a full operational validation of @dcoir-github-api before treating it as a viable GitHub execution conduit for project work.
    Why it matters:
-   - The helper-skill alignment and retirement work is complete enough that the project should shift back to the real deliverables and remaining todo lanes.
+   - The failing session ended with only partial proof; some read behavior and manual write operations worked, but the full chat-bound operational path was not validated end-to-end.
    Next action:
-   - Choose the top deliverable or remaining todo lane and continue from the current split todo structure.
+   - Verify that the intended project GitHub action surface is actually available and usable in the current chat, then run the phased validation:
+     - Round 1 read path: getRepository, getBranch(main), getFileContent(README.md), getCommit(main)
+     - Round 2 convenience file path on a disposable branch: createBranchReference, createOrUpdateSingleFile, getFileContent readback, deleteSingleFile, deleteReference
+     - Round 3 grouped low-level Git path on a disposable branch: createBranchReference, compareCommits, createGitTree, createGitCommit, updateBranchReference, verification readback, deleteReference
+   - Treat write behavior as potentially approval-gated and do not conclude schema, token, or parameter failure until approval behavior or stale binding has been ruled out.
 
-2. Use canonical task-memory preflight before GitHub-family execution work.
+2. Decide whether @dcoir-github-api is a viable project GitHub conduit only after the phased validation completes.
+   Why it matters:
+   - The project should not assume a preferred GitHub execution surface before approval behavior, runtime stability, and write reliability are understood.
+   Next action:
+   - If it validates, document the approval-gated operating process for chat-bound GitHub work; if it does not, define the approved alternate path and explicit authorization rule.
+
+3. Resume main project deliverables and reprioritize remaining todo items from the split todo structure after the conduit decision is settled.
+   Why it matters:
+   - The project still needs to return to the real deliverables and broader todo lanes once the GitHub execution path is clear.
+   Next action:
+   - Choose the top deliverable or remaining todo lane and continue from the current split todo structure after the GitHub-conduit decision is made.
+
+4. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:
    - Validated procedures should be consulted before friction, not after an avoidable miss or retry.
    Next action:
    - Check knowledge/task_memory and the applicable GitHub procedures before repo writes, deletes, packaging, or structural changes.
 
-3. Prefer one bounded multi-file git-object transaction when multiple related existing-file edits or deletions belong together.
+5. Prefer one bounded multi-file git-object transaction when multiple related existing-file edits or deletions belong together.
    Why it matters:
    - Grouped repo changes reduce drift and mirror programmer-style all-at-once updates better than one-file-at-a-time churn.
    Next action:

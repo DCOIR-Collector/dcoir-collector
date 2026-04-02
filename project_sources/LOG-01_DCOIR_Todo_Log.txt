@@ -9,7 +9,7 @@ Current stable pointers
 - Task memory manifest: knowledge/task_memory/00_registry/task_memory_manifest.yaml
 
 Current active priority
-- Resume main project deliverables and reprioritize remaining todo work from the split todo structure.
+- Conduct a full operational validation of @dcoir-github-api before treating it as a viable GitHub execution conduit for project work, then decide and document the GitHub operating process or approved alternate path before resuming the broader main-deliverables line.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -20,6 +20,8 @@ Detailed todo structure
 - project_sources/todo/05_Deferred_Or_Conditional.txt
 
 Queued next priorities
+- If @dcoir-github-api validates, define and document the approval-gated operating process for chat-bound GitHub work.
+- If it does not validate or remains unreliable in-chat, document the approved alternate GitHub path and stop treating it as an assumed conduit until revalidated.
 - Continue maintaining and extending the GitHub task-memory bank as validated procedures, limitations, failure signatures, and preflight rules are learned.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge/wiki structure.
 - After operator-side extraction is available, ingest readable text from supporting zip files other than DCOIR_Collector.zip into appropriate governed GitHub locations and refresh repo-awareness documents accordingly.
@@ -35,6 +37,7 @@ Documentation and knowledge lane
 Structure and refactor lane
 - Review large governed logs and continuity files for sustainable split candidates.
 - Normalize naming and folder conventions where older experimental paths remain.
+- Review any remaining legacy or orphaned split-attempt artifacts before cleanup, and only remove them after dependency checks are complete.
 - Preserve cross-file traceability whenever a governed file is split.
 - Review whether any remaining repo delivery artifacts still lag the current split todo and task-memory posture.
 
@@ -42,3 +45,4 @@ Deferred or conditional items
 - After text-bearing zip contents are extracted and uploaded, update the repo structure and awareness files so the extracted readable sources become first-class project knowledge where appropriate.
 - Apply additional skill package maintenance only when a new validated bundle is ready and operator conditions allow.
 - If future GitHub procedures or failure signatures are validated, promote them into knowledge/task_memory and refresh the compiled indexes.
+- If @dcoir-github-api remains unavailable or unreliable after phased validation, use an alternate GitHub path only when explicitly authorized and document that conduit decision in governed logs.

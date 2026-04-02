@@ -24,15 +24,17 @@ Current validated status
 - The task-memory bank remains implemented in GitHub using a canonical registry plus compiled indexes.
 - The repo also contains a governed combined analyst-facing DCOIR master prompt and governed Gemini merged-agent design artifacts that should be treated as core project deliverables.
 - The old dcoir-github-operator lane is retired and the old DCOIR_Collector_parts path has been removed.
+- @dcoir-github-api is not yet treated as a validated end-to-end GitHub execution conduit for chat-bound use; the failing session needs a full operational retest before that decision is made.
 
 Current session outcomes
 - Added canonical GitHub task-memory procedures for grouped multi-file transactions and memory-preflight routing.
 - Refreshed the control plane, todo summaries, and workflow docs so GitHub-family work now consults canonical task memory before execution and prefers one bounded grouped transaction for related changes.
 - Prepared a dedicated dcoir-memory-preflight skill and an updated dcoir-decision-policy package so the preflight behavior can exist in the skill layer as well as in governed docs and task memory.
-- The project is ready to shift back from workflow hardening into the main deliverables and remaining todo items.
+- Refreshed the todo and handoff continuity line so the unfinished @dcoir-github-api validation effort is preserved explicitly instead of being lost behind the broader main-deliverables summary.
+- Preserved the chat-bound GitHub caution notes: verify availability in-chat, treat writes as potentially approval-gated or runtime-unstable, and do not use alternate paths without explicit operator authorization.
 
 Current next planned work item
-- Resume main project deliverables and remaining todo work, using canonical task-memory preflight before GitHub-family changes.
+- Conduct the phased @dcoir-github-api operational validation and decide whether it is a viable GitHub conduit before relying on it for project repo work.
 
 Recommended next move
-- Apply the prepared preflight-related skill update package when operator conditions allow, then resume the main deliverables and todo reprioritization flow.
+- Run Round 1 through Round 3 of the @dcoir-github-api operational validation in a fresh chat or stable runtime, then document the conduit decision and resume the main deliverables line.

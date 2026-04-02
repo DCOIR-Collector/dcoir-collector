@@ -11,3 +11,7 @@ DCOIR Deferred Or Conditional
 3. If future GitHub procedures or failure signatures are validated, promote them into knowledge/task_memory and refresh the compiled indexes.
    Why it matters:
    - The canonical memory bank should keep improving as new validated workflows are learned.
+
+4. If @dcoir-github-api remains unavailable or unreliable after phased validation, document the approved alternate GitHub path and use it only when explicitly authorized.
+   Why it matters:
+   - The project should not drift into silent fallback behavior when the intended conduit is not working.
