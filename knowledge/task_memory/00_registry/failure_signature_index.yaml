@@ -1,0 +1,9 @@
+failure_signatures:
+  GH-FSIG-001:
+    summary: connector or platform safety block on low-level tree update
+    canonical_record: knowledge/task_memory/10_domains/github/failure_signatures/GH-FSIG-001-safety-block-on-tree.yaml
+    preferred_response: GH-PROC-004
+  GH-FSIG-002:
+    summary: runtime wrapper replacement attempted before dependency files are present
+    canonical_record: knowledge/task_memory/10_domains/github/failure_signatures/GH-FSIG-002-wrapper-update-risk.yaml
+    preferred_response: GH-PROC-003
