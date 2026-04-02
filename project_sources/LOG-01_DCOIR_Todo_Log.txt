@@ -8,6 +8,38 @@ Current stable pointers
 - Task memory bank root: knowledge/task_memory
 - Task memory manifest: knowledge/task_memory/00_registry/task_memory_manifest.yaml
 
-Current next work item
-- Audit affected skills for the collector split.
-- Then maintain and extend the GitHub task-memory bank as new validated procedures and limitations are learned.
+Current active priority
+- Audit affected helper skills for the collector split and connector-first GitHub execution model.
+
+Detailed todo structure
+- project_sources/LOG-01_DCOIR_Todo_Index.txt
+- project_sources/todo/01_Active_Now.txt
+- project_sources/todo/02_Queued_Next.txt
+- project_sources/todo/03_Documentation_And_Knowledge_Lane.txt
+- project_sources/todo/04_Structure_And_Refactor_Lane.txt
+- project_sources/todo/05_Deferred_Or_Conditional.txt
+
+Queued next priorities
+- Define a sustainable split standard for growth-prone governed files.
+- Rebuild the todo/log structure using an index-plus-child-files model.
+- Continue maintaining and extending the GitHub task-memory bank as validated procedures, limitations, and failure signatures are learned.
+
+Documentation and knowledge lane
+- Improve the main README with clearer mission, deliverables, navigation, and repo map guidance.
+- Improve each major folder README so it acts as a useful local guide.
+- Expand knowledge/ into a fuller wiki-style documentation structure rooted in its README.
+- Explicitly document the analyst-facing combined DCOIR master prompt as a core deliverable.
+- Explicitly document the Gemini parent-agent and sub-agent system as a core deliverable.
+- Surface the project’s DFIR posture and authoritative-source IOC/external-context enrichment model more clearly in human-readable documentation.
+- After operator-side extraction is available, ingest readable text from supporting zip files other than DCOIR_Collector.zip into appropriate governed GitHub locations and refresh repo-awareness documents accordingly.
+
+Structure and refactor lane
+- Review and clean up orphaned or abandoned split-attempt files and folders.
+- Validate whether project_sources/DCOIR_Collector_parts/ is fully stale and safe to remove after dependency review.
+- Review large governed logs and continuity files for sustainable split candidates.
+- Preserve cross-file traceability whenever a governed file is split.
+
+Deferred or conditional items
+- Remove dcoir-github-operator only after the helper-skill and dependency sweep confirms it is no longer part of the live workflow assumptions.
+- Remove older collector split-attempt artifacts only after dependency review confirms they are not referenced by current docs, skills, or workflows.
+- Perform manual skill package maintenance later in a home-session environment where package download and replacement is practical.
