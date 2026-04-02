@@ -1,0 +1,25 @@
+DCOIR Structure And Refactor Lane
+
+1. Review and clean up orphaned or abandoned split-attempt files and folders.
+   Why it matters:
+   - Stale structural artifacts can confuse future maintenance and create false authority signals.
+   Next action:
+   - Validate dependency status before deletion.
+
+2. Validate whether project_sources/DCOIR_Collector_parts/ is fully stale and safe to remove.
+   Why it matters:
+   - It appears to reflect an older split-attempt line rather than the current canonical collector_parts layout.
+   Next action:
+   - Confirm no current docs, skills, or packaging flows depend on it.
+
+3. Normalize naming and folder conventions where older experimental paths remain.
+   Why it matters:
+   - Consistent naming reduces confusion and eases future updates.
+
+4. Review large logs and continuity files for sustainable split candidates.
+   Why it matters:
+   - Growth-prone files should be restructured before they become brittle.
+
+5. Preserve cross-file traceability whenever governed files are split.
+   Why it matters:
+   - Resume and governance must remain clean even after structural refactors.
