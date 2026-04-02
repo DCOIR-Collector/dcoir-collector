@@ -1,0 +1,19 @@
+DCOIR Active Now
+
+1. Audit affected helper skills for the collector split and connector-first GitHub model.
+   Why it matters:
+   - This is the current governed next work item.
+   Next action:
+   - Identify which helper skills still assume older collector structure, older GitHub workflow assumptions, or retired execution lanes.
+
+2. Identify which skills or docs still assume dcoir-github-operator is part of the live workflow.
+   Why it matters:
+   - Removal decisions should be dependency-driven, not assumption-driven.
+   Next action:
+   - Build a reference list and defer deletion decisions until home-session skill maintenance is possible.
+
+3. Identify which skills or docs still point to stale collector split paths or stale split-attempt structures.
+   Why it matters:
+   - Structural drift can mislead future maintenance and validation.
+   Next action:
+   - Compare current canonical collector_parts layout against older paths and references.
