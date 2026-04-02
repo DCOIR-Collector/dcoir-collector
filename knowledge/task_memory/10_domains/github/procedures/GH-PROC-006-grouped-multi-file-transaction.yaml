@@ -1,0 +1,54 @@
+record_id: GH-PROC-006
+domain: github
+record_type: procedure
+operation: grouped_multi_file_transaction
+object_type: governed_readable_text_change_set
+problem_signature: multiple related existing-file changes or deletions should land in one bounded repo transaction rather than one-file-at-a-time writes
+primary_lane: low_level_git_object_flow
+preconditions:
+  - repository and all touched paths are known
+  - replacement content is fully prepared before write
+  - current ref is known or treated as main
+  - all related changes actually belong in one grouped change set
+step_sequence:
+  - step: read_live_state
+    action: fetch_file
+    purpose: confirm the current state of each touched existing file before overwrite or delete
+  - step: resolve_head_sha
+    action: compare_commits
+    purpose: recover the current head commit sha for parent_sha and base_tree_sha
+  - step: prepare_blobs
+    action: create_blob
+    purpose: create immutable content objects for every changed file that is not a deletion
+  - step: build_grouped_tree
+    action: create_tree
+    purpose: attach all changed paths in one tree transaction and use sha null for deletions
+  - step: create_grouped_commit
+    action: create_commit
+    purpose: point one commit at the full grouped change set
+  - step: move_ref
+    action: update_ref
+    purpose: move main to the grouped commit once
+  - step: verify_every_path
+    action: fetch_file
+    purpose: confirm the exact final state of every touched path, including 404 verification for deleted files
+verification_steps:
+  - fetch every changed path from main after the ref move
+  - compare content for updated paths, not just commit success
+  - verify deleted paths by absence or 404 behavior
+  - if structural or control-plane files changed, verify the downstream docs and logs that should stay aligned
+anti_patterns:
+  - do not perform one-file-at-a-time existing-file writes when the change set belongs together
+  - do not treat commit creation alone as success
+  - do not skip deleted-path verification after a grouped change
+known_good_signatures:
+  - compare_commits base=head=main returned current head sha
+  - create_tree accepted the full grouped path set
+  - create_commit returned one commit sha for the full change set
+  - update_ref returned success true
+  - readback verification matched the intended final state for every touched path
+fallbacks:
+  - GH-PROC-004
+  - GH-PROC-005
+last_validated: 2026-04-02
+confidence: high

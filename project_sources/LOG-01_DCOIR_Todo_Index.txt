@@ -6,28 +6,22 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Audit affected helper skills for the collector split and connector-first GitHub model.
-2. Rebuild the todo/log structure into a sustainable split model.
-3. Improve root and folder-level documentation, including clearer statement of mission, deliverables, and knowledge sources.
-4. Expand knowledge handling so readable text with long-term project value is not trapped inside supporting zip files.
+1. Resume main project deliverables and reprioritize remaining todo work from the split todo structure.
+2. Improve root and folder-level documentation and continue building the knowledge/wiki structure.
+3. Expand knowledge handling so readable text with project value is not trapped inside supporting zip files.
+4. Continue using canonical task-memory preflight and grouped GitHub transactions for related repo work.
 
 Todo-file map
 - todo/01_Active_Now.txt
-  - Work that is currently active or gating.
 - todo/02_Queued_Next.txt
-  - High-priority next items that follow the active lane.
 - todo/03_Documentation_And_Knowledge_Lane.txt
-  - README, wiki, knowledge, and extracted-readable-text work.
 - todo/04_Structure_And_Refactor_Lane.txt
-  - File-layout cleanup, sustainable splits, orphan review, and structural normalization.
 - todo/05_Deferred_Or_Conditional.txt
-  - Work that depends on later review, operator timing, or dependency validation.
 
 Current best next move
-- Complete the affected-helper-skill audit for the collector split and connector-first GitHub workflow model.
+- Resume the main project deliverables and remaining todo items, consulting canonical task memory before GitHub-family execution work.
 
 Notes
 - The current canonical collector runtime is project_sources/DCOIR_Collector.ps1.
 - The current governed readable collector source set is project_sources/collector_parts/*.ps1.
-- The current next governed work item remains the affected-helper-skill audit.
-- Removal of stale files or retired skills should wait until dependency review is complete.
+- Related GitHub existing-file edits or deletions should prefer one bounded grouped transaction over one-file-at-a-time updates.

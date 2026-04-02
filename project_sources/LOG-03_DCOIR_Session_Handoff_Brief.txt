@@ -19,28 +19,20 @@ Current governance state
 - Project space is the bootstrap/runtime anchor and should not carry duplicate editable readable governed text.
 
 Current validated status
-- Local full regression remains complete for the current collector and harness line.
-- The harness path-output cleanup remains complete.
 - The collector remains split into smaller governed source files, with DCOIR_Collector.ps1 preserved as the runtime wrapper.
+- The harness readable source remains run_DCOIR_Tests.ps1.
 - The task-memory bank remains implemented in GitHub using a canonical registry plus compiled indexes.
 - The repo also contains a governed combined analyst-facing DCOIR master prompt and governed Gemini merged-agent design artifacts that should be treated as core project deliverables.
+- The old dcoir-github-operator lane is retired and the old DCOIR_Collector_parts path has been removed.
 
 Current session outcomes
-- README mission and deliverables direction was expanded to describe the project as a governed DCOIR framework rather than only a collector repository.
-- The project deliverables were clarified as including:
-  - the collector and validation line
-  - the analyst-facing combined DCOIR master prompt
-  - the Gemini parent-agent and sub-agent system
-  - the control-plane and continuity layer
-  - the knowledge and documentation layer
-- A rebuilt todo structure was created using an index-plus-child-files model rather than one indefinitely growing todo file.
-- A likely stale split-attempt path was identified: project_sources/DCOIR_Collector_parts/. Do not remove it yet; wait for dependency review.
-- dcoir-github-operator remains a likely retirement candidate but should not be removed until the helper-skill and dependency sweep is complete.
-- A new queued documentation and knowledge task was added: after operator-side extraction is available, ingest readable text from supporting zip files other than DCOIR_Collector.zip into governed GitHub locations and refresh repo-awareness documents accordingly.
+- Added canonical GitHub task-memory procedures for grouped multi-file transactions and memory-preflight routing.
+- Refreshed the control plane, todo summaries, and workflow docs so GitHub-family work now consults canonical task memory before execution and prefers one bounded grouped transaction for related changes.
+- Prepared a dedicated dcoir-memory-preflight skill and an updated dcoir-decision-policy package so the preflight behavior can exist in the skill layer as well as in governed docs and task memory.
+- The project is ready to shift back from workflow hardening into the main deliverables and remaining todo items.
 
 Current next planned work item
-- Audit and update any affected helper skills for the collector split and connector-first GitHub execution model.
+- Resume main project deliverables and remaining todo work, using canonical task-memory preflight before GitHub-family changes.
 
 Recommended next move
-- When operator conditions allow, review helper-skill dependencies first.
-- After that, continue promoting the README mission and deliverables direction and the rebuilt todo structure into the remaining governed files as needed.
+- Apply the prepared preflight-related skill update package when operator conditions allow, then resume the main deliverables and todo reprioritization flow.

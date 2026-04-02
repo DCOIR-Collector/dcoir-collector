@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.7
+DCOIR Version Manifest 3.9.8
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -30,5 +30,5 @@ Current task-memory bank
 - Compiled lookup: knowledge/task_memory/30_compiled/fast_lookup.json
 
 Current next work item
-- Audit and update affected helper skills for the collector split and connector-first GitHub execution model.
-- Use knowledge/task_memory as the canonical GitHub memory bank for validated connector and task procedures, limitations, failure signatures, and session promotions.
+- Resume main project deliverables and reprioritize remaining todo items from the split todo structure.
+- Use knowledge/task_memory as the canonical GitHub memory bank and consult relevant procedures before GitHub-family or packaging work.

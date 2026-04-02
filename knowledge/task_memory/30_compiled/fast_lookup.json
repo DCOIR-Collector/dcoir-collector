@@ -39,6 +39,22 @@
       "object_type": "repo_state",
       "path": "knowledge/task_memory/10_domains/github/procedures/GH-PROC-005-post-write-verification.yaml"
     },
+    "GH-PROC-006": {
+      "domain": "github",
+      "type": "procedure",
+      "operation": "grouped_multi_file_transaction",
+      "object_type": "governed_readable_text_change_set",
+      "path": "knowledge/task_memory/10_domains/github/procedures/GH-PROC-006-grouped-multi-file-transaction.yaml",
+      "fallbacks": ["GH-PROC-001", "GH-PROC-005"]
+    },
+    "GH-PROC-007": {
+      "domain": "github",
+      "type": "procedure",
+      "operation": "memory_preflight_routing",
+      "object_type": "github_family_workflow",
+      "path": "knowledge/task_memory/10_domains/github/procedures/GH-PROC-007-memory-preflight-routing.yaml",
+      "fallbacks": ["GH-PROC-001", "GH-PROC-005", "GEN-PROC-001"]
+    },
     "GH-LIM-001": {
       "domain": "github",
       "type": "limitation",

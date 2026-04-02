@@ -1,19 +1,19 @@
 DCOIR Active Now
 
-1. Audit affected helper skills for the collector split and connector-first GitHub model.
+1. Resume main project deliverables and reprioritize remaining todo items from the split todo structure.
    Why it matters:
-   - This is the current governed next work item.
+   - The helper-skill alignment and retirement work is complete enough that the project should shift back to the real deliverables and remaining todo lanes.
    Next action:
-   - Identify which helper skills still assume older collector structure, older GitHub workflow assumptions, or retired execution lanes.
+   - Choose the top deliverable or remaining todo lane and continue from the current split todo structure.
 
-2. Identify which skills or docs still assume dcoir-github-operator is part of the live workflow.
+2. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:
-   - Removal decisions should be dependency-driven, not assumption-driven.
+   - Validated procedures should be consulted before friction, not after an avoidable miss or retry.
    Next action:
-   - Build a reference list and defer deletion decisions until home-session skill maintenance is possible.
+   - Check knowledge/task_memory and the applicable GitHub procedures before repo writes, deletes, packaging, or structural changes.
 
-3. Identify which skills or docs still point to stale collector split paths or stale split-attempt structures.
+3. Prefer one bounded multi-file git-object transaction when multiple related existing-file edits or deletions belong together.
    Why it matters:
-   - Structural drift can mislead future maintenance and validation.
+   - Grouped repo changes reduce drift and mirror programmer-style all-at-once updates better than one-file-at-a-time churn.
    Next action:
-   - Compare current canonical collector_parts layout against older paths and references.
+   - Batch related GitHub changes into one transaction and verify every touched path afterward.

@@ -1,17 +1,13 @@
 DCOIR Deferred Or Conditional
 
-1. Remove dcoir-github-operator only after the helper-skill and dependency sweep confirms it is no longer part of the live workflow assumptions.
-   Why it matters:
-   - Retirement should follow dependency review, not precede it.
-
-2. Remove older collector split-attempt artifacts only after dependency review confirms they are not referenced by current docs, skills, or workflows.
-   Why it matters:
-   - Cleanup should not break anything still in use.
-
-3. In a later home session, perform manual skill package download, update, and replacement work where required.
-   Why it matters:
-   - This cannot be completed cleanly from the current work environment.
-
-4. After text-bearing zip contents are extracted and uploaded, update the repo structure and awareness files so the extracted readable sources become first-class project knowledge where appropriate.
+1. After text-bearing zip contents are extracted and uploaded, update the repo structure and awareness files so the extracted readable sources become first-class project knowledge where appropriate.
    Why it matters:
    - Extracted readable text should be integrated deliberately, not left as loose side material.
+
+2. Apply additional skill package maintenance only when a new validated bundle is ready and operator conditions allow.
+   Why it matters:
+   - Skill changes should remain bounded, regression-tested, and intentional.
+
+3. If future GitHub procedures or failure signatures are validated, promote them into knowledge/task_memory and refresh the compiled indexes.
+   Why it matters:
+   - The canonical memory bank should keep improving as new validated workflows are learned.

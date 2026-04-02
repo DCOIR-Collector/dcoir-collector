@@ -1,0 +1,57 @@
+record_id: GH-PROC-007
+domain: github
+record_type: procedure
+operation: memory_preflight_routing
+object_type: github_family_workflow
+problem_signature: before high-friction github-family work, consult canonical task memory first instead of rediscovering the right lane only after friction or failure
+primary_lane: preflight_lookup_then_execute
+preconditions:
+  - project has been re-anchored to Project Instructions, then CP-01, then CP-02
+  - the task family can be classified at least broadly
+  - knowledge/task_memory is available as the canonical memory bank
+step_sequence:
+  - step: classify_task_family
+    action: reasoning
+    purpose: decide whether the task is github write, grouped repo change, packaging, structural change, control-plane change, or another family likely to have a validated procedure
+  - step: read_memory_index
+    action: fetch_file
+    purpose: open the task-memory manifest and compiled fast lookup before choosing the execution lane
+  - step: select_canonical_records
+    action: fetch_file
+    purpose: open only the smallest relevant set of canonical records for the task family
+  - step: choose_lane
+    action: reasoning
+    purpose: derive the recommended lane, anti-patterns, and verification requirements from the consulted records
+  - step: execute_or_advise
+    action: reasoning
+    purpose: either execute through the chosen lane or report the best next move when preflight is being used as advisory support
+  - step: verify
+    action: fetch_file
+    purpose: apply the required readback or post-write verification from the consulted records before claiming success
+preferred_record_sets:
+  existing_file_update:
+    - GH-PROC-001
+    - GH-PROC-005
+  grouped_multi_file_change:
+    - GH-PROC-006
+    - GH-PROC-005
+  new_file_create:
+    - GH-PROC-002
+    - GH-PROC-005
+  large_file_or_structural_refactor:
+    - GH-PROC-003
+    - GH-PROC-005
+verification_steps:
+  - name the records consulted before execution when the task family matches a known procedure
+  - carry forward the anti-patterns and verification rules from the selected records
+  - if no relevant canonical record exists, say that plainly and use the best bounded path instead of pretending memory was consulted
+anti_patterns:
+  - do not rely on recollection alone when a matching canonical procedure exists
+  - do not wait for friction or a failed attempt before consulting canonical task memory on a known workflow family
+  - do not skip post-write verification after a github-family action
+fallbacks:
+  - GH-PROC-004
+  - GH-PROC-005
+  - GEN-PROC-001
+last_validated: 2026-04-02
+confidence: high

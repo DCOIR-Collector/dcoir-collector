@@ -1,6 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.8
+Change class: task-memory preflight expansion, grouped GitHub transaction rule, and post-alignment state refresh
+
+What changed
+- Added canonical GitHub task-memory procedures for grouped multi-file transactions and memory-preflight routing.
+- Refreshed the task-memory manifest and compiled fast lookup so the new GitHub procedures are first-class retrievable records.
+- Updated DOC-01 so GitHub-family execution work now consults canonical task memory first and prefers one bounded multi-file git-object transaction for related existing-file edits or deletions.
+- Refreshed CP-01, LOG-01, LOG-03, the todo index, and key split todo lanes so the current work line no longer points at the completed helper-skill audit or the retired dcoir-github-operator lane.
+- Prepared a dedicated dcoir-memory-preflight skill and an updated dcoir-decision-policy skill package so the preflight behavior can be applied in the skill layer as well as in governed docs and task memory.
+
+Why
+- GitHub-family work should not require operator reminders before canonical task memory is consulted.
+- Related repo changes should land as one bounded transaction instead of one-file-at-a-time churn when they belong together.
+- The control plane and split todo structure needed to catch up to the current post-skill-alignment project state so the next move points back to the real deliverables and remaining todo work.
+
+Validation notes
+- The new task-memory records are present under knowledge/task_memory/10_domains/github/procedures/ and indexed in the compiled fast lookup.
+- DOC-01, CP-01, LOG-01, LOG-03, the todo index, and the refreshed split todo lanes are updated together in one grouped change set.
+- The grouped git-object transaction lane remains the preferred path for related existing-file repo edits and deletions.
+
+[PRIOR]
 Version: 3.9.7
 Change class: repo text refresh, split todo structure activation, and connector memory refinement
 
@@ -22,23 +43,3 @@ Validation notes
 - The low-level existing-file update lane was revalidated on main through create_blob, create_tree, create_commit, update_ref, and readback verification.
 - compare_commits base=main and head=main successfully returned the current head sha during the write flow.
 - No live repo text hits were found for dcoir-github-operator or DCOIR_Collector_parts during the repo-side cleanup scan.
-
-[PRIOR]
-Version: 3.9.6
-Change class: GitHub task-memory bank implemented and continuity refreshed
-
-What changed
-- The GitHub task-memory bank is now implemented under knowledge/task_memory/.
-- The task-memory bank uses a canonical registry plus compiled indexes.
-- Control-plane continuity files now point to the task-memory bank as the durable GitHub memory location for validated procedures, limitations, failure signatures, and promoted session lessons.
-- The next active item is the affected-skill audit for the collector split and connector-first GitHub workflow.
-- After the skill audit, the task-memory bank should be maintained and extended as new validated procedures and limits are learned.
-
-Why
-- The GitHub update lane and related connector behavior needed a durable memory system so validated procedures would not be lost between sessions.
-- The project needed a fast retrieval structure that keeps GitHub as the canonical storage substrate.
-
-Validation notes
-- The task-memory manifest is live at knowledge/task_memory/00_registry/task_memory_manifest.yaml.
-- The compiled fast lookup index is live at knowledge/task_memory/30_compiled/fast_lookup.json.
-- CP-01, LOG-01, LOG-03, and the session follow-up queue now point to the implemented memory bank.
