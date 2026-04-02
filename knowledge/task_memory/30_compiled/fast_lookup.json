@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "memory_bank_id": "dcoir-task-memory-bank",
+  "records": {
+    "GH-PROC-001": {
+      "domain": "github",
+      "type": "procedure",
+      "operation": "existing_file_update",
+      "object_type": "governed_readable_text",
+      "path": "knowledge/task_memory/10_domains/github/procedures/GH-PROC-001-existing-file-update.yaml",
+      "fallbacks": ["GH-PROC-004", "GH-PROC-005"]
+    },
+    "GH-PROC-002": {
+      "domain": "github",
+      "type": "procedure",
+      "operation": "new_file_create",
+      "object_type": "governed_readable_text",
+      "path": "knowledge/task_memory/10_domains/github/procedures/GH-PROC-002-new-file-create.yaml"
+    },
+    "GH-PROC-003": {
+      "domain": "github",
+      "type": "procedure",
+      "operation": "large_file_refactor",
+      "object_type": "monolithic_source_file",
+      "path": "knowledge/task_memory/10_domains/github/procedures/GH-PROC-003-large-file-refactor.yaml",
+      "fallbacks": ["GEN-PROC-001", "GH-PROC-005"]
+    },
+    "GH-PROC-004": {
+      "domain": "github",
+      "type": "procedure",
+      "operation": "safety_block_fallback",
+      "object_type": "connector_write_lane",
+      "path": "knowledge/task_memory/10_domains/github/procedures/GH-PROC-004-safety-block-fallback.yaml"
+    },
+    "GH-PROC-005": {
+      "domain": "github",
+      "type": "procedure",
+      "operation": "post_write_verification",
+      "object_type": "repo_state",
+      "path": "knowledge/task_memory/10_domains/github/procedures/GH-PROC-005-post-write-verification.yaml"
+    },
+    "GH-LIM-001": {
+      "domain": "github",
+      "type": "limitation",
+      "operation": "create_file_capability_boundary",
+      "path": "knowledge/task_memory/10_domains/github/limitations/GH-LIM-001-create-file-no-sha.yaml"
+    },
+    "GH-LIM-002": {
+      "domain": "github",
+      "type": "limitation",
+      "operation": "url_fetch_constraints",
+      "path": "knowledge/task_memory/10_domains/github/limitations/GH-LIM-002-url-fetch-constraints.yaml"
+    },
+    "GH-FSIG-001": {
+      "domain": "github",
+      "type": "failure_signature",
+      "path": "knowledge/task_memory/10_domains/github/failure_signatures/GH-FSIG-001-safety-block-on-tree.yaml",
+      "preferred_response": "GH-PROC-004"
+    },
+    "GH-FSIG-002": {
+      "domain": "github",
+      "type": "failure_signature",
+      "path": "knowledge/task_memory/10_domains/github/failure_signatures/GH-FSIG-002-wrapper-update-risk.yaml",
+      "preferred_response": "GH-PROC-003"
+    },
+    "GEN-PROC-001": {
+      "domain": "generic",
+      "type": "procedure",
+      "operation": "dependency_first_refactor",
+      "path": "knowledge/task_memory/10_domains/generic/procedures/GEN-PROC-001-dependency-first-refactor.yaml"
+    },
+    "GEN-PROC-002": {
+      "domain": "generic",
+      "type": "procedure",
+      "operation": "queue_next_critical_task",
+      "path": "knowledge/task_memory/10_domains/generic/procedures/GEN-PROC-002-queue-next-critical-task.yaml"
+    },
+    "SP-2026-04-01-GH": {
+      "domain": "generic",
+      "type": "session_promotion",
+      "path": "knowledge/task_memory/20_logs/session_promotions/2026-04-01-github-connector-lessons.yaml"
+    }
+  }
+}
