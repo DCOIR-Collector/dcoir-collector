@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.6
+DCOIR Version Manifest 3.9.7
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -6,7 +6,12 @@ Current control plane
 - Setup guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Layout spec: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
 - Todo log: project_sources/LOG-01_DCOIR_Todo_Log.txt
+- Todo index: project_sources/LOG-01_DCOIR_Todo_Index.txt
+- Todo lanes: project_sources/todo/*.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
+
+Current repo guide
+- Root README: README.md
 
 Current collector files
 - Runtime wrapper: project_sources/DCOIR_Collector.ps1

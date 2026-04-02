@@ -1,4 +1,4 @@
-DCOIR Repository Layout Spec 1.1.2
+DCOIR Repository Layout Spec 1.1.3
 
 Purpose
 - This file defines the canonical GitHub-primary repository and Project-bootstrap layout for DCOIR.
@@ -25,6 +25,12 @@ Readable-source rules
   - project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1
 - Harness readable source:
   - project_sources/run_DCOIR_Tests.ps1
+- Todo log and split todo structure:
+  - project_sources/LOG-01_DCOIR_Todo_Log.txt
+  - project_sources/LOG-01_DCOIR_Todo_Index.txt
+  - project_sources/todo/*.txt
+- Session handoff:
+  - project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 - Knowledge markdown in knowledge/ is the readable working source when present.
 
 Resume rules

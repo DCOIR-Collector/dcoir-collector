@@ -1,6 +1,29 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.7
+Change class: repo text refresh, split todo structure activation, and connector memory refinement
+
+What changed
+- README.md was expanded into a stronger repo entry point with project mission, deliverables, scope priorities, navigation, and documentation direction.
+- The todo line now includes a split structure consisting of project_sources/LOG-01_DCOIR_Todo_Index.txt plus project_sources/todo/*.txt child files.
+- LOG-01 and LOG-03 were refreshed to point to the split todo structure and the clarified deliverable set.
+- CP-01, DOC-01, and DOC-03 were refreshed so the control plane and layout docs acknowledge the split todo structure and the stronger repo-guide posture.
+- The GitHub task-memory procedure for existing-file updates was refined to record that compare_commits with base=main and head=main can recover the current head sha when fetch_commit is flaky upstream.
+
+Why
+- The repo needed a clearer top-level statement of what the project is and what it delivers.
+- The todo line needed a sustainable split model rather than one indefinitely growing file.
+- The control-plane and layout docs needed to stay aligned with the new live repo structure.
+- The connector-first GitHub write lane needed a more resilient documented head-sha recovery method.
+
+Validation notes
+- README.md, LOG-01, LOG-03, CP-01, DOC-01, DOC-03, and the split todo files are live on main.
+- The low-level existing-file update lane was revalidated on main through create_blob, create_tree, create_commit, update_ref, and readback verification.
+- compare_commits base=main and head=main successfully returned the current head sha during the write flow.
+- No live repo text hits were found for dcoir-github-operator or DCOIR_Collector_parts during the repo-side cleanup scan.
+
+[PRIOR]
 Version: 3.9.6
 Change class: GitHub task-memory bank implemented and continuity refreshed
 
@@ -19,23 +42,3 @@ Validation notes
 - The task-memory manifest is live at knowledge/task_memory/00_registry/task_memory_manifest.yaml.
 - The compiled fast lookup index is live at knowledge/task_memory/30_compiled/fast_lookup.json.
 - CP-01, LOG-01, LOG-03, and the session follow-up queue now point to the implemented memory bank.
-
-[PRIOR]
-Version: 3.9.5
-Change class: Collector split source model and wrapper preservation
-
-What changed
-- The collector readable source was split into smaller governed files under project_sources/collector_parts/.
-- project_sources/DCOIR_Collector.ps1 remains the runtime filename.
-- project_sources/DCOIR_Collector.ps1 is now a thin loader wrapper that dot-sources the numbered collector parts.
-- The next active item is the affected-skill audit for the collector split and connector-first GitHub workflow.
-
-Why
-- The monolithic collector was too large and brittle for efficient GitHub maintenance.
-- Splitting by functional role reduces timeout risk and makes targeted updates easier.
-- The runtime filename had to stay stable for operator workflow compatibility.
-
-Validation notes
-- The split files were created before the runtime wrapper switched.
-- The wrapper now points to the collector_parts files on main.
-- The harness remains on the already-patched full-path output model.

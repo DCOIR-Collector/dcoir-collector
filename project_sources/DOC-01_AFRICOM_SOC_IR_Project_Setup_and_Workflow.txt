@@ -15,14 +15,21 @@ Readable-source rule
 - The readable governed collector source set is project_sources/collector_parts/*.ps1.
 - The runtime collector is a thin loader wrapper that dot-sources the numbered collector parts.
 - The harness readable source remains project_sources/run_DCOIR_Tests.ps1.
+- The current todo structure now uses a split model anchored by project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt.
 
 Packaging convention
 - For GitHub-maintained readable text updates, prefer direct GitHub edits over patch ZIPs when the connector path supports them.
 - Use the GitHub connector directly as the preferred execution surface when DCOIR work needs to read, create, or update governed readable text in malwaredevil/dcoir-collector.
 - Use dcoir-* helper skills for planning, analysis, impact review, validation support, and workflow support rather than as the default GitHub write lane.
 - For existing-file updates, prefer the validated low-level git-object lane through create_blob, create_tree, create_commit, update_ref, and connector readback.
+- When the current head sha is needed and fetch_commit is flaky upstream, compare_commits with base=main and head=main may be used to recover the current head sha before create_tree and create_commit.
 
 Current stable artifacts
+- Root repo guide: README.md
 - Collector runtime wrapper: project_sources/DCOIR_Collector.ps1
 - Collector readable source set: project_sources/collector_parts/*.ps1
 - Local regression harness readable source: project_sources/run_DCOIR_Tests.ps1
+- Todo log: project_sources/LOG-01_DCOIR_Todo_Log.txt
+- Todo index: project_sources/LOG-01_DCOIR_Todo_Index.txt
+- Todo child lanes: project_sources/todo/*.txt
+- Task-memory bank root: knowledge/task_memory
