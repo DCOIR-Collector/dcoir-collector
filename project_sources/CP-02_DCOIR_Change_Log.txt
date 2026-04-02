@@ -1,6 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.6
+Change class: GitHub task-memory bank implemented and continuity refreshed
+
+What changed
+- The GitHub task-memory bank is now implemented under knowledge/task_memory/.
+- The task-memory bank uses a canonical registry plus compiled indexes.
+- Control-plane continuity files now point to the task-memory bank as the durable GitHub memory location for validated procedures, limitations, failure signatures, and promoted session lessons.
+- The next active item is the affected-skill audit for the collector split and connector-first GitHub workflow.
+- After the skill audit, the task-memory bank should be maintained and extended as new validated procedures and limits are learned.
+
+Why
+- The GitHub update lane and related connector behavior needed a durable memory system so validated procedures would not be lost between sessions.
+- The project needed a fast retrieval structure that keeps GitHub as the canonical storage substrate.
+
+Validation notes
+- The task-memory manifest is live at knowledge/task_memory/00_registry/task_memory_manifest.yaml.
+- The compiled fast lookup index is live at knowledge/task_memory/30_compiled/fast_lookup.json.
+- CP-01, LOG-01, LOG-03, and the session follow-up queue now point to the implemented memory bank.
+
+[PRIOR]
 Version: 3.9.5
 Change class: Collector split source model and wrapper preservation
 
@@ -9,7 +29,6 @@ What changed
 - project_sources/DCOIR_Collector.ps1 remains the runtime filename.
 - project_sources/DCOIR_Collector.ps1 is now a thin loader wrapper that dot-sources the numbered collector parts.
 - The next active item is the affected-skill audit for the collector split and connector-first GitHub workflow.
-- The next queued item after that is the GitHub connector permanent-memory task.
 
 Why
 - The monolithic collector was too large and brittle for efficient GitHub maintenance.
@@ -20,7 +39,3 @@ Validation notes
 - The split files were created before the runtime wrapper switched.
 - The wrapper now points to the collector_parts files on main.
 - The harness remains on the already-patched full-path output model.
-
-[PRIOR]
-Version: 3.9.4
-Change class: Local validation recorded and CMD harness removed
