@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "domains": {
+    "github": {
+      "primary_registry": [
+        "knowledge/task_memory/10_domains/github/procedures/GH-PROC-001-existing-file-update.yaml",
+        "knowledge/task_memory/10_domains/github/procedures/GH-PROC-002-new-file-create.yaml",
+        "knowledge/task_memory/10_domains/github/procedures/GH-PROC-003-large-file-refactor.yaml",
+        "knowledge/task_memory/10_domains/github/procedures/GH-PROC-004-safety-block-fallback.yaml",
+        "knowledge/task_memory/10_domains/github/procedures/GH-PROC-005-post-write-verification.yaml"
+      ],
+      "limitations": [
+        "knowledge/task_memory/10_domains/github/limitations/GH-LIM-001-create-file-no-sha.yaml",
+        "knowledge/task_memory/10_domains/github/limitations/GH-LIM-002-url-fetch-constraints.yaml"
+      ],
+      "failure_signatures": [
+        "knowledge/task_memory/10_domains/github/failure_signatures/GH-FSIG-001-safety-block-on-tree.yaml",
+        "knowledge/task_memory/10_domains/github/failure_signatures/GH-FSIG-002-wrapper-update-risk.yaml"
+      ]
+    },
+    "generic": {
+      "primary_registry": [
+        "knowledge/task_memory/10_domains/generic/procedures/GEN-PROC-001-dependency-first-refactor.yaml",
+        "knowledge/task_memory/10_domains/generic/procedures/GEN-PROC-002-queue-next-critical-task.yaml"
+      ],
+      "session_promotions": [
+        "knowledge/task_memory/20_logs/session_promotions/2026-04-01-github-connector-lessons.yaml"
+      ]
+    }
+  }
+}
