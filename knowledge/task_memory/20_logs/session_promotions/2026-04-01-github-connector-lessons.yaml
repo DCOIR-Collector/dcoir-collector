@@ -1,0 +1,28 @@
+session_promotion_id: SP-2026-04-01-GH
+captured_from: 2026-04-01 project session
+scope: github connector maintenance lessons
+new_or_updated_records:
+  - GH-PROC-001
+  - GH-PROC-002
+  - GH-PROC-003
+  - GH-PROC-004
+  - GH-PROC-005
+  - GH-LIM-001
+  - GH-LIM-002
+  - GH-FSIG-001
+  - GH-FSIG-002
+  - GEN-PROC-001
+  - GEN-PROC-002
+validated_observations:
+  - Existing-file updates were reliably completed with the low-level git-object lane.
+  - New files could be created with create_file on main.
+  - Large monolithic file maintenance was brittle enough to justify a functional split.
+  - Post-write fetch_file readback was required to trust final state.
+  - Continuity tasks should be promoted into GitHub before branching work continues.
+false_hypotheses_to_avoid:
+  - create_file should not be assumed to accept sha for in-place update.
+  - commit success alone should not be treated as proof that file content is correct.
+  - runtime wrappers should not be cut over before dependency files exist.
+operator_impact:
+  - Reduced risk of losing the GitHub update lane again.
+  - Preserved a reusable pattern for future connector-first repo maintenance.
