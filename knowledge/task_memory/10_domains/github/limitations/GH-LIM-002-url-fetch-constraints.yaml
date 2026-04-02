@@ -1,0 +1,15 @@
+record_id: GH-LIM-002
+domain: github
+record_type: limitation
+tool: fetch_and_download_helpers
+observed_limit: GitHub URL helper paths were inconsistent for direct maintenance work compared with connector-native fetch_file and write actions
+symptoms:
+  - some URL fetch attempts did not help finish repo updates
+  - api.github.com URLs were not accepted by the fetch wrapper
+safe_interpretation:
+  - prefer fetch_file by repository path and ref for authoritative reads
+  - prefer connector-native write actions for repo maintenance
+false_hypotheses_to_avoid:
+  - raw GitHub URL experiments should be the primary repo-maintenance lane
+last_validated: 2026-04-01
+confidence: high
