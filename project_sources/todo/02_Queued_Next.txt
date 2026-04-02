@@ -1,0 +1,19 @@
+DCOIR Queued Next
+
+1. Define a sustainable split standard for growth-prone governed files.
+   Why it matters:
+   - The project should not keep recreating oversized files that are difficult to update safely.
+   Next action:
+   - Define index-plus-child-file patterns, naming rules, and traceability requirements.
+
+2. Rebuild the todo/log structure using that split standard.
+   Why it matters:
+   - The current todo line is a likely split candidate and should become easier to maintain.
+   Next action:
+   - Replace one growing todo file with a short index and bounded child files.
+
+3. Continue maintaining and extending knowledge/task_memory as validated procedures, limitations, and failure signatures are learned.
+   Why it matters:
+   - The task-memory bank is now the durable GitHub memory location for validated lessons.
+   Next action:
+   - Keep promoting validated session lessons into canonical records and compiled indexes.
