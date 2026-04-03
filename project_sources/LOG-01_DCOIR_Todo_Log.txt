@@ -11,7 +11,7 @@ Current stable pointers
 - Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
 
 Current active priority
-- Settle the authoritative session-tracker workflow now that the close-out update landed, prove whether claimed session-local memory is real and inspectable, decide the role or removal of GitHub-backed tracker memory, and define how surviving state is promoted into the authoritative todo and log surfaces during GitHub-update triggers.
+- Settle the authoritative session-tracker workflow now that the close-out update landed, prove whether claimed session-local memory is real and inspectable, establish an authoritative current-state or version verification and enforcement mechanism so the project stays on the same page across control-plane, continuity, and todo surfaces, decide the role or removal of GitHub-backed tracker memory, and define how surviving state is promoted into the authoritative todo and log surfaces during GitHub-update triggers.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt

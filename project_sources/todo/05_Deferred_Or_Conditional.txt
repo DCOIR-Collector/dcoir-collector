@@ -19,3 +19,7 @@ DCOIR Deferred Or Conditional
 5. If the session-tracker workflow later proves that a dedicated session close-out skill is cleaner than the current embedded model, treat that as a bounded follow-on helper-skill decision rather than as an assumed immediate change.
    Why it matters:
    - The current update should validate the real workflow before introducing another helper-skill surface.
+
+6. If the current-state and version-checking problem is later solved by a durable verification or enforcement mechanism, refresh the control-plane and continuity model to reflect that new authority posture explicitly.
+   Why it matters:
+   - The project should not keep carrying temporary drift-handling rules after a stronger solution is validated.

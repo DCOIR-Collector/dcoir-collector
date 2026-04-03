@@ -10,6 +10,7 @@ Current stable artifacts
 - Task memory bank root: knowledge/task_memory
 - Governed helper-skill source root: dcoir_skills/
 - Helper working-state continuity root: dcoir_skill_memory/
+- Authoritative todo surfaces: project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
@@ -18,6 +19,7 @@ Current governance state
 - All `dcoir-*` skill source is now governed in GitHub under `dcoir_skills/`.
 - Helper working-state continuity remains under `dcoir_skill_memory/` and should not be confused with source authority.
 - Closed-loop memory-preflight, session-local write-buffer behavior, mandatory post-change skill regression, GitHub skill-source rollout workflows, blocked-state escalation expectations, and grouped downstream GitHub update handling are governed in DOC-01, DOC-05, DOC-06, LOG-04, LOG-06, and LOG-07.
+- The authoritative active work queue is now the refreshed LOG-01 and split todo structure, which currently points at the session-tracker workflow review line and the linked current-state or version-checking concern.
 
 Operator preference notes
 - Show the proposed decomposed plan before the first GitHub upload unless the operator explicitly waives preview.
@@ -29,16 +31,19 @@ Operator preference notes
 
 Current validated status
 - The full governed GitHub source set for current `dcoir-*` skills is stored under `dcoir_skills/`.
-- The five core helper-skill upgrades for workflow enforcement were completed, packaged, installed, and locally regression-cleared before the GitHub source rollout.
-- The dated policy decision and the evergreen GitHub helper-skill layout guide are live in GitHub.
-- The validated low-level git-object lane was successfully re-applied for existing-file corrections and grouped follow-on updates.
-- Decision memory and canonical GitHub task memory now encode lane choice, recovery order, and the rule against speculative limitation claims.
+- The close-out-capable `dcoir-session-tracker` update is now live in the governed skill source.
+- The authoritative todo surfaces now point at the session-tracker workflow review line, preserve the queued CI/CD, GitHub optimization, connector research, Agent Mode, and redundancy-audit branches, and now explicitly carry the authoritative current-state or version-checking concern as a vital active item.
+- The validated low-level git-object lane was successfully re-applied for the grouped LOG-01 reprioritization and then for the broader continuity or control-plane alignment pass.
+- Decision memory and canonical GitHub task memory still encode lane choice, recovery order, and the rule against speculative limitation claims.
 
 Current session outcomes
-- Corrected the earlier durable record language so the failure is classified as assistant procedure-recovery failure and execution-discipline failure, not a proven connector limitation.
-- Hardened DOC-01, DOC-05, decision-policy memory, and GH-PROC-001, GH-PROC-006, and GH-PROC-007.
-- Batched the remaining known downstream continuity and workflow follow-ons into one grouped GitHub update instead of another serial chain of small commits.
+- Refreshed the authoritative todo structure so it now records the session-tracker workflow review as the active work line and includes the new vital current-state or version-checking concern.
+- Refreshed the control-plane and continuity surfaces so they now point at the same active work line as LOG-01.
+- Preserved the broader queued work items in authoritative todo rather than leaving them only in helper memory or chat.
 
 Current next planned work item
-- Review the broader `dcoir-*` helper-skill set for whether each skill should support session-local write buffering, grouped GitHub flushes, or closed-loop memory-preflight routing now that governed GitHub source is live.
-- Then use the preserved `dcoir-readme-maintainer` baseline artifact to land the bounded README refresh batch.
+- Settle the authoritative `dcoir-session-tracker` workflow after the close-out update and verify whether claimed session-local memory is real, inspectable, and properly maintained.
+- Decide the role, reduction, or removal of GitHub-backed `dcoir-session-tracker` memory and define how surviving state should be promoted into authoritative todo or log surfaces during GitHub-update triggers.
+- Establish an authoritative current-state and version-checking mechanism so the project does not drift across LOG-01, CP-01, CP-02, LOG-03, LOG-05, and other active continuity surfaces.
+- Define the pre-GitHub-update flush and manicure workflow for any `dcoir-*` skills that maintain session-local working state, including explicit attention callouts about what each skill needs to update.
+- After that bounded pass, continue into the queued CI/CD-style validation regime, GitHub optimization and discovery work, connector research, Agent Mode research, and later redundancy audit captured in the authoritative todo structure.
