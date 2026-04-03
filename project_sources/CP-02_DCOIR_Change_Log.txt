@@ -1,6 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.15
+Change class: knowledge-doc-maintainer skill refresh for post-delete GitHub-primary workflow
+
+What changed
+- Refreshed the external `dcoir-knowledge-doc-maintainer` skill bundle so its instructions, operator workflow, reinventory prompt, and metadata align to the current post-delete GitHub-primary knowledge-doc model.
+- Removed the skill's default assumption that the retired extracted folder `knowledge/supporting_knowledge_docs/` is part of the normal current maintenance path.
+- Clarified that `supporting_assets/supporting_knowledge_docs.zip` is a retained delivery or reference asset, not control-plane authority.
+- Synced the repo-side documentation lane, handoff posture, and manifest next-work guidance so the remaining work is package replacement plus targeted regression rather than pre-delete skill review.
+
+Why
+- The project removed the obsolete extracted `knowledge/supporting_knowledge_docs/` folder from the current working line.
+- The knowledge-doc-maintainer skill still needed a post-delete refresh so it would not steer future maintenance back toward the retired extracted-folder model.
+- The durable workflow should now point at the current GitHub-primary knowledge-doc posture and treat any retained ZIP as supporting output rather than the editable source of truth.
+
+Validation notes
+- Packaged and validated an updated `dcoir-knowledge-doc-maintainer` skill bundle after refreshing the relevant skill files.
+- Refreshed the repo-side follow-up posture so future sessions know the next step is external skill-package replacement plus targeted regression.
+- Left the broader DOC-04 structural audit and extracted-folder integration work queued behind the active architecture-first lane.
+
+[PRIOR]
 Version: 3.9.14
 Change class: legacy extracted supporting-knowledge-doc folder removal and control-plane refresh
 
@@ -39,44 +59,3 @@ Validation notes
 - Verified that `project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt` exists in the governed repo working line.
 - Refreshed `CP-01`, `DOC-01`, `DOC-03`, `LOG-01`, `LOG-03`, and the split todo posture so the repo's current-state and continuity surfaces align to the structural-standard-first work line.
 - The duplicate-content audit remains queued behind the structural-standard and extracted-folder integration passes.
-
-[PRIOR]
-Version: 3.9.12
-Change class: helper-skills routing-note creation and documentation sync
-
-What changed
-- Added a governed descriptive routing note at `knowledge/DCOIR_Helper_Skills_Routing_Note.md` that inventories the current `dcoir-*` helper skills, their intended task families, preferred routing cues, and important usage boundaries.
-- Updated knowledge/README.md so the knowledge folder explicitly includes governed routing notes and references the new helper-skills routing note.
-- Updated the documentation and knowledge lane so the project now tracks ongoing maintenance of the helper-skills routing note when the installed helper-skill set changes materially.
-- Refreshed `CP-01` and `LOG-03` so the new routing note is visible in the governed current-state and handoff posture.
-
-Why
-- The project had discussed a repo-side skills inventory or routing reference but did not yet have a current governed note that future chats could use as a stable descriptive aid.
-- A documented helper-skills routing note should make project-side skill selection easier to understand and more predictable without pretending to guarantee automatic invocation.
-- The note needs to stay descriptive and non-authoritative so it does not override the control plane.
-
-Validation notes
-- The new routing note was created under `knowledge/` as governed readable project documentation.
-- `knowledge/README.md`, `CP-01`, `LOG-03`, and the documentation lane were refreshed to stay aligned with the new note.
-- The helper-skills routing note is framed as descriptive guidance only, not as a guaranteed auto-trigger mechanism or a control-plane authority source.
-
-[PRIOR]
-Version: 3.9.11
-Change class: queued duplicate-audit todo refresh and repo-cleanup continuity sync
-
-What changed
-- Refreshed CP-01, CP-02, LOG-01, LOG-03, the todo index, and key split todo lanes to add a queued structural-cleanup item for auditing the repo for true duplicate content.
-- Captured the rule that duplicate cleanup should compare actual content rather than only names or paths, and remove only verified duplicates.
-- Captured the operator preference for automation-first execution, minimal manual work, simple step-by-step instructions, and willingness to use paid tools when they materially reduce friction.
-- Replaced the now-completed stale-branch review reminder with the new duplicate-audit cleanup item in the queued continuity line.
-- Synced the handoff line so the repo state no longer implies the superseded outlier branch or PR still needs review.
-
-Why
-- Duplicate readable material or duplicated repo assets can create confusion, cleanup risk, and maintenance drift unless the repo compares real content before removal.
-- The operator explicitly prefers the easiest automated path, not manual comparison-heavy cleanup.
-- The todo and handoff line should reflect the current clean-repo posture after the stale PR and branch cleanup completed.
-
-Validation notes
-- The current active work line remains the extracted-readable-source review and integration pass.
-- The duplicate-audit task is queued in the structural lane rather than promoted ahead of the current active item.
-- The stale PR branch cleanup is now treated as complete, and the queued outlier-review reminder has been retired from the active continuity line.
