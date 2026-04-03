@@ -1,7 +1,7 @@
 DCOIR Helper Skill Workflow Decisions - 2026-04-03
 
 Purpose
-- Capture the approved 2026-04-03 workflow decisions for helper-skill process improvement, closed-loop memory use, session-local write buffering, GitHub source rollout, and post-change regression.
+- Capture the approved 2026-04-03 workflow decisions for helper-skill process improvement, closed-loop memory use, session-local write buffering, GitHub source rollout, post-change regression, and grouped downstream GitHub update handling.
 
 Approved durable workflow decisions
 - Use `dcoir-memory-preflight` both before high-friction execution and after blockers are overcome when the lesson could improve a repeatable workflow or reusable process guidance.
@@ -11,11 +11,16 @@ Approved durable workflow decisions
 - After every helper-skill create or update, pass the result through `dcoir-skill-regression-auditor`.
 - When helper-skill source is governed in GitHub, use the new-skill workflow of build, download, manual install, extract, and GitHub Desktop source ingest.
 - When helper-skill source is already governed in GitHub, use the update workflow of build, download, manual install, and assistant-managed GitHub source update when the connector lane is safe.
+- When both an in-chat GitHub update lane and an operator-managed lane are possible, ask the operator which lane they want before shifting the work.
+- For GitHub-family existing-file or grouped existing-file friction, use `GH-PROC-007` plus `GH-PROC-001` or `GH-PROC-006`, then `GH-PROC-005`, before writing any durable limitation claim.
+- When multiple downstream GitHub follow-on updates are already known, collect them into one bounded grouped transaction instead of serial one-off best-next-move commits.
 
 Implementation posture
 - Treat the session-local buffer design as staged implementation work, not as already-complete cross-session memory.
 - Prefer explicit flush-check triggers over pretending the chat can silently monitor elapsed time in the background.
 - Keep grouped-write limitations honest until the in-chat connector lane safely supports the intended batched update posture for existing-file updates.
+- Do not write durable connector or tool-limitation claims unless a specific low-level step has failed after correct preflight and execution.
+- Distinguish assistant procedure-recovery failure, assistant execution failure, ungrounded inference, and proven tool limitation explicitly when explaining GitHub-family friction.
 
 Highest-value skill candidates for future buffer review
 - `dcoir-plan-tracker`
@@ -29,3 +34,4 @@ Next implementation sequence
 2. Upgrade the core routing and stateful helper skills so the rules become enforceable behavior.
 3. Review the broader `dcoir-*` skill set for whether each skill should support session-local buffering or closed-loop preflight routing.
 4. After those workflow rules are grounded, run the newly installed `dcoir-readme-maintainer` on a baseline README maintenance pass.
+5. Aggregate any already-known downstream GitHub follow-on updates into one grouped transaction whenever no unresolved dependency requires an intermediate commit.

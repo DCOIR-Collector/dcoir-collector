@@ -1,6 +1,29 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.20
+Change class: GitHub procedure-recovery correction, workflow hardening, and batched downstream continuity refresh
+
+What changed
+- Corrected the earlier 2026-04-03 update-lane record so it classifies the issue as assistant procedure-recovery failure and execution-discipline failure, not as a proven connector limitation.
+- Corrected the `dcoir-memory-preflight` permanent note so it preserves the validated low-level existing-file update lane and the lesson about recovery discipline.
+- Hardened `project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt` and `project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt` so they explicitly require operator lane choice, canonical GitHub recovery before limitation claims, and grouped handling of known downstream GitHub follow-on updates.
+- Hardened `dcoir_skill_memory/dcoir-decision-policy/decision_policy_memory.md` with the same lane-choice, recovery-order, and grouped-follow-on-update rules.
+- Hardened canonical GitHub task-memory procedures `GH-PROC-001`, `GH-PROC-006`, and `GH-PROC-007` so they now encode the validated recovery order and the record-hygiene rule against speculative limitation claims.
+- Refreshed the manifest, change log, handoff brief, dated workflow decisions, and dated resume anchor in one grouped continuity update so the repo state reflects the latest GitHub recovery and batching rules without another serial chain of follow-on commits.
+
+Why
+- The validated low-level git-object lane was already in canonical memory and should have been re-applied before any capability-boundary language was written into durable records.
+- The operator requires explicit choice between in-chat GitHub updates and operator-managed lanes such as GitHub Desktop.
+- The operator also requires that when multiple downstream GitHub updates are already known, they should be landed as one grouped update instead of serial one-off best-next-move follow-ons.
+- The continuity layer should reflect the current hardened workflow rules instead of lagging behind the real governed state.
+
+Validation notes
+- The validated low-level git-object lane was successfully used again on `main` for existing-file updates during the correction pass.
+- Direct readback confirmed the corrected records, hardened workflow docs, updated decision memory, and updated canonical GitHub procedures.
+- This continuity refresh was itself prepared and landed as one bounded grouped GitHub transaction.
+
+[PRIOR]
 Version: 3.9.19
 Change class: governed GitHub helper-skill source rollout and continuity refresh
 
@@ -25,28 +48,3 @@ Validation notes
 - The governed source root `dcoir_skills/` is live in GitHub.
 - Direct readback confirmed governed helper-skill source under `dcoir_skills/` on `main`.
 - The continuity surfaces in this update set are the bounded follow-on refresh after the governed source rollout.
-
-[PRIOR]
-Version: 3.9.18
-Change class: github connector reference-pack intake and task-memory promotion
-
-What changed
-- Added a governed GitHub connector reference pack under `knowledge/github_connector_reference/`.
-- Stored a distilled machine-readable connector inventory in `knowledge/github_connector_reference/github_connector_information.json` derived from the uploaded JSON reference set.
-- Added `knowledge/github_connector_reference/GitHub_Connector_Execution_Guide.md` as the human-facing operating guide distilled from the uploaded TXT reference view and current DCOIR workflow needs.
-- Added canonical GitHub task-memory procedure `GH-PROC-008` so the connector reference pack can be used through normal preflight and lane-selection reasoning.
-- Updated the task-memory manifest and compiled fast lookup so `GH-PROC-008` is part of the canonical memory path.
-- Refreshed control-plane, handoff, knowledge-index, and todo surfaces so the GitHub connector reference-pack promotion work becomes the next active workflow line.
-- Preserved the existing `dcoir-readme-maintainer` skill idea and added follow-on design tracking for a `dcoir-plan-tracker` skill and for evaluating whether all `dcoir-*` skill source should live in GitHub under a one-source-of-truth model.
-
-Why
-- GitHub connector execution now materially shapes repo workflow speed, reliability, and recoverability.
-- The uploaded connector references were rich enough to deserve governed storage rather than being left only in chat history.
-- A distilled JSON inventory plus a human-facing guide is easier to maintain than two large raw snapshots while still preserving both machine and operator utility.
-- Durable connector-execution lessons should flow into canonical task memory instead of remaining only in ad hoc notes.
-
-Validation notes
-- The uploaded connector reference set identified `GitHub Connector Information` with `total_functions` equal to `61`.
-- The governed JSON file is a distilled derivative chosen for speed and maintainability; the TXT upload was used to drive the human-facing execution guide.
-- `GH-PROC-008` is now present in both the canonical task-memory procedure path and the compiled fast lookup index.
-- Control-plane and continuity files now reflect the connector-reference-pack workflow as the next active GitHub-heavy improvement line.

@@ -2,7 +2,7 @@
 artifact_type: dcoir-decision-policy-memory
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-04-03T21:10:00Z
+exported_at_utc: 2026-04-03T21:35:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -27,6 +27,10 @@ GitHub-backed decision-memory continuity for DCOIR helper skills
   - rule: for GitHub-family existing-file or grouped existing-file friction, re-anchor and apply GH-PROC-007 plus GH-PROC-001 or GH-PROC-006, then GH-PROC-005, before writing durable limitation or connector-failure claims
   - why: avoid turning assistant procedure-recovery failure or execution-discipline failure into a false permanent record about capability boundaries
   - next_action: use this as the default recovery order for GitHub-family write friction
+- **aggregate known downstream github follow-on updates** (status: approved; source: operator_intent_matrix)
+  - rule: when multiple downstream GitHub control-plane, continuity, task-memory, or helper-memory updates are already known, collect them into one bounded grouped transaction instead of serial one-off commits or repeated best-next-move nudges
+  - why: reduce churn, preserve grouped intent, and avoid forcing the operator through repeated tiny repo updates
+  - next_action: treat this as the default posture unless an unresolved dependency requires an intermediate commit
 
 ## Pending or situational learning
 - **GitHub-backed helper-memory rollout sequencing** (status: in_progress; source: current_chat)
@@ -39,6 +43,7 @@ GitHub-backed decision-memory continuity for DCOIR helper skills
 - keep helper memory in dcoir_skill_memory/ and separate from governed project files
 - ask before shifting repo updates to GitHub Desktop or another operator-managed lane
 - for existing-file GitHub recovery, use canonical GitHub task memory before writing any capability-boundary explanation
+- when multiple downstream GitHub updates are already known, batch them into one grouped update
 
 ## Next actions
 - keep the decision memory file current after durable preference or sequencing changes
@@ -48,3 +53,4 @@ GitHub-backed decision-memory continuity for DCOIR helper skills
 - Initialized during the five-skill GitHub-memory rollout.
 - Expanded on 2026-04-03 after the operator clarified that repo-update lane choice must stay under explicit operator control.
 - Expanded again on 2026-04-03 after recovery of the validated low-level git-object lane for existing-file updates.
+- Expanded again on 2026-04-03 after the operator required batching known downstream GitHub follow-on updates into one grouped change set.

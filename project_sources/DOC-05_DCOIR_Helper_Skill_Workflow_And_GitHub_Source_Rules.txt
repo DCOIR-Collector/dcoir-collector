@@ -29,6 +29,7 @@ Core standing rules
 3. Minimal-operation GitHub write rule
 - Prefer staging content in-session and using as few GitHub operations as possible.
 - For related existing-file updates, prefer one bounded grouped git-object transaction over one-file-at-a-time churn when the connector lane can do so safely.
+- When multiple downstream GitHub follow-on updates are already known, collect them into one bounded grouped transaction instead of serial one-off commits or repeated best-next-move follow-ons.
 - If the grouped lane cannot yet be completed safely in-chat, preserve the intended grouped-write posture and keep the limitation explicit rather than hiding it.
 - Do not write durable connector or tool-limitation claims unless a specific low-level step has failed after correct preflight and execution.
 - Distinguish assistant procedure-recovery failure, assistant execution failure, ungrounded inference, and proven tool limitation explicitly when explaining GitHub-family friction.

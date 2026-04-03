@@ -34,6 +34,7 @@ Packaging convention
 - After grouped GitHub changes, verify every touched path, including absent-path verification for deletions.
 - When both an in-chat GitHub update lane and an operator-managed lane are possible, ask the operator which lane they want before shifting the work.
 - For GitHub-family existing-file or grouped existing-file recovery, treat GH-PROC-007 plus GH-PROC-001 or GH-PROC-006, then GH-PROC-005, as the first recovery set before writing any capability-boundary claim into durable records.
+- When multiple downstream GitHub follow-on updates are already known, collect them into one bounded grouped transaction instead of serial one-off commits or repeated best-next-move updates.
 - For operator-side bulk file placement, extracted-file ingestion, or binary and zip handling, prefer GitHub Desktop on a local clone as the easiest approved path when the operator chooses that lane.
 - Use GitHub Web UI only for small or simple operator-managed manual edits. GitHub CLI and GitKraken are optional, not the default operator path.
 

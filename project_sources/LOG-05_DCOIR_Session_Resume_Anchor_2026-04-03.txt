@@ -3,36 +3,34 @@ DCOIR Session Resume Anchor - 2026-04-03
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session.
 - Use it when resuming in a brand-new session after reading Project Instructions, CP-01, and CP-02.
-- This file exists because the session included multiple helper-skill builds, operator workflow decisions, GitHub Desktop source ingest for governed helper-skill source, direct GitHub continuity updates, and new governed workflow rules that should not be reconstructed from memory.
+- This file exists because the session included helper-skill upgrades, governed GitHub helper-skill source rollout, continuity updates, GitHub procedure-recovery corrections, and grouped downstream GitHub follow-on updates that should not be reconstructed from memory.
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
 - Project Instructions remain the first bootstrap anchor.
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- The operator successfully committed the governed `dcoir_skills/` source rollout to main through a local GitHub Desktop workflow.
 - The helper-skill source policy question is no longer open: all `dcoir-*` skill source is now stored in GitHub.
+- The validated low-level git-object lane remains the approved chat-managed path for existing-file GitHub updates.
 
 Current governed workflow state
-- `project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt` reflects the current helper-skill workflow rules.
+- `project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt` reflects the current GitHub recovery and batching rules.
 - `project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt` exists as the evergreen helper-skill workflow rules surface.
 - `project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt` exists as the evergreen GitHub helper-skill source layout and rollout surface.
 - `project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt` exists as the dated decision record for the helper-skill workflow changes.
 - `project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt` exists as the dated decision record for the GitHub helper-skill source policy.
-- `dcoir_skills/` now exists as the governed GitHub readable source root for current DCOIR helper-skill source.
+- `project_sources/LOG-07_DCOIR_GitHub_Update_Lane_Choice_And_Connector_Limitation_2026-04-03.txt` now serves as the dated correction record for update-lane choice and procedure-recovery discipline.
+- `dcoir_skills/` exists as the governed GitHub readable source root for current DCOIR helper-skill source.
 - `dcoir_skill_memory/` remains the helper working-state continuity root and should not be confused with source authority.
 
 Important operator rules and preferences preserved this session
 - Show the proposed decomposed plan before the first GitHub upload unless the operator explicitly waives preview.
 - Prefer staging content in-session and using as few GitHub operations as possible.
 - Use `dcoir-memory-preflight` both before high-friction execution and after blockers are overcome when the lesson could improve a repeatable workflow or reusable process guidance.
-- Treat session-local write buffers plus later grouped GitHub flushes as a valid DCOIR helper-skill design line.
-- Do not pretend chat can silently monitor elapsed time in the background; use explicit flush-check trigger points instead.
+- Ask which lane the operator wants before shifting repo work to GitHub Desktop or another operator-managed lane.
+- Do not write durable limitation claims until the validated GitHub recovery set has been applied and a named low-level step has actually failed.
+- When multiple downstream GitHub follow-on updates are already known, collect them into one grouped transaction instead of serial one-off best-next-move updates.
 - After every helper-skill create or update, pass the result through `dcoir-skill-regression-auditor`.
-- When DCOIR helper-skill source is governed in GitHub under the one-source-of-truth model, the default new-skill workflow is build, download, manual install, extract, and GitHub Desktop source ingest.
-- When a DCOIR helper skill already has governed GitHub source, the default update workflow is build, download, manual install, and assistant-managed GitHub source update when the connector lane can do so safely.
-- The operator prefers being offered GitHub Desktop with a repo-ready bundle for large multi-file repo updates.
-- When policy, authority, or governance materially blocks progress, report the block immediately, explain what would unblock it, and give the best available courses of action.
 
 What was completed in this session
 1. Five core helper-skill upgrades
@@ -44,15 +42,14 @@ What was completed in this session
 - The full governed GitHub source set for current `dcoir-*` skills was landed under `dcoir_skills/`.
 - The helper-memory note for the GitHub skill-source rule was preserved under `dcoir_skill_memory/dcoir-decision-policy/`.
 
-3. Policy and layout governance
-- `LOG-06` was added as the dated GitHub helper-skill source policy decision record.
-- `DOC-06` was added as the evergreen GitHub helper-skill source layout and rollout guide.
-- The blocked-state escalation preference and the GitHub Desktop large-update preference were both preserved in governed project surfaces.
+3. GitHub procedure-recovery correction and hardening
+- Durable records were corrected so this issue is treated as assistant procedure-recovery failure and execution-discipline failure, not a proven connector limitation.
+- DOC-01, DOC-05, decision-policy memory, and GH-PROC-001, GH-PROC-006, and GH-PROC-007 were hardened.
+- The remaining known downstream continuity and workflow updates were batched into one grouped GitHub update.
 
 What is still open right now
 1. Review the broader `dcoir-*` helper-skill set for whether each skill should support session-local write buffering, grouped GitHub flushes, or closed-loop memory-preflight routing.
 2. Apply a bounded README refresh batch using the preserved `dcoir-readme-maintainer` baseline artifact.
-3. Continue future continuity refreshes in grouped updates so control-plane and helper-memory surfaces stay aligned with the governed GitHub source root.
 
 Current no-doubt resume sequence
 1. Read Project Instructions.
@@ -61,9 +58,6 @@ Current no-doubt resume sequence
 4. Read `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt`.
 5. Read `project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt`.
 6. Read `project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt`.
-7. Read this file: `project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt`.
-8. Read `project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt`.
+7. Read `project_sources/LOG-07_DCOIR_GitHub_Update_Lane_Choice_And_Connector_Limitation_2026-04-03.txt`.
+8. Read this file: `project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt`.
 9. Then continue from the broader `dcoir-*` helper-skill review line.
-
-One best next move
-- Resume with the broader `dcoir-*` helper-skill review, starting from the highest-value candidates in DOC-05, because the core workflow-enforcement upgrades and the governed GitHub helper-skill source rollout are already complete.
