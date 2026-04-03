@@ -1,6 +1,6 @@
 ---
 name: dcoir-session-tracker
-description: session-local task, note, and continuity tracker for africom_soc_ir / dcoir work. use when chatgpt needs to capture "don't forget" items, answer what is left, merge an uploaded markdown session log with current-session notes, classify items into session-only scratch versus candidate log-01/log-02/log-03 updates, preserve durable preference candidates, hold session-local buffer state until the right flush-check trigger, classify reusable lessons after blocker recovery, export a downloadable markdown handoff artifact, or run a session close-out routine before the operator moves work to another session.
+description: session-local task, note, and continuity tracker for africom_soc_ir / dcoir work. use when chatgpt needs to capture "don't forget" items, maintain a real inspectable local session-state file during the current chat when code execution is available, answer what is left, merge an uploaded markdown session log with current-session notes, classify items into session-only scratch versus candidate log-01/log-02/log-03 updates, preserve durable preference candidates, hold session-local buffer state until the right flush-check trigger, export a downloadable markdown handoff artifact, or run a session close-out routine before the operator moves work to another session.
 ---
 
 # DCOIR Session Tracker
@@ -11,21 +11,50 @@ Before proceeding, verify that the current task is actually inside the AFRICOM_S
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 ## Overview
-Use this skill to maintain a session-local tracker that catches spontaneous operator thoughts before they get lost, keeps a clean inventory of what remains, merges an uploaded markdown handoff artifact into the current session state, prepares promotion-ready follow-up when the operator wants items moved into governed Project files, and honestly tracks what is still only buffered in the current session.
+Use this skill to maintain a session-local tracker that catches spontaneous operator thoughts before they get lost, keeps a clean inventory of what remains, maintains a real inspectable local session-state file when code execution and file writing are available, prepares promotion-ready follow-up when the operator wants items moved into governed Project files, and honestly tracks what is still only buffered in the current session.
 
 This skill does not claim hidden persistence across chats.
-- within the current conversation, it can maintain a live tracker and session-local buffer state
-- across future conversations, it only has what is re-imported from an exported markdown artifact or what was promoted into governed Project sources
+- within the current conversation, it may maintain a live local session-state file and session-local buffer state when code execution and file writing are available
+- across future conversations, it only has what is re-imported from an exported markdown artifact or what was promoted into governed Project sources or an explicitly requested GitHub-backed helper-state snapshot
 
 ## Core capabilities
 1. Capture casual "don't forget" statements without waiting for a formal task list.
 2. Classify items into the right buckets.
-3. Answer "what do we still have left" with a deduplicated, priority-ordered inventory.
-4. Merge an uploaded markdown tracker artifact with the current chat state.
-5. Export a standardized markdown handoff artifact for later upload into a new session.
-6. Hold session-local buffered continuity, promotion-candidate, and flush-check state until the right GitHub or export moment.
-7. Use the GitHub connector directly to read or update the canonical session-tracker state file in `malwaredevil/dcoir-collector` when durable project continuity is needed.
-8. Stage governed follow-up actions when session items should be promoted into Project files or skill updates.
+3. Maintain a real local session-state file as the primary working state when code execution and file writing are available.
+4. Inspect the local session-state file and report its path, filename, size, modified time, checksum, and current item counts.
+5. Answer "what do we still have left" with a deduplicated, priority-ordered inventory grounded in the current local state when that state exists.
+6. Merge an uploaded markdown tracker artifact with the current chat state.
+7. Export a standardized markdown handoff artifact for later upload into a new session.
+8. Hold session-local buffered continuity, promotion-candidate, and flush-check state until the right GitHub or export moment.
+9. Use the GitHub connector directly only when durable continuity in GitHub is explicitly requested or when the current workflow is already doing a safe GitHub write and a helper-state snapshot is truly wanted.
+10. Stage governed follow-up actions when session items should be promoted into Project files or skill updates.
+
+## Local session-state file
+When code execution and file writing are available, use a real local JSON file as the primary working-state surface.
+
+Default local state path:
+- `/mnt/data/dcoir_session_tracker/session_state.json`
+
+Primary implementation:
+- use `scripts/session_state_store.py` to initialize, upsert, complete, remove, inspect, and update summary fields
+- use `scripts/render_session_state.py` only to render a markdown export from the local JSON state file
+
+Required local-state workflow:
+1. Initialize the local file before claiming that a maintained session-state file exists.
+2. Use the local file as the primary working state during the chat when code execution and file writing are available.
+3. After material tracker changes, inspect the file when the operator asks whether the local session state is real or when GitHub flush time is approaching.
+4. Before any GitHub write, inspect the file and surface what it currently contains, what is ready for promotion, and what should remain local.
+5. Before session close-out, inspect the file again and classify durable, exported-only, and buffered-only state explicitly.
+
+Inspection requirement:
+- do not claim a real local session-state file exists unless `scripts/session_state_store.py inspect` confirms its path, filename, size, modified time, checksum, and counts
+- when the operator questions whether the local session state is real, show the inspection result instead of paraphrasing intent
+
+If code execution or file writing is unavailable:
+- say plainly that a real local session-state file cannot be proven in the current branch
+- keep reasoning bounded and do not imply that a real maintained local file exists
+
+Read `references/local_session_state_workflow.md` when local-state implementation or inspection details are needed.
 
 ## Session close-out mode
 Use this mode when the operator signals that work is about to move to another chat or session.
@@ -49,24 +78,25 @@ Run the full close-out routine below and distinguish:
 Required close-out checks:
 1. Re-anchor to Project Instructions, then CP-01, then CP-02.
 2. Run a flush check against all known buffered session-tracker state.
-3. Verify whether materially learned workflow rules, preferences, blocker recoveries, and reusable lessons were:
+3. Inspect the local session-state file when it exists and surface the inspection result.
+4. Verify whether materially learned workflow rules, preferences, blocker recoveries, and reusable lessons were:
    - already written to governed GitHub sources
    - intentionally kept as session-local buffered state
    - exported into a handoff artifact
    - still missing durable capture and needing explicit callout
-4. Verify that all tasks and requests mentioned in the session are either:
+5. Verify that all tasks and requests mentioned in the session are either:
    - closed as done
    - preserved in the correct governed destination
    - explicitly carried as open items in the handoff state
-5. Verify that session-related continuity surfaces are updated when the current workflow is already performing a safe GitHub write.
-6. Produce a next-session starter prompt grounded in the current control plane and current open items.
-7. Report any close-out gap plainly instead of implying the next session can safely resume from unstored chat-only state.
+6. Verify that session-related continuity surfaces are updated when the current workflow is already performing a safe GitHub write.
+7. Produce a next-session starter prompt grounded in the current control plane and current open items.
+8. Report any close-out gap plainly instead of implying the next session can safely resume from unstored chat-only state.
 
 Close-out truth rules:
-- Do not claim the next session will know buffered chat-only state unless that state was flushed to GitHub or exported into a handoff artifact.
-- Do not claim a task is preserved just because it was discussed in chat.
-- Do not silently drop unfinished requests, structural ideas, or durable preference candidates.
-- Do not mark close-out complete while known session-state drift remains unreported.
+- do not claim the next session will know buffered chat-only state unless that state was flushed to GitHub or exported into a handoff artifact
+- do not claim a task is preserved just because it was discussed in chat
+- do not silently drop unfinished requests, structural ideas, or durable preference candidates
+- do not mark close-out complete while known session-state drift remains unreported
 
 ## Classification buckets
 Every tracked item should land in one primary bucket:
@@ -142,45 +172,29 @@ Preferred flush-check trigger points:
 - when the skill reports meaningful state drift
 - when the operator signals that work is moving to another session
 
-When a flush-check occurs, surface:
-- what is still buffered
-- what is safe to flush now
-- what should remain session-local for now
-- one best next move
+When a flush-check occurs:
+- inspect the local session-state file when it exists
+- surface what is still buffered
+- surface what is safe to flush now
+- surface what should remain session-local for now
+- end with one best next move
+
+Read `references/session_buffer_workflow.md` when flush-check details are needed.
 
 ## Session close-out workflow
 When the operator is moving to another session, read `references/session_closeout_workflow.md` and perform this close-out sequence in order:
-
-1. Inventory all active tracked items, including:
-   - session-only notes
-   - durable preference candidates
-   - new skill ideas
-   - follow-on validation items
-   - blocked items
-   - promotion-ready LOG-01 / LOG-02 / LOG-03 candidates
-2. Run a flush check and classify each item as:
-   - safe to flush now
-   - should remain session-local for now
-   - must be exported in handoff
-   - already durable and only needs verification
-3. Verify whether known continuity surfaces are current enough for safe resume.
-4. If the surrounding workflow is already doing a safe GitHub write, batch the already-known follow-on continuity updates into that grouped transaction.
-5. If no safe GitHub write is occurring, export the handoff artifact and state plainly what remains non-durable.
-6. Produce a starter prompt for the next session that includes:
-   - re-anchor instruction
-   - current stable baseline
-   - exact current next work item
-   - open items that must be preserved
-   - any known buffered-but-not-governed state that still needs handling
-7. End with one best next move.
+1. Inventory all active tracked items, including session-only notes, durable preference candidates, new skill ideas, follow-on validation items, blocked items, and promotion-ready LOG-01 / LOG-02 / LOG-03 candidates.
+2. Run a flush check and inspect the local session-state file when it exists.
+3. Classify each item as safe to flush now, should remain session-local for now, must be exported in handoff, or already durable and only needs verification.
+4. Verify whether known continuity surfaces are current enough for safe resume.
+5. If the surrounding workflow is already doing a safe GitHub write, batch the already-known follow-on continuity updates into that grouped transaction.
+6. If no safe GitHub write is occurring, export the handoff artifact and state plainly what remains non-durable.
+7. Produce a starter prompt for the next session.
+8. End with one best next move.
 
 Close-out completion standard:
-- A session is not "closed out" merely because a summary was written.
-- It is closed out only when the response explicitly states:
-  - what is durable
-  - what is exported only
-  - what remains buffered only
-  - what the next session should do first
+- a session is not "closed out" merely because a summary was written
+- it is closed out only when the response explicitly states what is durable, what is exported only, what remains buffered only, and what the next session should do first
 
 ## Inventory workflow
 When the operator asks what remains:
@@ -189,16 +203,17 @@ When the operator asks what remains:
 3. keep session-only items separate from promotion candidates
 4. surface durable preference candidates separately from one-off notes
 5. surface buffered but unflushed items explicitly
-6. end with one best next move
+6. if the local state file exists, inspect it and use that as the primary grounding surface
+7. end with one best next move
 
 ## Export workflow
 When the operator asks to export, hand off, or save the session state:
 1. Read `references/session_state_schema.md`.
-2. Build a structured state object that matches the schema.
-3. If code execution and file writing are available, use `scripts/render_session_state.py` to create a markdown artifact.
-4. When durable continuity in GitHub is requested, use the GitHub connector directly to create or update the canonical GitHub session-state file, reducing operator burden to the smallest bounded manual GitHub action only when connector limitations prevent safe completion.
-5. If file writing is not available, emit the same artifact as one markdown block.
-6. Use the default filename pattern `YYYYMMDDTHHMMSSZ_dcoir_session_state.md` unless the operator explicitly asks for another name.
+2. Ensure the local JSON state file exists when code execution and file writing are available.
+3. Use `scripts/render_session_state.py` to create a markdown artifact from the local JSON state file.
+4. When durable continuity in GitHub is explicitly requested, or when the surrounding workflow is already doing a safe GitHub write and an intentional helper-state snapshot is wanted, use the GitHub connector directly to create or update the optional GitHub session-state file.
+5. If code execution or file writing is not available, emit the same artifact as one markdown block and say the local file was not available for proof.
+6. Use the default export filename pattern `YYYYMMDDTHHMMSSZ_dcoir_session_state.md` unless the operator explicitly asks for another name.
 
 The exported markdown artifact must contain:
 - YAML frontmatter with machine-friendly metadata
@@ -222,34 +237,38 @@ When the operator wants one or more session items promoted into governed Project
 6. Use `dcoir-repo-packager` only after the scope and readiness questions are settled.
 7. Keep session tracker items separate from promoted Project truth until the operator approves the promotion path.
 
-## GitHub-backed session state
-Use the GitHub connector directly against repository `malwaredevil/dcoir-collector` when session-tracker state should persist outside the current chat.
+## Optional GitHub-backed session state
+Use the GitHub connector directly against repository `malwaredevil/dcoir-collector` only when session-tracker state should persist outside the current chat or when the current workflow intentionally wants a durable GitHub helper-state snapshot.
 
 GitHub session-state layout:
 - root folder: `dcoir_skill_memory/`
 - per-skill folder: `dcoir_skill_memory/dcoir-session-tracker/`
-- canonical state file: `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md`
+- canonical snapshot file: `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md`
 
 Rules:
 - re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing the state file
-- treat the GitHub session-state file as helper working state only, not control-plane authority
-- keep one canonical markdown file unless the operator explicitly wants snapshots
+- treat the GitHub session-state file as optional helper working state only, not control-plane authority
+- do not treat the GitHub file as the default primary working state when the local session-state file exists
+- keep one canonical markdown snapshot file unless the operator explicitly wants snapshots or history
 - update it through the GitHub connector directly when the available connector action surface can complete the modification safely
 - if the GitHub connector cannot safely complete the write, say that plainly and reduce the operator burden to the smallest bounded manual GitHub action or surface the markdown content for later commit
 
+Read `references/github_memory_workflow.md` when GitHub-backed helper-state details are needed.
+
 ## Truth rules
-- do not claim cross-session memory unless the state was exported and later re-imported, or the contents were promoted into governed Project files
+- do not claim cross-session memory unless the state was exported and later re-imported, or the contents were promoted into governed Project files, or the operator explicitly requested a GitHub-backed helper-state snapshot
 - do not treat an imported markdown artifact as control-plane authority
 - do not let session notes overwrite CP, DOC, LOG, PP, ST, or RB authority rules
 - do not silently convert a user preference into a durable rule without surfacing its persistence status
 - do not lose operator-stated rationale when it materially explains why the item matters
 - do not claim buffered state is durable before GitHub flush or handoff export actually happened
+- do not claim a real local session-state file exists until the inspection command proves it
 
 ## Output contract
 When acting under this skill:
 - keep the tracker concise but stateful
 - separate session-only items from governed-promotion candidates
-- distinguish captured facts, grounded inferences, imported context, and buffered state
+- distinguish captured facts, grounded inferences, imported context, local-file state, and buffered state
 - preserve durable preference candidates explicitly
 - prefer one best next move over a broad menu
 - when exporting, produce a markdown artifact that can be re-uploaded and merged later
@@ -258,17 +277,19 @@ When acting under this skill:
 When acting in session close-out mode, return sections in this order:
 1. Current durable state
 2. Buffered but unflushed state
-3. Exported handoff state
-4. Open items carried forward
-5. Close-out gaps
-6. Starter prompt for next session
-7. Best next move
+3. Local session-state inspection result
+4. Exported handoff state
+5. Open items carried forward
+6. Close-out gaps
+7. Starter prompt for next session
+8. Best next move
 
 Keep the output concise, but do not omit state classification.
 The operator must be able to tell exactly what the next session can trust without reconstructing chat history.
 
 ## References
 Read these when needed:
+- `references/local_session_state_workflow.md`
 - `references/classification_rules.md`
 - `references/session_state_schema.md`
 - `references/import_merge_rules.md`
@@ -276,3 +297,4 @@ Read these when needed:
 - `references/sample_cases.md`
 - `references/session_buffer_workflow.md`
 - `references/session_closeout_workflow.md`
+- `references/github_memory_workflow.md`

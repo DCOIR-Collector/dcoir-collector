@@ -2,6 +2,10 @@
 
 Session-tracker may hold notes, promotion candidates, and continuity state locally until the next flush-check trigger.
 
+## Primary local surface
+When code execution and file writing are available, the primary buffer surface is the real local JSON file at `/mnt/data/dcoir_session_tracker/session_state.json` unless the operator explicitly chose another path.
+Inspect that file instead of merely paraphrasing the intended state when the operator questions whether the buffer is real.
+
 ## Preferred flush-check trigger points
 - before any GitHub write
 - after blocker resolution
@@ -17,12 +21,14 @@ Session-tracker may hold notes, promotion candidates, and continuity state local
 - what is safe to flush now
 - what should remain session-local for now
 - what must be exported for handoff if a safe GitHub write is not happening
+- the local session-state inspection result when the file exists
 - one best next move
 
 ## Close-out-specific rule
 When the operator is moving to another session, a flush check is mandatory.
 Do not treat session transition as a casual summary moment.
-Classify durable state, exported-only state, and buffered-only state explicitly.
+Classify durable state, exported-only state, buffered-only state, and the inspected local-file state explicitly.
 
 Truth rule:
 - buffered state is session-local only until it is flushed to GitHub or exported in a handoff artifact
+- a claimed local file is not proven until the inspection command confirms it

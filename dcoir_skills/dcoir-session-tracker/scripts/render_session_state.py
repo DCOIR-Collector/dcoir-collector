@@ -74,9 +74,13 @@ def build_markdown(state: dict[str, Any]) -> str:
     imports_merged = state.get("imports_merged", [])
     current_phase = state.get("current_phase", "not specified")
     best_next_move = state.get("best_next_move", "not specified")
+    close_out_status = state.get("close_out_status", "not specified")
+    durability_summary = state.get("durability_summary", {})
     open_items = state.get("open_items", {})
     completed = state.get("completed", [])
     promotion_ready = state.get("promotion_ready", {})
+    starter_prompt = state.get("starter_prompt", "")
+    closeout_verification = state.get("closeout_verification", [])
     provenance_notes = state.get("provenance_notes", [])
 
     lines: list[str] = [
@@ -107,6 +111,17 @@ def build_markdown(state: dict[str, Any]) -> str:
     lines.append("## Best next move")
     lines.append(best_next_move)
     lines.append("")
+    lines.append("## Close-out status")
+    lines.append(close_out_status)
+    lines.append("")
+    lines.append("## Durability summary")
+    lines.append(f"- governed_github: {durability_summary.get('governed_github', 'not specified')}")
+    lines.append(f"- exported_handoff_only: {durability_summary.get('exported_handoff_only', 'not specified')}")
+    lines.append(f"- buffered_session_only: {durability_summary.get('buffered_session_only', 'not specified')}")
+    unresolved = durability_summary.get('unresolved_closeout_gap')
+    if unresolved:
+        lines.append(f"- unresolved_closeout_gap: {unresolved}")
+    lines.append("")
     lines.append("## Open items")
 
     for key in ORDER:
@@ -127,6 +142,17 @@ def build_markdown(state: dict[str, Any]) -> str:
         block = promotion_ready.get(key, "")
         lines.append(block if block else "none")
         lines.append("")
+
+    lines.append("## Starter prompt for next session")
+    lines.append(starter_prompt if starter_prompt else "none")
+    lines.append("")
+
+    lines.append("## Close-out verification notes")
+    if closeout_verification:
+        lines.extend([f"- {note}" for note in closeout_verification])
+    else:
+        lines.append("- none")
+    lines.append("")
 
     lines.append("## Provenance notes")
     if provenance_notes:
