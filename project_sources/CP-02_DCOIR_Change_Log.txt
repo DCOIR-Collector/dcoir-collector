@@ -1,6 +1,30 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.10
+Change class: extracted readable source integration, zip retirement, and retirement of the dcoir-github-api work line
+
+What changed
+- Added the extracted readable contents of six previously zipped bundles into governed GitHub-readable folders under project_sources/ and knowledge/.
+- Retired the original zip copies of those extracted bundles from supporting_assets/ so the readable working line no longer depends on them.
+- Refreshed CP-01, LOG-01, LOG-03, the todo index, and key split todo lanes so the active project line no longer points at dcoir-github-api operational validation.
+- Rebased the current working posture around the validated GitHub connector low-level lane for chat-managed readable-text updates and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
+- Refreshed README, DOC-01, DOC-03, and folder-level README guidance so the new extracted readable folders are part of the visible governed project structure.
+- Reviewed earlier test branches and separated stale cleanup candidates from a still-ahead branch that should not be removed blindly.
+
+Why
+- Important readable project material should not remain trapped inside zip files once operator-side extraction is available.
+- The project should stop carrying an active todo and handoff line for dcoir-github-api after the operator decided not to pursue that route.
+- The repo guidance needed to reflect the real approved working posture for chat-managed edits versus operator-managed bulk file placement.
+- The extracted Gemini and supporting-knowledge sources should become first-class governed project material instead of side assets.
+
+Validation notes
+- Verified the new extracted readable folders exist in the live repo under project_sources/ and knowledge/.
+- Verified the refreshed control-plane and continuity files now point at the same post-extraction, post-dcoir-github-api work line.
+- Earlier test branches direct-update-test, tmp-skill-memory-update-test, and dcoir-cp01-sync-20260330 were identified as stale cleanup candidates.
+- todo-skill-inventory-analysis-20260403 remains ahead of main and was not treated as a disposable test branch.
+
+[PRIOR]
 Version: 3.9.9
 Change class: todo and handoff refresh for dcoir-github-api operational validation and GitHub conduit decision
 
@@ -20,47 +44,3 @@ Validation notes
 - CP-01, LOG-01, LOG-03, the todo index, and the refreshed split todo lanes point at the same next work line.
 - The active todo line now captures the phased @dcoir-github-api validation plan, conduit-decision follow-on, and the no-unauthorized-fallback rule.
 - Existing documentation, knowledge-expansion, task-memory, and zip-ingestion work remains preserved in the split todo structure.
-
-[PRIOR]
-Version: 3.9.8
-Change class: task-memory preflight expansion, grouped GitHub transaction rule, and post-alignment state refresh
-
-What changed
-- Added canonical GitHub task-memory procedures for grouped multi-file transactions and memory-preflight routing.
-- Refreshed the task-memory manifest and compiled fast lookup so the new GitHub procedures are first-class retrievable records.
-- Updated DOC-01 so GitHub-family execution work now consults canonical task memory first and prefers one bounded multi-file git-object transaction for related existing-file edits or deletions.
-- Refreshed CP-01, LOG-01, LOG-03, the todo index, and key split todo lanes so the current work line no longer points at the completed helper-skill audit or the retired dcoir-github-operator lane.
-- Prepared a dedicated dcoir-memory-preflight skill and an updated dcoir-decision-policy skill package so the preflight behavior can be applied in the skill layer as well as in governed docs and task memory.
-
-Why
-- GitHub-family work should not require operator reminders before canonical task memory is consulted.
-- Related repo changes should land as one bounded transaction instead of one-file-at-a-time churn when they belong together.
-- The control plane and split todo structure needed to catch up to the current post-skill-alignment project state so the next move points back to the real deliverables and remaining todo work.
-
-Validation notes
-- The new task-memory records are present under knowledge/task_memory/10_domains/github/procedures/ and indexed in the compiled fast lookup.
-- DOC-01, CP-01, LOG-01, LOG-03, the todo index, and the refreshed split todo lanes are updated together in one grouped change set.
-- The grouped git-object transaction lane remains the preferred path for related existing-file repo edits and deletions.
-
-[PRIOR]
-Version: 3.9.7
-Change class: repo text refresh, split todo structure activation, and connector memory refinement
-
-What changed
-- README.md was expanded into a stronger repo entry point with project mission, deliverables, scope priorities, navigation, and documentation direction.
-- The todo line now includes a split structure consisting of project_sources/LOG-01_DCOIR_Todo_Index.txt plus project_sources/todo/*.txt child files.
-- LOG-01 and LOG-03 were refreshed to point to the split todo structure and the clarified deliverable set.
-- CP-01, DOC-01, and DOC-03 were refreshed so the control plane and layout docs acknowledge the split todo structure and the stronger repo-guide posture.
-- The GitHub task-memory procedure for existing-file updates was refined to record that compare_commits with base=main and head=main can recover the current head sha when fetch_commit is flaky upstream.
-
-Why
-- The repo needed a clearer top-level statement of what the project is and what it delivers.
-- The todo line needed a sustainable split model rather than one indefinitely growing file.
-- The control-plane and layout docs needed to stay aligned with the new live repo structure.
-- The connector-first GitHub write lane needed a more resilient documented head-sha recovery method.
-
-Validation notes
-- README.md, LOG-01, LOG-03, CP-01, DOC-01, DOC-03, and the split todo files are live on main.
-- The low-level existing-file update lane was revalidated on main through create_blob, create_tree, create_commit, update_ref, and readback verification.
-- compare_commits base=main and head=main successfully returned the current head sha during the write flow.
-- No live repo text hits were found for dcoir-github-operator or DCOIR_Collector_parts during the repo-side cleanup scan.

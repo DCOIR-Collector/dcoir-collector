@@ -1,4 +1,4 @@
-DCOIR Repository Layout Spec 1.1.3
+DCOIR Repository Layout Spec 1.1.4
 
 Purpose
 - This file defines the canonical GitHub-primary repository and Project-bootstrap layout for DCOIR.
@@ -32,6 +32,13 @@ Readable-source rules
 - Session handoff:
   - project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 - Knowledge markdown in knowledge/ is the readable working source when present.
+- Extracted readable source folders currently include:
+  - project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/
+  - project_sources/original_alert_triage_gemini_agents/
+  - project_sources/original_collector_artifact_gemini_agents/
+  - knowledge/comparative_reference_agent_markdowns/
+  - knowledge/generated_agent_markdowns/
+  - knowledge/supporting_knowledge_docs/
 
 Resume rules
 - Resume from Project Instructions first.
@@ -39,3 +46,4 @@ Resume rules
 - Read project_sources/CP-01_DCOIR_Version_Manifest.txt first and project_sources/CP-02_DCOIR_Change_Log.txt second.
 - Treat GitHub as the working repository and review surface.
 - Treat Project space as bootstrap/runtime anchor, not a second readable-source repository.
+- For operator-side bulk file placement or binary and zip handling, GitHub Desktop on a local clone is the easiest approved path.

@@ -11,30 +11,35 @@ Current stable artifacts
 - Compiled lookup: knowledge/task_memory/30_compiled/fast_lookup.json
 - Todo split index: project_sources/LOG-01_DCOIR_Todo_Index.txt
 - Todo child files: project_sources/todo/*.txt
+- Extracted readable Gemini source folders: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/, project_sources/original_alert_triage_gemini_agents/, and project_sources/original_collector_artifact_gemini_agents/
+- Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/, knowledge/generated_agent_markdowns/, and knowledge/supporting_knowledge_docs/
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - GitHub is the working repository and review surface for readable governed text.
 - Project space is the bootstrap/runtime anchor and should not carry duplicate editable readable governed text.
+- The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
+- GitHub Desktop is the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
 
 Current validated status
 - The collector remains split into smaller governed source files, with DCOIR_Collector.ps1 preserved as the runtime wrapper.
 - The harness readable source remains run_DCOIR_Tests.ps1.
 - The task-memory bank remains implemented in GitHub using a canonical registry plus compiled indexes.
 - The repo also contains a governed combined analyst-facing DCOIR master prompt and governed Gemini merged-agent design artifacts that should be treated as core project deliverables.
+- The newly extracted readable Gemini and supporting-knowledge folders are now part of the governed repo working line.
 - The old dcoir-github-operator lane is retired and the old DCOIR_Collector_parts path has been removed.
-- @dcoir-github-api is not yet treated as a validated end-to-end GitHub execution conduit for chat-bound use; the failing session needs a full operational retest before that decision is made.
+- The dcoir-github-api validation route is retired from the active working line and should not be treated as the next planned path.
 
 Current session outcomes
-- Added canonical GitHub task-memory procedures for grouped multi-file transactions and memory-preflight routing.
-- Refreshed the control plane, todo summaries, and workflow docs so GitHub-family work now consults canonical task memory before execution and prefers one bounded grouped transaction for related changes.
-- Prepared a dedicated dcoir-memory-preflight skill and an updated dcoir-decision-policy package so the preflight behavior can exist in the skill layer as well as in governed docs and task memory.
-- Refreshed the todo and handoff continuity line so the unfinished @dcoir-github-api validation effort is preserved explicitly instead of being lost behind the broader main-deliverables summary.
-- Preserved the chat-bound GitHub caution notes: verify availability in-chat, treat writes as potentially approval-gated or runtime-unstable, and do not use alternate paths without explicit operator authorization.
+- Integrated the extracted readable contents of six formerly zipped bundles into governed folders under project_sources/ and knowledge/.
+- Refreshed the control plane, repo guide, workflow docs, and continuity files so the extracted readable folders are part of the visible governed project structure.
+- Retired the dcoir-github-api work line from the active todo, handoff, and control-plane posture.
+- Preserved the validated GitHub connector low-level lane for chat-managed readable-text work and documented GitHub Desktop as the easiest approved operator path for bulk local placement and binary or zip handling.
+- Reviewed earlier test branches and separated stale cleanup candidates from a still-ahead branch that should not be removed blindly.
 
 Current next planned work item
-- Conduct the phased @dcoir-github-api operational validation and decide whether it is a viable GitHub conduit before relying on it for project repo work.
+- Review the newly extracted readable source folders and fold their highest-value material into stronger documentation, knowledge indexes, and deliverable-aware repo guidance.
 
 Recommended next move
-- Run Round 1 through Round 3 of the @dcoir-github-api operational validation in a fresh chat or stable runtime, then document the conduit decision and resume the main deliverables line.
+- Audit the newly extracted project_sources and knowledge folders, then promote their highest-value material into stronger docs, indexes, and governed deliverable references before resuming the broader deliverables line.

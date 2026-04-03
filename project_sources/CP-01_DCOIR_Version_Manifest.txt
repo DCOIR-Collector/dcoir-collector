@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.9
+DCOIR Version Manifest 3.9.10
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -29,7 +29,15 @@ Current task-memory bank
 - Canonical registry: knowledge/task_memory/00_registry/task_memory_manifest.yaml
 - Compiled lookup: knowledge/task_memory/30_compiled/fast_lookup.json
 
+Current extracted readable source folders
+- Build bundle source set: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/
+- Original alert triage Gemini agents: project_sources/original_alert_triage_gemini_agents/
+- Original collector artifact Gemini agents: project_sources/original_collector_artifact_gemini_agents/
+- Comparative reference agent markdowns: knowledge/comparative_reference_agent_markdowns/
+- Generated agent markdowns: knowledge/generated_agent_markdowns/
+- Supporting knowledge markdowns: knowledge/supporting_knowledge_docs/
+
 Current next work item
-- Conduct a full operational validation of @dcoir-github-api before treating it as a viable project GitHub execution conduit.
-- If it validates, document the approval-gated operating process for chat-bound GitHub work; if it does not, stop and use an approved alternate path only when explicitly authorized.
-- After the conduit decision is settled, resume the main project deliverables and reprioritize remaining todo items from the split todo structure.
+- Review and integrate the newly extracted readable Gemini and supporting knowledge source folders into stronger documentation, knowledge indexes, and deliverable awareness.
+- Then resume the main project deliverables and reprioritize remaining todo items from the split todo structure.
+- Use the validated GitHub connector low-level lane for chat-managed readable text updates and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.

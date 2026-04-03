@@ -16,6 +16,7 @@ Readable-source rule
 - The runtime collector is a thin loader wrapper that dot-sources the numbered collector parts.
 - The harness readable source remains project_sources/run_DCOIR_Tests.ps1.
 - The current todo structure now uses a split model anchored by project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt.
+- Extracted readable source folders with ongoing project value should live in governed folders under project_sources/ or knowledge/, not remain trapped inside zip bundles.
 
 Packaging convention
 - For GitHub-maintained readable text updates, prefer direct GitHub edits over patch ZIPs when the connector path supports them.
@@ -26,6 +27,8 @@ Packaging convention
 - For multiple related existing-file changes or removals, prefer one bounded multi-file git-object transaction over one-file-at-a-time updates.
 - When the current head sha is needed and fetch_commit is flaky upstream, compare_commits with base=main and head=main may be used to recover the current head sha before create_tree and create_commit.
 - After grouped GitHub changes, verify every touched path, including absent-path verification for deletions.
+- For operator-side bulk file placement, extracted-file ingestion, or binary and zip handling, prefer GitHub Desktop on a local clone as the easiest approved path.
+- Use GitHub Web UI only for small or simple operator-managed manual edits. GitHub CLI and GitKraken are optional, not the default operator path.
 
 Current stable artifacts
 - Root repo guide: README.md
@@ -36,3 +39,5 @@ Current stable artifacts
 - Todo index: project_sources/LOG-01_DCOIR_Todo_Index.txt
 - Todo child lanes: project_sources/todo/*.txt
 - Task-memory bank root: knowledge/task_memory
+- Extracted readable Gemini source folders: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/, project_sources/original_alert_triage_gemini_agents/, and project_sources/original_collector_artifact_gemini_agents/
+- Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/, knowledge/generated_agent_markdowns/, and knowledge/supporting_knowledge_docs/

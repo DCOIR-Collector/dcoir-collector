@@ -7,3 +7,10 @@ Recommended contents:
 - collector usage docs
 - Gemini workflow docs
 - supporting knowledge markdown files
+- comparative reference agent markdowns
+- generated agent markdowns
+
+Current extracted readable knowledge folders:
+- `knowledge/comparative_reference_agent_markdowns/`
+- `knowledge/generated_agent_markdowns/`
+- `knowledge/supporting_knowledge_docs/`

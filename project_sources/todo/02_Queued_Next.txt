@@ -1,10 +1,10 @@
 DCOIR Queued Next
 
-1. Add a governed workflow note for the validated GitHub operating process once the conduit decision is settled.
+1. Add governed workflow and navigation notes for the newly extracted readable source folders once the first review pass is complete.
    Why it matters:
-   - Future sessions should not have to rediscover how approval-gated chat-bound GitHub work is supposed to operate.
+   - Future sessions should not have to rediscover what was extracted, where it lives, and why it matters.
    Next action:
-   - If @dcoir-github-api validates, document the operating process; if it does not, document the approved alternate path and explicit authorization rule.
+   - After the review pass, add stronger folder indexes, topic notes, and cross-links where the extracted material has durable project value.
 
 2. Define a sustainable split standard for growth-prone governed files.
    Why it matters:

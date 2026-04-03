@@ -1,35 +1,31 @@
 DCOIR Active Now
 
-1. Conduct a full operational validation of @dcoir-github-api before treating it as a viable GitHub execution conduit for project work.
+1. Review and integrate the newly extracted readable Gemini and supporting-knowledge folders into stronger documentation, knowledge indexes, and deliverable awareness.
    Why it matters:
-   - The failing session ended with only partial proof; some read behavior and manual write operations worked, but the full chat-bound operational path was not validated end-to-end.
+   - The newly extracted readable folders are now part of the governed repo working line and should be made easier to navigate and use.
    Next action:
-   - Verify that the intended project GitHub action surface is actually available and usable in the current chat, then run the phased validation:
-     - Round 1 read path: getRepository, getBranch(main), getFileContent(README.md), getCommit(main)
-     - Round 2 convenience file path on a disposable branch: createBranchReference, createOrUpdateSingleFile, getFileContent readback, deleteSingleFile, deleteReference
-     - Round 3 grouped low-level Git path on a disposable branch: createBranchReference, compareCommits, createGitTree, createGitCommit, updateBranchReference, verification readback, deleteReference
-   - Treat write behavior as potentially approval-gated and do not conclude schema, token, or parameter failure until approval behavior or stale binding has been ruled out.
+   - Audit the extracted folders, identify the highest-value materials, and fold them into stronger repo guidance, knowledge indexes, and deliverable references.
 
-2. Decide whether @dcoir-github-api is a viable project GitHub conduit only after the phased validation completes.
+2. Resume main project deliverables and reprioritize remaining todo items from the split todo structure now that the dcoir-github-api work line is retired.
    Why it matters:
-   - The project should not assume a preferred GitHub execution surface before approval behavior, runtime stability, and write reliability are understood.
+   - The project should return to its real deliverables instead of carrying a stale conduit-validation line.
    Next action:
-   - If it validates, document the approval-gated operating process for chat-bound GitHub work; if it does not, define the approved alternate path and explicit authorization rule.
+   - Choose the top deliverable or todo lane after the extracted-folder review is complete and continue from the split todo structure.
 
-3. Resume main project deliverables and reprioritize remaining todo items from the split todo structure after the conduit decision is settled.
+3. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:
-   - The project still needs to return to the real deliverables and broader todo lanes once the GitHub execution path is clear.
-   Next action:
-   - Choose the top deliverable or remaining todo lane and continue from the current split todo structure after the GitHub-conduit decision is made.
-
-4. Use canonical task-memory preflight before GitHub-family execution work.
-   Why it matters:
-   - Validated procedures should be consulted before friction, not after an avoidable miss or retry.
+   - Validated procedures should be consulted before friction, not after avoidable misses or retries.
    Next action:
    - Check knowledge/task_memory and the applicable GitHub procedures before repo writes, deletes, packaging, or structural changes.
 
-5. Prefer one bounded multi-file git-object transaction when multiple related existing-file edits or deletions belong together.
+4. Prefer one bounded multi-file git-object transaction when multiple related existing-file edits or deletions belong together.
    Why it matters:
    - Grouped repo changes reduce drift and mirror programmer-style all-at-once updates better than one-file-at-a-time churn.
    Next action:
    - Batch related GitHub changes into one transaction and verify every touched path afterward.
+
+5. Use GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
+   Why it matters:
+   - Bulk operator-managed file movement is easier and less error-prone there than in more technical or chat-bound paths.
+   Next action:
+   - Prefer GitHub Desktop for future operator-side bulk placement work unless a stronger approved path is later validated.

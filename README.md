@@ -26,7 +26,8 @@ This repository is not only a collector-script repo. It is the GitHub-primary wo
 - GitHub repository `malwaredevil/dcoir-collector` is the sole working source for governed readable text.
 - Project space is the bootstrap and runtime anchor, not a second editable readable-text repository.
 - Resume and governance begin with Project Instructions, then `CP-01`, then `CP-02`.
-- The preferred operating posture is connector-first GitHub execution, with helper skills used for analysis, validation, packaging, workflow support, and maintenance where appropriate.
+- The preferred operating posture is the validated GitHub connector low-level lane for chat-managed readable-text updates, with GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
+- Helper skills are used for analysis, validation, packaging, workflow support, and maintenance where appropriate.
 - The collector runtime filename remains stable while the readable governed source set may evolve for maintainability.
 
 ## Core Deliverables
@@ -74,5 +75,5 @@ The documentation goal is to make the repository understandable without hidden c
 - a stronger root `README`
 - helpful folder-level `README` files
 - a fuller wiki-style knowledge structure in `knowledge/`
-- readable extraction of important text currently trapped inside supporting zip files where appropriate
+- extracted readable materials from formerly zipped supporting bundles kept in governed folders under `project_sources/` and `knowledge/`
 - sustainable splitting of growth-prone governed files such as todo and log structures

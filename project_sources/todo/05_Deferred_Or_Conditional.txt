@@ -1,6 +1,6 @@
 DCOIR Deferred Or Conditional
 
-1. After text-bearing zip contents are extracted and uploaded, update the repo structure and awareness files so the extracted readable sources become first-class project knowledge where appropriate.
+1. If future extracted or newly received readable bundles arrive, place them into appropriate governed GitHub locations and refresh repo structure and awareness files so the readable sources become first-class project material where appropriate.
    Why it matters:
    - Extracted readable text should be integrated deliberately, not left as loose side material.
 
@@ -12,6 +12,6 @@ DCOIR Deferred Or Conditional
    Why it matters:
    - The canonical memory bank should keep improving as new validated workflows are learned.
 
-4. If @dcoir-github-api remains unavailable or unreliable after phased validation, document the approved alternate GitHub path and use it only when explicitly authorized.
+4. If a new chat-bound GitHub execution surface is proposed in the future, do not adopt it into the working line until it is explicitly approved and fully validated.
    Why it matters:
-   - The project should not drift into silent fallback behavior when the intended conduit is not working.
+   - The project should not drift into unvalidated execution-path assumptions.

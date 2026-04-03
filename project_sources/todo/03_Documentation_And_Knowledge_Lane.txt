@@ -4,7 +4,7 @@ DCOIR Documentation And Knowledge Lane
    Why it matters:
    - The root README should explain the project as a framework, not only as a bootstrap pointer.
    Next action:
-   - Add mission, working model, core deliverables, and documentation direction.
+   - Keep README aligned with the visible governed working line and extracted readable source folders.
 
 2. Improve each major folder README so it acts as a useful local guide.
    Why it matters:
@@ -30,14 +30,14 @@ DCOIR Documentation And Knowledge Lane
    Next action:
    - Add it to README deliverables and documentation map.
 
-6. Add documentation for IOC/external-context enrichment posture, authoritative-source priority, and DFIR operating principles.
+6. Add documentation for IOC or external-context enrichment posture, authoritative-source priority, and DFIR operating principles.
    Why it matters:
    - These are already part of the governed design and should be easier to discover.
    Next action:
    - Surface the prompt-pack authoritative-source model in human-readable documentation.
 
-7. Extract text-bearing supporting zip contents other than DCOIR_Collector.zip once available, place the readable text into appropriate governed GitHub locations, and update repo awareness/docs so their existence and value are preserved.
+7. Review the newly extracted readable source folders from formerly zipped Gemini and supporting-knowledge bundles and promote their highest-value material into stronger docs and indexes where appropriate.
    Why it matters:
-   - Important readable knowledge should not remain trapped inside zip files when it has long-term project value.
+   - The extraction step is done, but the newly visible readable material still needs deliberate integration into the long-term documentation structure.
    Next action:
-   - After operator-side extraction is available, place the files in appropriate GitHub-readable locations and refresh documentation and control-plane awareness as needed.
+   - Audit the extracted folders, add cross-links and indexes, and move especially durable materials into clearer governed doc locations when needed.
