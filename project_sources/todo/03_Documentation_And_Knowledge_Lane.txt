@@ -48,8 +48,8 @@ DCOIR Documentation And Knowledge Lane
    Next action:
    - Refresh `knowledge/DCOIR_Helper_Skills_Routing_Note.md` whenever the installed helper-skill set changes materially.
 
-9. Verify that `dcoir-knowledge-doc-maintainer` still matches the current GitHub-primary knowledge-doc workflow before treating older extracted knowledge-doc sets as safe deletion targets.
+9. Verify and refresh `dcoir-knowledge-doc-maintainer` so it matches the current GitHub-primary knowledge-doc workflow after the legacy extracted supporting-knowledge-doc folder removal.
    Why it matters:
-   - The project has moved to a GitHub-primary readable-source model, and older extracted supporting knowledge docs may reflect pre-GitHub-primary packaging or baseline posture.
+   - The project has removed the obsolete extracted `knowledge/supporting_knowledge_docs/` set from the current working line, and the knowledge-doc-maintainer skill still needs to be checked against the post-delete control plane and current maintained-doc model.
    Next action:
-   - Review the skill against the current control plane, confirm which knowledge-doc set it is supposed to maintain, and only then decide whether stale extracted knowledge docs and their folder should be deleted.
+   - Review the skill inputs, outputs, packaging assumptions, and maintained knowledge-doc source location, then refresh the skill and any dependent workflow notes so future knowledge-doc maintenance follows the current GitHub-primary model instead of the retired legacy extracted-doc posture.
