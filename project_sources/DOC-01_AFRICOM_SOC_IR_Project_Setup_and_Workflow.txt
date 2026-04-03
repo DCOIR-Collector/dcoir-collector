@@ -35,14 +35,30 @@ Packaging convention
 - For operator-side bulk file placement, extracted-file ingestion, or binary and zip handling, prefer GitHub Desktop on a local clone as the easiest approved path.
 - Use GitHub Web UI only for small or simple operator-managed manual edits. GitHub CLI and GitKraken are optional, not the default operator path.
 
+Helper-skill workflow rules
+- Use dcoir-memory-preflight both before high-friction execution and after a blocker or failed attempt is successfully overcome when the lesson could improve a repeatable workflow, reusable limitation note, reusable failure signature, or helper-skill/process guidance.
+- Do not silently promote every recovered blocker into canonical memory. First classify whether the lesson is one-off or reusable, then stage a bounded promotion candidate.
+- Relevant stateful helper skills may accumulate session-local buffer content during the chat and flush it into GitHub in grouped updates at the next suitable write point rather than writing every small change immediately.
+- Session-local buffered content is not cross-session durable unless it is flushed to GitHub or exported into a handoff artifact.
+- Preferred flush-check trigger points are before GitHub writes, after blocker resolution, when switching major tasks, at major milestones, before session export or handoff, when the operator asks what remains, and when a helper skill reports meaningful state drift.
+- Prefer staging content in-session and using as few GitHub operations as possible.
+- If the grouped existing-file update lane cannot yet be completed safely in-chat, keep the grouped-write intent explicit rather than pretending the limitation is solved.
+- After every helper-skill create or update, pass the result through dcoir-skill-regression-auditor before treating the skill as ready for broader use or workflow promotion.
+- When DCOIR helper-skill source is governed in GitHub under the one-source-of-truth model, the default new-skill rollout workflow is build, download, manual install, extract, and GitHub Desktop source ingest.
+- When a DCOIR helper skill already has governed GitHub source, the default update workflow is build, download, manual install, and assistant-managed GitHub source update when the connector lane can do so safely.
+
 Current stable artifacts
 - Root repo guide: README.md
+- Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
+- Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
 - Collector runtime wrapper: project_sources/DCOIR_Collector.ps1
 - Collector readable source set: project_sources/collector_parts/*.ps1
 - Local regression harness readable source: project_sources/run_DCOIR_Tests.ps1
 - Todo log: project_sources/LOG-01_DCOIR_Todo_Log.txt
 - Todo index: project_sources/LOG-01_DCOIR_Todo_Index.txt
 - Todo child lanes: project_sources/todo/*.txt
+- Session handoff brief: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
+- Helper-skill workflow decision log: project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt
 - Task-memory bank root: knowledge/task_memory
 - Extracted readable Gemini source folders: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/, project_sources/original_alert_triage_gemini_agents/, and project_sources/original_collector_artifact_gemini_agents/
-- Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/, knowledge/generated_agent_markdowns/, and knowledge/supporting_knowledge_docs/
+- Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/

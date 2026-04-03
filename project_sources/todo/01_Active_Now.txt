@@ -4,7 +4,7 @@ DCOIR Active Now
    Why it matters:
    - GitHub connector execution now materially shapes repo workflow speed, reliability, and recoverability.
    Next action:
-   - Use `knowledge/github_connector_reference/`, `GH-PROC-008`, and canonical GitHub task memory to refine function selection, operator guidance, and future GitHub-heavy workflow planning.
+   - Use knowledge/github_connector_reference/, GH-PROC-008, and canonical GitHub task memory to refine function selection, operator guidance, and future GitHub-heavy workflow planning.
 
 2. Finish the governed structural refactor standard for growth-prone readable files.
    Why it matters:
@@ -35,3 +35,27 @@ DCOIR Active Now
    - Grouped repo changes reduce drift and mirror programmer-style all-at-once updates better than one-file-at-a-time churn.
    Next action:
    - Batch related GitHub changes into one transaction and verify every touched path afterward.
+
+7. Upgrade the core helper-skill workflow so memory-preflight is closed-loop instead of pre-execution only.
+   Why it matters:
+   - Reusable lessons from blockers and failed attempts should improve future workflow speed and quality rather than remain trapped in one chat or one plan.
+   Next action:
+   - Update dcoir-memory-preflight, dcoir-decision-policy, dcoir-plan-tracker, and dcoir-session-tracker so blocker recovery can be classified and staged for later promotion.
+
+8. Implement session-local write buffers and grouped GitHub flush behavior for the highest-value stateful helper skills.
+   Why it matters:
+   - Stateful helper skills should not need to push every tiny change immediately when a bounded grouped flush would be cleaner and more repeatable.
+   Next action:
+   - Start with dcoir-plan-tracker, dcoir-session-tracker, dcoir-decision-policy, dcoir-memory-preflight, and dcoir-skill-regression-auditor, using explicit flush-check triggers rather than pretending chat can silently monitor elapsed time.
+
+9. Treat post-create and post-update helper-skill regression as mandatory.
+   Why it matters:
+   - Packaging success is not sufficient proof that a helper skill is ready for broader workflow use.
+   Next action:
+   - Pass every helper-skill create or update through dcoir-skill-regression-auditor and keep bounded evidence when full integrated regression is not yet practical.
+
+10. Finish the governed rollout model for GitHub-hosted DCOIR helper-skill source.
+    Why it matters:
+    - The project needs a repeatable path for getting new and updated helper-skill source under GitHub governance without dual-maintenance drift.
+    Next action:
+    - Use the approved workflow of build, download, manual install, extract, and GitHub Desktop source ingest for new skills, and build, download, manual install, and assistant-managed GitHub source update for already-governed skills.
