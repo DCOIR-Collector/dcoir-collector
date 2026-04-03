@@ -53,3 +53,9 @@ DCOIR Documentation And Knowledge Lane
    - The project has already removed the obsolete extracted `knowledge/supporting_knowledge_docs/` set, and the patched skill package now passes local regression against the post-delete control-plane fixture.
    Next action:
    - Install or replace the patched skill package, run targeted invocation or accessibility smoke regression, and confirm the skill no longer steers maintenance toward the retired extracted-doc posture.
+
+10. Consider creating a dedicated `dcoir-readme-maintainer` skill for root and folder README maintenance.
+   Why it matters:
+   - README upkeep is now a recurring enough workflow that it may deserve its own helper skill instead of being handled indirectly through broader documentation maintenance.
+   Next action:
+   - Define the scope for root README, folder README, navigation-index, and cross-link maintenance so the project can decide whether to build a dedicated README-maintainer skill.

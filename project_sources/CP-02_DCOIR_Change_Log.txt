@@ -1,6 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.17
+Change class: regression-auditor skill patch, codex-learning preference capture, and follow-on skill-maintenance sync
+
+What changed
+- Patched and repackaged the external `dcoir-skill-regression-auditor` skill bundle so its planner and fixture references explicitly support the current-control-plane narrative-manifest fixture and the campaign rule to test the tester first.
+- Captured the operator preference that optional ChatGPT Codex work should be offered as step-by-step, click-by-click learning tasks, starting with basic usage before more advanced workflows.
+- Added a documentation-lane todo to consider creating a dedicated `dcoir-readme-maintainer` skill for root and folder README maintenance.
+- Updated helper regression memory and repo-side continuity surfaces so the next skill-maintenance step is replacing the patched regression-auditor package and then deep-scanning the remaining `dcoir-*` skills.
+- Corrected the manifest version lag so CP-01 now catches up to the current control-plane state.
+
+Why
+- The project needs `dcoir-skill-regression-auditor` to be trustworthy before using it to evaluate the rest of the helper-skill fleet.
+- The user explicitly wants optional Codex learning tasks presented in a beginner-friendly, click-by-click way when they are useful for project work.
+- README maintenance has grown into a repeatable enough workflow that it should be tracked as a potential dedicated skill.
+- The control plane should not drift across CP-01, CP-02, handoff, and helper memory while the helper-skill patch campaign is underway.
+
+Validation notes
+- The patched `dcoir-skill-regression-auditor` package passed `quick_validate.py`, its updated planner script executed successfully, and the skill was repackaged as a valid bundle.
+- The helper regression memory now records the regression-auditor package as patched and packaged with the next action set to external replacement plus a short post-install smoke regression.
+- The repo-side continuity files now reflect the Codex-learning preference and the new README-maintainer-skill todo.
+
+[PRIOR]
 Version: 3.9.16
 Change class: knowledge-doc-maintainer scanner patch and local regression validation
 
@@ -20,23 +42,3 @@ Validation notes
 - `build_knowledge_docs.py` emitted the expected `.md.txt` file and `supporting_knowledge_docs.zip` on a representative spec fixture.
 - Before the patch, the success fixture returned `recognized_governed_github_readable_sources` count 0; after the patch, the same fixture returned count 15.
 - The missing-control-plane fixture still failed clearly with `FileNotFoundError`, preserving the expected stop gate.
-
-[PRIOR]
-Version: 3.9.15
-Change class: knowledge-doc-maintainer skill refresh for post-delete GitHub-primary workflow
-
-What changed
-- Refreshed the external `dcoir-knowledge-doc-maintainer` skill bundle so its instructions, operator workflow, reinventory prompt, and metadata align to the current post-delete GitHub-primary knowledge-doc model.
-- Removed the skill's default assumption that the retired extracted folder `knowledge/supporting_knowledge_docs/` is part of the normal current maintenance path.
-- Clarified that `supporting_assets/supporting_knowledge_docs.zip` is a retained delivery or reference asset, not control-plane authority.
-- Synced the repo-side documentation lane, handoff posture, and manifest next-work guidance so the remaining work is package replacement plus targeted regression rather than pre-delete skill review.
-
-Why
-- The project removed the obsolete extracted `knowledge/supporting_knowledge_docs/` folder from the current working line.
-- The knowledge-doc-maintainer skill still needed a post-delete refresh so it would not steer future maintenance back toward the retired extracted-folder model.
-- The durable workflow should now point at the current GitHub-primary knowledge-doc posture and treat any retained ZIP as supporting output rather than the editable source of truth.
-
-Validation notes
-- Packaged and validated an updated `dcoir-knowledge-doc-maintainer` skill bundle after refreshing the relevant skill files.
-- Refreshed the repo-side follow-up posture so future sessions know the next step is external skill-package replacement plus targeted regression.
-- Left the broader DOC-04 structural audit and extracted-folder integration work queued behind the active architecture-first lane.

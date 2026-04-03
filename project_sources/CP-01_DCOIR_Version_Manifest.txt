@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.15
+DCOIR Version Manifest 3.9.17
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -41,9 +41,9 @@ Current extracted readable source folders
 - Generated agent markdowns: knowledge/generated_agent_markdowns/
 
 Current next work item
-- Finish the governed structural refactor standard for growth-prone readable files and treat it as the active architecture-first work line.
-- Replace the refreshed `dcoir-knowledge-doc-maintainer` external skill package and run targeted invocation or accessibility regression against the current post-delete GitHub-primary knowledge-doc workflow.
-- Use the structural standard to define split-trigger rules, canonical index-plus-child-file patterns, naming rules, traceability requirements, dependency-first cutover rules, and required verification.
-- Inventory remaining likely split candidates, legacy split-attempt artifacts, and lagging repo delivery artifacts under the new standard.
-- After the structural-standard pass and knowledge-doc-maintainer validation are in place, resume the extracted-folder integration pass under the new rules and keep the duplicate-content audit queued behind that work.
+- Replace the patched `dcoir-skill-regression-auditor` external skill package and use it to lead the broad deep-scan and patch campaign across the remaining `dcoir-*` helper skills.
+- Present optional ChatGPT Codex tasks as step-by-step, click-by-click learning opportunities for the operator, starting with basic Codex usage before more advanced workflows.
+- Consider creating a dedicated `dcoir-readme-maintainer` skill for root and folder README maintenance and track it in the documentation-and-knowledge lane.
+- Continue the DOC-04-guided architecture work by inventorying likely split candidates, legacy split-attempt artifacts, and lagging repo delivery artifacts under the structural standard.
+- After the skill-maintenance pass and structural-standard work are stable, resume the extracted-folder integration pass under the new rules and keep the duplicate-content audit queued behind that work.
 - Continue using the validated GitHub connector low-level lane for chat-managed readable text updates, canonical task-memory preflight before high-friction GitHub work, and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
