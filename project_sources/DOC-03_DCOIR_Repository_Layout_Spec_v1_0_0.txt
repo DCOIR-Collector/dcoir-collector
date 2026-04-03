@@ -40,7 +40,6 @@ Readable-source rules
   - project_sources/original_collector_artifact_gemini_agents/
   - knowledge/comparative_reference_agent_markdowns/
   - knowledge/generated_agent_markdowns/
-  - knowledge/supporting_knowledge_docs/
 
 Structural refactor layout rule
 - When a growth-prone governed readable file is structurally refactored, preserve one stable parent, index, or wrapper file where future sessions need a predictable entrypoint.

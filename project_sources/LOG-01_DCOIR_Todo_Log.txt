@@ -8,7 +8,7 @@ Current stable pointers
 - Task memory bank root: knowledge/task_memory
 - Task memory manifest: knowledge/task_memory/00_registry/task_memory_manifest.yaml
 - Extracted readable Gemini source folders: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/, project_sources/original_alert_triage_gemini_agents/, and project_sources/original_collector_artifact_gemini_agents/
-- Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/, knowledge/generated_agent_markdowns/, and knowledge/supporting_knowledge_docs/
+- Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
 
 Current active priority
 - Finish the governed structural refactor standard for growth-prone readable files, align the control plane and evergreen docs to it, inventory remaining split candidates and legacy split-attempt artifacts, then resume the extracted-folder integration pass under the new structural rules.

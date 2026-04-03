@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.13
+DCOIR Version Manifest 3.9.14
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -39,11 +39,11 @@ Current extracted readable source folders
 - Original collector artifact Gemini agents: project_sources/original_collector_artifact_gemini_agents/
 - Comparative reference agent markdowns: knowledge/comparative_reference_agent_markdowns/
 - Generated agent markdowns: knowledge/generated_agent_markdowns/
-- Supporting knowledge markdowns: knowledge/supporting_knowledge_docs/
 
 Current next work item
 - Finish the governed structural refactor standard for growth-prone readable files and treat it as the active architecture-first work line.
 - Use the structural standard to define split-trigger rules, canonical index-plus-child-file patterns, naming rules, traceability requirements, dependency-first cutover rules, and required verification.
 - Inventory remaining likely split candidates, legacy split-attempt artifacts, and lagging repo delivery artifacts under the new standard.
 - After the structural-standard pass is in place, resume the extracted-folder integration pass under the new rules and keep the duplicate-content audit queued behind that work.
+- Verify that dcoir-knowledge-doc-maintainer still matches the current GitHub-primary knowledge-doc workflow after the legacy extracted supporting-knowledge-doc folder removal.
 - Continue using the validated GitHub connector low-level lane for chat-managed readable text updates, canonical task-memory preflight before high-friction GitHub work, and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.

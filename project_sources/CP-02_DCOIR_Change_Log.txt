@@ -1,6 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.14
+Change class: legacy extracted supporting-knowledge-doc folder removal and control-plane refresh
+
+What changed
+- Removed the legacy extracted folder `knowledge/supporting_knowledge_docs/` and its stale pre-GitHub-primary supporting knowledge-doc files from the governed repo working line.
+- Refreshed the manifest, layout spec, knowledge README, todo log, and session handoff posture so the deleted folder is no longer treated as a current extracted readable knowledge folder.
+- Kept the extracted Gemini folders plus the comparative and generated agent markdown folders as the current extracted readable side-material set.
+- Added an explicit todo to verify that `dcoir-knowledge-doc-maintainer` still matches the current GitHub-primary knowledge-doc workflow before any future knowledge-doc regeneration or broader delete decisions.
+
+Why
+- The deleted supporting knowledge-doc set reflected older baseline and packaging posture from before GitHub became the project's primary readable working repository.
+- Keeping stale extracted knowledge docs in the current working line would create avoidable confusion about what is current and what should be maintained.
+- The current control plane and maintained knowledge workflow should point at the up-to-date GitHub-primary model rather than preserve obsolete extracted docs as if they were current.
+
+Validation notes
+- Verified the legacy folder paths return absent after the grouped delete landed on main.
+- Refreshed the current-state surfaces that previously named `knowledge/supporting_knowledge_docs/` as a current extracted readable folder.
+- Left the `dcoir-knowledge-doc-maintainer` verification todo in place so the maintained knowledge-doc workflow can be checked against the current control plane next.
+
+[PRIOR]
 Version: 3.9.13
 Change class: structural refactor standard activation and control-plane reprioritization
 

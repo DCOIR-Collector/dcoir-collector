@@ -16,7 +16,7 @@ Current stable artifacts
 - Todo child files: project_sources/todo/*.txt
 - Governed helper-skills routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 - Extracted readable Gemini source folders: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/, project_sources/original_alert_triage_gemini_agents/, and project_sources/original_collector_artifact_gemini_agents/
-- Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/, knowledge/generated_agent_markdowns/, and knowledge/supporting_knowledge_docs/
+- Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
@@ -33,7 +33,8 @@ Current validated status
 - The harness readable source remains run_DCOIR_Tests.ps1.
 - The task-memory bank remains implemented in GitHub using a canonical registry plus compiled indexes.
 - The repo also contains a governed combined analyst-facing DCOIR master prompt and governed Gemini merged-agent design artifacts that should be treated as core project deliverables.
-- The newly extracted readable Gemini and supporting-knowledge folders are now part of the governed repo working line.
+- The extracted readable Gemini folders plus the comparative and generated agent-markdown folders remain part of the governed repo working line.
+- The legacy extracted supporting-knowledge-doc folder has been removed from the current working line after stale pre-GitHub-primary content review.
 - The old dcoir-github-operator lane is retired and the old DCOIR_Collector_parts path has been removed.
 - The dcoir-github-api validation route is retired from the active working line and should not be treated as the next planned path.
 - The stale outlier PR and branch cleanup is complete and is no longer treated as a pending review item.
@@ -45,10 +46,11 @@ Current session outcomes
 - Promoted the structural refactor standard to the active architecture-first work line across the control plane, evergreen docs, todo posture, and handoff posture.
 - Preserved the validated GitHub connector low-level lane for chat-managed readable-text work and documented GitHub Desktop as the easiest approved operator path for bulk local placement and binary or zip handling.
 - Kept the extracted-folder integration line and duplicate-audit line behind the structural-standard pass.
+- Removed the obsolete extracted `knowledge/supporting_knowledge_docs/` folder after explicit operator approval and aligned the current-state surfaces so it is no longer treated as current.
 - Left the helper-skills routing note in place as a descriptive project-side aid and not a control-plane authority source.
 
 Current next planned work item
-- Use DOC-04 to inventory remaining likely split candidates, naming-normalization targets, legacy split-attempt artifacts, and lagging repo delivery artifacts, then resume the extracted readable folder integration pass under the new structural rules.
+- Verify that dcoir-knowledge-doc-maintainer still matches the current GitHub-primary knowledge-doc workflow after the legacy supporting-knowledge-doc folder removal, then use DOC-04 to inventory remaining likely split candidates, naming-normalization targets, legacy split-attempt artifacts, and lagging repo delivery artifacts before resuming the extracted readable folder integration pass under the new structural rules.
 
 Recommended next move
-- Audit the governed repo for the next real split/refactor targets under DOC-04, then resume the extracted readable folder integration line with the structural standard now acting as the architecture-first guardrail.
+- Review dcoir-knowledge-doc-maintainer against the current control plane and maintained knowledge-doc workflow, then continue the DOC-04-guided audit for the next real split/refactor targets while the reduced extracted-folder set remains clean and current.
