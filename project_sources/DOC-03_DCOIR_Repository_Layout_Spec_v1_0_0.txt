@@ -33,7 +33,7 @@ Readable-source rules
   - project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 - Structural refactor standard:
   - project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt
-- Knowledge markdown kn knowledge/ is the readable working source when present.
+- Knowledge markdown in knowledge/ is the readable working source when present.
 - Extracted readable source folders currently include:
   - project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/
   - project_sources/original_alert_triage_gemini_agents/
