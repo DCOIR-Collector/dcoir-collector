@@ -1,0 +1,31 @@
+DCOIR Helper Skill Workflow Decisions - 2026-04-03
+
+Purpose
+- Capture the approved 2026-04-03 workflow decisions for helper-skill process improvement, closed-loop memory use, session-local write buffering, GitHub source rollout, and post-change regression.
+
+Approved durable workflow decisions
+- Use `dcoir-memory-preflight` both before high-friction execution and after blockers are overcome when the lesson could improve a repeatable workflow or reusable process guidance.
+- Treat session-local write buffers and later grouped GitHub flushes as a valid DCOIR helper-skill design line.
+- Show the proposed decomposed plan before the first GitHub upload unless the operator explicitly waives preview.
+- Prefer staging content in-session and using as few GitHub operations as possible.
+- After every helper-skill create or update, pass the result through `dcoir-skill-regression-auditor`.
+- When helper-skill source is governed in GitHub, use the new-skill workflow of build, download, manual install, extract, and GitHub Desktop source ingest.
+- When helper-skill source is already governed in GitHub, use the update workflow of build, download, manual install, and assistant-managed GitHub source update when the connector lane is safe.
+
+Implementation posture
+- Treat the session-local buffer design as staged implementation work, not as already-complete cross-session memory.
+- Prefer explicit flush-check triggers over pretending the chat can silently monitor elapsed time in the background.
+- Keep grouped-write limitations honest until the in-chat connector lane safely supports the intended batched update posture for existing-file updates.
+
+Highest-value skill candidates for future buffer review
+- `dcoir-plan-tracker`
+- `dcoir-session-tracker`
+- `dcoir-decision-policy`
+- `dcoir-memory-preflight`
+- `dcoir-skill-regression-auditor`
+
+Next implementation sequence
+1. Govern the approved helper-skill workflow rules in readable project sources.
+2. Upgrade the core routing and stateful helper skills so the rules become enforceable behavior.
+3. Review the broader `dcoir-*` skill set for whether each skill should support session-local buffering or closed-loop preflight routing.
+4. After those workflow rules are grounded, run the newly installed `dcoir-readme-maintainer` on a baseline README maintenance pass.
