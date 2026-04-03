@@ -1,0 +1,282 @@
+DCOIR Change Log 3.4
+
+[CURRENT]
+Version: Gemini_First_Bounded_Design_Artifact_Promotion_3_4
+Type: First bounded Gemini Enterprise Agent Designer design artifact promotion and workflow sync
+Summary:
+- The current stable operator-facing collector baseline remains unchanged in logic as ST-01_DCOIR_Collector_3_1_4.txt.
+- No collector logic change was made in this sync.
+- The first bounded Gemini Enterprise Agent Designer design artifact is now promoted as PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt.
+- The promoted design artifact is now part of the uploaded Project-readable PP-class source set as the current approved Gemini design artifact source.
+- The prompt-pack operating model remains dual-form: maintain modular prompt-pack source files as the authoritative build set and maintain one promoted combined analyst-facing master prompt for runtime use.
+- The approved Gemini generator workflow remains the bounded workflow source for regeneration and validation, and the promoted bounded design artifact is now the current generated design reference for the workflow line.
+- The current next planned work item is now to maintain the modular prompt-pack line, the combined analyst-facing master prompt, the Gemini generator workflow, the promoted bounded Gemini design artifact, and supporting Knowledge alignment after future stable script or workflow changes.
+
+Validation summary:
+- The candidate passed bounded design-artifact generation and exact source-order conformance review against the current approved PP-01 through PP-08 line under PP-09 workflow control.
+- The candidate passed topology-preservation, runtime-parity, schema-inheritance, guardrails-preservation, deterministic-regeneration, and adversarial field-shape-hardening checks before promotion.
+- The candidate corrected PP-08 design-authority leakage, restored explicit PP-02 universal-envelope inheritance, restored canonical nested field shapes, and removed a case-specific global lane preference before promotion.
+- No live Gemini generator runtime exists in the current Project workspace, so runtime execution testing was not possible in this promotion scope.
+- The promoted design artifact remains aligned with the current modular prompt-pack authority, combined runtime parity model, Gemini generator workflow contract, and full-refresh packaging posture.
+
+Workflow sync:
+- CP-01_DCOIR_Version_Manifest.txt now records the promoted bounded Gemini design artifact as current in the uploaded Project-readable source set.
+- DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt now reflects the promoted bounded Gemini design artifact in the current stable artifacts list and current AI-workflow posture.
+- DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt now maps the promoted bounded Gemini design artifact into repo-mode and full-refresh packaging outputs.
+- LOG-01_DCOIR_Todo_Log.txt now moves first bounded Gemini design-artifact generation from Next to Complete and uploaded and points to ongoing workflow and Knowledge alignment maintenance as the next planned work item.
+- LOG-02_DCOIR_Lessons_Learned_Log.txt now records the durable lessons that generated Gemini design artifacts should tighten PP-02 field inheritance before promotion and must keep PP-08 parity-only rather than design-time-authority status.
+- LOG-03_DCOIR_Session_Handoff_Brief.txt now reflects the promoted bounded Gemini design artifact and the new maintenance-focused next-step posture.
+- Knowledge - 01 - Overview and About.md.txt and Knowledge - 10 - AI Prompt and Agent Design.md.txt now reflect the current PP-10 design-artifact state and roadmap.
+- PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt is now the promoted Project-readable Gemini design artifact source and no longer carries candidate-only status language.
+
+Prompt-pack and AI-workflow Project-readable sources:
+- PP-01_System_Prompt_v1_0_1.txt
+- PP-02_Output_Schema_v1_0_0.txt
+- PP-03_Baseline_Triage_Prompt_v1_0_0.txt
+- PP-04_Enrichment_Review_Prompt_v0_1_1.txt
+- PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt
+- PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt
+- PP-07_Agent_Guardrails_v1_0_0.txt
+- PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt
+- PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
+- PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt
+
+Supporting package asset:
+- DCOIR_Collector.zip
+
+Rollback reference:
+- RB-01_DCOIR_Collector_refinement_2_1_3.txt
+
+Files intentionally refreshed in this first-bounded-design-artifact promotion sync:
+- control-plane sources
+- evergreen setup guide
+- repo-layout spec
+- situational logs
+- supporting Knowledge doc 01
+- supporting Knowledge doc 10
+- Gemini design artifact source 10
+
+Next planned work item:
+- Maintain the modular prompt-pack line, the combined analyst-facing master prompt, the Gemini generator workflow, the promoted bounded Gemini design artifact, and supporting Knowledge alignment after future stable script or workflow changes.
+
+DCOIR Change Log 3.1
+
+[PRIOR BASELINE]
+Version: PromptPack_Final_Case_Synthesis_3_1
+Type: Final case synthesis prompt promotion and workflow sync
+Summary:
+- The current stable operator-facing collector baseline remains unchanged.
+- No collector logic change was made in this sync.
+- The final case synthesis prompt is now promoted as 11_DCOIR_Collector_3_1_4_Final_Case_Synthesis_Prompt_v0_1_1.txt.
+- The final case synthesis prompt is now part of the uploaded Project-readable prompt-pack source set.
+- The promoted prompt stays aligned with the current system prompt, output schema, and evidence-backed case-synthesis model.
+- Bounded validation and hardening reinforced disposition discipline, action-array discipline, recommended-next-step alignment, and no-filler benign closure behavior.
+- The current next planned work item is now agent guardrails.
+
+Validation summary:
+- The candidate passed the malicious downloader and persistence synthetic case without regressing containment, hunting, or follow-up guidance.
+- The candidate passed the benign-but-weird patch-management synthetic case after hardening reduced pressure to invent filler actions or generic reassurance.
+- The candidate passed the partial ambiguous remote-PowerShell synthetic case while keeping confidence bounded and scope-limited.
+- The revised candidate now explicitly allows empty containment, hunting, and follow_up arrays when no action in that class is justified by the reviewed scope.
+- The revised candidate now forces recommended_next_step to align with the strongest justified follow-up action or with close_case or monitor_only when those are the correct disposition-aligned outcomes.
+- The revised candidate now explicitly forbids filler reassurance, unsupported hygiene advice, or unsupported environment-clear language in benign and likely-benign closure summaries.
+- The promoted prompt remains aligned with the current universal schema envelope and the required final case response order from executive summary through recommended actions.
+
+Workflow sync:
+- DCOIR_Version_Manifest.txt now records the promoted final case synthesis prompt as current.
+- DCOIR_Todo_Log.txt now moves final case synthesis from Next to Complete and uploaded.
+- DCOIR_Session_Handoff_Brief.txt now reflects the expanded approved modular prompt-pack set and the next modular work item.
+- DCOIR_Lessons_Learned_Log.txt now records the durable lessons from final-case-synthesis promotion testing.
+- Knowledge - 01 - Overview and About.md.txt now points to agent guardrails as the next modular prompt-pack work item.
+- Knowledge - 07 - Artifact Review Guide.md.txt and Knowledge - 10 - AI Prompt and Agent Design.md.txt now reflect the approved final case synthesis prompt as part of the current modular set.
+
+Prompt-pack Project-readable sources:
+- 06_DCOIR_Collector_3_1_4_System_Prompt_v1_0_1.txt
+- 07_DCOIR_Collector_3_1_4_Output_Schema_v1_0_0.txt
+- 08_DCOIR_Collector_3_1_4_Baseline_Triage_Prompt_v1_0_0.txt
+- 09_DCOIR_Collector_3_1_4_Enrichment_Review_Prompt_v0_1_1.txt
+- 10_DCOIR_Collector_3_1_4_Retrieved_Artifact_Review_Prompt_v0_1_1.txt
+- 11_DCOIR_Collector_3_1_4_Final_Case_Synthesis_Prompt_v0_1_1.txt
+
+Supporting package asset:
+- DCOIR_Collector.zip
+
+Rollback reference:
+- DCOIR_Collector_refinement_2_1_3.txt
+
+Files intentionally refreshed in this final case synthesis promotion sync:
+- version manifest
+- change log
+- todo log
+- lessons learned log
+- session handoff brief
+- Knowledge doc 01
+- Knowledge doc 07
+- Knowledge doc 10
+- final case synthesis prompt 11
+
+Next planned work item:
+- Build agent guardrails against the current stable script line and validated modular prompt-pack set.
+
+[PRIOR BASELINE]
+Version: PromptPack_Enrichment_Review_3_1_FullRefresh_Hardening
+Type: Promotion workflow hardening and full-refresh repack
+Summary:
+- The current stable operator-facing collector baseline remains unchanged.
+- No collector logic change was made in this sync.
+- No enrichment-review prompt content change was made in this sync.
+- 09_DCOIR_Collector_3_1_4_Enrichment_Review_Prompt_v0_1_1.txt remains the current uploaded enrichment-review prompt-pack source.
+- The promotion workflow is now hardened so promotion bundles default to full-refresh workspace replacement unless RELEASE_INSTRUCTIONS.txt explicitly declares a targeted update.
+- The previously produced reduced-scope promotion bundle is superseded by a rebuilt full-refresh upload bundle that carries the complete uploaded Project source set, the complete supporting Knowledge-doc set, and the current supporting uploaded asset.
+- The current next planned work item remains the retrieved artifact review prompt.
+
+Validation summary:
+- The promoted enrichment-review prompt remains aligned with the current system prompt, output schema, and one-action-at-a-time enrichment model.
+- The hardened workflow now matches the long-standing operator method of deleting the current uploaded workspace set and re-uploading the complete refreshed set from one bundle.
+- The evergreen workflow guide, transition checklist, repo-layout spec, and current governance files now express the same default packaging behavior.
+- The rebuilt release bundle now follows the canonical full-refresh update-bundle layout: project_sources/, supporting_knowledge_docs/, supporting_assets/, and release_notes/.
+
+Workflow sync:
+- AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt now makes promotion bundles default to full-refresh upload bundles unless a targeted update is explicitly requested.
+- DCOIR_Project_Transition_Checklist.txt now treats targeted update bundles as the exception path and full-refresh promotion bundles as the default path.
+- DCOIR_Repository_Layout_Spec_v1_0_0.txt now states that promotion bundles default to full-refresh update mode unless RELEASE_INSTRUCTIONS.txt explicitly labels the delivery as targeted update.
+- DCOIR_Version_Manifest.txt, DCOIR_Todo_Log.txt, DCOIR_Session_Handoff_Brief.txt, and DCOIR_Lessons_Learned_Log.txt now reflect the hardened default full-refresh promotion workflow.
+- Knowledge - 01 - Overview and About.md.txt now reflects the default full-refresh replacement model for promotions and broad sync bundles.
+
+Prompt-pack Project-readable sources:
+- 06_DCOIR_Collector_3_1_4_System_Prompt_v1_0_1.txt
+- 07_DCOIR_Collector_3_1_4_Output_Schema_v1_0_0.txt
+- 08_DCOIR_Collector_3_1_4_Baseline_Triage_Prompt_v1_0_0.txt
+- 09_DCOIR_Collector_3_1_4_Enrichment_Review_Prompt_v0_1_1.txt
+
+Supporting package asset:
+- DCOIR_Collector.zip
+
+Rollback reference:
+- DCOIR_Collector_refinement_2_1_3.txt
+
+Files intentionally refreshed in this workflow-hardening and full-refresh repack sync:
+- version manifest
+- change log
+- setup guide
+- transition checklist
+- repo-layout spec
+- todo log
+- lessons learned log
+- session handoff brief
+- Knowledge doc 01
+
+Next planned work item:
+- Build the retrieved artifact review prompt for the DCOIR_Collector 3.1.4 prompt pack as the next modular source file.
+
+[EARLIER BASELINE]
+Version: PromptPack_Enrichment_Review_3_1
+Type: Enrichment review prompt promotion and workflow sync
+Summary:
+- The current stable operator-facing collector baseline remains unchanged.
+- No collector logic change was made in this sync.
+- The enrichment review prompt is now promoted as 09_DCOIR_Collector_3_1_4_Enrichment_Review_Prompt_v0_1_1.txt.
+- The enrichment review prompt is now part of the uploaded Project-readable prompt-pack source set.
+- The promoted prompt stays aligned with the current system prompt, output schema, and one-action-at-a-time enrichment model.
+- Prompt-pack validation reinforced schema-envelope inheritance, partial-session discipline, retrieval-handoff boundaries, and conflict handling when raw action evidence disagrees with summarized enrichment output.
+- The current next planned work item is now the retrieved artifact review prompt.
+
+Validation summary:
+- The candidate passed controlled suspicious network-refresh review without drifting out of enrichment mode or branching into shotgun next steps.
+- The candidate passed bounded benign-context signer review without over-clearing the broader case.
+- The candidate correctly treated pull-* staging results as retrieval handoff rather than pretending the staged artifact text had already been reviewed.
+- The candidate correctly preferred more specific raw action evidence when it conflicted with higher-level enrich-finalize or summarized output.
+- The promoted prompt remained aligned with the current universal schema envelope and current enrichment-action families.
+
+Workflow sync:
+- DCOIR_Version_Manifest.txt now records the promoted enrichment review prompt as current.
+- DCOIR_Todo_Log.txt now moves enrichment review from Next to Complete and uploaded.
+- DCOIR_Session_Handoff_Brief.txt now reflects the promoted enrichment review prompt and the next modular work item.
+- DCOIR_Lessons_Learned_Log.txt now records the durable lessons from enrichment-review promotion testing.
+- Knowledge - 01 - Overview and About.md.txt now points to the retrieved artifact review prompt as the next modular prompt-pack work item.
+- Knowledge - 07 - Artifact Review Guide.md.txt and Knowledge - 10 - AI Prompt and Agent Design.md.txt now reflect the expanded approved modular prompt-pack set.
+
+Prompt-pack Project-readable sources:
+- 06_DCOIR_Collector_3_1_4_System_Prompt_v1_0_1.txt
+- 07_DCOIR_Collector_3_1_4_Output_Schema_v1_0_0.txt
+- 08_DCOIR_Collector_3_1_4_Baseline_Triage_Prompt_v1_0_0.txt
+- 09_DCOIR_Collector_3_1_4_Enrichment_Review_Prompt_v0_1_1.txt
+
+Supporting package asset:
+- DCOIR_Collector.zip
+
+Rollback reference:
+- DCOIR_Collector_refinement_2_1_3.txt
+
+Files intentionally refreshed in this enrichment review promotion sync:
+- version manifest
+- change log
+- todo log
+- lessons learned log
+- session handoff brief
+- Knowledge doc 01
+- Knowledge doc 07
+- Knowledge doc 10
+- enrichment review prompt 09
+
+Next planned work item:
+- Build the retrieved artifact review prompt for the DCOIR_Collector 3.1.4 prompt pack as the next modular source file.
+
+[HISTORICAL BASELINE]
+Version: Knowledge_Docs_Markdown_Migration_3_1
+Type: Knowledge-doc markdown migration and helper-skill realignment sync
+Summary:
+- The current stable operator-facing collector baseline remains unchanged.
+- No collector logic change was made in this sync.
+- No prompt-pack logic change was made in this sync.
+- The supporting human-readable Knowledge-doc set is now migrated from legacy .docx output to markdown stored as stable Knowledge - ## - Title.md.txt files.
+- The uploaded Knowledge-doc set remains a supporting human-readable source class rather than control-plane authority.
+- The setup guide and repo-layout spec now align on a three-class full-refresh bundle model: project_sources, supporting_knowledge_docs, and supporting_assets.
+- The approved helper skills dcoir-knowledge-doc-maintainer and dcoir-repo-packager were updated to match the markdown Knowledge-doc model.
+- The current next planned work item remains the enrichment review prompt.
+
+Validation summary:
+- The Knowledge-doc maintainer skill now inventories legacy .docx and current .md.txt Knowledge-doc states, emits markdown stored as .md.txt, and packages the full Knowledge-doc set as a ZIP.
+- The markdown Knowledge-doc builder passed a live sample generation test.
+- The repo packager correctly failed against the legacy workspace because the manifest and file set still reflected .docx Knowledge docs.
+- The repo packager then passed a simulated post-migration workspace test, placing Knowledge docs in DCOIR_Project/knowledge/ and separating full-refresh output into project_sources/, supporting_knowledge_docs/, and supporting_assets/.
+- The packager continues to emit native runtime filenames by stripping only the terminal .txt from known readable script sources where the layout rules allow that.
+
+Workflow sync:
+- DCOIR_Version_Manifest.txt now records the current uploaded Knowledge-doc set as .md.txt files.
+- AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt now records markdown Knowledge-doc handling and the three-class full-refresh bundle model.
+- DCOIR_Repository_Layout_Spec_v1_0_0.txt now records Knowledge - ## - Title.md.txt handling in repo mode and supporting_knowledge_docs/ handling in full-refresh update mode.
+- DCOIR_Todo_Log.txt now records the markdown Knowledge-doc set as complete and uploaded.
+- DCOIR_Session_Handoff_Brief.txt now reflects the markdown Knowledge-doc set and the updated full-refresh bundle structure.
+- DCOIR_Lessons_Learned_Log.txt now records the durable lessons from using .md.txt Knowledge docs for chat-readable access and from separating supporting Knowledge docs cleanly in bundle output.
+
+Uploaded supporting human-readable Knowledge docs:
+- Knowledge - 01 - Overview and About.md.txt
+- Knowledge - 02 - Elastic Quick Start.md.txt
+- Knowledge - 03 - Local Test and Regression.md.txt
+- Knowledge - 04 - Tier 1 Collect Runbook.md.txt
+- Knowledge - 05 - Tier 2 Collect Runbook.md.txt
+- Knowledge - 06 - Enrichment Actions.md.txt
+- Knowledge - 07 - Artifact Review Guide.md.txt
+- Knowledge - 08 - Troubleshooting.md.txt
+- Knowledge - 09 - FAQ.md.txt
+- Knowledge - 10 - AI Prompt and Agent Design.md.txt
+
+Supporting package asset:
+- DCOIR_Collector.zip
+
+Rollback reference:
+- DCOIR_Collector_refinement_2_1_3.txt
+
+Files intentionally refreshed in this markdown Knowledge-doc migration sync:
+- version manifest
+- change log
+- setup guide
+- repo-layout spec
+- todo log
+- lessons learned log
+- session handoff brief
+- Knowledge docs 01 through 10
+
+Next planned work item:
+- Build the enrichment review prompt for the DCOIR_Collector 3.1.4 prompt pack as the next modular source file.

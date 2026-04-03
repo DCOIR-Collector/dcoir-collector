@@ -1,0 +1,377 @@
+PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0
+
+PURPOSE
+- This file defines the repeatable generator workflow for deriving a Gemini Enterprise Agent Designer build from the current approved DCOIR prompt-pack line.
+- It locks the generator output contract, source order, validation gates, and packaging rules against the current PP-01 through PP-08 source line.
+- It exists to preserve behavioral alignment during future Gemini agent and sub-agent design work.
+
+STATUS AND AUTHORITY
+- This file is the current Project-readable Gemini generator workflow source in the uploaded PP-class working set.
+- Treat the Project Instructions, CP-01_DCOIR_Version_Manifest.txt, and CP-02_DCOIR_Change_Log.txt as the control plane above this file.
+- Treat this file as current only as recorded by the control plane.
+- Supporting Knowledge docs may inform this workflow but must not override the control plane or validated prompt-pack source files.
+
+ROLE OF THIS WORKFLOW
+- Use this workflow when the operator needs to generate, refresh, or validate a Gemini Enterprise Agent Designer representation of the current approved DCOIR analyst workflow.
+- Use it only after re-anchoring to the current control plane.
+- Do not use it to decide promotions by itself.
+- Do not use it to bypass manifest authority, change-log history, or the validated modular prompt-pack line.
+
+PRIMARY OBJECTIVE
+- Derive one Gemini-compatible agent design that preserves the validated DCOIR workflow across:
+  - baseline triage
+  - enrichment review
+  - retrieved artifact review
+  - final case synthesis
+- Preserve the current dual-form operating model:
+  - modular prompt-pack files remain the design-time source of truth
+  - the promoted combined master prompt remains the runtime parity reference
+- Prevent behavioral drift during agent conversion.
+
+CONTROL-PLANE PRECHECK
+Before any generator run:
+1. Read Project Instructions.
+2. Read CP-01_DCOIR_Version_Manifest.txt.
+3. Read CP-02_DCOIR_Change_Log.txt.
+4. Stop if the manifest, change log, or current uploaded source set conflict.
+5. Use only the files marked CURRENT in the manifest as authoritative uploaded Project-readable sources.
+
+REQUIRED SOURCE ORDER
+The generator must consume current authoritative sources in this exact order.
+
+A. Control-plane authority and current-state anchors
+1. Project Instructions
+2. CP-01_DCOIR_Version_Manifest.txt
+3. CP-02_DCOIR_Change_Log.txt
+
+B. Design-time prompt-pack authority
+4. PP-01_System_Prompt_v1_0_1.txt
+5. PP-02_Output_Schema_v1_0_0.txt
+6. PP-03_Baseline_Triage_Prompt_v1_0_0.txt
+7. PP-04_Enrichment_Review_Prompt_v0_1_1.txt
+8. PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt
+9. PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt
+10. PP-07_Agent_Guardrails_v1_0_0.txt
+
+C. Runtime parity reference
+11. PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt
+
+D. Secondary supporting workflow references
+12. DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
+13. DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
+14. LOG-01_DCOIR_Todo_Log.txt
+15. LOG-02_DCOIR_Lessons_Learned_Log.txt
+16. LOG-03_DCOIR_Session_Handoff_Brief.txt
+17. Knowledge - 10 - AI Prompt and Agent Design.md.txt
+
+SOURCE USE RULES
+- The control plane defines authority and current-state truth.
+- PP-01 through PP-07 are the design-time behavioral authority.
+- PP-08 is the runtime parity reference, not the design-time source of truth.
+- Secondary supporting references may clarify workflow intent, roadmap, packaging, or durable lessons, but they must not replace prompt-pack authority.
+- Do not derive Gemini behavior from ad hoc prompt copies, stale local-only notes, or superseded historical filenames.
+
+CANONICAL EXTRACTION MODEL
+Extract the following layers in order.
+
+1. Shared mission and interaction layer from PP-01
+- role
+- mission
+- workflow stages
+- interaction style
+- command-lane rules
+- safety and scope limits
+
+2. Canonical output-contract layer from PP-02
+- schema envelope
+- evidence-first rules
+- partial-batch discipline
+- minimal-next-step discipline
+- disposition discipline
+- mode-specific response order
+
+3. Mode-specialized behavior layers
+- baseline triage from PP-03
+- enrichment review from PP-04
+- retrieved artifact review from PP-05
+- final case synthesis from PP-06
+
+4. Cross-cutting drift-prevention layer from PP-07
+- evidence-first preservation
+- explicit separation of evidence, inference, and outside context
+- strict mode boundaries
+- schema inheritance rather than local schema replacement
+- endpoint versus workstation command-lane separation
+- retrieval-handoff discipline
+- bounded benign closure behavior
+- durable behavior across future collector increments when the workflow contract remains materially the same
+
+5. Runtime parity layer from PP-08
+- confirm the extracted design still matches the validated combined runtime behavior
+- use PP-08 to detect drift, wrapper loss, or integration mistakes
+- do not let PP-08 override contradictory modular-source authority
+
+TARGET GEMINI AGENT TOPOLOGY
+The default generator target is a bounded multi-agent design with one orchestration layer and four task-specialized agents.
+
+1. Orchestrator / Entry Agent
+- receives the analyst request or staged artifact text
+- determines the best-fit workflow mode
+- preserves continuity across rounds
+- routes to the correct task agent
+- enforces the shared foundation and handoff rules
+
+2. Baseline Triage Agent
+- derived primarily from PP-03
+- reviews baseline-stage artifacts and analyst observations
+- ranks the strongest findings
+- recommends the single best next step when possible
+
+3. Enrichment Review Agent
+- derived primarily from PP-04
+- evaluates targeted enrichment output against the baseline question being tested
+- prefers raw action evidence over weaker summary text
+- avoids broad branching when the evidence does not justify it
+
+4. Retrieved Artifact Review Agent
+- derived primarily from PP-05
+- explains what a script, config, task XML, log excerpt, or similar artifact appears to do within the reviewed scope
+- keeps confidence bounded for partial or analyst-summarized artifacts
+- keeps follow-up leads narrow and materially useful
+
+5. Final Case Synthesis Agent
+- derived primarily from PP-06
+- summarizes only reviewed evidence actually in scope
+- reconciles contradictions explicitly
+- supports empty containment, hunting, or follow_up outputs when justified by scope
+
+SHARED FOUNDATION FOR EVERY GENERATED AGENT
+Every generated Gemini agent or sub-agent must inherit all of the following.
+- analyst-copilot posture rather than generic chatbot behavior
+- defensive-only security analysis boundaries
+- evidence-first reasoning
+- explicit uncertainty handling
+- partial-scope discipline
+- single-best-next-step behavior when appropriate
+- concise, structured, operational rendering
+- preservation of endpoint versus analyst-workstation execution-lane separation
+- prohibition on inventing artifact contents or over-claiming benignity or maliciousness
+
+LOCKED GENERATOR OUTPUT CONTRACT
+Every generator run must emit one structured design artifact with these sections in this exact order.
+
+1. Generator run metadata
+- workflow_name
+- workflow_version
+- run_date_utc
+- generator_status
+- scope_note
+
+2. Authority and source check
+- control_plane_status
+- manifest_version_used
+- change_log_version_used
+- conflict_status
+- authority_notes
+
+3. Source inventory
+- exact filenames used
+- source roles
+- source-order confirmation
+- source omissions or substitutions, if any
+
+4. Shared Gemini foundation
+- shared role wording
+- global constraints
+- inherited schema rules
+- inherited guardrails
+- environment and command-lane rules
+
+5. Agent topology
+- orchestrator description
+- task-agent list
+- routing rules
+- mode map
+- handoff boundaries
+
+6. Per-agent build blocks
+For each generated agent:
+- agent_name
+- derived_from_source_files
+- purpose
+- when_it_applies
+- required_inputs
+- required_output_shape
+- mandatory_behavior
+- prohibited_drift
+- stop_conditions
+- handoff_triggers
+
+7. Output-contract mapping
+- map shared output requirements back to PP-02
+- map mode-specific response order back to the appropriate workflow stage
+- note any Gemini-specific rendering adaptations without changing behavior
+
+8. Runtime parity review
+- PP-08 parity status
+- behaviorally aligned yes or no
+- mismatches detected
+- corrective notes
+
+9. Validation record
+- source-order check
+- modular-authority check
+- schema-inheritance check
+- guardrails-preservation check
+- deterministic-regeneration check
+- promotion-readiness recommendation
+
+10. Packaging plan
+- single-file or multi-file delivery classification
+- required bundle type if multi-file
+- repo-mode placement
+- full-refresh placement
+- operator replacement instructions status
+
+GENERATOR OUTPUT RULES
+- Do not emit a loose narrative with missing sections.
+- Do not collapse shared constraints into task-specific prompts only.
+- Do not redefine the schema locally inside one generated task agent.
+- Do not let any generated agent escape the four-mode DCOIR workflow unless the control plane later changes that contract.
+- Do not add unvalidated extra agents by default.
+- If a future run intentionally adds an extra agent, label it as a non-default extension and justify it explicitly.
+
+ALLOWED GEMINI ADAPTATION RULES
+- Gemini-specific wording changes are allowed only when they preserve behavior.
+- Structural adjustments for Gemini Agent Designer field names are allowed only when they do not alter source meaning.
+- Concision improvements are allowed when they do not remove constraints, mode boundaries, schema expectations, or validation gates.
+- No adaptation may weaken evidence discipline, scope discipline, command-lane separation, or bounded closure behavior.
+
+NON-NEGOTIABLE VALIDATION GATES
+A generator run fails if any of the following is true.
+- The control plane was not re-read first.
+- The current manifest and change log do not support the same active prompt-pack line.
+- Any current PP-01 through PP-07 source file is omitted from the design-time extraction path.
+- PP-08 is used as the design-time authority instead of the modular set.
+- The generated design replaces the schema locally instead of inheriting it.
+- The generated design weakens evidence-first behavior.
+- The generated design weakens partial-scope discipline.
+- The generated design weakens single-best-next-step behavior.
+- The generated design weakens endpoint versus analyst-workstation lane separation.
+- The generated design weakens retrieval-handoff discipline.
+- The generated design weakens bounded benign closure behavior.
+- The generated design introduces unsupported offensive, destructive, or evidence-destruction guidance.
+- The generated design is not reproducible from the same approved source set.
+
+REQUIRED VALIDATION CHECKLIST
+Every successful generator run must explicitly record all of the following.
+
+1. Control-plane alignment check
+- current control-plane files were read first
+- no unresolved conflict exists
+
+2. Source-order fidelity check
+- exact source list matches the current required source order
+- no unauthorized substitution exists
+
+3. Modular-source authority check
+- PP-01 through PP-07 remain the design-time authority
+- PP-08 is treated only as the runtime parity reference
+
+4. Schema inheritance check
+- shared output contract maps cleanly to PP-02
+- no task agent replaces the canonical schema envelope
+
+5. Guardrails preservation check
+- generated design preserves all current PP-07 validation targets
+
+6. Runtime parity check
+- generated design remains behaviorally aligned with the current combined runtime source
+- any mismatch is identified before promotion
+
+7. Deterministic regeneration check
+- rerunning the generator against the same approved inputs should reproduce the same design artifact except for intentionally variable metadata such as timestamp lines
+- if a non-metadata difference appears, treat it as a fidelity defect and fail the run until corrected
+
+8. Bounded scenario check
+- validate at least one baseline triage scenario
+- validate at least one enrichment review scenario
+- validate at least one retrieved artifact review scenario
+- validate at least one final case synthesis scenario
+- confirm no regression in scope-bounding or next-step discipline
+
+PACKAGING RULES
+- A one-file draft deliverable may be delivered directly.
+- A multi-file deliverable must be packaged as one ZIP bundle by default.
+- A promotion or broad sync bundle should default to full-refresh workspace replacement unless release_notes/RELEASE_INSTRUCTIONS.txt explicitly declares a targeted update.
+- Do not assume a reduced patch bundle when more than one uploaded Project source is affected.
+
+REQUIRED BUNDLE LAYOUT FOR MULTI-FILE DELIVERY
+Use this top-level layout.
+- update_bundle/
+  - project_sources/
+  - supporting_knowledge_docs/
+  - supporting_assets/
+  - release_notes/
+  - optional project_settings/
+  - optional local_prompts/
+
+PLACEMENT RULES FOR THIS WORKFLOW SOURCE
+- Uploaded Project workspace filename:
+  - PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
+- Repo-mode generated path:
+  - prompts/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
+- Full-refresh bundle path:
+  - project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
+
+BUNDLE CONTENT RULES
+- Keep uploaded Project-readable source filenames unchanged in project_sources/.
+- Keep supporting Knowledge docs unchanged in supporting_knowledge_docs/.
+- Keep supporting uploaded package assets unchanged in supporting_assets/.
+- Include release_notes/RELEASE_INSTRUCTIONS.txt whenever the delivery contains more than one file.
+- Include project_settings/ only when settings-applied control-plane content must be refreshed.
+- Include local_prompts/ only when intentionally maintained local-only prompts exist.
+
+OPERATOR INSTRUCTION RULES
+- When presenting a multi-file promotion or refresh delivery, present the ZIP bundle first.
+- Then list the files inside it.
+- Then provide exact replacement actions in this format:
+  - DELETE from Project:
+    - <old file>
+  - UPLOAD to Project:
+    - <new file>
+- Alphabetize actionable file lists within each action group.
+
+REFRESH WATCHLIST FOR FUTURE MATERIAL UPDATE OF THIS WORKFLOW
+Before promoting a future change to this workflow, review impact to:
+- CP-01_DCOIR_Version_Manifest.txt
+- CP-02_DCOIR_Change_Log.txt
+- DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt if evergreen workflow behavior changed materially
+- DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt if the prompts/ or project_sources/ mapping set changes
+- LOG-01_DCOIR_Todo_Log.txt
+- LOG-02_DCOIR_Lessons_Learned_Log.txt
+- LOG-03_DCOIR_Session_Handoff_Brief.txt
+- Knowledge - 10 - AI Prompt and Agent Design.md.txt
+- any other Knowledge doc whose workflow explanation materially changes
+
+CHANGE-TOLERANCE RULES
+- This workflow should remain usable across future collector or prompt-pack increments when the workflow contract remains materially the same.
+- Keep persistent role wording version-tolerant where possible.
+- If a future source-line change materially affects workflow stages, schema semantics, action naming, or environment rules, re-validate this workflow before treating it as aligned.
+
+STOP CONDITIONS
+Stop and report plainly if any of the following occurs.
+- control-plane ambiguity
+- manifest and change-log conflict
+- missing current source file named in the manifest
+- broken source order
+- unsupported attempt to bypass modular-source authority
+- unresolved drift between generated Gemini design and PP-08 runtime parity expectations
+
+END STATE
+A successful run under this workflow produces one bounded Gemini Enterprise Agent Designer design artifact that:
+- is traceable to the current control plane
+- is derived from the current validated modular prompt-pack line
+- is checked against the promoted combined runtime prompt
+- preserves the current DCOIR workflow contract
+- is ready for review, testing, and later promotion work if approved

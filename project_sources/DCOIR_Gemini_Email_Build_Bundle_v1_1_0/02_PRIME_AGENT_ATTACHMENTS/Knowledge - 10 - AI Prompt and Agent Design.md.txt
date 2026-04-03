@@ -1,0 +1,50 @@
+# Knowledge - 10 - AI Prompt and Agent Design
+
+_Current dual-form prompt-pack posture and current agent-oriented generator workflow rules_
+
+**Summary:** This page explains how the current prompt-pack line is organized, how the promoted combined master prompt fits into the runtime model, and how the approved Gemini generator workflow now fits into future agent-design generation and review.
+
+| Source class | Authoritative basis |
+| --- | --- |
+| Project sources | PP-01_System_Prompt_v1_0_1.txt; PP-02_Output_Schema_v1_0_0.txt; PP-03_Baseline_Triage_Prompt_v1_0_0.txt; PP-04_Enrichment_Review_Prompt_v0_1_1.txt; PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt; PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt; PP-07_Agent_Guardrails_v1_0_0.txt; PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt; PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt; PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt; DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; LOG-01_DCOIR_Todo_Log.txt; CP-01_DCOIR_Version_Manifest.txt |
+| Official external sources | Not required for this page |
+| Scope note | This page documents current approved prompt-pack posture and current approved Gemini workflow posture only. |
+
+## Current approved modular set
+
+- PP-01_System_Prompt_v1_0_1.txt
+- PP-02_Output_Schema_v1_0_0.txt
+- PP-03_Baseline_Triage_Prompt_v1_0_0.txt
+- PP-04_Enrichment_Review_Prompt_v0_1_1.txt
+- PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt
+- PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt
+- PP-07_Agent_Guardrails_v1_0_0.txt
+
+## Current promoted combined runtime source
+
+- PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt
+
+## Current approved Gemini workflow source
+
+- PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
+
+## Current approved Gemini design artifact source
+
+- PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt
+
+## Operating model
+
+- Maintain modular prompt-pack source files as the authoritative build set.
+- Maintain one promoted combined analyst-facing master prompt from the validated modular set for current AI-assistant use.
+- Keep the modular files and the combined master prompt behaviorally aligned.
+- Use the approved Gemini generator workflow to derive future Gemini Enterprise Agent Designer outputs from the validated modular source files, the promoted combined master prompt, and companion knowledge files, not from ad hoc prompt copies.
+- Treat the approved Gemini workflow as a bounded workflow source, not as a replacement for modular prompt-pack authority.
+- Treat the promoted bounded Gemini design artifact as the current generated design reference for the workflow line, not as a replacement for modular prompt-pack authority or the control plane.
+- If no live Gemini generator runtime exists yet, keep validation claims bounded to workflow-source conformance rather than claiming unperformed runtime testing.
+
+## Current roadmap after first bounded Gemini design-artifact promotion
+
+- Maintain modular prompt-pack files, the combined master prompt, the Gemini generator workflow, the promoted bounded Gemini design artifact, and supporting knowledge files aligned with the stable collector line.
+- Re-test prompt, guardrail, Gemini-workflow, and Gemini-design-artifact behavior after any future stable script or workflow change.
+- Future regenerated or extended Gemini design artifacts should still derive through PP-09 from current authoritative sources rather than ad hoc prompt copies.
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

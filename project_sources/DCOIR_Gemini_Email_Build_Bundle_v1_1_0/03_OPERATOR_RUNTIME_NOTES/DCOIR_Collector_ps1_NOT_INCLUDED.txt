@@ -1,0 +1,11 @@
+# DCOIR_Collector.ps1 Not Included
+
+This bundle intentionally omits the live `DCOIR_Collector.ps1` script body.
+
+Target runtime filename:
+- DCOIR_Collector.ps1
+
+Authoritative readable source name in the project:
+- ST-01_DCOIR_Collector_3_1_4.txt
+
+Use the full Knowledge doc set and the collector/harness guidance there for operator behavior, and reconstruct the actual script body later from the authoritative source.

@@ -1,0 +1,32 @@
+# Knowledge - 04 - Tier 1 Collect Runbook
+
+_Baseline collection workflow for standard first-pass collection_
+
+**Summary:** Tier 1 collection is the standard first-pass baseline run. It gathers broad baseline evidence and is the normal entry point before targeted enrichment.
+
+| Source class | Authoritative basis |
+| --- | --- |
+| Project sources | DCOIR_Collector.314.ps1.txt; LOG-01_DCOIR_Todo_Log.txt |
+| Official external sources | Not required for this page |
+| Scope note | Commands shown here follow the current collector parameter model and quick aliases. |
+
+## Collector entry points
+
+| Approach | Command |
+| --- | --- |
+| Local collector quick alias | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t1 |
+| Explicit parameter form | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T1 -Hours 24 |
+| Elastic endpoint form | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t1" --comment "Run DCOIR Tier 1 collect" |
+
+## What Tier 1 is for
+
+- Build the first baseline package for host, identity, process, network, service, task, registry, event-log, and defender review.
+- Produce a broad enough artifact set to support baseline triage before targeted enrichment begins.
+- Give the analyst a consistent foundation for the DCOIR workflow: baseline review, enrichment, retrieved artifact review, and final synthesis.
+
+## Outputs and follow-on actions
+
+- The collector writes run-specific output rooted at the selected OutRoot, with reports, final artifacts, logs, and bundles under the current run folder.
+- After a Tier 1 collect, the collector's next-step hints normally point to one enrichment action at a time rather than broad additional collection.
+- The preferred next review target is the merged baseline report when available, followed by metadata and flat final_artifacts output.
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

@@ -1,0 +1,30 @@
+# Gemini Build Quick Start
+
+## Goal
+Build one prime Gemini agent plus four sub-agents for the DCOIR workflow, then attach the full Knowledge doc set to the prime agent so it can answer operator questions about the collector, harness, workflow, enrichment, artifact review, troubleshooting, FAQ topics, and the current Gemini/DCOIR operating model.
+
+## Build order
+1. Create the prime agent from `01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt`.
+2. Create the four sub-agents from the remaining files in `01_GEMINI_AGENT_BUILD/`.
+3. Attach every file in `02_PRIME_AGENT_ATTACHMENTS/` to the prime agent.
+4. Do not attach `90_OPTIONAL_TECHNICAL_REFERENCE/` by default.
+5. Use `03_OPERATOR_RUNTIME_NOTES/` and `04_COLLECTOR_ZIP_REBUILD/` for operator support.
+
+## Prime agent attachment rule
+Attach the full Knowledge doc set to the prime agent. The Knowledge docs are the intended reference corpus when the operator asks the agent a question that is covered by those documents.
+
+## What the agent should be able to help with
+- baseline triage routing and review
+- enrichment review routing and review
+- retrieved artifact review routing and review
+- final case synthesis routing and review
+- collector and harness usage questions
+- Tier 1 and Tier 2 collection questions
+- troubleshooting and FAQ questions
+- questions about current Gemini/DCOIR agent behavior and boundaries
+
+## Runtime-file note
+The collector and harness script bodies are intentionally not included in this bundle. Use the note files in `03_OPERATOR_RUNTIME_NOTES/` for target runtime names, intended usage, and reconstruction reminders.
+
+## Optional material
+Anything in `90_OPTIONAL_TECHNICAL_REFERENCE/` is supporting technical context only. It is not needed for first-time setup.

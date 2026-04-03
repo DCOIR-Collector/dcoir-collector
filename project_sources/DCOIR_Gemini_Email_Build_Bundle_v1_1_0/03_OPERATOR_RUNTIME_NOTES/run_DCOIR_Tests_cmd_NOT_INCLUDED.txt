@@ -1,0 +1,11 @@
+# run_DCOIR_Tests.cmd Not Included
+
+This bundle intentionally omits the live `run_DCOIR_Tests.cmd` wrapper body.
+
+Target runtime filename:
+- run_DCOIR_Tests.cmd
+
+Authoritative readable source name in the project:
+- run_DCOIR_Tests.cmd.txt
+
+Use the full Knowledge doc set for wrapper purpose and local execution guidance, and reconstruct the actual wrapper body later from the authoritative source.

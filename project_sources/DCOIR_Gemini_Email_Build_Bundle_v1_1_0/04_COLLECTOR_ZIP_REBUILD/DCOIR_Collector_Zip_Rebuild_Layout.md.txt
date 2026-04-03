@@ -1,0 +1,11 @@
+# DCOIR Collector ZIP Rebuild Layout
+
+Purpose:
+- rebuild `DCOIR_Collector.zip` outside this email bundle when you have access to the required executables
+
+Recommended layout before zipping:
+- put the 20 executables together in one folder
+- do not nest them inside an extra parent folder in the ZIP
+- keep the original executable filenames unchanged
+
+This email bundle intentionally does not include the ZIP itself.
