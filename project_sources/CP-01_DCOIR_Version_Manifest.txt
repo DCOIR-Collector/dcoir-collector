@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.17
+DCOIR Version Manifest 3.9.18
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -29,9 +29,11 @@ Current task-memory bank
 - Root: knowledge/task_memory
 - Canonical registry: knowledge/task_memory/00_registry/task_memory_manifest.yaml
 - Compiled lookup: knowledge/task_memory/30_compiled/fast_lookup.json
+- GitHub connector reference usage procedure: knowledge/task_memory/10_domains/github/procedures/GH-PROC-008-connector-reference-assisted-lane-selection.yaml
 
 Current governed knowledge notes
 - Helper-skills routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
+- GitHub connector reference pack: knowledge/github_connector_reference/
 
 Current extracted readable source folders
 - Build bundle source set: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/
@@ -41,9 +43,10 @@ Current extracted readable source folders
 - Generated agent markdowns: knowledge/generated_agent_markdowns/
 
 Current next work item
-- Replace the patched `dcoir-skill-regression-auditor` external skill package and use it to lead the broad deep-scan and patch campaign across the remaining `dcoir-*` helper skills.
-- Present optional ChatGPT Codex tasks as step-by-step, click-by-click learning opportunities for the operator, starting with basic Codex usage before more advanced workflows.
-- Consider creating a dedicated `dcoir-readme-maintainer` skill for root and folder README maintenance and track it in the documentation-and-knowledge lane.
+- Use the governed GitHub connector reference pack and GH-PROC-008 to improve GitHub connector lane selection, operator guidance, and future GitHub task-memory promotion.
+- Keep presenting optional ChatGPT Codex tasks as step-by-step, click-by-click learning opportunities, starting with basic Codex usage before more advanced workflows.
+- Consider creating dedicated `dcoir-readme-maintainer` and `dcoir-plan-tracker` skills, and keep all project-specific skill names under the `dcoir-` prefix.
+- Evaluate whether all `dcoir-*` skill source should be stored in GitHub under a governed one-source-of-truth model before any broad source-hosting rollout.
 - Continue the DOC-04-guided architecture work by inventorying likely split candidates, legacy split-attempt artifacts, and lagging repo delivery artifacts under the structural standard.
-- After the skill-maintenance pass and structural-standard work are stable, resume the extracted-folder integration pass under the new rules and keep the duplicate-content audit queued behind that work.
+- After the GitHub connector reference promotion work and structural-standard work are stable, resume the extracted-folder integration pass under the new rules and keep the duplicate-content audit queued behind that work.
 - Continue using the validated GitHub connector low-level lane for chat-managed readable text updates, canonical task-memory preflight before high-friction GitHub work, and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.

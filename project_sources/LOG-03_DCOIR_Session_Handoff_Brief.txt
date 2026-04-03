@@ -15,6 +15,7 @@ Current stable artifacts
 - Todo split index: project_sources/LOG-01_DCOIR_Todo_Index.txt
 - Todo child files: project_sources/todo/*.txt
 - Governed helper-skills routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
+- Governed GitHub connector reference pack: knowledge/github_connector_reference/
 - Extracted readable Gemini source folders: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/, project_sources/original_alert_triage_gemini_agents/, and project_sources/original_collector_artifact_gemini_agents/
 - Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
 
@@ -27,6 +28,7 @@ Current governance state
 - GitHub Desktop is the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
 - The helper-skills routing note is descriptive guidance only and should not be treated as a control-plane authority source.
 - Governed structural refactors for growth-prone readable files now follow DOC-04 as the current repo-wide standard.
+- All project-specific helper skills should retain the `dcoir-` prefix.
 
 Operator preference notes
 - When optional project-helpful work can be done through ChatGPT Codex on the ChatGPT website, offer it as an optional learning experience rather than a required task.
@@ -40,6 +42,7 @@ Current validated status
 - The repo also contains a governed combined analyst-facing DCOIR master prompt and governed Gemini merged-agent design artifacts that should be treated as core project deliverables.
 - The extracted readable Gemini folders plus the comparative and generated agent-markdown folders remain part of the governed repo working line.
 - The legacy extracted supporting-knowledge-doc folder has been removed from the current working line after stale pre-GitHub-primary content review.
+- The governed GitHub connector reference pack is now stored in GitHub, and GH-PROC-008 provides the first canonical task-memory procedure for using it safely.
 - The old dcoir-github-operator lane is retired and the old DCOIR_Collector_parts path has been removed.
 - The dcoir-github-api validation route is retired from the active working line and should not be treated as the next planned path.
 - The stale outlier PR and branch cleanup is complete and is no longer treated as a pending review item.
@@ -48,17 +51,14 @@ Current validated status
 - The patched dcoir-skill-regression-auditor external skill package now passes local validation and is ready for replacement plus post-install smoke regression.
 
 Current session outcomes
-- Added `project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt` as the governed structural refactor standard.
-- Promoted the structural refactor standard to the active architecture-first work line across the control plane, evergreen docs, todo posture, and handoff posture.
-- Preserved the validated GitHub connector low-level lane for chat-managed readable-text work and documented GitHub Desktop as the easiest approved operator path for bulk local placement and binary or zip handling.
-- Kept the extracted-folder integration line and duplicate-audit line behind the structural-standard pass.
-- Removed the obsolete extracted `knowledge/supporting_knowledge_docs/` folder after explicit operator approval and aligned the current-state surfaces so it is no longer treated as current.
-- Refreshed the `dcoir-knowledge-doc-maintainer` skill package so its workflow no longer assumes the retired extracted supporting-knowledge-doc folder is part of the default maintenance path.
-- Patched the regression-auditor skill package first so it can serve as the test harness for the broader `dcoir-*` helper-skill deep scan and patch campaign.
-- Left the helper-skills routing note in place as a descriptive project-side aid and not a control-plane authority source.
+- Added a governed GitHub connector reference pack under `knowledge/github_connector_reference/`.
+- Added a distilled machine-readable connector inventory and a human-facing execution guide based on the uploaded GitHub connector reference materials.
+- Added GH-PROC-008 and updated the canonical task-memory manifest and compiled lookup so GitHub connector reference usage is part of the normal preflight path.
+- Elevated GitHub connector reference-pack promotion to the next active improvement line because connector execution now materially shapes repo workflow reliability.
+- Preserved the existing `dcoir-readme-maintainer` skill idea and added follow-on tracking for `dcoir-plan-tracker` and for a governed one-source-of-truth model if the project later stores all `dcoir-*` skill source in GitHub.
 
 Current next planned work item
-- Replace the patched `dcoir-skill-regression-auditor` external skill package and run a quick post-install invocation or accessibility smoke regression against the current control-plane model, then use it to deep-scan the remaining `dcoir-*` skills in bounded batches.
+- Use the governed GitHub connector reference pack and GH-PROC-008 to improve GitHub connector lane selection, operator guidance, and future GitHub task-memory promotion before widening the next GitHub-heavy workflow pass.
 
 Recommended next move
-- Install or replace the patched `dcoir-skill-regression-auditor` skill package, run a short post-install smoke regression, and then continue the broader helper-skill scan before returning to the next DOC-04-guided architecture and integration items.
+- Review how the connector reference pack should feed future GitHub procedures and task memory, then decide the best one-source-of-truth model for repo-hosted `dcoir-*` skill source before the broader skill-source rollout or the next major GitHub-heavy workflow expansion.

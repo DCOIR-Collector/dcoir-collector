@@ -1,30 +1,36 @@
 DCOIR Active Now
 
-1. Finish the governed structural refactor standard for growth-prone readable files.
+1. Govern the GitHub connector reference pack and promote its strongest execution patterns into durable GitHub procedure guidance and task memory.
+   Why it matters:
+   - GitHub connector execution now materially shapes repo workflow speed, reliability, and recoverability.
+   Next action:
+   - Use `knowledge/github_connector_reference/`, `GH-PROC-008`, and canonical GitHub task memory to refine function selection, operator guidance, and future GitHub-heavy workflow planning.
+
+2. Finish the governed structural refactor standard for growth-prone readable files.
    Why it matters:
    - The project has a validated collector split pattern but does not yet have a fully codified repo-wide structural standard.
    Next action:
-   - Align CP-01, CP-02, DOC-01, DOC-03, LOG-01, LOG-03, and the todo structure to DOC-04 and make the structural pass the active work line.
+   - Align CP-01, CP-02, DOC-01, DOC-03, LOG-01, LOG-03, and the todo structure to DOC-04 and keep the structural pass current while connector-governance improvements land.
 
-2. Inventory remaining likely split candidates, legacy split-attempt artifacts, naming-normalization targets, and lagging repo delivery artifacts under the new standard.
+3. Inventory remaining likely split candidates, legacy split-attempt artifacts, naming-normalization targets, and lagging repo delivery artifacts under the new standard.
    Why it matters:
    - The new standard should immediately guide the next real architecture targets rather than remain abstract.
    Next action:
    - Review growth-prone governed files, orphaned split-attempt artifacts, and repo delivery artifacts that may still describe the older posture.
 
-3. Resume the extracted readable Gemini and supporting-knowledge folder integration pass under the new structural rules.
+4. Resume the extracted readable Gemini and supporting-knowledge folder integration pass under the new structural rules.
    Why it matters:
    - The extracted readable working line still needs better governed navigation and long-term placement, but it should proceed under the new structural standard.
    Next action:
    - Audit the extracted folders after the structural pass and promote the highest-value materials into stronger indexes, docs, and governed deliverable references.
 
-4. Use canonical task-memory preflight before GitHub-family execution work.
+5. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:
    - Validated procedures should be consulted before friction, not after avoidable misses or retries.
    Next action:
    - Check knowledge/task_memory and the applicable GitHub procedures before repo writes, deletes, packaging, or structural changes.
 
-5. Prefer one bounded multi-file git-object transaction when multiple related existing-file edits or deletions belong together.
+6. Prefer one bounded multi-file git-object transaction when multiple related existing-file edits or deletions belong together.
    Why it matters:
    - Grouped repo changes reduce drift and mirror programmer-style all-at-once updates better than one-file-at-a-time churn.
    Next action:

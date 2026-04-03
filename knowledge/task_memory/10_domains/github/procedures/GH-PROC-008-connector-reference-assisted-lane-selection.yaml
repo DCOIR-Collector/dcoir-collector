@@ -1,0 +1,63 @@
+record_id: GH-PROC-008
+domain: github
+record_type: procedure
+operation: connector_reference_assisted_lane_selection
+object_type: github_connector_function_inventory
+problem_signature: when planning GitHub connector work, consult the governed connector reference pack to choose the right function shape and reduce avoidable connector trial-and-error without overriding the live tool surface
+primary_lane: json_reference_first_then_live_surface_verification
+preconditions:
+  - project has been re-anchored to Project Instructions, then CP-01, then CP-02
+  - the task family can be classified at least broadly
+  - the governed connector reference pack is available under knowledge/github_connector_reference
+  - canonical GitHub task memory remains available as the higher-trust execution lane guide
+step_sequence:
+  - step: classify_task_family
+    action: reasoning
+    purpose: decide whether the task is readback, new-file create, existing-file update, grouped multi-file change, delete, review workflow, or another GitHub-family lane
+  - step: open_json_snapshot
+    action: fetch_file
+    purpose: inspect the canonical machine-readable connector snapshot for candidate function names, required inputs, and return shapes
+  - step: consult_human_guide
+    action: fetch_file
+    purpose: use the execution guide for human-oriented lane selection and DCOIR-specific cautions
+  - step: compare_candidates
+    action: reasoning
+    purpose: choose the smallest plausible function set and compare exact parameter requirements before execution
+  - step: verify_against_live_surface
+    action: reasoning
+    purpose: treat the live connector surface as final authority and stop if the snapshot appears stale or mismatched
+  - step: execute_or_advise
+    action: reasoning
+    purpose: either execute using the chosen lane or report the best next move when the procedure is being used in advisory mode
+  - step: verify_repo_state
+    action: fetch_file
+    purpose: apply the required readback or post-write verification after any write action
+preferred_record_sets:
+  existing_file_update:
+    - GH-PROC-001
+    - GH-PROC-005
+  grouped_multi_file_change:
+    - GH-PROC-006
+    - GH-PROC-005
+  new_file_create:
+    - GH-PROC-002
+    - GH-PROC-005
+  connector_selection_or_mapping:
+    - GH-PROC-007
+    - GH-PROC-008
+verification_steps:
+  - confirm the selected function still exists in the current live connector surface before relying on the snapshot
+  - confirm required inputs and expected outputs match the intended job before execution
+  - for repo writes, apply GH-PROC-005 or the more specific procedure verification before claiming success
+anti_patterns:
+  - do not treat the governed connector snapshot as more authoritative than the live tool surface
+  - do not use the human-facing guide alone when exact structured parameter shapes matter
+  - do not skip canonical task-memory preflight on grouped repo changes or other high-friction GitHub work
+  - do not recommend patching or workflow changes solely because a read-only scan could not inspect an installed package
+fallbacks:
+  - GH-PROC-007
+  - GH-PROC-006
+  - GH-PROC-005
+  - GH-LIM-001
+last_validated: 2026-04-03
+confidence: medium

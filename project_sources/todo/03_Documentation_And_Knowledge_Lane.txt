@@ -58,4 +58,22 @@ DCOIR Documentation And Knowledge Lane
    Why it matters:
    - README upkeep is now a recurring enough workflow that it may deserve its own helper skill instead of being handled indirectly through broader documentation maintenance.
    Next action:
-   - Define the scope for root README, folder README, navigation-index, and cross-link maintenance so the project can decide whether to build a dedicated README-maintainer skill.
+   - Define the scope for root README, folder README, navigation-index, and cross-link maintenance so the project can decide whether to build a dedicated `dcoir-readme-maintainer` skill.
+
+11. Govern the uploaded GitHub connector reference material and keep promoting its strongest patterns into durable GitHub procedure guidance.
+   Why it matters:
+   - The repo now has a governed connector reference pack and a connector-reference task-memory procedure, but the highest-value execution patterns still need to be promoted into broader operator and memory guidance over time.
+   Next action:
+   - Continue mining `knowledge/github_connector_reference/` and GH-PROC-008 for reusable GitHub execution patterns.
+
+12. Evaluate storing all `dcoir-*` skill source code in GitHub under a governed one-source-of-truth model.
+   Why it matters:
+   - Codex-accessible helper-skill source may improve maintenance and future project-generalization work, but only if the project avoids dual-maintenance drift between repo source, external skill packages, and installed skills.
+   Next action:
+   - Design a governed skill-source layout, define packaging and replacement expectations, and decide whether GitHub should become the canonical readable source for all `dcoir-*` skill code.
+
+13. Consider creating a dedicated `dcoir-plan-tracker` skill for deep task decomposition, progress tracking, resume state persistence, and operator-visible execution tables.
+   Why it matters:
+   - Multi-step project work increasingly benefits from durable planned substeps, visible progress state, clean resume points, and optional operator-facing tracking surfaces.
+   Next action:
+   - Define the minimum table or canvas model, persistence location, resume semantics, and any required connector or tool support before deciding whether to build the skill.

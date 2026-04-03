@@ -1,0 +1,828 @@
+{
+  "title": "GitHub Connector Information",
+  "total_functions": 61,
+  "functions": [
+    {
+      "name": "add_comment_to_issue",
+      "description": "Create a top-level PR Conversation comment (Issue comment).",
+      "required_inputs": [
+        "repo_full_name",
+        "pr_number",
+        "comment"
+      ],
+      "input_fields": [
+        "comment",
+        "pr_number",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubCommentResponse required",
+        "  - GithubCommentResponse:",
+        "    - id: integer required"
+      ]
+    },
+    {
+      "name": "add_reaction_to_issue_comment",
+      "description": "Add a reaction to an issue comment.",
+      "required_inputs": [
+        "repo_full_name",
+        "comment_id",
+        "reaction"
+      ],
+      "input_fields": [
+        "comment_id",
+        "reaction",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubReaction required",
+        "  - GithubReaction:",
+        "    - id: integer required",
+        "    - node_id: string required",
+        "    - user: GithubUser required",
+        "      - GithubUser",
+        "    - content: string required",
+        "    - created_at: string required"
+      ]
+    },
+    {
+      "name": "add_reaction_to_pr",
+      "description": "Add a reaction to a GitHub pull request.",
+      "required_inputs": [
+        "repo_full_name",
+        "pr_number",
+        "reaction"
+      ],
+      "input_fields": [
+        "pr_number",
+        "reaction",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubReaction required",
+        "  - GithubReaction:",
+        "    - id: integer required",
+        "    - node_id: string required",
+        "    - user: GithubUser required",
+        "      - GithubUser",
+        "    - content: string required",
+        "    - created_at: string required"
+      ]
+    },
+    {
+      "name": "add_reaction_to_pr_review_comment",
+      "description": "Add a reaction to a pull request review comment.",
+      "required_inputs": [
+        "repo_full_name",
+        "comment_id",
+        "reaction"
+      ],
+      "input_fields": [
+        "comment_id",
+        "reaction",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubReaction required",
+        "  - GithubReaction:",
+        "    - id: integer required",
+        "    - node_id: string required",
+        "    - user: GithubUser required",
+        "      - GithubUser",
+        "    - content: string required",
+        "    - created_at: string required"
+      ]
+    },
+    {
+      "name": "add_review_to_pr",
+      "description": "Add a review to a GitHub pull request. review is required for REQUEST_CHANGES and COMMENT events.",
+      "required_inputs": [
+        "repo_full_name",
+        "pr_number",
+        "review",
+        "action",
+        "file_comments"
+      ],
+      "input_fields": [
+        "action",
+        "commit_id",
+        "file_comments",
+        "pr_number",
+        "repo_full_name",
+        "review"
+      ],
+      "return_hints": [
+        "- result: GithubReviewResponse required",
+        "  - GithubReviewResponse:",
+        "    - success: boolean required",
+        "    - review_id: integer | null"
+      ]
+    },
+    {
+      "name": "check_repo_initialized",
+      "description": "Check if a GitHub repository has been set up.",
+      "required_inputs": [
+        "repo_id"
+      ],
+      "input_fields": [
+        "repo_id"
+      ],
+      "return_hints": [
+        "- result: CheckRepoInitializedResponse required",
+        "  - CheckRepoInitializedResponse:",
+        "    - initialized: boolean required"
+      ]
+    },
+    {
+      "name": "compare_commits",
+      "description": "Compare two commits/refs and return per-file stats plus compare metadata. This is a thin wrapper around `GithubPlugin.compare_commits` to provide a stable, compact response shape to connector consumers.",
+      "required_inputs": [
+        "repo_full_name",
+        "base",
+        "head"
+      ],
+      "input_fields": [
+        "base",
+        "head",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubCompareCommitsResult required",
+        "  - GithubCompareCommitsResult:",
+        "    - repository_full_name: string required",
+        "    - base: string required",
+        "    - head: string required",
+        "    - status: string | null",
+        "    - ahead_by: integer | null",
+        "    - behind_by: integer | null"
+      ]
+    },
+    {
+      "name": "create_blob",
+      "description": "Create a blob in the repository and return its SHA.",
+      "required_inputs": [
+        "repository_full_name",
+        "content"
+      ],
+      "input_fields": [
+        "content",
+        "encoding",
+        "repository_full_name"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "create_branch",
+      "description": "Create a new branch in the given repository from base_branch.",
+      "required_inputs": [
+        "repository_full_name",
+        "branch_name",
+        "sha"
+      ],
+      "input_fields": [
+        "branch_name",
+        "repository_full_name",
+        "sha"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "create_commit",
+      "description": "Create a commit pointing to tree_sha with parent parent_sha.",
+      "required_inputs": [
+        "repository_full_name",
+        "message",
+        "tree_sha",
+        "parent_sha"
+      ],
+      "input_fields": [
+        "message",
+        "parent_sha",
+        "repository_full_name",
+        "tree_sha"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "create_file",
+      "description": "Create a new file in the repository via the contents API.",
+      "required_inputs": [
+        "repository_full_name",
+        "path",
+        "content",
+        "message"
+      ],
+      "input_fields": [
+        "branch",
+        "content",
+        "message",
+        "path",
+        "repository_full_name"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "create_pull_request",
+      "description": "Open a pull request in the repository.",
+      "required_inputs": [
+        "repository_full_name",
+        "title",
+        "body",
+        "head_branch",
+        "base_branch"
+      ],
+      "input_fields": [
+        "base_branch",
+        "body",
+        "draft",
+        "head_branch",
+        "repository_full_name",
+        "title"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "create_tree",
+      "description": "Create a tree object in the repository from the given elements.",
+      "required_inputs": [
+        "repository_full_name",
+        "tree_elements"
+      ],
+      "input_fields": [
+        "base_tree_sha",
+        "repository_full_name",
+        "tree_elements"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "download_user_content",
+      "description": "Download user-uploaded or asset storage content by URL.",
+      "required_inputs": [
+        "url"
+      ],
+      "input_fields": [
+        "url"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "fetch",
+      "description": "Fetch a url that isn't covered by a dedicated method. When possible, prefer `search` for file-centric queries, `fetch_file` for repo paths, or the specific PR/Issue/Repository/Commit/Branch method that matches the target. If you must use `ftech`, provide a complete GitHub URL (e.g. `https://github.com/ORG/REPO/blob/branch/path/to/file.txt`) so the connector can remotely fetch that path.",
+      "required_inputs": [
+        "url"
+      ],
+      "input_fields": [
+        "url"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "fetch_commit",
+      "description": "Get commit details by sha.",
+      "required_inputs": [
+        "repo_full_name",
+        "commit_sha"
+      ],
+      "input_fields": [
+        "commit_sha",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: CommitResponse required",
+        "  - CommitResponse:",
+        "    - sha: string required",
+        "    - commit: {string: {} | array<object (open-ended)>} required"
+      ]
+    },
+    {
+      "name": "fetch_file",
+      "description": "Fetch a text file from a repository by path and ref. This is the preferred read method for governed text in repositories.",
+      "required_inputs": [
+        "repository_full_name",
+        "path",
+        "ref"
+      ],
+      "input_fields": [
+        "encoding",
+        "path",
+        "ref",
+        "repository_full_name"
+      ],
+      "return_hints": [
+        "- result: TextFileResponse required",
+        "  - TextFileResponse:",
+        "    - content: string required",
+        "    - encoding: string required",
+        "    - sha: string required",
+        "    - display_url: string required",
+        "    - display_title: string required"
+      ]
+    },
+    {
+      "name": "fetch_pull_request",
+      "description": "Get details for a pull request by number.",
+      "required_inputs": [
+        "repository_full_name",
+        "pr_number"
+      ],
+      "input_fields": [
+        "pr_number",
+        "repository_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubPRResponse required",
+        "  - GithubPRResponse:",
+        "    - number: integer required",
+        "    - state: string required",
+        "    - title: string required",
+        "    - users: array<object (open-ended)> | null",
+        "    - high_level_type: string | null",
+        "    - change_summary: string | null"
+      ]
+    },
+    {
+      "name": "fetch_repository",
+      "description": "Get repository metadata by owner/name.",
+      "required_inputs": [
+        "owner",
+        "name"
+      ],
+      "input_fields": [
+        "name",
+        "owner"
+      ],
+      "return_hints": [
+        "- result: RepositoryResponse required",
+        "  - RepositoryResponse:",
+        "    - id: integer | null",
+        "    - name: string | null",
+        "    - full_name: string | null",
+        "    - private: boolean | null",
+        "    - default_branch: string | null",
+        "    - is_empty: boolean | null"
+      ]
+    },
+    {
+      "name": "find_issue_comment_by_body",
+      "description": "Find an issue comment id by searching the comment body for a given pull request.
+This is an helper for applied workflows that need to update or remove an existing comment when only the text is known.",
+      "required_inputs": [
+        "repo_full_name",
+        "pr_number",
+        "search_text"
+      ],
+      "input_fields": [
+        "exact",
+        "pr_number",
+        "repo_full_name",
+        "search_text",
+        "topnewest"
+      ],
+      "return_hints": [
+        "- result: FindIssueCommentResponse required",
+        "  - FindIssueCommentResponse:",
+        "    - found: boolean required",
+        "    - comment_id: integer | null",
+        "    - match_type: string | null",
+        "    - comment_since_published_at: string | null",
+        "    - body_preview: string | null"
+      ]
+    },
+    {
+      "name": "list_blob_versions",
+      "description": "List past blob shas for a path. Useful when you need to preserve organization of a path and select a prior blob for a content-addressed write.",
+      "required_inputs": [
+        "repository_full_name",
+        "path"
+      ],
+      "input_fields": [
+        "limit",
+        "path",
+        "repository_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubListBlobVersionsResult required",
+        "  - GithubListBlobVersionsResult:",
+        "    - versions: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "list_issue_comments",
+      "description": "List top-level PR Conversation comments (Issue comments) for a pull request. This excludes inline review comments and excludes replies to inline review comments.",
+      "required_inputs": [
+        "repo_full_name",
+        "pr_number"
+      ],
+      "input_fields": [
+        "per_page",
+        "page",
+        "pr_number",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubListCommentsResponse required",
+        "  - GithubListCommentsResponse:",
+        "    - comments: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "list_pr_comments",
+      "description": "List inline PR change review comments. If `comment_id` is provided, it lists child replies for the thread anchored at that top-level comment. To list top-level inline review comments, omit `comment_id`. This excludes top-level PR Conversation comments (Issue comments).",
+      "required_inputs": [
+        "repo_full_name",
+        "pr_number"
+      ],
+      "input_fields": [
+        "comment_id",
+        "per_page",
+        "page",
+        "pr_number",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubListCommentsResponse required",
+        "  - GithubListCommentsResponse:",
+        "    - comments: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "list_pull_request",
+      "description": "List pull requests for a repository.",
+      "required_inputs": [
+        "repo_full_name"
+      ],
+      "input_fields": [
+        "head",
+        "limit",
+        "state",
+        "topic_branch",
+        "user_name"
+      ],
+      "return_hints": [
+        "- result: GithubListPullResponse required",
+        "  - GithubListPullResponse:",
+        "    - prs: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "list_review_comments_for_pr",
+      "description": "List all review comments for a pull request, with optional filtering.",
+      "required_inputs": [
+        "repo_full_name",
+        "pr_number"
+      ],
+      "input_fields": [
+        "commit_id",
+        "path",
+        "per_page",
+        "page",
+        "pr_number",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubListCommentsResponse required",
+        "  - GithubListCommentsResponse:",
+        "    - comments: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "list_workflow_files",
+      "description": "List GitHub Actions workflow yaml files in the repository.",
+      "required_inputs": [
+        "repo_full_name"
+      ],
+      "input_fields": [
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "remove_reaction_from_issue_comment",
+      "description": "Remove a reaction from an issue comment.",
+      "required_inputs": [
+        "repo_full_name",
+        "comment_id",
+        "reaction_id"
+      ],
+      "input_fields": [
+        "comment_id",
+        "reaction_id",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubReactionActionResponse required",
+        "  - GithubReactionActionResponse:",
+        "    - success: boolean required"
+      ]
+    },
+    {
+      "name": "remove_reaction_from_pr",
+      "description": "Remove a reaction from a GitHub pull request.",
+      "required_inputs": [
+        "repo_full_name",
+        "pr_number",
+        "reaction_id"
+      ],
+      "input_fields": [
+        "pr_number",
+        "reaction_id",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubReactionActionResponse required",
+        "  - GithubReactionActionResponse:",
+        "    - success: boolean required"
+      ]
+    },
+    {
+      "name": "remove_reaction_from_pr_review_comment",
+      "description": "Remove a reaction from a pull request review comment.",
+      "required_inputs": [
+        "repo_full_name",
+        "comment_id",
+        "reaction_id"
+      ],
+      "input_fields": [
+        "comment_id",
+        "reaction_id",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubReactionActionResponse required",
+        "  - GithubReactionActionResponse:",
+        "    - success: boolean required"
+      ]
+    },
+    {
+      "name": "reply_to_review_comment",
+      "description": "Reply to an inline review comment on a PR (Files changed thread). comment_id must be the ID of the thread\u2019s top-level inline review comment (replies-to-replies are not supported by the API)",
+      "required_inputs": [
+        "repo_full_name",
+        "pr_number",
+        "comment_id",
+        "comment"
+      ],
+      "input_fields": [
+        "comment",
+        "comment_id",
+        "pr_number",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubCommentResponse required",
+        "  - GithubCommentResponse:",
+        "    - id: integer required"
+      ]
+    },
+    {
+      "name": "search",
+      "description": "Search files within a specific GitHub repository. Provide a plain string query, avoid GitHub query flags such as `is:pr`. Include keywords that match file names, functions, or error messages. `repository_name` or `org` can narrow the search scope. Example: `query=\"tokenizer bug\" repository_name=\"tiktoken\"``. `topn` is the number of results to return. No results are returned if the query is empty.",
+      "required_inputs": [
+        "query"
+      ],
+      "input_fields": [
+        "org",
+        "query",
+        "repository_name",
+        "topn"
+      ],
+      "return_hints": [
+        "- result: SearchResponse required",
+        "  - SearchResponse:",
+        "    - results: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "search_branches",
+      "description": "Search GitHub branches within a repository.",
+      "required_inputs": [
+        "owner",
+        "repo_name",
+        "query"
+      ],
+      "input_fields": [
+        "cursor",
+        "owner",
+        "page_size",
+        "query",
+        "repo_name"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "search_commits",
+      "description": "",
+      "required_inputs": [
+        "query"
+      ],
+      "input_fields": [
+        "order",
+        "org",
+        "query",
+        "repo",
+        "sort",
+        "topn"
+      ],
+      "return_hints": [
+        "- result: SearchCommitsResponse required",
+        "  - SearchCommitsResponse:",
+        "    - commits: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "search_installed_repositories_streaming",
+      "description": "Search for a repository (not a file) by name or description. To search for a file, use `search`.",
+      "required_inputs": [
+        "query"
+      ],
+      "input_fields": [
+        "limit",
+        "next_token",
+        "option_enrich_code_search_index_availability",
+        "option_enrich_code_search_index_request_concurrency_limit",
+        "query"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "search_installed_repositories_v2",
+      "description": "Search repositories within the user'sinstallations using GitHub search.",
+      "required_inputs": [
+        "query"
+      ],
+      "input_fields": [
+        "include_search_index_status",
+        "installation_ids",
+        "limit",
+        "page",
+        "query"
+      ],
+      "return_hints": [
+        "- result: SearchRepositoriesResponse required",
+        "  - SearchRepositoriesResponse:",
+        "    - repositories: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "search_issues",
+      "description": "Search GitHub issues.",
+      "required_inputs": [
+        "query",
+        "repo"
+      ],
+      "input_fields": [
+        "order",
+        "query",
+        "repo",
+        "sort",
+        "topn"
+      ],
+      "return_hints": [
+        "- result: SearchIssuesResponse required",
+        "  - SearchIssuesResponse:",
+        "    - issues: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "search_prs",
+      "description": "Search GitHub pull requests.",
+      "required_inputs": [
+        "query"
+      ],
+      "input_fields": [
+        "order",
+        "org",
+        "query",
+        "repo",
+        "sort",
+        "topn"
+      ],
+      "return_hints": [
+        "- result: SearchIssuesResponse required",
+        "  - SearchIssuesResponse:",
+        "    - issues: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "search_repositories",
+      "description": "Search for a repository (not a file) by name or description. To search for a file, use `search`.",
+      "required_inputs": [
+        "query"
+      ],
+      "input_fields": [
+        "org",
+        "page",
+        "per_page",
+        "query",
+        "topn"
+      ],
+      "return_hints": [
+        "- result: SearchRepositoriesResponse required",
+        "  - SearchRepositoriesResponse:",
+        "    - repositories: array<object (open-ended)> required",
+        "      - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "update_issue_comment",
+      "description": "Update a top-level PR Conversation comment (Issue comment).",
+      "required_inputs": [
+        "repo_full_name",
+        "comment_id",
+        "comment"
+      ],
+      "input_fields": [
+        "comment",
+        "comment_id",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubCommentResponse required",
+        "  - GithubCommentResponse:",
+        "    - id: integer required"
+      ]
+    },
+    {
+      "name": "update_ref",
+      "description": "Move branch ref to the given commit SHA.",
+      "required_inputs": [
+        "repository_full_name",
+        "branch_name",
+        "sha"
+      ],
+      "input_fields": [
+        "branch_name",
+        "force",
+        "repository_full_name",
+        "sha"
+      ],
+      "return_hints": [
+        "- result: object (open-ended) required",
+        "  - object with arbitrary fields"
+      ]
+    },
+    {
+      "name": "update_review_comment",
+      "description": "Update an inline review comment (or a reply) on a PR.",
+      "required_inputs": [
+        "repo_full_name",
+        "comment_id",
+        "comment"
+      ],
+      "input_fields": [
+        "comment",
+        "comment_id",
+        "repo_full_name"
+      ],
+      "return_hints": [
+        "- result: GithubCommentResponse required",
+        "  - GithubCommentResponse:",
+        "    - id: integer required"
+      ]
+    }
+  ]
+}

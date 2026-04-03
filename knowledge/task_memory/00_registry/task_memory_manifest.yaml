@@ -44,6 +44,7 @@ current_priority_records:
   - GH-PROC-005
   - GH-PROC-006
   - GH-PROC-007
+  - GH-PROC-008
   - GH-LIM-001
   - GH-LIM-002
   - GH-FSIG-001
@@ -55,3 +56,4 @@ notes:
   - GitHub is the canonical storage substrate for this memory bank.
   - Compiled indexes are acceleration layers, not sources of truth.
   - When in doubt, prefer canonical procedure records over chat memory.
+  - Governed GitHub connector reference material lives under knowledge/github_connector_reference and should be mined into canonical task memory when durable patterns are validated.

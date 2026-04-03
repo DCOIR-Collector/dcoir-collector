@@ -6,12 +6,13 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Finish the governed structural refactor standard for growth-prone readable files and align the control plane, evergreen docs, and continuity posture to it.
-2. Inventory remaining likely split candidates, legacy split-attempt artifacts, naming-normalization targets, and lagging repo delivery artifacts under the new structural standard.
-3. Resume the extracted readable Gemini and supporting-knowledge folder integration pass under the new structural rules.
-4. Improve root and folder-level documentation and continue building the knowledge or wiki structure.
-5. Continue using canonical task-memory preflight and grouped GitHub transactions for related chat-managed repo work.
-6. After the structural-standard and extracted-folder passes, audit the repo for true duplicate content, remove only verified duplicates after content comparison, and prefer an automation-first operator path with simple step-by-step guidance.
+1. Govern the GitHub connector reference pack and keep promoting its strongest execution patterns into durable GitHub procedure guidance and task memory.
+2. Finish the governed structural refactor standard for growth-prone readable files and align the control plane, evergreen docs, and continuity posture to it.
+3. Inventory remaining likely split candidates, legacy split-attempt artifacts, naming-normalization targets, and lagging repo delivery artifacts under the new structural standard.
+4. Resume the extracted readable Gemini and supporting-knowledge folder integration pass under the new structural rules.
+5. Improve root and folder-level documentation and continue building the knowledge or wiki structure.
+6. Continue using canonical task-memory preflight and grouped GitHub transactions for related chat-managed repo work.
+7. After the structural-standard and extracted-folder passes, audit the repo for true duplicate content, remove only verified duplicates after content comparison, and prefer an automation-first operator path with simple step-by-step guidance.
 
 Todo-file map
 - todo/01_Active_Now.txt
@@ -21,7 +22,7 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Finish the structural refactor standard and use it to inventory the next governed split/refactor targets before resuming extracted-folder integration.
+- Use the governed GitHub connector reference pack and GH-PROC-008 to improve GitHub connector lane selection, operator guidance, and future GitHub-heavy procedure promotion before widening the next connector-heavy workflow pass.
 
 Notes
 - The current canonical collector runtime is project_sources/DCOIR_Collector.ps1.

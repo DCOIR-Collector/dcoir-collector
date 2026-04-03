@@ -1,6 +1,31 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.18
+Change class: github connector reference-pack intake and task-memory promotion
+
+What changed
+- Added a governed GitHub connector reference pack under `knowledge/github_connector_reference/`.
+- Stored a distilled machine-readable connector inventory in `knowledge/github_connector_reference/github_connector_information.json` derived from the uploaded JSON reference set.
+- Added `knowledge/github_connector_reference/GitHub_Connector_Execution_Guide.md` as the human-facing operating guide distilled from the uploaded TXT reference view and current DCOIR workflow needs.
+- Added canonical GitHub task-memory procedure `GH-PROC-008` so the connector reference pack can be used through normal preflight and lane-selection reasoning.
+- Updated the task-memory manifest and compiled fast lookup so `GH-PROC-008` is part of the canonical memory path.
+- Refreshed control-plane, handoff, knowledge-index, and todo surfaces so the GitHub connector reference-pack promotion work becomes the next active workflow line.
+- Preserved the existing `dcoir-readme-maintainer` skill idea and added follow-on design tracking for a `dcoir-plan-tracker` skill and for evaluating whether all `dcoir-*` skill source should live in GitHub under a one-source-of-truth model.
+
+Why
+- GitHub connector execution now materially shapes repo workflow speed, reliability, and recoverability.
+- The uploaded connector references were rich enough to deserve governed storage rather than being left only in chat history.
+- A distilled JSON inventory plus a human-facing guide is easier to maintain than two large raw snapshots while still preserving both machine and operator utility.
+- Durable connector-execution lessons should flow into canonical task memory instead of remaining only in ad hoc notes.
+
+Validation notes
+- The uploaded connector reference set identified `GitHub Connector Information` with `total_functions` equal to `61`.
+- The governed JSON file is a distilled derivative chosen for speed and maintainability; the TXT upload was used to drive the human-facing execution guide.
+- `GH-PROC-008` is now present in both the canonical task-memory procedure path and the compiled fast lookup index.
+- Control-plane and continuity files now reflect the connector-reference-pack workflow as the next active GitHub-heavy improvement line.
+
+[PRIOR]
 Version: 3.9.17
 Change class: regression-auditor skill patch, codex-learning preference capture, and follow-on skill-maintenance sync
 
@@ -21,24 +46,3 @@ Validation notes
 - The patched `dcoir-skill-regression-auditor` package passed `quick_validate.py`, its updated planner script executed successfully, and the skill was repackaged as a valid bundle.
 - The helper regression memory now records the regression-auditor package as patched and packaged with the next action set to external replacement plus a short post-install smoke regression.
 - The repo-side continuity files now reflect the Codex-learning preference and the new README-maintainer-skill todo.
-
-[PRIOR]
-Version: 3.9.16
-Change class: knowledge-doc-maintainer scanner patch and local regression validation
-
-What changed
-- Patched `dcoir-knowledge-doc-maintainer/scripts/scan_project.py` in the external skill package so it can parse the current narrative `CP-01_DCOIR_Version_Manifest.txt` model instead of relying only on the older section-key format.
-- Repackaged the skill after the scanner patch and removed the unnecessary `__pycache__` artifact from the bundled package.
-- Re-ran package validation, the current-control-plane success fixture, the missing-control-plane failure fixture, and representative build-doc artifact verification.
-- Updated helper regression memory and repo-side continuity surfaces so the next step is package replacement plus a quick post-install smoke regression.
-
-Why
-- The refreshed post-delete skill text was ahead of the scanner logic: the package validated and `build_knowledge_docs.py` worked, but `scan_project.py` still returned zero recognized governed readable sources on a current-control-plane fixture.
-- Leaving that mismatch in place would cause future knowledge-doc maintenance to misread the current GitHub-primary control plane even though the instructions had already been refreshed.
-- The patched package should now be treated as the candidate replacement bundle, with only a post-install smoke regression left before the workflow returns to broader DOC-04 architecture work.
-
-Validation notes
-- `quick_validate.py` returned a valid skill package.
-- `build_knowledge_docs.py` emitted the expected `.md.txt` file and `supporting_knowledge_docs.zip` on a representative spec fixture.
-- Before the patch, the success fixture returned `recognized_governed_github_readable_sources` count 0; after the patch, the same fixture returned count 15.
-- The missing-control-plane fixture still failed clearly with `FileNotFoundError`, preserving the expected stop gate.

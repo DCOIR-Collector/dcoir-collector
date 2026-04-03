@@ -55,6 +55,14 @@
       "path": "knowledge/task_memory/10_domains/github/procedures/GH-PROC-007-memory-preflight-routing.yaml",
       "fallbacks": ["GH-PROC-001", "GH-PROC-005", "GEN-PROC-001"]
     },
+    "GH-PROC-008": {
+      "domain": "github",
+      "type": "procedure",
+      "operation": "connector_reference_assisted_lane_selection",
+      "object_type": "github_connector_function_inventory",
+      "path": "knowledge/task_memory/10_domains/github/procedures/GH-PROC-008-connector-reference-assisted-lane-selection.yaml",
+      "fallbacks": ["GH-PROC-007", "GH-PROC-006", "GH-PROC-005", "GH-LIM-001"]
+    },
     "GH-LIM-001": {
       "domain": "github",
       "type": "limitation",
