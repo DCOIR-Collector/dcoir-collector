@@ -1,0 +1,92 @@
+DCOIR Session Resume Anchor - 2026-04-03
+
+Purpose
+- This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session.
+- Use it when resuming in a brand-new session after reading Project Instructions, CP-01, and CP-02.
+- This file exists because the session included multiple helper-skill builds, operator workflow decisions, manual GitHub Desktop application of existing-file updates, and new governed workflow rules that should not be reconstructed from memory.
+
+Current stable baseline
+- Working GitHub repository: malwaredevil/dcoir-collector
+- Readable governed text still follows the GitHub-primary model.
+- Project Instructions remain the first bootstrap anchor.
+- Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
+- The operator successfully committed the needed existing-file updates to main through a local GitHub Desktop workflow.
+- The temporary branch `tmp-struct-std-test-20260403` was safely deleted after confirmation that it had no unique needed commits.
+
+Current governed workflow state
+- `project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt` was updated and now reflects the current helper-skill workflow rules.
+- `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt` was updated and now reflects the latest helper-skill workflow rules, current validated status, and next planned work item.
+- `project_sources/todo/01_Active_Now.txt` was updated through the operator’s GitHub Desktop commit and should be treated as the current active-now line.
+- `project_sources/todo/03_Documentation_And_Knowledge_Lane.txt` was updated through the operator’s GitHub Desktop commit and should be treated as the current documentation lane.
+- `knowledge/DCOIR_Helper_Skills_Routing_Note.md` was updated through the operator’s GitHub Desktop commit and should be treated as the current governed helper-skill routing aid.
+- `project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt` now exists as the evergreen helper-skill workflow rules surface.
+- `project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt` now exists as the dated decision record for the 2026-04-03 helper-skill workflow changes.
+
+Important operator rules and preferences preserved this session
+- Show the proposed decomposed plan before the first GitHub upload unless the operator explicitly waives preview.
+- Prefer staging content in-session and using as few GitHub operations as possible.
+- Use `dcoir-memory-preflight` both before high-friction execution and after blockers are overcome when the lesson could improve a repeatable workflow or reusable process guidance.
+- Treat session-local write buffers plus later grouped GitHub flushes as a valid DCOIR helper-skill design line.
+- Do not pretend chat can silently monitor elapsed time in the background; use explicit flush-check trigger points instead.
+- After every helper-skill create or update, pass the result through `dcoir-skill-regression-auditor`.
+- When DCOIR helper-skill source is governed in GitHub under the one-source-of-truth model, the default new-skill workflow is build, download, manual install, extract, and GitHub Desktop source ingest.
+- When a DCOIR helper skill already has governed GitHub source, the default update workflow is build, download, manual install, and assistant-managed GitHub source update when the connector lane can do so safely.
+- The operator is willing to use a local repo plus GitHub Desktop when the in-chat existing-file update lane is the blocking factor, and considers stale core files a worse risk than a failed write that can be rolled back.
+
+What was completed in this session
+1. `dcoir-plan-tracker`
+- The skill was designed, specified, packaged, manually installed, and used on its first live governed plan.
+- GitHub-backed tracker root files and the first live plan for `dcoir-readme-maintainer` were created.
+- The plan captured the README-maintainer need, boundary draft, skill specification draft, and packaging step.
+
+2. `dcoir-readme-maintainer`
+- The skill was designed, specified, packaged, manually installed, and bounded-regression checked.
+- A bounded baseline README maintenance pass was run and preserved in helper memory.
+
+3. Helper-skill workflow governance
+- The closed-loop `dcoir-memory-preflight` rule was promoted.
+- The session-local write-buffer rule and grouped flush trigger points were promoted.
+- The mandatory post-create and post-update `dcoir-skill-regression-auditor` rule was promoted.
+- The new-skill and updated-skill GitHub-source rollout workflows were promoted.
+
+4. Important continuity and workflow files
+- The operator applied the replacement files through the local GitHub Desktop workflow and successfully committed them to main.
+- The branch cleanup completed successfully afterward.
+
+Helper-memory and supporting artifacts created this session
+- `dcoir_skill_memory/dcoir-memory-preflight/memory_preflight_workflow_upgrade_requirements.md`
+- `dcoir_skill_memory/dcoir-skill-regression-auditor/2026-04-03_dcoir-readme-maintainer_bounded_regression.md`
+- `dcoir_skill_memory/dcoir-readme-maintainer/baseline_readme_pass_2026-04-03.md`
+- `project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt`
+- `project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt`
+
+What is still open right now
+1. Upgrade the core helper skills so the newly governed helper-skill workflow rules become enforceable behavior.
+- Target skills:
+  - `dcoir-memory-preflight`
+  - `dcoir-decision-policy`
+  - `dcoir-plan-tracker`
+  - `dcoir-session-tracker`
+  - `dcoir-skill-regression-auditor`
+- This is the main next work item.
+
+2. Review the broader `dcoir-*` helper-skill set for whether each skill should support session-local write buffering, grouped GitHub flushes, or closed-loop memory-preflight routing.
+- Start with the highest-value candidates listed in DOC-05 and LOG-04.
+- Do not force buffering into every skill without a deliberate review.
+
+3. Apply a bounded README refresh batch when the chosen update lane is available.
+- Use the preserved baseline artifact for the concrete root README, knowledge README, and project_sources README changes.
+
+Current no-doubt resume sequence
+1. Read Project Instructions.
+2. Read `project_sources/CP-01_DCOIR_Version_Manifest.txt`.
+3. Read `project_sources/CP-02_DCOIR_Change_Log.txt`.
+4. Read `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt`.
+5. Read `project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt`.
+6. Read this file: `project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt`.
+7. Read `dcoir_skill_memory/dcoir-memory-preflight/memory_preflight_workflow_upgrade_requirements.md`.
+8. Read `dcoir_skill_memory/dcoir-readme-maintainer/baseline_readme_pass_2026-04-03.md`.
+9. Then start the skill-upgrade pass for the five core helper skills listed above.
+
+One best next move
+- Resume by upgrading `dcoir-memory-preflight` first, then `dcoir-decision-policy`, then `dcoir-plan-tracker`, then `dcoir-session-tracker`, then `dcoir-skill-regression-auditor`, because those five skills are the direct path to making the newly governed helper-skill workflow rules real behavior instead of only documented process guidance.
