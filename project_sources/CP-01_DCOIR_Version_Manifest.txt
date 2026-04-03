@@ -1,10 +1,11 @@
-DCOIR Version Manifest 3.9.12
+DCOIR Version Manifest 3.9.13
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
 - Change log: project_sources/CP-02_DCOIR_Change_Log.txt
 - Setup guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Layout spec: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
+- Structural refactor standard: project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt
 - Todo log: project_sources/LOG-01_DCOIR_Todo_Log.txt
 - Todo index: project_sources/LOG-01_DCOIR_Todo_Index.txt
 - Todo lanes: project_sources/todo/*.txt
@@ -41,8 +42,8 @@ Current extracted readable source folders
 - Supporting knowledge markdowns: knowledge/supporting_knowledge_docs/
 
 Current next work item
-- Review and integrate the newly extracted readable Gemini and supporting knowledge source folders into stronger documentation, knowledge indexes, and deliverable awareness.
-- Then resume the main project deliverables and reprioritize remaining todo items from the split todo structure.
-- After the extracted-folder review pass, audit the GitHub repo for true duplicate content by comparing content rather than names, remove only verified duplicates, and prefer an automation-first operator path with simple step-by-step guidance if connector-only comparison proves cumbersome.
-- Use the validated GitHub connector low-level lane for chat-managed readable text updates and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
-- Use the governed helper-skills routing note as a descriptive project-side aid when choosing the most appropriate `dcoir-*` helper skill, and refresh it if the installed helper-skill set changes materially.
+- Finish the governed structural refactor standard for growth-prone readable files and treat it as the active architecture-first work line.
+- Use the structural standard to define split-trigger rules, canonical index-plus-child-file patterns, naming rules, traceability requirements, dependency-first cutover rules, and required verification.
+- Inventory remaining likely split candidates, legacy split-attempt artifacts, and lagging repo delivery artifacts under the new standard.
+- After the structural-standard pass is in place, resume the extracted-folder integration pass under the new rules and keep the duplicate-content audit queued behind that work.
+- Continue using the validated GitHub connector low-level lane for chat-managed readable text updates, canonical task-memory preflight before high-friction GitHub work, and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.

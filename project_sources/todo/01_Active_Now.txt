@@ -1,31 +1,31 @@
 DCOIR Active Now
 
-1. Review and integrate the newly extracted readable Gemini and supporting-knowledge folders into stronger documentation, knowledge indexes, and deliverable awareness.
+1. Finish the governed structural refactor standard for growth-prone readable files.
    Why it matters:
-   - The newly extracted readable folders are now part of the governed repo working line and should be made easier to navigate and use.
+   - The project has a validated collector split pattern but does not yet have a fully codified repo-wide structural standard.
    Next action:
-   - Audit the extracted folders, identify the highest-value materials, and fold them into stronger repo guidance, knowledge indexes, and deliverable references.
+   - Align CP-01, CP-02, DOC-01, DOC-03, LOG-01, LOG-03, and the todo structure to DOC-04 and make the structural pass the active work line.
 
-2. Resume main project deliverables and reprioritize remaining todo items from the split todo structure now that the dcoir-github-api work line is retired.
+2. Inventory remaining likely split candidates, legacy split-attempt artifacts, naming-normalization targets, and lagging repo delivery artifacts under the new standard.
    Why it matters:
-   - The project should return to its real deliverables instead of carrying a stale conduit-validation line.
+   - The new standard should immediately guide the next real architecture targets rather than remain abstract.
    Next action:
-   - Choose the top deliverable or todo lane after the extracted-folder review is complete and continue from the split todo structure.
+   - Review growth-prone governed files, orphaned split-attempt artifacts, and repo delivery artifacts that may still describe the older posture.
 
-3. Use canonical task-memory preflight before GitHub-family execution work.
+3. Resume the extracted readable Gemini and supporting-knowledge folder integration pass under the new structural rules.
+   Why it matters:
+   - The extracted readable working line still needs better governed navigation and long-term placement, but it should proceed under the new structural standard.
+   Next action:
+   - Audit the extracted folders after the structural pass and promote the highest-value materials into stronger indexes, docs, and governed deliverable references.
+
+4. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:
    - Validated procedures should be consulted before friction, not after avoidable misses or retries.
    Next action:
    - Check knowledge/task_memory and the applicable GitHub procedures before repo writes, deletes, packaging, or structural changes.
 
-4. Prefer one bounded multi-file git-object transaction when multiple related existing-file edits or deletions belong together.
+5. Prefer one bounded multi-file git-object transaction when multiple related existing-file edits or deletions belong together.
    Why it matters:
    - Grouped repo changes reduce drift and mirror programmer-style all-at-once updates better than one-file-at-a-time churn.
    Next action:
    - Batch related GitHub changes into one transaction and verify every touched path afterward.
-
-5. Use GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
-   Why it matters:
-   - Bulk operator-managed file movement is easier and less error-prone there than in more technical or chat-bound paths.
-   Next action:
-   - Prefer GitHub Desktop for future operator-side bulk placement work unless a stronger approved path is later validated.

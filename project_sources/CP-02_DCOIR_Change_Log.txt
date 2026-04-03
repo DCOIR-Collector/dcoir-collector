@@ -1,12 +1,32 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.13
+Change class: structural refactor standard activation and control-plane reprioritization
+
+What changed
+- Added the governed structural refactor standard at `project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt`.
+- Promoted the structural refactor standard to the active architecture-first work line.
+- Refreshed the control plane, evergreen docs, todo posture, and session handoff posture to point at the structural-standard pass first.
+- Repositioned the extracted-folder integration pass and the duplicate-content audit behind the structural-standard pass.
+
+Why
+- The project had a validated collector split example but did not yet have a fully governed repo-wide structural refactor standard for growth-prone readable files.
+- The active work line should reflect the architecture-first need to formalize split-trigger rules, index-plus-child-file patterns, naming rules, traceability requirements, dependency-first cutover rules, and verification expectations before additional structural cleanup or broader documentation integration proceeds.
+- The extracted-folder integration and duplicate-audit work will be safer and easier to govern after the structural standard is formalized and the next likely refactor targets are inventoried.
+
+Validation notes
+- Verified that `project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt` exists in the governed repo working line.
+- Refreshed `CP-01`, `DOC-01`, `DOC-03`, `LOG-01`, `LOG-03`, and the split todo posture so the repo's current-state and continuity surfaces align to the structural-standard-first work line.
+- The duplicate-content audit remains queued behind the structural-standard and extracted-folder integration passes.
+
+[PRIOR]
 Version: 3.9.12
 Change class: helper-skills routing-note creation and documentation sync
 
 What changed
 - Added a governed descriptive routing note at `knowledge/DCOIR_Helper_Skills_Routing_Note.md` that inventories the current `dcoir-*` helper skills, their intended task families, preferred routing cues, and important usage boundaries.
-- Updated `knowledge/README.md` so the knowledge folder explicitly includes governed routing notes and references the new helper-skills routing note.
+- Updated knowledge/README.md so the knowledge folder explicitly includes governed routing notes and references the new helper-skills routing note.
 - Updated the documentation and knowledge lane so the project now tracks ongoing maintenance of the helper-skills routing note when the installed helper-skill set changes materially.
 - Refreshed `CP-01` and `LOG-03` so the new routing note is visible in the governed current-state and handoff posture.
 

@@ -18,6 +18,11 @@ Readable-source rule
 - The current todo structure now uses a split model anchored by project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt.
 - Extracted readable source folders with ongoing project value should live in governed folders under project_sources/ or knowledge/, not remain trapped inside zip bundles.
 
+Structural refactor standard
+- Governed structural refactors for growth-prone readable files follow project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt.
+- Prefer index-plus-child-file or wrapper-plus-role-bounded-part patterns when a governed file becomes brittle.
+- Preserve stable runtime or resume entry files, define split boundaries by role, create dependencies first, cut over stable entrypoints last, and refresh control-plane and continuity references immediately after structural change.
+
 Packaging convention
 - For GitHub-maintained readable text updates, prefer direct GitHub edits over patch ZIPs when the connector path supports them.
 - Use the GitHub connector directly as the preferred execution surface when DCOIR work needs to read, create, or update governed readable text in malwaredevil/dcoir-collector.

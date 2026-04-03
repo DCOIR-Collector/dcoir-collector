@@ -3,6 +3,9 @@ DCOIR Session Handoff Brief
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
 - GitHub control-plane files: project_sources/CP-01_DCOIR_Version_Manifest.txt and project_sources/CP-02_DCOIR_Change_Log.txt
+- Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
+- Layout spec: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
+- Structural refactor standard: project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt
 - Collector runtime file: project_sources/DCOIR_Collector.ps1
 - Collector readable source set: project_sources/collector_parts/*.ps1
 - Harness readable source: project_sources/run_DCOIR_Tests.ps1
@@ -23,6 +26,7 @@ Current governance state
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
 - GitHub Desktop is the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
 - The helper-skills routing note is descriptive guidance only and should not be treated as a control-plane authority source.
+- Governed structural refactors for growth-prone readable files now follow DOC-04 as the current repo-wide standard.
 
 Current validated status
 - The collector remains split into smaller governed source files, with DCOIR_Collector.ps1 preserved as the runtime wrapper.
@@ -34,18 +38,17 @@ Current validated status
 - The dcoir-github-api validation route is retired from the active working line and should not be treated as the next planned path.
 - The stale outlier PR and branch cleanup is complete and is no longer treated as a pending review item.
 - A governed helper-skills routing note now exists to make project-side helper-skill selection easier to understand and more predictable without promising guaranteed auto-invocation.
+- The governed structural refactor standard now exists as the current reusable architecture rule set for growth-prone readable files.
 
 Current session outcomes
-- Integrated the extracted readable contents of six formerly zipped bundles into governed folders under project_sources/ and knowledge/.
-- Refreshed the control plane, repo guide, workflow docs, and continuity files so the extracted readable folders are part of the visible governed project structure.
-- Retired the dcoir-github-api work line from the active todo, handoff, and control-plane posture.
+- Added `project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt` as the governed structural refactor standard.
+- Promoted the structural refactor standard to the active architecture-first work line across the control plane, evergreen docs, todo posture, and handoff posture.
 - Preserved the validated GitHub connector low-level lane for chat-managed readable-text work and documented GitHub Desktop as the easiest approved operator path for bulk local placement and binary or zip handling.
-- Completed cleanup of the superseded outlier PR and branch so the repo no longer carries that hanging review path.
-- Added a queued structural-cleanup item to audit the repo for true duplicate content, compare actual content before removal, and prefer an automation-first operator path with simple step-by-step guidance if connector-only comparison proves too cumbersome.
-- Added a governed helper-skills routing note and aligned the knowledge README, documentation lane, and current-state references to keep the note discoverable and maintainable.
+- Kept the extracted-folder integration line and duplicate-audit line behind the structural-standard pass.
+- Left the helper-skills routing note in place as a descriptive project-side aid and not a control-plane authority source.
 
 Current next planned work item
-- Review the newly extracted readable source folders and fold their highest-value material into stronger documentation, knowledge indexes, and deliverable-aware repo guidance.
+- Use DOC-04 to inventory remaining likely split candidates, naming-normalization targets, legacy split-attempt artifacts, and lagging repo delivery artifacts, then resume the extracted readable folder integration pass under the new structural rules.
 
 Recommended next move
-- Audit the newly extracted project_sources and knowledge folders, then promote their highest-value material into stronger docs, indexes, and governed deliverable references before resuming the broader deliverables line; keep the duplicate-audit task queued for the structural lane after that pass, and refresh the helper-skills routing note when the installed helper-skill set changes materially.
+- Audit the governed repo for the next real split/refactor targets under DOC-04, then resume the extracted readable folder integration line with the structural standard now acting as the architecture-first guardrail.

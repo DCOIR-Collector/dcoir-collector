@@ -31,7 +31,9 @@ Readable-source rules
   - project_sources/todo/*.txt
 - Session handoff:
   - project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
-- Knowledge markdown in knowledge/ is the readable working source when present.
+- Structural refactor standard:
+  - project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt
+- Knowledge markdown kn knowledge/ is the readable working source when present.
 - Extracted readable source folders currently include:
   - project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/
   - project_sources/original_alert_triage_gemini_agents/
@@ -39,6 +41,11 @@ Readable-source rules
   - knowledge/comparative_reference_agent_markdowns/
   - knowledge/generated_agent_markdowns/
   - knowledge/supporting_knowledge_docs/
+
+Structural refactor layout rule
+- When a growth-prone governed readable file is structurally refactored, preserve one stable parent, index, or wrapper file where future sessions need a predictable entrypoint.
+- Move role-bounded detail into explicit child files.
+- Preserve cross-file traceability and refresh current-state references when the live working model changes.
 
 Resume rules
 - Resume from Project Instructions first.
