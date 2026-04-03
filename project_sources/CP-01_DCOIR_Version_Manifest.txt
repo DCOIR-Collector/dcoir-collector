@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.10
+DCOIR Version Manifest 3.9.11
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -40,4 +40,5 @@ Current extracted readable source folders
 Current next work item
 - Review and integrate the newly extracted readable Gemini and supporting knowledge source folders into stronger documentation, knowledge indexes, and deliverable awareness.
 - Then resume the main project deliverables and reprioritize remaining todo items from the split todo structure.
+- After the extracted-folder review pass, audit the GitHub repo for true duplicate content by comparing content rather than names, remove only verified duplicates, and prefer an automation-first operator path with simple step-by-step guidance if connector-only comparison proves cumbersome.
 - Use the validated GitHub connector low-level lane for chat-managed readable text updates and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.

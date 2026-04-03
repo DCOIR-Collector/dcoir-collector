@@ -1,6 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.11
+Change class: queued duplicate-audit todo refresh and repo-cleanup continuity sync
+
+What changed
+- Refreshed CP-01, CP-02, LOG-01, LOG-03, the todo index, and key split todo lanes to add a queued structural-cleanup item for auditing the repo for true duplicate content.
+- Captured the rule that duplicate cleanup should compare actual content rather than only names or paths, and remove only verified duplicates.
+- Captured the operator preference for automation-first execution, minimal manual work, simple step-by-step instructions, and willingness to use paid tools when they materially reduce friction.
+- Replaced the now-completed stale-branch review reminder with the new duplicate-audit cleanup item in the queued continuity line.
+- Synced the handoff line so the repo state no longer implies the superseded outlier branch or PR still needs review.
+
+Why
+- Duplicate readable material or duplicated repo assets can create confusion, cleanup risk, and maintenance drift unless the repo compares real content before removal.
+- The operator explicitly prefers the easiest automated path, not manual comparison-heavy cleanup.
+- The todo and handoff line should reflect the current clean-repo posture after the stale PR and branch cleanup completed.
+
+Validation notes
+- The current active work line remains the extracted-readable-source review and integration pass.
+- The duplicate-audit task is queued in the structural lane rather than promoted ahead of the current active item.
+- The stale PR branch cleanup is now treated as complete, and the queued outlier-review reminder has been retired from the active continuity line.
+
+[PRIOR]
 Version: 3.9.10
 Change class: extracted readable source integration, zip retirement, and retirement of the dcoir-github-api work line
 
@@ -23,24 +44,3 @@ Validation notes
 - Verified the refreshed control-plane and continuity files now point at the same post-extraction, post-dcoir-github-api work line.
 - Earlier test branches direct-update-test, tmp-skill-memory-update-test, and dcoir-cp01-sync-20260330 were identified as stale cleanup candidates.
 - todo-skill-inventory-analysis-20260403 remains ahead of main and was not treated as a disposable test branch.
-
-[PRIOR]
-Version: 3.9.9
-Change class: todo and handoff refresh for dcoir-github-api operational validation and GitHub conduit decision
-
-What changed
-- Refreshed CP-01, LOG-01, LOG-03, the todo index, and key split todo lanes so the unfinished dcoir-github-api validation effort from the failing session is preserved in the live work line.
-- Elevated phased operational validation of @dcoir-github-api to the top active work item, including read-path, convenience-write-path, and grouped low-level Git-path testing.
-- Added follow-on todo items for deciding whether @dcoir-github-api is a viable project GitHub conduit and for documenting the approval-gated operating process only after full validation succeeds.
-- Added continuity notes that chat-bound GitHub writes may be approval-gated or runtime-unstable, that the conduit should not be treated as validated until phased testing completes, and that alternate GitHub paths require explicit operator authorization.
-- Added structural and deferred reminders for orphaned split-attempt artifact review and for documenting an approved alternate GitHub path if the intended conduit remains unavailable or unreliable after testing.
-
-Why
-- The project should not lose the unfinished GitHub-conduit validation work behind a broader main-deliverables summary.
-- The next resume point should reflect the operator's decision to test @dcoir-github-api fully before treating it as a preferred repo execution surface.
-- Continuity-critical GitHub execution rules should be visible in the governed todo and handoff line so they are not rediscovered only after another unstable session.
-
-Validation notes
-- CP-01, LOG-01, LOG-03, the todo index, and the refreshed split todo lanes point at the same next work line.
-- The active todo line now captures the phased @dcoir-github-api validation plan, conduit-decision follow-on, and the no-unauthorized-fallback rule.
-- Existing documentation, knowledge-expansion, task-memory, and zip-ingestion work remains preserved in the split todo structure.

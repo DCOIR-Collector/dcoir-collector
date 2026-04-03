@@ -11,7 +11,7 @@ Current priority summary
 3. Improve root and folder-level documentation and continue building the knowledge or wiki structure.
 4. Continue using canonical task-memory preflight and grouped GitHub transactions for related chat-managed repo work.
 5. Use GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
-6. Review stale earlier test branches and remove only the ones that are actually disposable.
+6. After the extracted-folder review pass, audit the repo for true duplicate content, remove only verified duplicates after content comparison, and prefer an automation-first operator path with simple step-by-step guidance.
 
 Todo-file map
 - todo/01_Active_Now.txt

@@ -30,16 +30,18 @@ Current validated status
 - The newly extracted readable Gemini and supporting-knowledge folders are now part of the governed repo working line.
 - The old dcoir-github-operator lane is retired and the old DCOIR_Collector_parts path has been removed.
 - The dcoir-github-api validation route is retired from the active working line and should not be treated as the next planned path.
+- The stale outlier PR and branch cleanup is complete and is no longer treated as a pending review item.
 
 Current session outcomes
 - Integrated the extracted readable contents of six formerly zipped bundles into governed folders under project_sources/ and knowledge/.
 - Refreshed the control plane, repo guide, workflow docs, and continuity files so the extracted readable folders are part of the visible governed project structure.
 - Retired the dcoir-github-api work line from the active todo, handoff, and control-plane posture.
 - Preserved the validated GitHub connector low-level lane for chat-managed readable-text work and documented GitHub Desktop as the easiest approved operator path for bulk local placement and binary or zip handling.
-- Reviewed earlier test branches and separated stale cleanup candidates from a still-ahead branch that should not be removed blindly.
+- Completed cleanup of the superseded outlier PR and branch so the repo no longer carries that hanging review path.
+- Added a queued structural-cleanup item to audit the repo for true duplicate content, compare actual content before removal, and prefer an automation-first operator path with simple step-by-step guidance if connector-only comparison proves too cumbersome.
 
 Current next planned work item
 - Review the newly extracted readable source folders and fold their highest-value material into stronger documentation, knowledge indexes, and deliverable-aware repo guidance.
 
 Recommended next move
-- Audit the newly extracted project_sources and knowledge folders, then promote their highest-value material into stronger docs, indexes, and governed deliverable references before resuming the broader deliverables line.
+- Audit the newly extracted project_sources and knowledge folders, then promote their highest-value material into stronger docs, indexes, and governed deliverable references before resuming the broader deliverables line; keep the duplicate-audit task queued for the structural lane after that pass.

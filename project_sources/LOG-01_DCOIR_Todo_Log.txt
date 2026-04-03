@@ -26,7 +26,7 @@ Queued next priorities
 - Continue maintaining and extending the GitHub task-memory bank as validated procedures, limitations, failure signatures, and preflight rules are learned.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge or wiki structure.
 - Continue using the validated GitHub connector low-level lane for chat-managed readable-text edits and GitHub Desktop as the easiest approved operator path for bulk local placement and binary or zip handling.
-- Review stale earlier test branches and remove only those that are actually disposable.
+- After the extracted-folder review pass, audit the repo for true duplicate content by comparing actual content rather than names, remove only verified duplicates, and prefer an automation-first path with simple step-by-step instructions and minimal manual work.
 
 Documentation and knowledge lane
 - Improve the main README with clearer mission, deliverables, navigation, and repo map guidance.
@@ -42,6 +42,7 @@ Structure and refactor lane
 - Review any remaining legacy or orphaned split-attempt artifacts before cleanup, and only remove them after dependency checks are complete.
 - Preserve cross-file traceability whenever a governed file is split.
 - Review whether any remaining repo delivery artifacts still lag the current split todo and task-memory posture.
+- Audit the repo for true duplicate content by comparing actual content rather than names or paths, remove only verified duplicates, and prefer an automation-first operator path with simple step-by-step guidance if connector-only comparison proves too cumbersome.
 
 Deferred or conditional items
 - If future extracted or newly received readable bundles arrive, place them into appropriate governed GitHub locations and refresh repo awareness files accordingly.

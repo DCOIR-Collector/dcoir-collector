@@ -19,3 +19,9 @@ DCOIR Structure And Refactor Lane
 5. Review whether any remaining repo delivery artifacts still lag the current split todo and task-memory posture.
    Why it matters:
    - Packaging and delivery artifacts should not quietly drift behind the live control plane.
+
+6. Audit the repo for true duplicate content and remove only verified duplicates.
+   Why it matters:
+   - Duplicate readable material, duplicate extracted sources, or duplicated supporting assets can create confusion, cleanup risk, and maintenance drift if the repo only checks names or paths.
+   Next action:
+   - Compare actual content rather than only filenames or locations, remove only verified duplicates, and if connector-only comparison proves too cumbersome, define the easiest automation-first operator path with simple step-by-step instructions and minimal manual work.

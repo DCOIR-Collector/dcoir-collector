@@ -12,7 +12,13 @@ DCOIR Queued Next
    Next action:
    - Define index-plus-child-file patterns, naming rules, and traceability requirements.
 
-3. Continue maintaining and extending knowledge/task_memory as validated procedures, limitations, and failure signatures are learned.
+3. Audit the repo for true duplicate content and prepare the easiest automation-first removal path.
+   Why it matters:
+   - Duplicate readable material can create confusion and maintenance drift, and the operator prefers automated comparison and cleanup over manual review.
+   Next action:
+   - Compare actual content rather than names or paths, remove only verified duplicates, and if connector-only comparison is too cumbersome, define the simplest operator-friendly automated path with simple step-by-step instructions and minimal manual work.
+
+4. Continue maintaining and extending knowledge/task_memory as validated procedures, limitations, and failure signatures are learned.
    Why it matters:
    - The task-memory bank is now the durable GitHub memory location for validated lessons.
    Next action:
