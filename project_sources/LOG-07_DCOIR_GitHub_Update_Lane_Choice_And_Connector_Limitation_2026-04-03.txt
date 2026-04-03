@@ -1,0 +1,26 @@
+DCOIR GitHub Update-Lane Choice And Connector Limitation - 2026-04-03
+
+Purpose
+- Record the operator-approved rule for choosing between in-chat GitHub updates and operator-managed GitHub updates.
+- Record the observed connector limitation from the 2026-04-03 in-chat update attempt for existing governed files.
+
+Approved operator rule
+- Do not shift repo updates onto the operator by default.
+- When repo updates could be done either in chat or through GitHub Desktop or another operator-managed lane, ask the operator which lane they want.
+- GitHub Desktop with a repo-ready bundle may be offered for large multi-file updates, but it must be presented as an option rather than assumed.
+- If the operator wants the in-chat GitHub lane, keep the update in chat and attempt the connector path first when it is safe to do so.
+
+Observed connector limitation in this session
+- New-file creation through the GitHub connector is working.
+- Readback verification through the GitHub connector is working.
+- Existing-file updates are not currently exposed through a simple safe overwrite action in the available connector surface.
+- The contents-style overwrite path indicates that an existing-file update would need a file SHA that the current create action does not expose as an input.
+- The documented grouped low-level lane remains the right conceptual procedure, but the currently exposed connector surface does not provide the full tree metadata plainly enough for a clean bounded existing-file overwrite flow in this chat.
+
+Workflow implication
+- Keep the limitation explicit instead of pretending the existing-file overwrite lane is already safe.
+- Preserve the reusable limitation note in helper memory so future GitHub-family preflight can surface it early.
+- When this limitation matters, tell the operator immediately and ask whether they want the in-chat path to continue with bounded alternatives or whether they want to switch lanes.
+
+Best next move
+- Preserve this rule and limitation in durable helper memory and use it during future GitHub-family preflight and decision-policy routing.
