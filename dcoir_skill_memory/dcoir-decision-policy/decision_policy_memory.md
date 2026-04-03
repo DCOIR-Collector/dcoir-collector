@@ -2,7 +2,7 @@
 artifact_type: dcoir-decision-policy-memory
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-03-30T12:29:55Z
+exported_at_utc: 2026-04-03T21:10:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -19,6 +19,14 @@ GitHub-backed decision-memory continuity for DCOIR helper skills
   - rule: prefer one zip bundle containing the full update set and concise replacement instructions
   - why: minimize operator downloads and manual update burden
   - next_action: keep applying this default for multi-skill updates
+- **operator chooses repo update lane** (status: approved; source: operator_intent_matrix)
+  - rule: when repo updates could be done either in chat or through GitHub Desktop or another operator-managed lane, ask which lane the operator wants before shifting the work
+  - why: the operator may not always be on a machine where GitHub Desktop is available and wants explicit control over whether the update stays in chat
+  - next_action: apply this before suggesting or shifting to any operator-managed repo-update path
+- **github existing-file recovery comes before limitation claims** (status: approved; source: operator_intent_matrix)
+  - rule: for GitHub-family existing-file or grouped existing-file friction, re-anchor and apply GH-PROC-007 plus GH-PROC-001 or GH-PROC-006, then GH-PROC-005, before writing durable limitation or connector-failure claims
+  - why: avoid turning assistant procedure-recovery failure or execution-discipline failure into a false permanent record about capability boundaries
+  - next_action: use this as the default recovery order for GitHub-family write friction
 
 ## Pending or situational learning
 - **GitHub-backed helper-memory rollout sequencing** (status: in_progress; source: current_chat)
@@ -27,12 +35,16 @@ GitHub-backed decision-memory continuity for DCOIR helper skills
   - next_action: reassess after operator verifies the manual skill updates
 
 ## Delivery and update preferences
-- bundle multi-file skill updates into one zip
+- bundle multi-file skill updates into one zip when that lane is chosen
 - keep helper memory in dcoir_skill_memory/ and separate from governed project files
+- ask before shifting repo updates to GitHub Desktop or another operator-managed lane
+- for existing-file GitHub recovery, use canonical GitHub task memory before writing any capability-boundary explanation
 
 ## Next actions
 - keep the decision memory file current after durable preference or sequencing changes
-- re-read this file before future packaging-handoff decisions
+- re-read this file before future packaging-handoff decisions and repo-update lane decisions
 
 ## Provenance notes
 - Initialized during the five-skill GitHub-memory rollout.
+- Expanded on 2026-04-03 after the operator clarified that repo-update lane choice must stay under explicit operator control.
+- Expanded again on 2026-04-03 after recovery of the validated low-level git-object lane for existing-file updates.

@@ -10,6 +10,7 @@ preconditions:
   - replacement content is fully prepared before write
   - current ref is known or treated as main
   - all related changes actually belong in one grouped change set
+  - GH-PROC-007 preflight has been applied when the task is high-friction or when the grouped lane is being recovered after friction
 step_sequence:
   - step: read_live_state
     action: fetch_file
@@ -37,10 +38,12 @@ verification_steps:
   - compare content for updated paths, not just commit success
   - verify deleted paths by absence or 404 behavior
   - if structural or control-plane files changed, verify the downstream docs and logs that should stay aligned
+  - if friction occurred before recovery, classify the failure honestly as assistant recall failure, assistant execution failure, or a proven low-level-step failure
 anti_patterns:
   - do not perform one-file-at-a-time existing-file writes when the change set belongs together
   - do not treat commit creation alone as success
   - do not skip deleted-path verification after a grouped change
+  - do not write durable connector, tool, or capability-boundary claims before a named low-level step in this lane has actually failed after correct preflight and execution
 known_good_signatures:
   - compare_commits base=head=main returned current head sha
   - create_tree accepted the full grouped path set
@@ -50,5 +53,5 @@ known_good_signatures:
 fallbacks:
   - GH-PROC-004
   - GH-PROC-005
-last_validated: 2026-04-02
+last_validated: 2026-04-03
 confidence: high

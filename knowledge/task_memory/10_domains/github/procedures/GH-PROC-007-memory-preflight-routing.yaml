@@ -41,17 +41,24 @@ preferred_record_sets:
   large_file_or_structural_refactor:
     - GH-PROC-003
     - GH-PROC-005
+recovery_order:
+  github_existing_file_or_grouped_existing_file_friction:
+    - GH-PROC-007
+    - GH-PROC-001 or GH-PROC-006
+    - GH-PROC-005
 verification_steps:
   - name the records consulted before execution when the task family matches a known procedure
   - carry forward the anti-patterns and verification rules from the selected records
   - if no relevant canonical record exists, say that plainly and use the best bounded path instead of pretending memory was consulted
+  - if friction occurs, distinguish assistant recall failure, assistant execution failure, ungrounded inference, and proven low-level-step failure before writing any durable capability-boundary claim
 anti_patterns:
   - do not rely on recollection alone when a matching canonical procedure exists
   - do not wait for friction or a failed attempt before consulting canonical task memory on a known workflow family
   - do not skip post-write verification after a github-family action
+  - do not write durable connector, tool, or capability-boundary claims before the relevant low-level recovery set has been applied and a named step has failed
 fallbacks:
   - GH-PROC-004
   - GH-PROC-005
   - GEN-PROC-001
-last_validated: 2026-04-02
+last_validated: 2026-04-03
 confidence: high
