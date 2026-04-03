@@ -30,6 +30,8 @@ Core standing rules
 - Prefer staging content in-session and using as few GitHub operations as possible.
 - For related existing-file updates, prefer one bounded grouped git-object transaction over one-file-at-a-time churn when the connector lane can do so safely.
 - If the grouped lane cannot yet be completed safely in-chat, preserve the intended grouped-write posture and keep the limitation explicit rather than hiding it.
+- Do not write durable connector or tool-limitation claims unless a specific low-level step has failed after correct preflight and execution.
+- Distinguish assistant procedure-recovery failure, assistant execution failure, ungrounded inference, and proven tool limitation explicitly when explaining GitHub-family friction.
 
 4. Mandatory post-change skill regression rule
 - After every helper-skill create or update, pass the result through `dcoir-skill-regression-auditor` before treating the skill as ready for broader use, packaging follow-through, or workflow promotion.
@@ -52,6 +54,13 @@ Core standing rules
   - manually install the skill update
   - use the GitHub-governed source set as the durable readable source of truth
   - let ChatGPT perform the governed GitHub source update directly when the connector lane can do so safely
+- When both an in-chat GitHub update lane and an operator-managed lane are possible, ask the operator which lane they want before shifting the work.
+- GitHub Desktop with a repo-ready bundle may be offered for large multi-file updates, but it must not be assumed by default.
+
+7. GitHub existing-file recovery rule
+- For GitHub-family existing-file or grouped existing-file recovery, treat `GH-PROC-007` plus `GH-PROC-001` or `GH-PROC-006`, then `GH-PROC-005`, as the first recovery set.
+- Re-apply the validated low-level git-object lane before writing any durable limitation claim.
+- Keep readback verification mandatory before the work is treated as complete.
 
 Skills most likely to benefit from session-local write buffers
 - Highest-value initial candidates:
@@ -95,3 +104,4 @@ Truth rules
 - Do not let helper-memory working state override the control plane.
 - Do not silently promote reusable lessons into canonical memory.
 - Keep the operator informed when grouped-write behavior is desired but not yet fully supported by the current in-chat connector lane.
+- Do not attribute GitHub-family friction to connector failure or capability boundaries unless a specific low-level step has actually failed after correct preflight and execution.
