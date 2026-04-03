@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "tracker_id": "dcoir-plan-tracker",
+  "root_path": "dcoir_skill_memory/dcoir-plan-tracker",
+  "active_plan_ids": [
+    "PLAN-20260403-dcoir-readme-maintainer-skill-build"
+  ],
+  "plans": [
+    {
+      "plan_id": "PLAN-20260403-dcoir-readme-maintainer-skill-build",
+      "title": "build dcoir-readme-maintainer skill",
+      "state": "active",
+      "created": "2026-04-03",
+      "last_updated": "2026-04-03",
+      "active_task_id": "T1",
+      "active_task_title": "re-anchor and inspect current README-maintenance need"
+    }
+  ]
+}
