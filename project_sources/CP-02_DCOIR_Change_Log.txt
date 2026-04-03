@@ -1,6 +1,23 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.21
+Change class: todo reprioritization and continuity alignment for the session-tracker workflow line
+
+What changed
+- Updated the authoritative todo surfaces so the active branch now points at the session-tracker workflow review line.
+- Added the current-state and version-checking concern to the active queue as a vital work item.
+- Refreshed the manifest, handoff brief, and resume anchor so they now match the active LOG-01 work line.
+
+Why
+- The repo had drifted into multiple active branch descriptions across LOG-01, CP-01, LOG-03, and LOG-05.
+- The operator wanted the repo brought back onto the same page before continuing the session-tracker workflow review.
+
+Validation notes
+- Direct readback confirmed the updated todo surfaces before the continuity refresh.
+- Direct readback confirmed the refreshed manifest, handoff brief, and resume anchor after the grouped existing-file update.
+
+[PRIOR]
 Version: 3.9.20
 Change class: GitHub procedure-recovery correction, workflow hardening, and batched downstream continuity refresh
 
@@ -22,29 +39,3 @@ Validation notes
 - The validated low-level git-object lane was successfully used again on `main` for existing-file updates during the correction pass.
 - Direct readback confirmed the corrected records, hardened workflow docs, updated decision memory, and updated canonical GitHub procedures.
 - This continuity refresh was itself prepared and landed as one bounded grouped GitHub transaction.
-
-[PRIOR]
-Version: 3.9.19
-Change class: governed GitHub helper-skill source rollout and continuity refresh
-
-What changed
-- Settled the previously open policy question and approved that all `dcoir-*` skill source should be stored in GitHub.
-- Added `project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt` as the dated project-side decision record for the GitHub helper-skill source policy.
-- Added `project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt` as the evergreen layout and rollout companion for governed helper-skill source.
-- Added the governed helper-skill source root `dcoir_skills/` and landed the full governed GitHub source set for all current `dcoir-*` skills.
-- Preserved the distinction between governed helper-skill source under `dcoir_skills/` and helper working-state continuity under `dcoir_skill_memory/`.
-- Captured the operator preference that when policy, authority, or governance materially blocks progress, the assistant should report the block immediately, explain what would unblock it, and give the best available courses of action.
-- Refreshed continuity surfaces so the control plane, handoff view, and dated resume anchor reflect the live `dcoir_skills/` governed source root.
-
-Why
-- The project had reached the point where helper-skill source was important enough to govern directly in GitHub instead of leaving the storage model as an open design question.
-- The five-skill workflow-enforcement upgrade and the broader helper-skill estate are easier to maintain when GitHub is the readable source-of-truth.
-- The operator prefers being offered GitHub Desktop with a repo-ready bundle as a first-class option for large multi-file repo updates.
-- Immediate blocked-state escalation improves workflow speed by making operator authorization part of the normal recovery path instead of a late discovery.
-
-Validation notes
-- The governed policy decision file is live in GitHub.
-- The evergreen helper-skill source layout document is live in GitHub.
-- The governed source root `dcoir_skills/` is live in GitHub.
-- Direct readback confirmed governed helper-skill source under `dcoir_skills/` on `main`.
-- The continuity surfaces in this update set are the bounded follow-on refresh after the governed source rollout.
