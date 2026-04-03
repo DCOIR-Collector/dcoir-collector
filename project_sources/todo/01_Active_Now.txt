@@ -1,26 +1,24 @@
 DCOIR Active Now
 
-1. Conduct a full operational validation of @dcoir-github-api before treating it as a viable GitHub execution conduit for project work.
+1. Analyze the best governed implementation path for a GitHub-native skills inventory note that lists current dcoir-* skills, intended use cases, and trigger phrases without changing authority or implying deterministic auto-invocation.
    Why it matters:
-   - The failing session ended with only partial proof; some read behavior and manual write operations worked, but the full chat-bound operational path was not validated end-to-end.
+   - The project needs a durable, governed way to keep helper-skill awareness visible without turning a documentation note into an authority override or a hard routing mechanism.
    Next action:
-   - Verify that the intended project GitHub action surface is actually available and usable in the current chat, then run the phased validation:
-     - Round 1 read path: getRepository, getBranch(main), getFileContent(README.md), getCommit(main)
-     - Round 2 convenience file path on a disposable branch: createBranchReference, createOrUpdateSingleFile, getFileContent readback, deleteSingleFile, deleteReference
-     - Round 3 grouped low-level Git path on a disposable branch: createBranchReference, compareCommits, createGitTree, createGitCommit, updateBranchReference, verification readback, deleteReference
-   - Treat write behavior as potentially approval-gated and do not conclude schema, token, or parameter failure until approval behavior or stale binding has been ruled out.
+   - Determine the best file class, repo location, scope, and wording for the note.
+   - Verify that the note can remain descriptive only and does not conflict with existing authority, workflow, or helper-skill boundary rules.
+   - Identify any direct refresh set that would be required only if the note is later implemented.
 
-2. Decide whether @dcoir-github-api is a viable project GitHub conduit only after the phased validation completes.
+2. If the skills-inventory analysis supports it, implement the note as descriptive documentation only and refresh any directly affected control-plane or workflow docs.
    Why it matters:
-   - The project should not assume a preferred GitHub execution surface before approval behavior, runtime stability, and write reliability are understood.
+   - The note should only exist if it improves governed skill awareness without creating authority drift or false expectations about skill invocation.
    Next action:
-   - If it validates, document the approval-gated operating process for chat-bound GitHub work; if it does not, define the approved alternate path and explicit authorization rule.
+   - Implement the note only after the analysis settles its location, scope, and wording, then refresh any directly affected awareness or control-plane docs.
 
-3. Resume main project deliverables and reprioritize remaining todo items from the split todo structure after the conduit decision is settled.
+3. Resume main project deliverables and reprioritize remaining todo items from the split todo structure after the skills-inventory decision is settled.
    Why it matters:
-   - The project still needs to return to the real deliverables and broader todo lanes once the GitHub execution path is clear.
+   - The project still needs to return to the real deliverables and broader todo lanes once this documentation-design decision is clear.
    Next action:
-   - Choose the top deliverable or remaining todo lane and continue from the current split todo structure after the GitHub-conduit decision is made.
+   - Choose the top deliverable or remaining todo lane and continue from the current split todo structure after the skills-inventory decision is made.
 
 4. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:

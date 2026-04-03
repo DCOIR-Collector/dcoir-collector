@@ -6,12 +6,12 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Conduct a full operational validation of @dcoir-github-api before treating it as a viable project GitHub execution conduit.
-2. If it validates, document the approval-gated GitHub operating process; if it does not, define the approved alternate path and explicit authorization rule.
-3. After the conduit decision is settled, resume the main project deliverables and reprioritize remaining todo work from the split todo structure.
+1. Analyze the best governed implementation path for a GitHub-native skills inventory note that lists current dcoir-* skills, intended use cases, and trigger phrases without changing authority or implying deterministic auto-invocation.
+2. If the analysis supports it, implement the note as descriptive documentation only and refresh any directly affected control-plane or workflow docs.
+3. After the skills-inventory decision is settled, resume the main project deliverables and reprioritize remaining todo work from the split todo structure.
 4. Improve root and folder-level documentation and continue building the knowledge/wiki structure.
 5. Expand knowledge handling so readable text with project value is not trapped inside supporting zip files.
-6. Continue using canonical task-memory preflight, grouped GitHub transactions for related repo work, and chat-bound GitHub caution rules.
+6. Continue using canonical task-memory preflight and grouped GitHub transactions for related repo work.
 
 Todo-file map
 - todo/01_Active_Now.txt
@@ -21,11 +21,10 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Run the phased @dcoir-github-api operational validation and decide whether it can be trusted as the project GitHub conduit before resuming repo-execution work through it.
+- Analyze the best location, file class, scope, and wording for a governed GitHub skills inventory note, keeping it descriptive and non-authoritative before deciding whether to implement it.
 
 Notes
 - The current canonical collector runtime is project_sources/DCOIR_Collector.ps1.
 - The current governed readable collector source set is project_sources/collector_parts/*.ps1.
 - Related GitHub existing-file edits or deletions should prefer one bounded grouped transaction over one-file-at-a-time updates.
-- Chat-bound GitHub writes may be approval-gated or runtime-unstable and should not be treated as failed until approval behavior or stale binding has been ruled out.
-- If the intended project GitHub action surface is unavailable or unreliable in the current chat, stop and use an alternate path only when explicitly authorized.
+- A governed skills inventory note should list current dcoir-* skills, intended use cases, and trigger phrases only; it should not promise deterministic skill auto-invocation or override existing authority rules.

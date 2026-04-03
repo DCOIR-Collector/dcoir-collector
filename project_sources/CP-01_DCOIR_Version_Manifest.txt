@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.9
+DCOIR Version Manifest 3.9.10
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -30,6 +30,6 @@ Current task-memory bank
 - Compiled lookup: knowledge/task_memory/30_compiled/fast_lookup.json
 
 Current next work item
-- Conduct a full operational validation of @dcoir-github-api before treating it as a viable project GitHub execution conduit.
-- If it validates, document the approval-gated operating process for chat-bound GitHub work; if it does not, stop and use an approved alternate path only when explicitly authorized.
-- After the conduit decision is settled, resume the main project deliverables and reprioritize remaining todo items from the split todo structure.
+- Analyze the best governed implementation path for a GitHub-native skills inventory note that lists current dcoir-* skills, intended use cases, and trigger phrases without changing authority or implying deterministic auto-invocation.
+- If the analysis supports it, implement the note as descriptive documentation only and refresh any directly affected control-plane or workflow docs.
+- After the skills-inventory decision is settled, resume the main project deliverables and reprioritize remaining todo items from the split todo structure.

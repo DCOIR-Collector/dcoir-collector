@@ -9,7 +9,7 @@ Current stable pointers
 - Task memory manifest: knowledge/task_memory/00_registry/task_memory_manifest.yaml
 
 Current active priority
-- Conduct a full operational validation of @dcoir-github-api before treating it as a viable GitHub execution conduit for project work, then decide and document the GitHub operating process or approved alternate path before resuming the broader main-deliverables line.
+- Analyze the best governed implementation path for a GitHub-native skills inventory note that lists current dcoir-* skills, intended use cases, and trigger phrases without changing authority or implying deterministic auto-invocation, then decide whether to implement it as descriptive documentation before returning to the broader main-deliverables line.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -20,8 +20,7 @@ Detailed todo structure
 - project_sources/todo/05_Deferred_Or_Conditional.txt
 
 Queued next priorities
-- If @dcoir-github-api validates, define and document the approval-gated operating process for chat-bound GitHub work.
-- If it does not validate or remains unreliable in-chat, document the approved alternate GitHub path and stop treating it as an assumed conduit until revalidated.
+- If the skills-inventory analysis supports it, implement the note as descriptive documentation only and refresh any directly affected control-plane or workflow docs.
 - Continue maintaining and extending the GitHub task-memory bank as validated procedures, limitations, failure signatures, and preflight rules are learned.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge/wiki structure.
 - After operator-side extraction is available, ingest readable text from supporting zip files other than DCOIR_Collector.zip into appropriate governed GitHub locations and refresh repo-awareness documents accordingly.
@@ -45,4 +44,4 @@ Deferred or conditional items
 - After text-bearing zip contents are extracted and uploaded, update the repo structure and awareness files so the extracted readable sources become first-class project knowledge where appropriate.
 - Apply additional skill package maintenance only when a new validated bundle is ready and operator conditions allow.
 - If future GitHub procedures or failure signatures are validated, promote them into knowledge/task_memory and refresh the compiled indexes.
-- If @dcoir-github-api remains unavailable or unreliable after phased validation, use an alternate GitHub path only when explicitly authorized and document that conduit decision in governed logs.
+- If the skills-inventory analysis concludes that a governed note would create authority confusion or maintenance overhead, keep the idea unimplemented and preserve the decision in governed logs.

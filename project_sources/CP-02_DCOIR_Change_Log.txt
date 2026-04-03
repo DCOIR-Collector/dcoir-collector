@@ -1,6 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.10
+Change class: todo and handoff refresh for governed skills inventory analysis
+
+What changed
+- Refreshed CP-01, LOG-01, LOG-03, the todo index, and key split todo lanes so the current active work line now starts with analysis of a governed GitHub skills inventory note.
+- Removed the unfinished @dcoir-github-api conduit-validation lane from the active todo and handoff priority line.
+- Added a new top-priority analysis item for a descriptive skills inventory note that would list current dcoir-* skills, intended use cases, and trigger phrases without changing authority or promising deterministic auto-invocation.
+- Added a follow-on item to implement the note only if the analysis supports it and the wording remains descriptive rather than prescriptive.
+
+Why
+- The project needs a cleaner governed way to keep current helper-skill awareness visible without turning a documentation note into an authority override or a hard routing mechanism.
+- The active work line should reflect the operator's decision to stop prioritizing @dcoir-github-api validation and instead analyze a GitHub-native skills inventory note first.
+- Control-plane and continuity files should stay aligned so the next resume point is clear and does not pull the project back into the retired conduit-testing lane.
+
+Validation notes
+- DOC-01 already treats dcoir-* helper skills as planning, analysis, validation, and workflow aids rather than the default GitHub write lane.
+- The refreshed CP-01, LOG-01, LOG-03, todo index, and active todo lane point at the same next work line.
+- The proposed skills inventory note remains a documentation-analysis item only at this stage; implementation and any downstream doc refresh remain future work pending that analysis.
+
+[PRIOR]
 Version: 3.9.9
 Change class: todo and handoff refresh for dcoir-github-api operational validation and GitHub conduit decision
 

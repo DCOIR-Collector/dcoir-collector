@@ -12,6 +12,6 @@ DCOIR Deferred Or Conditional
    Why it matters:
    - The canonical memory bank should keep improving as new validated workflows are learned.
 
-4. If @dcoir-github-api remains unavailable or unreliable after phased validation, document the approved alternate GitHub path and use it only when explicitly authorized.
+4. If the skills-inventory analysis concludes that a governed note would create authority confusion or maintenance overhead, keep the idea unimplemented and preserve the decision in governed logs.
    Why it matters:
-   - The project should not drift into silent fallback behavior when the intended conduit is not working.
+   - The project should not add governance surface area unless the note materially improves clarity.

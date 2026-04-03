@@ -24,17 +24,16 @@ Current validated status
 - The task-memory bank remains implemented in GitHub using a canonical registry plus compiled indexes.
 - The repo also contains a governed combined analyst-facing DCOIR master prompt and governed Gemini merged-agent design artifacts that should be treated as core project deliverables.
 - The old dcoir-github-operator lane is retired and the old DCOIR_Collector_parts path has been removed.
-- @dcoir-github-api is not yet treated as a validated end-to-end GitHub execution conduit for chat-bound use; the failing session needs a full operational retest before that decision is made.
+- A governed skills inventory note is not yet implemented; the current work item is to analyze whether it should exist and how to scope it without changing authority.
 
 Current session outcomes
-- Added canonical GitHub task-memory procedures for grouped multi-file transactions and memory-preflight routing.
-- Refreshed the control plane, todo summaries, and workflow docs so GitHub-family work now consults canonical task memory before execution and prefers one bounded grouped transaction for related changes.
-- Prepared a dedicated dcoir-memory-preflight skill and an updated dcoir-decision-policy package so the preflight behavior can exist in the skill layer as well as in governed docs and task memory.
-- Refreshed the todo and handoff continuity line so the unfinished @dcoir-github-api validation effort is preserved explicitly instead of being lost behind the broader main-deliverables summary.
-- Preserved the chat-bound GitHub caution notes: verify availability in-chat, treat writes as potentially approval-gated or runtime-unstable, and do not use alternate paths without explicit operator authorization.
+- Reviewed the proposal for a GitHub-native skills inventory note that would list current dcoir-* skills, intended use cases, and trigger phrases.
+- Determined that the idea can be analyzed as descriptive documentation without changing authority, provided it does not promise deterministic auto-invocation or become a hard routing rule.
+- Refreshed the todo and handoff continuity line so the skills-inventory analysis is now the active work item instead of the earlier @dcoir-github-api conduit-testing lane.
+- Preserved the GitHub-family cautions that helper skills remain aids rather than the default GitHub write lane and that grouped GitHub changes should still use canonical task-memory preflight and verification.
 
 Current next planned work item
-- Conduct the phased @dcoir-github-api operational validation and decide whether it is a viable GitHub conduit before relying on it for project repo work.
+- Analyze the best governed implementation path for a GitHub-native skills inventory note and decide whether it should be implemented as descriptive documentation only.
 
 Recommended next move
-- Run Round 1 through Round 3 of the @dcoir-github-api operational validation in a fresh chat or stable runtime, then document the conduit decision and resume the main deliverables line.
+- Determine the best file class, location, scope, and wording for a governed skills inventory note, then decide whether to implement it and what downstream doc refreshes would be required.

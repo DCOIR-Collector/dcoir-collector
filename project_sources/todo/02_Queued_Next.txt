@@ -1,10 +1,10 @@
 DCOIR Queued Next
 
-1. Add a governed workflow note for the validated GitHub operating process once the conduit decision is settled.
+1. If the skills-inventory analysis supports it, add the governed note and refresh the directly affected awareness or control-plane docs.
    Why it matters:
-   - Future sessions should not have to rediscover how approval-gated chat-bound GitHub work is supposed to operate.
+   - The implementation should stay bounded and traceable rather than growing into an implicit routing or authority mechanism.
    Next action:
-   - If @dcoir-github-api validates, document the operating process; if it does not, document the approved alternate path and explicit authorization rule.
+   - Implement the note only after its role, file class, scope, and wording are settled.
 
 2. Define a sustainable split standard for growth-prone governed files.
    Why it matters:
