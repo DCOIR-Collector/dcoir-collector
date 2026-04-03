@@ -26,6 +26,15 @@ imports_merged:
 ## Best next move
 [one best next move]
 
+## Close-out status
+[short statement]
+
+## Durability summary
+- governed_github: [short statement]
+- exported_handoff_only: [short statement]
+- buffered_session_only: [short statement]
+- unresolved_closeout_gap: [optional short statement]
+
 ## Open items
 ### session_only
 - [ID] title — why it matters — next action
@@ -63,6 +72,15 @@ imports_merged:
 
 ### LOG-03 candidate text
 [optional]
+
+## Starter prompt for next session
+[required when the operator is moving to another session]
+
+## Close-out verification notes
+- learned rules checked
+- open tasks checked
+- continuity/log surfaces checked
+- remaining non-durable items called out
 
 ## Provenance notes
 - imported artifact notes

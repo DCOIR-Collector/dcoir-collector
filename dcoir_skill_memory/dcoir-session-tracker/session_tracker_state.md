@@ -2,7 +2,7 @@
 artifact_type: dcoir-session-state
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-04-01T14:10:00Z
+exported_at_utc: 2026-04-03T00:00:00Z
 authority_basis:
   - Project Instructions v15
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -16,73 +16,90 @@ imports_merged:
 # DCOIR Session State
 
 ## Current phase
-Collector all-path testing has been executed through Elastic Defend response actions, the harness partial-success reporting defect is patched, and the bounded endpoint rerun is now a deferred validation item until the operator has sent himself the needed files. The active branch returns to second-wave GitHub-operator adoption.
+Current governed work is focused on extending `dcoir-session-tracker` with explicit session close-out behavior, refreshing stale session-tracker continuity, and preserving new structural ideas in GitHub-backed memory instead of leaving them only in chat.
 
 ## Best next move
-Resume the next active roadmap branch: second-wave GitHub-operator adoption. Hold the bounded harness rerun until the operator has sent himself the required files.
+Apply the updated `dcoir-session-tracker` skill zip manually, then overwrite the bundled repo files in a local clone with GitHub Desktop, commit them together, and push one grouped update before continuing the broader helper-skill review line.
+
+## Close-out status
+Session close-out mode is now drafted and bundled for update, but it is not yet durable in GitHub until the repo overwrite bundle is committed and pushed.
+
+## Durability summary
+- governed_github: control-plane version 3.9.20, GitHub-primary skill-source governance, and the current helper-skill workflow hardening remain durable on main.
+- exported_handoff_only: none in this bundle.
+- buffered_session_only: the newly stated close-out rule and the new structural ideas are only chat-local until this repo bundle is applied.
+- unresolved_closeout_gap: the canonical `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md` file previously lagged the current 2026-04-03 governed state.
 
 ## Open items
 ### durable_preference_candidate
-- [ST-002] Keep helper-skill memory separate in GitHub (status: open; provenance: current_chat)
-  - why: Helper memory should remain separate from governed project files.
-  - next_action: Continue using dcoir_skill_memory/ as the helper-memory root.
-  - related: dcoir_skill_memory/
-- [ST-003] Bundle multi-skill updates into one zip (status: open; provenance: current_chat)
-  - why: The operator prefers one download for grouped manual skill updates.
-  - next_action: Keep providing one bundle zip when multiple skills are updated together.
-  - related: dcoir-decision-policy
-- [ST-013] Defer broader GitHub project-control and management surfaces to later phases while keeping full GitHub coverage as the ideal endstate (status: open; provenance: current_chat)
-  - why: The release should maximize feasible in-chat GitHub capability while keeping unsupported management surfaces deferred.
-  - next_action: Keep unsupported surfaces such as wiki, projects, actions, releases, packages, and settings/security admin flows out of the current adoption line.
-  - related: dcoir-github-operator
-- [ST-014] Keep readable governed repo text updates in scope for dcoir-github-operator, excluding zip and other binary assets (status: open; provenance: current_chat)
-  - why: The super-skill must be able to update the project’s readable governed text without waiting for a later release.
-  - next_action: Treat project_sources/, knowledge/, project_settings/, release_notes/, and dcoir_skill_memory/ as the primary writable readable-text surfaces.
-  - related: dcoir-github-operator, project_sources/, knowledge/, project_settings/, release_notes/
+- [P-001] Run a mandatory session close-out routine whenever the operator signals work is moving to another session. (status: in_progress; provenance: current_chat)
+  - why: Learned rules, open tasks, and continuity updates should not be lost between sessions.
+  - next_action: Apply the updated `dcoir-session-tracker` bundle and commit the GitHub source update so the rule is durable.
+  - related: `dcoir-session-tracker`, `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md`
+
+### new_skill_idea
+- [N-001] Decide later whether session close-out should remain inside `dcoir-session-tracker` or become a dedicated helper skill. (status: deferred; provenance: current_chat)
+  - why: Extending the existing stateful skill is the smallest correct first move, but a dedicated skill may be useful if the workflow grows much broader.
+  - next_action: Reassess after the updated tracker is installed and used in real session transitions.
+  - related: `dcoir-session-tracker`
+- [N-002] Research additional ChatGPT connectors that could add project value, including UI and UX improvements. (status: open; provenance: current_chat)
+  - why: Better connectors may improve project operations and reduce workflow friction.
+  - next_action: Run a bounded web-backed connector research pass and classify which additions are actually useful for DCOIR.
+  - related: connectors, open-web research
+- [N-003] Explore ways to integrate Agent Mode more directly into the DCOIR workflow. (status: open; provenance: current_chat)
+  - why: Better integration may reduce operator friction and improve workflow reach.
+  - next_action: Research the current Agent Mode surface and then decide whether a helper-skill or workflow adjustment makes sense.
+  - related: Agent Mode, workflow design
 
 ### follow_on_validation
-- [ST-020] Expand validated dcoir-github-operator adoption into second-wave skills and remaining governed workflow sources as needed (status: in_progress; provenance: grounded_inference)
-  - why: First-wave adoption is complete, and this is now the active roadmap branch.
-  - next_action: Identify the second-wave adopter set and update them against the validated operator behavior.
-  - related: dcoir-github-operator, dcoir-knowledge-doc-maintainer, dcoir-session-resume, dcoir-change-impact-analyzer, dcoir-repo-packager
-- [ST-022] Explore whether a project skill could use a direct API-auth GitHub lane from this chat interface for more automated create, read, and update behavior (status: open; provenance: current_chat)
-  - why: The operator wants to revisit whether a skill could programmatically use a direct GitHub API path in this project chat environment for cleaner automation.
-  - next_action: Brainstorm feasible direct-auth patterns, environment handling, container implications, and security/workflow tradeoffs before deciding whether this should become a real implementation line.
-  - related: dcoir-github-operator, GitHub API auth, .env handling
-- [ST-023] Validate the harness partial-success reporting patch in the endpoint lane (status: deferred; provenance: current_chat)
-  - why: The patch was applied after endpoint evidence showed QuickAliases Strings and Streams being flattened from collector `PARTIAL_SUCCESS` into harness `PASS`, but the rerun should wait until the operator has sent himself the needed files.
-  - next_action: Resume QuickAliases Strings and Streams plus one Core control lane only after the operator has sent himself the required files.
-  - related: project_sources/run_DCOIR_Tests.ps1, project_sources/DCOIR_Collector.ps1
+- [V-001] Run regression on the updated `dcoir-session-tracker` close-out behavior after manual install and repo-source update. (status: open; provenance: current_chat)
+  - why: The skill should not be treated as ready until the updated close-out flow is checked against real use cases.
+  - next_action: Validate trigger recognition, durability-state reporting, starter-prompt output, and close-out gap reporting.
+  - related: `dcoir-session-tracker`, `dcoir-skill-regression-auditor`
+- [V-002] Build a CI/CD-style end-to-end and edge-case test regime for the repository, skills, workflows, and deliverables. (status: open; provenance: current_chat)
+  - why: The project needs a durable graded test posture that is updated whenever behavior changes.
+  - next_action: Design the test architecture, pass and fail metrics, fixture model, and update workflow before choosing any execution platform.
+  - related: repo-wide validation, workflows, deliverables
+- [V-003] Run a dedicated GitHub optimization and discovery session to learn the most efficient connector and operator interaction patterns. (status: open; provenance: current_chat)
+  - why: The operator wants fewer confirmation clicks and a more efficient GitHub workflow.
+  - next_action: Explore connector behavior, bundling possibilities, verification shortcuts, and creative operator-lane patterns without writing unsupported assumptions into durable guidance.
+  - related: GitHub connector, GitHub Desktop, operator workflow
+
+### session_only
+- [S-001] Resume the broader `dcoir-*` helper-skill review for session-local buffering, grouped GitHub flushes, and closed-loop preflight support after the session close-out routine lands. (status: deferred; provenance: grounded_inference)
+  - why: That remains the current governed next work line after the immediate session close-out gap is handled.
+  - next_action: Continue the broader skill-by-skill review once the updated tracker is installed and the repo source is refreshed.
+  - related: `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt`
 
 ## Completed or resolved this session
-- [ST-005] Implement GitHub-backed memory for the current high-value five-skill set (status: done; provenance: current_chat)
-  - why: The requested rollout was completed and packaged.
-  - next_action: Continue using the GitHub-backed memory pattern where appropriate.
-  - related: dcoir-decision-policy, dcoir-collector-qa, dcoir-validation-orchestrator, dcoir-skill-regression-auditor, dcoir-live-test-remediation-planner
-- [ST-010] Test the connector-backed dcoir-github-operator against malwaredevil/dcoir-collector (status: done; provenance: current_chat)
-  - why: The rebuilt super-skill is now validated against the real repository from the project chat environment.
-  - next_action: Use the validated operator behavior for dependent-skill and governed-text adoption.
-  - related: dcoir-github-operator, malwaredevil/dcoir-collector
-- [ST-011] Update dependent skills to use the GitHub super-skill after it is validated (status: done; provenance: current_chat)
-  - why: The first-wave dependent helper-skill set was refreshed to use the validated operator behavior.
-  - next_action: Continue into second-wave adopters only if the operator selects that branch.
-  - related: dcoir-*
-- [ST-012] Update project sources, workflows, controls, and instructions to use the GitHub super-skill after it is validated (status: done; provenance: current_chat)
-  - why: The governed workflow and log surface was refreshed to describe the live validated operator behavior.
-  - next_action: Keep the control plane aligned if the operator chooses another GitHub-operator adoption wave.
-  - related: project_sources/, project_settings/
-- [ST-016] Rebuild dcoir-github-operator as a connector-backed full first release and manually update it (status: done; provenance: current_chat)
-  - why: The direct-API-first model was replaced with the connector-backed design that matches the project-chat runtime.
-  - next_action: Keep the patched package as the validated baseline.
-  - related: dcoir-github-operator
-- [ST-018] Patch dcoir-github-operator to use the validated existing-file update lane, remove obsolete auth-placeholder assets, and refresh icon/metadata (status: done; provenance: current_chat)
-  - why: The original existing-file update path did not reflect the connector-backed runtime reality.
-  - next_action: Keep future operator changes aligned to the validated connector execution model.
-  - related: dcoir-github-operator
-- [ST-021] Execute collector all-path testing through the Elastic Defend endpoint lane and preserve the findings (status: done; provenance: current_chat)
-  - why: QuickAliases, Core, and Retrieval all executed successfully, and the bounded findings were captured from the operator log plus six summary artifacts.
-  - next_action: Use the bounded rerun only for harness-reporting validation rather than re-opening broad collector execution scope.
-  - related: project_sources/DCOIR_Collector.ps1, project_sources/run_DCOIR_Tests.ps1, project_sources/run_DCOIR_Tests.cmd
+- [H-001] Re-anchored to the current governed state on `main` and confirmed that the latest control-plane version is 3.9.20. (status: done; provenance: current_chat)
+  - why: The new work had to start from the current governed baseline.
+  - next_action: Keep using the current control-plane order for further updates.
+  - related: `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/CP-02_DCOIR_Change_Log.txt`
+- [H-002] Drafted the exact session close-out mode update set for `dcoir-session-tracker`. (status: done; provenance: current_chat)
+  - why: The operator wanted the routine formalized before moving on to other structural work.
+  - next_action: Install the skill zip and commit the repo overwrite bundle.
+  - related: `dcoir-session-tracker`
+
+## Promotion-ready notes
+### LOG-01 candidate text
+Update the active workflow queue after the `dcoir-session-tracker` close-out-mode bundle is installed and the governed GitHub source refresh is committed, then continue the broader helper-skill review.
+
+### LOG-02 candidate text
+When the operator signals that work is moving to another session, treat close-out as a required verification and continuity workflow rather than as a casual summary.
+
+### LOG-03 candidate text
+The session-closeout update bundle for `dcoir-session-tracker` is prepared but not yet durable until the manual skill install and grouped GitHub Desktop repo update are completed.
+
+## Starter prompt for next session
+Re-anchor to the AFRICOM_SOC_IR / DCOIR project and resume from the latest governed state on main. Read in this order: Project Instructions, `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/CP-02_DCOIR_Change_Log.txt`, `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt`, `project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt`, `project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt`, `project_sources/LOG-07_DCOIR_GitHub_Update_Lane_Choice_And_Connector_Limitation_2026-04-03.txt`, and `project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt`. Then verify whether the updated `dcoir-session-tracker` close-out-mode bundle was installed and whether the grouped GitHub Desktop overwrite bundle was committed and pushed. After that, report the current durable state, any remaining buffered-only items, the exact next work item, the priority open items, and one recommended next move.
+
+## Close-out verification notes
+- learned rules checked: yes, including the new mandatory session close-out rule candidate
+- open tasks checked: yes, current structural ideas and validation work were classified and preserved
+- continuity and log surfaces checked: yes, stale `session_tracker_state.md` drift was identified and corrected in this bundle
+- remaining non-durable items called out: yes, the new rule and open items remain non-durable until the repo bundle is applied
 
 ## Provenance notes
-- Updated after the operator explicitly deferred the harness rerun and directed the project to move on to the next task.
+- This state refresh replaces an older canonical session-tracker state that still reflected the 2026-04-01 workflow branch.
+- The current update bundle intentionally combines the skill-source patch and the session-tracker memory refresh so the operator can land them together through GitHub Desktop.

@@ -23,3 +23,23 @@ When useful, prepare ready-to-drop candidate text for:
 - `LOG-03_DCOIR_Session_Handoff_Brief.txt`
 
 Do not imply these candidate blocks are already promoted.
+
+## Session close-out promotion sequence
+Use this sequence when the operator is moving to another session and the current session contains material that should not remain chat-only.
+
+1. Confirm whether a safe GitHub write is already happening in the current workflow.
+2. Re-anchor to the control plane.
+3. Identify the smallest correct continuity update set.
+4. Prefer batching already-known continuity follow-ons into one grouped transaction when the lane is safe.
+5. If no safe GitHub write is happening, export the handoff artifact and state the remaining non-durable items plainly.
+6. Prepare starter-prompt text for the next session.
+7. Do not imply session close-out is complete until durability state is explicitly reported.
+
+## Close-out candidate destinations
+When relevant, prepare ready-to-drop candidate text for:
+- `LOG-01_DCOIR_Todo_Log.txt`
+- `LOG-02_DCOIR_Lessons_Learned_Log.txt`
+- `LOG-03_DCOIR_Session_Handoff_Brief.txt`
+- `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md`
+
+Do not imply these candidate blocks are already promoted unless they were actually written.

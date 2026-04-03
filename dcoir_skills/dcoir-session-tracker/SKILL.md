@@ -1,6 +1,6 @@
 ---
 name: dcoir-session-tracker
-description: session-local task, note, and continuity tracker for africom_soc_ir / dcoir work. use when chatgpt needs to capture "don't forget" items, answer what is left, merge an uploaded markdown session log with current-session notes, classify items into session-only scratch versus candidate log-01/log-02/log-03 updates, preserve durable preference candidates, hold session-local buffer state until the right flush-check trigger, classify reusable lessons after blocker recovery, or export a downloadable markdown handoff artifact.
+description: session-local task, note, and continuity tracker for africom_soc_ir / dcoir work. use when chatgpt needs to capture "don't forget" items, answer what is left, merge an uploaded markdown session log with current-session notes, classify items into session-only scratch versus candidate log-01/log-02/log-03 updates, preserve durable preference candidates, hold session-local buffer state until the right flush-check trigger, classify reusable lessons after blocker recovery, export a downloadable markdown handoff artifact, or run a session close-out routine before the operator moves work to another session.
 ---
 
 # DCOIR Session Tracker
@@ -26,6 +26,47 @@ This skill does not claim hidden persistence across chats.
 6. Hold session-local buffered continuity, promotion-candidate, and flush-check state until the right GitHub or export moment.
 7. Use the GitHub connector directly to read or update the canonical session-tracker state file in `malwaredevil/dcoir-collector` when durable project continuity is needed.
 8. Stage governed follow-up actions when session items should be promoted into Project files or skill updates.
+
+## Session close-out mode
+Use this mode when the operator signals that work is about to move to another chat or session.
+
+Strong trigger phrases include:
+- "go to another session"
+- "move this to a new session"
+- "before we switch sessions"
+- "close out this session"
+- "wrap this session"
+- "give me a starter prompt for the next session"
+- equivalent language that clearly means session transition or handoff
+
+When session close-out mode is triggered, do not treat it as a normal export only.
+Run the full close-out routine below and distinguish:
+- what is already durable in governed GitHub sources
+- what is only buffered in the current session
+- what was exported but not yet promoted
+- what is still open and must be carried forward
+
+Required close-out checks:
+1. Re-anchor to Project Instructions, then CP-01, then CP-02.
+2. Run a flush check against all known buffered session-tracker state.
+3. Verify whether materially learned workflow rules, preferences, blocker recoveries, and reusable lessons were:
+   - already written to governed GitHub sources
+   - intentionally kept as session-local buffered state
+   - exported into a handoff artifact
+   - still missing durable capture and needing explicit callout
+4. Verify that all tasks and requests mentioned in the session are either:
+   - closed as done
+   - preserved in the correct governed destination
+   - explicitly carried as open items in the handoff state
+5. Verify that session-related continuity surfaces are updated when the current workflow is already performing a safe GitHub write.
+6. Produce a next-session starter prompt grounded in the current control plane and current open items.
+7. Report any close-out gap plainly instead of implying the next session can safely resume from unstored chat-only state.
+
+Close-out truth rules:
+- Do not claim the next session will know buffered chat-only state unless that state was flushed to GitHub or exported into a handoff artifact.
+- Do not claim a task is preserved just because it was discussed in chat.
+- Do not silently drop unfinished requests, structural ideas, or durable preference candidates.
+- Do not mark close-out complete while known session-state drift remains unreported.
 
 ## Classification buckets
 Every tracked item should land in one primary bucket:
@@ -99,12 +140,47 @@ Preferred flush-check trigger points:
 - before session export or handoff
 - when the operator asks what remains
 - when the skill reports meaningful state drift
+- when the operator signals that work is moving to another session
 
 When a flush-check occurs, surface:
 - what is still buffered
 - what is safe to flush now
 - what should remain session-local for now
 - one best next move
+
+## Session close-out workflow
+When the operator is moving to another session, read `references/session_closeout_workflow.md` and perform this close-out sequence in order:
+
+1. Inventory all active tracked items, including:
+   - session-only notes
+   - durable preference candidates
+   - new skill ideas
+   - follow-on validation items
+   - blocked items
+   - promotion-ready LOG-01 / LOG-02 / LOG-03 candidates
+2. Run a flush check and classify each item as:
+   - safe to flush now
+   - should remain session-local for now
+   - must be exported in handoff
+   - already durable and only needs verification
+3. Verify whether known continuity surfaces are current enough for safe resume.
+4. If the surrounding workflow is already doing a safe GitHub write, batch the already-known follow-on continuity updates into that grouped transaction.
+5. If no safe GitHub write is occurring, export the handoff artifact and state plainly what remains non-durable.
+6. Produce a starter prompt for the next session that includes:
+   - re-anchor instruction
+   - current stable baseline
+   - exact current next work item
+   - open items that must be preserved
+   - any known buffered-but-not-governed state that still needs handling
+7. End with one best next move.
+
+Close-out completion standard:
+- A session is not "closed out" merely because a summary was written.
+- It is closed out only when the response explicitly states:
+  - what is durable
+  - what is exported only
+  - what remains buffered only
+  - what the next session should do first
 
 ## Inventory workflow
 When the operator asks what remains:
@@ -178,6 +254,19 @@ When acting under this skill:
 - prefer one best next move over a broad menu
 - when exporting, produce a markdown artifact that can be re-uploaded and merged later
 
+## Session close-out output contract
+When acting in session close-out mode, return sections in this order:
+1. Current durable state
+2. Buffered but unflushed state
+3. Exported handoff state
+4. Open items carried forward
+5. Close-out gaps
+6. Starter prompt for next session
+7. Best next move
+
+Keep the output concise, but do not omit state classification.
+The operator must be able to tell exactly what the next session can trust without reconstructing chat history.
+
 ## References
 Read these when needed:
 - `references/classification_rules.md`
@@ -186,3 +275,4 @@ Read these when needed:
 - `references/promotion_handoff.md`
 - `references/sample_cases.md`
 - `references/session_buffer_workflow.md`
+- `references/session_closeout_workflow.md`
