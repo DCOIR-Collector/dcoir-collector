@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.11
+DCOIR Version Manifest 3.9.12
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -29,6 +29,9 @@ Current task-memory bank
 - Canonical registry: knowledge/task_memory/00_registry/task_memory_manifest.yaml
 - Compiled lookup: knowledge/task_memory/30_compiled/fast_lookup.json
 
+Current governed knowledge notes
+- Helper-skills routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
+
 Current extracted readable source folders
 - Build bundle source set: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/
 - Original alert triage Gemini agents: project_sources/original_alert_triage_gemini_agents/
@@ -42,3 +45,4 @@ Current next work item
 - Then resume the main project deliverables and reprioritize remaining todo items from the split todo structure.
 - After the extracted-folder review pass, audit the GitHub repo for true duplicate content by comparing content rather than names, remove only verified duplicates, and prefer an automation-first operator path with simple step-by-step guidance if connector-only comparison proves cumbersome.
 - Use the validated GitHub connector low-level lane for chat-managed readable text updates and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
+- Use the governed helper-skills routing note as a descriptive project-side aid when choosing the most appropriate `dcoir-*` helper skill, and refresh it if the installed helper-skill set changes materially.

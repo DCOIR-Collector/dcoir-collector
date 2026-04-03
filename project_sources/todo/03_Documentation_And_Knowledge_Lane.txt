@@ -41,3 +41,9 @@ DCOIR Documentation And Knowledge Lane
    - The extraction step is done, but the newly visible readable material still needs deliberate integration into the long-term documentation structure.
    Next action:
    - Audit the extracted folders, add cross-links and indexes, and move especially durable materials into clearer governed doc locations when needed.
+
+8. Maintain the governed helper-skills routing note so project-side helper-skill selection stays easier to understand and more predictable.
+   Why it matters:
+   - The routing note is a useful descriptive aid for choosing the right `dcoir-*` helper skill during project work, but it only helps if it stays current.
+   Next action:
+   - Refresh `knowledge/DCOIR_Helper_Skills_Routing_Note.md` whenever the installed helper-skill set changes materially.

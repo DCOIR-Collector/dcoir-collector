@@ -11,6 +11,7 @@ Current stable artifacts
 - Compiled lookup: knowledge/task_memory/30_compiled/fast_lookup.json
 - Todo split index: project_sources/LOG-01_DCOIR_Todo_Index.txt
 - Todo child files: project_sources/todo/*.txt
+- Governed helper-skills routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 - Extracted readable Gemini source folders: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/, project_sources/original_alert_triage_gemini_agents/, and project_sources/original_collector_artifact_gemini_agents/
 - Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/, knowledge/generated_agent_markdowns/, and knowledge/supporting_knowledge_docs/
 
@@ -21,6 +22,7 @@ Current governance state
 - Project space is the bootstrap/runtime anchor and should not carry duplicate editable readable governed text.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
 - GitHub Desktop is the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
+- The helper-skills routing note is descriptive guidance only and should not be treated as a control-plane authority source.
 
 Current validated status
 - The collector remains split into smaller governed source files, with DCOIR_Collector.ps1 preserved as the runtime wrapper.
@@ -31,6 +33,7 @@ Current validated status
 - The old dcoir-github-operator lane is retired and the old DCOIR_Collector_parts path has been removed.
 - The dcoir-github-api validation route is retired from the active working line and should not be treated as the next planned path.
 - The stale outlier PR and branch cleanup is complete and is no longer treated as a pending review item.
+- A governed helper-skills routing note now exists to make project-side helper-skill selection easier to understand and more predictable without promising guaranteed auto-invocation.
 
 Current session outcomes
 - Integrated the extracted readable contents of six formerly zipped bundles into governed folders under project_sources/ and knowledge/.
@@ -39,9 +42,10 @@ Current session outcomes
 - Preserved the validated GitHub connector low-level lane for chat-managed readable-text work and documented GitHub Desktop as the easiest approved operator path for bulk local placement and binary or zip handling.
 - Completed cleanup of the superseded outlier PR and branch so the repo no longer carries that hanging review path.
 - Added a queued structural-cleanup item to audit the repo for true duplicate content, compare actual content before removal, and prefer an automation-first operator path with simple step-by-step guidance if connector-only comparison proves too cumbersome.
+- Added a governed helper-skills routing note and aligned the knowledge README, documentation lane, and current-state references to keep the note discoverable and maintainable.
 
 Current next planned work item
 - Review the newly extracted readable source folders and fold their highest-value material into stronger documentation, knowledge indexes, and deliverable-aware repo guidance.
 
 Recommended next move
-- Audit the newly extracted project_sources and knowledge folders, then promote their highest-value material into stronger docs, indexes, and governed deliverable references before resuming the broader deliverables line; keep the duplicate-audit task queued for the structural lane after that pass.
+- Audit the newly extracted project_sources and knowledge folders, then promote their highest-value material into stronger docs, indexes, and governed deliverable references before resuming the broader deliverables line; keep the duplicate-audit task queued for the structural lane after that pass, and refresh the helper-skills routing note when the installed helper-skill set changes materially.

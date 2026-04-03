@@ -1,6 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.12
+Change class: helper-skills routing-note creation and documentation sync
+
+What changed
+- Added a governed descriptive routing note at `knowledge/DCOIR_Helper_Skills_Routing_Note.md` that inventories the current `dcoir-*` helper skills, their intended task families, preferred routing cues, and important usage boundaries.
+- Updated `knowledge/README.md` so the knowledge folder explicitly includes governed routing notes and references the new helper-skills routing note.
+- Updated the documentation and knowledge lane so the project now tracks ongoing maintenance of the helper-skills routing note when the installed helper-skill set changes materially.
+- Refreshed `CP-01` and `LOG-03` so the new routing note is visible in the governed current-state and handoff posture.
+
+Why
+- The project had discussed a repo-side skills inventory or routing reference but did not yet have a current governed note that future chats could use as a stable descriptive aid.
+- A documented helper-skills routing note should make project-side skill selection easier to understand and more predictable without pretending to guarantee automatic invocation.
+- The note needs to stay descriptive and non-authoritative so it does not override the control plane.
+
+Validation notes
+- The new routing note was created under `knowledge/` as governed readable project documentation.
+- `knowledge/README.md`, `CP-01`, `LOG-03`, and the documentation lane were refreshed to stay aligned with the new note.
+- The helper-skills routing note is framed as descriptive guidance only, not as a guaranteed auto-trigger mechanism or a control-plane authority source.
+
+[PRIOR]
 Version: 3.9.11
 Change class: queued duplicate-audit todo refresh and repo-cleanup continuity sync
 
@@ -20,27 +40,3 @@ Validation notes
 - The current active work line remains the extracted-readable-source review and integration pass.
 - The duplicate-audit task is queued in the structural lane rather than promoted ahead of the current active item.
 - The stale PR branch cleanup is now treated as complete, and the queued outlier-review reminder has been retired from the active continuity line.
-
-[PRIOR]
-Version: 3.9.10
-Change class: extracted readable source integration, zip retirement, and retirement of the dcoir-github-api work line
-
-What changed
-- Added the extracted readable contents of six previously zipped bundles into governed GitHub-readable folders under project_sources/ and knowledge/.
-- Retired the original zip copies of those extracted bundles from supporting_assets/ so the readable working line no longer depends on them.
-- Refreshed CP-01, LOG-01, LOG-03, the todo index, and key split todo lanes so the active project line no longer points at dcoir-github-api operational validation.
-- Rebased the current working posture around the validated GitHub connector low-level lane for chat-managed readable-text updates and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
-- Refreshed README, DOC-01, DOC-03, and folder-level README guidance so the new extracted readable folders are part of the visible governed project structure.
-- Reviewed earlier test branches and separated stale cleanup candidates from a still-ahead branch that should not be removed blindly.
-
-Why
-- Important readable project material should not remain trapped inside zip files once operator-side extraction is available.
-- The project should stop carrying an active todo and handoff line for dcoir-github-api after the operator decided not to pursue that route.
-- The repo guidance needed to reflect the real approved working posture for chat-managed edits versus operator-managed bulk file placement.
-- The extracted Gemini and supporting-knowledge sources should become first-class governed project material instead of side assets.
-
-Validation notes
-- Verified the new extracted readable folders exist in the live repo under project_sources/ and knowledge/.
-- Verified the refreshed control-plane and continuity files now point at the same post-extraction, post-dcoir-github-api work line.
-- Earlier test branches direct-update-test, tmp-skill-memory-update-test, and dcoir-cp01-sync-20260330 were identified as stale cleanup candidates.
-- todo-skill-inventory-analysis-20260403 remains ahead of main and was not treated as a disposable test branch.
