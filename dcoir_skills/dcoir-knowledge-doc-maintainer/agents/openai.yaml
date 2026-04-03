@@ -1,0 +1,12 @@
+interface:
+  display_name: DCOIR Knowledge Doc Maintainer
+  short_description: Maintains and emits Knowledge docs from current GitHub-primary DCOIR sources
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

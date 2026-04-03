@@ -1,0 +1,551 @@
+{
+  "control_file_roles": {
+    "manifest": [
+      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/DCOIR_Version_Manifest.txt",
+      "DCOIR_Version_Manifest.txt"
+    ],
+    "change_log": [
+      "project_sources/CP-02_DCOIR_Change_Log.txt",
+      "CP-02_DCOIR_Change_Log.txt",
+      "project_sources/DCOIR_Change_Log.txt",
+      "DCOIR_Change_Log.txt"
+    ],
+    "setup": [
+      "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
+      "DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
+      "project_sources/AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
+      "AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt"
+    ],
+    "layout": [
+      "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
+      "DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
+      "project_sources/DCOIR_Repository_Layout_Spec_v1_0_0.txt",
+      "DCOIR_Repository_Layout_Spec_v1_0_0.txt"
+    ]
+  },
+  "manifest_sections": {
+    "CURRENT GOVERNED GITHUB READABLE SOURCES": "governed_github_readable_sources",
+    "CURRENT GOVERNED KNOWLEDGE SOURCES IN GITHUB": "governed_knowledge_sources",
+    "CURRENT GOVERNED SETTINGS MIRRORS IN GITHUB": "governed_settings_mirrors",
+    "CURRENT SUPPORTING ASSETS IN GITHUB": "supporting_assets"
+  },
+  "packaging_priority": [
+    "none",
+    "targeted",
+    "full_refresh"
+  ],
+  "rules": [
+    {
+      "id": "control-plane-change",
+      "match": {
+        "exact": [
+          "CP-01_DCOIR_Version_Manifest.txt",
+          "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+          "CP-02_DCOIR_Change_Log.txt",
+          "project_sources/CP-02_DCOIR_Change_Log.txt"
+        ]
+      },
+      "required_refresh": [
+        "control_plane_review",
+        "release_notes_review",
+        "session_resume_outputs_review"
+      ],
+      "conditional_review": [
+        "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
+        "project_sources/DOC-02_DCOIR_Project_Transition_Checklist.txt",
+        "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
+        "all current dcoir-* skills",
+        "README.md",
+        "project_sources/LOG-01_DCOIR_Todo_Index.txt",
+        "project_sources/todo/*.txt"
+      ],
+      "deep_regression": [
+        "dcoir-session-resume",
+        "dcoir-source-authority-auditor",
+        "dcoir-repo-packager",
+        "all affected dcoir-* skills",
+        "any touched scripts or bundle generators"
+      ],
+      "skill_impacts": [
+        "dcoir-session-resume",
+        "dcoir-source-authority-auditor",
+        "dcoir-repo-packager",
+        "dcoir-knowledge-doc-maintainer",
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "full_refresh",
+      "reason": "Control-plane changes alter what is current and usually ripple into packaging, resume, and helper-skill behavior."
+    },
+    {
+      "id": "evergreen-doc-change",
+      "match": {
+        "prefix": [
+          "DOC-",
+          "project_sources/DOC-"
+        ]
+      },
+      "required_refresh": [
+        "affected evergreen document"
+      ],
+      "conditional_review": [
+        "release_notes/RELEASE_INSTRUCTIONS.txt",
+        "any helper skill that encodes the changed workflow"
+      ],
+      "deep_regression": [
+        "relevant dcoir-* helper skills",
+        "relevant bundle or script flows if the doc changed execution or packaging rules"
+      ],
+      "skill_impacts": [
+        "dcoir-session-resume",
+        "dcoir-knowledge-doc-maintainer",
+        "dcoir-repo-packager",
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "full_refresh",
+      "reason": "Evergreen workflow or layout changes typically require a coordinated workspace refresh and helper-skill review."
+    },
+    {
+      "id": "situational-log-change",
+      "match": {
+        "prefix": [
+          "LOG-",
+          "project_sources/LOG-"
+        ],
+        "exact": [
+          "LOG-01_DCOIR_Todo_Index.txt",
+          "project_sources/LOG-01_DCOIR_Todo_Index.txt"
+        ],
+        "regex": [
+          "^project_sources/todo/.+\\.txt$"
+        ]
+      },
+      "required_refresh": [
+        "affected situational log"
+      ],
+      "conditional_review": [
+        "resume outputs if the active work line or handoff state changed",
+        "project_sources/LOG-01_DCOIR_Todo_Index.txt",
+        "project_sources/todo/*.txt"
+      ],
+      "deep_regression": [],
+      "skill_impacts": [
+        "dcoir-session-resume"
+      ],
+      "packaging": "targeted",
+      "reason": "Situational logs are usually targeted refreshes unless they accompany a broader structural change."
+    },
+    {
+      "id": "collector-or-harness-change",
+      "match": {
+        "exact": [
+          "DCOIR_Collector.ps1",
+          "project_sources/DCOIR_Collector.ps1",
+          "run_DCOIR_Tests.ps1",
+          "project_sources/run_DCOIR_Tests.ps1",
+          "RB-01_DCOIR_Collector_refinement_2_1_3.txt",
+          "project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt"
+        ]
+      },
+      "required_refresh": [
+        "supporting_assets/DCOIR_Collector.zip",
+        "operator execution guidance review"
+      ],
+      "conditional_review": [
+        "supporting_assets/supporting_knowledge_docs.zip",
+        "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
+        "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
+        "repo/update bundle mappings",
+        "project_sources/LOG-01_DCOIR_Todo_Log.txt",
+        "project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt",
+        "README.md",
+        "project_sources/LOG-01_DCOIR_Todo_Index.txt",
+        "project_sources/todo/*.txt"
+      ],
+      "deep_regression": [
+        "collector local regression harness",
+        "repo bundle generation",
+        "full-refresh bundle generation",
+        "any changed dcoir-* skill touching collector or packaging"
+      ],
+      "skill_impacts": [
+        "dcoir-collector-qa",
+        "dcoir-knowledge-doc-maintainer",
+        "dcoir-repo-packager",
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "full_refresh",
+      "reason": "Collector and harness changes can affect runtime packaging, operator guidance, and emitted native filenames."
+    },
+    {
+      "id": "supporting-collector-asset-change",
+      "match": {
+        "exact": [
+          "DCOIR_Collector.zip",
+          "supporting_assets/DCOIR_Collector.zip"
+        ]
+      },
+      "required_refresh": [
+        "affected supporting asset"
+      ],
+      "conditional_review": [
+        "supporting_assets/supporting_knowledge_docs.zip",
+        "repo/update bundle generation",
+        "tool inventory documentation"
+      ],
+      "deep_regression": [
+        "repo bundle generation",
+        "full-refresh bundle generation",
+        "asset-consumption paths"
+      ],
+      "skill_impacts": [
+        "dcoir-knowledge-doc-maintainer",
+        "dcoir-repo-packager",
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "targeted",
+      "reason": "Collector package-asset changes alter downstream bundle content and may change documented tool inventory."
+    },
+    {
+      "id": "knowledge-source-change",
+      "match": {
+        "regex": [
+          "^knowledge/.+\\\\.md$",
+          "^[^/]+\\\\.md$"
+        ],
+        "exact": [
+          "knowledge/*.md"
+        ]
+      },
+      "required_refresh": [
+        "affected knowledge markdown sources"
+      ],
+      "conditional_review": [
+        "supporting_assets/supporting_knowledge_docs.zip",
+        "knowledge workflow guidance",
+        "knowledge inventory or delivery posture"
+      ],
+      "deep_regression": [
+        "dcoir-knowledge-doc-maintainer",
+        "knowledge delivery or packaging checks if a published bundle must stay aligned"
+      ],
+      "skill_impacts": [
+        "dcoir-knowledge-doc-maintainer",
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "targeted",
+      "reason": "Knowledge markdown now lives as an editable GitHub working set and should be treated separately from retained delivery zips."
+    },
+    {
+      "id": "knowledge-zip-change",
+      "match": {
+        "exact": [
+          "supporting_knowledge_docs.zip",
+          "supporting_assets/supporting_knowledge_docs.zip"
+        ]
+      },
+      "required_refresh": [
+        "affected supporting asset"
+      ],
+      "conditional_review": [
+        "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
+        "project_sources/DOC-02_DCOIR_Project_Transition_Checklist.txt",
+        "any workflow or skill that builds or references the retained knowledge zip"
+      ],
+      "deep_regression": [
+        "dcoir-knowledge-doc-maintainer",
+        "dcoir-repo-packager",
+        "any flow that consumes knowledge guidance"
+      ],
+      "skill_impacts": [
+        "dcoir-knowledge-doc-maintainer",
+        "dcoir-repo-packager",
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "full_refresh",
+      "reason": "Knowledge delivery-asset changes affect the retained zip and the helper skills that package or regenerate it."
+    },
+    {
+      "id": "settings-mirror-change",
+      "match": {
+        "prefix": [
+          "project_settings/SET-",
+          "SET-"
+        ],
+        "exact": [
+          "project_settings/GITHUB_WORKING_REPOSITORY_NOTE.md",
+          "GITHUB_WORKING_REPOSITORY_NOTE.md"
+        ]
+      },
+      "required_refresh": [
+        "settings baseline review",
+        "bootstrap behavior review"
+      ],
+      "conditional_review": [
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/CP-02_DCOIR_Change_Log.txt",
+        "resume and packaging helper skills"
+      ],
+      "deep_regression": [
+        "dcoir-session-resume",
+        "dcoir-source-authority-auditor",
+        "dcoir-repo-packager"
+      ],
+      "skill_impacts": [
+        "dcoir-session-resume",
+        "dcoir-source-authority-auditor",
+        "dcoir-repo-packager",
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "full_refresh",
+      "reason": "Settings baseline or working-repository note changes alter bootstrap and helper-skill assumptions."
+    },
+    {
+      "id": "prompt-pack-modular-change",
+      "match": {
+        "exact": [
+          "PP-01_System_Prompt_v1_0_1.txt",
+          "PP-02_Output_Schema_v1_0_0.txt",
+          "PP-03_Baseline_Triage_Prompt_v1_0_0.txt",
+          "PP-04_Enrichment_Review_Prompt_v0_1_1.txt",
+          "PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt",
+          "PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt",
+          "PP-07_Agent_Guardrails_v1_0_0.txt",
+          "project_sources/PP-01_System_Prompt_v1_0_1.txt",
+          "project_sources/PP-02_Output_Schema_v1_0_0.txt",
+          "project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt",
+          "project_sources/PP-04_Enrichment_Review_Prompt_v0_1_1.txt",
+          "project_sources/PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt",
+          "project_sources/PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt",
+          "project_sources/PP-07_Agent_Guardrails_v1_0_0.txt"
+        ]
+      },
+      "required_refresh": [
+        "project_sources/PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt"
+      ],
+      "conditional_review": [
+        "project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt",
+        "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt",
+        "supporting_assets/generated_agent_markdowns.zip",
+        "supporting_assets/supporting_knowledge_docs.zip if operator guidance changed"
+      ],
+      "deep_regression": [
+        "dcoir-prompt-pack-assembler",
+        "runtime prompt behavior tests",
+        "any affected dcoir-* skill or script using prompt outputs"
+      ],
+      "skill_impacts": [
+        "dcoir-prompt-pack-assembler",
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "full_refresh",
+      "reason": "Modular prompt-pack changes require a regenerated combined master prompt and should trigger deeper validation before live use."
+    },
+    {
+      "id": "combined-master-direct-change",
+      "match": {
+        "prefix": [
+          "PP-08_Combined_Analyst_Facing_Master_Prompt_",
+          "project_sources/PP-08_Combined_Analyst_Facing_Master_Prompt_"
+        ]
+      },
+      "required_refresh": [
+        "review whether PP-01 through PP-07 should be the true source change"
+      ],
+      "conditional_review": [
+        "modular prompt-pack source alignment",
+        "prompt-pack assembly path"
+      ],
+      "deep_regression": [
+        "dcoir-prompt-pack-assembler",
+        "runtime prompt behavior tests"
+      ],
+      "skill_impacts": [
+        "dcoir-prompt-pack-assembler",
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "targeted",
+      "reason": "PP-08 is a generated runtime artifact and direct edits can bypass the modular source of truth."
+    },
+    {
+      "id": "gemini-workflow-change",
+      "match": {
+        "prefix": [
+          "PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_",
+          "project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_"
+        ]
+      },
+      "required_refresh": [
+        "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt",
+        "supporting_assets/generated_agent_markdowns.zip"
+      ],
+      "conditional_review": [
+        "supporting_assets/comparative_reference_agent_markdowns.zip",
+        "Gemini field guidance in control-plane and situational logs"
+      ],
+      "deep_regression": [
+        "Gemini design-generation path",
+        "bounded design artifact generation checks",
+        "generated companion-markdown verification"
+      ],
+      "skill_impacts": [
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "full_refresh",
+      "reason": "Generator-workflow changes must flow into the bounded design artifact and generated companion markdown outputs."
+    },
+    {
+      "id": "gemini-design-artifact-change",
+      "match": {
+        "prefix": [
+          "PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_",
+          "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_"
+        ]
+      },
+      "required_refresh": [
+        "supporting_assets/generated_agent_markdowns.zip if generated outputs are meant to stay aligned"
+      ],
+      "conditional_review": [
+        "project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt",
+        "supporting_assets/comparative_reference_agent_markdowns.zip"
+      ],
+      "deep_regression": [
+        "bounded design artifact validation",
+        "generated companion-markdown alignment checks"
+      ],
+      "skill_impacts": [
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "full_refresh",
+      "reason": "Bounded design artifact changes should not leave generated companion markdowns stale."
+    },
+    {
+      "id": "generated-markdowns-change",
+      "match": {
+        "exact": [
+          "generated_agent_markdowns.zip",
+          "supporting_assets/generated_agent_markdowns.zip"
+        ]
+      },
+      "required_refresh": [
+        "affected supporting asset"
+      ],
+      "conditional_review": [
+        "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt"
+      ],
+      "deep_regression": [
+        "generated-agent-markdown verification"
+      ],
+      "skill_impacts": [
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "targeted",
+      "reason": "Generated companion markdown changes should stay aligned with the bounded design artifact."
+    },
+    {
+      "id": "comparative-markdowns-change",
+      "match": {
+        "exact": [
+          "comparative_reference_agent_markdowns.zip",
+          "supporting_assets/comparative_reference_agent_markdowns.zip"
+        ]
+      },
+      "required_refresh": [
+        "affected supporting asset"
+      ],
+      "conditional_review": [
+        "project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt",
+        "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt"
+      ],
+      "deep_regression": [
+        "Gemini style-benchmark alignment checks"
+      ],
+      "skill_impacts": [
+        "dcoir-change-impact-analyzer"
+      ],
+      "packaging": "targeted",
+      "reason": "Comparative reference changes can alter the approved design benchmark for Gemini field density and routing style."
+    },
+    {
+      "id": "skill-change",
+      "match": {
+        "regex": [
+          "^dcoir-[a-z0-9-]+$"
+        ]
+      },
+      "required_refresh": [
+        "affected skill package"
+      ],
+      "conditional_review": [
+        "any references, scripts, and packaging instructions bundled with the changed skill",
+        "downstream skills that depend on the changed skill's outputs or assumptions"
+      ],
+      "deep_regression": [
+        "deep regression on the changed skill before live use",
+        "deep regression after every patch",
+        "cross-skill regression if the changed skill encodes shared project structure assumptions"
+      ],
+      "skill_impacts": [
+        "affected skill"
+      ],
+      "packaging": "targeted",
+      "reason": "The operator prefers deep regression for skills before live use and after every patch so failures are caught before production impact."
+    },
+    {
+      "id": "repo-guide-change",
+      "match": {
+        "exact": [
+          "README.md"
+        ]
+      },
+      "required_refresh": [
+        "repo guide review"
+      ],
+      "conditional_review": [
+        "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
+        "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
+        "project_sources/LOG-01_DCOIR_Todo_Log.txt",
+        "project_sources/LOG-01_DCOIR_Todo_Index.txt",
+        "project_sources/todo/*.txt"
+      ],
+      "deep_regression": [
+        "dcoir-session-resume",
+        "dcoir-change-impact-analyzer",
+        "dcoir-repo-packager"
+      ],
+      "skill_impacts": [
+        "dcoir-session-resume",
+        "dcoir-change-impact-analyzer",
+        "dcoir-repo-packager",
+        "dcoir-knowledge-doc-maintainer"
+      ],
+      "packaging": "targeted",
+      "reason": "The root repo guide now carries live project mission, deliverables, navigation, and documentation posture, so helper skills and packaging flows should stay aligned when it changes."
+    },
+    {
+      "id": "fallback-unknown-target",
+      "match": {
+        "regex": [
+          ".*"
+        ]
+      },
+      "required_refresh": [
+        "manual classification required"
+      ],
+      "conditional_review": [
+        "control-plane alignment",
+        "packaging impact",
+        "deep regression if the target is testable"
+      ],
+      "deep_regression": [
+        "deep regression if the changed target affects runtime or generated outputs"
+      ],
+      "skill_impacts": [
+        "dcoir-change-impact-analyzer if rules need to be taught a new target class"
+      ],
+      "packaging": "none",
+      "reason": "Unknown targets are a hard stop and require manual classification before promotion, packaging, or downstream impact decisions are trusted."
+    }
+  ]
+}

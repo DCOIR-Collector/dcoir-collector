@@ -1,0 +1,53 @@
+DCOIR GitHub Helper Skill Source Layout And Rollout
+
+Purpose
+- Define the GitHub layout and rollout rules for governed DCOIR helper-skill source.
+- Treat GitHub as the readable source-of-truth for helper-skill source once a skill is landed under the approved root.
+
+Scope
+- These rules apply to DCOIR helper-skill source that is intentionally governed in the GitHub working repository.
+- These rules do not replace Project Instructions or the current control plane.
+- Helper working-state memory under `dcoir_skill_memory/` remains separate from governed source authority.
+
+Governed source root
+- `dcoir_skills/`
+
+Per-skill source layout
+- Each governed DCOIR helper skill lives at `dcoir_skills/<skill-name>/`.
+- Preserve the readable package layout inside each skill folder:
+  - `SKILL.md`
+  - `agents/`
+  - `assets/` when present
+  - `references/` when present
+  - `scripts/` when present
+- Exclude runtime residue such as `__pycache__/`, temporary outputs, and test spill files.
+
+Authority rules
+- Once a skill source set is landed under `dcoir_skills/`, that GitHub source set is the readable source-of-truth for that skill.
+- Do not keep duplicate editable readable copies of the same governed skill source outside the approved GitHub source root.
+- `dcoir_skill_memory/` is helper working-state continuity, not source authority.
+
+Initial governed batch
+- `dcoir-memory-preflight`
+- `dcoir-decision-policy`
+- `dcoir-plan-tracker`
+- `dcoir-session-tracker`
+- `dcoir-skill-regression-auditor`
+
+Rollout rules
+- For a new or newly-governed DCOIR helper skill, land the readable source under `dcoir_skills/` and verify it by readback.
+- For a DCOIR helper skill that already has governed GitHub source, update the source under `dcoir_skills/` and verify it by readback.
+- Prefer grouped readable-source updates when related files belong together.
+
+Write and verification posture
+- Prefer the smallest bounded safe lane that preserves grouped intent.
+- Use readback verification after GitHub writes.
+- Keep grouped-write limitations explicit when an in-chat connector lane cannot safely perform a larger existing-file batch.
+
+Blocked-state communication rule
+- When policy, authority, or governance materially blocks progress, report the block immediately.
+- State what is blocked, why it is blocked, what change would unblock it, and the best available courses of action.
+
+Relationship to other project surfaces
+- Use this document with `project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt`.
+- Use dated decision logs for specific approvals or one-time rollout decisions.

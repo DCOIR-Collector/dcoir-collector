@@ -1,0 +1,95 @@
+---
+name: dcoir-change-impact-analyzer
+description: analyze proposed or completed changes in the africom_soc_ir / dcoir project and determine the downstream refresh set, helper-skill impacts, regression requirements, packaging recommendation, and stop conditions. use when chatgpt needs to answer what else must change after a file, asset, skill, workflow, packaging, or prompt-pack update; when validating whether a change is safe to promote; or when deciding whether a targeted update or full-refresh bundle is required. prefer the current gitHub-primary control plane, current manifest roles, and current gitHub-native collector or harness filenames over older project-mirror assumptions. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
+---
+
+# DCOIR Change Impact Analyzer
+
+Use this skill to turn a proposed or completed DCOIR change into an explicit downstream work list.
+
+## Core workflow
+1. Read the current manifest first.
+2. Read the current change log second.
+3. Resolve the current control plane and current working set from those files.
+4. Identify the changed files, changed assets, changed skills, or changed workflow targets from the user request.
+5. Run `scripts/analyze_change_impact.py` with the changed targets.
+6. Read the generated markdown and json reports.
+7. Return the direct refresh set, conditional review set, deep-regression set, packaging recommendation, and stop conditions.
+
+## Inputs this skill supports
+- Explicit file list such as `project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt`, `PP-07_Agent_Guardrails_v1_0_0.txt`, or `project_sources/DCOIR_Collector.ps1`
+- Supporting assets such as `supporting_assets/supporting_knowledge_docs.zip` or `supporting_knowledge_docs.zip`
+- Skill names such as `dcoir-repo-packager`
+- Short natural-language requests when ChatGPT can confidently map the request to the changed targets before running the script
+
+## Required project gate
+This skill is for the AFRICOM_SOC_IR / DCOIR project only.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
+
+Before analyzing impact, verify the current authoritative control-plane files from the workspace.
+
+Preferred current control-plane files:
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
+- `project_sources/CP-02_DCOIR_Change_Log.txt`
+- `project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt`
+- `project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt`
+- `README.md` when the current repo-guide posture is part of the changed set
+- `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/*.txt` when the active work-line structure changed
+
+Stop if the manifest or change log cannot be resolved.
+
+## Hard rules
+- Do not decide authority or promotion status.
+- Do not silently ignore changed current files.
+- Do not assume PP-08 is the source of truth over PP-01 through PP-07.
+- Do not treat supporting assets as control-plane authority.
+- Hard-stop unknown targets that fall outside the current rule set; do not emit a provisional packaging recommendation for them.
+- When the change affects a skill, script, packaging path, or runtime behavior, require deep regression before the result is treated as ready for live or production use.
+- Prefer full-refresh bundles for structural changes, renames, broad multi-file syncs, control-plane changes, or packaging-model changes.
+- Prefer manifest role resolution over brittle filename assumptions.
+
+## Deep-regression rule
+The operator preference is to catch issues before production impact.
+
+Treat deep regression as the default whenever the changed target is any of these:
+- a DCOIR skill
+- a script or harness source
+- collector logic or packaging
+- prompt-pack behavior that affects runtime outputs
+- repo or update-bundle generation
+- anything else that can be tested reliably
+
+## Output contract
+Return these sections in order:
+1. Change summary
+2. Directly changed targets
+3. Required refresh set
+4. Conditional review set
+5. Deep-regression test set
+6. Packaging recommendation
+7. Stop conditions and warnings
+
+## Commands
+Analyze explicit changed targets:
+```bash
+python scripts/analyze_change_impact.py   --source-dir /mnt/data   --output-dir /mnt/data/dcoir_change_impact_out   --changed-target PP-03_Baseline_Triage_Prompt_v1_0_0.txt   --changed-target project_sources/DCOIR_Collector.ps1
+```
+
+Analyze a skill change:
+```bash
+python scripts/analyze_change_impact.py   --source-dir /mnt/data   --output-dir /mnt/data/dcoir_change_impact_out   --changed-target dcoir-repo-packager
+```
+
+## Output handling
+After the script runs:
+- Read `dcoir_change_impact_report.md` and `dcoir_change_impact_report.json`.
+- If the report says `analysis_status` is `failure`, explain the exact stop reason.
+- If the report says `analysis_status` is `success`, summarize the required refresh set and deep-regression set plainly.
+- Call out anti-patterns such as direct PP-08 edits without corresponding modular prompt-pack changes.
+- Treat helper-skill refreshes and deep regression as first-class downstream work items when the rules require them.
+
+## References
+Use these bundled references when needed:
+- `references/impact_rules.json`
+- `references/impact_model.md`

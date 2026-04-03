@@ -1,0 +1,12 @@
+interface:
+  display_name: DCOIR Release Scope Builder
+  short_description: Choose DCOIR release scope and packaging posture.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -1,0 +1,13 @@
+interface:
+  display_name: DCOIR Change Impact Analyzer
+  short_description: Analyze downstream refresh, regression, and packaging impacts
+    from a DCOIR project change.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

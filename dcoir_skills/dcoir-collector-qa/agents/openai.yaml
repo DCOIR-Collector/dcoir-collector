@@ -1,0 +1,12 @@
+interface:
+  display_name: DCOIR Collector QA
+  short_description: Validate, troubleshoot, and regression-test the DCOIR collector line.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

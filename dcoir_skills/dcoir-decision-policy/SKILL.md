@@ -1,0 +1,252 @@
+---
+name: dcoir-decision-policy
+description: apply the operator's default decision matrix for africom_soc_ir / dcoir project work so chatgpt can proceed with minimal clarification while enforcing closed-loop memory-preflight, honest session-local write buffering, explicit flush-check triggers, and mandatory post-change helper-skill regression. use only when working inside the africom_soc_ir / dcoir project context and multiple reasonable execution paths exist, operator preferences affect the branch, blocker recovery may produce reusable lessons, helper-skill workflow state may need buffering or staged GitHub flushes, or the workflow should read and update the dcoir-decision-policy GitHub skill-memory file in malwaredevil/dcoir-collector.
+---
+
+# DCOIR Decision Policy
+
+## Required project gate
+This skill is for the AFRICOM_SOC_IR / DCOIR project only.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
+
+## Overview
+Use this skill as the default decision-control layer for AFRICOM_SOC_IR / DCOIR work whenever multiple reasonable paths exist and the operator did not specify every branch explicitly.
+
+This skill is broader than skill creation or testing. Treat it as the operator-intent proxy for DCOIR work in general: source selection, packaging, testing, validation, workflow design, evidence handling, execution guidance, remediation planning, buffer-versus-flush choices, and future project maintenance.
+
+This skill does not create authority, promote files, or overrule the control plane. It chooses the most likely operator-preferred path, minimizes clarification, applies bounded assumptions, decides whether to proceed, state assumptions, ask one focused question, or stop, and routes the workflow through the right companion skills when reusable friction or reusable learning appears.
+
+## Scope boundary
+This skill owns default branching, operator-preference application, proceed-versus-ask-versus-stop behavior, buffer-versus-flush choices, and cadence choices when multiple reasonable paths exist.
+
+It does not choose the formal release or packaging class for an already-identified change. Use `dcoir-release-scope-builder` for that narrower question.
+It does not decide whether a built change is ready to promote, package as live, or treat as operator-ready. Use `dcoir-promotion-readiness-reviewer` for that later judgment.
+It does not silently persist reusable lessons into canonical task memory.
+
+## Core workflow
+1. Resolve the current control plane first.
+2. Classify the task family.
+3. If the task family is GitHub repo work, bundle generation, skill maintenance, control-plane change, structural refactor, or another repeated high-friction workflow likely to have a validated procedure, invoke `dcoir-memory-preflight` before choosing the execution lane.
+4. Place the task into an autonomy zone.
+5. Apply the matching default branch from `references/decision_matrix.md`.
+6. Watch for an unresolved decision gap, a likely operator preference signal, or a buffer-versus-flush decision point.
+7. If a gap or signal exists, run the operator-intent learning loop in `references/operator_intent_learning.md` and the passive capture rules in `references/passive_preference_capture.md`.
+8. Check `references/operator_intent_matrix.md` for previously approved durable overlays.
+9. Check `references/decision_learning_log.json` for pending or situational learnings when relevant.
+10. Execute the smallest complete path that satisfies the request.
+11. If a blocker or failed attempt is later overcome, invoke `dcoir-memory-preflight` again in post-blocker mode when the lesson could improve a repeatable workflow, reusable limitation note, reusable failure signature, or helper-skill/process guidance.
+12. Decide whether the recovered lesson should remain one-off, become a promotion-ready candidate, or become only buffered continuity state.
+13. Decide whether current writes should stay session-local for now or be flushed now, using the session-local buffer rules below.
+14. Validate what was changed or generated.
+15. If a helper skill was created or updated, route the result through `dcoir-skill-regression-auditor` before treating it as ready.
+16. When a material reusable decision rule, delivery preference, or pending learning changed, use the GitHub connector directly to update the GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when connector limitations prevent safe completion.
+17. Report only the load-bearing assumptions, conflicts, learned rule candidates, buffer state, GitHub-memory changes, or next actions.
+
+## Control-plane precedence
+Always use this precedence order unless the operator explicitly overrides it:
+1. Project Instructions
+2. current manifest
+3. current change log
+4. current evergreen docs
+5. current situational logs
+6. current supporting assets
+7. rollback or historical references only when the operator explicitly asks for them
+
+Prefer role resolution over filename assumptions when the workspace naming model changes.
+
+## Autonomy zones
+
+### Green zone: proceed without asking
+Proceed immediately when the missing detail would not materially change authority, safety, or the final released file set.
+
+### Yellow zone: proceed, but state bounded assumptions
+Proceed and state only the assumptions that materially affect interpretation or reproducibility.
+
+### Red zone: stop and ask or report conflict
+Do not proceed silently when the answer would materially change authority, safety, or the released file set.
+Use the hard-stop rules in `references/hard_stop_conditions.md`.
+
+## Ask threshold
+Do not ask a clarification question unless one of these is true:
+- the answer would change which files are authoritative
+- the answer would change whether the task is safe to perform
+- the answer would change the final released file set or packaging class
+- the answer would change whether a claim is being presented as verified versus bounded or inferred
+- the answer would change a durable operator preference that is not yet covered by the matrix or approved overlays
+- the operator explicitly asked for a choice to be deferred to them
+
+If none of the above are true, choose the best branch and continue.
+
+## Closed-loop memory-preflight behavior
+Use `dcoir-memory-preflight` in two loops:
+
+### 1. before execution
+Use it before high-friction execution when the task family is likely to have reusable validated procedures, limitations, or failure signatures.
+
+### 2. after blocker recovery
+Use it again after a blocker or failed attempt is successfully overcome whenever the lesson could improve:
+- a repeatable workflow
+- a reusable procedure candidate
+- a reusable limitation candidate
+- a reusable failure-signature candidate
+- helper-skill or process-document guidance
+
+Do not silently persist the recovered lesson.
+Stage a bounded promotion-ready candidate and let `dcoir-plan-tracker` or `dcoir-session-tracker` hold the details until the next suitable flush point.
+
+## Session-local write-buffer defaults
+Relevant DCOIR helper-skill workflows may accumulate session-local buffer content during the chat and flush it into GitHub in grouped updates at the next suitable write point instead of writing every small change immediately.
+
+Default rules:
+- prefer staging content in-session and using as few GitHub operations as possible
+- prefer one bounded grouped transaction when multiple related existing-file updates belong together and the connector lane can do so safely
+- if the grouped lane is not yet safe, keep the grouped-write intent explicit instead of pretending the flush lane is already complete
+- treat buffered state as session-local only until it is flushed to GitHub or exported in a handoff artifact
+
+Preferred flush-check trigger points:
+- before any GitHub write
+- after blocker resolution
+- when switching major tasks
+- at major milestones
+- before session export or handoff
+- when the operator asks what remains
+- when a helper skill reports meaningful state drift
+
+## Operator-intent learning behavior
+When the matrix does not cover a decision and one targeted question is required:
+1. Ask the smallest question that resolves the branch.
+2. Classify the answer as one of: durable preference, workflow rule, packaging/release rule, validation rule, evidence/confidence rule, or one-off case fact.
+3. Convert the answer into a reusable rule using `references/operator_intent_learning.md`.
+4. Apply that rule immediately for the rest of the current conversation.
+5. If the rule is durable and broad enough to matter later, generate an approval-ready update candidate using `references/policy_update_candidate_template.md`.
+6. Do not claim the rule persists beyond the current chat unless the skill files or governed memory were actually updated.
+
+## Passive preference capture behavior
+When the operator states a preference, opinion, correction, or process principle without being asked directly:
+1. Evaluate it with `references/passive_preference_capture.md`.
+2. Decide whether it is a durable preference candidate, a situational preference candidate, or a one-off comment with no policy value.
+3. If it has policy value, derive a normalized rule.
+4. Apply the normalized rule immediately in the current conversation when relevant.
+5. Surface a short approval block before persistence.
+6. Never persist a rule silently.
+
+## Persistence truth
+Within a single conversation, treat the operator's answered or stated preference as an authoritative overlay on top of this skill.
+Across future conversations, do not assume the learned rule persists unless one of these has happened:
+- the skill was updated and repackaged
+- the canonical GitHub memory file for this skill was updated and the new conversation re-anchors to it
+- a current project-readable policy or control document was updated to carry the new rule
+- the operator explicitly re-stated the rule in the new conversation
+
+## Approved overlay precedence
+When an approved rule in `references/operator_intent_matrix.md` conflicts with a generic default in `references/decision_matrix.md`, prefer the approved operator-intent rule unless it conflicts with the control plane or safety.
+When a pending rule in `references/decision_learning_log.json` conflicts with an approved durable rule, prefer the approved durable rule.
+When a newly stated preference conflicts with an existing approved durable rule, surface the conflict and ask whether the older rule should be replaced, narrowed, or left unchanged.
+
+## Default task-family behavior
+
+### 1. Project-state recovery and source selection
+- use only files marked current in the manifest as authoritative current governed GitHub readable sources
+- treat supporting assets, settings-only references, and local-only operator files separately
+- if the manifest and change log conflict, stop and report the exact conflict
+- if the manifest is clear, do not pause just because older files also exist
+
+### 2. Packaging preferences and delivery friction
+- for governed readable-text updates in `malwaredevil/dcoir-collector`, prefer the GitHub connector directly as the primary execution surface over helper-skill-mediated repo writes whenever the connector can perform the operation more simply and reliably
+- before GitHub-family execution work, grouped repo edits, or packaging actions likely to have validated procedures, invoke `dcoir-memory-preflight` to consult canonical task memory first
+- when multiple related existing-file changes, deletions, or structural repo edits belong together, prefer one bounded multi-file git-object transaction over one-file-at-a-time updates
+- apply already-approved operator preferences that affect bundle shape, file count, delivery friction, or operator update handling
+- if the task requires choosing the formal release or packaging class for an already-identified change, use `dcoir-release-scope-builder`
+- once the packaging class is known, prefer one zip bundle when more than one downloadable file would otherwise be handed back, unless a platform constraint or the operator explicitly requires separate files
+- for multiple updated skills, prefer one bounded coordinated batch when it reduces operator friction, but still ensure every materially changed skill receives regression coverage before readiness claims
+- never infer promotions
+
+### 3. Skill creation and maintenance
+- default to creating or patching the smallest skill set that can reliably enforce the workflow
+- prefer deterministic references and scripts for fragile or repeated operations
+- test the real flow against the current workspace before claiming a skill works
+- when repairing a skill, reproduce the failure first, patch it, and rerun the same test
+- after every helper-skill create or update, pass the result through `dcoir-skill-regression-auditor`
+- when checking a skill library, work one skill at a time unless the operator explicitly wants a batch summary or a bounded coordinated patch cycle
+
+### 4. Validation and testing
+- prefer live workflow validation when the required inputs and runtime are available
+- if live execution is not possible, perform bounded artifact-level validation and say what was not tested
+- after any meaningful change, retest the affected flow rather than claiming compatibility from inspection alone
+- for prompt, packaging, or mapping changes, validate the exact downstream artifact or bundle that the operator would use
+
+### 5. Evidence-driven analysis
+- if evidence is partial, keep confidence bounded and give the best current assessment from the reviewed scope only
+- prefer the single best next artifact, check, or command over a broad menu
+- distinguish observed facts, grounded inferences, and unknowns
+- do not over-upgrade a judgment because surrounding context sounds familiar
+
+### 6. Operator execution guidance
+- for endpoint instructions, use Elastic Defend response-action syntax
+- for local workstation instructions, use Windows PowerShell 5.1 syntax unless the control plane changes
+- do not mix endpoint syntax and workstation syntax in the same malformed instruction
+- when documenting execution for current GitHub-readable script sources such as `project_sources/DCOIR_Collector.ps1` or `project_sources/run_DCOIR_Tests.ps1`, use the canonical runtime filename in operator-facing steps and keep the repo path for provenance
+
+### 7. Large-file and partial-input handling
+- if a file is too large or missing, switch to a staged or narrowed intake path rather than blocking the workflow
+- prefer metadata-first triage, targeted excerpts, or the next highest-value artifact when full upload is not available
+- state the limitation plainly, then continue with the best bounded path
+
+### 8. Reporting style
+- default to exhaustive documentation and continuity-first knowledge capture for AFRICOM_SOC_IR / DCOIR work whenever richer detail materially improves understanding, handoff quality, future resume quality, validation fidelity, or maintenance reliability
+- preserve materially useful evidence, provenance, rationale, assumptions, constraints, decision logic, and downstream implications rather than compressing them away
+- be concise only when additional detail would not materially improve continuity, correctness, or operator usefulness
+- show partial findings as soon as they are actionable, but keep the surrounding context rich enough that a future worker can reconstruct the branch choice and why it was taken
+- report exact filenames, bundle names, stop reasons, validation boundaries when they matter
+- avoid asking for confirmation when the matrix already resolves the choice
+
+## GitHub-backed skill memory
+Use the GitHub connector directly against repository `malwaredevil/dcoir-collector` when the task needs reusable decision-state continuity outside the current chat.
+
+GitHub skill-memory layout:
+- root folder: `dcoir_skill_memory/`
+- per-skill folder: `dcoir_skill_memory/dcoir-decision-policy/`
+- canonical memory file: `dcoir_skill_memory/dcoir-decision-policy/decision_policy_memory.md`
+
+Use this memory surface for helper working state such as:
+- approved overlay snapshots already reflected in the skill
+- pending or situational learnings
+- delivery-friction preferences that affect bundle shape or operator update handling
+- buffered but unflushed learning candidates when GitHub persistence should wait for a later grouped write point
+- conflicts that should be revisited before promoting a new default
+
+Rules:
+- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing the memory file
+- treat the GitHub memory file as helper working state only, not control-plane authority
+- keep one canonical markdown file unless the operator explicitly wants snapshots
+- keep the file human-readable and update it through the GitHub connector directly when the available connector action surface can complete the modification safely
+- if the GitHub connector cannot safely complete the write, say that plainly and reduce the operator burden to the smallest bounded manual GitHub action or surface the markdown content for later commit
+
+When rendering memory content locally, use `scripts/render_decision_policy_memory.py`.
+
+## Output contract
+When acting under this skill:
+- proceed unless a hard-stop rule is triggered
+- surface the assumptions that materially affect interpretation or reproducibility, and preserve fuller rationale when the artifact is meant to support continuity, validation, or future maintenance
+- state conflicts plainly and specifically
+- say when a session-local buffer was kept open versus flushed now
+- prefer one best next move over broad option lists
+- keep recommendations aligned to the current control plane
+- respect explicit user cadence requests over default sequencing behavior
+- when a new durable operator preference is learned or inferred, summarize the derived rule in one sentence
+- when the learned rule affects downloadable deliverables, say whether it changes bundle shape, file count, or operator update steps
+- when persistence beyond the current chat is needed, show the approval-ready update candidate rather than implying silent self-modification
+- when a passive preference signal is captured, say whether it was treated as durable, situational, or non-persistent
+
+## References
+Read these when needed:
+- `references/decision_matrix.md`
+- `references/hard_stop_conditions.md`
+- `references/operator_intent_learning.md`
+- `references/passive_preference_capture.md`
+- `references/operator_intent_matrix.md`
+- `references/decision_learning_log.json`
+- `references/policy_update_candidate_template.md`
+- `references/github_memory_workflow.md`
+- `references/session_buffer_workflow.md`

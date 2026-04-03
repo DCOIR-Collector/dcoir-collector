@@ -1,0 +1,10 @@
+interface:
+  display_name: DCOIR README Maintainer
+  short_description: Maintain root and folder README surfaces for DCOIR work.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

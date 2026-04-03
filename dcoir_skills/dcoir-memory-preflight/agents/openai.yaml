@@ -1,0 +1,11 @@
+interface:
+  display_name: DCOIR Memory Preflight
+  short_description: check canonical task memory before high-friction dcoir execution
+    work
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

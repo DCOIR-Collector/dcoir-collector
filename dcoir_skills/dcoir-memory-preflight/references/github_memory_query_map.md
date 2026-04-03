@@ -1,0 +1,17 @@
+# GitHub Memory Query Map
+
+## Default canonical records to check
+- existing-file update -> `GH-PROC-001`
+- new-file create -> `GH-PROC-002`
+- large-file or structural refactor -> `GH-PROC-003`
+- safety-block fallback -> `GH-PROC-004`
+- post-write verification -> `GH-PROC-005`
+- grouped multi-file transaction -> `GH-PROC-006`
+- github preflight routing -> `GH-PROC-007`
+- connector reference assisted lane selection -> `GH-PROC-008`
+
+## Notes
+- prefer the compiled lookup first, then open only the selected canonical records
+- for grouped changes, pair the transaction procedure with post-write verification
+- for connector-function choice or lane-shape ambiguity, pair `GH-PROC-007` with `GH-PROC-008`
+- after blocker recovery, reuse the same canonical record family first before proposing any new promotion candidate

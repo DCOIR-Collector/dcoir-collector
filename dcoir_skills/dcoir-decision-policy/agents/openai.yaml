@@ -1,0 +1,13 @@
+interface:
+  display_name: DCOIR Decision Policy
+  short_description: Apply the operator's default decision matrix and approval-gated
+    learning so DCOIR work can proceed with minimal clarification.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

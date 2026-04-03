@@ -1,0 +1,21 @@
+interface:
+  display_name: Dcoir Prompt Pack Assembler
+  short_description: assemble one combined dcoir analyst-facing master prompt draft
+    from the current validated modular prompt-pack source files in the africom_soc_ir
+    / dcoir project. use when chatgpt needs to build, refresh, validate, or reassemble
+    the combined master prompt from the current modular set after control-plane review
+    has already settled what is current. this skill is project-gated, class-prefix
+    aware, uses the current files marked authoritative in the manifest, requires a
+    current guardrails module, and should tolerate future control-plane filename drift
+    when manifest roles remain clear. use only when working inside the africom_soc_ir
+    / dcoir project context; if that project context is not present, do not use this
+    skill.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

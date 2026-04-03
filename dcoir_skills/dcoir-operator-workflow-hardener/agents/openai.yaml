@@ -1,0 +1,13 @@
+interface:
+  display_name: DCOIR Operator Workflow Hardener
+  short_description: Normalize DCOIR operator guidance for endpoint execution, retrieval,
+    cleanup, and pasted collector-output interpretation.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

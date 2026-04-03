@@ -1,0 +1,12 @@
+interface:
+  display_name: DCOIR Skill Regression Auditor
+  short_description: Plan and audit deeper regression for DCOIR skills.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
