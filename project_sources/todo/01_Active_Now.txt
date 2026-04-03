@@ -1,28 +1,28 @@
 DCOIR Active Now
 
-1. Govern the GitHub connector reference pack and promote its strongest execution patterns into durable GitHub procedure guidance and task memory.
+1. Settle the authoritative session-tracker workflow after the close-out update.
    Why it matters:
-   - GitHub connector execution now materially shapes repo workflow speed, reliability, and recoverability.
+   - The project now has a close-out-capable tracker, but the authoritative operating model for session-only state, GitHub promotion, and todo-surface updates still needs to be made explicit.
    Next action:
-   - Use knowledge/github_connector_reference/, GH-PROC-008, and canonical GitHub task memory to refine function selection, operator guidance, and future GitHub-heavy workflow planning.
+   - Start a fresh bounded pass focused only on dcoir-session-tracker, its local-working-state claims, its GitHub-update behavior, and the authoritative promotion path into LOG-01, LOG-02, and LOG-03 when appropriate.
 
-2. Finish the governed structural refactor standard for growth-prone readable files.
+2. Verify whether dcoir-session-tracker really maintains a real local session-memory file during normal use.
    Why it matters:
-   - The project has a validated collector split pattern but does not yet have a fully codified repo-wide structural standard.
+   - The workflow should not rely on an assumed local session file unless its path, name, size, update behavior, and contents can be inspected and verified.
    Next action:
-   - Align CP-01, CP-02, DOC-01, DOC-03, LOG-01, LOG-03, and the todo structure to DOC-04 and keep the structural pass current while connector-governance improvements land.
+   - Define and test an inspection method that shows the local session-memory file location, name, size, modified time, and contents or bounded excerpt, then document what is actually proven versus only intended.
 
-3. Inventory remaining likely split candidates, legacy split-attempt artifacts, naming-normalization targets, and lagging repo delivery artifacts under the new standard.
+3. Decide the role, reduction, or removal of GitHub-backed dcoir-session-tracker memory.
    Why it matters:
-   - The new standard should immediately guide the next real architecture targets rather than remain abstract.
+   - The project may now have unnecessary redundancy between session-local state, exported handoff artifacts, GitHub-backed skill memory, and authoritative todo or log surfaces.
    Next action:
-   - Review growth-prone governed files, orphaned split-attempt artifacts, and repo delivery artifacts that may still describe the older posture.
+   - Compare the current tracker-memory model with the intended session-only model and decide whether GitHub-backed tracker memory should remain, be narrowed, or be removed.
 
-4. Resume the extracted readable Gemini and supporting-knowledge folder integration pass under the new structural rules.
+4. Define the pre-GitHub-update flush and manicure workflow for any dcoir-* skills that maintain local session state.
    Why it matters:
-   - The extracted readable working line still needs better governed navigation and long-term placement, but it should proceed under the new structural standard.
+   - Before a GitHub update, every relevant stateful skill should clean up completed items, preserve remaining work correctly, and state exactly what it needs to update rather than leaving that logic implicit.
    Next action:
-   - Audit the extracted folders after the structural pass and promote the highest-value materials into stronger indexes, docs, and governed deliverable references.
+   - Identify which dcoir-* skills truly maintain session-local working state, require them to surface what they need to update during GitHub writes, and define a consistent trigger path before governed repo updates.
 
 5. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:
@@ -36,26 +36,8 @@ DCOIR Active Now
    Next action:
    - Batch related GitHub changes into one transaction and verify every touched path afterward.
 
-7. Upgrade the core helper-skill workflow so memory-preflight is closed-loop instead of pre-execution only.
-   Why it matters:
-   - Reusable lessons from blockers and failed attempts should improve future workflow speed and quality rather than remain trapped in one chat or one plan.
-   Next action:
-   - Update dcoir-memory-preflight, dcoir-decision-policy, dcoir-plan-tracker, and dcoir-session-tracker so blocker recovery can be classified and staged for later promotion.
-
-8. Implement session-local write buffers and grouped GitHub flush behavior for the highest-value stateful helper skills.
-   Why it matters:
-   - Stateful helper skills should not need to push every tiny change immediately when a bounded grouped flush would be cleaner and more repeatable.
-   Next action:
-   - Start with dcoir-plan-tracker, dcoir-session-tracker, dcoir-decision-policy, dcoir-memory-preflight, and dcoir-skill-regression-auditor, using explicit flush-check triggers rather than pretending chat can silently monitor elapsed time.
-
-9. Treat post-create and post-update helper-skill regression as mandatory.
+7. Treat post-create and post-update helper-skill regression as mandatory.
    Why it matters:
    - Packaging success is not sufficient proof that a helper skill is ready for broader workflow use.
    Next action:
    - Pass every helper-skill create or update through dcoir-skill-regression-auditor and keep bounded evidence when full integrated regression is not yet practical.
-
-10. Finish the governed rollout model for GitHub-hosted DCOIR helper-skill source.
-    Why it matters:
-    - The project needs a repeatable path for getting new and updated helper-skill source under GitHub governance without dual-maintenance drift.
-    Next action:
-    - Use the approved workflow of build, download, manual install, extract, and GitHub Desktop source ingest for new skills, and build, download, manual install, and assistant-managed GitHub source update for already-governed skills.

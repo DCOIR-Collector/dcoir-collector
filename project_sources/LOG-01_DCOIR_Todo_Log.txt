@@ -11,7 +11,7 @@ Current stable pointers
 - Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
 
 Current active priority
-- Finish the governed structural refactor standard for growth-prone readable files, align the control plane and evergreen docs to it, inventory remaining split candidates and legacy split-attempt artifacts, then resume the extracted-folder integration pass under the new structural rules.
+- Settle the authoritative session-tracker workflow now that the close-out update landed, prove whether claimed session-local memory is real and inspectable, decide the role or removal of GitHub-backed tracker memory, and define how surviving state is promoted into the authoritative todo and log surfaces during GitHub-update triggers.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -22,11 +22,13 @@ Detailed todo structure
 - project_sources/todo/05_Deferred_Or_Conditional.txt
 
 Queued next priorities
-- Resume the newly extracted readable folder review and decide which materials should be elevated into stronger knowledge indexes, Gemini workflow docs, or control-plane references under the new structural rules.
+- Build a CI/CD-style end-to-end and edge-case validation regime for the repository, skills, workflows, and deliverables, with explicit pass/fail metrics and update expectations whenever the system changes.
+- Run a dedicated GitHub optimization and discovery pass focused on reducing approval friction, improving call efficiency, and preserving only validated patterns in durable guidance.
+- Research other ChatGPT connectors that add real project value, including better UI/UX, and identify when direct connector use or connector-aware helper-skill routing is worth the added complexity.
+- Explore how Agent Mode could fit the DCOIR workflow more cleanly, but do not adopt or document it as a working line until the available surface is researched and validated.
 - Continue maintaining and extending knowledge/task_memory as validated procedures, limitations, and failure signatures are learned.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge or wiki structure.
-- Continue using the validated GitHub connector low-level lane for chat-managed readable-text edits and GitHub Desktop as the easiest approved operator path for bulk local placement and binary or zip handling.
-- After the structural-standard and extracted-folder passes, audit the repo for true duplicate content by comparing actual content rather than names, remove only verified duplicates, and prefer an automation-first path with simple step-by-step instructions and minimal manual work.
+- After the session-tracker and structural-standard passes, audit the repo for true duplicate content or other accidental redundancies and remove only verified overlap.
 
 Documentation and knowledge lane
 - Improve the main README with clearer mission, deliverables, navigation, and repo map guidance.
@@ -49,4 +51,4 @@ Deferred or conditional items
 - If future extracted or newly received readable bundles arrive, place them into appropriate governed GitHub locations and refresh repo awareness files accordingly.
 - Apply additional skill package maintenance only when a new validated bundle is ready and operator conditions allow.
 - If future GitHub procedures or failure signatures are validated, promote them into knowledge/task_memory and refresh the compiled indexes.
-- If a new chat-bound GitHub execution surface is proposed in the future, do not adopt it into the working line until it is explicitly approved and fully validated.
+- If a new chat-bound GitHub execution surface, new connector, or Agent Mode path is proposed in the future, do not adopt it into the working line until it is explicitly approved and fully validated.

@@ -12,6 +12,10 @@ DCOIR Deferred Or Conditional
    Why it matters:
    - The canonical memory bank should keep improving as new validated workflows are learned.
 
-4. If a new chat-bound GitHub execution surface is proposed in the future, do not adopt it into the working line until it is explicitly approved and fully validated.
+4. If a new chat-bound GitHub execution surface, new connector, or Agent Mode path is proposed in the future, do not adopt it into the working line until it is explicitly approved and fully validated.
    Why it matters:
    - The project should not drift into unvalidated execution-path assumptions.
+
+5. If the session-tracker workflow later proves that a dedicated session close-out skill is cleaner than the current embedded model, treat that as a bounded follow-on helper-skill decision rather than as an assumed immediate change.
+   Why it matters:
+   - The current update should validate the real workflow before introducing another helper-skill surface.
