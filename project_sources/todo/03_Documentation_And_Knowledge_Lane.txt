@@ -47,3 +47,9 @@ DCOIR Documentation And Knowledge Lane
    - The routing note is a useful descriptive aid for choosing the right `dcoir-*` helper skill during project work, but it only helps if it stays current.
    Next action:
    - Refresh `knowledge/DCOIR_Helper_Skills_Routing_Note.md` whenever the installed helper-skill set changes materially.
+
+9. Verify that `dcoir-knowledge-doc-maintainer` still matches the current GitHub-primary knowledge-doc workflow before treating older extracted knowledge-doc sets as safe deletion targets.
+   Why it matters:
+   - The project has moved to a GitHub-primary readable-source model, and older extracted supporting knowledge docs may reflect pre-GitHub-primary packaging or baseline posture.
+   Next action:
+   - Review the skill against the current control plane, confirm which knowledge-doc set it is supposed to maintain, and only then decide whether stale extracted knowledge docs and their folder should be deleted.
