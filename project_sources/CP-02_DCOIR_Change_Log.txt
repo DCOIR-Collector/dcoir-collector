@@ -1,6 +1,32 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.19
+Change class: governed GitHub helper-skill source rollout and continuity refresh
+
+What changed
+- Settled the previously open policy question and approved that all `dcoir-*` skill source should be stored in GitHub.
+- Added `project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt` as the dated project-side decision record for the GitHub helper-skill source policy.
+- Added `project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt` as the evergreen layout and rollout companion for governed helper-skill source.
+- Added the governed helper-skill source root `dcoir_skills/` and landed the full governed GitHub source set for all current `dcoir-*` skills.
+- Preserved the distinction between governed helper-skill source under `dcoir_skills/` and helper working-state continuity under `dcoir_skill_memory/`.
+- Captured the operator preference that when policy, authority, or governance materially blocks progress, the assistant should report the block immediately, explain what would unblock it, and give the best available courses of action.
+- Refreshed continuity surfaces so the control plane, handoff view, and dated resume anchor reflect the live `dcoir_skills/` governed source root.
+
+Why
+- The project had reached the point where helper-skill source was important enough to govern directly in GitHub instead of leaving the storage model as an open design question.
+- The five-skill workflow-enforcement upgrade and the broader helper-skill estate are easier to maintain when GitHub is the readable source-of-truth.
+- The operator prefers being offered GitHub Desktop with a repo-ready bundle as a first-class option for large multi-file repo updates.
+- Immediate blocked-state escalation improves workflow speed by making operator authorization part of the normal recovery path instead of a late discovery.
+
+Validation notes
+- The governed policy decision file is live in GitHub.
+- The evergreen helper-skill source layout document is live in GitHub.
+- The governed source root `dcoir_skills/` is live in GitHub.
+- Direct readback confirmed governed helper-skill source under `dcoir_skills/` on `main`.
+- The continuity surfaces in this update set are the bounded follow-on refresh after the governed source rollout.
+
+[PRIOR]
 Version: 3.9.18
 Change class: github connector reference-pack intake and task-memory promotion
 
@@ -24,25 +50,3 @@ Validation notes
 - The governed JSON file is a distilled derivative chosen for speed and maintainability; the TXT upload was used to drive the human-facing execution guide.
 - `GH-PROC-008` is now present in both the canonical task-memory procedure path and the compiled fast lookup index.
 - Control-plane and continuity files now reflect the connector-reference-pack workflow as the next active GitHub-heavy improvement line.
-
-[PRIOR]
-Version: 3.9.17
-Change class: regression-auditor skill patch, codex-learning preference capture, and follow-on skill-maintenance sync
-
-What changed
-- Patched and repackaged the external `dcoir-skill-regression-auditor` skill bundle so its planner and fixture references explicitly support the current-control-plane narrative-manifest fixture and the campaign rule to test the tester first.
-- Captured the operator preference that optional ChatGPT Codex work should be offered as step-by-step, click-by-click learning tasks, starting with basic usage before more advanced workflows.
-- Added a documentation-lane todo to consider creating a dedicated `dcoir-readme-maintainer` skill for root and folder README maintenance.
-- Updated helper regression memory and repo-side continuity surfaces so the next skill-maintenance step is replacing the patched regression-auditor package and then deep-scanning the remaining `dcoir-*` skills.
-- Corrected the manifest version lag so CP-01 now catches up to the current control-plane state.
-
-Why
-- The project needs `dcoir-skill-regression-auditor` to be trustworthy before using it to evaluate the rest of the helper-skill fleet.
-- The user explicitly wants optional Codex learning tasks presented in a beginner-friendly, click-by-click way when they are useful for project work.
-- README maintenance has grown into a repeatable enough workflow that it should be tracked as a potential dedicated skill.
-- The control plane should not drift across CP-01, CP-02, handoff, and helper memory while the helper-skill patch campaign is underway.
-
-Validation notes
-- The patched `dcoir-skill-regression-auditor` package passed `quick_validate.py`, its updated planner script executed successfully, and the skill was repackaged as a valid bundle.
-- The helper regression memory now records the regression-auditor package as patched and packaged with the next action set to external replacement plus a short post-install smoke regression.
-- The repo-side continuity files now reflect the Codex-learning preference and the new README-maintainer-skill todo.

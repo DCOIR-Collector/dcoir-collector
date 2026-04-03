@@ -7,7 +7,8 @@ Current stable artifacts
 - Layout spec: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
 - Structural refactor standard: project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt
 - Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
-- Helper-skill workflow decision log: project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt
+- GitHub helper-skill source layout and rollout guide: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
+- Helper-skill workflow decision logs: project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt and project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt
 - Collector runtime file: project_sources/DCOIR_Collector.ps1
 - Collector readable source set: project_sources/collector_parts/*.ps1
 - Harness readable source: project_sources/run_DCOIR_Tests.ps1
@@ -18,6 +19,8 @@ Current stable artifacts
 - Todo child files: project_sources/todo/*.txt
 - Governed helper-skills routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 - Governed GitHub connector reference pack: knowledge/github_connector_reference/
+- Governed helper-skill source root: dcoir_skills/
+- Helper working-state continuity root: dcoir_skill_memory/
 - Extracted readable Gemini source folders: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/, project_sources/original_alert_triage_gemini_agents/, and project_sources/original_collector_artifact_gemini_agents/
 - Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
 
@@ -27,11 +30,13 @@ Current governance state
 - GitHub is the working repository and review surface for readable governed text.
 - Project space is the bootstrap/runtime anchor and should not carry duplicate editable readable governed text.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
-- GitHub Desktop is the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
+- GitHub Desktop is the easiest approved operator path for bulk local placement, extracted-file ingestion, binary or zip handling, and large multi-file repo updates.
+- All `dcoir-*` skill source is now governed in GitHub under `dcoir_skills/`.
+- Helper working-state continuity remains under `dcoir_skill_memory/` and should not be confused with source authority.
 - The helper-skills routing note is descriptive guidance only and should not be treated as a control-plane authority source.
 - Governed structural refactors for growth-prone readable files now follow DOC-04 as the current repo-wide standard.
 - All project-specific helper skills should retain the dcoir- prefix.
-- Closed-loop memory-preflight, session-local write-buffer behavior, mandatory post-change skill regression, and the GitHub skill-source rollout workflows are now governed in DOC-05.
+- Closed-loop memory-preflight, session-local write-buffer behavior, mandatory post-change skill regression, GitHub skill-source rollout workflows, and blocked-state escalation expectations are now governed in DOC-05, DOC-06, LOG-04, and LOG-06.
 
 Operator preference notes
 - When optional project-helpful work can be done through ChatGPT Codex on the ChatGPT website, offer it as an optional learning experience rather than a required task.
@@ -40,6 +45,8 @@ Operator preference notes
 - Show the proposed decomposed plan before the first GitHub upload unless the operator explicitly waives preview.
 - Prefer staging content in-session and using as few GitHub operations as possible.
 - Use explicit flush-check triggers for session-local write buffers rather than pretending chat can silently monitor elapsed time in the background.
+- For large multi-file GitHub updates, offer GitHub Desktop with a repo-ready bundle as a preferred option alongside in-chat updates.
+- When policy, authority, or governance materially blocks progress, report the block immediately, explain what would unblock it, and give the best available courses of action.
 
 Current validated status
 - The collector remains split into smaller governed source files, with DCOIR_Collector.ps1 preserved as the runtime wrapper.
@@ -54,25 +61,22 @@ Current validated status
 - The stale outlier PR and branch cleanup is complete and is no longer treated as a pending review item.
 - A governed helper-skills routing note now exists to make project-side helper-skill selection easier to understand and more predictable without promising guaranteed auto-invocation.
 - The governed structural refactor standard now exists as the current reusable architecture rule set for growth-prone readable files.
-- The patched dcoir-skill-regression-auditor external skill package now passes local validation and is ready for replacement plus post-install smoke regression.
-- The initial dcoir-readme-maintainer package is installed, has passed bounded regression, and has a preserved baseline README maintenance pass in helper memory.
-- The initial dcoir-plan-tracker package is installed and the first governed plan line is active in GitHub helper memory.
+- The full governed GitHub source set for current `dcoir-*` skills is now stored under `dcoir_skills/`.
+- The five core helper-skill upgrades for workflow enforcement were completed, packaged, installed, and locally regression-cleared before the GitHub source rollout.
+- The dated policy decision and the evergreen GitHub helper-skill layout guide are live in GitHub.
 
 Current session outcomes
-- Added a governed GitHub connector reference pack under knowledge/github_connector_reference/.
-- Added a distilled machine-readable connector inventory and a human-facing execution guide based on the uploaded GitHub connector reference materials.
-- Added GH-PROC-008 and updated the canonical task-memory manifest and compiled lookup so GitHub connector reference usage is part of the normal preflight path.
-- Elevated GitHub connector reference-pack promotion to the next active improvement line because connector execution now materially shapes repo workflow reliability.
-- Preserved the existing dcoir-readme-maintainer skill idea and added follow-on tracking for dcoir-plan-tracker and for a governed one-source-of-truth model if the project later stores all dcoir-* skill source in GitHub.
-- Added DOC-05 as the evergreen helper-skill workflow rules surface and LOG-04 as the dated decision record for the approved 2026-04-03 helper-skill workflow changes.
-- Captured the closed-loop dcoir-memory-preflight rule and the session-local write-buffer rule in durable GitHub-readable project sources.
-- Captured the mandatory post-create and post-update dcoir-skill-regression-auditor rule in durable GitHub-readable project sources.
-- Captured the new-skill and updated-skill GitHub-source rollout workflows in durable GitHub-readable project sources.
-- Preserved the dcoir-memory-preflight workflow upgrade requirements in helper memory for future implementation work.
-- Preserved the dcoir-readme-maintainer bounded regression note and baseline README maintenance pass in helper memory.
+- Upgraded `dcoir-memory-preflight`, `dcoir-decision-policy`, `dcoir-plan-tracker`, `dcoir-session-tracker`, and `dcoir-skill-regression-auditor` so the new helper-skill workflow rules become enforceable behavior.
+- Completed local post-install regression for the five-skill upgrade batch.
+- Settled the policy question of whether all `dcoir-*` skill source should be stored in GitHub.
+- Added the dated project-side policy decision log `LOG-06` and the evergreen layout guide `DOC-06`.
+- Added the governed helper-skill source root `dcoir_skills/` and landed the governed source set for all current `dcoir-*` skills.
+- Preserved the decision-policy helper-memory note for the GitHub skill-source rule.
+- Captured the operator preference that GitHub Desktop with a repo-ready bundle should be offered for large multi-file repo updates.
+- Captured the operator preference that governance or policy blocks should be surfaced immediately with clear unblock options.
 
 Current next planned work item
-- Upgrade dcoir-memory-preflight, dcoir-decision-policy, dcoir-plan-tracker, dcoir-session-tracker, and dcoir-skill-regression-auditor so the new helper-skill workflow rules become enforceable behavior.
+- Review the broader `dcoir-*` helper-skill set for whether each skill should support session-local write buffering, grouped GitHub flushes, or closed-loop memory-preflight routing now that governed GitHub source is live.
 
 Recommended next move
-- Apply the approved workflow-rule refreshes to the lagging continuity and routing files, then use the dcoir-readme-maintainer baseline pass to land a bounded README refresh batch when the chosen update lane is available.
+- Start the broader `dcoir-*` helper-skill review from the highest-value candidates in DOC-05, then use the preserved `dcoir-readme-maintainer` baseline artifact to land the bounded README refresh batch.

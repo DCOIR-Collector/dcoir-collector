@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.18
+DCOIR Version Manifest 3.9.19
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -6,13 +6,17 @@ Current control plane
 - Setup guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Layout spec: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
 - Structural refactor standard: project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt
+- Helper-skill workflow rules: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
+- GitHub helper-skill source layout and rollout: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
 - Todo log: project_sources/LOG-01_DCOIR_Todo_Log.txt
 - Todo index: project_sources/LOG-01_DCOIR_Todo_Index.txt
 - Todo lanes: project_sources/todo/*.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
+- GitHub skill-source policy decision: project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt
 
 Current repo guide
 - Root README: README.md
+- Governed helper-skill source root: dcoir_skills/README.md
 
 Current collector files
 - Runtime wrapper: project_sources/DCOIR_Collector.ps1
@@ -35,6 +39,11 @@ Current governed knowledge notes
 - Helper-skills routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 - GitHub connector reference pack: knowledge/github_connector_reference/
 
+Current governed helper-skill source
+- Root: dcoir_skills/
+- Policy decision: all `dcoir-*` skill source is stored in GitHub under the governed source root.
+- Helper working-state continuity remains under dcoir_skill_memory/ and should not be confused with source authority.
+
 Current extracted readable source folders
 - Build bundle source set: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/
 - Original alert triage Gemini agents: project_sources/original_alert_triage_gemini_agents/
@@ -43,10 +52,7 @@ Current extracted readable source folders
 - Generated agent markdowns: knowledge/generated_agent_markdowns/
 
 Current next work item
-- Use the governed GitHub connector reference pack and GH-PROC-008 to improve GitHub connector lane selection, operator guidance, and future GitHub task-memory promotion.
+- Review the broader `dcoir-*` helper-skill set for whether each skill should support session-local write buffering, grouped GitHub flushes, or closed-loop memory-preflight routing now that governed GitHub source is live.
 - Keep presenting optional ChatGPT Codex tasks as step-by-step, click-by-click learning opportunities, starting with basic Codex usage before more advanced workflows.
-- Consider creating dedicated `dcoir-readme-maintainer` and `dcoir-plan-tracker` skills, and keep all project-specific skill names under the `dcoir-` prefix.
-- Evaluate whether all `dcoir-*` skill source should be stored in GitHub under a governed one-source-of-truth model before any broad source-hosting rollout.
-- Continue the DOC-04-guided architecture work by inventorying likely split candidates, legacy split-attempt artifacts, and lagging repo delivery artifacts under the structural standard.
-- After the GitHub connector reference promotion work and structural-standard work are stable, resume the extracted-folder integration pass under the new rules and keep the duplicate-content audit queued behind that work.
+- Use the preserved `dcoir-readme-maintainer` baseline artifact to land a bounded README refresh batch when the chosen update lane is available.
 - Continue using the validated GitHub connector low-level lane for chat-managed readable text updates, canonical task-memory preflight before high-friction GitHub work, and GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
