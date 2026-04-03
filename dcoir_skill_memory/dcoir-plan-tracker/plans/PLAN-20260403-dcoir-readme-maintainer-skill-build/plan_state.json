@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "plan_id": "PLAN-20260403-dcoir-readme-maintainer-skill-build",
+  "title": "build dcoir-readme-maintainer skill",
+  "lifecycle_state": "active",
+  "created": "2026-04-03",
+  "last_updated": "2026-04-03",
+  "active_task_id": "T1",
+  "active_task_title": "re-anchor and inspect current README-maintenance need",
+  "next_recommended_action": "Execute T1.2 by defining the actual README-maintainer skill boundary: root README, folder README, navigation guidance, and cross-link upkeep.",
+  "tasks": [
+    {
+      "id": "T1",
+      "parent_id": "root",
+      "level": "task",
+      "title": "re-anchor and inspect current README-maintenance need",
+      "status": "in_progress",
+      "owner": "assistant",
+      "why_it_matters": "confirm the build target is still grounded in the active working line before skill scoping begins",
+      "next_action": "execute T1.2 by defining the actual README-maintainer skill boundary",
+      "expected_output": "grounded scope baseline for dcoir-readme-maintainer",
+      "validation_gate": "current todo and docs still support the skill need",
+      "touched_paths": [
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/CP-02_DCOIR_Change_Log.txt",
+        "project_sources/todo/03_Documentation_And_Knowledge_Lane.txt",
+        "project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt"
+      ],
+      "blocking_dependency": "none",
+      "last_update": "T1.1 completed; T1.2 next"
+    },
+    {
+      "id": "T1.1",
+      "parent_id": "T1",
+      "level": "subtask",
+      "title": "confirm README-maintenance need is still tracked",
+      "status": "done",
+      "owner": "assistant",
+      "why_it_matters": "ensure the skill target still exists as a governed next-need",
+      "next_action": "none",
+      "expected_output": "confirmed tracked need with cited evidence",
+      "validation_gate": "README-maintainer candidate still appears in current todo/doc lane",
+      "touched_paths": [
+        "project_sources/todo/03_Documentation_And_Knowledge_Lane.txt",
+        "project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt"
+      ],
+      "blocking_dependency": "none",
+      "last_update": "validated against documentation lane and session handoff"
+    },
+    {
+      "id": "T1.2",
+      "parent_id": "T1",
+      "level": "subtask",
+      "title": "identify skill boundary for README work",
+      "status": "todo",
+      "owner": "assistant",
+      "why_it_matters": "prevent scope drift into broader documentation maintenance",
+      "next_action": "separate root README, folder README, navigation, and cross-link responsibilities",
+      "expected_output": "first-pass skill boundary draft",
+      "validation_gate": "boundary is specific enough to guide skill creation questions and resources",
+      "touched_paths": [
+        "README.md",
+        "folder READMEs",
+        "project_sources/todo/03_Documentation_And_Knowledge_Lane.txt"
+      ],
+      "blocking_dependency": "depends on T1.1",
+      "last_update": "pending"
+    },
+    {
+      "id": "T2",
+      "parent_id": "root",
+      "level": "task",
+      "title": "define dcoir-readme-maintainer skill specification",
+      "status": "todo",
+      "owner": "assistant",
+      "why_it_matters": "convert the grounded need into a reusable helper-skill design",
+      "next_action": "draft scope, triggers, resources, and output contract",
+      "expected_output": "build-ready skill specification draft",
+      "validation_gate": "spec aligns to current control plane and skill-routing posture",
+      "touched_paths": [
+        "future skill package surfaces"
+      ],
+      "blocking_dependency": "depends on T1",
+      "last_update": "pending"
+    },
+    {
+      "id": "T3",
+      "parent_id": "root",
+      "level": "task",
+      "title": "prepare for skill package build and validation",
+      "status": "todo",
+      "owner": "assistant",
+      "why_it_matters": "the end state is not only a concept but a package-ready build path",
+      "next_action": "convert the specification into actual package contents after scope lock",
+      "expected_output": "package-ready next-step plan",
+      "validation_gate": "files, validation approach, and packaging posture are explicit",
+      "touched_paths": [
+        "future skill bundle paths"
+      ],
+      "blocking_dependency": "depends on T2",
+      "last_update": "pending"
+    }
+  ],
+  "observations": [
+    "show proposed decomposed plan before first github upload unless the user explicitly waives preview",
+    "prefer staging content in-session and using as few github operations as possible",
+    "explore session-local write buffers with later grouped github flushes where safe"
+  ]
+}
