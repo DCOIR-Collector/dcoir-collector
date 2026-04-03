@@ -40,7 +40,7 @@ Current validated status
 - The stale outlier PR and branch cleanup is complete and is no longer treated as a pending review item.
 - A governed helper-skills routing note now exists to make project-side helper-skill selection easier to understand and more predictable without promising guaranteed auto-invocation.
 - The governed structural refactor standard now exists as the current reusable architecture rule set for growth-prone readable files.
-- The refreshed dcoir-knowledge-doc-maintainer external skill package is now prepared for the post-delete GitHub-primary knowledge-doc model.
+- The patched dcoir-knowledge-doc-maintainer external skill package now passes local regression against the post-delete GitHub-primary control-plane fixture and is ready for package replacement plus post-install smoke regression.
 
 Current session outcomes
 - Added `project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt` as the governed structural refactor standard.
@@ -49,10 +49,11 @@ Current session outcomes
 - Kept the extracted-folder integration line and duplicate-audit line behind the structural-standard pass.
 - Removed the obsolete extracted `knowledge/supporting_knowledge_docs/` folder after explicit operator approval and aligned the current-state surfaces so it is no longer treated as current.
 - Refreshed the `dcoir-knowledge-doc-maintainer` skill package so its workflow no longer assumes the retired extracted supporting-knowledge-doc folder is part of the default maintenance path.
+- Patched the skill scanner so it recognizes the current narrative CP-01 control-plane model and reran the success and failure fixtures locally.
 - Left the helper-skills routing note in place as a descriptive project-side aid and not a control-plane authority source.
 
 Current next planned work item
-- Replace the refreshed `dcoir-knowledge-doc-maintainer` external skill package and run targeted invocation or accessibility regression against the current post-delete GitHub-primary knowledge-doc workflow, then continue the DOC-04-guided audit for naming-normalization targets, legacy split-attempt artifacts, and remaining extracted-folder integration work.
+- Replace the patched `dcoir-knowledge-doc-maintainer` external skill package and run a quick post-install invocation or accessibility smoke regression against the current post-delete GitHub-primary knowledge-doc workflow, then continue the DOC-04-guided audit for naming-normalization targets, legacy split-attempt artifacts, and remaining extracted-folder integration work.
 
 Recommended next move
-- Install or replace the refreshed `dcoir-knowledge-doc-maintainer` skill package, run targeted regression on its post-delete workflow assumptions, and then resume the DOC-04-guided architecture and integration audit.
+- Install or replace the patched `dcoir-knowledge-doc-maintainer` skill package, run a short post-install smoke regression, and then resume the DOC-04-guided architecture and integration audit.

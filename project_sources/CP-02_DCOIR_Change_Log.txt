@@ -1,6 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.16
+Change class: knowledge-doc-maintainer scanner patch and local regression validation
+
+What changed
+- Patched `dcoir-knowledge-doc-maintainer/scripts/scan_project.py` in the external skill package so it can parse the current narrative `CP-01_DCOIR_Version_Manifest.txt` model instead of relying only on the older section-key format.
+- Repackaged the skill after the scanner patch and removed the unnecessary `__pycache__` artifact from the bundled package.
+- Re-ran package validation, the current-control-plane success fixture, the missing-control-plane failure fixture, and representative build-doc artifact verification.
+- Updated helper regression memory and repo-side continuity surfaces so the next step is package replacement plus a quick post-install smoke regression.
+
+Why
+- The refreshed post-delete skill text was ahead of the scanner logic: the package validated and `build_knowledge_docs.py` worked, but `scan_project.py` still returned zero recognized governed readable sources on a current-control-plane fixture.
+- Leaving that mismatch in place would cause future knowledge-doc maintenance to misread the current GitHub-primary control plane even though the instructions had already been refreshed.
+- The patched package should now be treated as the candidate replacement bundle, with only a post-install smoke regression left before the workflow returns to broader DOC-04 architecture work.
+
+Validation notes
+- `quick_validate.py` returned a valid skill package.
+- `build_knowledge_docs.py` emitted the expected `.md.txt` file and `supporting_knowledge_docs.zip` on a representative spec fixture.
+- Before the patch, the success fixture returned `recognized_governed_github_readable_sources` count 0; after the patch, the same fixture returned count 15.
+- The missing-control-plane fixture still failed clearly with `FileNotFoundError`, preserving the expected stop gate.
+
+[PRIOR]
 Version: 3.9.15
 Change class: knowledge-doc-maintainer skill refresh for post-delete GitHub-primary workflow
 
@@ -19,43 +40,3 @@ Validation notes
 - Packaged and validated an updated `dcoir-knowledge-doc-maintainer` skill bundle after refreshing the relevant skill files.
 - Refreshed the repo-side follow-up posture so future sessions know the next step is external skill-package replacement plus targeted regression.
 - Left the broader DOC-04 structural audit and extracted-folder integration work queued behind the active architecture-first lane.
-
-[PRIOR]
-Version: 3.9.14
-Change class: legacy extracted supporting-knowledge-doc folder removal and control-plane refresh
-
-What changed
-- Removed the legacy extracted folder `knowledge/supporting_knowledge_docs/` and its stale pre-GitHub-primary supporting knowledge-doc files from the governed repo working line.
-- Refreshed the manifest, layout spec, knowledge README, todo log, and session handoff posture so the deleted folder is no longer treated as a current extracted readable knowledge folder.
-- Kept the extracted Gemini folders plus the comparative and generated agent markdown folders as the current extracted readable side-material set.
-- Added an explicit todo to verify that `dcoir-knowledge-doc-maintainer` still matches the current GitHub-primary knowledge-doc workflow before any future knowledge-doc regeneration or broader delete decisions.
-
-Why
-- The deleted supporting knowledge-doc set reflected older baseline and packaging posture from before GitHub became the project's primary readable working repository.
-- Keeping stale extracted knowledge docs in the current working line would create avoidable confusion about what is current and what should be maintained.
-- The current control plane and maintained knowledge workflow should point at the up-to-date GitHub-primary model rather than preserve obsolete extracted docs as if they were current.
-
-Validation notes
-- Verified the legacy folder paths return absent after the grouped delete landed on main.
-- Refreshed the current-state surfaces that previously named `knowledge/supporting_knowledge_docs/` as a current extracted readable folder.
-- Left the `dcoir-knowledge-doc-maintainer` verification todo in place so the maintained knowledge-doc workflow can be checked against the current control plane next.
-
-[PRIOR]
-Version: 3.9.13
-Change class: structural refactor standard activation and control-plane reprioritization
-
-What changed
-- Added the governed structural refactor standard at `project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt`.
-- Promoted the structural refactor standard to the active architecture-first work line.
-- Refreshed the control plane, evergreen docs, todo posture, and session handoff posture to point at the structural-standard pass first.
-- Repositioned the extracted-folder integration pass and the duplicate-content audit behind the structural-standard pass.
-
-Why
-- The project had a validated collector split example but did not yet have a fully governed repo-wide structural refactor standard for growth-prone readable files.
-- The active work line should reflect the architecture-first need to formalize split-trigger rules, index-plus-child-file patterns, naming rules, traceability requirements, dependency-first cutover rules, and verification expectations before additional structural cleanup or broader documentation integration proceeds.
-- The extracted-folder integration and duplicate-audit work will be safer and easier to govern after the structural standard is formalized and the next likely refactor targets are inventoried.
-
-Validation notes
-- Verified that `project_sources/DOC-04_DCOIR_Structural_Refactor_Standard.txt` exists in the governed repo working line.
-- Refreshed `CP-01`, `DOC-01`, `DOC-03`, `LOG-01`, `LOG-03`, and the split todo posture so the repo's current-state and continuity surfaces align to the structural-standard-first work line.
-- The duplicate-content audit remains queued behind the structural-standard and extracted-folder integration passes.

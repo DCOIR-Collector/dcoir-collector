@@ -48,8 +48,8 @@ DCOIR Documentation And Knowledge Lane
    Next action:
    - Refresh `knowledge/DCOIR_Helper_Skills_Routing_Note.md` whenever the installed helper-skill set changes materially.
 
-9. Replace and regression-test the refreshed `dcoir-knowledge-doc-maintainer` package so it matches the current GitHub-primary knowledge-doc workflow after the legacy extracted supporting-knowledge-doc folder removal.
+9. Replace and smoke-test the patched `dcoir-knowledge-doc-maintainer` package so it matches the current GitHub-primary knowledge-doc workflow after the legacy extracted supporting-knowledge-doc folder removal.
    Why it matters:
-   - The project has already removed the obsolete extracted `knowledge/supporting_knowledge_docs/` set and refreshed the skill package, so the remaining work is package replacement plus targeted regression against the post-delete control plane.
+   - The project has already removed the obsolete extracted `knowledge/supporting_knowledge_docs/` set, and the patched skill package now passes local regression against the post-delete control-plane fixture.
    Next action:
-   - Install or replace the refreshed skill package, run targeted invocation or accessibility regression, and confirm the skill no longer steers maintenance toward the retired extracted-doc posture.
+   - Install or replace the patched skill package, run targeted invocation or accessibility smoke regression, and confirm the skill no longer steers maintenance toward the retired extracted-doc posture.
