@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-startup-validated-and-manual-bundle-fix-v1
+Current state id: 2026-04-05-continuous-execution-cadence-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -13,7 +13,7 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Continue the broader helper-skill deep-dive and code-hygiene campaign from the now live-validated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair, resume-status fast path, updated `dcoir-session-tracker` plus `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair, resume-status fast path, updated `dcoir-session-tracker` plus `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode, and durable continuous-execution cadence for operator-approved coordinated campaigns.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -24,7 +24,8 @@ Detailed todo structure
 - project_sources/todo/05_Deferred_Or_Conditional.txt
 
 Queued next priorities
-- Run a full skill deep dive to confirm current helper skills still execute successfully, remain current with the project's goals and governance, and do not carry obsolete or inefficient logic.
-- Review session-memory-enabled and buffer-capable skills for reliable presence preflight, resume-only routing discipline, pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior, now starting from the live-validated `dcoir-session-resume`, `dcoir-memory-preflight`, `dcoir-session-tracker`, and `dcoir-plan-tracker` paths plus the repaired `dcoir-repo-packager` manual repo-update bundle lane.
+- Work the current high-risk wave first: `dcoir-plan-tracker`, `dcoir-session-tracker`, `dcoir-collector-qa`, `dcoir-decision-policy`, `dcoir-live-test-remediation-planner`, `dcoir-memory-preflight`, `dcoir-operator-workflow-hardener`, `dcoir-repo-packager`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator`.
+- Review session-memory-enabled and buffer-capable skills for reliable presence preflight, resume-only routing discipline, pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior from the live-validated startup baseline and repaired manual delivery lane.
+- Keep the operator-facing cadence aligned to the durable no-premature-pause rule so coordinated campaign work continues until there is something real for the operator to do.
 - Review any remaining literals only as bounded contractual exceptions where discovery-contract replacement would not materially improve portability or maintainability.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge and wiki structure.

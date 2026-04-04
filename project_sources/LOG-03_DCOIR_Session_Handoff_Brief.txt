@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-05-startup-validated-and-manual-bundle-fix-v1
+Current state id: 2026-04-05-continuous-execution-cadence-v1
 
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -8,7 +8,7 @@ Current stable artifacts
 - Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
 - GitHub helper-skill source layout and rollout guide: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
-- Helper-skill workflow decision logs: LOG-04 through LOG-29
+- Helper-skill workflow decision logs: LOG-04 through LOG-30
 - Task memory bank root: knowledge/task_memory
 - Governed helper-skill source root: dcoir_skills/
 - Authoritative todo surfaces: project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt
@@ -18,7 +18,8 @@ Current governance state
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
 - The project discovery contract and parity surfaces are now part of the governed helper-skill control posture.
-- The next governance branch remains the broader helper-skill deep-dive and code-hygiene campaign, now starting from a live-validated first-turn bootstrap pair, resume-status fast path, updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, a repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode, stronger pre-push behavior, and the recorded delivery-bundle plus GitHub Desktop commit `Summary` preferences.
+- The next governance branch remains the coordinated all-skills helper-skill deep-dive and code-hygiene campaign, now starting from a live-validated first-turn bootstrap pair, resume-status fast path, updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, a repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode, stronger pre-push behavior, and the recorded delivery-bundle plus GitHub Desktop commit `Summary` preferences.
+- `dcoir-decision-policy` now carries the durable continuous-execution cadence for operator-approved coordinated campaigns and should not stop at intermediate milestones unless there is a real action, blocker, materially changed evidence state, or decision to surface.
 - The stamped active-surface widening hold now has 1 remaining real resume cycle.
 
 Current validated status
@@ -29,10 +30,10 @@ Current validated status
 - The practical high-value hard-coded-project-variable audit passes are complete through the remaining GitHub-memory/helper-memory surfaces.
 - The first `dcoir-session-tracker` deep-dive pass is locally validated, the second presence-guard pass is locally validated, the bounded `dcoir-plan-tracker` local-JSON startup-preflight rollout is locally validated, and the bounded resume-status fast-path tightening for `dcoir-session-resume` plus `dcoir-memory-preflight` is now live-validated in real workflow use.
 - The repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode is locally validated and used to emit the current affected-path delivery artifacts with no wrapper root.
-- The manual delivery-bundle structure preference and GitHub Desktop commit `Summary` preference are now recorded in governed project sources and directly supported by the repaired packager lane.
+- The coordinated all-skills campaign baseline is structurally clean at the broad level, with the current high-risk wave now explicitly prioritized for deeper execution and code review.
 
 Current next planned work item
-- Continue the broader helper-skill deep-dive and code-hygiene campaign from the now live-validated first-turn bootstrap pair, resume-status fast path, repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode, and updated startup local-JSON preflight behavior.
-- Rank and begin the next highest-value helper-skill execution and code review pass under the current CI/CD-style validation regime.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, repaired delivery lane, and current validation regime.
+- Work the current high-risk wave first: `dcoir-plan-tracker`, `dcoir-session-tracker`, `dcoir-collector-qa`, `dcoir-decision-policy`, `dcoir-live-test-remediation-planner`, `dcoir-memory-preflight`, `dcoir-operator-workflow-hardener`, `dcoir-repo-packager`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator`.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
 - Use the repaired GitHub Desktop manual repo-update bundle mode and the recorded commit `Summary` preference for future affected-file repo-update deliveries.

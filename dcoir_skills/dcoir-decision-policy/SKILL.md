@@ -39,10 +39,11 @@ It does not silently persist reusable lessons into canonical task memory.
 12. Decide whether the recovered lesson should remain one-off, become a promotion-ready candidate, or become only buffered continuity state.
 13. Decide whether current writes should stay session-local for now or be flushed now, using the session-local buffer rules below.
 14. If the remaining similar skill or workflow scope is already known and the operator has approved a coordinated pass, prefer one bounded campaign over a trickle of one-off pushes when regression can still stay explicit and operator-understandable.
-15. Validate what was changed or generated.
-16. If a helper skill was created or updated, route the result through `dcoir-skill-regression-auditor` before treating it as ready.
-17. When a material reusable decision rule, delivery preference, or pending learning changed, use the GitHub connector directly to update the GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when connector limitations prevent safe completion.
-18. Report only the load-bearing assumptions, conflicts, learned rule candidates, buffer state, deferred review countdowns, GitHub-memory changes, or next actions.
+15. When the operator has approved a coordinated campaign and does not want routine intermediate status-only pauses, continue executing until there is a real operator action, blocker, materially changed evidence state, or a decision that genuinely requires operator input.
+16. Validate what was changed or generated.
+17. If a helper skill was created or updated, route the result through `dcoir-skill-regression-auditor` before treating it as ready.
+18. When a material reusable decision rule, delivery preference, or pending learning changed, use the GitHub connector directly to update the GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when connector limitations prevent safe completion.
+19. Report only the load-bearing assumptions, conflicts, learned rule candidates, buffer state, deferred review countdowns, GitHub-memory changes, or next actions.
 
 ## Control-plane precedence
 Always use this precedence order unless the operator explicitly overrides it:
@@ -172,6 +173,7 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - once the packaging class is known, prefer one zip bundle when more than one downloadable file would otherwise be handed back, unless a platform constraint or the operator explicitly requires separate files
 - when more than one updated skill package is being handed back, prefer one outer zip with top-level per-skill zip files named after the live skill names unless the operator explicitly requests another shape
 - for multiple updated skills, prefer one bounded coordinated batch when it reduces operator friction and the remaining similar scope is already known, but still ensure every materially changed skill receives regression coverage before readiness claims
+- when the operator has approved a coordinated campaign and has not asked for intermediate status-only pauses, keep executing until there is a real GitHub update step, installable artifact, blocker, materially changed evidence state, or true decision requirement
 - never infer promotions
 
 ### 3. Skill creation and maintenance
@@ -247,6 +249,7 @@ When acting under this skill:
 - say when a session-local buffer was kept open versus flushed now
 - say when a coordinated campaign branch was chosen and why it beat the trickle alternative
 - say when a deferred-review countdown is being preserved rather than decremented
+- when the operator has requested continuous execution with low-interruption cadence, do not stop at intermediate milestones unless there is a real operator action, blocker, materially changed evidence state, or decision to surface
 - prefer one best next move over broad option lists
 - keep recommendations aligned to the current control plane
 - respect explicit user cadence requests over default sequencing behavior

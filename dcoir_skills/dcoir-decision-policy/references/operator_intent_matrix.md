@@ -59,6 +59,13 @@ Use this file as the highest-precedence approved overlay inside the skill, below
 - Why it persists: reflects the operator's explicit preference to minimize repetitive downloads and make manual multi-skill installation as frictionless as possible.
 - Source of learning: explicit operator preference stated in chat during the validation-regime branch.
 
+
+### Rule 10: in operator-approved coordinated campaigns, continue executing until there is a real action, blocker, or decision
+- Trigger condition: the operator has approved a bounded coordinated campaign or broad pass, does not want routine intermediate status pings, and has not reserved the next branch decision to themselves.
+- Default action: continue working through the current campaign wave without stopping at intermediate analytical milestones; only surface operator-facing interruptions when there is a real GitHub update step, skill-install step, blocker, materially changed evidence state, or a decision that genuinely requires operator input.
+- Why it persists: reflects the operator's explicit direction to avoid premature pauses and keep the campaign moving until there is something concrete for them to do.
+- Source of learning: explicit operator preference stated in chat during the coordinated all-skills deep-dive campaign.
+
 ## Usage rule
 
 When a rule in this file applies, prefer it over generic defaults in `decision_matrix.md` unless doing so would conflict with the control plane or safety.

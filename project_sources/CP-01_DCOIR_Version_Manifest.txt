@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.41
+DCOIR Version Manifest 3.9.42
 
-Current state id: 2026-04-05-startup-validated-and-manual-bundle-fix-v1
+Current state id: 2026-04-05-continuous-execution-cadence-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -36,6 +36,7 @@ Current control plane
 - Parity verification and README refresh: project_sources/LOG-27_DCOIR_Parity_Verification_And_Readme_Refresh_2026-04-04.txt
 - Resume-status fast path and bounded preflight lane: project_sources/LOG-28_DCOIR_Resume_Status_Fast_Path_And_Bounded_Preflight_Lane_2026-04-04.txt
 - GitHub Desktop manual repo-update bundle mode fix and delivery correction: project_sources/LOG-29_DCOIR_GitHub_Desktop_Manual_Repo_Update_Bundle_Mode_Fix_2026-04-05.txt
+- Continuous execution cadence and coordinated all-skills campaign progression: project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_All_Skills_Campaign_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -67,6 +68,7 @@ Current governed helper-skill source
 - Multi-skill delivery bundles should use one outer zip whose top level contains only the affected per-skill zip files named after the live skill names with no subfolders.
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 - `dcoir-repo-packager` now supports a GitHub Desktop manual repo-update bundle mode that packages only the affected repo-relative files or folders, preserves those paths exactly, emits no wrapper root, and surfaces the suggested commit `Summary` in the report and response.
+- `dcoir-decision-policy` now treats operator-approved coordinated campaigns with low-interruption cadence as continuous-execution branches and should not stop at intermediate milestones unless there is a real GitHub update step, installable artifact, blocker, materially changed evidence state, or a decision that genuinely requires operator input.
 - `dcoir-session-resume` and `dcoir-memory-preflight` now form the mandatory first substantive-turn bootstrap pair for every new AFRICOM_SOC_IR / DCOIR session.
 - `dcoir-session-resume` now uses a resume-status fast path for simple current-state checks and should stay on governed GitHub readable-text fetches before considering clone, container, archive-download, raw-web, or local-script detours.
 - `dcoir-memory-preflight` now treats resume-only status work as a bounded routing case and should not widen the lane beyond governed GitHub readable-text fetches unless the primary lane fails or the drift gate cannot be resolved from fetched text alone.
@@ -78,8 +80,8 @@ Current governed helper-skill source
 - `dcoir_skills/project_discovery_contract.json` is the canonical machine-readable current-project discovery contract for eligible helper skills.
 
 Current next work item
-- Keep the CI/CD-style validation regime branch active and use the live-validated first-turn bootstrap pair, resume-status fast path, repaired GitHub Desktop manual repo-update bundle mode, parity output, discovery contract, and derived pre-push review behavior to anchor the broader helper-skill deep-dive and code-hygiene campaign.
-- Rank and begin the next highest-value helper-skill execution and code review pass from the now live-validated startup baseline and repaired manual delivery lane.
-- Use the repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode for future affected-file governed repo-update deliveries.
+- Keep the CI/CD-style validation regime active and continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, parity output, discovery contract, and derived pre-push review behavior.
+- Execute the current high-risk wave first: `dcoir-plan-tracker`, `dcoir-session-tracker`, `dcoir-collector-qa`, `dcoir-decision-policy`, `dcoir-live-test-remediation-planner`, `dcoir-memory-preflight`, `dcoir-operator-workflow-hardener`, `dcoir-repo-packager`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator`.
+- In operator-approved coordinated campaigns with low-interruption cadence, continue executing until there is a real GitHub update step, installable artifact, blocker, materially changed evidence state, or a decision that genuinely requires operator input.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
 - Keep the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.

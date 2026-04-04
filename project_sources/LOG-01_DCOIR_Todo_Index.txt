@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-startup-validated-and-manual-bundle-fix-v1
+Current state id: 2026-04-05-continuous-execution-cadence-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,11 +8,12 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, and tighter resume-only routing discipline.
-2. Rank and execute the next highest-value helper-skill execution and code review pass under the current CI/CD-style validation regime.
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, and tighter resume-only routing discipline.
+2. Execute the current high-risk wave first: `dcoir-plan-tracker`, `dcoir-session-tracker`, `dcoir-collector-qa`, `dcoir-decision-policy`, `dcoir-live-test-remediation-planner`, `dcoir-memory-preflight`, `dcoir-operator-workflow-hardener`, `dcoir-repo-packager`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator`.
 3. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other session-memory-enabled or buffer-capable skills before governed pushes.
 4. Use the repaired GitHub Desktop manual repo-update bundle mode together with the recorded delivery-bundle and GitHub Desktop commit `Summary` preferences for future manual deliveries unless the operator explicitly overrides them.
-5. Continue using canonical task-memory preflight and grouped GitHub transactions for related governed work.
+5. In operator-approved coordinated campaigns with low-interruption cadence, continue executing until there is a real GitHub update step, installable artifact, blocker, materially changed evidence state, or a decision that genuinely requires operator input.
+6. Continue using canonical task-memory preflight and grouped GitHub transactions for related governed work.
 
 Todo-file map
 - todo/01_Active_Now.txt
@@ -22,4 +23,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Select the next highest-value helper skill for deep review and execute that pass from the now live-validated bootstrap and resume-only routing baseline while using the repaired GitHub Desktop manual repo-update bundle mode for future affected-path deliveries.
+- Keep executing the current high-risk helper-skill wave from the live-validated startup and repaired delivery baseline and do not surface the branch again until there is a real GitHub update bundle, installable skill artifact, blocker, materially changed evidence state, or decision to hand off.

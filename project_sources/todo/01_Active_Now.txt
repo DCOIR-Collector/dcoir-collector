@@ -1,26 +1,32 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-startup-validated-and-manual-bundle-fix-v1
+Current state id: 2026-04-05-continuous-execution-cadence-v1
 
-1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline.
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline.
    Why it matters:
-   - The project now has real-session proof for the first-turn bootstrap pair, tighter resume-only routing, and stronger startup local-JSON behavior, so deeper execution and code-hygiene review can proceed with less hidden-state risk and less avoidable startup friction.
+   - The project now has real-session proof for the first-turn bootstrap pair, tighter resume-only routing, stronger startup local-JSON behavior, and a repaired GitHub Desktop manual repo-update bundle lane, so deeper execution and code-hygiene review can proceed with less hidden-state risk and less avoidable startup friction.
    Next action:
-   - Rank the next highest-value helper-skill target and begin the next execution and code review pass under the current CI/CD-style validation regime.
+   - Keep executing the current high-risk wave under the CI/CD-style validation regime until there is a real GitHub update step, installable artifact, blocker, materially changed evidence state, or decision to surface.
 
-2. Use the repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode for future affected-file governed repo-update deliveries.
+2. Work the current high-risk wave first.
    Why it matters:
-   - The recorded GitHub Desktop delivery preference now has a direct packaging lane, so future delivery sessions do not need to fall back to copy-paste file-content patches when the affected repo files are already settled.
+   - The workflow/state/validation family carries the highest concentration of operator-visible continuity, pre-push, packaging, and resume risk.
    Next action:
-   - Keep using the repaired affected-path bundle mode for GitHub Desktop manual repo updates and re-check the lane when workflow assumptions materially change.
+   - Continue with `dcoir-plan-tracker`, `dcoir-session-tracker`, `dcoir-collector-qa`, `dcoir-decision-policy`, `dcoir-live-test-remediation-planner`, `dcoir-memory-preflight`, `dcoir-operator-workflow-hardener`, `dcoir-repo-packager`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator` before the lighter edge skills.
 
-3. Maintain the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.
+3. Maintain the durable no-premature-pause cadence in operator-approved coordinated campaigns.
+   Why it matters:
+   - The operator wants the campaign to keep moving until there is something real for them to do instead of stopping at intermediate analytical checkpoints.
+   Next action:
+   - Continue execution and only surface operator-facing interruptions for a GitHub update bundle, installable skill artifact, blocker, materially changed evidence state, or true decision requirement.
+
+4. Maintain the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.
    Why it matters:
    - The project wants one more qualifying live resume cycle before widening the stamped active-surface set, and synthetic or generated-artifact validation should not count.
    Next action:
    - Decrement the countdown only after the next qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.
 
-4. Review any remaining hard-coded literals only as bounded contractual exceptions.
+5. Review any remaining hard-coded literals only as bounded contractual exceptions.
    Why it matters:
    - The practical high-value discovery-contract adoption pass is materially complete, so any remaining literals should now be treated as explicit contract review rather than as default embedded assumptions.
    Next action:

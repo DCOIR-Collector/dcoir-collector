@@ -71,3 +71,13 @@ Ask only when the missing answer would change:
 5. an explicitly reserved operator choice
 
 Otherwise proceed.
+
+
+## H. Campaign execution cadence
+
+| Situation | Default action |
+| --- | --- |
+| Operator approved a bounded coordinated campaign and did not ask for intermediate status-only pauses | Continue executing until there is a real operator action, blocker, materially changed evidence state, or decision requirement |
+| A mid-campaign milestone produces no operator action and no branching decision | Keep working instead of stopping to summarize progress only |
+| A repo-update zip, installable skill zip, blocker, or true decision point is ready | Surface it immediately with the smallest complete operator-facing handoff |
+
