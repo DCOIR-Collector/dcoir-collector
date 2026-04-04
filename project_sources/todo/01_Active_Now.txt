@@ -1,14 +1,14 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-hardcoded-audit-v2
+Current state id: 2026-04-04-hardcoded-audit-v3
 
-1. Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces.
+1. Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces, with the remaining GitHub-memory and helper-memory guidance next in line.
    Why it matters:
    - The project wants helper skills to evolve with current governed project structure instead of repeatedly breaking on moved files, renamed control surfaces, or transferred workflow context.
    Next action:
-   - Continue replacing brittle assumptions with governed discovery-contract lookups where practical, and document any bounded exact-contract exceptions explicitly.
+   - Continue replacing brittle assumptions with governed discovery-contract lookups where practical, document any bounded exact-contract exceptions explicitly, and target the remaining GitHub-memory and helper-memory guidance next.
 
-2. Keep the CI/CD-style validation regime active and use the discovery contract plus parity surfaces to anchor the broader helper-skill deep-dive and code-hygiene campaign.
+2. Keep the CI/CD-style validation regime active and use the expanded discovery contract plus parity surfaces to anchor the broader helper-skill deep-dive and code-hygiene campaign.
    Why it matters:
    - The project now has enough grounded inventory, parity, and discovery structure that deeper testing should follow the real current scope rather than chat memory.
    Next action:

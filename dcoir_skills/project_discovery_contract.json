@@ -76,5 +76,15 @@
   "parity_surfaces": {
     "manifest": "dcoir_skills/skill_parity_manifest.json",
     "summary": "dcoir_skills/skill_parity_summary.md"
+  },
+  "project": {
+    "label": "AFRICOM_SOC_IR / DCOIR",
+    "skill_prefix": "dcoir-",
+    "skills_root": "dcoir_skills/"
+  },
+  "helper_memory": {
+    "repository": "malwaredevil/dcoir-collector",
+    "root": "dcoir_skill_memory/",
+    "readme": "dcoir_skill_memory/README.md"
   }
 }

@@ -6,11 +6,29 @@ import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Any
 
 EXCLUDE_DIRS = {'__pycache__'}
 EXCLUDE_SUFFIXES = {'.pyc'}
 EXCLUDE_NAMES = {'.DS_Store'}
+
+
+def load_contract(path: Path | None) -> dict[str, Any]:
+    if path is None or not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
+def resolve_project_label(contract: dict[str, Any], explicit: str | None) -> str:
+    if explicit:
+        return explicit
+    return contract.get('project', {}).get('label', 'current project not recorded')
+
+
+def resolve_skill_prefix(contract: dict[str, Any], explicit: str | None) -> str:
+    if explicit is not None:
+        return explicit
+    return contract.get('project', {}).get('skill_prefix', 'dcoir-')
 
 
 def iter_skill_dirs(skills_root: Path, skill_prefix: str, include: set[str] | None) -> Iterable[Path]:
@@ -95,18 +113,20 @@ def main() -> int:
     ap.add_argument('--skills-root', required=True)
     ap.add_argument('--output', required=True)
     ap.add_argument('--zip-dir')
-    ap.add_argument('--skill-prefix', default='dcoir-')
+    ap.add_argument('--skill-prefix', default=None)
     ap.add_argument('--skill', action='append', default=[])
     ap.add_argument('--baseline-origin', default='repo_source')
-    ap.add_argument('--project', default='AFRICOM_SOC_IR / DCOIR')
+    ap.add_argument('--contract')
+    ap.add_argument('--project', default=None)
     args = ap.parse_args()
+    contract = load_contract(Path(args.contract).resolve() if args.contract else None)
     manifest = build_manifest(
         Path(args.skills_root).resolve(),
         Path(args.zip_dir).resolve() if args.zip_dir else None,
-        args.skill_prefix,
+        resolve_skill_prefix(contract, args.skill_prefix),
         set(args.skill) or None,
         args.baseline_origin,
-        args.project,
+        resolve_project_label(contract, args.project),
     )
     out = Path(args.output).resolve()
     out.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')

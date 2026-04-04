@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.34
+DCOIR Version Manifest 3.9.35
 
-Current state id: 2026-04-04-hardcoded-audit-v2
+Current state id: 2026-04-04-hardcoded-audit-v3
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -26,6 +26,7 @@ Current control plane
 - Skill parity rebaseline and installed skill verification: project_sources/LOG-17_DCOIR_Skill_Parity_Rebaseline_And_Installed_Skill_Verification_2026-04-04.txt
 - Hard-coded project variable audit pass 1: project_sources/LOG-18_DCOIR_Hard_Coded_Project_Variable_Audit_Pass1_2026-04-04.txt
 - Hard-coded project variable audit pass 2: project_sources/LOG-19_DCOIR_Hard_Coded_Project_Variable_Audit_Pass2_2026-04-04.txt
+- Hard-coded project variable audit pass 3: project_sources/LOG-20_DCOIR_Hard_Coded_Project_Variable_Audit_Pass3_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -52,14 +53,14 @@ Current governed helper-skill source
 - `dcoir-repo-packager`, `dcoir-session-resume`, and `dcoir-readme-maintainer` now also prefer the governed discovery contract for eligible current-project assumptions where practical.
 - `dcoir-repo-packager` is aligned to the current repo-style layout and current bootstrap-safe roots.
 - `dcoir-validation-orchestrator` owns the broader validation-regime branch and the session-memory pre-push-contract validation scenarios.
-- `dcoir-parity-verifier` owns canonical skill parity manifest refresh, installed-skill versus governed-source verification, summary generation, and rebaseline work.
+- `dcoir-parity-verifier` owns canonical skill parity manifest refresh, installed-skill versus governed-source verification, summary generation, and rebaseline work, and now prefers the governed discovery contract for project label and skill-prefix defaults where practical.
 - `dcoir_skills/skill_parity_manifest.json` is the canonical machine-readable parity surface.
 - `dcoir_skills/skill_parity_summary.md` is the generated human-readable parity companion surface.
 - `dcoir_skills/project_discovery_contract.json` is the canonical machine-readable current-project discovery contract for eligible helper skills.
 
 Current next work item
 - Keep the CI/CD-style validation regime branch active and use the refreshed parity output and the expanded discovery contract to anchor the broader helper-skill deep-dive and code-hygiene campaign.
-- Continue the audit for hard-coded project variables and replace brittle assumptions with current-project discovery where practical.
+- Continue the audit for hard-coded project variables and replace brittle assumptions with current-project discovery where practical, with the remaining GitHub-memory and helper-memory surfaces next in line.
 - Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other buffer-capable skills before any governed push.
 - Keep the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
 - Use dcoir-parity-verifier again whenever a future grouped skill update changes the governed skill source or installed packages.

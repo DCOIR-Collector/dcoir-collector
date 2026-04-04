@@ -1,0 +1,29 @@
+DCOIR Hard-Coded Project Variable Audit Pass 3 - 2026-04-04
+
+Current state id: 2026-04-04-hardcoded-audit-v3
+
+Decision
+- Continue replacing avoidable project-specific defaults inside helper-skill contracts and scripts with governed discovery-contract lookups where practical.
+- Treat exact project values as acceptable only when they are the explicit governed contract being enforced rather than an accidental embedded assumption.
+
+Scope of this pass
+- dcoir-validation-orchestrator
+- dcoir-parity-verifier
+- governed discovery contract expansion needed to support those skills
+
+What changed
+- Added governed `project.label`, `project.skill_prefix`, and `project.skills_root` fields to `dcoir_skills/project_discovery_contract.json`.
+- Added governed helper-memory defaults to the discovery contract so contract-aware skills can resolve current helper-memory roots without embedding the repo name or root path only in skill text.
+- Updated `dcoir-validation-orchestrator` to prefer the discovery contract for current repository and helper-memory assumptions.
+- Updated `dcoir-parity-verifier` to prefer the discovery contract for project-label and skill-prefix defaults in the manifest-build path.
+
+Why
+- Validation and parity surfaces were still carrying avoidable project defaults after pass 2.
+- Centralizing those values in the governed discovery contract reduces maintenance burden and improves transferability.
+
+Bounded exceptions
+- Canonical parity surface paths such as `dcoir_skills/skill_parity_manifest.json` and `dcoir_skills/skill_parity_summary.md` remain acceptable explicit contract values.
+- Skill-specific helper-memory filenames remain acceptable when they are part of the skill's own governed contract.
+
+Next likely cluster
+- remaining GitHub-memory and helper-memory surfaces that still embed the current repo name or helper-memory root directly in skill instructions or supporting guidance

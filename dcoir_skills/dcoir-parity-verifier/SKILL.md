@@ -24,7 +24,8 @@ Treat zip hash as a secondary package or install check only.
 Use when the governed repo-side skill source changed.
 1. Re-anchor to Project Instructions, then CP-01, then CP-02.
 2. Read `references/manifest_schema.md`, `references/hash_policy.md`, and `references/verification_workflow.md` when needed.
-3. Build or refresh `dcoir_skills/skill_parity_manifest.json` from the governed skill-source root.
+3. Resolve the current project label, governed repository naming, and skill prefix from `dcoir_skills/project_discovery_contract.json` when those assumptions matter.
+4. Build or refresh `dcoir_skills/skill_parity_manifest.json` from the governed skill-source root.
 4. Render `dcoir_skills/skill_parity_summary.md` from the manifest.
 5. If install zips were built, record their zip hashes too.
 6. Treat the manifest as canonical and the summary as generated.
@@ -64,7 +65,7 @@ Use these scripts:
 ### Commands
 Build or refresh manifest:
 ```bash
-python scripts/build_skill_parity_manifest.py --skills-root /mnt/data/dcoir_skills --output /mnt/data/skill_parity_manifest.json --zip-dir /mnt/data/skill_zips --baseline-origin repo_source
+python scripts/build_skill_parity_manifest.py --skills-root /mnt/data/dcoir_skills --output /mnt/data/skill_parity_manifest.json --zip-dir /mnt/data/skill_zips --contract /mnt/data/dcoir_skills/project_discovery_contract.json --baseline-origin repo_source
 ```
 
 Render summary:

@@ -38,7 +38,7 @@ def bullets(items: list[str]) -> list[str]:
 def build_markdown(state: dict[str, Any]) -> str:
     exported_at = state.get('exported_at_utc') or datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     authority_basis = state.get('authority_basis', [])
-    lines = ['---', 'artifact_type: dcoir-validation-orchestrator-memory', 'schema_version: 2', f"project: {state.get('project', 'AFRICOM_SOC_IR / DCOIR')}", f'exported_at_utc: {exported_at}', 'authority_basis:']
+    lines = ['---', 'artifact_type: dcoir-validation-orchestrator-memory', 'schema_version: 2', f"project: {state.get('project', 'current project not recorded')}", f'exported_at_utc: {exported_at}', 'authority_basis:']
     lines.extend([f'  - {item}' for item in authority_basis] or ['  - none-recorded'])
     lines.extend(['---', '', '# DCOIR Validation Orchestrator Memory', '', '## Current focus', state.get('current_focus', 'not specified'), '', '## Active validation plans'])
     lines.extend(section(state.get('active_validation_plans', [])))

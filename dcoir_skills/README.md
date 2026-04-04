@@ -8,7 +8,7 @@ Root rules
 - Preserve the readable package layout for each skill.
 - Exclude runtime residue such as `__pycache__/` and temporary outputs.
 - Keep this README aligned to the current visible skill set and use the helper-skill routing note for the richer descriptive routing matrix.
-- Prefer `dcoir_skills/project_discovery_contract.json` for current project bootstrap assumptions when a helper skill needs current repo, control-plane, active-surface, or repo-guide discovery.
+- Prefer `dcoir_skills/project_discovery_contract.json` for current project bootstrap assumptions when a helper skill needs current repo, control-plane, active-surface, repo-guide, project-label, skill-prefix, or helper-memory-root discovery.
 
 Current governed helper-skill source set
 - `dcoir-attention-signaler`

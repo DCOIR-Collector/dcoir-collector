@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-04-hardcoded-audit-v2
+Current state id: 2026-04-04-hardcoded-audit-v3
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -25,7 +25,7 @@ Detailed todo structure
 - project_sources/todo/05_Deferred_Or_Conditional.txt
 
 Queued next priorities
-- Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces.
+- Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces, with the remaining GitHub-memory and helper-memory guidance next in line.
 - Run the broader helper-skill deep dive to confirm current helper skills still execute successfully, remain current with the project's goals and governance, and do not carry obsolete or inefficient logic.
 - Keep using the shared pre-push flush and staged-governed-update contract for session-memory-enabled and buffer-capable skills.
 - Keep improving the main README and folder-level documentation while the knowledge and wiki structure grows.

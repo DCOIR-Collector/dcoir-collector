@@ -4,12 +4,15 @@
 Use the GitHub repository as a human-readable helper-memory surface for validation-plan state without confusing it with governed control-plane authority.
 
 ## Repository path
+Resolve repository and helper-memory defaults from `dcoir_skills/project_discovery_contract.json` before falling back to packaged assumptions.
+
+Default contract-driven layout for this skill:
 - Root helper-memory folder: `dcoir_skill_memory/`
 - Validation-orchestrator folder: `dcoir_skill_memory/dcoir-validation-orchestrator/`
 - Default state file: `dcoir_skill_memory/dcoir-validation-orchestrator/validation_orchestrator_memory.md`
 
 ## Execution layer
-- Use the GitHub connector directly as the default execution layer for helper-memory reads and writes in `malwaredevil/dcoir-collector`.
+- Use the GitHub connector directly as the default execution layer for helper-memory reads and writes in the current governed repository resolved through the discovery contract.
 - Re-anchor to Project Instructions, then CP-01, then CP-02 before invoking it.
 - Prefer connector `fetch_file` readback after every write and prefer the validated existing-file update lane for modifications.
 

@@ -38,3 +38,6 @@ Human-readable companion surface:
   }
 }
 ```
+
+## Discovery-contract note
+- when available, resolve the manifest `project` label and skill-prefix defaults from `dcoir_skills/project_discovery_contract.json` rather than embedding them only in script defaults

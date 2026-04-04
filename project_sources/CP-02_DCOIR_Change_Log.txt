@@ -1,28 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.35
+Current state id: 2026-04-04-hardcoded-audit-v3
+Change class: hard-coded project variable audit pass 3 and discovery-contract adoption for remaining validation/parity workflow defaults
+
+What changed
+- Expanded `dcoir_skills/project_discovery_contract.json` so it now also carries governed project label, governed skill prefix, governed skills-root label, and helper-memory root defaults in addition to repository, control-file, active-surface, repo-guide, bootstrap-anchor, parity-surface, and collector-runtime assumptions.
+- Added `project_sources/LOG-20_DCOIR_Hard_Coded_Project_Variable_Audit_Pass3_2026-04-04.txt` as the governed decision record for the third hard-coded-project-variable audit pass.
+- Updated `dcoir-validation-orchestrator` so it now prefers the governed discovery contract for current governed repository naming and helper-memory-root assumptions instead of embedding those assumptions only in skill instructions or helper-memory guidance.
+- Updated `dcoir-parity-verifier` so it now prefers the governed discovery contract for project-label and skill-prefix defaults when building the canonical parity manifest instead of embedding those values only in script defaults.
+- Refreshed the active continuity and todo surfaces so they now point at the continuing hard-coded-project-variable audit with the remaining GitHub-memory and helper-memory surfaces as the next likely remediation cluster.
+
+Why
+- Pass 2 moved the workflow-entry and packaging surfaces onto the governed discovery contract, but remaining validation and parity surfaces still carried avoidable project defaults that should be contract-driven instead.
+- The operator wants project-specific values to remain explicit governed contract values rather than accidental embedded assumptions.
+
+Validation notes
+- Local bounded regression passed the updated `dcoir-validation-orchestrator` helper-memory rendering path and the updated `dcoir-parity-verifier` manifest-build path on a synthetic fixture that included the governed discovery contract.
+- Updated skill packages passed local packaging validation.
+- Wider audit of remaining GitHub-memory and helper-memory surfaces remains the next branch.
+
+[PRIOR]
 Version: 3.9.34
 Current state id: 2026-04-04-hardcoded-audit-v2
 Change class: hard-coded project variable audit pass 2 and discovery contract expansion
-
-What changed
-- Expanded `dcoir_skills/project_discovery_contract.json` so it now carries repo-guide surfaces and bootstrap-anchor paths in addition to repo name, control-file roles, active-surface paths, parity surfaces, and current-project parsing rules.
-- Added `project_sources/LOG-19_DCOIR_Hard_Coded_Project_Variable_Audit_Pass2_2026-04-04.txt` as the governed decision record for the second hard-coded-project-variable audit pass.
-- Updated `dcoir-repo-packager` so it now reads the governed discovery contract from the current repo tree before falling back to packaged mapping defaults, including contract-driven repository naming in generated bootstrap instructions.
-- Updated `dcoir-session-resume` so it now prefers the governed discovery contract for current repository, control-plane, and active-surface assumptions instead of embedding those assumptions only in skill instructions.
-- Updated `dcoir-readme-maintainer` so it now consults the governed discovery contract before resolving current README target surfaces and current control-plane files.
-- Refreshed the active continuity and todo surfaces so they now point at the continuing hard-coded-project-variable audit and broader deep-dive/code-hygiene branch.
-
-Why
-- Pass 1 fixed several script-level brittle assumptions, but workflow-entry and packaging surfaces still carried avoidable fixed project assumptions.
-- The operator wants helper skills to evolve with the project and remain more transferable, with exact project values allowed only when they are the explicit governed contract rather than accidental embedded assumptions.
-
-Validation notes
-- Local bounded regression passed the updated `dcoir-repo-packager` script path on a synthetic fixture that included the governed discovery contract and confirmed contract-driven repository naming in generated release instructions.
-- Updated skill packages passed local packaging validation.
-- Wider audit of remaining skills and repo-level workflow surfaces remains the next branch.
-
-[PRIOR]
-Version: 3.9.33
-Current state id: 2026-04-04-hardcoded-audit-v1
-Change class: hard-coded project variable audit pass 1 and shared project discovery contract adoption

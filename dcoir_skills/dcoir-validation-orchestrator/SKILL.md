@@ -1,6 +1,6 @@
 ---
 name: dcoir-validation-orchestrator
-description: build explicit validation plans for dcoir changes and workflows, with deep regression as the default for anything testable before live use and after every patch. use when chatgpt needs to decide what to test, in what order, with what evidence thresholds, what gates must pass before a skill, script, prompt-pack flow, bundle generator, documentation alignment batch, session-memory workflow, or other dcoir change is considered ready, or when the workflow should read and update the dcoir-validation-orchestrator GitHub skill-memory file in malwaredevil/dcoir-collector. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
+description: build explicit validation plans for dcoir changes and workflows, with deep regression as the default for anything testable before live use and after every patch. use when chatgpt needs to decide what to test, in what order, with what evidence thresholds, what gates must pass before a skill, script, prompt-pack flow, bundle generator, documentation alignment batch, session-memory workflow, or other dcoir change is considered ready, or when the workflow should read and update the dcoir-validation-orchestrator GitHub skill-memory file in the current governed repository resolved through the project discovery contract. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
 ---
 
 # DCOIR Validation Orchestrator
@@ -32,9 +32,9 @@ This skill now owns:
 - session-memory pre-push contract validation planning
 
 ## GitHub-backed skill memory
-Use the GitHub connector directly against repository `malwaredevil/dcoir-collector` when reusable validation-plan state should persist outside the current chat.
+Use the GitHub connector directly against the current governed repository resolved through `dcoir_skills/project_discovery_contract.json` when reusable validation-plan state should persist outside the current chat.
 
-GitHub skill-memory layout:
+GitHub skill-memory layout (resolved from the governed discovery contract plus the current skill name):
 - root folder: `dcoir_skill_memory/`
 - per-skill folder: `dcoir_skill_memory/dcoir-validation-orchestrator/`
 - canonical memory file: `dcoir_skill_memory/dcoir-validation-orchestrator/validation_orchestrator_memory.md`
@@ -66,3 +66,4 @@ When rendering memory content locally, use `scripts/render_validation_memory.py`
 ## References
 - `references/validation_scenario_library.md`
 - `references/github_memory_workflow.md`
+- `../project_discovery_contract.json` when current repository or helper-memory naming assumptions matter

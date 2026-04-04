@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-04-hardcoded-audit-v2
+Current state id: 2026-04-04-hardcoded-audit-v3
 
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -8,7 +8,7 @@ Current stable artifacts
 - Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
 - GitHub helper-skill source layout and rollout guide: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
-- Helper-skill workflow decision logs: LOG-04 through LOG-19
+- Helper-skill workflow decision logs: LOG-04 through LOG-20
 - Task memory bank root: knowledge/task_memory
 - Governed helper-skill source root: dcoir_skills/
 - Authoritative todo surfaces: project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt
@@ -26,6 +26,6 @@ Current validated status
 - The broader validation-regime and deep-dive/code-hygiene branch remains active.
 
 Current next planned work item
-- Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces.
-- Keep the validation regime active and use the discovery contract plus parity surfaces to anchor deeper helper-skill execution and code-hygiene review.
+- Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces, with the remaining GitHub-memory and helper-memory guidance next in line.
+- Keep the validation regime active and use the expanded discovery contract plus parity surfaces to anchor deeper helper-skill execution and code-hygiene review.
 - Keep applying the pre-push flush and staged-governed-update contract before future governed pushes.

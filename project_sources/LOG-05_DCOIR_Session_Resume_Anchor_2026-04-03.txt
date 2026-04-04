@@ -1,6 +1,6 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-04-hardcoded-audit-v2
+Current state id: 2026-04-04-hardcoded-audit-v3
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.
@@ -20,6 +20,6 @@ Current governed workflow state
 - The stamped active-surface widening hold remains at 2 remaining real resume cycles and should not be decremented for synthetic or generated-artifact validation alone.
 
 What is still open right now
-1. Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces.
-2. Keep the CI/CD-style validation regime active and use the discovery contract plus parity surfaces to anchor deeper helper-skill execution and code-hygiene review.
+1. Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces, with the remaining GitHub-memory and helper-memory guidance next in line.
+2. Keep the CI/CD-style validation regime active and use the expanded discovery contract plus parity surfaces to anchor deeper helper-skill execution and code-hygiene review.
 3. Use the shared pre-push flush and staged-governed-update contract before future governed pushes.
