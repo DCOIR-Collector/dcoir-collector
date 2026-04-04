@@ -55,11 +55,12 @@ A valid inspection should surface:
 - Do not claim a real local session-state file exists until `inspect` proves it.
 - Do not treat a merely described buffer as equivalent to a file-backed local state.
 - The local JSON file is the primary working state when it exists.
-- GitHub-backed helper-state snapshots are optional and secondary to the local file.
+- GitHub-backed tracker-memory snapshots are not used for this skill.
+- Cross-session continuity for this skill should come from an exported handoff artifact or promotion into governed Project files.
 
-## GitHub-write requirement
-Before any GitHub update that depends on session-tracker state:
+## Governed-write requirement
+Before any governed Project update that depends on session-tracker state:
 1. inspect the local file
 2. surface pending promotion candidates
 3. surface what should remain local
-4. only then propose or execute the GitHub update path
+4. only then propose or execute the Project-file update path

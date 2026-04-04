@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.21
+DCOIR Version Manifest 3.9.22
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -27,10 +27,11 @@ Current task-memory bank
 Current governed helper-skill source
 - Root: dcoir_skills/
 - Policy decision: all `dcoir-*` skill source is stored in GitHub under the governed source root.
-- Helper working-state continuity remains under dcoir_skill_memory/ and should not be confused with source authority.
+- Helper working-state continuity remains under dcoir_skill_memory/ only for the skills that still legitimately use it and should not be confused with source authority.
+- `dcoir-session-tracker` now uses the local JSON state file as its only working-state surface and does not use a GitHub-backed helper-memory branch.
 
 Current next work item
-- Settle the authoritative `dcoir-session-tracker` workflow after the close-out update and verify whether claimed session-local memory is real, inspectable, and properly maintained.
-- Decide the role, reduction, or removal of GitHub-backed `dcoir-session-tracker` memory and define how surviving state should be promoted into authoritative todo or log surfaces during GitHub-update triggers.
+- Use the local-only `dcoir-session-tracker` model and define how surviving tracker state should be promoted into authoritative todo or log surfaces during GitHub-update triggers.
+- Establish an authoritative current-state and version-checking mechanism so the project does not drift across LOG-01, CP-01, CP-02, LOG-03, LOG-05, and other active continuity surfaces.
 - Define the pre-GitHub-update flush and manicure workflow for any `dcoir-*` skills that maintain session-local working state, including explicit attention callouts about what each skill needs to update.
 - After that bounded pass, continue into the queued CI/CD-style validation regime, GitHub optimization and discovery work, connector research, Agent Mode research, and later redundancy audit captured in the authoritative todo structure.

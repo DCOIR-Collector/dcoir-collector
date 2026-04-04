@@ -1,6 +1,25 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.22
+Change class: local-only session-tracker memory model and continuity refresh
+
+What changed
+- Removed the GitHub-backed helper-memory branch from `dcoir-session-tracker` and made the local JSON file the only tracker working-state surface for this skill.
+- Refreshed the tracker skill instructions and references so they now route cross-session continuity through exported handoff artifacts or governed Project-file promotion instead of `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md`.
+- Prepared deletion of `dcoir_skills/dcoir-session-tracker/references/github_memory_workflow.md` and `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md` as part of the local-only model transition.
+- Refreshed the active todo and continuity surfaces so they no longer describe GitHub-backed tracker memory as an open design branch.
+
+Why
+- The tracker now has a real inspectable local JSON state file, so the extra GitHub-backed branch for this skill became unnecessary redundancy.
+- Cross-session continuity for this skill should come from exported handoff artifacts or governed Project-file promotion, not from a parallel helper-memory surface.
+- The project should stop carrying contradictory language about whether tracker GitHub memory still exists.
+
+Validation notes
+- The bounded regression for the local-only model passed the tested path: capture item, inspect local file, ask what remains, trigger move-to-another-session behavior, and verify close-out output against the local file.
+- The local file and regression artifacts proved the tracker can operate without a GitHub-backed helper-memory branch.
+
+[PRIOR]
 Version: 3.9.21
 Change class: todo reprioritization and continuity alignment for the session-tracker workflow line
 
@@ -8,34 +27,3 @@ What changed
 - Updated the authoritative todo surfaces so the active branch now points at the session-tracker workflow review line.
 - Added the current-state and version-checking concern to the active queue as a vital work item.
 - Refreshed the manifest, handoff brief, and resume anchor so they now match the active LOG-01 work line.
-
-Why
-- The repo had drifted into multiple active branch descriptions across LOG-01, CP-01, LOG-03, and LOG-05.
-- The operator wanted the repo brought back onto the same page before continuing the session-tracker workflow review.
-
-Validation notes
-- Direct readback confirmed the updated todo surfaces before the continuity refresh.
-- Direct readback confirmed the refreshed manifest, handoff brief, and resume anchor after the grouped existing-file update.
-
-[PRIOR]
-Version: 3.9.20
-Change class: GitHub procedure-recovery correction, workflow hardening, and batched downstream continuity refresh
-
-What changed
-- Corrected the earlier 2026-04-03 update-lane record so it classifies the issue as assistant procedure-recovery failure and execution-discipline failure, not as a proven connector limitation.
-- Corrected the `dcoir-memory-preflight` permanent note so it preserves the validated low-level existing-file update lane and the lesson about recovery discipline.
-- Hardened `project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt` and `project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt` so they explicitly require operator lane choice, canonical GitHub recovery before limitation claims, and grouped handling of known downstream GitHub follow-on updates.
-- Hardened `dcoir_skill_memory/dcoir-decision-policy/decision_policy_memory.md` with the same lane-choice, recovery-order, and grouped-follow-on-update rules.
-- Hardened canonical GitHub task-memory procedures `GH-PROC-001`, `GH-PROC-006`, and `GH-PROC-007` so they now encode the validated recovery order and the record-hygiene rule against speculative limitation claims.
-- Refreshed the manifest, change log, handoff brief, dated workflow decisions, and dated resume anchor in one grouped continuity update so the repo state reflects the latest GitHub recovery and batching rules without another serial chain of follow-on commits.
-
-Why
-- The validated low-level git-object lane was already in canonical memory and should have been re-applied before any capability-boundary language was written into durable records.
-- The operator requires explicit choice between in-chat GitHub updates and operator-managed lanes such as GitHub Desktop.
-- The operator also requires that when multiple downstream GitHub updates are already known, they should be landed as one grouped update instead of serial one-off best-next-move follow-ons.
-- The continuity layer should reflect the current hardened workflow rules instead of lagging behind the real governed state.
-
-Validation notes
-- The validated low-level git-object lane was successfully used again on `main` for existing-file updates during the correction pass.
-- Direct readback confirmed the corrected records, hardened workflow docs, updated decision memory, and updated canonical GitHub procedures.
-- This continuity refresh was itself prepared and landed as one bounded grouped GitHub transaction.

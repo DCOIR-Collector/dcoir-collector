@@ -6,14 +6,13 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Settle the authoritative session-tracker workflow after the close-out update and verify whether claimed session-local memory is real, inspectable, and properly maintained.
-2. Decide the role, reduction, or removal of GitHub-backed dcoir-session-tracker memory and define how surviving state should be promoted into authoritative todo or log surfaces during GitHub-update triggers.
-3. Establish an authoritative current-state and version-checking mechanism so the project does not drift across LOG-01, CP-01, CP-02, LOG-03, LOG-05, and other active continuity surfaces.
-4. Define the pre-GitHub-update flush and manicure workflow for any dcoir-* skills that maintain session-local working state, including explicit attention callouts about what each skill needs to update.
-5. Build a CI/CD-style end-to-end and edge-case validation regime for the repository, skills, workflows, and deliverables.
-6. Run a dedicated GitHub optimization and discovery pass to reduce operator confirmation friction and improve call efficiency without writing unsupported assumptions into durable guidance.
-7. Research additional connectors and Agent Mode only after the session-tracker and GitHub-workflow line is clearer and only promote validated conclusions.
-8. Continue using canonical task-memory preflight and grouped GitHub transactions for related chat-managed repo work.
+1. Use the local-only `dcoir-session-tracker` model and define how surviving tracker state should be promoted into authoritative todo or log surfaces during GitHub-update triggers.
+2. Establish an authoritative current-state and version-checking mechanism so the project does not drift across LOG-01, CP-01, CP-02, LOG-03, LOG-05, and other active continuity surfaces.
+3. Define the pre-GitHub-update flush and manicure workflow for any `dcoir-*` skills that maintain session-local working state, including explicit attention callouts about what each skill needs to update.
+4. Build a CI/CD-style end-to-end and edge-case validation regime for the repository, skills, workflows, and deliverables.
+5. Run a dedicated GitHub optimization and discovery pass to reduce operator confirmation friction and improve call efficiency without writing unsupported assumptions into durable guidance.
+6. Research additional connectors and Agent Mode only after the session-tracker and GitHub-workflow line is clearer and only promote validated conclusions.
+7. Continue using canonical task-memory preflight and grouped GitHub transactions for related chat-managed repo work.
 
 Todo-file map
 - todo/01_Active_Now.txt
@@ -23,11 +22,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Use the authoritative todo surfaces to continue the fresh bounded pass focused on the session-tracker workflow, local-session-memory proof, current-state and version checking, GitHub-update flush behavior, and redundancy reduction before widening back out to the larger GitHub or validation branches.
-
-Notes
-- The current canonical collector runtime is project_sources/DCOIR_Collector.ps1.
-- The current governed readable collector source set is project_sources/collector_parts/*.ps1.
-- Related GitHub existing-file edits or deletions should prefer one bounded grouped transaction over one-file-at-a-time updates.
-- The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text edits.
-- GitHub Desktop remains the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
+- Use the authoritative todo surfaces to continue the bounded pass focused on the local-only `dcoir-session-tracker` model, current-state and version checking, GitHub-update flush behavior, and redundancy reduction before widening back out to the larger GitHub or validation branches.

@@ -20,7 +20,7 @@ Inspect that file instead of merely paraphrasing the intended state when the ope
 - what is still buffered
 - what is safe to flush now
 - what should remain session-local for now
-- what must be exported for handoff if a safe GitHub write is not happening
+- what must be exported for handoff if a safe governed Project write is not happening
 - the local session-state inspection result when the file exists
 - one best next move
 
@@ -30,5 +30,5 @@ Do not treat session transition as a casual summary moment.
 Classify durable state, exported-only state, buffered-only state, and the inspected local-file state explicitly.
 
 Truth rule:
-- buffered state is session-local only until it is flushed to GitHub or exported in a handoff artifact
+- buffered state is session-local only until it is promoted into governed Project files or exported in a handoff artifact
 - a claimed local file is not proven until the inspection command confirms it

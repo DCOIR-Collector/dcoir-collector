@@ -1,48 +1,30 @@
 DCOIR Active Now
 
-1. Settle the authoritative session-tracker workflow after the close-out update.
+1. Use the local-only `dcoir-session-tracker` model after removing GitHub-backed tracker memory.
    Why it matters:
-   - The project now has a close-out-capable tracker, but the authoritative operating model for session-only state, GitHub promotion, and todo-surface updates still needs to be made explicit.
+   - The tracker now has a real local JSON working-state file, so the project should stop carrying the redundant GitHub-backed helper-memory branch for this skill.
    Next action:
-   - Continue the fresh bounded pass focused only on dcoir-session-tracker, its local-working-state claims, its GitHub-update behavior, and the authoritative promotion path into LOG-01, LOG-02, and LOG-03 when appropriate.
+   - Define how surviving tracker state should be promoted into LOG-01, LOG-02, LOG-03, or other governed Project files during GitHub-update triggers.
 
-2. Verify whether dcoir-session-tracker really maintains a real local session-memory file during normal use.
-   Why it matters:
-   - The workflow should not rely on an assumed local session file unless its path, name, size, update behavior, and contents can be inspected and verified.
-   Next action:
-   - Define and test an inspection method that shows the local session-memory file location, name, size, modified time, and contents or bounded excerpt, then document what is actually proven versus only intended.
-
-3. Decide the role, reduction, or removal of GitHub-backed dcoir-session-tracker memory.
-   Why it matters:
-   - The project may now have unnecessary redundancy between session-local state, exported handoff artifacts, GitHub-backed skill memory, and authoritative todo or log surfaces.
-   Next action:
-   - Compare the current tracker-memory model with the intended session-only model and decide whether GitHub-backed tracker memory should remain, be narrowed, or be removed.
-
-4. Establish an authoritative current-state and version-checking mechanism across control-plane, continuity, and todo surfaces.
+2. Establish an authoritative current-state and version-checking mechanism across control-plane, continuity, and todo surfaces.
    Why it matters:
    - The recent lag between LOG-01, CP-01, CP-02, LOG-03, and LOG-05 showed that the project can drift into contradictory state unless there is a durable verification and enforcement model.
    Next action:
    - Define the source of truth, the required verification cadence, the drift-detection method, and the enforcement workflow that keeps active surfaces on the same page.
 
-5. Define the pre-GitHub-update flush and manicure workflow for any dcoir-* skills that maintain local session state.
+3. Define the pre-GitHub-update flush and manicure workflow for any `dcoir-*` skills that maintain local session state.
    Why it matters:
    - Before a GitHub update, every relevant stateful skill should clean up completed items, preserve remaining work correctly, and state exactly what it needs to update rather than leaving that logic implicit.
    Next action:
-   - Identify which dcoir-* skills truly maintain session-local working state, require them to surface what they need to update during GitHub writes, and define a consistent trigger path before governed repo updates.
+   - Identify which `dcoir-*` skills truly maintain session-local working state, require them to surface what they need to update during GitHub writes, and define a consistent trigger path before governed repo updates.
 
-6. Use canonical task-memory preflight before GitHub-family execution work.
+4. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:
    - Validated procedures should be consulted before friction, not after avoidable misses or retries.
    Next action:
    - Check knowledge/task_memory and the applicable GitHub procedures before repo writes, deletes, packaging, or structural changes.
 
-7. Prefer one bounded multi-file git-object transaction when multiple related existing-file edits or deletions belong together.
-   Why it matters:
-   - Grouped repo changes reduce drift and mirror programmer-style all-at-once updates better than one-file-at-a-time churn.
-   Next action:
-   - Batch related GitHub changes into one transaction and verify every touched path afterward.
-
-8. Treat post-create and post-update helper-skill regression as mandatory.
+5. Treat post-create and post-update helper-skill regression as mandatory.
    Why it matters:
    - Packaging success is not sufficient proof that a helper skill is ready for broader workflow use.
    Next action:

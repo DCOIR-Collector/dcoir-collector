@@ -27,7 +27,7 @@ Do not imply these candidate blocks are already promoted.
 ## Session close-out promotion sequence
 Use this sequence when the operator is moving to another session and the current session contains material that should not remain chat-only.
 
-1. Confirm whether a safe GitHub write is already happening in the current workflow.
+1. Confirm whether a safe governed Project write is already happening in the current workflow.
 2. Re-anchor to the control plane.
 3. Identify the smallest correct continuity update set.
 4. Prefer batching already-known continuity follow-ons into one grouped transaction when the lane is safe.
@@ -40,6 +40,5 @@ When relevant, prepare ready-to-drop candidate text for:
 - `LOG-01_DCOIR_Todo_Log.txt`
 - `LOG-02_DCOIR_Lessons_Learned_Log.txt`
 - `LOG-03_DCOIR_Session_Handoff_Brief.txt`
-- `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md`
 
 Do not imply these candidate blocks are already promoted unless they were actually written.
