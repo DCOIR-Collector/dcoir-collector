@@ -20,9 +20,9 @@ Inspect the file:
 python scripts/session_state_store.py inspect
 ```
 
-Upsert or update one item:
+Upsert or update one verbose item:
 ```bash
-python scripts/session_state_store.py upsert --item-json '{"id":"S-001","bucket":"session_only","title":"example","why":"example","next_action":"example"}'
+python scripts/session_state_store.py upsert --item-json '{"id":"S-001","bucket":"session_only","title":"example title","detail":"full context line that makes the item understandable in isolation","why":"why this matters","next_action":"next action to take","carry_forward_note":"what the next session should remember if this is still open","promotion_target":"project_sources/LOG-01_DCOIR_Todo_Log.txt"}'
 ```
 
 Mark one item done and move it to completed:
@@ -39,6 +39,24 @@ Update summary fields:
 ```bash
 python scripts/session_state_store.py set-summary --current-phase "example phase" --best-next-move "example next move"
 ```
+
+## Verbosity requirement
+The local JSON file is allowed to preserve concise helper metadata, but materially important operator-facing items should carry enough context to be understood in isolation.
+
+Minimum recommended item fields:
+- `title`
+- `detail`
+- `why`
+- `next_action`
+- `carry_forward_note` when later resume clarity would benefit
+- `promotion_target` when the likely governed destination is already known
+
+Preferred additional fields when useful:
+- `operator_language`
+- `impact_if_missed`
+- `desired_outcome`
+- `flush_trigger`
+- `related`
 
 ## Inspection output requirements
 A valid inspection should surface:
@@ -63,4 +81,5 @@ Before any governed Project update that depends on session-tracker state:
 1. inspect the local file
 2. surface pending promotion candidates
 3. surface what should remain local
-4. only then propose or execute the Project-file update path
+4. use verbose item detail by default for materially important buffered items
+5. only then propose or execute the Project-file update path

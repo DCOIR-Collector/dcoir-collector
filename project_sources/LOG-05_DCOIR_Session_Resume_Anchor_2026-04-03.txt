@@ -3,7 +3,7 @@ DCOIR Session Resume Anchor - 2026-04-03
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session.
 - Use it when resuming in a brand-new session after reading Project Instructions, CP-01, and CP-02.
-- This file exists because the session included local-file tracker implementation, local-only tracker-memory transition, authoritative todo reprioritization, and broader continuity alignment that should not be reconstructed from memory.
+- This file exists because the session included local-file tracker implementation, local-only tracker-memory transition, authoritative todo reprioritization, broader continuity alignment, and later 2026-04-04 flush/manicure and verbosity decisions that should not be reconstructed from memory.
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -12,14 +12,15 @@ Current stable baseline
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
 - The helper-skill source policy question is no longer open: all `dcoir-*` skill source is now stored in GitHub.
 - The validated low-level git-object lane remains the approved chat-managed path for existing-file GitHub updates.
-- The authoritative active work queue now points at the local-only `dcoir-session-tracker` workflow line and the linked current-state or version-checking concern.
+- The authoritative active work queue now points at tracker-centered flush/manicure validation, resume-speed improvement, and the linked current-state or version-checking concern.
 
 Current governed workflow state
 - `dcoir-session-tracker` now uses the local JSON state file as its only working-state surface.
 - Cross-session continuity for `dcoir-session-tracker` now comes from exported handoff artifacts or governed Project-file promotion.
-- `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/*.txt` now carry the authoritative active queue for the local-only tracker workflow branch.
+- The tracker now preserves and renders richer item detail by default so the operator can understand carried state without reverse-engineering terse summaries.
+- `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/*.txt` now carry the authoritative active queue for the tracker-centered workflow branch.
 
-What was completed in this session
+What was completed in this session family
 1. Local-only tracker memory transition
 - Removed the GitHub-backed tracker-memory branch from `dcoir-session-tracker`.
 - Switched the tracker to the local JSON state file as the only working-state surface for this skill.
@@ -28,7 +29,12 @@ What was completed in this session
 2. Bounded local-only regression
 - The tested path passed: capture item, inspect local file, ask what remains, trigger move-to-another-session behavior, and verify close-out output against the local file.
 
+3. Flush/manicure and verbose tracker design pass
+- Defined the bounded pre-GitHub-update flush/manicure workflow with `dcoir-session-tracker` as the reference model.
+- Added startup-speed and governance-gap concerns as explicit acceptance-test items.
+- Upgraded the tracker schema and render expectations so tracked items preserve richer operator-facing detail.
+
 What is still open right now
-1. Use the local-only `dcoir-session-tracker` model and define how surviving tracker state should be promoted into authoritative todo or log surfaces during GitHub-update triggers.
+1. Run bounded regression on the verbose `dcoir-session-tracker` upgrade and the pre-GitHub-update flush/manicure workflow, using startup-speed and fresh-session resume predictability plus governance-gap detection as the acceptance tests.
 2. Establish an authoritative current-state and version-checking mechanism so the project does not drift across LOG-01, CP-01, CP-02, LOG-03, LOG-05, and other active continuity surfaces.
-3. Define the pre-GitHub-update flush and manicure workflow for any `dcoir-*` skills that maintain session-local working state, including explicit attention callouts about what each skill needs to update.
+3. Decide which other stateful `dcoir-*` skills should adopt the same flush/manicure and verbose state model after the tracker reference implementation is validated.

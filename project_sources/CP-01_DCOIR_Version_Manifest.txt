@@ -1,4 +1,4 @@
-DCOIR Version Manifest 3.9.22
+DCOIR Version Manifest 3.9.23
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -12,6 +12,7 @@ Current control plane
 - Helper-skill workflow decisions: project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt
 - GitHub skill-source policy decision: project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt
 - GitHub update-lane correction record: project_sources/LOG-07_DCOIR_GitHub_Update_Lane_Choice_And_Connector_Limitation_2026-04-03.txt
+- Flush/manicure and tracker-verbosity workflow decision: project_sources/LOG-08_DCOIR_Pre_GitHub_Update_Flush_And_Tracker_Verbosity_Workflow_Decision_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -29,9 +30,11 @@ Current governed helper-skill source
 - Policy decision: all `dcoir-*` skill source is stored in GitHub under the governed source root.
 - Helper working-state continuity remains under dcoir_skill_memory/ only for the skills that still legitimately use it and should not be confused with source authority.
 - `dcoir-session-tracker` now uses the local JSON state file as its only working-state surface and does not use a GitHub-backed helper-memory branch.
+- `dcoir-session-tracker` now preserves and renders tracker items verbosely enough that the operator can understand the carried state without reconstructing prior chat context.
+- The tracker now owns a bounded pre-GitHub-update flush/manicure workflow reference model for stateful helper-skill session state.
 
 Current next work item
-- Use the local-only `dcoir-session-tracker` model and define how surviving tracker state should be promoted into authoritative todo or log surfaces during GitHub-update triggers.
-- Establish an authoritative current-state and version-checking mechanism so the project does not drift across LOG-01, CP-01, CP-02, LOG-03, LOG-05, and other active continuity surfaces.
-- Define the pre-GitHub-update flush and manicure workflow for any `dcoir-*` skills that maintain session-local working state, including explicit attention callouts about what each skill needs to update.
+- Run bounded regression on the verbose `dcoir-session-tracker` upgrade and the pre-GitHub-update flush/manicure workflow, using startup-speed and fresh-session resume predictability plus governance-gap detection as the acceptance tests.
+- Establish an authoritative current-state and version-checking enforcement mechanism so the project does not drift across LOG-01, CP-01, CP-02, LOG-03, LOG-05, and other active continuity surfaces.
+- Decide which other stateful `dcoir-*` skills should adopt the same flush/manicure and verbose state model after the tracker reference implementation is validated.
 - After that bounded pass, continue into the queued CI/CD-style validation regime, GitHub optimization and discovery work, connector research, Agent Mode research, and later redundancy audit captured in the authoritative todo structure.

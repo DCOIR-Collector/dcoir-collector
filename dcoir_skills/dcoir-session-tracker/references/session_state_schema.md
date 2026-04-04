@@ -7,7 +7,7 @@ Use this exact high-level structure when exporting session state.
 ```markdown
 ---
 artifact_type: dcoir-session-state
-schema_version: 1
+schema_version: 2
 project: AFRICOM_SOC_IR / DCOIR
 exported_at_utc: 2026-03-27T12:34:56Z
 authority_basis:
@@ -37,7 +37,15 @@ imports_merged:
 
 ## Open items
 ### session_only
-- [ID] title — why it matters — next action
+- [ID] title
+  - status: open
+  - provenance: current_chat
+  - detail: full context line that makes the item understandable in isolation
+  - why: why it matters
+  - next_action: next useful action
+  - carry_forward_note: [optional]
+  - promotion_target: [optional]
+  - related: [optional comma-separated list]
 
 ### candidate_log01
 - [ID] ...
@@ -49,7 +57,10 @@ imports_merged:
 - [ID] ...
 
 ### durable_preference_candidate
-- [ID] normalized rule — persistence status — next action
+- [ID] normalized rule
+  - persistence_status: promotion_candidate
+  - detail: what the preference means in practice
+  - next_action: what should be patched or preserved
 
 ### new_skill_idea
 - [ID] ...
@@ -87,6 +98,31 @@ imports_merged:
 - project-log grounding notes
 - bounded assumptions
 ```
+
+## Verbosity rule
+Use the verbose item shape by default for materially important items.
+Do not collapse those items to a one-line form when the operator would lose continuity or resume clarity.
+
+## Minimum item fields
+A materially important item should preserve:
+- `id`
+- `title`
+- `detail`
+- `why`
+- `next_action`
+- `status`
+- `provenance`
+
+Recommended fields when relevant:
+- `operator_language`
+- `impact_if_missed`
+- `desired_outcome`
+- `promotion_target`
+- `carry_forward_note`
+- `related`
+- `buffer_state`
+- `persistence_status`
+- `flush_trigger`
 
 ## ID guidance
 Use short stable IDs such as:

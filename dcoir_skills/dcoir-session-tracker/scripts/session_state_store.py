@@ -59,7 +59,7 @@ def default_state(path: Path) -> dict[str, Any]:
         'closeout_verification': [],
         'provenance_notes': [],
         'local_state_metadata': {
-            'schema_version': 1,
+            'schema_version': 2,
             'state_type': 'session_local_working_state',
             'created_at_utc': stamp,
             'updated_at_utc': stamp,
@@ -84,7 +84,7 @@ def load_state(path: Path) -> dict[str, Any]:
     data.setdefault('completed', [])
     data.setdefault('promotion_ready', {'log01': '', 'log02': '', 'log03': ''})
     data.setdefault('local_state_metadata', {})
-    data['local_state_metadata'].setdefault('schema_version', 1)
+    data['local_state_metadata'].setdefault('schema_version', 2)
     data['local_state_metadata'].setdefault('state_type', 'session_local_working_state')
     data['local_state_metadata'].setdefault('created_at_utc', now_utc())
     data['local_state_metadata']['state_path'] = str(path.resolve())
@@ -95,6 +95,7 @@ def save_state(path: Path, state: dict[str, Any]) -> None:
     ensure_parent(path)
     state['exported_at_utc'] = now_utc()
     state.setdefault('local_state_metadata', {})
+    state['local_state_metadata']['schema_version'] = 2
     state['local_state_metadata']['updated_at_utc'] = now_utc()
     state['local_state_metadata']['state_path'] = str(path.resolve())
     path.write_text(json.dumps(state, indent=2, sort_keys=False) + '\n', encoding='utf-8')
@@ -132,9 +133,15 @@ def normalize_item(item: dict[str, Any], existing: dict[str, Any] | None = None)
         raise ValueError('item must include non-empty title')
     merged.setdefault('status', 'open')
     merged.setdefault('provenance', 'current_chat')
+    merged.setdefault('detail', merged.get('why', '') or merged['title'])
     merged.setdefault('why', '')
     merged.setdefault('next_action', '')
     merged.setdefault('related', [])
+    merged.setdefault('operator_language', '')
+    merged.setdefault('impact_if_missed', '')
+    merged.setdefault('desired_outcome', '')
+    merged.setdefault('promotion_target', '')
+    merged.setdefault('carry_forward_note', '')
     merged.setdefault('buffer_state', 'buffered_session_local')
     merged.setdefault('persistence_status', 'session_only')
     merged.setdefault('flush_trigger', '')
@@ -191,7 +198,7 @@ def cmd_upsert(args: argparse.Namespace) -> int:
 def cmd_complete(args: argparse.Namespace) -> int:
     path = args.path
     state = load_state(path)
-    existing, bucket = remove_item_everywhere(state, args.id)
+    existing, _bucket = remove_item_everywhere(state, args.id)
     if existing is None:
         raise ValueError(f'item not found: {args.id}')
     existing['status'] = 'done'

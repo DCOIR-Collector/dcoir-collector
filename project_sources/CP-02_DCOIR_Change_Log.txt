@@ -1,6 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.23
+Change class: pre-GitHub-update flush/manicure workflow definition and verbose session-tracker upgrade
+
+What changed
+- Defined a bounded pre-GitHub-update flush/manicure workflow for stateful helper-skill session state, using `dcoir-session-tracker` as the reference implementation.
+- Embedded startup-speed, fresh-session resume predictability, and governance-gap detection into the active workflow line as explicit acceptance-test concerns instead of leaving them as informal chat observations.
+- Added a verbose tracker-entry standard so operator-facing tracker items now preserve fuller detail, rationale, carry-forward context, and promotion intent by default.
+- Updated the governed `dcoir-session-tracker` skill instructions, local-state workflow reference, export schema guidance, and local scripts so the tracker can store and render richer item detail.
+- Refreshed the active todo and continuity surfaces so they now point at post-patch validation of the tracker reference model and the linked current-state or version-checking enforcement problem.
+
+Why
+- New-session resume should be quick, predictable, and repeatable rather than dependent on manual reconstruction from terse continuity notes.
+- The tracker needs richer stored and rendered state so the operator can understand what is being carried forward without guessing what a short summary means.
+- Governance drift remains a critical project risk, so the flush/manicure workflow now explicitly surfaces promotion candidates, remain-local state, and the enforcement path that still needs to be finalized.
+
+Validation notes
+- Local tracker regression passed the bounded script path: initialize local state, upsert verbose items, inspect the real local JSON file, and render a markdown export with richer item detail.
+- The patched tracker reference model is ready for bounded fresh-session resume and governance-gap regression next.
+
+[PRIOR]
 Version: 3.9.22
 Change class: local-only session-tracker memory model and continuity refresh
 
@@ -18,12 +38,3 @@ Why
 Validation notes
 - The bounded regression for the local-only model passed the tested path: capture item, inspect local file, ask what remains, trigger move-to-another-session behavior, and verify close-out output against the local file.
 - The local file and regression artifacts proved the tracker can operate without a GitHub-backed helper-memory branch.
-
-[PRIOR]
-Version: 3.9.21
-Change class: todo reprioritization and continuity alignment for the session-tracker workflow line
-
-What changed
-- Updated the authoritative todo surfaces so the active branch now points at the session-tracker workflow review line.
-- Added the current-state and version-checking concern to the active queue as a vital work item.
-- Refreshed the manifest, handoff brief, and resume anchor so they now match the active LOG-01 work line.

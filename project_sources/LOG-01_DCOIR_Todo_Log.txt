@@ -11,7 +11,7 @@ Current stable pointers
 - Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
 
 Current active priority
-- Use the local-only `dcoir-session-tracker` model now that GitHub-backed tracker memory is removed, define how surviving tracker state is promoted into the authoritative todo and log surfaces during GitHub-update triggers, establish an authoritative current-state and version-checking enforcement mechanism across control-plane, continuity, and todo surfaces, and define the pre-GitHub-update flush and manicure workflow for stateful `dcoir-*` skills.
+- Validate the verbose local-only `dcoir-session-tracker` reference model and the pre-GitHub-update flush/manicure workflow, with startup-speed or fresh-session resume predictability and governance-gap detection as the leading acceptance tests, then use that result to finalize the authoritative current-state and version-checking enforcement mechanism across control-plane, continuity, and todo surfaces.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt

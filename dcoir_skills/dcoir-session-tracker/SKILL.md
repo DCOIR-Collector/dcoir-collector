@@ -1,6 +1,6 @@
 ---
 name: dcoir-session-tracker
-description: session-local task, note, and continuity tracker for africom_soc_ir / dcoir work. use when chatgpt needs to capture "don't forget" items, maintain a real inspectable local session-state file during the current chat when code execution is available, answer what is left, merge an uploaded markdown session log with current-session notes, classify items into session-only scratch versus candidate log-01/log-02/log-03 updates, preserve durable preference candidates, hold session-local buffer state until the right flush-check trigger, export a downloadable markdown handoff artifact, or run a session close-out routine before the operator moves work to another session.
+description: session-local task, note, and continuity tracker for africom_soc_ir / dcoir work. use when chatgpt needs to capture "don't forget" items, maintain a real inspectable local session-state file during the current chat when code execution is available, answer what is left, merge an uploaded markdown session log with current-session notes, classify items into session-only scratch versus candidate log-01/log-02/log-03 updates, preserve durable preference candidates, surface tracker items verbosely enough that the operator can understand them without reconstructing prior chat context, run a pre-github-update flush/manicure check before governed writes that depend on stateful helper-skill state, export a downloadable markdown handoff artifact, or run a session close-out routine before the operator moves work to another session.
 ---
 
 # DCOIR Session Tracker
@@ -11,7 +11,7 @@ Before proceeding, verify that the current task is actually inside the AFRICOM_S
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 ## Overview
-Use this skill to maintain a session-local tracker that catches spontaneous operator thoughts before they get lost, keeps a clean inventory of what remains, maintains a real inspectable local session-state file when code execution and file writing are available, prepares promotion-ready follow-up when the operator wants items moved into governed Project files, and honestly tracks what is still only buffered in the current session.
+Use this skill to maintain a session-local tracker that catches spontaneous operator thoughts before they get lost, keeps an explicit and operator-readable inventory of what remains, maintains a real inspectable local session-state file when code execution and file writing are available, prepares promotion-ready follow-up when the operator wants items moved into governed Project files, and honestly tracks what is still only buffered in the current session.
 
 This skill does not claim hidden persistence across chats.
 - within the current conversation, it may maintain a live local session-state file and session-local buffer state when code execution and file writing are available
@@ -24,10 +24,11 @@ This skill does not claim hidden persistence across chats.
 3. Maintain a real local session-state file as the primary working state when code execution and file writing are available.
 4. Inspect the local session-state file and report its path, filename, size, modified time, checksum, and current item counts.
 5. Answer "what do we still have left" with a deduplicated, priority-ordered inventory grounded in the current local state when that state exists.
-6. Merge an uploaded markdown tracker artifact with the current chat state.
-7. Export a standardized markdown handoff artifact for later upload into a new session.
-8. Hold session-local buffered continuity, promotion-candidate, and flush-check state until the right governed Project update or export moment.
-9. Stage governed follow-up actions when session items should be promoted into Project files or skill updates.
+6. Preserve and render tracker items verbosely enough that the operator can understand the carried state without reconstructing prior chat context.
+7. Merge an uploaded markdown tracker artifact with the current chat state.
+8. Export a standardized markdown handoff artifact for later upload into a new session.
+9. Hold session-local buffered continuity, promotion-candidate, and flush-check state until the right governed Project update or export moment.
+10. Stage governed follow-up actions when session items should be promoted into Project files or skill updates.
 
 ## Local session-state file
 When code execution and file writing are available, use a real local JSON file as the primary working-state surface.
@@ -55,6 +56,30 @@ If code execution or file writing is unavailable:
 - keep reasoning bounded and do not imply that a real maintained local file exists
 
 Read `references/local_session_state_workflow.md` when local-state implementation or inspection details are needed.
+
+## Verbosity standard
+Tracker items should be understandable in isolation.
+Do not reduce a materially important item to a short opaque phrase when the operator would need more context to know what it means.
+
+Minimum operator-facing tracker content for a materially important item:
+- title
+- full detail or context line
+- why it matters
+- next action
+- carry-forward or promotion note when relevant
+- related files, skills, or artifacts when known
+
+Preferred additional fields when they materially help:
+- operator wording
+- impact if missed
+- desired outcome
+- promotion target
+- flush trigger
+
+Truth rules for verbosity:
+- terse summaries may exist internally, but they should not be the primary operator-facing representation for important items
+- when a user says the tracker is too terse, treat that as both a durable preference candidate and a tracker-improvement task when appropriate
+- prefer explicit context over stylistic brevity when the tracker is being used for continuity, handoff, or resume quality
 
 ## Session close-out mode
 Use this mode when the operator signals that work is about to move to another chat or session.
@@ -128,9 +153,15 @@ For each tracked item, preserve:
 - normalized bucket
 - status: `open`, `in_progress`, `blocked`, `deferred`, or `done`
 - provenance: `current_chat`, `imported_artifact`, `project_log`, or `grounded_inference`
+- detail or context line that makes the item understandable in isolation
 - why it matters
 - next useful action
 - related files, skills, or artifacts when known
+- `operator_language` when the exact operator wording is especially useful
+- `impact_if_missed` when the item guards against likely workflow loss or drift
+- `desired_outcome` when the item is steering toward a concrete future state
+- `promotion_target` when the likely governed destination is already known
+- `carry_forward_note` when the next session will need a bounded reminder or handoff cue
 - `buffer_state`: `not_buffered`, `buffered_session_local`, `promoted_to_governed`, or `exported_in_handoff`
 - `persistence_status`: `session_only`, `promotion_candidate`, `governed_written`, or `needs_export`
 - `flush_trigger` when a later review point is already known
@@ -177,6 +208,7 @@ When a flush-check occurs:
 - surface what is still buffered
 - surface what is safe to flush now
 - surface what should remain session-local for now
+- use the verbose tracker-entry standard by default for materially important buffered items
 - end with one best next move
 
 Read `references/session_buffer_workflow.md` when flush-check details are needed.
@@ -204,7 +236,8 @@ When the operator asks what remains:
 4. surface durable preference candidates separately from one-off notes
 5. surface buffered but unflushed items explicitly
 6. if the local state file exists, inspect it and use that as the primary grounding surface
-7. end with one best next move
+7. use the verbose tracker-entry standard by default for materially important items
+8. end with one best next move
 
 ## Export workflow
 When the operator asks to export, hand off, or save the session state:
@@ -221,6 +254,7 @@ The exported markdown artifact must contain:
 - candidate LOG-01 / LOG-02 / LOG-03 promotions
 - durable preference candidates and their persistence status
 - buffer state and pending flush items when relevant
+- verbose item detail for materially important carried-forward items
 - new skill ideas and validation follow-ons
 - one best next move
 
@@ -255,7 +289,7 @@ Rules:
 
 ## Output contract
 When acting under this skill:
-- keep the tracker concise but stateful
+- keep the tracker explicit, continuity-rich, and easy for the operator to understand without reconstructing prior chat history
 - separate session-only items from governed-promotion candidates
 - distinguish captured facts, grounded inferences, imported context, local-file state, and buffered state
 - preserve durable preference candidates explicitly
@@ -273,7 +307,7 @@ When acting in session close-out mode, return sections in this order:
 7. Starter prompt for next session
 8. Best next move
 
-Keep the output concise, but do not omit state classification.
+Keep the output concise only where extra detail would not materially help continuity.
 The operator must be able to tell exactly what the next session can trust without reconstructing chat history.
 
 ## References

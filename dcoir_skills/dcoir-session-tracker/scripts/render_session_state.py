@@ -46,20 +46,53 @@ def load_state(path: Path) -> dict[str, Any]:
 def fmt_item(item: dict[str, Any]) -> str:
     item_id = item.get("id", "UNSPECIFIED")
     title = item.get("title", "untitled item")
-    why = item.get("why", "")
-    next_action = item.get("next_action", "")
     status = item.get("status", "open")
     provenance = item.get("provenance", "current_chat")
+    bucket = item.get("bucket", "unspecified")
 
-    parts = [f"- [{item_id}] {title} (status: {status}; provenance: {provenance})"]
+    lines = [f"- [{item_id}] {title}"]
+    lines.append(f"  - status: {status}")
+    lines.append(f"  - provenance: {provenance}")
+    lines.append(f"  - bucket: {bucket}")
+
+    detail = item.get("detail", "")
+    operator_language = item.get("operator_language", "")
+    why = item.get("why", "")
+    impact_if_missed = item.get("impact_if_missed", "")
+    desired_outcome = item.get("desired_outcome", "")
+    next_action = item.get("next_action", "")
+    promotion_target = item.get("promotion_target", "")
+    carry_forward_note = item.get("carry_forward_note", "")
+    persistence_status = item.get("persistence_status", "")
+    buffer_state = item.get("buffer_state", "")
+    flush_trigger = item.get("flush_trigger", "")
+
+    if operator_language:
+        lines.append(f"  - operator_language: {operator_language}")
+    if detail:
+        lines.append(f"  - detail: {detail}")
     if why:
-        parts.append(f"  - why: {why}")
+        lines.append(f"  - why: {why}")
+    if impact_if_missed:
+        lines.append(f"  - impact_if_missed: {impact_if_missed}")
+    if desired_outcome:
+        lines.append(f"  - desired_outcome: {desired_outcome}")
     if next_action:
-        parts.append(f"  - next_action: {next_action}")
+        lines.append(f"  - next_action: {next_action}")
+    if promotion_target:
+        lines.append(f"  - promotion_target: {promotion_target}")
+    if persistence_status:
+        lines.append(f"  - persistence_status: {persistence_status}")
+    if buffer_state:
+        lines.append(f"  - buffer_state: {buffer_state}")
+    if flush_trigger:
+        lines.append(f"  - flush_trigger: {flush_trigger}")
+    if carry_forward_note:
+        lines.append(f"  - carry_forward_note: {carry_forward_note}")
     related = item.get("related", [])
     if related:
-        parts.append(f"  - related: {', '.join(str(x) for x in related)}")
-    return "\n".join(parts)
+        lines.append(f"  - related: {', '.join(str(x) for x in related)}")
+    return "\n".join(lines)
 
 
 def section_lines(items: list[dict[str, Any]]) -> list[str]:
@@ -82,11 +115,12 @@ def build_markdown(state: dict[str, Any]) -> str:
     starter_prompt = state.get("starter_prompt", "")
     closeout_verification = state.get("closeout_verification", [])
     provenance_notes = state.get("provenance_notes", [])
+    schema_version = state.get("local_state_metadata", {}).get("schema_version", 2)
 
     lines: list[str] = [
         "---",
         "artifact_type: dcoir-session-state",
-        "schema_version: 1",
+        f"schema_version: {schema_version}",
         f"project: {state.get('project', 'AFRICOM_SOC_IR / DCOIR')}",
         f"exported_at_utc: {exported_at}",
         "authority_basis:",

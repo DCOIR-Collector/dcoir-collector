@@ -1,22 +1,22 @@
 DCOIR Active Now
 
-1. Use the local-only `dcoir-session-tracker` model after removing GitHub-backed tracker memory.
+1. Run bounded regression on the verbose `dcoir-session-tracker` upgrade and the pre-GitHub-update flush/manicure workflow.
    Why it matters:
-   - The tracker now has a real local JSON working-state file, so the project should stop carrying the redundant GitHub-backed helper-memory branch for this skill.
+   - The tracker is now the reference model for stateful helper-skill session state, but it still needs explicit proof that the richer capture, export, and flush/manicure behavior improves fresh-session resume and operator understanding in practice.
    Next action:
-   - Define how surviving tracker state should be promoted into LOG-01, LOG-02, LOG-03, or other governed Project files during GitHub-update triggers.
+   - Use the startup-speed or fresh-session resume concern and the governance-gap concern as the acceptance-test cases, then inspect whether the resulting resume path is quick, predictable, and repeatable enough.
 
 2. Establish an authoritative current-state and version-checking mechanism across control-plane, continuity, and todo surfaces.
    Why it matters:
    - The recent lag between LOG-01, CP-01, CP-02, LOG-03, and LOG-05 showed that the project can drift into contradictory state unless there is a durable verification and enforcement model.
    Next action:
-   - Define the source of truth, the required verification cadence, the drift-detection method, and the enforcement workflow that keeps active surfaces on the same page.
+   - Define the source of truth, the required verification cadence, the drift-detection method, the attention-worthy callout path, and the remediation workflow that keeps active surfaces on the same page.
 
-3. Define the pre-GitHub-update flush and manicure workflow for any `dcoir-*` skills that maintain local session state.
+3. Decide which other `dcoir-*` skills truly need the same stateful flush/manicure and verbose-state treatment.
    Why it matters:
-   - Before a GitHub update, every relevant stateful skill should clean up completed items, preserve remaining work correctly, and state exactly what it needs to update rather than leaving that logic implicit.
+   - `dcoir-session-tracker` is the first proving ground, but other stateful helper skills may also need explicit pre-write state surfacing and richer operator-facing continuity.
    Next action:
-   - Identify which `dcoir-*` skills truly maintain session-local working state, require them to surface what they need to update during GitHub writes, and define a consistent trigger path before governed repo updates.
+   - After the tracker regression passes, inventory the other stateful skills and decide which ones should adopt the same pattern.
 
 4. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:

@@ -6,12 +6,12 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Use the local-only `dcoir-session-tracker` model and define how surviving tracker state should be promoted into authoritative todo or log surfaces during GitHub-update triggers.
+1. Run bounded regression on the verbose `dcoir-session-tracker` upgrade and the pre-GitHub-update flush/manicure workflow, using startup-speed and fresh-session resume predictability plus governance-gap detection as the acceptance tests.
 2. Establish an authoritative current-state and version-checking mechanism so the project does not drift across LOG-01, CP-01, CP-02, LOG-03, LOG-05, and other active continuity surfaces.
-3. Define the pre-GitHub-update flush and manicure workflow for any `dcoir-*` skills that maintain session-local working state, including explicit attention callouts about what each skill needs to update.
+3. Decide which other stateful `dcoir-*` skills should adopt the same flush/manicure and verbose state model after the tracker reference implementation is validated.
 4. Build a CI/CD-style end-to-end and edge-case validation regime for the repository, skills, workflows, and deliverables.
 5. Run a dedicated GitHub optimization and discovery pass to reduce operator confirmation friction and improve call efficiency without writing unsupported assumptions into durable guidance.
-6. Research additional connectors and Agent Mode only after the session-tracker and GitHub-workflow line is clearer and only promote validated conclusions.
+6. Research additional connectors and Agent Mode only after the tracker-centered workflow line is clearer and only promote validated conclusions.
 7. Continue using canonical task-memory preflight and grouped GitHub transactions for related chat-managed repo work.
 
 Todo-file map
@@ -22,4 +22,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Use the authoritative todo surfaces to continue the bounded pass focused on the local-only `dcoir-session-tracker` model, current-state and version checking, GitHub-update flush behavior, and redundancy reduction before widening back out to the larger GitHub or validation branches.
+- Use the authoritative todo surfaces to continue the bounded pass focused on validating the tracker reference model, tightening resume-speed and governance-gap handling, and only then widening the same stateful workflow pattern to other skills.
