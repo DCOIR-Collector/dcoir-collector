@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-04-hardcoded-audit-v1
+Current state id: 2026-04-04-hardcoded-audit-v2
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -11,10 +11,10 @@ Current stable pointers
 - Task memory manifest: knowledge/task_memory/00_registry/task_memory_manifest.yaml
 - Governed helper-skill source root: dcoir_skills/
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
-- Current discovery contract: dcoir_skills/project_discovery_contract.json
+- Current project discovery contract: dcoir_skills/project_discovery_contract.json
 
 Current active priority
-- Continue the hard-coded-project-variable audit, use the governed discovery contract where it reduces brittle assumptions, and keep the validation-regime and pre-push-contract branches aligned while the broader helper-skill deep-dive begins.
+- Continue the hard-coded project variable audit while keeping the validation regime and pre-push flush contract active.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -25,7 +25,7 @@ Detailed todo structure
 - project_sources/todo/05_Deferred_Or_Conditional.txt
 
 Queued next priorities
-- Continue the remaining-skill hard-coded-project-variable audit and reduce brittle bootstrap literals where current-project discovery can replace them.
-- Run the broader helper-skill deep dive to confirm current skills still execute successfully, remain current with project goals and governance, and do not carry obsolete or inefficient logic.
-- Review session-memory-enabled and buffer-capable skills for reliable pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior.
-- Improve the main README and folder-level documentation and continue building the fuller knowledge and wiki structure.
+- Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces.
+- Run the broader helper-skill deep dive to confirm current helper skills still execute successfully, remain current with the project's goals and governance, and do not carry obsolete or inefficient logic.
+- Keep using the shared pre-push flush and staged-governed-update contract for session-memory-enabled and buffer-capable skills.
+- Keep improving the main README and folder-level documentation while the knowledge and wiki structure grows.

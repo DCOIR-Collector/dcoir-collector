@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-04-hardcoded-audit-v1
+Current state id: 2026-04-04-hardcoded-audit-v2
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,8 +8,8 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Continue the hard-coded-project-variable audit across remaining skills and workflow surfaces.
-2. Keep the CI/CD-style validation regime active and use the parity/discovery outputs to anchor the broader helper-skill deep-dive and code-hygiene campaign.
+1. Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces.
+2. Keep the CI/CD-style validation regime active and use the discovery contract plus parity surfaces to anchor the broader helper-skill deep-dive and code-hygiene campaign.
 3. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other buffer-capable skills before governed pushes.
 4. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
 5. Continue using canonical task-memory preflight and grouped GitHub transactions for related governed work.
@@ -22,4 +22,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Continue the discovery-contract-driven hard-coded-project-variable audit, then use the results to rank the next execution and code-hygiene deep-dive targets.
+- Continue the hard-coded project variable audit first, then use the same discovery-contract and parity structure to drive the deeper skill execution and code-hygiene campaign.

@@ -1,24 +1,24 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-hardcoded-audit-v1
+Current state id: 2026-04-04-hardcoded-audit-v2
 
-1. Continue the hard-coded-project-variable audit across remaining skills and workflow surfaces.
+1. Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces.
    Why it matters:
-   - The operator wants DCOIR helper skills to evolve with the project rather than repeatedly breaking on renamed files, moved control-plane surfaces, or transferred workflow contexts.
+   - The project wants helper skills to evolve with current governed project structure instead of repeatedly breaking on moved files, renamed control surfaces, or transferred workflow context.
    Next action:
-   - Use the new governed discovery contract where it replaces brittle bootstrap literals and identify the next highest-value skills or workflow surfaces still relying on repeated project-specific assumptions.
+   - Continue replacing brittle assumptions with governed discovery-contract lookups where practical, and document any bounded exact-contract exceptions explicitly.
 
-2. Keep the CI/CD-style validation regime active and use the parity/discovery outputs to anchor the broader helper-skill deep-dive and code-hygiene campaign.
+2. Keep the CI/CD-style validation regime active and use the discovery contract plus parity surfaces to anchor the broader helper-skill deep-dive and code-hygiene campaign.
    Why it matters:
-   - The project now has a grounded inventory, parity surface, and first-pass discovery contract, so the deeper audit can be scoped from real current evidence rather than from chat memory.
+   - The project now has enough grounded inventory, parity, and discovery structure that deeper testing should follow the real current scope rather than chat memory.
    Next action:
-   - Rank the next deep-dive targets and begin the highest-value execution and code review passes.
+   - Use the validation regime and parity results to rank the next deep-dive targets after each audit pass lands.
 
 3. Use the shared pre-push flush and staged-governed-update contract for session-memory-enabled or buffer-capable skills.
    Why it matters:
-   - Tracker and helper-memory state can still be missed when a suitable governed push is already happening in the same branch.
+   - The project wants future governed pushes to lose only work since the last push, not buffered tracker or helper-memory state that should have landed in the same grouped update.
    Next action:
-   - Before future governed pushes, require a bounded flush/manicure review for the buffer-capable skills and stage same-branch governed updates plus post-push cleanup.
+   - Before future governed pushes, require a bounded flush/manicure review for the stateful or GitHub-memory-backed skills that are active in the same branch.
 
 4. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:

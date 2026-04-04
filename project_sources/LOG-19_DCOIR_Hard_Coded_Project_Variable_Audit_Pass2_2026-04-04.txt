@@ -1,0 +1,26 @@
+DCOIR Hard-Coded Project Variable Audit Pass 2 - 2026-04-04
+
+Current state id: 2026-04-04-hardcoded-audit-v2
+
+Scope
+- Continue the hard-coded project variable audit after pass 1.
+- Prioritize workflow-entry and packaging surfaces that still embed fixed repo names, fixed current-file paths, or brittle current-workline assumptions where the governed discovery contract can carry those assumptions instead.
+
+What changed
+- Expanded `dcoir_skills/project_discovery_contract.json` so it now carries current repo-guide surfaces and bootstrap-anchor paths in addition to repo name, control-file roles, active-surface paths, manifest parsing rules, collector runtime aliases, and parity surfaces.
+- Updated `dcoir-repo-packager` so it now reads the governed discovery contract from the current repo tree before falling back to packaged mapping defaults, including the repository name used in bootstrap release instructions and contract-driven control-plane role resolution.
+- Updated `dcoir-session-resume` so it now prefers the governed discovery contract for current repository, control-plane, and active-surface assumptions instead of embedding those assumptions only in the skill instructions.
+- Updated `dcoir-readme-maintainer` so it now consults the governed discovery contract before resolving current README target surfaces and current control-plane files.
+
+Why
+- Pass 1 fixed several script-level brittle assumptions, but workflow-entry and packaging surfaces still carried avoidable fixed project assumptions.
+- The operator wants helper skills to evolve with the project and remain more transferable, with fixed project values allowed only when they are the explicit governed contract rather than accidental embedded assumptions.
+
+Validation notes
+- Local bounded regression passed the updated `dcoir-repo-packager` script path on a synthetic fixture that included the governed discovery contract and confirmed contract-driven repository naming in the generated release instructions.
+- Updated skill packages passed local packaging validation.
+- Wider audit of remaining skills and repo-level workflow surfaces remains open.
+
+Next branch
+- Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces.
+- Keep the validation-regime branch active and use the discovery contract plus parity surfaces to anchor deeper helper-skill execution and code-hygiene review.

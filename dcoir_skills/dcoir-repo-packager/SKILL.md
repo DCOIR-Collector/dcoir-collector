@@ -16,7 +16,7 @@ This skill is for the AFRICOM_SOC_IR / DCOIR project only.
 Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
-Before packaging anything, verify that the control plane can be resolved from the working file set.
+Before packaging anything, verify that the control plane can be resolved from the working file set. Prefer the governed discovery contract `dcoir_skills/project_discovery_contract.json` when it is present in the current repo tree, then fall back to the packaged mapping rules.
 
 Preferred current control-plane files:
 - `project_sources/CP-01_DCOIR_Version_Manifest.txt`
@@ -71,7 +71,7 @@ Also stop if any of these are true:
    - Build both repo and update outputs in one run.
 
 ## Workflow
-1. Verify the DCOIR project gate by control-plane role, not just one hard-coded historic filename set.
+1. Verify the DCOIR project gate by discovery contract and control-plane role, not just one hard-coded historic filename set.
 2. Decide the packaging mode from the user's request.
 3. Run `scripts/create_dcoir_bundle.py`.
 4. Read the generated JSON report.

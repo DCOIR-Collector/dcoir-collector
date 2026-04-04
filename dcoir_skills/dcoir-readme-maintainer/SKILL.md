@@ -10,8 +10,8 @@ Use this skill only for the AFRICOM_SOC_IR / DCOIR project.
 
 Before doing README work:
 1. Re-anchor to Project Instructions.
-2. Read current `project_sources/CP-01_DCOIR_Version_Manifest.txt`.
-3. Read current `project_sources/CP-02_DCOIR_Change_Log.txt`.
+2. Read `dcoir_skills/project_discovery_contract.json` when it is present so current manifest, change-log, and repo-guide surfaces can be resolved from governed discovery instead of brittle current-path assumptions.
+3. Read current manifest and change log from the discovery contract when available.
 4. Confirm the task is inside the current governed DCOIR working line.
 
 If authority is unclear or the control plane conflicts, stop and report the exact conflict instead of rewriting README surfaces from stale assumptions.
@@ -40,6 +40,7 @@ Read `references/scope_boundary.md` when the task risks drifting into broader do
    - **Navigation or cross-link cleanup** -> follow "Navigation workflow"
 
 2. For all job types:
+   - inspect the current discovery contract when present before deciding which README surfaces are the current repo-guide surfaces
    - inspect the target README surface first
    - inspect nearby repo context that the README summarizes or links to
    - inspect the current documentation lane if priorities or scope are ambiguous

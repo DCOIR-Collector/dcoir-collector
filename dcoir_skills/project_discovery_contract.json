@@ -33,6 +33,19 @@
     "todo_index": "project_sources/LOG-01_DCOIR_Todo_Index.txt",
     "active_now": "project_sources/todo/01_Active_Now.txt"
   },
+  "repo_guide_surfaces": {
+    "root_readme": "README.md",
+    "skills_root": "dcoir_skills/README.md",
+    "knowledge_root": "knowledge/README.md",
+    "project_sources_root": "project_sources/README.md",
+    "routing_note": "knowledge/DCOIR_Helper_Skills_Routing_Note.md"
+  },
+  "bootstrap_anchors": {
+    "primary_bootstrap": [
+      "CP-00_DCOIR_GitHub_Primary_Bootstrap.txt",
+      "project_sources/CP-00_DCOIR_GitHub_Primary_Bootstrap.txt"
+    ]
+  },
   "manifest_sections": {
     "CURRENT GOVERNED GITHUB READABLE SOURCES": "governed_github_readable_sources",
     "CURRENT GOVERNED KNOWLEDGE SOURCES IN GITHUB": "governed_knowledge_sources",

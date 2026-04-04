@@ -20,12 +20,14 @@ Proceed only when the current chat, project, or custom GPT is operating as the A
 Use the first available bootstrap anchor in this order:
 1. AFRICOM_SOC_IR / DCOIR workspace instructions if present.
 2. Uploaded bootstrap pointer such as `CP-00_DCOIR_GitHub_Primary_Bootstrap.txt` if present.
-3. Then GitHub control plane in repository `malwaredevil/dcoir-collector`.
+3. Then GitHub control plane in the repository named in `dcoir_skills/project_discovery_contract.json` when that contract is present.
+4. If no governed discovery contract is available, fall back to repository `malwaredevil/dcoir-collector`.
 
 ## Core workflow
-1. Read the current manifest file first. Expected current path: `project_sources/CP-01_DCOIR_Version_Manifest.txt`.
-2. Read the current change log second. Expected current path: `project_sources/CP-02_DCOIR_Change_Log.txt`.
-3. Invoke `dcoir-source-authority-auditor` as the explicit drift gate before trusting supporting continuity surfaces such as `LOG-03`, `LOG-05`, `LOG-01_DCOIR_Todo_Log.txt`, `LOG-01_DCOIR_Todo_Index.txt`, and `todo/01_Active_Now.txt`.
+1. Read `dcoir_skills/project_discovery_contract.json` when it is present and use it to resolve the current manifest path, change-log path, supporting continuity surfaces, and repository name.
+2. Read the current manifest file first. Expected current path remains `project_sources/CP-01_DCOIR_Version_Manifest.txt` when no better contract-driven path is available.
+3. Read the current change log second. Expected current path remains `project_sources/CP-02_DCOIR_Change_Log.txt` when no better contract-driven path is available.
+4. Invoke `dcoir-source-authority-auditor` as the explicit drift gate before trusting the supporting continuity surfaces resolved from the current discovery contract or the current default active-surface set.
 4. If the drift gate returns `hard_stop_conflict`, stop and report the exact conflict plainly instead of producing a normal resume summary.
 5. If the drift gate returns `proceed_bounded`, continue only with bounded claims and say exactly which active surfaces were unavailable.
 6. If the drift gate returns `clear_to_proceed`, continue into the normal resume summary.
@@ -36,7 +38,8 @@ Use the first available bootstrap anchor in this order:
 ## Required rules
 - Treat the current AFRICOM_SOC_IR / DCOIR workspace as the operational workspace, not the historical archive.
 - Treat the first available bootstrap anchor plus the current manifest plus the current change log as the default control plane.
-- Treat GitHub repository `malwaredevil/dcoir-collector` as the sole working source for readable governed text.
+- Treat the repository named in `dcoir_skills/project_discovery_contract.json` as the sole working source for readable governed text when that contract is present.
+- Fall back to `malwaredevil/dcoir-collector` only when the governed discovery contract is unavailable.
 - Treat uploaded bootstrap files and local workspace files as anchors or supporting assets, not as a second editable readable text repository.
 - Do not decide authority.
 - Do not promote files.

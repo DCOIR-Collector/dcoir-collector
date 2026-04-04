@@ -1,28 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 3.9.33
-Current state id: 2026-04-04-hardcoded-audit-v1
-Change class: hard-coded project variable audit pass 1 and shared project discovery contract adoption
+Version: 3.9.34
+Current state id: 2026-04-04-hardcoded-audit-v2
+Change class: hard-coded project variable audit pass 2 and discovery contract expansion
 
 What changed
-- Added `dcoir_skills/project_discovery_contract.json` as the governed machine-readable discovery contract for current repo, control-plane, manifest-section, active-surface, and collector runtime-alias bootstrap assumptions.
-- Added `project_sources/LOG-18_DCOIR_Hard_Coded_Project_Variable_Audit_Pass1_2026-04-04.txt` as the governed decision record for the first hard-coded-project-variable audit pass.
-- Updated `dcoir-source-authority-auditor`, `dcoir-knowledge-doc-maintainer`, `dcoir-change-impact-analyzer`, and `dcoir-collector-qa` so they now read the shared discovery contract before falling back to packaged bootstrap assumptions.
-- Refreshed `dcoir_skills/README.md` so it now documents the project discovery contract alongside the parity surfaces.
+- Expanded `dcoir_skills/project_discovery_contract.json` so it now carries repo-guide surfaces and bootstrap-anchor paths in addition to repo name, control-file roles, active-surface paths, parity surfaces, and current-project parsing rules.
+- Added `project_sources/LOG-19_DCOIR_Hard_Coded_Project_Variable_Audit_Pass2_2026-04-04.txt` as the governed decision record for the second hard-coded-project-variable audit pass.
+- Updated `dcoir-repo-packager` so it now reads the governed discovery contract from the current repo tree before falling back to packaged mapping defaults, including contract-driven repository naming in generated bootstrap instructions.
+- Updated `dcoir-session-resume` so it now prefers the governed discovery contract for current repository, control-plane, and active-surface assumptions instead of embedding those assumptions only in skill instructions.
+- Updated `dcoir-readme-maintainer` so it now consults the governed discovery contract before resolving current README target surfaces and current control-plane files.
 - Refreshed the active continuity and todo surfaces so they now point at the continuing hard-coded-project-variable audit and broader deep-dive/code-hygiene branch.
 
 Why
-- The operator wants DCOIR helper skills to evolve with the project rather than repeatedly breaking on renamed files, moved control-plane surfaces, or transferred workflow contexts.
-- A governed machine-readable discovery contract reduces maintenance burden and increases future transferability.
-- Some exact project rules still remain acceptable bounded exceptions when they are the explicit contract being enforced rather than accidental discovery assumptions.
+- Pass 1 fixed several script-level brittle assumptions, but workflow-entry and packaging surfaces still carried avoidable fixed project assumptions.
+- The operator wants helper skills to evolve with the project and remain more transferable, with exact project values allowed only when they are the explicit governed contract rather than accidental embedded assumptions.
 
 Validation notes
-- Local bounded regression passed the updated `dcoir-source-authority-auditor`, `dcoir-knowledge-doc-maintainer`, `dcoir-change-impact-analyzer`, and `dcoir-collector-qa` script paths on a synthetic current-project fixture that included the governed discovery contract.
+- Local bounded regression passed the updated `dcoir-repo-packager` script path on a synthetic fixture that included the governed discovery contract and confirmed contract-driven repository naming in generated release instructions.
 - Updated skill packages passed local packaging validation.
 - Wider audit of remaining skills and repo-level workflow surfaces remains the next branch.
 
 [PRIOR]
-Version: 3.9.32
-Current state id: 2026-04-04-skill-parity-rebaseline-v1
-Change class: skill parity rebaseline and installed-skill verification
+Version: 3.9.33
+Current state id: 2026-04-04-hardcoded-audit-v1
+Change class: hard-coded project variable audit pass 1 and shared project discovery contract adoption
