@@ -56,12 +56,12 @@ A valid flush/manicure review for this skill should surface:
 - one best next move
 
 ## GitHub-backed skill memory
-Use the GitHub connector directly against repository `malwaredevil/dcoir-collector` when reusable regression-planning state should persist outside the current chat.
+Use the GitHub connector directly against the current governed repository resolved from the governed discovery contract when reusable regression-planning state should persist outside the current chat.
 
 GitHub skill-memory layout:
-- root folder: `dcoir_skill_memory/`
-- per-skill folder: `dcoir_skill_memory/dcoir-skill-regression-auditor/`
-- canonical memory file: `dcoir_skill_memory/dcoir-skill-regression-auditor/skill_regression_memory.md`
+- root folder: use the governed discovery contract helper-memory root
+- per-skill folder: `helper_memory.root` + `dcoir-skill-regression-auditor/`
+- canonical memory file: `helper_memory.root` + `dcoir-skill-regression-auditor/skill_regression_memory.md`
 
 Use this memory surface for helper working state such as:
 - tracked skills with active regression follow-through

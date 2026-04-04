@@ -164,7 +164,7 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - if the manifest is clear, do not pause just because older files also exist
 
 ### 2. Packaging preferences and delivery friction
-- for governed readable-text updates in `malwaredevil/dcoir-collector`, prefer the GitHub connector directly as the primary execution surface over helper-skill-mediated repo writes whenever the connector can perform the operation more simply and reliably
+- for governed readable-text updates in the current governed repository resolved from the governed discovery contract, prefer the GitHub connector directly as the primary execution surface over helper-skill-mediated repo writes whenever the connector can perform the operation more simply and reliably
 - before GitHub-family execution work, grouped repo edits, or packaging actions likely to have validated procedures, invoke `dcoir-memory-preflight` to consult canonical task memory first
 - when multiple related existing-file changes, deletions, or structural repo edits belong together, prefer one bounded multi-file git-object transaction over one-file-at-a-time updates
 - apply already-approved operator preferences that affect bundle shape, file count, update friction, campaign scope, or operator update handling
@@ -215,12 +215,12 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - avoid asking for confirmation when the matrix already resolves the choice
 
 ## GitHub-backed skill memory
-Use the GitHub connector directly against repository `malwaredevil/dcoir-collector` when the task needs reusable decision-state continuity outside the current chat.
+Use the GitHub connector directly against the current governed repository resolved from the governed discovery contract when the task needs reusable decision-state continuity outside the current chat.
 
 GitHub skill-memory layout:
-- root folder: `dcoir_skill_memory/`
-- per-skill folder: `dcoir_skill_memory/dcoir-decision-policy/`
-- canonical memory file: `dcoir_skill_memory/dcoir-decision-policy/decision_policy_memory.md`
+- root folder: use the governed discovery contract helper-memory root
+- per-skill folder: `helper_memory.root` + `dcoir-decision-policy/`
+- canonical memory file: `helper_memory.root` + `dcoir-decision-policy/decision_policy_memory.md`
 
 Use this memory surface for helper working state such as:
 - approved overlay snapshots already reflected in the skill

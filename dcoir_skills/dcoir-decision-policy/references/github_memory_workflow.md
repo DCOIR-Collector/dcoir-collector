@@ -4,12 +4,12 @@
 Use the GitHub repository as a human-readable helper-memory surface for decision-policy state without confusing it with governed control-plane authority.
 
 ## Repository path
-- Root helper-memory folder: `dcoir_skill_memory/`
-- Decision-policy folder: `dcoir_skill_memory/dcoir-decision-policy/`
-- Default state file: `dcoir_skill_memory/dcoir-decision-policy/decision_policy_memory.md`
+- Root helper-memory folder: use the governed discovery contract helper-memory root
+- Decision-policy folder: `helper_memory.root` + `dcoir-decision-policy/`
+- Default state file: `helper_memory.root` + `dcoir-decision-policy/decision_policy_memory.md`
 
 ## Execution layer
-- Use the GitHub connector directly as the default execution layer for helper-memory reads and writes in `malwaredevil/dcoir-collector`.
+- Use the GitHub connector directly as the default execution layer for helper-memory reads and writes in the current governed repository resolved from the governed discovery contract.
 - Re-anchor to Project Instructions, then CP-01, then CP-02 before invoking it.
 - Prefer connector `fetch_file` readback after every write and prefer the validated existing-file update lane for modifications.
 
@@ -22,8 +22,8 @@ Use the GitHub repository as a human-readable helper-memory surface for decision
 - Update the file after material decision-state changes through the GitHub connector directly when the available connector action surface can complete the modification safely.
 
 ## Recommended first files
-- `dcoir_skill_memory/README.md`
-- `dcoir_skill_memory/dcoir-decision-policy/decision_policy_memory.md`
+- `helper_memory.readme` from the governed discovery contract
+- `helper_memory.root` + `dcoir-decision-policy/decision_policy_memory.md`
 
 ## Write pattern
 1. Read the current memory file if it exists.

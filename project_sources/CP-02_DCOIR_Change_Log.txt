@@ -1,27 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.36
+Current state id: 2026-04-04-hardcoded-audit-v4
+Change class: hard-coded project variable audit pass 4 and discovery-contract adoption for remaining github-memory/helper-memory surfaces
+
+What changed
+- Added `project_sources/LOG-21_DCOIR_Hard_Coded_Project_Variable_Audit_Pass4_2026-04-04.txt` as the governed decision record for the fourth hard-coded-project-variable audit pass.
+- Updated `dcoir-decision-policy` so it now prefers the governed discovery contract for current governed repository naming and helper-memory-root assumptions instead of embedding those values only in skill instructions or helper-memory guidance.
+- Updated `dcoir-skill-regression-auditor` so it now prefers the governed discovery contract for current governed repository naming and helper-memory-root assumptions instead of embedding those values only in skill instructions or helper-memory guidance.
+- Refreshed the active continuity and todo surfaces so they now point at the post-pass-4 broader helper-skill deep-dive and code-hygiene campaign while keeping the remaining hard-coded-assumption review bounded to later exception handling.
+
+Why
+- Passes 1 through 3 moved most practical current-project bootstrap assumptions onto the governed discovery contract, but the remaining GitHub-memory and helper-memory surfaces still carried avoidable embedded project defaults.
+- The operator wants project-specific values to remain explicit governed contract values where practical, with only bounded contractual exceptions left embedded.
+
+Validation notes
+- Local bounded regression passed the updated `dcoir-decision-policy` and `dcoir-skill-regression-auditor` packaged-skill validation path.
+- Updated skill packages passed local packaging validation.
+- The broader helper-skill deep-dive and code-hygiene campaign remains the next branch.
+
+[PRIOR]
 Version: 3.9.35
 Current state id: 2026-04-04-hardcoded-audit-v3
 Change class: hard-coded project variable audit pass 3 and discovery-contract adoption for remaining validation/parity workflow defaults
-
-What changed
-- Expanded `dcoir_skills/project_discovery_contract.json` so it now also carries governed project label, governed skill prefix, governed skills-root label, and helper-memory root defaults in addition to repository, control-file, active-surface, repo-guide, bootstrap-anchor, parity-surface, and collector-runtime assumptions.
-- Added `project_sources/LOG-20_DCOIR_Hard_Coded_Project_Variable_Audit_Pass3_2026-04-04.txt` as the governed decision record for the third hard-coded-project-variable audit pass.
-- Updated `dcoir-validation-orchestrator` so it now prefers the governed discovery contract for current governed repository naming and helper-memory-root assumptions instead of embedding those assumptions only in skill instructions or helper-memory guidance.
-- Updated `dcoir-parity-verifier` so it now prefers the governed discovery contract for project-label and skill-prefix defaults when building the canonical parity manifest instead of embedding those values only in script defaults.
-- Refreshed the active continuity and todo surfaces so they now point at the continuing hard-coded-project-variable audit with the remaining GitHub-memory and helper-memory surfaces as the next likely remediation cluster.
-
-Why
-- Pass 2 moved the workflow-entry and packaging surfaces onto the governed discovery contract, but remaining validation and parity surfaces still carried avoidable project defaults that should be contract-driven instead.
-- The operator wants project-specific values to remain explicit governed contract values rather than accidental embedded assumptions.
-
-Validation notes
-- Local bounded regression passed the updated `dcoir-validation-orchestrator` helper-memory rendering path and the updated `dcoir-parity-verifier` manifest-build path on a synthetic fixture that included the governed discovery contract.
-- Updated skill packages passed local packaging validation.
-- Wider audit of remaining GitHub-memory and helper-memory surfaces remains the next branch.
-
-[PRIOR]
-Version: 3.9.34
-Current state id: 2026-04-04-hardcoded-audit-v2
-Change class: hard-coded project variable audit pass 2 and discovery contract expansion

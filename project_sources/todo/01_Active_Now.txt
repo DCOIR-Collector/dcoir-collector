@@ -1,27 +1,27 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-hardcoded-audit-v3
+Current state id: 2026-04-04-hardcoded-audit-v4
 
-1. Continue the hard-coded project variable audit on remaining eligible skills and repo-level workflow surfaces, with the remaining GitHub-memory and helper-memory guidance next in line.
+1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the explicit validation structure.
    Why it matters:
-   - The project wants helper skills to evolve with current governed project structure instead of repeatedly breaking on moved files, renamed control surfaces, or transferred workflow context.
+   - The project now has a validation regime, parity baseline, and discovery contract strong enough to support deeper execution and code-hygiene review without relying on chat memory.
    Next action:
-   - Continue replacing brittle assumptions with governed discovery-contract lookups where practical, document any bounded exact-contract exceptions explicitly, and target the remaining GitHub-memory and helper-memory guidance next.
+   - Rank the next deep-dive targets and begin the highest-value execution and code review passes.
 
-2. Keep the CI/CD-style validation regime active and use the expanded discovery contract plus parity surfaces to anchor the broader helper-skill deep-dive and code-hygiene campaign.
+2. Use the shared pre-push flush and staged-governed-update contract for session-memory-enabled or buffer-capable skills.
    Why it matters:
-   - The project now has enough grounded inventory, parity, and discovery structure that deeper testing should follow the real current scope rather than chat memory.
+   - Recent grouped updates proved that tracker and helper-memory state can still be missed when a suitable governed push is already happening in the same branch.
    Next action:
-   - Use the validation regime and parity results to rank the next deep-dive targets after each audit pass lands.
+   - Before future governed pushes, require a bounded flush/manicure review for `dcoir-session-tracker`, `dcoir-plan-tracker`, `dcoir-decision-policy`, `dcoir-memory-preflight`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator`.
 
-3. Use the shared pre-push flush and staged-governed-update contract for session-memory-enabled or buffer-capable skills.
-   Why it matters:
-   - The project wants future governed pushes to lose only work since the last push, not buffered tracker or helper-memory state that should have landed in the same grouped update.
-   Next action:
-   - Before future governed pushes, require a bounded flush/manicure review for the stateful or GitHub-memory-backed skills that are active in the same branch.
-
-4. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:
    - The project wants evidence before widening the stamped active-surface set, and synthetic or generated-artifact validation should not count as real live resume cycles.
    Next action:
    - Decrement the countdown only after a qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.
+
+4. Review any remaining hard-coded literals only as bounded contractual exceptions.
+   Why it matters:
+   - The practical high-value discovery-contract adoption pass is materially complete, so any remaining literals should now be treated as explicit contract review rather than as default embedded assumptions.
+   Next action:
+   - Review remaining literals only where portability, maintainability, or governance clarity would materially improve.
