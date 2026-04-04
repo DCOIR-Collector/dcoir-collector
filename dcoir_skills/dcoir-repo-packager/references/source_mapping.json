@@ -38,5 +38,6 @@
     "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt"
   ],
   "update_bundle_include_settings": true,
-  "update_bundle_include_supporting_assets": true
+  "update_bundle_include_supporting_assets": true,
+  "github_desktop_manual_update_bundle_name": "DCOIR_GitHub_Desktop_Manual_Repo_Update_Bundle.zip"
 }

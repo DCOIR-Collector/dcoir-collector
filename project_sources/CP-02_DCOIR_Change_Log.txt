@@ -1,6 +1,29 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.41
+Current state id: 2026-04-05-startup-validated-and-manual-bundle-fix-v1
+Change class: startup-flow live validation completion and github desktop manual repo-update bundle mode fix
+
+What changed
+- Added `project_sources/LOG-29_DCOIR_GitHub_Desktop_Manual_Repo_Update_Bundle_Mode_Fix_2026-04-05.txt` as the governed decision record for diagnosing and repairing the missing GitHub Desktop manual repo-update bundle lane.
+- Recorded that the updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path were proven in a real fresh-session workflow.
+- Updated `dcoir-repo-packager` so it now supports `github-desktop-manual-update` mode, which packages only the requested affected repo-relative files or folders with no wrapper root and surfaces the suggested commit `Summary` in the report and response.
+- Updated the packager references so the GitHub Desktop manual repo-update bundle class is explicitly documented alongside the existing repo and bootstrap bundle classes.
+- Refreshed the active continuity and todo surfaces so startup-flow proof is no longer treated as pending work, the broader helper-skill deep-dive line is promoted, and the stamped active-surface widening hold countdown moves from 2 remaining real resume cycles to 1 remaining real resume cycle.
+
+Why
+- The operator confirmed that the new startup flow works in a real session, so the governed state needed to stop treating that validation as still pending.
+- The operator expected ZIP deliverables for GitHub Desktop repo updates, but the recorded delivery preference and the actual repo-packager behavior had drifted apart.
+- The highest-value fix was to repair the existing packaging skill and align the governed continuity surfaces rather than keep responding with copy-paste file-content patches during GitHub Desktop delivery sessions.
+
+Validation notes
+- The updated startup bootstrap pair and bounded resume-status fast path are now live-validated in a real session.
+- The updated `dcoir-repo-packager` skill package passes local packaging validation.
+- The repaired GitHub Desktop manual repo-update bundle mode was exercised against a repo-shaped working tree to emit the current affected-path bundle with no wrapper root.
+- The next immediate branch is to continue the broader helper-skill deep-dive and code-hygiene campaign from the stronger validated startup and repaired delivery baseline.
+
+[PRIOR]
 Version: 3.9.40
 Current state id: 2026-04-04-resume-status-fast-path-v1
 Change class: resume-status fast path and bounded session-start preflight lane tightening
@@ -20,31 +43,3 @@ Why
 Validation notes
 - Local bounded regression passed the updated `dcoir-session-resume` and `dcoir-memory-preflight` packaged-skill validation path.
 - The next immediate branch is a live workflow validation that a fresh-session resume-status request now stays on the governed GitHub readable-text lane without unnecessary acquisition or execution detours before the primary lane is tried.
-
-[PRIOR]
-Version: 3.9.39
-Current state id: 2026-04-04-session-start-bootstrap-and-prompt-review-v1
-Change class: stateful local-json startup preflight rollout, first-turn bootstrap enforcement, prompt/bootstrap review, and README/parity refresh
-
-What changed
-- Added `project_sources/LOG-25_DCOIR_Stateful_Local_JSON_Startup_Preflight_Rollout_2026-04-04.txt` as the governed decision record for the bounded rollout of beginning-of-session local-JSON presence preflights across the confirmed in-scope DCOIR skills.
-- Added `project_sources/LOG-26_DCOIR_Session_Start_Bootstrap_And_Project_Prompt_Optimization_Review_2026-04-04.txt` as the governed decision record for making `dcoir-session-resume` plus `dcoir-memory-preflight` the mandatory first substantive-turn bootstrap pair for every new DCOIR session and for the bounded review of the project prompt plus the attached `CP-00` bootstrap pointer. 
-- Added `project_sources/LOG-27_DCOIR_Parity_Verification_And_Readme_Refresh_2026-04-04.txt` as the governed record for the bounded parity review and README refresh pass.
-- Updated `project_sources/LOG-24_DCOIR_Delivery_Bundle_Structure_And_GitHub_Desktop_Manual_Update_Preference_2026-04-04.txt` so it now also records the operator preference that GitHub Desktop manual repo-update deliveries should include a suggested commit `Summary`.
-- Updated `dcoir-session-tracker` instructions and references so `ensure-state` is explicitly the required beginning-of-session preflight for each new session that uses the skill.
-- Added `dcoir-plan-tracker/scripts/ensure_plan_state.py` and updated `dcoir-plan-tracker` instructions, references, and local scripts so local plan folders now prove `plan_state.json` presence early and emit explicit missing-state warnings instead of silently proceeding when an expected local JSON file is absent.
-- Updated `dcoir-session-resume` so its description and instructions now treat the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session as a mandatory default bootstrap use case.
-- Updated `dcoir-memory-preflight` so it now has an explicit `session_start_bootstrap` mode that follows `dcoir-session-resume` on the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session.
-- Refreshed `README.md` and `dcoir_skills/README.md` so the visible repo guidance now matches the first-turn bootstrap pair, the bounded local-JSON startup-preflight scope, and the delivery-bundle plus commit-summary preference.
-
-Why
-- The operator wants every new DCOIR session to start from the current governed control plane and canonical memory posture even when the first user message does not explicitly ask to resume or preflight.
-- The operator wants every DCOIR skill that actually uses a real local JSON working-state file to initialize or prove that local file at the beginning of the session instead of leaving startup local-state proof implicit.
-- The project prompt and the Project-space `CP-00` bootstrap pointer were already strong, but the highest-value optimization was to make the session-start bootstrap pair explicit rather than leaving it as an inferred habit.
-- The README and parity surfaces needed a bounded refresh so the visible repo guidance and skill-source validation posture stay aligned to the new working line.
-
-Validation notes
-- Local bounded regression passed the new `dcoir-plan-tracker` startup local-state preflight path for existing local plan-state proof, brand-new local plan initialization, and explicit missing-state warnings when an expected local `plan_state.json` file was absent.
-- Updated `dcoir-session-tracker`, `dcoir-plan-tracker`, `dcoir-session-resume`, and `dcoir-memory-preflight` skill packages passed local packaging validation.
-- Reviewed the current governed parity surface and README surfaces, refreshed the affected README files, and prepared the next governed parity refresh to land after this source update set is applied.
-- The next immediate branch is a live workflow validation of the session-start bootstrap pair and the bounded local-JSON startup-preflight behavior on a real governed push or local plan-tracker branch.

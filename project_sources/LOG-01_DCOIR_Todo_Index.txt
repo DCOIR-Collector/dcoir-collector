@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-04-resume-status-fast-path-v1
+Current state id: 2026-04-05-startup-validated-and-manual-bundle-fix-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,10 +8,10 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Live-validate the updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path together with the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
-2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, stronger local-state proof baseline, and tighter resume-only routing discipline.
+1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, and tighter resume-only routing discipline.
+2. Rank and execute the next highest-value helper-skill execution and code review pass under the current CI/CD-style validation regime.
 3. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other session-memory-enabled or buffer-capable skills before governed pushes.
-4. Use the recorded delivery-bundle and GitHub Desktop commit `Summary` preferences for future manual deliveries unless the operator explicitly overrides them.
+4. Use the repaired GitHub Desktop manual repo-update bundle mode together with the recorded delivery-bundle and GitHub Desktop commit `Summary` preferences for future manual deliveries unless the operator explicitly overrides them.
 5. Continue using canonical task-memory preflight and grouped GitHub transactions for related governed work.
 
 Todo-file map
@@ -22,4 +22,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Use a fresh-session DCOIR current-state check to verify that the first-turn bootstrap pair now stays on the governed GitHub readable-text fast path before alternate acquisition or execution lanes are considered, then continue the live startup-preflight validation line.
+- Select the next highest-value helper skill for deep review and execute that pass from the now live-validated bootstrap and resume-only routing baseline while using the repaired GitHub Desktop manual repo-update bundle mode for future affected-path deliveries.

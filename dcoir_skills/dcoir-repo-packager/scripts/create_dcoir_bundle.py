@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create strict DCOIR repo-layout and GitHub-primary bootstrap bundles."""
+"""Create strict DCOIR repo-layout, bootstrap, and GitHub Desktop patch bundles."""
 
 from __future__ import annotations
 
@@ -89,7 +89,26 @@ def zip_dir(root_dir: Path, zip_path: Path, relative_to: Path) -> None:
                 zf.write(file_path, file_path.relative_to(relative_to))
 
 
-def verify_project_gate(source_dir: Path, mapping: dict[str, Any]) -> tuple[bool, list[str], dict[str, Any]]:
+def normalize_rel_path(rel_path: str) -> str:
+    candidate = Path(rel_path)
+    if candidate.is_absolute():
+        raise ValueError(f'include path must be repo-relative, not absolute: {rel_path}')
+    if any(part in {'', '.', '..'} for part in candidate.parts):
+        raise ValueError(f'include path is unsafe or escapes the repo root: {rel_path}')
+    return candidate.as_posix()
+
+
+def dedupe_preserve(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            out.append(item)
+    return out
+
+
+def verify_project_gate(source_dir: Path, mapping: dict[str, Any], mode: str, include_paths: list[str]) -> tuple[bool, list[str], dict[str, Any]]:
     errors: list[str] = []
     details: dict[str, Any] = {}
 
@@ -99,20 +118,51 @@ def verify_project_gate(source_dir: Path, mapping: dict[str, Any]) -> tuple[bool
     if missing_roles:
         errors.append('missing required DCOIR control-plane roles')
 
-    missing_required_entries = sorted(
-        entry for entry in mapping.get('required_repo_mode_entries', []) if not (source_dir / entry).exists()
-    )
-    details['missing_required_repo_mode_entries'] = missing_required_entries
-    if missing_required_entries:
-        errors.append('one or more required current repo-mode entries are missing from the source directory')
+    if mode in {'repo', 'both'}:
+        missing_required_entries = sorted(
+            entry for entry in mapping.get('required_repo_mode_entries', []) if not (source_dir / entry).exists()
+        )
+        details['missing_required_repo_mode_entries'] = missing_required_entries
+        if missing_required_entries:
+            errors.append('one or more required current repo-mode entries are missing from the source directory')
 
-    missing_repo_roots = sorted(
-        root for root in mapping.get('repo_mode_include_roots', [])
-        if root in {'knowledge', 'project_sources', 'project_settings', 'supporting_assets'} and not (source_dir / root).exists()
-    )
-    details['missing_expected_roots'] = missing_repo_roots
-    if missing_repo_roots:
-        errors.append('one or more required current roots are missing from the source directory')
+        missing_repo_roots = sorted(
+            root for root in mapping.get('repo_mode_include_roots', [])
+            if root in {'knowledge', 'project_sources', 'project_settings', 'supporting_assets'} and not (source_dir / root).exists()
+        )
+        details['missing_expected_roots'] = missing_repo_roots
+        if missing_repo_roots:
+            errors.append('one or more required current roots are missing from the source directory')
+
+    if mode == 'update':
+        missing_update_roots = sorted(
+            root for root in mapping.get('update_mode_include_roots', []) if not (source_dir / root).exists()
+        )
+        details['missing_update_mode_roots'] = missing_update_roots
+
+    if mode == 'github-desktop-manual-update':
+        normalized_paths: list[str] = []
+        path_errors: list[str] = []
+        for raw_path in include_paths:
+            try:
+                normalized = normalize_rel_path(raw_path)
+            except ValueError as exc:
+                path_errors.append(str(exc))
+                continue
+            normalized_paths.append(normalized)
+        normalized_paths = dedupe_preserve(normalized_paths)
+        details['normalized_include_paths'] = normalized_paths
+        details['include_path_errors'] = path_errors
+        missing_include_paths = sorted(
+            rel_path for rel_path in normalized_paths if not (source_dir / rel_path).exists()
+        )
+        details['missing_include_paths'] = missing_include_paths
+        if not include_paths:
+            errors.append('github desktop manual repo-update mode requires at least one include path')
+        if path_errors:
+            errors.extend(path_errors)
+        if missing_include_paths:
+            errors.append('one or more requested include paths are missing from the source directory')
 
     return len(errors) == 0, errors, details
 
@@ -194,11 +244,39 @@ Notes
     }
 
 
+def build_github_desktop_manual_update_bundle(source_dir: Path, output_dir: Path, mapping: dict[str, Any], include_paths: list[str], commit_summary: str) -> dict[str, Any]:
+    bundle_root = output_dir / 'github_desktop_manual_update_build'
+    ensure_clean_dir(bundle_root)
+    emitted: list[str] = []
+    normalized_paths = dedupe_preserve([normalize_rel_path(path) for path in include_paths])
+    for rel_path in normalized_paths:
+        copy_entry(source_dir, rel_path, bundle_root, emitted)
+    bundle_name = mapping.get('github_desktop_manual_update_bundle_name', 'DCOIR_GitHub_Desktop_Manual_Repo_Update_Bundle.zip')
+    bundle_zip = output_dir / bundle_name
+    zip_dir(bundle_root, bundle_zip, bundle_root)
+    checks = {
+        'wrapper_root_absent_in_zip_build': True,
+        'requested_paths_present': all((bundle_root / rel_path).exists() for rel_path in normalized_paths),
+        'only_requested_paths_emitted': sorted(emitted) == sorted(dedupe_preserve(emitted)),
+    }
+    return {
+        'mode': 'github-desktop-manual-update',
+        'build_root': str(bundle_root),
+        'zip_path': str(bundle_zip),
+        'included': emitted,
+        'requested_include_paths': normalized_paths,
+        'suggested_commit_summary': commit_summary,
+        'checks': checks,
+    }
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description='Create strict DCOIR repo and bootstrap bundles.')
+    parser = argparse.ArgumentParser(description='Create strict DCOIR repo, bootstrap, and patch bundles.')
     parser.add_argument('--source-dir', default='/mnt/data', help='Directory containing current DCOIR files.')
     parser.add_argument('--output-dir', required=True, help='Output directory for build artifacts.')
-    parser.add_argument('--mode', choices=['repo', 'update', 'both'], default='repo')
+    parser.add_argument('--mode', choices=['repo', 'update', 'both', 'github-desktop-manual-update'], default='repo')
+    parser.add_argument('--include-path', action='append', default=[], help='Repo-relative path to include in GitHub Desktop manual repo-update mode.')
+    parser.add_argument('--commit-summary', default='', help='Suggested commit summary for GitHub Desktop manual repo-update mode.')
     args = parser.parse_args()
 
     source_dir = Path(args.source_dir).resolve()
@@ -208,7 +286,7 @@ def main() -> int:
     base_mapping = load_mapping()
     discovery_contract = load_discovery_contract(source_dir)
     mapping = apply_discovery_contract(base_mapping, discovery_contract)
-    success, errors, gate_details = verify_project_gate(source_dir, mapping)
+    success, errors, gate_details = verify_project_gate(source_dir, mapping, args.mode, args.include_path)
     report: dict[str, Any] = {
         'success': success,
         'mode': args.mode,
@@ -224,6 +302,16 @@ def main() -> int:
             report['outputs'].append(build_repo_bundle(source_dir, output_dir, mapping))
         if args.mode in {'update', 'both'}:
             report['outputs'].append(build_update_bundle(source_dir, output_dir, mapping))
+        if args.mode == 'github-desktop-manual-update':
+            report['outputs'].append(
+                build_github_desktop_manual_update_bundle(
+                    source_dir,
+                    output_dir,
+                    mapping,
+                    args.include_path,
+                    args.commit_summary,
+                )
+            )
 
     report_path = output_dir / 'packager_report.json'
     report_path.write_text(json.dumps(report, indent=2), encoding='utf-8')

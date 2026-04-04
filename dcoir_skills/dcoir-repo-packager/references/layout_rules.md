@@ -28,6 +28,13 @@ Update mode should include only bootstrap-safe roots:
 - `supporting_assets/` when present
 - `release_notes/RELEASE_INSTRUCTIONS.txt`
 
+## Canonical GitHub Desktop manual repo-update bundle tree
+GitHub Desktop manual repo-update mode should include only the affected repo-relative files or folders requested for the current patch set:
+- preserve the requested repo-relative paths exactly
+- do not add a wrapper root
+- do not add helper files such as commit-summary text files inside the ZIP
+- surface the suggested commit summary in the report and chat output instead
+
 ## Hard rules
 - Preserve current relative paths in repo mode instead of remapping into stale legacy trees.
 - Do not include readable governed text from `project_sources/`, `knowledge/`, or `dcoir_skills/` in update mode.
@@ -36,3 +43,4 @@ Update mode should include only bootstrap-safe roots:
 - Do not emit extra files.
 - Do not guess where unknown files belong.
 - If required control-plane roles or required current roots are missing, stop and require a skill update or source repair.
+- If a GitHub Desktop manual repo-update include path is missing, unsafe, absolute, or escapes the repo root, stop instead of guessing.

@@ -1,12 +1,12 @@
 ---
 name: dcoir-repo-packager
-description: build strict dcoir repo-layout zips and github-primary bootstrap bundles from the current authoritative dcoir project files. use when chatgpt needs to package the current project workspace for local repo-style testing or for a bootstrap refresh that follows the no-duplicate-readable-source rule. this skill is class-prefix aware, prefers control-plane roles over brittle legacy filenames, supports the current github-primary layout, and must stop if the required control-plane roles or required current roots cannot be resolved.
+description: build strict dcoir repo-layout zips, github-primary bootstrap bundles, and github desktop manual repo-update patch bundles from the current authoritative dcoir project files. use when chatgpt needs to package the current project workspace for local repo-style testing, prepare a bootstrap refresh that follows the no-duplicate-readable-source rule, or emit a github desktop manual repo-update bundle containing only affected repo-relative files with no wrapper root. this skill is class-prefix aware, prefers control-plane roles over brittle legacy filenames, supports the current github-primary layout, and must stop if the required control-plane roles or requested paths cannot be resolved safely.
 ---
 
 # DCOIR Repo Packager
 
 ## Overview
-Build strict DCOIR repo-layout ZIPs and GitHub-primary bootstrap/update bundles from the current approved DCOIR file set.
+Build strict DCOIR repo-layout ZIPs, GitHub-primary bootstrap/update bundles, and GitHub Desktop manual repo-update patch bundles from the current approved DCOIR file set.
 
 This skill is project-gated and must only act when the current DCOIR control plane is present and the required current roots can be resolved.
 Use this skill after authority, promotion, rename, and content decisions are already settled.
@@ -28,13 +28,15 @@ Legacy compatibility aliases may be accepted only when the bundled mapping rules
 
 Also stop if any of these are true:
 - the required control-plane roles cannot be resolved
-- a required current root or file is missing from disk
+- a required current root or file is missing from disk for the selected mode
 - the current layout drifts beyond what this skill knows how to package safely
+- a requested GitHub Desktop manual repo-update path is missing, unsafe, absolute, or escapes the repo root
 
 ## What this skill may do
 - Build a strict `DCOIR_Project/` repo-layout ZIP for local testing.
 - Build a GitHub-primary bootstrap/update bundle with only `project_settings/`, retained `supporting_assets/` when present, and `release_notes/RELEASE_INSTRUCTIONS.txt`.
-- Build both outputs in one run when asked.
+- Build a GitHub Desktop manual repo-update bundle with only the affected repo-relative files and folders, no wrapper root, and a suggested commit summary surfaced in the report.
+- Build repo and update outputs in one run when asked.
 - Report exactly what it created and where files were emitted.
 
 ## What this skill must not do
@@ -45,6 +47,7 @@ Also stop if any of these are true:
 - Do not invent folders or filenames.
 - Do not silently continue when the control plane or required roots drift.
 - Do not reintroduce duplicate readable governed text files into a Project bootstrap bundle.
+- Do not add extra wrapper roots or extra top-level helper files to a GitHub Desktop manual repo-update bundle.
 
 ## Packaging modes
 
@@ -70,12 +73,20 @@ Also stop if any of these are true:
 3. **Both mode**
    - Build both repo and update outputs in one run.
 
+4. **GitHub Desktop manual repo-update mode**
+   - Use when the operator wants a patch-style ZIP for GitHub Desktop that contains only the affected repo-relative paths.
+   - Require one or more `--include-path` values.
+   - Preserve the repo-relative paths exactly as provided.
+   - Do not add a wrapper root.
+   - Surface the suggested commit summary in the JSON report and in the chat response, not as an extra file inside the ZIP.
+
 ## Workflow
 1. Verify the DCOIR project gate by discovery contract and control-plane role, not just one hard-coded historic filename set.
 2. Decide the packaging mode from the user's request.
-3. Run `scripts/create_dcoir_bundle.py`.
-4. Read the generated JSON report.
-5. Share the ZIP file or files and summarize only the key packaging result.
+3. For GitHub Desktop manual repo-update mode, collect the affected repo-relative paths and the suggested commit summary.
+4. Run `scripts/create_dcoir_bundle.py`.
+5. Read the generated JSON report.
+6. Share the ZIP file or files and summarize only the key packaging result.
 
 ## Commands
 Repo bundle:
@@ -93,6 +104,11 @@ Both:
 python scripts/create_dcoir_bundle.py --source-dir /mnt/data --output-dir /mnt/data/dcoir_packager_out --mode both
 ```
 
+GitHub Desktop manual repo-update bundle:
+```bash
+python scripts/create_dcoir_bundle.py --source-dir /mnt/data --output-dir /mnt/data/dcoir_packager_out --mode github-desktop-manual-update --include-path project_sources/CP-01_DCOIR_Version_Manifest.txt --include-path dcoir_skills/dcoir-repo-packager/SKILL.md --commit-summary "record startup validation and repair github desktop patch-bundle packaging"
+```
+
 ## Output handling
 After the script runs:
 - Read the generated `packager_report.json`.
@@ -100,6 +116,7 @@ After the script runs:
 - If `success` is true, provide the resulting ZIP link or links.
 - For repo mode, describe it as a strict local-testing repo-layout bundle.
 - For update mode, describe it as a GitHub-primary bootstrap bundle and remind the user to follow `release_notes/RELEASE_INSTRUCTIONS.txt`.
+- For GitHub Desktop manual repo-update mode, describe it as a patch-style GitHub Desktop bundle containing only the affected repo-relative paths with no wrapper root, and include the suggested commit summary in the response.
 - Treat settings content and supporting assets as separate bootstrap-bundle classes.
 
 ## References

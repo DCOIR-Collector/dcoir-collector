@@ -1,24 +1,24 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-resume-status-fast-path-v1
+Current state id: 2026-04-05-startup-validated-and-manual-bundle-fix-v1
 
-1. Live-validate the updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path together with the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
+1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline.
    Why it matters:
-   - The operator now expects both correct startup bootstrap behavior and a faster, more disciplined lane for simple current-state checks, and that combined posture still needs a real workflow validation for trust.
+   - The project now has real-session proof for the first-turn bootstrap pair, tighter resume-only routing, and stronger startup local-JSON behavior, so deeper execution and code-hygiene review can proceed with less hidden-state risk and less avoidable startup friction.
    Next action:
-   - Use a fresh-session DCOIR current-state check and then a real workflow branch to verify that the bootstrap pair stays on the governed GitHub readable-text fast path before alternate lanes are considered and that the startup local-JSON messaging remains strong in practice.
+   - Rank the next highest-value helper-skill target and begin the next execution and code review pass under the current CI/CD-style validation regime.
 
-2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the stronger local-state proof and tighter resume-only routing baseline.
+2. Use the repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode for future affected-file governed repo-update deliveries.
    Why it matters:
-   - The project now has a validation regime, parity baseline, discovery contract, stronger local-state proof behavior across the confirmed local-JSON skills, and a more disciplined resume-only routing lane, so deeper execution and code-hygiene review can proceed with less hidden-state risk and less avoidable startup friction.
+   - The recorded GitHub Desktop delivery preference now has a direct packaging lane, so future delivery sessions do not need to fall back to copy-paste file-content patches when the affected repo files are already settled.
    Next action:
-   - After the combined live validation, rank the next deep-dive targets and begin the next highest-value execution and code review pass.
+   - Keep using the repaired affected-path bundle mode for GitHub Desktop manual repo updates and re-check the lane when workflow assumptions materially change.
 
-3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+3. Maintain the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.
    Why it matters:
-   - The project wants evidence before widening the stamped active-surface set, and synthetic or generated-artifact validation should not count as real live resume cycles.
+   - The project wants one more qualifying live resume cycle before widening the stamped active-surface set, and synthetic or generated-artifact validation should not count.
    Next action:
-   - Decrement the countdown only after a qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.
+   - Decrement the countdown only after the next qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.
 
 4. Review any remaining hard-coded literals only as bounded contractual exceptions.
    Why it matters:

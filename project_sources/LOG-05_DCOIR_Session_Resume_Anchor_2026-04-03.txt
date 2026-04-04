@@ -1,26 +1,29 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-04-resume-status-fast-path-v1
+Current state id: 2026-04-05-startup-validated-and-manual-bundle-fix-v1
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.
 - Use it when resuming in a brand-new session after reading Project Instructions, CP-01, and CP-02.
-- This session family now includes helper-skill workflow enforcement, drift-gate integration, plan-tracker repair, coordinated stateful-skill updates, the inventory-driven alignment pass, repo-packager repair, validation-regime activation, skill parity baselining, hard-coded-project-variable audit passes 1 through 4, session-tracker deep-dive pass 1, the session-tracker presence-guard pass, the stateful local-JSON startup preflight rollout, the recorded delivery-bundle plus GitHub Desktop commit `Summary` preferences, and the resume-status fast-path tightening pass.
+- This session family now includes helper-skill workflow enforcement, drift-gate integration, plan-tracker repair, coordinated stateful-skill updates, the inventory-driven alignment pass, repo-packager repair, validation-regime activation, skill parity baselining, hard-coded-project-variable audit passes 1 through 4, session-tracker deep-dive pass 1, the session-tracker presence-guard pass, the stateful local-JSON startup preflight rollout, the recorded delivery-bundle plus GitHub Desktop commit `Summary` preferences, the resume-status fast-path tightening pass, the real-session startup-flow validation, and the GitHub Desktop manual repo-update bundle mode fix.
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
 - Project Instructions remain the first bootstrap anchor.
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- The authoritative active work queue now points at live validation of the updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path together with the `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON and missing-state behavior inside the broader deep-dive and code-hygiene campaign.
+- The authoritative active work queue now points at the broader helper-skill deep-dive and code-hygiene campaign from the live-validated first-turn bootstrap pair, resume-status fast path, startup local-JSON and missing-state behavior, and repaired GitHub Desktop manual repo-update bundle mode.
 
 Current governed workflow state
-- The helper-skill workflow, drift-gate, direct-resume, plan-tracker, coordinated stateful-trio, inventory-pass, repaired repo-packager, validation regime, skill parity, hard-coded-variable audit, first session-tracker deep-dive line, second session-tracker presence-guard line, the bounded local-JSON startup preflight rollout, the recorded delivery-bundle plus GitHub Desktop commit `Summary` preferences, and the bounded resume-status fast-path tightening line are grounded.
+- The helper-skill workflow, drift-gate, direct-resume, plan-tracker, coordinated stateful-trio, inventory-pass, repaired repo-packager, validation regime, skill parity, hard-coded-variable audit, first session-tracker deep-dive line, second session-tracker presence-guard line, the bounded local-JSON startup preflight rollout, the recorded delivery-bundle plus GitHub Desktop commit `Summary` preferences, the bounded resume-status fast-path tightening line, the live startup-flow validation, and the repaired GitHub Desktop manual repo-update bundle lane are grounded.
 - The practical high-value discovery-contract adoption pass is materially complete for the currently identified helper-skill surfaces.
-- The stamped active-surface widening hold remains at 2 remaining real resume cycles and should not be decremented for synthetic or generated-artifact validation alone.
+- The updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path are now live-validated together with the updated `dcoir-session-tracker` plus `dcoir-plan-tracker` startup local-JSON and missing-state behavior.
+- The stamped active-surface widening hold now has 1 remaining real resume cycle and should not be decremented for synthetic or generated-artifact validation alone.
 
 What is still open right now
-1. Live-validate the updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path together with the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
-2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the explicit validation structure.
-3. Continue enforcing the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other buffer-capable skills before future governed pushes.
-4. Use the recorded delivery-bundle structure preference and GitHub Desktop commit `Summary` preference for future manual deliveries unless a later request overrides them.
+1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the now live-validated startup and repaired delivery baseline.
+2. Rank and execute the next highest-value helper-skill execution and code review pass under the current CI/CD-style validation regime.
+3. Use the repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode for future affected-file governed repo-update deliveries and keep validating it as the workflow evolves.
+4. Continue enforcing the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other buffer-capable skills before future governed pushes.
+5. Use the recorded delivery-bundle structure preference and GitHub Desktop commit `Summary` preference for future manual deliveries unless a later request overrides them.
+6. Keep the stamped active-surface widening hold at 1 remaining real resume cycle before any widening review.
