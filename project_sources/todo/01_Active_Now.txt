@@ -1,32 +1,26 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-skill-parity-v1
+Current state id: 2026-04-04-hardcoded-audit-v1
 
-1. Use `dcoir-parity-verifier` to perform the full repo-source skill parity rebaseline.
+1. Continue the hard-coded-project-variable audit across remaining skills and workflow surfaces.
    Why it matters:
-   - The current canonical parity manifest is a bootstrap seeded from the installed skill tree plus the new parity-verifier skill, and it should not be treated as a fully repo-verified baseline until a repo-source rebaseline happens.
+   - The operator wants DCOIR helper skills to evolve with the project rather than repeatedly breaking on renamed files, moved control-plane surfaces, or transferred workflow contexts.
    Next action:
-   - Rebuild the manifest from the governed repo source root, regenerate the summary, and compare installed skill trees or install zips against that canonical baseline.
+   - Use the new governed discovery contract where it replaces brittle bootstrap literals and identify the next highest-value skills or workflow surfaces still relying on repeated project-specific assumptions.
 
-2. Keep the CI/CD-style validation regime active and use the parity output to shape the broader deep-dive and code-hygiene campaign.
+2. Keep the CI/CD-style validation regime active and use the parity/discovery outputs to anchor the broader helper-skill deep-dive and code-hygiene campaign.
    Why it matters:
-   - The project now has a grounded inventory, parity surface, and validated reference workflows, so broader testing and code review can proceed from explicit evidence instead of from chat memory.
+   - The project now has a grounded inventory, parity surface, and first-pass discovery contract, so the deeper audit can be scoped from real current evidence rather than from chat memory.
    Next action:
-   - Feed the parity results into the skill deep-dive ranking and the validation-regime scenarios.
+   - Rank the next deep-dive targets and begin the highest-value execution and code review passes.
 
 3. Use the shared pre-push flush and staged-governed-update contract for session-memory-enabled or buffer-capable skills.
    Why it matters:
-   - Recent grouped updates proved that tracker and helper-memory state can still be missed when a suitable governed push is already happening in the same branch.
+   - Tracker and helper-memory state can still be missed when a suitable governed push is already happening in the same branch.
    Next action:
-   - Before future governed pushes, require the bounded flush/manicure review for the affected skills and verify staged updates land in the same grouped push.
+   - Before future governed pushes, require a bounded flush/manicure review for the buffer-capable skills and stage same-branch governed updates plus post-push cleanup.
 
-4. Audit skills for hard-coded project variables and replace brittle assumptions with current-project discovery where practical.
-   Why it matters:
-   - The project will keep growing and changing, so skills should assume less and read more from the current control plane, current repo state, and current parity surfaces.
-   Next action:
-   - Use the parity output and the deep-dive branch to rank and fix the highest-value hard-coded project assumptions first.
-
-5. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+4. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:
    - The project wants evidence before widening the stamped active-surface set, and synthetic or generated-artifact validation should not count as real live resume cycles.
    Next action:

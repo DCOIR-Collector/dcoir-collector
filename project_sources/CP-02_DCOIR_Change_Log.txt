@@ -1,29 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 3.9.32
-Current state id: 2026-04-04-skill-parity-rebaseline-v1
-Change class: dedicated skill parity verifier, canonical manifest surfaces, and bootstrap parity baseline
+Version: 3.9.33
+Current state id: 2026-04-04-hardcoded-audit-v1
+Change class: hard-coded project variable audit pass 1 and shared project discovery contract adoption
 
 What changed
-- Added `LOG-16_DCOIR_Skill_Parity_Verifier_And_Canonical_Manifest_Workflow_Decision_2026-04-04.txt` as the governed decision record for the dedicated parity-verifier branch.
-- Added the new governed helper skill `dcoir-parity-verifier`.
-- Added the canonical machine-readable parity surface `dcoir_skills/skill_parity_manifest.json`.
-- Added the generated human-readable parity companion `dcoir_skills/skill_parity_summary.md`.
-- Updated `dcoir_skills/README.md` and `knowledge/DCOIR_Helper_Skills_Routing_Note.md` so the new skill and parity surfaces are visible in the governed skill inventory.
-- Refreshed the active todo and continuity surfaces so they now point at full repo-source parity rebaseline and later hard-coded-project-variable auditing.
+- Added `dcoir_skills/project_discovery_contract.json` as the governed machine-readable discovery contract for current repo, control-plane, manifest-section, active-surface, and collector runtime-alias bootstrap assumptions.
+- Added `project_sources/LOG-18_DCOIR_Hard_Coded_Project_Variable_Audit_Pass1_2026-04-04.txt` as the governed decision record for the first hard-coded-project-variable audit pass.
+- Updated `dcoir-source-authority-auditor`, `dcoir-knowledge-doc-maintainer`, `dcoir-change-impact-analyzer`, and `dcoir-collector-qa` so they now read the shared discovery contract before falling back to packaged bootstrap assumptions.
+- Refreshed `dcoir_skills/README.md` so it now documents the project discovery contract alongside the parity surfaces.
+- Refreshed the active continuity and todo surfaces so they now point at the continuing hard-coded-project-variable audit and broader deep-dive/code-hygiene branch.
 
 Why
-- The project needed an executed parity baseline and a repeatable installed-skill verification result after introducing the parity-verifier workflow.
-- The earlier parity surfaces were intentionally bootstrap-level and needed a stronger rebaseline before they could anchor later deep-dive and hard-coded-variable audits.
+- The operator wants DCOIR helper skills to evolve with the project rather than repeatedly breaking on renamed files, moved control-plane surfaces, or transferred workflow contexts.
+- A governed machine-readable discovery contract reduces maintenance burden and increases future transferability.
+- Some exact project rules still remain acceptable bounded exceptions when they are the explicit contract being enforced rather than accidental discovery assumptions.
 
 Validation notes
-- Executed dcoir-parity-verifier against the current installed DCOIR skill trees available in the environment.
-- Built a refreshed parity manifest and rendered summary successfully.
-- Verified all current DCOIR installed skill trees and freshly packaged install zips against that baseline with overall status match.
-- This executed rebaseline is explicitly labeled baseline_origin: installed_skill_tree and should not be misdescribed as a strict checked-out repo-source baseline.
+- Local bounded regression passed the updated `dcoir-source-authority-auditor`, `dcoir-knowledge-doc-maintainer`, `dcoir-change-impact-analyzer`, and `dcoir-collector-qa` script paths on a synthetic current-project fixture that included the governed discovery contract.
+- Updated skill packages passed local packaging validation.
+- Wider audit of remaining skills and repo-level workflow surfaces remains the next branch.
 
 [PRIOR]
-Version: 3.9.30
-Current state id: 2026-04-04-validation-contract-v1
-Change class: validation-regime branch activation and session-memory pre-push flush contract
+Version: 3.9.32
+Current state id: 2026-04-04-skill-parity-rebaseline-v1
+Change class: skill parity rebaseline and installed-skill verification

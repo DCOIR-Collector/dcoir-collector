@@ -11,6 +11,20 @@ from zipfile import BadZipFile
 from pathlib import Path
 from typing import Any, Dict, List
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+SKILL_ROOT = SCRIPT_DIR.parent
+PACKAGED_CONTRACT_PATH = SKILL_ROOT / "references" / "project_discovery_contract.json"
+REPO_CONTRACT_PATH = Path("dcoir_skills/project_discovery_contract.json")
+
+def load_project_contract(source_dir: Path) -> dict[str, Any]:
+    repo_contract = source_dir / REPO_CONTRACT_PATH
+    candidate = repo_contract if repo_contract.exists() else PACKAGED_CONTRACT_PATH
+    return json.loads(candidate.read_text(encoding="utf-8"))
+
+CONTRACT = json.loads(PACKAGED_CONTRACT_PATH.read_text(encoding="utf-8"))
+MANIFEST_SECTION_KEYS = CONTRACT.get("manifest_sections", {})
+CURRENT_MANIFEST_HEADINGS = CONTRACT.get("current_prose_headings", {})
+
 MANIFEST_SECTION_KEYS = {
     "CURRENT GOVERNED GITHUB READABLE SOURCES": "governed_github_readable_sources",
     "CURRENT GOVERNED KNOWLEDGE SOURCES IN GITHUB": "governed_knowledge_sources",
@@ -18,13 +32,7 @@ MANIFEST_SECTION_KEYS = {
     "CURRENT SUPPORTING ASSETS IN GITHUB": "supporting_assets",
 }
 
-CURRENT_MANIFEST_HEADINGS = {
-    "current control plane": "governed_github_readable_sources",
-    "current repo guide": "governed_github_readable_sources",
-    "current collector files": "governed_github_readable_sources",
-    "current task-memory bank": "governed_github_readable_sources",
-    "current governed knowledge notes": "governed_knowledge_sources",
-}
+CURRENT_MANIFEST_HEADINGS = CONTRACT.get("current_prose_headings", CURRENT_MANIFEST_HEADINGS)
 
 DOC_TITLES = [
     "Knowledge - 01 - Overview and About.md.txt",
@@ -53,10 +61,7 @@ TOOL_DOC_MAP = {
     "tcpvcon": {"family": "TCPView/Tcpvcon", "doc_hint": "tcpview"},
 }
 
-CONTROL_FILE_CANDIDATES = {
-    "manifest": ["project_sources/CP-01_DCOIR_Version_Manifest.txt", "CP-01_DCOIR_Version_Manifest.txt"],
-    "change_log": ["project_sources/CP-02_DCOIR_Change_Log.txt", "CP-02_DCOIR_Change_Log.txt"],
-}
+CONTROL_FILE_CANDIDATES = {k: v for k, v in CONTRACT.get("control_file_roles", {}).items() if k in {"manifest", "change_log"}}
 
 
 def runtime_download_name(filename: str) -> str | None:
@@ -284,6 +289,7 @@ def inventory_knowledge_docs_zip(path: Path | None) -> List[str]:
 
 
 def main() -> int:
+    global MANIFEST_SECTION_KEYS, CURRENT_MANIFEST_HEADINGS, CONTROL_FILE_CANDIDATES
     ap = argparse.ArgumentParser()
     ap.add_argument('--source-dir', required=True)
     ap.add_argument('--state-file')
@@ -292,6 +298,10 @@ def main() -> int:
     args = ap.parse_args()
 
     source_dir = Path(args.source_dir)
+    contract = load_project_contract(source_dir)
+    MANIFEST_SECTION_KEYS = contract.get('manifest_sections', MANIFEST_SECTION_KEYS)
+    CURRENT_MANIFEST_HEADINGS = contract.get('current_prose_headings', CURRENT_MANIFEST_HEADINGS)
+    CONTROL_FILE_CANDIDATES = {k: v for k, v in contract.get('control_file_roles', {}).items() if k in {'manifest', 'change_log'}}
     manifest = resolve_existing_file(source_dir, CONTROL_FILE_CANDIDATES['manifest'])
     change_log = resolve_existing_file(source_dir, CONTROL_FILE_CANDIDATES['change_log'])
     manifest_data = parse_manifest(manifest)

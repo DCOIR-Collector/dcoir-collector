@@ -5,8 +5,25 @@ import argparse
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+SKILL_ROOT = SCRIPT_DIR.parent
+PACKAGED_CONTRACT_PATH = SKILL_ROOT / "references" / "project_discovery_contract.json"
+REPO_CONTRACT_PATH = Path("dcoir_skills/project_discovery_contract.json")
+
+def load_project_contract(source_dir: Path) -> dict[str, Any]:
+    repo_contract = source_dir / REPO_CONTRACT_PATH
+    candidate = repo_contract if repo_contract.exists() else PACKAGED_CONTRACT_PATH
+    return json.loads(candidate.read_text(encoding="utf-8"))
+
+CONTRACT = json.loads(PACKAGED_CONTRACT_PATH.read_text(encoding="utf-8"))
+CONTROL_FILE_CANDIDATES = CONTRACT.get("control_file_roles", {})
+ACTIVE_SURFACE_PATHS = CONTRACT.get("active_surface_paths", {})
+MANIFEST_SECTIONS = CONTRACT.get("manifest_sections", {})
+CURRENT_PROSE_HEADINGS = CONTRACT.get("current_prose_headings", {})
+
+# legacy packaged defaults preserved below only as initial fallback structure
 CONTROL_FILE_CANDIDATES = {
     "manifest": [
         "project_sources/CP-01_DCOIR_Version_Manifest.txt",
@@ -22,22 +39,10 @@ CONTROL_FILE_CANDIDATES = {
     ],
 }
 
-ACTIVE_SURFACE_PATHS = {
-    "manifest": "project_sources/CP-01_DCOIR_Version_Manifest.txt",
-    "change_log": "project_sources/CP-02_DCOIR_Change_Log.txt",
-    "session_handoff": "project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt",
-    "session_resume": "project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt",
-    "todo_log": "project_sources/LOG-01_DCOIR_Todo_Log.txt",
-    "todo_index": "project_sources/LOG-01_DCOIR_Todo_Index.txt",
-    "active_now": "project_sources/todo/01_Active_Now.txt",
-}
+ACTIVE_SURFACE_PATHS = CONTRACT.get("active_surface_paths", ACTIVE_SURFACE_PATHS)
+MANIFEST_SECTIONS = CONTRACT.get("manifest_sections", MANIFEST_SECTIONS)
+CURRENT_PROSE_HEADINGS = CONTRACT.get("current_prose_headings", CURRENT_PROSE_HEADINGS)
 
-MANIFEST_SECTIONS = {
-    "CURRENT GOVERNED GITHUB READABLE SOURCES": "governed_github_readable_sources",
-    "CURRENT GOVERNED KNOWLEDGE SOURCES IN GITHUB": "governed_knowledge_sources",
-    "CURRENT GOVERNED SETTINGS MIRRORS IN GITHUB": "governed_settings_mirrors",
-    "CURRENT SUPPORTING ASSETS IN GITHUB": "supporting_assets",
-}
 
 STATE_ID_RE = re.compile(r"^Current state id\s*:?\s*(.+?)\s*$", re.IGNORECASE)
 CP01_VERSION_RE = re.compile(r"^DCOIR Version Manifest\s+(\S+)\s*$", re.IGNORECASE)
@@ -64,9 +69,7 @@ def parse_current_prose_manifest(text: str) -> Dict[str, List[str]]:
         line = raw.strip()
         if not line:
             continue
-        if not line.startswith('- ') and not line.startswith('Version:') and line.endswith(':') is False and line in {
-            'Current control plane', 'Current repo guide', 'Current collector files', 'Current task-memory bank', 'Current governed helper-skill source', 'Current next work item'
-        }:
+        if not line.startswith('- ') and not line.startswith('Version:') and line.endswith(':') is False and line.lower() in CURRENT_PROSE_HEADINGS:
             heading = line
             continue
         if line.startswith('- '):
@@ -74,13 +77,11 @@ def parse_current_prose_manifest(text: str) -> Dict[str, List[str]]:
             value = payload.split(':', 1)[1].strip() if ':' in payload else payload
             if not looks_like_path(value):
                 continue
-            if heading in {'Current control plane', 'Current repo guide', 'Current collector files'}:
-                parsed['governed_github_readable_sources'].append(value)
-            elif heading == 'Current task-memory bank':
-                if value.startswith('knowledge/'):
-                    parsed['governed_knowledge_sources'].append(value)
-                else:
-                    parsed['governed_github_readable_sources'].append(value)
+            bucket = CURRENT_PROSE_HEADINGS.get((heading or '').lower())
+            if bucket == 'governed_knowledge_sources' and not value.startswith('knowledge/'):
+                bucket = 'governed_github_readable_sources'
+            if bucket:
+                parsed[bucket].append(value)
     return parsed
 
 
@@ -352,13 +353,20 @@ def audit(source_dir: Path, requested: List[str]) -> dict:
 
 
 def main() -> int:
+    global CONTROL_FILE_CANDIDATES, ACTIVE_SURFACE_PATHS, MANIFEST_SECTIONS, CURRENT_PROSE_HEADINGS
     ap = argparse.ArgumentParser()
     ap.add_argument('--source-dir', required=True)
     ap.add_argument('--requested-json', required=True)
     ap.add_argument('--output-json', required=True)
     args = ap.parse_args()
+    source_dir = Path(args.source_dir)
+    contract = load_project_contract(source_dir)
+    CONTROL_FILE_CANDIDATES = contract.get('control_file_roles', CONTROL_FILE_CANDIDATES)
+    ACTIVE_SURFACE_PATHS = contract.get('active_surface_paths', ACTIVE_SURFACE_PATHS)
+    MANIFEST_SECTIONS = contract.get('manifest_sections', MANIFEST_SECTIONS)
+    CURRENT_PROSE_HEADINGS = contract.get('current_prose_headings', CURRENT_PROSE_HEADINGS)
     requested = json.loads(Path(args.requested_json).read_text(encoding='utf-8')).get('requested_items', [])
-    result = audit(Path(args.source_dir), requested)
+    result = audit(source_dir, requested)
     out = Path(args.output_json)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2), encoding='utf-8')

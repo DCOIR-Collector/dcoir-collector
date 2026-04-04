@@ -6,7 +6,17 @@ import hashlib
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+SKILL_ROOT = SCRIPT_DIR.parent
+PACKAGED_CONTRACT_PATH = SKILL_ROOT / "references" / "project_discovery_contract.json"
+REPO_CONTRACT_PATH = Path("dcoir_skills/project_discovery_contract.json")
+
+def load_project_contract(source_dir: Path) -> dict[str, Any]:
+    repo_contract = source_dir / REPO_CONTRACT_PATH
+    candidate = repo_contract if repo_contract.exists() else PACKAGED_CONTRACT_PATH
+    return json.loads(candidate.read_text(encoding="utf-8"))
 
 REQUIRED_MARKERS = [
     "STATUS",
@@ -199,14 +209,12 @@ def main() -> None:
     extracted = extract_cleanup_commands(collector_text)
     code_blocks = build_code_blocks(suites, extracted)
 
-    runtime_alias_ok = (
-        "project_sources/DCOIR_Collector.ps1" in manifest_text
-        and "project_sources/run_DCOIR_Tests.ps1" in manifest_text
-        and ("Project bootstrap layout" in layout_text or "Project-bootstrap layout" in layout_text)
-        and "GitHub repository malwaredevil/dcoir-collector is the sole readable working-source location for governed text." in layout_text
-    )
+    contract = load_project_contract(manifest.parent.parent)
+    alias_contract = contract.get('collector_runtime_alias_contract', {})
+    runtime_alias_ok = all(token in manifest_text for token in alias_contract.get('manifest_required_strings', [])) and any(token in layout_text for token in alias_contract.get('layout_any_strings', []))
 
-    harness_targets_runtime_alias = r".\DCOIR_Collector.ps1" in tests_ps1_text or r".\DCOIR_Collector.ps1" in tests_cmd_text
+    runtime_alias = alias_contract.get('harness_runtime_alias', r'.\DCOIR_Collector.ps1')
+    harness_targets_runtime_alias = runtime_alias in tests_ps1_text or runtime_alias in tests_cmd_text
 
     output_contract_status = {
         marker: ("present" if positions else "missing")

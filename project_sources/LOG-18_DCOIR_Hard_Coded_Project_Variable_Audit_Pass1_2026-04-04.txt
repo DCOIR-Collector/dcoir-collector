@@ -1,0 +1,25 @@
+DCOIR Hard-Coded Project Variable Audit Pass 1 - 2026-04-04
+
+Current state id: 2026-04-04-hardcoded-audit-v1
+
+Decision
+- Introduce one governed machine-readable discovery contract at `dcoir_skills/project_discovery_contract.json` so current repo, control-plane, manifest-section, active-surface, and collector runtime-alias bootstrap assumptions do not remain buried as repeated code literals across multiple skills.
+- Treat this discovery contract as the preferred current-project bootstrap surface for eligible DCOIR helper skills.
+- Keep only a minimal packaged fallback copy inside affected skills so they can still operate when the repo-side governed source tree is not mounted.
+- Treat exact current project file families inside project-specific impact-rule files or explicit runtime-contract files as acceptable bounded exceptions when those rules are part of the skill's intentional project logic rather than brittle discovery assumptions.
+
+What changed in pass 1
+- `dcoir-source-authority-auditor` now loads current control-file roles, active-surface paths, manifest sections, and current-prose headings from the governed discovery contract when available.
+- `dcoir-knowledge-doc-maintainer` scanner now loads current control-file roles and manifest-section/current-heading mappings from the governed discovery contract when available.
+- `dcoir-change-impact-analyzer` now loads current control-file roles and manifest sections from the governed discovery contract before applying the project-specific impact rules.
+- `dcoir-collector-qa` now loads collector runtime-alias expectations from the governed discovery contract instead of relying only on embedded repo-name and path-string checks.
+
+Why
+- The operator wants DCOIR skills to evolve with the project instead of repeatedly breaking on renamed files, moved control-plane surfaces, or transferred workflow contexts.
+- A governed discovery contract reduces maintenance burden and improves later transferability.
+- Project-specific rules are still allowed when they are the deliberate contract of the skill rather than accidental discovery assumptions.
+
+Still open after pass 1
+- Continue the audit across remaining DCOIR skills and references for brittle repo-name strings, fixed file-family literals, or duplicated current-project assumptions that should become contract-driven.
+- Decide later whether additional repo-level governed machine-readable contracts are needed for task-memory, packaging, prompt-pack, or knowledge-maintenance discovery.
+- Keep the no-hard-coded-project-variable rule as the preferred direction, with bounded exceptions only when the exact project contract is itself the thing being enforced.

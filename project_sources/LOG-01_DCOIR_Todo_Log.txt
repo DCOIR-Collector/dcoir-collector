@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-04-skill-parity-v1
+Current state id: 2026-04-04-hardcoded-audit-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -11,10 +11,10 @@ Current stable pointers
 - Task memory manifest: knowledge/task_memory/00_registry/task_memory_manifest.yaml
 - Governed helper-skill source root: dcoir_skills/
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
-- Canonical skill parity surface: dcoir_skills/skill_parity_manifest.json
+- Current discovery contract: dcoir_skills/project_discovery_contract.json
 
 Current active priority
-- Use `dcoir-parity-verifier` to establish governed-source versus installed-skill parity as the current verification spine, then use that output to drive the broader helper-skill deep-dive, code-hygiene work, and the no-hard-coded-project-variable audit.
+- Continue the hard-coded-project-variable audit, use the governed discovery contract where it reduces brittle assumptions, and keep the validation-regime and pre-push-contract branches aligned while the broader helper-skill deep-dive begins.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -25,9 +25,7 @@ Detailed todo structure
 - project_sources/todo/05_Deferred_Or_Conditional.txt
 
 Queued next priorities
-- Build and use the CI/CD-style validation regime from the inventory and gap-analysis scope map.
-- Audit current helper skills for hard-coded project variables and replace brittle assumptions with current-project discovery where practical.
+- Continue the remaining-skill hard-coded-project-variable audit and reduce brittle bootstrap literals where current-project discovery can replace them.
+- Run the broader helper-skill deep dive to confirm current skills still execute successfully, remain current with project goals and governance, and do not carry obsolete or inefficient logic.
 - Review session-memory-enabled and buffer-capable skills for reliable pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior.
-- Use parity results to perform the broader helper-skill deep dive and confirm current skills still execute successfully and remain aligned with project goals and governance.
-- Audit skills for hard-coded project variables and replace brittle assumptions with current-project discovery where practical.
-- Continue improving folder-level documentation and building the fuller knowledge and wiki structure.
+- Improve the main README and folder-level documentation and continue building the fuller knowledge and wiki structure.

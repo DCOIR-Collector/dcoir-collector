@@ -10,6 +10,8 @@ from typing import Any, Dict, List, Optional
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_ROOT = SCRIPT_DIR.parent
 RULES_PATH = SKILL_ROOT / "references" / "impact_rules.json"
+PACKAGED_CONTRACT_PATH = SKILL_ROOT / "references" / "project_discovery_contract.json"
+REPO_CONTRACT_PATH = Path("dcoir_skills/project_discovery_contract.json")
 OUTPUT_MD = "dcoir_change_impact_report.md"
 OUTPUT_JSON = "dcoir_change_impact_report.json"
 
@@ -24,8 +26,19 @@ def read_text(path: Path) -> str:
 
 
 
-def load_rules() -> Dict[str, Any]:
-    return json.loads(RULES_PATH.read_text(encoding="utf-8"))
+def load_project_contract(source_dir: Path) -> Dict[str, Any]:
+    repo_contract = source_dir / REPO_CONTRACT_PATH
+    candidate = repo_contract if repo_contract.exists() else PACKAGED_CONTRACT_PATH
+    return json.loads(candidate.read_text(encoding="utf-8"))
+
+def load_rules(source_dir: Path) -> Dict[str, Any]:
+    rules = json.loads(RULES_PATH.read_text(encoding="utf-8"))
+    contract = load_project_contract(source_dir)
+    if contract.get("control_file_roles"):
+        rules["control_file_roles"] = contract["control_file_roles"]
+    if contract.get("manifest_sections"):
+        rules["manifest_sections"] = contract["manifest_sections"]
+    return rules
 
 
 
@@ -187,7 +200,7 @@ def target_in_current_working_set(target: str, current_known: set[str]) -> bool:
 
 
 def build_analysis(source_dir: Path, changed_targets: List[str]) -> Dict[str, Any]:
-    rules = load_rules()
+    rules = load_rules(source_dir)
     resolved = resolve_control_files(source_dir, rules['control_file_roles'])
     manifest_name = resolved['manifest']
     manifest_data = parse_manifest_current_files(

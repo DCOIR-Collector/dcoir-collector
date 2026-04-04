@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-04-skill-parity-v1
+Current state id: 2026-04-04-hardcoded-audit-v1
 
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -8,10 +8,9 @@ Current stable artifacts
 - Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
 - GitHub helper-skill source layout and rollout guide: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
-- Helper-skill workflow decision logs: LOG-04 through LOG-16
+- Helper-skill workflow decision logs: LOG-04 through LOG-18
 - Task memory bank root: knowledge/task_memory
 - Governed helper-skill source root: dcoir_skills/
-- Skill parity surfaces: dcoir_skills/skill_parity_manifest.json and dcoir_skills/skill_parity_summary.md
 - Authoritative todo surfaces: project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt
 
 Current governance state
@@ -19,17 +18,18 @@ Current governance state
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
 - The repaired repo-packager is aligned to the current repo-style bundle model.
-- The validation-regime and pre-push-contract branch is already active.
-- The new parity-verifier branch now owns canonical skill parity surfaces and later rebaseline work.
+- The skill parity surfaces are live and the parity-verifier branch is grounded.
+- The governed discovery contract now carries the first shared machine-readable bootstrap assumptions for eligible helper skills.
 - The stamped active-surface widening hold remains at 2 remaining real resume cycles.
 
 Current validated status
 - The coordinated stateful-candidate trio campaign is live and bounded-validation ready.
 - The first inventory and documentation alignment pass is complete.
 - The repaired repo-packager source is aligned to the current repo-style roots and update-mode bootstrap-safe roots.
-- The new `dcoir-parity-verifier` scripts passed bounded local validation for manifest generation, summary generation, and tree or zip verification.
+- Installed skill parity has been checked against the live governed source on the rebaseline line.
+- First-pass discovery-contract adoption is locally validated on the affected skills.
 
 Current next planned work item
-- Use `dcoir-parity-verifier` to perform the first full repo-source rebaseline of the skill parity manifest.
-- Use the parity output to anchor the broader helper-skill deep-dive and code-hygiene campaign, including the hard-coded-project-variable audit.
-- Keep the shared pre-push flush and staged-governed-update contract active for future governed pushes.
+- Continue the hard-coded-project-variable audit across remaining skills and workflow surfaces.
+- Keep the CI/CD-style validation regime active and use the discovery contract and parity outputs to anchor the broader deep-dive and code-hygiene campaign.
+- Use the shared pre-push flush and staged-governed-update contract before future governed pushes.
