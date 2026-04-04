@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.28
+DCOIR Version Manifest 3.9.29
 
-Current state id: 2026-04-04-stateful-trio-v1
+Current state id: 2026-04-04-docs-alignment-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -20,6 +20,7 @@ Current control plane
 - Plan-tracker verbose resume-state and widening-hold workflow decision: project_sources/LOG-11_DCOIR_Plan_Tracker_Verbose_Resume_State_And_Widening_Hold_Workflow_Decision_2026-04-04.txt
 - Plan-tracker exact-resume-goal autofill fix and validation refresh: project_sources/LOG-12_DCOIR_Plan_Tracker_Exact_Resume_Goal_Autofill_Fix_And_Validation_Refresh_2026-04-04.txt
 - Coordinated stateful candidate trio campaign decision: project_sources/LOG-13_DCOIR_Coordinated_Stateful_Candidate_Trio_Campaign_Decision_2026-04-04.txt
+- Inventory and documentation alignment batch decision: project_sources/LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Batch_Decision_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -45,8 +46,8 @@ Current governed helper-skill source
 - `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` now form the coordinated stateful-candidate trio campaign for the remaining highest-value stateful or workflow-control upgrades.
 
 Current next work item
-- Run bounded regression on the coordinated stateful-candidate trio campaign, using representative operator-preference capture, post-blocker promotion-candidate staging, and coordinated multi-skill regression-plan output as the acceptance tests.
+- Run bounded validation on the inventory and documentation alignment batch, including the refreshed README surfaces and the helper-skills routing-note correction.
+- Audit `dcoir-repo-packager` alignment against the current control plane and source mapping before treating its bundle outputs as fully current.
 - Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
 - After each qualifying real resume cycle, decrement the widening-hold countdown in the governed todo or continuity surfaces and run the widening review only when the countdown reaches 0.
-- Decide which additional stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker, enforcement, direct-resume, plan-tracker, and coordinated-trio reference implementations are validated.
-- After that bounded pass, continue into the queued CI/CD-style validation regime, GitHub optimization and discovery work, connector research, Agent Mode research, and later redundancy audit captured in the authoritative todo structure.
+- Use the resulting grounded inventory and gap map to design the broader CI/CD-style end-to-end and edge-case validation regime.

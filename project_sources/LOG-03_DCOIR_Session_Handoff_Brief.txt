@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-04-stateful-trio-v1
+Current state id: 2026-04-04-docs-alignment-v1
 
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -8,7 +8,7 @@ Current stable artifacts
 - Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
 - GitHub helper-skill source layout and rollout guide: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
-- Helper-skill workflow decision logs: project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt, project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt, project_sources/LOG-07_DCOIR_GitHub_Update_Lane_Choice_And_Connector_Limitation_2026-04-03.txt, project_sources/LOG-08_DCOIR_Pre_GitHub_Update_Flush_And_Tracker_Verbosity_Workflow_Decision_2026-04-04.txt, project_sources/LOG-09_DCOIR_Current_State_And_Version_Checking_Enforcement_Workflow_Decision_2026-04-04.txt, project_sources/LOG-10_DCOIR_Session_Resume_Direct_Drift_Gate_Workflow_Decision_2026-04-04.txt, project_sources/LOG-11_DCOIR_Plan_Tracker_Verbose_Resume_State_And_Widening_Hold_Workflow_Decision_2026-04-04.txt, project_sources/LOG-12_DCOIR_Plan_Tracker_Exact_Resume_Goal_Autofill_Fix_And_Validation_Refresh_2026-04-04.txt, and project_sources/LOG-13_DCOIR_Coordinated_Stateful_Candidate_Trio_Campaign_Decision_2026-04-04.txt
+- Helper-skill workflow decision logs: LOG-04 through LOG-14
 - Task memory bank root: knowledge/task_memory
 - Governed helper-skill source root: dcoir_skills/
 - Authoritative todo surfaces: project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt
@@ -18,16 +18,15 @@ Current governance state
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
 - All `dcoir-*` skill source is now governed in GitHub under `dcoir_skills/`.
-- Helper working-state continuity remains under `dcoir_skill_memory/` only for the skills that still legitimately use it and should not be confused with source authority.
-- The active continuity surface set now carries the shared `current_state_id` `2026-04-04-stateful-trio-v1` as the current machine-checkable coordination signal.
-- The stamped active-surface widening hold remains at 2 remaining real resume cycles before any widening review.
-- The remaining highest-value stateful or workflow-control candidates are now being handled as one bounded coordinated campaign rather than a slow trickle of one-off pushes.
+- The documentation and helper-skill inventory surfaces are now on an explicit inventory-driven alignment branch.
+- The stamped active-surface widening hold remains at 2 remaining real resume cycles.
 
 Current validated status
-- `dcoir-session-tracker`, `dcoir-source-authority-auditor`, `dcoir-session-resume`, and `dcoir-plan-tracker` are the current validated reference implementations for the newer stateful-continuity pattern.
-- The coordinated trio patch set for `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` is live in governed source and ready for bounded campaign validation next.
+- The coordinated stateful-candidate trio campaign is live and bounded-validation ready.
+- The inventory pass has now produced a first grounded gap map for README surfaces, helper-skill inventory alignment, maintainer-skill ownership boundaries, and likely repo-packager risk.
+- The refreshed README and routing-note surfaces are ready for bounded validation next.
 
 Current next planned work item
-- Run bounded regression on the coordinated stateful-candidate trio campaign, using representative operator-preference capture, post-blocker promotion-candidate staging, and coordinated multi-skill regression-plan output as the acceptance tests.
-- Keep the widening-hold countdown explicit and unchanged at 2 remaining real resume cycles.
-- After the trio validation pass, decide which additional stateful `dcoir-*` skills truly need the same pattern next.
+- Validate the refreshed README and routing-note surfaces as the first inventory-driven alignment batch.
+- Audit `dcoir-repo-packager` against the current control plane and source mapping.
+- Use the resulting grounded inventory to design the broader CI/CD-style end-to-end and edge-case validation regime.

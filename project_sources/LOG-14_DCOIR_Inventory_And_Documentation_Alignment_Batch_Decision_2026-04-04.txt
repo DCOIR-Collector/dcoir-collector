@@ -1,0 +1,34 @@
+DCOIR Inventory And Documentation Alignment Batch Decision - 2026-04-04
+
+Purpose
+- Record the approved 2026-04-04 workflow decision for the first grounded inventory-and-gap-analysis follow-on batch.
+- Align the repo's README and helper-skill inventory surfaces to the live governed state before the later CI/CD-style validation-regime design and before broader documentation/knowledge maintenance expansion.
+
+Approved durable workflow decisions
+- The inventory-and-gap-analysis pass is broad enough to shape the next corrective campaign instead of waiting for a separate planning-only phase.
+- The first corrective batch after the 3.9.28 coordinated stateful-candidate trio campaign should be a bounded documentation and inventory alignment batch.
+- The batch should refresh the current high-value README surfaces:
+  - `README.md`
+  - `knowledge/README.md`
+  - `project_sources/README.md`
+  - `dcoir_skills/README.md`
+- The batch should also refresh `knowledge/DCOIR_Helper_Skills_Routing_Note.md` so the governed project-side helper-skill routing aid no longer lists helper skills that are not part of the current governed source root.
+- The batch should preserve the distinction between concise navigational README work and the broader later knowledge-doc generation or wiki-expansion work.
+- The batch should keep the later CI/CD-style validation-regime design line explicit and queued; this README/inventory batch is meant to sharpen the inventory that the later validation regime will use.
+- The inventory pass also identified `dcoir-repo-packager` as a likely alignment-risk review target, but that audit should remain a paired follow-on risk review rather than be silently folded into this README batch without explicit verification.
+
+Why
+- The root README already says the documentation goal is to make the repository understandable without hidden context and to strengthen folder-level README surfaces.
+- The current folder README surfaces remain too shallow for the repo's own stated documentation direction.
+- `dcoir_skills/README.md` is stale and still reflects only the older initial governed skill batch.
+- The helper-skills routing note should stay aligned to the real current helper-skill set and workflow rules.
+- A bounded README and inventory refresh improves discoverability for every later workflow, including validation-regime design and packaging review.
+
+Validation posture
+- Treat this as a bounded documentation and inventory-alignment batch.
+- Validate that the refreshed README surfaces are cross-linked, current-state-aware, and locally useful.
+- Validate that the refreshed routing note does not name helper skills that are absent from the current governed source root.
+- Do not decrement the stamped active-surface widening hold countdown for this batch because this is not a qualifying real resume-cycle event.
+
+Best next move
+- Apply one grouped README and routing-note refresh batch first, then audit `dcoir-repo-packager` against the current control plane, and then use the resulting grounded inventory to design the broader CI/CD-style validation regime.

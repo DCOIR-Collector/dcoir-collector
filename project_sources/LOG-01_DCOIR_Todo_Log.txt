@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-04-stateful-trio-v1
+Current state id: 2026-04-04-docs-alignment-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -13,7 +13,7 @@ Current stable pointers
 - Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
 
 Current active priority
-- Validate the coordinated stateful-candidate trio campaign for `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor`, with representative operator-preference capture, post-blocker promotion-candidate staging, and coordinated multi-skill regression-plan output as the leading acceptance tests, then use that result to decide which remaining stateful skills truly need the same pattern next.
+- Validate the inventory-driven documentation and helper-skill inventory alignment batch, then use the result to audit dcoir-repo-packager alignment and shape the broader CI/CD-style validation regime.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -22,12 +22,3 @@ Detailed todo structure
 - project_sources/todo/03_Documentation_And_Knowledge_Lane.txt
 - project_sources/todo/04_Structure_And_Refactor_Lane.txt
 - project_sources/todo/05_Deferred_Or_Conditional.txt
-
-Queued next priorities
-- Build a CI/CD-style end-to-end and edge-case validation regime for the repository, skills, workflows, and deliverables, with explicit pass/fail metrics and update expectations whenever the system changes.
-- Run a dedicated GitHub optimization and discovery pass focused on reducing approval friction, improving call efficiency, and preserving only validated patterns in durable guidance.
-- Research other ChatGPT connectors that add real project value, including better UI/UX, and identify when direct connector use or connector-aware helper-skill routing is worth the added complexity.
-- Explore how Agent Mode could fit the DCOIR workflow more cleanly, but do not adopt or document it as a working line until the available surface is researched and validated.
-- Continue maintaining and extending knowledge/task_memory as validated procedures, limitations, and failure signatures are learned.
-- Improve the main README and folder-level documentation and continue building the fuller knowledge or wiki structure.
-- After the tracker-centered structural, enforcement, and coordinated-trio passes, audit the repo for true duplicate content or other accidental redundancies and remove only verified overlap.

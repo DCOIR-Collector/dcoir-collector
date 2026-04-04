@@ -1,46 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.29
+Current state id: 2026-04-04-docs-alignment-v1
+Change class: inventory-driven documentation and helper-skill inventory alignment batch
+
+What changed
+- Applied the first grounded inventory-and-gap-analysis follow-on batch after the 3.9.28 coordinated stateful-candidate trio campaign.
+- Refreshed the current high-value README surfaces: `README.md`, `knowledge/README.md`, `project_sources/README.md`, and `dcoir_skills/README.md`.
+- Refreshed `knowledge/DCOIR_Helper_Skills_Routing_Note.md` so the governed project-side helper-skill routing aid no longer lists helper skills that are not part of the current governed source root.
+- Added `LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Batch_Decision_2026-04-04.txt` as the governed decision record for this bounded inventory-driven alignment batch.
+- Refreshed the active todo and continuity surfaces so they now point at bounded validation of the refreshed README and routing-note surfaces, followed by the `dcoir-repo-packager` alignment audit and then the broader CI/CD-style validation-regime design.
+
+Why
+- The inventory-and-gap-analysis pass showed that the helper-skill source root README was stale, the folder README surfaces were too shallow for the repo's own stated documentation direction, and the governed helper-skill routing note needed inventory correction.
+- The project wanted the next corrective batch to follow from grounded inventory rather than from ad hoc patching.
+- README and routing-surface accuracy improves discoverability for nearly every later workflow, including packaging review and validation-regime design.
+
+Validation notes
+- The refreshed README surfaces should be checked for current-state accuracy, cross-link usefulness, and local-guide value rather than treated as a cosmetic text-only change.
+- The refreshed helper-skills routing note should be checked against the current governed skill source root and current loaded skill surface before it is treated as fully aligned.
+- This batch does not decrement the stamped active-surface widening hold countdown because it is not a qualifying real resume-cycle event.
+
+[PRIOR]
 Version: 3.9.28
 Current state id: 2026-04-04-stateful-trio-v1
 Change class: coordinated stateful candidate trio campaign and durable batch-first delivery overlay
-
-What changed
-- Reviewed and patched the remaining highest-value stateful or workflow-control skill candidates in one coordinated campaign: `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor`.
-- Added `LOG-13_DCOIR_Coordinated_Stateful_Candidate_Trio_Campaign_Decision_2026-04-04.txt` as the governed decision record for the coordinated campaign.
-- Persisted the operator-approved durable rule that when the remaining similar scope is already known and regression can stay explicit, one bounded coordinated campaign is preferred over a slow stream of onesy-twosey pushes.
-- Updated `dcoir-decision-policy` so it now surfaces coordinated campaign scope, buffered decision state, deferred-review countdowns, and the durable batch-first delivery overlay more explicitly.
-- Updated `dcoir-memory-preflight` so post-blocker promotion candidates now surface richer operator-facing detail and explicit flush-trigger handling.
-- Updated `dcoir-skill-regression-auditor` so coordinated multi-skill campaigns now preserve self-first sequencing, grouped readiness reporting, and more explicit buffered regression state.
-- Refreshed the active todo and continuity surfaces so they now point at bounded validation of the coordinated trio campaign while keeping the stamped-surface widening hold countdown at 2 remaining real resume cycles.
-
-Why
-- The operator explicitly wanted to stop the slow trickle of one-off pushes and instead handle the remaining similar stateful skill candidates in one larger coordinated pass.
-- The remaining trio was coherent enough to patch together without widening the campaign blindly to every remaining skill.
-- `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` were the strongest remaining continuity-sensitive skills after the earlier reference implementations.
-
-Validation notes
-- Local bounded regression passed the coordinated trio artifacts: verbose decision-policy memory rendering, explicit post-blocker candidate staging in memory-preflight guidance, and coordinated multi-skill regression-plan output from the patched regression auditor.
-- The updated `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` skill packages passed local skill packaging validation.
-- Wider workflow validation of the coordinated trio campaign remains the next bounded branch.
-
-[PRIOR]
-Version: 3.9.27
-Current state id: 2026-04-04-plan-tracker-v2
-Change class: plan-tracker exact-resume-goal autofill fix and validation refresh
-
-What changed
-- Repaired the `dcoir-plan-tracker` local transition logic so `resume_state.exact_resume_goal` now auto-populates from the strongest available next-action field when an active task transitions to `in_progress` and the resume-goal field would otherwise stay blank.
-- Added `LOG-12_DCOIR_Plan_Tracker_Exact_Resume_Goal_Autofill_Fix_And_Validation_Refresh_2026-04-04.txt` as the governed decision record for this narrow repair.
-- Refreshed the active todo and continuity surfaces so they now treat the repaired plan-tracker path as ready for bounded workflow use, keep the widening-hold countdown at 2 remaining real resume cycles, and avoid decrementing that hold for generated-plan validation artifacts.
-- Rolled the active continuity surfaces to the new shared `current_state_id` `2026-04-04-plan-tracker-v2` to mark the repaired plan-tracker line.
-
-Why
-- Bounded real-world validation of 3.9.26 found one remaining operator-facing defect: `05_resume_state.md` still rendered `exact_resume_goal` as not recorded even when the active task already had a usable `next_action`.
-- That defect was narrow enough to repair directly without reopening the broader plan-tracker design branch.
-- Generated-plan validation is useful for this repair, but it should not count as one of the real live resume cycles that govern the stamped-surface widening hold countdown.
-
-Validation notes
-- Local bounded regression passed the repaired `dcoir-plan-tracker` script path: initialize a plan, add a task with a usable `next_action`, mark it `in_progress`, and confirm that `05_resume_state.md` now renders a non-empty `exact_resume_goal` plus the unchanged widening-hold countdown.
-- The updated `dcoir-plan-tracker` skill package passed local skill packaging validation.
-- The repaired plan-tracker path is ready for bounded workflow use.

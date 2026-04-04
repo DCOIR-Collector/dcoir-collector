@@ -1,33 +1,27 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-stateful-trio-v1
+Current state id: 2026-04-04-docs-alignment-v1
 
-1. Run bounded regression on the coordinated stateful-candidate trio campaign.
+1. Run bounded validation on the inventory-driven documentation and helper-skill inventory alignment batch.
    Why it matters:
-   - `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` are the strongest remaining stateful or workflow-control candidates after the earlier reference implementations, and the operator explicitly wanted a coordinated batch instead of a slow trickle of one-off pushes.
+   - The repo now has a stronger root README, stronger folder README surfaces, and a corrected helper-skills routing note candidate, but those surfaces still need proof that they are current, cross-linked, and locally useful rather than merely longer.
    Next action:
-   - Use representative operator-preference capture, post-blocker promotion-candidate staging, and coordinated multi-skill regression-plan output as the acceptance tests, then confirm that the trio is explicit enough for real workflow use.
+   - Validate the refreshed README.md, knowledge/README.md, project_sources/README.md, dcoir_skills/README.md, and knowledge/DCOIR_Helper_Skills_Routing_Note.md against the live governed repo and current skill surface.
 
-2. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+2. Audit `dcoir-repo-packager` alignment against the current control plane and source mapping.
    Why it matters:
-   - The project wants evidence before widening the stamped active-surface set, and that decision should stay visible, countable, and review-triggering rather than becoming a vague reminder.
+   - The inventory pass identified repo-packager as a likely real alignment risk because its source-mapping assumptions appear older than the current 3.9.28 control plane and could still shape bundle output.
    Next action:
-   - After each qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable, decrement the hold countdown in the governed todo or continuity surfaces and trigger a bounded widening review only when the countdown reaches 0.
+   - Review the full source_mapping.json and create_dcoir_bundle.py logic against the current manifest and current control-plane surfaces, then decide whether a bounded repair batch is required.
 
-3. Decide which additional `dcoir-*` skills truly need the same stateful flush/manicure and verbose-state treatment.
+3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:
-   - The tracker, enforcement, direct-resume, plan-tracker, and coordinated-trio campaign now cover the strongest first candidates, but the project still should not widen the pattern blindly.
+   - The project still wants evidence before widening the stamped active-surface set, and this documentation or packaging review work is not a qualifying real resume-cycle event.
    Next action:
-   - After the coordinated trio campaign is validated, inventory the remaining stateful skills and decide which need the same pattern next.
+   - Decrement the hold only after qualifying real direct-resume cycles on live governed state, and trigger a bounded widening review only when the countdown reaches 0.
 
-4. Use canonical task-memory preflight before GitHub-family execution work.
+4. Use the resulting grounded inventory and gap map to design the broader CI/CD-style validation regime.
    Why it matters:
-   - Validated procedures should be consulted before friction, not after avoidable misses or retries.
+   - The project already has a validation owner skill, but the broader end-to-end and edge-case validation regime should be designed from the real current deliverable set and proven current workflow owners.
    Next action:
-   - Check knowledge/task_memory and the applicable GitHub procedures before repo writes, deletes, packaging, or structural changes.
-
-5. Treat post-create and post-update helper-skill regression as mandatory.
-   Why it matters:
-   - Packaging success is not sufficient proof that a helper skill is ready for broader workflow use.
-   Next action:
-   - Pass every helper-skill create or update through dcoir-skill-regression-auditor and keep bounded evidence when full integrated regression is not yet practical.
+   - Feed the validated inventory and gap-analysis outputs into dcoir-validation-orchestrator rather than building the regime from assumptions.

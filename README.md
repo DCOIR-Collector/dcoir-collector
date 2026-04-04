@@ -21,7 +21,7 @@ This repository is not only a collector-script repo. It is the GitHub-primary wo
 - the Gemini parent-agent and sub-agent design line
 - the durable task-memory bank for validated procedures, limitations, and failure signatures
 
-### Working Model
+## Working Model
 
 - GitHub repository `malwaredevil/dcoir-collector` is the sole working source for governed readable text.
 - Project space is the bootstrap and runtime anchor, not a second editable readable-text repository.
@@ -49,6 +49,36 @@ The governed manifest, change log, workflow/layout guidance, todo and handoff st
 ### 5. Knowledge and documentation layer
 Human-readable workflow, usage, and supporting knowledge documents that explain how to use, maintain, validate, and extend the project.
 
+## Current Governed Continuity Surfaces
+
+Use these first when grounding current project state:
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
+- `project_sources/CP-02_DCOIR_Change_Log.txt`
+- `project_sources/LOG-01_DCOIR_Todo_Index.txt`
+- `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt`
+- `project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt`
+
+For helper-skill workflow governance and rollout rules, use:
+- `project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt`
+- `project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt`
+
+## Repository Navigation
+
+- [project_sources](project_sources/) — current governed readable project sources, including the control plane, continuity surfaces, collector line, prompt-pack line, and extracted readable Gemini source folders.
+- [knowledge](knowledge/) — current human-readable supporting knowledge docs, routing notes, connector references, and extracted readable knowledge folders.
+- [dcoir_skills](dcoir_skills/) — governed GitHub-readable helper-skill source root.
+- [project_settings](project_settings/) — current settings mirrors and bootstrap/runtime anchor material.
+- [release_notes](release_notes/) — release instructions and batch-application guidance when a bundle requires operator-side placement.
+- [supporting_assets](supporting_assets/) — retained binary and zip assets used for packaging, local execution, or supporting delivery workflows.
+
+## Helper-Skill Workflow and Governance
+
+- Helper-skill source governance lives under [dcoir_skills](dcoir_skills/).
+- Project-side helper-skill selection guidance lives in [knowledge/DCOIR_Helper_Skills_Routing_Note.md](knowledge/DCOIR_Helper_Skills_Routing_Note.md).
+- Evergreen helper-skill workflow rules live in `project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt`.
+- Evergreen GitHub helper-skill source layout and rollout rules live in `project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt`.
+- Helper-skill workflow changes should be reflected in the routing note, the relevant folder README surfaces, and the current continuity surfaces when they materially change project-side behavior.
+
 ## Scope Priorities
 
 The project currently spans:
@@ -60,19 +90,11 @@ The project currently spans:
 - bounded IOC and external-context enrichment using authoritative-source priority
 - maintainable GitHub-native readable sources, documentation, and continuity artifacts
 
-## Repository Navigation
-
-- [project_sources](project_sources/)
-- [knowledge](knowledge/)
-- [project_settings](project_settings/)
-- [release_notes](release_notes/)
-- [supporting_assets](supporting_assets/)
-
 ## Documentation Direction
 
 The documentation goal is to make the repository understandable without hidden context. Over time this should include:
 
-- a stronger root `README`
+- a strong root `README`
 - helpful folder-level `README` files
 - a fuller wiki-style knowledge structure in `knowledge/`
 - extracted readable materials from formerly zipped supporting bundles kept in governed folders under `project_sources/` and `knowledge/`

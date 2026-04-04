@@ -1,45 +1,26 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-04-stateful-trio-v1
+Current state id: 2026-04-04-docs-alignment-v1
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.
 - Use it when resuming in a brand-new session after reading Project Instructions, CP-01, and CP-02.
-- This file exists because the session family now includes tracker implementation, local-only tracker-memory transition, authoritative todo reprioritization, flush/manicure and verbosity decisions, current-state/version-checking enforcement, direct resume-gate decisions, plan-tracker resume-state work, and later the coordinated remaining stateful-candidate trio campaign decision.
+- This file exists because the session family now includes helper-skill workflow enforcement, current-state/version-checking enforcement, direct resume-gate integration, plan-tracker repair, coordinated stateful-trio upgrades, and now an inventory-driven documentation and helper-skill inventory alignment batch that should not be reconstructed from memory.
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
 - Project Instructions remain the first bootstrap anchor.
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- The helper-skill source policy question is no longer open: all `dcoir-*` skill source is now stored in GitHub.
-- The validated low-level git-object lane remains the approved chat-managed path for existing-file GitHub updates.
-- The authoritative active work queue now points at coordinated trio validation, the still-held widening countdown, and the question of which remaining stateful skills truly need the same pattern next.
+- The authoritative active work queue now points at README and routing-surface validation, repo-packager alignment review, and then the broader validation-regime design branch.
 
 Current governed workflow state
-- `dcoir-session-tracker` now uses the local JSON state file as its only working-state surface.
-- Cross-session continuity for `dcoir-session-tracker` now comes from exported handoff artifacts or governed Project-file promotion.
-- The tracker now preserves and renders richer item detail by default so the operator can understand carried state without reverse-engineering terse summaries.
-- The active continuity surface set now carries the shared `current_state_id` `2026-04-04-stateful-trio-v1`.
-- `dcoir-source-authority-auditor` now performs an explicit drift check across the initial stamped surface set and hard-stops on mismatched state ids or `CP-01` / `CP-02` version drift.
-- `dcoir-session-resume` now consumes that same drift gate directly before trusting supporting continuity surfaces during resume.
-- `dcoir-plan-tracker` now preserves verbose plan-resume state, explicit flush/manicure surfacing, and countdown-gated follow-up decisions.
-- The coordinated stateful-candidate trio campaign now covers `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` in one bounded pass.
-- The stamped active-surface widening hold remains at 2 remaining real resume cycles and is not decremented by campaign-local validation artifacts.
-
-What was completed in this session family
-1. Local-only tracker memory transition
-- Removed the GitHub-backed tracker-memory branch from `dcoir-session-tracker`.
-- Switched the tracker to the local JSON state file as the only working-state surface for this skill.
-
-2. Tracker, enforcement, direct-resume, and plan-tracker reference passes
-- Validated the stateful-continuity reference path across the tracker, source-authority drift gate, direct-resume gate, and plan-tracker verbose resume-state work.
-
-3. Coordinated remaining stateful-candidate trio campaign setup
-- Approved one bounded campaign for `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` instead of more onesy-twosey pushes.
-- Refreshed the active continuity surfaces to point at bounded trio validation next.
+- The helper-skill workflow, drift-gate, direct-resume, plan-tracker, and coordinated stateful-trio reference lines are already grounded.
+- The current first follow-on batch from the inventory pass is a bounded README and helper-skill inventory alignment batch.
+- The stamped active-surface widening hold remains at 2 remaining real resume cycles and should not be decremented for documentation-only or generated-artifact validation.
 
 What is still open right now
-1. Run bounded regression on the coordinated stateful-candidate trio campaign, using representative operator-preference capture, post-blocker promotion-candidate staging, and coordinated multi-skill regression-plan output as the acceptance tests.
-2. Keep the widening-hold countdown at 2 remaining real resume cycles until qualifying real resume passes occur.
-3. Decide which additional stateful `dcoir-*` skills truly need the same flush/manicure and verbose-state model after the coordinated trio campaign is validated.
+1. Validate the refreshed README and helper-skill routing surfaces as current, locally useful, and accurately cross-linked.
+2. Audit `dcoir-repo-packager` alignment against the current control plane and source mapping.
+3. Use the resulting grounded inventory and gap map to design the broader CI/CD-style validation regime.
+4. Continue deciding which later maintainer-skill and knowledge-doc workflow improvements should become follow-on governed campaigns.

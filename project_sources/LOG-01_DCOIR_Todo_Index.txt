@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-04-stateful-trio-v1
+Current state id: 2026-04-04-docs-alignment-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,13 +8,11 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Run bounded regression on the coordinated stateful-candidate trio campaign for `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor`.
-2. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
-3. Decide which additional stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker, enforcement, direct-resume, plan-tracker, and coordinated-trio reference implementations are validated.
-4. Build a CI/CD-style end-to-end and edge-case validation regime for the repository, skills, workflows, and deliverables.
-5. Run a dedicated GitHub optimization and discovery pass to reduce operator confirmation friction and improve call efficiency without writing unsupported assumptions into durable guidance.
-6. Research additional connectors and Agent Mode only after the tracker-centered enforcement workflow line is clearer and only promote validated conclusions.
-7. Continue using canonical task-memory preflight and grouped GitHub transactions for related chat-managed repo work.
+1. Run bounded validation on the inventory-driven documentation and helper-skill inventory alignment batch.
+2. Audit `dcoir-repo-packager` alignment against the current control plane and source mapping.
+3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+4. Use the resulting grounded inventory and gap map to design the broader CI/CD-style end-to-end and edge-case validation regime.
+5. Decide which additional stateful or documentation-owner `dcoir-*` skills should adopt stronger discovery, trigger-awareness, or verbose continuity behavior after the inventory-driven gaps are better understood.
 
 Todo-file map
 - todo/01_Active_Now.txt
@@ -24,4 +22,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Use the authoritative todo surfaces to validate the coordinated trio campaign first, keep the widening hold countdown explicit and unchanged at 2, and only then decide which remaining stateful skills truly need the same pattern next.
+- Validate the refreshed README and routing-note surfaces first, then audit dcoir-repo-packager while the inventory gaps are still fresh, and only then expand into the broader validation-regime design line.
