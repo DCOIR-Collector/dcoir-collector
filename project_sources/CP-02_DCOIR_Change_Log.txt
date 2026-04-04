@@ -1,6 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.25
+Current state id: 2026-04-04-resume-gate-v1
+Change class: session-resume direct drift-gate consumption and active-surface stamp correction
+
+What changed
+- Bound `dcoir-session-resume` directly to the `dcoir-source-authority-auditor` drift gate so resume now checks the shared active-surface `current_state_id` and the `CP-01` / `CP-02` version pair before trusting supporting continuity surfaces.
+- Added `LOG-10_DCOIR_Session_Resume_Direct_Drift_Gate_Workflow_Decision_2026-04-04.txt` as the governed workflow decision record for the direct resume-gate integration.
+- Corrected the missing shared `current_state_id` on `project_sources/LOG-01_DCOIR_Todo_Log.txt` so the full initial stamped active-surface set is now aligned again.
+- Rolled the active continuity surface set to the new shared `current_state_id` `2026-04-04-resume-gate-v1` to mark the direct-resume integration line.
+- Refreshed the active todo and continuity surfaces so they now point at bounded validation of the direct resume-gate path and the question of whether the stamped surface set should widen.
+
+Why
+- Fresh-session resume is one of the highest-risk places for plausible-but-stale continuity to slip through, so it should consume the same explicit drift gate rather than relying only on human interpretation of supporting notes.
+- Follow-on verification of 3.9.24 exposed that `LOG-01_DCOIR_Todo_Log.txt` had not yet received the shared `current_state_id`, so the initial stamped active-surface set needed a corrective refresh before it could be treated as fully aligned.
+- The project wanted one drift-logic source of truth rather than a weaker reimplementation inside the resume skill.
+
+Validation notes
+- Local bounded regression passed the deterministic `dcoir-source-authority-auditor` script path against the corrected active-surface set.
+- The updated `dcoir-session-resume` skill package passed local skill packaging validation and the contract-path review for direct drift-gate consumption.
+- Wider workflow validation of the direct resume-gate path remains the next bounded branch.
+
+[PRIOR]
 Version: 3.9.24
 Current state id: 2026-04-04-enforcement-v1
 Change class: current-state/version-checking enforcement workflow definition and source-authority drift-gate upgrade
@@ -20,23 +42,3 @@ Why
 Validation notes
 - Local bounded regression passed the deterministic `dcoir-source-authority-auditor` script path for an aligned active-surface fixture and the drift failure gate for an intentionally mismatched `current_state_id` fixture.
 - The upgraded auditor is ready for bounded workflow validation as the first explicit drift gate on the active continuity surface set.
-
-[PRIOR]
-Version: 3.9.23
-Change class: pre-GitHub-update flush/manicure workflow definition and verbose session-tracker upgrade
-
-What changed
-- Defined a bounded pre-GitHub-update flush/manicure workflow for stateful helper-skill session state, using `dcoir-session-tracker` as the reference implementation.
-- Embedded startup-speed, fresh-session resume predictability, and governance-gap detection into the active workflow line as explicit acceptance-test concerns instead of leaving them as informal chat observations.
-- Added a verbose tracker-entry standard so operator-facing tracker items now preserve fuller detail, rationale, carry-forward context, and promotion intent by default.
-- Updated the governed `dcoir-session-tracker` skill instructions, local-state workflow reference, export schema guidance, and local scripts so the tracker can store and render richer item detail.
-- Refreshed the active todo and continuity surfaces so they now point at post-patch validation of the tracker reference model and the linked current-state or version-checking enforcement problem.
-
-Why
-- New-session resume should be quick, predictable, and repeatable rather than dependent on manual reconstruction from terse continuity notes.
-- The tracker needs richer stored and rendered state so the operator can understand what is being carried forward without guessing what a short summary means.
-- Governance drift remains a critical project risk, so the flush/manicure workflow now explicitly surfaces promotion candidates, remain-local state, and the enforcement path that still needs to be finalized.
-
-Validation notes
-- Local tracker regression passed the bounded script path: initialize local state, upsert verbose items, inspect the real local JSON file, and render a markdown export with richer item detail.
-- The patched tracker reference model is ready for bounded fresh-session resume and governance-gap regression next.

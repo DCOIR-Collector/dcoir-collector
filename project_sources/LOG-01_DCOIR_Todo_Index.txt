@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-04-enforcement-v1
+Current state id: 2026-04-04-resume-gate-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,9 +8,9 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Run bounded regression on the initial shared `current_state_id` rollout and the upgraded `dcoir-source-authority-auditor` drift gate, using aligned and intentionally drifted active-surface fixtures as the acceptance tests.
-2. Decide whether `dcoir-session-resume` should consume the same drift gate directly after the auditor validation pass, and whether the stamped active-surface set should widen beyond the initial continuity set.
-3. Decide which other stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker and enforcement reference implementations are validated.
+1. Run bounded regression on the direct `dcoir-session-resume` consumption of the `dcoir-source-authority-auditor` drift gate, using aligned and intentionally drifted active-surface fixtures as the acceptance tests.
+2. Decide whether the stamped active-surface set should widen beyond the initial continuity set after the direct resume-gate validation pass.
+3. Decide which other stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker, enforcement, and direct-resume reference implementations are validated.
 4. Build a CI/CD-style end-to-end and edge-case validation regime for the repository, skills, workflows, and deliverables.
 5. Run a dedicated GitHub optimization and discovery pass to reduce operator confirmation friction and improve call efficiency without writing unsupported assumptions into durable guidance.
 6. Research additional connectors and Agent Mode only after the tracker-centered enforcement workflow line is clearer and only promote validated conclusions.
@@ -24,4 +24,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Use the authoritative todo surfaces to run the bounded enforcement-model validation pass first, then decide whether to widen the stamped surface set or bind the same drift gate directly into session resume.
+- Use the authoritative todo surfaces to run the bounded direct-resume drift-gate validation pass first, then decide whether to widen the stamped surface set or bind the same gate into additional workflow entry points.

@@ -1,11 +1,11 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-04-enforcement-v1
+Current state id: 2026-04-04-resume-gate-v1
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.
 - Use it when resuming in a brand-new session after reading Project Instructions, CP-01, and CP-02.
-- This file exists because the session family included local-file tracker implementation, local-only tracker-memory transition, authoritative todo reprioritization, broader continuity alignment, 2026-04-04 flush/manicure and verbosity decisions, and later 2026-04-04 current-state or version-checking enforcement decisions that should not be reconstructed from memory.
+- This file exists because the session family included local-file tracker implementation, local-only tracker-memory transition, authoritative todo reprioritization, broader continuity alignment, 2026-04-04 flush/manicure and verbosity decisions, 2026-04-04 current-state or version-checking enforcement decisions, and later 2026-04-04 direct resume-gate decisions that should not be reconstructed from memory.
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -14,15 +14,16 @@ Current stable baseline
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
 - The helper-skill source policy question is no longer open: all `dcoir-*` skill source is now stored in GitHub.
 - The validated low-level git-object lane remains the approved chat-managed path for existing-file GitHub updates.
-- The authoritative active work queue now points at current-state/version-checking enforcement validation, explicit drift-gate behavior, and the linked question of whether the same gate should be consumed directly by session resume.
+- The authoritative active work queue now points at direct session-resume drift-gate validation, stamped-surface widening decisions, and the linked question of which other stateful skills should adopt the same patterns.
 
 Current governed workflow state
 - `dcoir-session-tracker` now uses the local JSON state file as its only working-state surface.
 - Cross-session continuity for `dcoir-session-tracker` now comes from exported handoff artifacts or governed Project-file promotion.
 - The tracker now preserves and renders richer item detail by default so the operator can understand carried state without reverse-engineering terse summaries.
-- The active continuity surface set now carries the shared `current_state_id` `2026-04-04-enforcement-v1`.
+- The active continuity surface set now carries the shared `current_state_id` `2026-04-04-resume-gate-v1`.
 - `dcoir-source-authority-auditor` now performs an explicit drift check across the initial stamped surface set and hard-stops on mismatched state ids or `CP-01` / `CP-02` version drift.
-- `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/*.txt` now carry the authoritative active queue for the tracker-and-enforcement workflow branch.
+- `dcoir-session-resume` now consumes that same drift gate directly before trusting supporting continuity surfaces during resume.
+- `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/*.txt` now carry the authoritative active queue for the tracker-plus-enforcement-plus-direct-resume workflow branch.
 
 What was completed in this session family
 1. Local-only tracker memory transition
@@ -43,7 +44,12 @@ What was completed in this session family
 - Added the shared `current_state_id` rollout across the initial active continuity surfaces.
 - Upgraded `dcoir-source-authority-auditor` into the first explicit drift gate for that active-surface set.
 
+5. Direct session-resume drift-gate integration pass
+- Corrected the missing `current_state_id` on `LOG-01_DCOIR_Todo_Log.txt` so the initial active-surface set is fully stamped again.
+- Bound `dcoir-session-resume` directly to the same `dcoir-source-authority-auditor` drift gate.
+- Refreshed the active continuity surfaces to point at bounded validation of the direct resume-gate path next.
+
 What is still open right now
-1. Run bounded regression on the initial `current_state_id` rollout and the upgraded `dcoir-source-authority-auditor` drift gate, using aligned and intentionally drifted active-surface fixtures as the acceptance tests.
-2. Decide whether `dcoir-session-resume` should consume the same drift gate directly after the auditor validation pass, and whether the stamped surface set should widen beyond the initial active continuity set.
-3. Decide which other stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker and enforcement reference implementations are validated.
+1. Run bounded regression on the direct `dcoir-session-resume` consumption of the `dcoir-source-authority-auditor` drift gate, using aligned and intentionally drifted active-surface fixtures as the acceptance tests.
+2. Decide whether the stamped active-surface set should widen beyond the initial continuity set after the direct resume-gate validation pass.
+3. Decide which other stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker, enforcement, and direct-resume reference implementations are validated.

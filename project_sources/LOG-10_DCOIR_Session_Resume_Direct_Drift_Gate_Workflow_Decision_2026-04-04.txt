@@ -1,0 +1,38 @@
+DCOIR Session-Resume Direct Drift-Gate Workflow Decision - 2026-04-04
+
+Purpose
+- Record the approved 2026-04-04 workflow decisions for binding `dcoir-session-resume` directly to the explicit `dcoir-source-authority-auditor` drift gate.
+- Prevent plausible but stale resume summaries from bypassing the same active-surface alignment checks already introduced for the enforcement workflow.
+
+Approved durable workflow decisions
+- `dcoir-session-resume` should read `CP-01` first and `CP-02` second, then consume the `dcoir-source-authority-auditor` drift gate before trusting supporting continuity surfaces such as `LOG-03`, `LOG-05`, `LOG-01_DCOIR_Todo_Log.txt`, `LOG-01_DCOIR_Todo_Index.txt`, and `todo/01_Active_Now.txt`.
+- `dcoir-session-resume` should not reimplement a weaker duplicate of the drift logic. It should use the same gate as the authoritative current-state alignment check.
+- If the drift gate returns `hard_stop_conflict`, `dcoir-session-resume` must stop and report the exact conflict rather than continuing into a normal resume summary.
+- If the drift gate returns `proceed_bounded`, `dcoir-session-resume` may continue only with bounded claims and must state which active surfaces were unavailable.
+- If the drift gate returns `clear_to_proceed`, `dcoir-session-resume` may continue into the normal resume output contract.
+- The missing `current_state_id` on `project_sources/LOG-01_DCOIR_Todo_Log.txt` discovered during follow-on 3.9.24 verification is now treated as a real governance-drift defect and must be corrected rather than hand-waved.
+- The shared `current_state_id` remains a coordination and drift-detection aid, not a replacement for the control plane or a claim that every semantic detail already matches perfectly.
+
+Direct resume-gate sequence
+1. Re-anchor to Project Instructions, then `CP-01`, then `CP-02`.
+2. Invoke the `dcoir-source-authority-auditor` drift gate on the active continuity surface set.
+3. If the gate returns `hard_stop_conflict`, stop and report the exact mismatch, the affected surfaces, and the smallest remediation set.
+4. If the gate returns `proceed_bounded`, continue only with bounded claims and explicit missing-surface callouts.
+5. If the gate returns `clear_to_proceed`, continue with the normal `dcoir-session-resume` output contract.
+6. Do not let a superficially familiar work line override an explicit drift result.
+
+Implementation posture
+- Keep one drift-logic source of truth in `dcoir-source-authority-auditor`.
+- Treat `dcoir-session-resume` as a workflow consumer of that gate, not as a second enforcement engine.
+- Keep the stamped active-surface set operator-understandable while the model is still being validated.
+- Continue to separate drift detection and explicit callout from actual governed-file remediation.
+
+Immediate validation targets
+1. Confirm that the corrected active-surface set clears the drift gate.
+2. Confirm that an intentionally drifted fixture hard-stops before a normal resume summary is produced.
+3. Confirm that the stop report is explicit enough to support quick operator understanding and grouped remediation.
+4. Confirm that the clean path still produces a concise and useful resume summary after the gate clears.
+5. Decide whether the stamped active-surface set should widen beyond the initial continuity set after this bounded pass.
+
+Best next move
+- Run bounded regression on the direct `dcoir-session-resume` consumption of the drift gate, then decide whether to widen the stamped surface set or bind the same gate into additional workflow entry points.

@@ -1,24 +1,24 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-enforcement-v1
+Current state id: 2026-04-04-resume-gate-v1
 
-1. Run bounded regression on the initial shared `current_state_id` rollout and the upgraded `dcoir-source-authority-auditor` drift gate.
+1. Run bounded regression on the direct `dcoir-session-resume` consumption of the `dcoir-source-authority-auditor` drift gate.
    Why it matters:
-   - The project now has an explicit drift gate and a machine-checkable active-surface coordination signal, but it still needs proof that the aligned path clears cleanly and the intentionally drifted path fails clearly enough to support real workflow use.
+   - The project now has an explicit drift gate and a machine-checkable active-surface coordination signal, but the resume entry point still needs proof that it stops correctly on drift and resumes cleanly when the active continuity surfaces are aligned.
    Next action:
-   - Use aligned and intentionally drifted active-surface fixtures as the acceptance tests, then inspect whether the conflict report is explicit enough to support quick operator understanding and grouped remediation.
+   - Use aligned and intentionally drifted active-surface fixtures as the acceptance tests, then inspect whether the stop report and the clean resume path are explicit enough to support quick operator understanding and grouped remediation.
 
-2. Decide whether `dcoir-session-resume` should consume the same drift gate directly, and whether the stamped active-surface set should widen beyond the initial continuity set.
+2. Decide whether the stamped active-surface set should widen beyond the initial continuity set.
    Why it matters:
-   - The auditor is now the first explicit enforcement gate, but the project still needs to decide how aggressively the same mechanism should shape fresh-session resume and which surfaces need the shared stamp.
+   - The initial stamped surface set is now aligned again and the first explicit drift gate is live, but the project still needs to decide whether a larger stamped set would improve correctness enough to justify the extra maintenance.
    Next action:
-   - After the bounded auditor validation pass, decide whether direct resume-gate consumption or a wider stamped-surface set would materially improve correctness without adding noise.
+   - After the bounded direct-resume validation pass, inventory the adjacent continuity surfaces and decide whether widening the stamped set improves real workflow safety without adding avoidable noise.
 
 3. Decide which other `dcoir-*` skills truly need the same stateful flush/manicure and verbose-state treatment.
    Why it matters:
    - `dcoir-session-tracker` is the first proving ground, but other stateful helper skills may also need explicit pre-write state surfacing and richer operator-facing continuity.
    Next action:
-   - After the tracker and enforcement reference implementations are both validated, inventory the other stateful skills and decide which ones should adopt the same pattern.
+   - After the tracker, enforcement, and direct-resume reference implementations are validated, inventory the other stateful skills and decide which ones should adopt the same pattern.
 
 4. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:
