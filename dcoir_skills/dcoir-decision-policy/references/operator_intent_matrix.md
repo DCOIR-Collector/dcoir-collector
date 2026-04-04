@@ -52,5 +52,13 @@ Use this file as the highest-precedence approved overlay inside the skill, below
 - Why it persists: reflects the operator's explicit direction that the remaining similar stateful-skill work should be delivered as a larger coordinated push instead of a slow trickle.
 - Source of learning: explicit operator preference stated in chat during the coordinated stateful-candidate campaign decision.
 
+
+### Rule 9: for multiple updated skills, prefer one outer zip with top-level per-skill zips named after the live skill names
+- Trigger condition: more than one updated skill package is being handed to the operator in the same branch.
+- Default action: prefer one outer zip that contains top-level per-skill zip files named after the live skills, such as `dcoir-decision-policy.zip`, with no nested subfolders, unless a platform constraint or the operator explicitly overrides that delivery shape.
+- Why it persists: reflects the operator's explicit preference to minimize repetitive downloads and make manual multi-skill installation as frictionless as possible.
+- Source of learning: explicit operator preference stated in chat during the validation-regime branch.
+
 ## Usage rule
+
 When a rule in this file applies, prefer it over generic defaults in `decision_matrix.md` unless doing so would conflict with the control plane or safety.

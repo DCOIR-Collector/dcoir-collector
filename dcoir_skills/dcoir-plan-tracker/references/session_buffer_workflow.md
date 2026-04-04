@@ -10,6 +10,7 @@ Plan-tracker may keep related tracker changes session-local until the next suita
 
 ## Preferred flush-check trigger points
 - before any GitHub write
+- when a governed push, GitHub Desktop push, or grouped repo batch is about to happen
 - after blocker resolution
 - when switching major tasks
 - at major milestones
@@ -22,7 +23,8 @@ Plan-tracker may keep related tracker changes session-local until the next suita
 2. Surface buffered plan-state changes, blocker-recovery notes, promotion candidates, and pending flush items.
 3. Surface what is safe to flush now.
 4. Surface what should remain local or buffered for now.
-5. Surface the next flush trigger and one best next move.
+5. Surface staged governed updates and active-todo changes that should land in the same grouped push when safe.
+6. Surface the next flush trigger and one best next move.
 6. If the current branch includes a countdown-gated decision, show the remaining count and the trigger condition explicitly.
 
 Truth rule:

@@ -170,6 +170,7 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - apply already-approved operator preferences that affect bundle shape, file count, update friction, campaign scope, or operator update handling
 - if the task requires choosing the formal release or packaging class for an already-identified change, use `dcoir-release-scope-builder`
 - once the packaging class is known, prefer one zip bundle when more than one downloadable file would otherwise be handed back, unless a platform constraint or the operator explicitly requires separate files
+- when more than one updated skill package is being handed back, prefer one outer zip with top-level per-skill zip files named after the live skill names unless the operator explicitly requests another shape
 - for multiple updated skills, prefer one bounded coordinated batch when it reduces operator friction and the remaining similar scope is already known, but still ensure every materially changed skill receives regression coverage before readiness claims
 - never infer promotions
 

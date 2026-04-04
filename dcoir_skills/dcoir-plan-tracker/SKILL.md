@@ -203,7 +203,7 @@ Supported commands include:
 5. Update `plan_tracker_registry.json` and `plan_tracker_memory.md`.
 6. Read `00_index.md`, `05_resume_state.md`, and `plan_state.json` first when resuming.
 7. Update markdown and json together whenever the plan changes.
-8. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces buffered state, promotion candidates, what should remain local, the next flush trigger, and one best next move.
+8. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces buffered state, promotion candidates, what should remain local, the next flush trigger, one best next move, and any staged governed updates that should land in the same grouped push.
 9. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger.
 10. Use the github connector directly for safe governed readable-text writes when available.
 11. Verify repo state after writes instead of trusting success messages alone.

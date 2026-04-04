@@ -12,6 +12,7 @@ Use session-local buffering when staging related GitHub-readable updates or help
 
 ## Preferred flush-check trigger points
 - before any GitHub write
+- when a governed push, GitHub Desktop push, or grouped repo batch is about to happen
 - after blocker resolution
 - when switching major tasks
 - at major milestones
@@ -28,3 +29,6 @@ A valid buffer or flush review for this skill should surface:
 - any deferred review countdown that still gates a future decision
 - the next flush trigger
 - one best next move
+
+## Pre-push contract note
+When a suitable governed push is already happening in the same branch, surface what should land in that same grouped push instead of silently leaving the state buffered for later.

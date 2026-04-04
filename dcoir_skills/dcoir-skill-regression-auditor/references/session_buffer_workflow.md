@@ -4,6 +4,7 @@ Regression-auditor may keep regression-memory deltas, follow-through notes, reco
 
 ## Preferred flush-check trigger points
 - before any GitHub write
+- when a governed push, GitHub Desktop push, or grouped repo batch is about to happen
 - after blocker resolution
 - at major milestones
 - before session export or handoff
@@ -21,3 +22,6 @@ A valid flush/manicure review for this skill should surface:
 - what should remain buffered for now
 - the next flush trigger
 - one best next move
+
+## Pre-push contract note
+When a suitable governed push is already happening in the same branch, surface what should land in that same grouped push instead of silently leaving the state buffered for later.

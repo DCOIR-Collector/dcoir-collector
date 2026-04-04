@@ -29,6 +29,7 @@ This skill does not claim hidden persistence across chats.
 8. Export a standardized markdown handoff artifact for later upload into a new session.
 9. Hold session-local buffered continuity, promotion-candidate, and flush-check state until the right governed Project update or export moment.
 10. Stage governed follow-up actions when session items should be promoted into Project files or skill updates.
+11. Stage governed-update entries explicitly when a grouped GitHub push or repo batch is about to happen so promotion candidates can land in the same governed update instead of waiting for later chat memory.
 
 ## Local session-state file
 When code execution and file writing are available, use a real local JSON file as the primary working-state surface.
@@ -44,7 +45,8 @@ Required local-state workflow:
 1. Initialize the local file before claiming that a maintained session-state file exists.
 2. Use the local file as the primary working state during the chat when code execution and file writing are available.
 3. After material tracker changes, inspect the file when the operator asks whether the local session state is real or when governed Project flush time is approaching.
-4. Before any GitHub write that depends on tracker state, inspect the file and surface what it currently contains, what is ready for promotion into governed Project files, and what should remain local.
+4. Before any GitHub write that depends on tracker state, inspect the file and surface what it currently contains, what is ready for promotion into governed Project files, what should remain local, and what staged governed updates should land in the same grouped transaction.
+5. When a governed push, grouped repo batch, or GitHub Desktop push is about to happen, run a pre-push flush review instead of leaving the tracker silent.
 5. Before session close-out, inspect the file again and classify durable, exported-only, and buffered-only state explicitly.
 
 Inspection requirement:
@@ -202,12 +204,16 @@ Preferred flush-check trigger points:
 - when the operator asks what remains
 - when the skill reports meaningful state drift
 - when the operator signals that work is moving to another session
+- when a governed push, GitHub Desktop push, or grouped repo batch is about to happen
 
 When a flush-check occurs:
 - inspect the local session-state file when it exists
 - surface what is still buffered
 - surface what is safe to flush now
 - surface what should remain session-local for now
+- surface staged governed updates that should land in the same grouped push
+- surface active-todo items that should be added, updated, or removed in the same grouped push
+- stage post-push cleanup actions
 - use the verbose tracker-entry standard by default for materially important buffered items
 - end with one best next move
 
@@ -254,6 +260,8 @@ The exported markdown artifact must contain:
 - candidate LOG-01 / LOG-02 / LOG-03 promotions
 - durable preference candidates and their persistence status
 - buffer state and pending flush items when relevant
+- staged governed updates when relevant
+- post-push cleanup items when relevant
 - verbose item detail for materially important carried-forward items
 - new skill ideas and validation follow-ons
 - one best next move

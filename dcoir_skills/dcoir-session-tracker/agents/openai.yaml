@@ -1,13 +1,9 @@
 interface:
-  display_name: DCOIR Session Tracker
-  short_description: Capture session todo items, merge markdown handoff logs, and
-    export continuity state for later DCOIR resume.
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  display_name: "dcoir session tracker"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+    - "chatgpt"
+    - "codex"
+    - "api"
+    - "atlas"
   allow_implicit_invocation: true

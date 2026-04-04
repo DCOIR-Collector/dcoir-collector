@@ -25,14 +25,24 @@ Upsert or update one verbose item:
 python scripts/session_state_store.py upsert --item-json '{"id":"S-001","bucket":"session_only","title":"example title","detail":"full context line that makes the item understandable in isolation","why":"why this matters","next_action":"next action to take","carry_forward_note":"what the next session should remember if this is still open","promotion_target":"project_sources/LOG-01_DCOIR_Todo_Log.txt"}'
 ```
 
-Mark one item done and move it to completed:
+Stage one governed update entry:
+```bash
+python scripts/session_state_store.py stage-governed-update --entry-json '{"title":"promote tracker items into LOG-01 and todo/01","target_paths":["project_sources/LOG-01_DCOIR_Todo_Log.txt","project_sources/todo/01_Active_Now.txt"],"action":"update","why":"same grouped push is already happening","source_item_ids":["S-101","S-102"]}'
+```
+
+Mark one item complete and move it to completed:
 ```bash
 python scripts/session_state_store.py complete --id S-001
 ```
 
-Remove an item entirely:
+Mark one item as governed-written after the push lands:
 ```bash
-python scripts/session_state_store.py remove --id S-001
+python scripts/session_state_store.py mark-governed-written --id S-001 --note 'promoted in same grouped push as LOG-01 update'
+```
+
+Clear staged governed updates after post-push cleanup:
+```bash
+python scripts/session_state_store.py clear-staged-governed-updates
 ```
 
 Update summary fields:
@@ -67,6 +77,7 @@ A valid inspection should surface:
 - sha256 checksum
 - counts by open bucket
 - completed item count
+- staged governed update count
 - optional state excerpt when requested
 
 ## Truth rules
@@ -81,5 +92,7 @@ Before any governed Project update that depends on session-tracker state:
 1. inspect the local file
 2. surface pending promotion candidates
 3. surface what should remain local
-4. use verbose item detail by default for materially important buffered items
-5. only then propose or execute the Project-file update path
+4. surface staged governed updates that should land in the same grouped transaction
+5. use verbose item detail by default for materially important buffered items
+6. only then propose or execute the Project-file update path
+7. after the governed push lands, mark the promoted items governed-written and clear the completed staged-update entries

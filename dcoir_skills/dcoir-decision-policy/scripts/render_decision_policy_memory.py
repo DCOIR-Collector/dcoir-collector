@@ -38,8 +38,7 @@ def fmt_rule(item: dict[str, Any]) -> str:
         value = item.get(key, "")
         if value:
             parts.append(f"  - {key}: {value}")
-    return "
-".join(parts)
+    return "\n".join(parts)
 
 
 def bullet_list(items: list[str]) -> list[str]:
@@ -86,8 +85,7 @@ def build_markdown(state: dict[str, Any]) -> str:
     lines.extend(["", "## Provenance notes"])
     lines.extend(bullet_list(state.get("provenance_notes", [])))
     lines.append("")
-    return "
-".join(lines)
+    return "\n".join(lines)
 
 
 def main() -> int:
