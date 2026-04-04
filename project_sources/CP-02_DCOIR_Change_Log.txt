@@ -1,30 +1,31 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.30
+Current state id: 2026-04-04-validation-contract-v1
+Change class: validation-regime branch activation and session-memory pre-push flush contract
+
+What changed
+- Added `LOG-15_DCOIR_Validation_Regime_And_Session_Memory_Pre_Push_Contract_Decision_2026-04-04.txt` as the governed decision record for the next validation-regime branch and the shared pre-push flush contract.
+- Activated `dcoir-validation-orchestrator` as the owner for the next CI/CD-style end-to-end and edge-case validation regime built from the inventory and gap-analysis scope map.
+- Updated `dcoir-validation-orchestrator` so it can emit validation plans for end-to-end workflows, edge cases, skill deep dives, documentation alignment, packager validation, and the session-memory pre-push contract.
+- Updated `dcoir-session-tracker` so it now supports explicit staged-governed-update tracking, pre-push flush output, and post-push cleanup tracking instead of relying only on informal chat carry-forward.
+- Updated the other buffer-capable or GitHub-memory-backed skills so their flush-check guidance now requires pre-push staging and same-branch governed updates when a suitable grouped push is already happening.
+- Updated `dcoir-decision-policy` so multi-skill delivery now prefers one outer zip with top-level per-skill zips named after the live skill names when more than one updated skill package is being handed to the operator.
+- Refreshed the active todo and continuity surfaces so they now point at the validation-regime and session-memory-contract branch while keeping the widening-hold countdown at 2 real resume cycles.
+
+Why
+- The inventory pass and recent grouped pushes showed that validation planning and session-memory staging were lagging behind the now-broader governed workflow.
+- The operator explicitly wants the next governed push to lose only work since the last push, not buffered tracker or helper-memory state that should have been included in the same grouped update.
+- The operator also clarified a more specific multi-skill delivery preference for one outer zip containing top-level per-skill zips named after the live skills.
+
+Validation notes
+- Bounded source validation confirms the repaired repo-packager now follows the current repo-style bundle model and current update-mode bootstrap roots.
+- Local regression passed the updated `dcoir-validation-orchestrator` plan emission path and the updated `dcoir-session-tracker` staged-governed-update path.
+- Local skill packaging validation passed for the changed skills in this batch.
+- Wider use of the validation regime and the pre-push flush contract remains the next governed branch.
+
+[PRIOR]
 Version: 3.9.29
 Current state id: 2026-04-04-inventory-pass1-v1
 Change class: inventory and documentation alignment pass one plus repo-packager current-project repair
-
-What changed
-- Completed the first bounded inventory and gap-analysis pass across current project mission, helper-skill inventory, README surfaces, knowledge surfaces, and packaging ownership.
-- Added `LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Pass1_2026-04-04.txt` as the governed decision record for the first inventory pass.
-- Refreshed `README.md`, `knowledge/README.md`, `project_sources/README.md`, `dcoir_skills/README.md`, and `knowledge/DCOIR_Helper_Skills_Routing_Note.md` so they better reflect the visible governed working line and current helper-skill inventory.
-- Repaired `dcoir-repo-packager` so repo mode now packages the current repo-style roots instead of depending on an outdated expected-file list and legacy tree assumptions.
-- Updated the active todo and continuity surfaces so they now carry the repo-packager validation branch and the newly confirmed session-memory pre-push staging defects.
-
-Why
-- The first inventory pass found that the repo root and folder-level README surfaces were shallower than the repo's own documentation direction expected.
-- The first inventory pass also found that `dcoir_skills/README.md` was stale and that the routing note had become the more accurate skill inventory surface.
-- The repo-packager audit found that `source_mapping.json`, `layout_rules.md`, and the packager script still depended on a stale legacy mapping model and a prose-manifest fallback to an older expected file list.
-- The operator explicitly wants fewer fragmented update cycles and wants high-value findings captured and promoted before a governed GitHub push whenever the same grouped update is already happening.
-
-Validation notes
-- Static audit confirmed the inventory/documentation gaps and the repo-packager alignment risk before the repair.
-- Local bounded validation passed the repaired `dcoir-repo-packager` script path on a representative synthetic current-project fixture for repo mode and update mode.
-- The updated `dcoir-repo-packager` skill package passed local skill packaging validation.
-- Wider validation of the repaired packager against the live governed project remains the next bounded branch.
-
-[PRIOR]
-Version: 3.9.28
-Current state id: 2026-04-04-stateful-trio-v1
-Change class: coordinated stateful candidate trio campaign and durable batch-first delivery overlay

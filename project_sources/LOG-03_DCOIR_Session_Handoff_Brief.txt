@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-04-docs-alignment-v1
+Current state id: 2026-04-04-validation-contract-v1
 
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -8,7 +8,7 @@ Current stable artifacts
 - Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
 - GitHub helper-skill source layout and rollout guide: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
-- Helper-skill workflow decision logs: LOG-04 through LOG-14
+- Helper-skill workflow decision logs: LOG-04 through LOG-15
 - Task memory bank root: knowledge/task_memory
 - Governed helper-skill source root: dcoir_skills/
 - Authoritative todo surfaces: project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt
@@ -17,16 +17,17 @@ Current governance state
 - Project Instructions remain the first bootstrap anchor.
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
-- All `dcoir-*` skill source is now governed in GitHub under `dcoir_skills/`.
-- The documentation and helper-skill inventory surfaces are now on an explicit inventory-driven alignment branch.
+- The repaired repo-packager is now aligned to the current repo-style bundle model.
+- The next governance branch is now a validation-regime plus session-memory pre-push contract branch.
 - The stamped active-surface widening hold remains at 2 remaining real resume cycles.
 
 Current validated status
 - The coordinated stateful-candidate trio campaign is live and bounded-validation ready.
-- The inventory pass has now produced a first grounded gap map for README surfaces, helper-skill inventory alignment, maintainer-skill ownership boundaries, and likely repo-packager risk.
-- The refreshed README and routing-note surfaces are ready for bounded validation next.
+- The first inventory and documentation alignment pass is complete.
+- The repaired repo-packager source is aligned to the current repo-style roots and update-mode bootstrap-safe roots.
+- The next branch is ready to validate end-to-end and edge-case workflows from an explicit scope map rather than from chat memory.
 
 Current next planned work item
-- Validate the refreshed README and routing-note surfaces as the first inventory-driven alignment batch.
-- Audit `dcoir-repo-packager` against the current control plane and source mapping.
-- Use the resulting grounded inventory to design the broader CI/CD-style end-to-end and edge-case validation regime.
+- Use `dcoir-validation-orchestrator` to emit the CI/CD-style validation regime from the current inventory and gap-analysis scope map.
+- Apply the shared pre-push flush and staged-governed-update contract to `dcoir-session-tracker` and the other buffer-capable skills during future governed pushes.
+- Begin the broader skill deep-dive and code-hygiene campaign from that explicit validation structure.

@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-04-inventory-pass1-v1
+Current state id: 2026-04-04-validation-contract-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -13,7 +13,7 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Validate the repaired `dcoir-repo-packager`, complete the first inventory-driven documentation alignment batch, and use that gap map to drive the CI/CD-style validation regime and the later session-memory flush-contract campaign.
+- Build and use the CI/CD-style validation regime from the inventory and gap-analysis scope map, while enforcing the shared pre-push flush and staged-governed-update contract for the session-memory-enabled and buffer-capable skills.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -24,9 +24,7 @@ Detailed todo structure
 - project_sources/todo/05_Deferred_Or_Conditional.txt
 
 Queued next priorities
-- Build a CI/CD-style end-to-end and edge-case validation regime for the repository, skills, workflows, and deliverables, using the inventory and gap-analysis map as the scope anchor.
 - Run a full skill deep dive to confirm current helper skills still execute successfully, remain current with the project's goals and governance, and do not carry obsolete or inefficient logic.
-- Review session-memory-enabled and buffer-capable skills for a shared pre-push flush, memory-update, and todo-synchronization contract.
-- Review dcoir-repo-packager against the current project until the packager and its mappings are fully aligned and validated.
+- Review session-memory-enabled and buffer-capable skills for reliable pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge and wiki structure.
-- Research additional connectors and Agent Mode only after the inventory and validation branches are materially clearer.
+- Research additional connectors and Agent Mode only after the validation regime and deep-dive branches are materially clearer.

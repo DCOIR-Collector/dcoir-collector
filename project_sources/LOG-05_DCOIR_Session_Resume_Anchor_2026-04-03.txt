@@ -1,26 +1,25 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-04-docs-alignment-v1
+Current state id: 2026-04-04-validation-contract-v1
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.
 - Use it when resuming in a brand-new session after reading Project Instructions, CP-01, and CP-02.
-- This file exists because the session family now includes helper-skill workflow enforcement, current-state/version-checking enforcement, direct resume-gate integration, plan-tracker repair, coordinated stateful-trio upgrades, and now an inventory-driven documentation and helper-skill inventory alignment batch that should not be reconstructed from memory.
+- This session family now includes helper-skill workflow enforcement, drift-gate integration, plan-tracker repair, coordinated stateful-skill updates, the first inventory-driven alignment pass, repo-packager repair, and now the validation-regime plus session-memory pre-push-contract branch.
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
 - Project Instructions remain the first bootstrap anchor.
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- The authoritative active work queue now points at README and routing-surface validation, repo-packager alignment review, and then the broader validation-regime design branch.
+- The authoritative active work queue now points at the validation regime, the pre-push flush contract, and the later deep-dive campaign.
 
 Current governed workflow state
-- The helper-skill workflow, drift-gate, direct-resume, plan-tracker, and coordinated stateful-trio reference lines are already grounded.
-- The current first follow-on batch from the inventory pass is a bounded README and helper-skill inventory alignment batch.
-- The stamped active-surface widening hold remains at 2 remaining real resume cycles and should not be decremented for documentation-only or generated-artifact validation.
+- The helper-skill workflow, drift-gate, direct-resume, plan-tracker, coordinated stateful-trio, inventory-pass, and repaired repo-packager lines are already grounded.
+- The active validation branch now owns both CI/CD-style validation-regime design and the pre-push flush contract for buffer-capable skills.
+- The stamped active-surface widening hold remains at 2 remaining real resume cycles and should not be decremented for synthetic or generated-artifact validation alone.
 
 What is still open right now
-1. Validate the refreshed README and helper-skill routing surfaces as current, locally useful, and accurately cross-linked.
-2. Audit `dcoir-repo-packager` alignment against the current control plane and source mapping.
-3. Use the resulting grounded inventory and gap map to design the broader CI/CD-style validation regime.
-4. Continue deciding which later maintainer-skill and knowledge-doc workflow improvements should become follow-on governed campaigns.
+1. Build and apply the CI/CD-style validation regime from the current inventory and gap-analysis scope map.
+2. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other buffer-capable skills before future governed pushes.
+3. Begin the broader helper-skill deep-dive and code-hygiene campaign from the explicit validation structure.

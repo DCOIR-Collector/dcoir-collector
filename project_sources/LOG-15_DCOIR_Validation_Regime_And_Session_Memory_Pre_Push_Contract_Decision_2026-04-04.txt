@@ -1,0 +1,45 @@
+DCOIR Validation Regime And Session-Memory Pre-Push Contract Decision - 2026-04-04
+
+Purpose
+- Record the approved 2026-04-04 workflow decisions for turning the inventory and gap-analysis map into the next CI/CD-style validation-regime branch.
+- Record the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other session-memory-enabled or buffer-capable helper skills.
+
+Approved durable workflow decisions
+- The project should move from the first inventory pass into an explicit CI/CD-style validation regime built from the known inventory, owners, and gap map rather than from chat recollection.
+- `dcoir-validation-orchestrator` is the owner for emitting that validation-regime structure, including end-to-end, edge-case, packager, docs/readme, and skill-deep-dive scenarios.
+- Before any governed GitHub push, grouped repo batch application, or equivalent governed update event, the active workflow must run a bounded pre-push flush review for `dcoir-session-tracker` and any other buffer-capable or GitHub-memory-backed skill that materially changed state during the current branch.
+- A valid pre-push flush review must surface what is buffered, what is safe to write now, what should remain local for now, which Project todo or continuity surfaces should be updated in the same grouped transaction, and which post-push cleanup actions remain.
+- Session-memory-enabled or buffer-capable skills must not wait for session close-out alone when a suitable governed push is already happening in the same branch.
+- The contract should minimize loss on unexpected session death by ensuring that the only state at risk is what changed after the last governed push or explicit export.
+- Generated-plan or synthetic validation artifacts do not count as real live resume cycles for the stamped active-surface widening hold countdown.
+- Multi-skill delivery should continue to prefer one outer zip with per-skill zips at the top level, named after the live skill names, when more than one updated skill package is being handed to the operator.
+
+Buffer-capable skills in scope for the shared contract
+- `dcoir-session-tracker`
+- `dcoir-plan-tracker`
+- `dcoir-decision-policy`
+- `dcoir-memory-preflight`
+- `dcoir-skill-regression-auditor`
+- `dcoir-validation-orchestrator`
+
+Required pre-push flush/manicure sequence
+1. Re-anchor to Project Instructions, then `CP-01`, then `CP-02`.
+2. Identify whether a governed push, grouped repo batch, or equivalent governed update is actually about to happen.
+3. Inspect the active session-tracker local state file when it exists.
+4. Surface staged tracker items that should be promoted into `LOG-01`, `LOG-03`, `LOG-05`, or related `todo/*.txt` surfaces in the same grouped update.
+5. Surface tracker items that should be marked complete, removed from active todo, or updated for current status in the same grouped update.
+6. Surface GitHub-memory or helper-memory deltas for the other buffer-capable skills when those deltas materially changed during the branch and the same grouped update can safely carry them.
+7. Surface what must remain local or deferred rather than being forced into governed files prematurely.
+8. Stage post-push cleanup actions and mark the promoted items as governed-written only after the governed update lands.
+9. End with one best next move.
+
+Validation-regime design targets
+1. End-to-end repo workflow validation.
+2. Edge-case and failure-gate validation.
+3. Skill deep-dive and code-hygiene validation.
+4. Docs/readme/knowledge alignment validation.
+5. Packager live-project validation.
+6. Session-memory pre-push contract validation.
+
+Best next move
+- Use the repaired packager result and the inventory/gap map to land the first validation-regime plus pre-push-contract batch, then begin the deeper skill deep-dive campaign from that governed structure.

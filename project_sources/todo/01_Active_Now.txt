@@ -1,33 +1,27 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-inventory-pass1-v1
+Current state id: 2026-04-04-validation-contract-v1
 
-1. Validate the repaired `dcoir-repo-packager` against a representative current-project fixture.
+1. Build and use the CI/CD-style validation regime from the current inventory and gap-analysis scope map.
    Why it matters:
-   - The inventory pass found that the packager references and script had drifted behind the current repo posture, so the repair now needs bounded validation before the skill can be treated as dependable again.
+   - The project now has enough grounded inventory and validated reference workflows that broader testing should be structured from the real current scope rather than from chat memory.
    Next action:
-   - Run repo mode and update mode on a representative current-project fixture, inspect the emitted repo roots and bootstrap bundle contents, and confirm that the current repo-style layout and no-duplicate-readable-source rule are both preserved.
+   - Use `dcoir-validation-orchestrator` to emit validation plans for end-to-end workflows, edge cases, skill deep dives, docs/readme alignment, packager validation, and the session-memory pre-push contract.
 
-2. Keep the first inventory and gap-analysis pass active and use it to drive the CI/CD-style validation regime.
+2. Use the shared pre-push flush and staged-governed-update contract for session-memory-enabled or buffer-capable skills.
    Why it matters:
-   - Validation planning should follow the actual current inventory, ownership map, and gap map instead of assuming the project structure is already fully settled.
+   - The latest grouped updates proved that tracker and helper-memory state can still be missed when a suitable governed push is already happening in the same branch.
    Next action:
-   - Turn the first inventory pass into a validation-regime scope map covering skills, workflows, docs, packaging, and edge cases.
+   - Before future governed pushes, require a bounded flush/manicure review for `dcoir-session-tracker`, `dcoir-plan-tracker`, `dcoir-decision-policy`, `dcoir-memory-preflight`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator`.
 
-3. Design a shared pre-push flush and staged-governed-update contract for session-memory-enabled or buffer-capable skills.
+3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:
-   - The latest operator feedback confirmed that the current session-memory model is still failing to stage buffered tracker and helper-memory state into the same governed push when a suitable grouped update is already happening.
-   Next action:
-   - Inventory the affected skills, define the bounded pre-push flush contract, and add regression coverage for tracker staging, helper-memory staging, todo synchronization, and post-push state cleanup.
-
-4. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
-   Why it matters:
-   - The project wants evidence before widening the stamped active-surface set, and generated-plan or synthetic validation should not count as real live resume cycles.
+   - The project wants evidence before widening the stamped active-surface set, and synthetic or generated-artifact validation should not count as real live resume cycles.
    Next action:
    - Decrement the countdown only after a qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.
 
-5. Decide which additional skills or workflows need the next deep-dive or code-hygiene pass.
+4. Begin the broader helper-skill deep-dive and code-hygiene campaign from the explicit validation structure.
    Why it matters:
-   - The project now has enough validated reference workflows that broader deep-dive work should be selected from an explicit gap map rather than from chat memory.
+   - The project now has enough validated reference workflows that deeper skill execution and code-hygiene reviews should be selected from an explicit gap and validation map rather than from chat memory.
    Next action:
-   - After the repo-packager validation pass, use the gap-analysis report to rank the next deep-dive targets.
+   - After the validation regime is emitted, rank the next deep-dive targets and begin the highest-value execution and code review passes.

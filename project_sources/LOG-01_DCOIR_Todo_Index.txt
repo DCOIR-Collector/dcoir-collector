@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-04-inventory-pass1-v1
+Current state id: 2026-04-04-validation-contract-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,11 +8,11 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Validate the repaired `dcoir-repo-packager` against a representative current-project fixture and confirm repo mode and update mode match the current GitHub-primary project posture.
-2. Keep the first inventory and gap-analysis pass active and use it to drive the CI/CD-style validation-regime design rather than letting validation planning outrun the known inventory.
-3. Design a shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and other session-memory-enabled or buffer-capable skills.
-4. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
-5. Decide which additional skills or workflows need the next deep-dive or code-hygiene pass after the packager and first inventory branch are validated.
+1. Build and use the CI/CD-style validation regime from the current inventory and gap-analysis scope map.
+2. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other session-memory-enabled or buffer-capable skills before governed pushes.
+3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+4. Begin the broader helper-skill deep-dive and code-hygiene campaign from the explicit validation structure.
+5. Continue using canonical task-memory preflight and grouped GitHub transactions for related governed work.
 
 Todo-file map
 - todo/01_Active_Now.txt
@@ -22,4 +22,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Validate the repaired repo-packager first, then use the first inventory pass and the resulting gap map to shape the CI/CD-style validation regime and the later session-memory flush-contract campaign.
+- Emit the validation regime first, then use the same governed structure to apply and test the pre-push flush contract on future grouped pushes.

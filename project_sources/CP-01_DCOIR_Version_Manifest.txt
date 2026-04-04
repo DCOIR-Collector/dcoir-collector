@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.29
+DCOIR Version Manifest 3.9.30
 
-Current state id: 2026-04-04-inventory-pass1-v1
+Current state id: 2026-04-04-validation-contract-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -21,6 +21,7 @@ Current control plane
 - Plan-tracker exact-resume-goal autofill fix and validation refresh: project_sources/LOG-12_DCOIR_Plan_Tracker_Exact_Resume_Goal_Autofill_Fix_And_Validation_Refresh_2026-04-04.txt
 - Coordinated stateful candidate trio campaign decision: project_sources/LOG-13_DCOIR_Coordinated_Stateful_Candidate_Trio_Campaign_Decision_2026-04-04.txt
 - Inventory and documentation alignment plus repo-packager audit decision: project_sources/LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Pass1_2026-04-04.txt
+- Validation regime and session-memory pre-push contract decision: project_sources/LOG-15_DCOIR_Validation_Regime_And_Session_Memory_Pre_Push_Contract_Decision_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -40,16 +41,16 @@ Current governed helper-skill source
 - Root: dcoir_skills/
 - Policy decision: all `dcoir-*` skill source is stored in GitHub under the governed source root.
 - Helper working-state continuity remains under dcoir_skill_memory/ only for the skills that still legitimately use it and should not be confused with source authority.
-- `dcoir-session-tracker` now uses the local JSON state file as its only working-state surface and does not use a GitHub-backed helper-memory branch.
 - `dcoir-source-authority-auditor` acts as the explicit drift gate for shared active-surface current-state alignment.
 - `dcoir-session-resume` consumes that same drift gate directly before trusting supporting continuity surfaces.
 - `dcoir-plan-tracker` is the current verbose resume-state and flush/manicure reference candidate.
 - `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` form the coordinated stateful-candidate trio campaign.
-- `dcoir-repo-packager` has now been audited against the current project and is being repaired to package the current repo-style layout rather than a stale legacy mapping posture.
+- `dcoir-repo-packager` has been repaired to package the current repo-style layout and current bootstrap-safe roots.
+- `dcoir-validation-orchestrator` now owns the next validation-regime branch and the session-memory pre-push contract validation scenarios.
+- `dcoir-session-tracker` and the other buffer-capable or GitHub-memory-backed skills are now on a shared pre-push flush and staged-governed-update contract branch.
 
 Current next work item
-- Validate the repaired `dcoir-repo-packager` against a representative current-project fixture and confirm repo mode and update mode match the current GitHub-primary project posture.
-- Keep the inventory-and-gap-analysis campaign active and use it to drive the CI/CD-style validation regime design rather than letting validation planning outrun the known inventory.
+- Build and use the CI/CD-style end-to-end and edge-case validation regime from the inventory and gap-analysis scope map.
+- Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other buffer-capable skills before any governed push.
 - Keep the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
-- Design a shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and other session-memory-enabled or buffer-capable skills so the next governed push loses only work since the last push.
-- After the repo-packager validation pass, continue into the CI/CD-style validation regime and the broader skill deep-dive and code-hygiene campaign.
+- Begin the broader skill deep-dive and code-hygiene campaign from the explicit inventory and validation structure rather than from chat memory.
