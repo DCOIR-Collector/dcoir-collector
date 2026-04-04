@@ -1,0 +1,41 @@
+DCOIR Inventory And Documentation Alignment Pass One - 2026-04-04
+
+Purpose
+- Record the approved 2026-04-04 first inventory and gap-analysis pass across current project mission, helper-skill inventory, README surfaces, knowledge surfaces, packaging ownership, and newly confirmed session-memory staging defects.
+- Turn the first pass into a governed baseline for follow-on documentation, packaging, validation, and session-memory workflow repairs.
+
+Verified inventory findings
+- The repo mission and deliverables are broader than just the collector and explicitly include the collector/runtime line, regression harness, control plane and continuity layer, knowledge and documentation layer, analyst-facing prompt-pack deliverable, Gemini design line, and durable task-memory bank.
+- The root README's documentation-direction language expects stronger folder READMEs and a fuller knowledge structure than the current folder README surfaces actually provide.
+- `dcoir_skills/README.md` was stale relative to the current helper-skill inventory and needed refresh.
+- `knowledge/DCOIR_Helper_Skills_Routing_Note.md` is the richer current descriptive inventory surface for helper-skill routing and should stay aligned when the skill set changes materially.
+- `dcoir-readme-maintainer` is intentionally narrower than the broader documentation and knowledge-maintenance needs discovered in this pass.
+- `dcoir-knowledge-doc-maintainer` is focused on knowledge-doc generation and refresh, not on acting as a broad continuously aware README and knowledge-change trigger engine.
+- `dcoir-repo-packager` had a real current-project alignment risk because its references and script still assumed an older mapping posture and an older expected-file list fallback.
+
+Approved durable workflow decisions
+- Inventory and gap analysis should precede the CI/CD-style validation-regime design when the current project inventory and ownership map are still settling.
+- Root and folder README surfaces should be treated as real local guides, not only as shallow directory pointers.
+- The helper-skill source root README and helper-skill routing note must stay aligned to the current visible governed skill set.
+- `dcoir-repo-packager` should package the current repo-style roots in repo mode instead of a stale legacy tree, while update mode should continue to enforce the no-duplicate-readable-source posture.
+- The newly observed session-memory defects are real workflow issues, not cosmetic concerns:
+  - `dcoir-session-tracker` should inspect and stage pending promotion candidates before a governed GitHub push that touches related continuity surfaces.
+  - Session-memory-enabled or buffer-capable skills should update their own GitHub memory or staged governed surfaces at bounded push points so a dead session loses only work since the last governed push.
+  - Generated-plan or synthetic validation should not decrement the real-resume widening-hold countdown.
+
+Immediate gap map
+1. Documentation and navigation gaps
+- Root and folder README surfaces needed richer local-guide content and better cross-links.
+- `dcoir_skills/README.md` lagged the actual current skill set.
+
+2. Packaging alignment gap
+- `dcoir-repo-packager` references and script were no longer aligned to the current project posture and needed repair before being treated as dependable.
+
+3. Session-memory workflow gap
+- `dcoir-session-tracker` and related session-memory-enabled or buffer-capable skills need a shared pre-push flush and staged-governed-update contract.
+
+4. Ownership-boundary gap
+- README maintenance and knowledge-doc maintenance do not yet cover every broader documentation and discovery need implied by the current project goals.
+
+Best next move
+- Validate the repaired `dcoir-repo-packager` on a representative current-project fixture, then use the completed first inventory pass to drive the CI/CD-style validation-regime design and the later session-memory workflow repair campaign.

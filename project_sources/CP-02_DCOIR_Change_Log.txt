@@ -2,25 +2,27 @@ DCOIR Change Log
 
 [CURRENT]
 Version: 3.9.29
-Current state id: 2026-04-04-docs-alignment-v1
-Change class: inventory-driven documentation and helper-skill inventory alignment batch
+Current state id: 2026-04-04-inventory-pass1-v1
+Change class: inventory and documentation alignment pass one plus repo-packager current-project repair
 
 What changed
-- Applied the first grounded inventory-and-gap-analysis follow-on batch after the 3.9.28 coordinated stateful-candidate trio campaign.
-- Refreshed the current high-value README surfaces: `README.md`, `knowledge/README.md`, `project_sources/README.md`, and `dcoir_skills/README.md`.
-- Refreshed `knowledge/DCOIR_Helper_Skills_Routing_Note.md` so the governed project-side helper-skill routing aid no longer lists helper skills that are not part of the current governed source root.
-- Added `LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Batch_Decision_2026-04-04.txt` as the governed decision record for this bounded inventory-driven alignment batch.
-- Refreshed the active todo and continuity surfaces so they now point at bounded validation of the refreshed README and routing-note surfaces, followed by the `dcoir-repo-packager` alignment audit and then the broader CI/CD-style validation-regime design.
+- Completed the first bounded inventory and gap-analysis pass across current project mission, helper-skill inventory, README surfaces, knowledge surfaces, and packaging ownership.
+- Added `LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Pass1_2026-04-04.txt` as the governed decision record for the first inventory pass.
+- Refreshed `README.md`, `knowledge/README.md`, `project_sources/README.md`, `dcoir_skills/README.md`, and `knowledge/DCOIR_Helper_Skills_Routing_Note.md` so they better reflect the visible governed working line and current helper-skill inventory.
+- Repaired `dcoir-repo-packager` so repo mode now packages the current repo-style roots instead of depending on an outdated expected-file list and legacy tree assumptions.
+- Updated the active todo and continuity surfaces so they now carry the repo-packager validation branch and the newly confirmed session-memory pre-push staging defects.
 
 Why
-- The inventory-and-gap-analysis pass showed that the helper-skill source root README was stale, the folder README surfaces were too shallow for the repo's own stated documentation direction, and the governed helper-skill routing note needed inventory correction.
-- The project wanted the next corrective batch to follow from grounded inventory rather than from ad hoc patching.
-- README and routing-surface accuracy improves discoverability for nearly every later workflow, including packaging review and validation-regime design.
+- The first inventory pass found that the repo root and folder-level README surfaces were shallower than the repo's own documentation direction expected.
+- The first inventory pass also found that `dcoir_skills/README.md` was stale and that the routing note had become the more accurate skill inventory surface.
+- The repo-packager audit found that `source_mapping.json`, `layout_rules.md`, and the packager script still depended on a stale legacy mapping model and a prose-manifest fallback to an older expected file list.
+- The operator explicitly wants fewer fragmented update cycles and wants high-value findings captured and promoted before a governed GitHub push whenever the same grouped update is already happening.
 
 Validation notes
-- The refreshed README surfaces should be checked for current-state accuracy, cross-link usefulness, and local-guide value rather than treated as a cosmetic text-only change.
-- The refreshed helper-skills routing note should be checked against the current governed skill source root and current loaded skill surface before it is treated as fully aligned.
-- This batch does not decrement the stamped active-surface widening hold countdown because it is not a qualifying real resume-cycle event.
+- Static audit confirmed the inventory/documentation gaps and the repo-packager alignment risk before the repair.
+- Local bounded validation passed the repaired `dcoir-repo-packager` script path on a representative synthetic current-project fixture for repo mode and update mode.
+- The updated `dcoir-repo-packager` skill package passed local skill packaging validation.
+- Wider validation of the repaired packager against the live governed project remains the next bounded branch.
 
 [PRIOR]
 Version: 3.9.28

@@ -1,97 +1,31 @@
 DCOIR Documentation And Knowledge Lane
 
-1. Improve the main README.md with mission, deliverables, repo map, and navigation guidance.
+1. Keep the refreshed root and folder README surfaces aligned to the visible governed working line.
    Why it matters:
-   - The root README should explain the project as a framework, not only as a bootstrap pointer.
+   - The first inventory pass confirmed that shallow pointer README surfaces are not enough for future maintainability.
    Next action:
-   - Keep README aligned with the visible governed working line and extracted readable source folders.
+   - Maintain README.md, knowledge/README.md, project_sources/README.md, and dcoir_skills/README.md as useful local guides with current links and scope-appropriate explanation.
 
-2. Improve each major folder README so it acts as a useful local guide.
+2. Keep knowledge/DCOIR_Helper_Skills_Routing_Note.md aligned to the current helper-skill inventory and workflow rules.
    Why it matters:
-   - Future workers should be able to understand each major folder without hidden context.
+   - The routing note is the richer current descriptive inventory surface for helper-skill selection.
    Next action:
-   - Add purpose, contents, authority notes, and navigation links.
+   - Refresh it whenever the installed skill set or helper-skill workflow rules change materially.
 
 3. Expand knowledge/ into a fuller wiki-style documentation structure rooted in its README.
    Why it matters:
    - Human-readable knowledge is a first-class project asset.
    Next action:
-   - Create a stronger knowledge index and topic-specific documents.
+   - Build a stronger knowledge index and topic-specific documents after the first inventory pass.
 
-4. Explicitly document the analyst-facing DCOIR master prompt as a core deliverable.
+4. Evaluate the ownership boundary between dcoir-readme-maintainer and dcoir-knowledge-doc-maintainer.
    Why it matters:
-   - The combined prompt-pack output is one of the major end products of the project.
+   - The current skill boundaries do not yet cover every broader documentation and discovery need implied by the project goals.
    Next action:
-   - Add it to README deliverables and documentation map.
+   - Decide whether one or both maintainer skills need discovery-trigger awareness, broader link integration logic, or a coordinated documentation campaign workflow.
 
-5. Explicitly document the Gemini parent-plus-sub-agent system as a core deliverable.
+5. Keep the master prompt, Gemini design line, DFIR operating principles, and enrichment posture visible in human-readable docs.
    Why it matters:
-   - The merged Gemini design line is a major project output and should be visible at the top level.
+   - These are core project deliverables and operating principles, not side notes.
    Next action:
-   - Add it to README deliverables and documentation map.
-
-6. Add documentation for IOC or external-context enrichment posture, authoritative-source priority, and DFIR operating principles.
-   Why it matters:
-   - These are already part of the governed design and should be easier to discover.
-   Next action:
-   - Surface the prompt-pack authoritative-source model in human-readable documentation.
-
-7. Review the newly extracted readable source folders from formerly zipped Gemini and supporting-knowledge bundles and promote their highest-value material into stronger docs and indexes where appropriate.
-   Why it matters:
-   - The extraction step is done, but the newly visible readable material still needs deliberate integration into the long-term documentation structure.
-   Next action:
-   - Audit the extracted folders, add cross-links and indexes, and move especially durable materials into clearer governed doc locations when needed.
-
-8. Maintain the governed helper-skills routing note so project-side helper-skill selection stays easier to understand and more predictable.
-   Why it matters:
-   - The routing note is a useful descriptive aid for choosing the right dcoir-* helper skill during project work, but it only helps if it stays current.
-   Next action:
-   - Refresh knowledge/DCOIR_Helper_Skills_Routing_Note.md whenever the installed helper-skill set or the approved helper-skill workflow rules change materially.
-
-9. Replace and smoke-test the patched dcoir-knowledge-doc-maintainer package so it matches the current GitHub-primary knowledge-doc workflow after the legacy extracted supporting-knowledge-doc folder removal.
-   Why it matters:
-   - The project has already removed the obsolete extracted knowledge/supporting_knowledge_docs/ set, and the patched skill package now passes local regression against the post-delete control-plane fixture.
-   Next action:
-   - Install or replace the patched skill package, run targeted invocation or accessibility smoke regression, and confirm the skill no longer steers maintenance toward the retired extracted-doc posture.
-
-10. Maintain and use the dedicated dcoir-readme-maintainer skill for root and folder README maintenance.
-   Why it matters:
-   - README upkeep is recurring enough to justify a focused helper skill instead of handling it indirectly through broader documentation maintenance.
-   Next action:
-   - Use the installed dcoir-readme-maintainer workflow and its preserved baseline pass to land a bounded README refresh batch for README.md, knowledge/README.md, and project_sources/README.md.
-
-11. Govern the uploaded GitHub connector reference material and keep promoting its strongest patterns into durable GitHub procedure guidance.
-   Why it matters:
-   - The repo now has a governed connector reference pack and a connector-reference task-memory procedure, but the highest-value execution patterns still need to be promoted into broader operator and memory guidance over time.
-   Next action:
-   - Continue mining knowledge/github_connector_reference/ and GH-PROC-008 for reusable GitHub execution patterns.
-
-12. Evaluate storing all dcoir-* skill source code in GitHub under a governed one-source-of-truth model.
-   Why it matters:
-   - Codex-accessible helper-skill source may improve maintenance and future project-generalization work, but only if the project avoids dual-maintenance drift between repo source, external skill packages, and installed skills.
-   Next action:
-   - Use the approved workflow of new-skill GitHub Desktop source ingest and assistant-managed updates for already-governed skills to shape the one-source-of-truth rollout.
-
-13. Maintain and upgrade the dedicated dcoir-plan-tracker skill for deep task decomposition, progress tracking, resume state persistence, and operator-visible execution tables.
-   Why it matters:
-   - Multi-step project work increasingly benefits from durable planned substeps, visible progress state, clean resume points, blocker capture, and clear next actions.
-   Next action:
-   - Keep the tracker aligned to plan preview before first GitHub upload, GitHub-backed persistence, decision-policy consultation, milestone signaling, blocker capture, and future session-local buffer participation.
-
-14. Keep the evergreen helper-skill workflow rules and dated decision records visible in project-readable docs.
-   Why it matters:
-   - The project now has approved workflow rules for closed-loop memory-preflight, session-local write buffers, post-change regression, and helper-skill GitHub-source rollout, and they will drift if they remain isolated.
-   Next action:
-   - Keep DOC-05 and LOG-04 aligned with the continuity files, routing note, and future helper-skill upgrades.
-
-15. Upgrade dcoir-memory-preflight so it supports closed-loop process learning rather than only pre-execution lookup.
-   Why it matters:
-   - Recovered blockers and failed attempts can yield reusable procedures, limitation notes, failure signatures, and helper-skill guidance.
-   Next action:
-   - Implement the trigger classes, lesson classification, promotion-candidate staging, and companion routing recorded in dcoir_skill_memory/dcoir-memory-preflight/memory_preflight_workflow_upgrade_requirements.md.
-
-16. Review which dcoir-* helper skills should support session-local write buffers and later grouped GitHub flushes.
-   Why it matters:
-   - The buffer model should improve repeatable workflow quality, but not every helper skill needs it.
-   Next action:
-   - Start with the highest-value stateful helpers, then review the broader helper-skill set for whether each skill should support buffering, grouped flushes, or closed-loop preflight routing.
+   - Continue integrating them into README and knowledge structures in bounded batches.

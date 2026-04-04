@@ -1,6 +1,6 @@
 DCOIR Version Manifest 3.9.29
 
-Current state id: 2026-04-04-docs-alignment-v1
+Current state id: 2026-04-04-inventory-pass1-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -20,11 +20,14 @@ Current control plane
 - Plan-tracker verbose resume-state and widening-hold workflow decision: project_sources/LOG-11_DCOIR_Plan_Tracker_Verbose_Resume_State_And_Widening_Hold_Workflow_Decision_2026-04-04.txt
 - Plan-tracker exact-resume-goal autofill fix and validation refresh: project_sources/LOG-12_DCOIR_Plan_Tracker_Exact_Resume_Goal_Autofill_Fix_And_Validation_Refresh_2026-04-04.txt
 - Coordinated stateful candidate trio campaign decision: project_sources/LOG-13_DCOIR_Coordinated_Stateful_Candidate_Trio_Campaign_Decision_2026-04-04.txt
-- Inventory and documentation alignment batch decision: project_sources/LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Batch_Decision_2026-04-04.txt
+- Inventory and documentation alignment plus repo-packager audit decision: project_sources/LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Pass1_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
 - Governed helper-skill source root: dcoir_skills/README.md
+- Knowledge root guide: knowledge/README.md
+- Project-source root guide: project_sources/README.md
+- Helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current task-memory bank
 - Root: knowledge/task_memory
@@ -38,16 +41,15 @@ Current governed helper-skill source
 - Policy decision: all `dcoir-*` skill source is stored in GitHub under the governed source root.
 - Helper working-state continuity remains under dcoir_skill_memory/ only for the skills that still legitimately use it and should not be confused with source authority.
 - `dcoir-session-tracker` now uses the local JSON state file as its only working-state surface and does not use a GitHub-backed helper-memory branch.
-- `dcoir-session-tracker` now preserves and renders tracker items verbosely enough that the operator can understand the carried state without reconstructing prior chat context.
-- The tracker now owns a bounded pre-GitHub-update flush/manicure workflow reference model for stateful helper-skill session state.
-- `dcoir-source-authority-auditor` now acts as the first explicit drift gate for the shared active-surface `current_state_id` and control-plane version-checking workflow.
-- `dcoir-session-resume` now consumes that same drift gate directly before trusting supporting continuity surfaces during resume.
-- `dcoir-plan-tracker` now acts as the next stateful-skill reference candidate for verbose resume-state and explicit flush/manicure surfacing.
-- `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` now form the coordinated stateful-candidate trio campaign for the remaining highest-value stateful or workflow-control upgrades.
+- `dcoir-source-authority-auditor` acts as the explicit drift gate for shared active-surface current-state alignment.
+- `dcoir-session-resume` consumes that same drift gate directly before trusting supporting continuity surfaces.
+- `dcoir-plan-tracker` is the current verbose resume-state and flush/manicure reference candidate.
+- `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` form the coordinated stateful-candidate trio campaign.
+- `dcoir-repo-packager` has now been audited against the current project and is being repaired to package the current repo-style layout rather than a stale legacy mapping posture.
 
 Current next work item
-- Run bounded validation on the inventory and documentation alignment batch, including the refreshed README surfaces and the helper-skills routing-note correction.
-- Audit `dcoir-repo-packager` alignment against the current control plane and source mapping before treating its bundle outputs as fully current.
-- Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
-- After each qualifying real resume cycle, decrement the widening-hold countdown in the governed todo or continuity surfaces and run the widening review only when the countdown reaches 0.
-- Use the resulting grounded inventory and gap map to design the broader CI/CD-style end-to-end and edge-case validation regime.
+- Validate the repaired `dcoir-repo-packager` against a representative current-project fixture and confirm repo mode and update mode match the current GitHub-primary project posture.
+- Keep the inventory-and-gap-analysis campaign active and use it to drive the CI/CD-style validation regime design rather than letting validation planning outrun the known inventory.
+- Keep the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+- Design a shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and other session-memory-enabled or buffer-capable skills so the next governed push loses only work since the last push.
+- After the repo-packager validation pass, continue into the CI/CD-style validation regime and the broader skill deep-dive and code-hygiene campaign.

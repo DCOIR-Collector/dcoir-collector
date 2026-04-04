@@ -1,27 +1,33 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-docs-alignment-v1
+Current state id: 2026-04-04-inventory-pass1-v1
 
-1. Run bounded validation on the inventory-driven documentation and helper-skill inventory alignment batch.
+1. Validate the repaired `dcoir-repo-packager` against a representative current-project fixture.
    Why it matters:
-   - The repo now has a stronger root README, stronger folder README surfaces, and a corrected helper-skills routing note candidate, but those surfaces still need proof that they are current, cross-linked, and locally useful rather than merely longer.
+   - The inventory pass found that the packager references and script had drifted behind the current repo posture, so the repair now needs bounded validation before the skill can be treated as dependable again.
    Next action:
-   - Validate the refreshed README.md, knowledge/README.md, project_sources/README.md, dcoir_skills/README.md, and knowledge/DCOIR_Helper_Skills_Routing_Note.md against the live governed repo and current skill surface.
+   - Run repo mode and update mode on a representative current-project fixture, inspect the emitted repo roots and bootstrap bundle contents, and confirm that the current repo-style layout and no-duplicate-readable-source rule are both preserved.
 
-2. Audit `dcoir-repo-packager` alignment against the current control plane and source mapping.
+2. Keep the first inventory and gap-analysis pass active and use it to drive the CI/CD-style validation regime.
    Why it matters:
-   - The inventory pass identified repo-packager as a likely real alignment risk because its source-mapping assumptions appear older than the current 3.9.28 control plane and could still shape bundle output.
+   - Validation planning should follow the actual current inventory, ownership map, and gap map instead of assuming the project structure is already fully settled.
    Next action:
-   - Review the full source_mapping.json and create_dcoir_bundle.py logic against the current manifest and current control-plane surfaces, then decide whether a bounded repair batch is required.
+   - Turn the first inventory pass into a validation-regime scope map covering skills, workflows, docs, packaging, and edge cases.
 
-3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+3. Design a shared pre-push flush and staged-governed-update contract for session-memory-enabled or buffer-capable skills.
    Why it matters:
-   - The project still wants evidence before widening the stamped active-surface set, and this documentation or packaging review work is not a qualifying real resume-cycle event.
+   - The latest operator feedback confirmed that the current session-memory model is still failing to stage buffered tracker and helper-memory state into the same governed push when a suitable grouped update is already happening.
    Next action:
-   - Decrement the hold only after qualifying real direct-resume cycles on live governed state, and trigger a bounded widening review only when the countdown reaches 0.
+   - Inventory the affected skills, define the bounded pre-push flush contract, and add regression coverage for tracker staging, helper-memory staging, todo synchronization, and post-push state cleanup.
 
-4. Use the resulting grounded inventory and gap map to design the broader CI/CD-style validation regime.
+4. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:
-   - The project already has a validation owner skill, but the broader end-to-end and edge-case validation regime should be designed from the real current deliverable set and proven current workflow owners.
+   - The project wants evidence before widening the stamped active-surface set, and generated-plan or synthetic validation should not count as real live resume cycles.
    Next action:
-   - Feed the validated inventory and gap-analysis outputs into dcoir-validation-orchestrator rather than building the regime from assumptions.
+   - Decrement the countdown only after a qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.
+
+5. Decide which additional skills or workflows need the next deep-dive or code-hygiene pass.
+   Why it matters:
+   - The project now has enough validated reference workflows that broader deep-dive work should be selected from an explicit gap map rather than from chat memory.
+   Next action:
+   - After the repo-packager validation pass, use the gap-analysis report to rank the next deep-dive targets.

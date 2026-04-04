@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-04-docs-alignment-v1
+Current state id: 2026-04-04-inventory-pass1-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -9,11 +9,11 @@ Current stable pointers
 - Harness: project_sources/run_DCOIR_Tests.ps1
 - Task memory bank root: knowledge/task_memory
 - Task memory manifest: knowledge/task_memory/00_registry/task_memory_manifest.yaml
-- Extracted readable Gemini source folders: project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/, project_sources/original_alert_triage_gemini_agents/, and project_sources/original_collector_artifact_gemini_agents/
-- Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
+- Governed helper-skill source root: dcoir_skills/
+- Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Validate the inventory-driven documentation and helper-skill inventory alignment batch, then use the result to audit dcoir-repo-packager alignment and shape the broader CI/CD-style validation regime.
+- Validate the repaired `dcoir-repo-packager`, complete the first inventory-driven documentation alignment batch, and use that gap map to drive the CI/CD-style validation regime and the later session-memory flush-contract campaign.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -22,3 +22,11 @@ Detailed todo structure
 - project_sources/todo/03_Documentation_And_Knowledge_Lane.txt
 - project_sources/todo/04_Structure_And_Refactor_Lane.txt
 - project_sources/todo/05_Deferred_Or_Conditional.txt
+
+Queued next priorities
+- Build a CI/CD-style end-to-end and edge-case validation regime for the repository, skills, workflows, and deliverables, using the inventory and gap-analysis map as the scope anchor.
+- Run a full skill deep dive to confirm current helper skills still execute successfully, remain current with the project's goals and governance, and do not carry obsolete or inefficient logic.
+- Review session-memory-enabled and buffer-capable skills for a shared pre-push flush, memory-update, and todo-synchronization contract.
+- Review dcoir-repo-packager against the current project until the packager and its mappings are fully aligned and validated.
+- Improve the main README and folder-level documentation and continue building the fuller knowledge and wiki structure.
+- Research additional connectors and Agent Mode only after the inventory and validation branches are materially clearer.

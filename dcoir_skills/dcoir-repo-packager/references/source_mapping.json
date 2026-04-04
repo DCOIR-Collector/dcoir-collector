@@ -17,55 +17,26 @@
       "DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt"
     ]
   },
-  "manifest_sections": {
-    "CURRENT GOVERNED GITHUB READABLE SOURCES": "governed_github_readable_sources",
-    "CURRENT GOVERNED KNOWLEDGE SOURCES IN GITHUB": "governed_knowledge_sources",
-    "CURRENT GOVERNED SETTINGS MIRRORS IN GITHUB": "governed_settings_mirrors",
-    "CURRENT SUPPORTING ASSETS IN GITHUB": "supporting_assets"
-  },
-  "expected_governed_github_readable_sources": [
+  "repo_mode_include_roots": [
+    "README.md",
+    "dcoir_skills",
+    "knowledge",
+    "project_sources",
+    "project_settings",
+    "supporting_assets",
+    "release_notes"
+  ],
+  "update_mode_include_roots": [
+    "project_settings",
+    "supporting_assets"
+  ],
+  "required_repo_mode_entries": [
     "README.md",
     "project_sources/CP-01_DCOIR_Version_Manifest.txt",
     "project_sources/CP-02_DCOIR_Change_Log.txt",
     "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
-    "project_sources/DOC-02_DCOIR_Project_Transition_Checklist.txt",
-    "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
-    "project_sources/LOG-01_DCOIR_Todo_Log.txt",
-    "project_sources/LOG-01_DCOIR_Todo_Index.txt",
-    "project_sources/todo/01_Active_Now.txt",
-    "project_sources/todo/02_Queued_Next.txt",
-    "project_sources/todo/03_Documentation_And_Knowledge_Lane.txt",
-    "project_sources/todo/04_Structure_And_Refactor_Lane.txt",
-    "project_sources/todo/05_Deferred_Or_Conditional.txt",
-    "project_sources/LOG-02_DCOIR_Lessons_Learned_Log.txt",
-    "project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt",
-    "project_sources/PP-01_System_Prompt_v1_0_1.txt",
-    "project_sources/PP-02_Output_Schema_v1_0_0.txt",
-    "project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt",
-    "project_sources/PP-04_Enrichment_Review_Prompt_v0_1_1.txt",
-    "project_sources/PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt",
-    "project_sources/PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt",
-    "project_sources/PP-07_Agent_Guardrails_v1_0_0.txt",
-    "project_sources/PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt",
-    "project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt",
-    "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt",
-    "project_sources/DCOIR_Collector.ps1",
-    "project_sources/run_DCOIR_Tests.ps1",
-    "project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt"
-  ],
-  "expected_governed_settings_mirrors": [
-    "project_settings/SET-06_AFRICOM_SOC_IR_Project_Instructions_v15.txt",
-    "project_settings/GITHUB_WORKING_REPOSITORY_NOTE.md"
+    "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt"
   ],
   "update_bundle_include_settings": true,
-  "update_bundle_include_supporting_assets": true,
-  "expected_governed_knowledge_sources": [
-    "knowledge/*.md"
-  ],
-  "expected_supporting_assets": [
-    "supporting_assets/DCOIR_Collector.zip",
-    "supporting_assets/supporting_knowledge_docs.zip",
-    "supporting_assets/comparative_reference_agent_markdowns.zip",
-    "supporting_assets/generated_agent_markdowns.zip"
-  ]
+  "update_bundle_include_supporting_assets": true
 }
