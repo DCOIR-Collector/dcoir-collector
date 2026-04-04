@@ -1,25 +1,26 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-04-session-tracker-deep-dive-v1
+Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.
 - Use it when resuming in a brand-new session after reading Project Instructions, CP-01, and CP-02.
-- This session family now includes helper-skill workflow enforcement, drift-gate integration, plan-tracker repair, coordinated stateful-skill updates, the inventory-driven alignment pass, repo-packager repair, validation-regime activation, skill parity baselining, hard-coded-project-variable audit passes 1 through 4, and session-tracker deep-dive pass 1.
+- This session family now includes helper-skill workflow enforcement, drift-gate integration, plan-tracker repair, coordinated stateful-skill updates, the inventory-driven alignment pass, repo-packager repair, validation-regime activation, skill parity baselining, hard-coded-project-variable audit passes 1 through 4, session-tracker deep-dive pass 1, the session-tracker presence-guard pass, and the recorded delivery-bundle preference.
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
 - Project Instructions remain the first bootstrap anchor.
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- The authoritative active work queue now points at live validation of the updated session-tracker pre-push review behavior inside the broader deep-dive and code-hygiene campaign.
+- The authoritative active work queue now points at live validation of the updated session-tracker presence preflight, explicit re-init signaling, and pre-push review behavior inside the broader deep-dive and code-hygiene campaign.
 
 Current governed workflow state
-- The helper-skill workflow, drift-gate, direct-resume, plan-tracker, coordinated stateful-trio, inventory-pass, repaired repo-packager, validation regime, skill parity, hard-coded-variable audit, and first session-tracker deep-dive lines are grounded.
+- The helper-skill workflow, drift-gate, direct-resume, plan-tracker, coordinated stateful-trio, inventory-pass, repaired repo-packager, validation regime, skill parity, hard-coded-variable audit, first session-tracker deep-dive line, second session-tracker presence-guard line, and recorded delivery-bundle preference are grounded.
 - The practical high-value discovery-contract adoption pass is materially complete for the currently identified helper-skill surfaces.
 - The stamped active-surface widening hold remains at 2 remaining real resume cycles and should not be decremented for synthetic or generated-artifact validation alone.
 
 What is still open right now
-1. Live-validate the updated `dcoir-session-tracker` pre-push review and todo-sync behavior during the next suitable governed push.
+1. Live-validate the updated `dcoir-session-tracker` presence preflight, explicit absence or re-init signaling, and pre-push review or todo-sync behavior during the next suitable governed push.
 2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the explicit validation structure.
 3. Continue enforcing the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other buffer-capable skills before future governed pushes.
+4. Use the recorded delivery-bundle structure preference for future affected-skill deliveries and GitHub Desktop manual repo-update bundles unless a later request overrides it.

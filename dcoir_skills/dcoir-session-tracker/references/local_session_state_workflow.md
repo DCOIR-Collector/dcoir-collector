@@ -10,6 +10,11 @@ Use a real local JSON file as the primary session-tracker working-state surface 
 - `scripts/session_state_store.py`
 
 ## Core commands
+Ensure the local state surface exists and report whether it was already present or had to be initialized:
+```bash
+python scripts/session_state_store.py ensure-state
+```
+
 Initialize the file:
 ```bash
 python scripts/session_state_store.py init
@@ -78,6 +83,12 @@ Preferred additional fields when useful:
 - `flush_trigger`
 - `related`
 
+## Presence and absence rules
+- `ensure-state` is the preferred first substantive local-state command in a tracker branch.
+- `ensure-state` may initialize a new file when none exists, but it must say that plainly so the operator knows a pre-existing file was not present.
+- `inspect` remains the strict proof command and should fail when the file is absent instead of silently recreating it.
+- If an upsert, summary update, staging action, or derived pre-push review path had to initialize a new file because no pre-existing file was present, that write path must emit an explicit operator-visible notice.
+
 ## Inspection output requirements
 A valid inspection should surface:
 - absolute path
@@ -94,6 +105,7 @@ A valid inspection should surface:
 ## Truth rules
 - Do not claim a real local session-state file exists until `inspect` proves it.
 - Do not treat a merely described buffer as equivalent to a file-backed local state.
+- Do not treat a newly re-initialized file as evidence that the missing interval was still file-backed.
 - The local JSON file is the primary working state when it exists.
 - GitHub-backed tracker-memory snapshots are not used for this skill.
 - Cross-session continuity for this skill should come from an exported handoff artifact or promotion into governed Project files.

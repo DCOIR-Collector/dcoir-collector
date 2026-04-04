@@ -104,8 +104,40 @@ def save_state(path: Path, state: dict[str, Any]) -> None:
     state['local_state_metadata']['schema_version'] = 4
     state['local_state_metadata']['updated_at_utc'] = stamp
     state['local_state_metadata']['state_path'] = str(path.resolve())
-    path.write_text(json.dumps(state, indent=2, sort_keys=False) + '
-', encoding='utf-8')
+    path.write_text(json.dumps(state, indent=2, sort_keys=False) + '\n', encoding='utf-8')
+
+def print_presence_status(path: Path, state: dict[str, Any], status: str, notice: str, show_state: bool = False) -> None:
+    payload = inspect_payload(path, state)
+    print(f'local_state_status: {status}')
+    print(f'local_state_notice: {notice}')
+    print(f'path: {payload["path"]}')
+    print(f'filename: {payload["filename"]}')
+    print(f'size_bytes: {payload["size_bytes"]}')
+    print(f'modified_time_utc: {payload["modified_time_utc"]}')
+    print(f'sha256: {payload["sha256"]}')
+    print(f'created_at_utc: {payload["created_at_utc"]}')
+    print(f'updated_at_utc: {payload["updated_at_utc"]}')
+    print('open_counts:')
+    for bucket, count in payload['open_counts'].items():
+        print(f'  - {bucket}: {count}')
+    print(f'completed_count: {payload["completed_count"]}')
+    print(f'staged_governed_update_count: {payload["staged_governed_update_count"]}')
+    print(f'staged_todo_action_count: {payload["staged_todo_action_count"]}')
+    print(f'post_push_cleanup_count: {payload["post_push_cleanup_count"]}')
+    if show_state:
+        print('state_json:')
+        print(json.dumps(state, indent=2, sort_keys=False))
+
+
+def emit_write_result(path: Path, state: dict[str, Any], primary_message: str, path_existed_before: bool) -> None:
+    print(primary_message)
+    if not path_existed_before:
+        print_presence_status(
+            path,
+            state,
+            'initialized_new_local_state',
+            'no pre-existing local session-state file was present at this step, so a new session-local state file was initialized first',
+        )
 
 
 def remove_item_everywhere(state: dict[str, Any], item_id: str) -> tuple[dict[str, Any] | None, str | None]:
@@ -194,8 +226,7 @@ def as_paths(value: Any, fallback_bucket: str | None = None) -> list[str]:
     if isinstance(value, list):
         return [str(x) for x in value if str(x).strip()]
     if isinstance(value, str) and value.strip():
-        parts = [part.strip() for part in value.replace(';', ',').split(',') if part.strip()]
-        return parts
+        return [part.strip() for part in value.replace(';', ',').split(',') if part.strip()]
     return list(DEFAULT_TARGETS.get(fallback_bucket or '', []))
 
 
@@ -205,14 +236,14 @@ def derive_pre_push_review(state: dict[str, Any]) -> dict[str, Any]:
     staged_governed = list(state.get('staged_governed_updates', []))
     staged_todo = list(state.get('staged_todo_actions', []))
     cleanup = list(state.get('post_push_cleanup', []))
-    safe_flush_now = []
-    remain_local = []
-    buffered_items = []
+    safe_flush_now: list[str] = []
+    remain_local: list[str] = []
+    buffered_items: list[str] = []
 
     for bucket in BUCKETS:
         for item in state.get('open_items', {}).get(bucket, []):
             item_id = item.get('id', '')
-            if item.get('buffer_state', 'buffered_session_local') == 'promoted_to_governed' or item.get('persistence_status') == 'governed_written':
+            if item.get('buffer_state') == 'promoted_to_governed' or item.get('persistence_status') == 'governed_written':
                 continue
             buffered_items.append(item_id)
             if bucket == 'session_only' and not item.get('promotion_target'):
@@ -247,7 +278,7 @@ def derive_pre_push_review(state: dict[str, Any]) -> dict[str, Any]:
                 if key not in existing_todo:
                     staged_todo.append(entry)
                     existing_todo.add(key)
-            cleanup_note = f"after push: mark {item_id} governed-written and clear staged entries that reference it"
+            cleanup_note = f'after push: mark {item_id} governed-written and clear staged entries that reference it'
             if cleanup_note not in cleanup:
                 cleanup.append(cleanup_note)
 
@@ -269,7 +300,7 @@ def derive_pre_push_review(state: dict[str, Any]) -> dict[str, Any]:
             if key not in existing_todo:
                 staged_todo.append(entry)
                 existing_todo.add(key)
-            cleanup_note = f"after push: clear completed staged-todo action for {item_id}"
+            cleanup_note = f'after push: clear completed staged-todo action for {item_id}'
             if cleanup_note not in cleanup:
                 cleanup.append(cleanup_note)
 
@@ -298,11 +329,7 @@ def render_pre_push_review(review: dict[str, Any], inspection: dict[str, Any] | 
         for key in ['completed_count', 'staged_governed_update_count', 'staged_todo_action_count', 'post_push_cleanup_count']:
             lines.append(f'- {key}: {inspection.get(key, 0)}')
         lines.append('')
-    for title, key in [
-        ('Buffered items', 'buffered_items'),
-        ('Safe to flush now', 'safe_flush_now'),
-        ('Remain local for now', 'remain_local'),
-    ]:
+    for title, key in [('Buffered items', 'buffered_items'), ('Safe to flush now', 'safe_flush_now'), ('Remain local for now', 'remain_local')]:
         lines.extend([f'## {title}', ''])
         vals = review.get(key, [])
         lines.extend([f'- {x}' for x in vals] or ['- none'])
@@ -310,8 +337,8 @@ def render_pre_push_review(review: dict[str, Any], inspection: dict[str, Any] | 
     lines.extend(['## Staged governed updates', ''])
     if review.get('staged_governed_updates'):
         for entry in review['staged_governed_updates']:
-            lines.append(f"- {entry.get('title','untitled staged update')}")
-            lines.append(f"  - action: {entry.get('action','update')}")
+            lines.append(f"- {entry.get('title', 'untitled staged update')}")
+            lines.append(f"  - action: {entry.get('action', 'update')}")
             if entry.get('why'):
                 lines.append(f"  - why: {entry.get('why')}")
             if entry.get('target_paths'):
@@ -323,8 +350,8 @@ def render_pre_push_review(review: dict[str, Any], inspection: dict[str, Any] | 
     lines.extend(['', '## Staged todo actions', ''])
     if review.get('staged_todo_actions'):
         for entry in review['staged_todo_actions']:
-            lines.append(f"- {entry.get('title','untitled staged todo action')}")
-            lines.append(f"  - action: {entry.get('action','add_or_update')}")
+            lines.append(f"- {entry.get('title', 'untitled staged todo action')}")
+            lines.append(f"  - action: {entry.get('action', 'add_or_update')}")
             if entry.get('why'):
                 lines.append(f"  - why: {entry.get('why')}")
             if entry.get('target_paths'):
@@ -336,18 +363,43 @@ def render_pre_push_review(review: dict[str, Any], inspection: dict[str, Any] | 
     lines.extend(['', '## Post-push cleanup', ''])
     lines.extend([f'- {x}' for x in review.get('post_push_cleanup', [])] or ['- none'])
     lines.extend(['', '## Best next move', '', review.get('best_next_move', 'not specified'), ''])
-    return '
-'.join(lines)
+    return '\n'.join(lines)
 
 
 def cmd_init(args: argparse.Namespace) -> int:
+    path_existed_before = args.path.exists()
     state = load_state(args.path)
     save_state(args.path, state)
-    print(f'Initialized {args.path.resolve()}')
+    emit_write_result(args.path, load_state(args.path), f'Initialized {args.path.resolve()}', path_existed_before)
+    return 0
+
+
+def cmd_ensure_state(args: argparse.Namespace) -> int:
+    path_existed_before = args.path.exists()
+    state = load_state(args.path)
+    if not path_existed_before:
+        save_state(args.path, state)
+        state = load_state(args.path)
+        print_presence_status(
+            args.path,
+            state,
+            'initialized_new_local_state',
+            'no pre-existing local session-state file was present, so a new session-local state file was initialized for this session',
+            show_state=args.show_state,
+        )
+        return 0
+    print_presence_status(
+        args.path,
+        state,
+        'existing_local_state_present',
+        'existing local session-state file is present and inspectable',
+        show_state=args.show_state,
+    )
     return 0
 
 
 def cmd_upsert(args: argparse.Namespace) -> int:
+    path_existed_before = args.path.exists()
     state = load_state(args.path)
     payload = json.loads(args.item_json) if args.item_json else json.loads(Path(args.item_file).read_text(encoding='utf-8'))
     if not isinstance(payload, dict):
@@ -361,7 +413,8 @@ def cmd_upsert(args: argparse.Namespace) -> int:
     remove_item_everywhere(state, item['id'])
     state['open_items'][bucket].append(item)
     save_state(args.path, state)
-    print(f'Captured {item["id"]} into {bucket} and preserved it in the local session-state file')
+    state = load_state(args.path)
+    emit_write_result(args.path, state, f'Captured {item["id"]} into {bucket} and preserved it in the local session-state file', path_existed_before)
     return 0
 
 
@@ -390,6 +443,7 @@ def cmd_remove(args: argparse.Namespace) -> int:
 
 
 def cmd_set_summary(args: argparse.Namespace) -> int:
+    path_existed_before = args.path.exists()
     state = load_state(args.path)
     if args.current_phase is not None:
         state['current_phase'] = args.current_phase
@@ -412,29 +466,34 @@ def cmd_set_summary(args: argparse.Namespace) -> int:
     if args.add_verification:
         state.setdefault('closeout_verification', []).extend(args.add_verification)
     save_state(args.path, state)
-    print(f'Updated summary fields in {args.path.resolve()}')
+    state = load_state(args.path)
+    emit_write_result(args.path, state, f'Updated summary fields in {args.path.resolve()}', path_existed_before)
     return 0
 
 
 def cmd_stage_governed_update(args: argparse.Namespace) -> int:
+    path_existed_before = args.path.exists()
     state = load_state(args.path)
     payload = json.loads(args.entry_json) if args.entry_json else json.loads(Path(args.entry_file).read_text(encoding='utf-8'))
     if not isinstance(payload, dict):
         raise ValueError('entry payload must be a JSON object')
     state.setdefault('staged_governed_updates', []).append(normalize_stage(payload))
     save_state(args.path, state)
-    print('Staged governed update entry')
+    state = load_state(args.path)
+    emit_write_result(args.path, state, 'Staged governed update entry', path_existed_before)
     return 0
 
 
 def cmd_stage_todo_action(args: argparse.Namespace) -> int:
+    path_existed_before = args.path.exists()
     state = load_state(args.path)
     payload = json.loads(args.entry_json) if args.entry_json else json.loads(Path(args.entry_file).read_text(encoding='utf-8'))
     if not isinstance(payload, dict):
         raise ValueError('todo action payload must be a JSON object')
     state.setdefault('staged_todo_actions', []).append(normalize_stage(payload))
     save_state(args.path, state)
-    print('Staged todo action entry')
+    state = load_state(args.path)
+    emit_write_result(args.path, state, 'Staged todo action entry', path_existed_before)
     return 0
 
 
@@ -469,6 +528,7 @@ def cmd_mark_governed_written(args: argparse.Namespace) -> int:
 
 
 def cmd_derive_pre_push_review(args: argparse.Namespace) -> int:
+    path_existed_before = args.path.exists()
     state = load_state(args.path)
     inspection = inspect_payload(args.path, state) if args.path.exists() else None
     review = derive_pre_push_review(state)
@@ -479,13 +539,20 @@ def cmd_derive_pre_push_review(args: argparse.Namespace) -> int:
         state['best_next_move'] = review['best_next_move']
         save_state(args.path, state)
         if args.path.exists():
-            inspection = inspect_payload(args.path, load_state(args.path))
+            state = load_state(args.path)
+            inspection = inspect_payload(args.path, state)
     if args.output_json:
-        Path(args.output_json).write_text(json.dumps({'inspection': inspection, 'review': review}, indent=2) + '
-', encoding='utf-8')
+        Path(args.output_json).write_text(json.dumps({'inspection': inspection, 'review': review}, indent=2) + '\n', encoding='utf-8')
     if args.output_md:
         Path(args.output_md).write_text(render_pre_push_review(review, inspection), encoding='utf-8')
     print(render_pre_push_review(review, inspection))
+    if args.update_state and not path_existed_before and args.path.exists():
+        print_presence_status(
+            args.path,
+            state,
+            'initialized_new_local_state',
+            'no pre-existing local session-state file was present when deriving the pre-push review, so a new session-local state file was initialized first',
+        )
     return 0
 
 
@@ -588,6 +655,11 @@ def build_parser() -> argparse.ArgumentParser:
     review_p.add_argument('--output-json')
     review_p.add_argument('--update-state', action='store_true')
     review_p.set_defaults(func=cmd_derive_pre_push_review)
+
+    ensure_p = sub.add_parser('ensure-state')
+    ensure_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)
+    ensure_p.add_argument('--show-state', action='store_true')
+    ensure_p.set_defaults(func=cmd_ensure_state)
 
     inspect_p = sub.add_parser('inspect')
     inspect_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)

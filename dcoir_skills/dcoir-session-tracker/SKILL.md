@@ -1,6 +1,6 @@
 ---
 name: dcoir-session-tracker
-description: maintain a session-local dcoir tracker with a real local json state file, verbose continuity capture, derived pre-push review bundles, staged governed updates, todo-sync proposals, and handoff exports. use when chatgpt needs to catch important project thoughts before they are lost, answer what remains, prove local tracker state exists, prepare follow-up promotion into governed project files, derive what should land in the next grouped github push, or close out a session safely for later resume inside africom_soc_ir / dcoir work.
+description: maintain a session-local dcoir tracker with a real local json state file, presence checks, explicit absence or re-init signaling, verbose continuity capture, derived pre-push review bundles, staged governed updates, todo-sync proposals, and handoff exports. use when chatgpt needs to catch important project thoughts before they are lost, answer what remains, prove local tracker state exists, detect or recover from silent local-state absence, prepare follow-up promotion into governed project files, derive what should land in the next grouped github push, or close out a session safely for later resume inside africom_soc_ir / dcoir work.
 ---
 
 # DCOIR Session Tracker
@@ -21,7 +21,7 @@ This skill does not claim hidden persistence across chats.
 ## Core capabilities
 1. Capture casual "don't forget" statements without waiting for a formal task list.
 2. Classify items into the right buckets.
-3. Maintain a real local session-state file as the primary working state when code execution and file writing are available.
+3. Run a startup local-state preflight and maintain a real local session-state file as the primary working state when code execution and file writing are available.
 4. Inspect the local session-state file and report its path, filename, size, modified time, checksum, and current item counts.
 5. Answer "what do we still have left" with a deduplicated, priority-ordered inventory grounded in the current local state when that state exists.
 6. Preserve and render tracker items verbosely enough that the operator can understand the carried state without reconstructing prior chat context.
@@ -32,6 +32,7 @@ This skill does not claim hidden persistence across chats.
 11. Stage governed-update entries explicitly when a grouped GitHub push or repo batch is about to happen so promotion candidates can land in the same governed update instead of waiting for later chat memory.
 12. Derive a pre-push review bundle from the current local state, including staged todo additions, updates, removals, and post-push cleanup.
 13. Give an immediate operator-visible confirmation when a materially important item is captured, including whether it is preserved session-locally only or already staged for the next governed push.
+14. Surface an explicit absence or re-init warning when a tracker write path had to initialize a new local session-state file because no pre-existing file was present.
 
 ## Local session-state file
 When code execution and file writing are available, use a real local JSON file as the primary working-state surface.
@@ -40,19 +41,22 @@ Default local state path:
 - `/mnt/data/dcoir_session_tracker/session_state.json`
 
 Primary implementation:
-- use `scripts/session_state_store.py` to initialize, upsert, complete, remove, inspect, derive the pre-push review, stage explicit governed updates or todo actions, and update summary fields
+- use `scripts/session_state_store.py` to ensure-state, initialize, upsert, complete, remove, inspect, derive the pre-push review, stage explicit governed updates or todo actions, and update summary fields
 - use `scripts/render_session_state.py` only to render a markdown export from the local JSON state file
 
 Required local-state workflow:
-1. Initialize the local file before claiming that a maintained session-state file exists.
-2. Use the local file as the primary working state during the chat when code execution and file writing are available.
-3. After material tracker changes, inspect the file when the operator asks whether the local session state is real or when governed Project flush time is approaching.
-4. Before any GitHub write that depends on tracker state, inspect the file and derive the pre-push review from current state.
-5. When a governed push, grouped repo batch, or GitHub Desktop push is about to happen, run the derived pre-push review instead of leaving the tracker silent.
-6. Before session close-out, inspect the file again and classify durable, exported-only, and buffered-only state explicitly.
+1. Run `scripts/session_state_store.py ensure-state` at first substantive tracker use so the operator can see whether a real local session-state file was already present or had to be initialized for the current branch.
+2. Initialize the local file before claiming that a maintained session-state file exists.
+3. Use the local file as the primary working state during the chat when code execution and file writing are available.
+4. If the startup preflight or a later write path had to initialize a new local file because no pre-existing file was present, say that plainly and do not imply that the missing interval was still protected by the local file.
+5. After material tracker changes, inspect the file when the operator asks whether the local session state is real or when governed Project flush time is approaching.
+6. Before any GitHub write that depends on tracker state, inspect the file and derive the pre-push review from current state.
+7. When a governed push, grouped repo batch, or GitHub Desktop push is about to happen, run the derived pre-push review instead of leaving the tracker silent.
+8. Before session close-out, inspect the file again and classify durable, exported-only, buffered-only, and any unresolved local-state absence risk explicitly.
 
 Inspection requirement:
 - do not claim a real local session-state file exists unless `scripts/session_state_store.py inspect` confirms its path, filename, size, modified time, checksum, and counts
+- use `scripts/session_state_store.py ensure-state` as the first-use preflight so the operator can see whether the local file was already present or had to be initialized in the current branch
 - when the operator questions whether the local session state is real, show the inspection result instead of paraphrasing intent
 
 If code execution or file writing is unavailable:
@@ -65,6 +69,7 @@ Read `references/local_session_state_workflow.md` when local-state implementatio
 When a materially important item is captured:
 - say that it was captured and preserved in the local session-state file when that file is real and current
 - say whether it remains session-local for now or is already staged for the next governed push
+- if the capture path had to initialize a new local file because no pre-existing file was present, say that plainly in the same response instead of silently treating the capture as uninterrupted continuity
 - prefer one short but explicit reassurance line over silent capture when the operator would otherwise be unsure whether the tracker actually preserved the item
 
 ## Verbosity standard
@@ -114,7 +119,8 @@ Required close-out checks:
 1. Re-anchor to Project Instructions, then CP-01, then CP-02.
 2. Run a flush check against all known buffered session-tracker state.
 3. Inspect the local session-state file when it exists and surface the inspection result.
-4. Verify whether materially learned workflow rules, preferences, blocker recoveries, and reusable lessons were already written to governed GitHub sources, intentionally kept as session-local buffered state, exported into a handoff artifact, or still missing durable capture.
+4. If no local session-state file exists at close-out time, say so plainly and warn that any interval since the last proven local-state inspection cannot be treated as file-backed continuity.
+5. Verify whether materially learned workflow rules, preferences, blocker recoveries, and reusable lessons were already written to governed GitHub sources, intentionally kept as session-local buffered state, exported into a handoff artifact, or still missing durable capture.
 5. Verify that all tasks and requests mentioned in the session are either closed as done, preserved in the correct governed destination, or explicitly carried as open items in the handoff state.
 6. Verify that session-related continuity surfaces are updated when the current workflow is already performing a safe GitHub write for governed Project updates.
 7. Produce a next-session starter prompt grounded in the current control plane and current open items.
@@ -255,6 +261,7 @@ Rules:
 - do not lose operator-stated rationale when it materially explains why the item matters
 - do not claim buffered state is durable before governed promotion or handoff export actually happened
 - do not claim a real local session-state file exists until the inspection command proves it
+- do not silently reinitialize a missing local state file during a write path without telling the operator that no pre-existing file was present at that step
 
 ## Output contract
 When acting under this skill:

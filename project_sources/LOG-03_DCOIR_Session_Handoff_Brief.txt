@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-04-session-tracker-deep-dive-v1
+Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
 
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -8,7 +8,7 @@ Current stable artifacts
 - Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
 - GitHub helper-skill source layout and rollout guide: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
-- Helper-skill workflow decision logs: LOG-04 through LOG-22
+- Helper-skill workflow decision logs: LOG-04 through LOG-24
 - Task memory bank root: knowledge/task_memory
 - Governed helper-skill source root: dcoir_skills/
 - Authoritative todo surfaces: project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt
@@ -18,7 +18,7 @@ Current governance state
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
 - The project discovery contract and parity surfaces are now part of the governed helper-skill control posture.
-- The next governance branch remains the broader helper-skill deep-dive and code-hygiene campaign, with the updated session-tracker pre-push review now part of that line.
+- The next governance branch remains the broader helper-skill deep-dive and code-hygiene campaign, with the updated session-tracker presence guard, explicit re-init signaling, pre-push review behavior, and the recorded delivery-bundle preference now part of that line.
 - The stamped active-surface widening hold remains at 2 remaining real resume cycles.
 
 Current validated status
@@ -27,9 +27,11 @@ Current validated status
 - The repaired repo-packager source is aligned to the current repo-style roots and update-mode bootstrap-safe roots.
 - The first executable skill-parity rebaseline and installed-skill verification pass is complete.
 - The practical high-value hard-coded-project-variable audit passes are complete through the remaining GitHub-memory/helper-memory surfaces.
-- The first `dcoir-session-tracker` deep-dive pass is locally validated and ready for live grouped-push validation.
+- The first `dcoir-session-tracker` deep-dive pass is locally validated and the second presence-guard pass is locally validated and ready for live grouped-push validation.
+- The manual delivery-bundle structure preference for multi-skill zips and GitHub Desktop repo-update bundles is now recorded in governed project sources.
 
 Current next planned work item
-- Live-validate the updated session-tracker pre-push review and todo-sync behavior during the next suitable governed push.
+- Live-validate the updated session-tracker presence preflight, explicit absence or re-init signaling, and pre-push review or todo-sync behavior during the next suitable governed push.
 - Keep the CI/CD-style validation regime active and continue the broader helper-skill deep-dive and code-hygiene campaign from that stronger tracker baseline.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
+- Use the recorded delivery-bundle preference for future affected-skill deliveries and GitHub Desktop manual repo-update bundles.

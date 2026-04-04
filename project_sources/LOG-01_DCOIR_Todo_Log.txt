@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-04-session-tracker-deep-dive-v1
+Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -13,7 +13,7 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Live-validate the updated session-tracker pre-push review and todo-sync behavior, then continue the broader helper-skill deep-dive and code-hygiene campaign from that stronger continuity baseline.
+- Live-validate the updated session-tracker presence preflight, explicit absence or re-init signaling, and pre-push review or todo-sync behavior, then continue the broader helper-skill deep-dive and code-hygiene campaign from that stronger continuity baseline.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -25,6 +25,6 @@ Detailed todo structure
 
 Queued next priorities
 - Run a full skill deep dive to confirm current helper skills still execute successfully, remain current with the project's goals and governance, and do not carry obsolete or inefficient logic.
-- Review session-memory-enabled and buffer-capable skills for reliable pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior, starting with a live validation of the updated `dcoir-session-tracker` path.
+- Review session-memory-enabled and buffer-capable skills for reliable presence preflight, pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior, starting with a live validation of the updated `dcoir-session-tracker` path.
 - Review any remaining literals only as bounded contractual exceptions where discovery-contract replacement would not materially improve portability or maintainability.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge and wiki structure.

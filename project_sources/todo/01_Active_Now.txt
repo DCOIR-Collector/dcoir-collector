@@ -1,12 +1,12 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-session-tracker-deep-dive-v1
+Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
 
-1. Live-validate the updated `dcoir-session-tracker` pre-push review and todo-sync behavior during the next suitable governed push.
+1. Live-validate the updated `dcoir-session-tracker` presence preflight, explicit absence or re-init signaling, and pre-push review or todo-sync behavior during the next suitable governed push.
    Why it matters:
-   - The tracker now derives staged governed updates, staged todo actions, and post-push cleanup from current local state, but that path still needs a real grouped-push validation for operator trust.
+   - The tracker now detects and surfaces missing-local-file recovery more honestly, but that path still needs a real grouped-push validation for operator trust.
    Next action:
-   - Use the updated tracker on the next governed push and verify that the derived pre-push review is strong enough in practice.
+   - Use the updated tracker on the next governed push and verify that the presence preflight and explicit re-init signaling are strong enough in practice.
 
 2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the stronger tracker baseline.
    Why it matters:
