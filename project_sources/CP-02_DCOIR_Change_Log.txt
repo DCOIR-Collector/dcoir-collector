@@ -1,6 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.40
+Current state id: 2026-04-04-resume-status-fast-path-v1
+Change class: resume-status fast path and bounded session-start preflight lane tightening
+
+What changed
+- Added `project_sources/LOG-28_DCOIR_Resume_Status_Fast_Path_And_Bounded_Preflight_Lane_2026-04-04.txt` as the governed decision record for the bounded efficiency pass on resume-only status work.
+- Updated `dcoir-session-resume` so simple current-state or resume-status requests now follow an explicit governed GitHub readable-text fast path before considering alternate acquisition or execution lanes.
+- Updated `dcoir-session-resume` so clone, archive-download, raw-web, container, and local-script detours are now explicitly disallowed for resume-only status work unless the primary governed GitHub readable-text lane fails or the drift gate cannot be resolved from fetched text alone.
+- Updated `dcoir-memory-preflight` so `session_start_bootstrap` now treats simple resume-status work as a bounded routing case and reinforces that the lane should stay on governed GitHub readable-text fetches unless the primary lane fails or the drift gate cannot be resolved from fetched text alone.
+- Refreshed the active continuity and todo surfaces so the next live validation now includes the first-turn bootstrap pair, the resume-status fast path, and the bounded local-JSON startup-preflight behavior together.
+
+Why
+- The operator identified an efficiency defect: a simple DCOIR current-state check still spent reasoning effort considering clone, container, and raw-web detours before settling on the governed GitHub fetch path.
+- The project wanted that behavior corrected as a routing-constraint problem rather than accepting it as unavoidable model drift.
+- The highest-value fix was to tighten the two skills that already own first-turn bootstrap and lane preflight behavior instead of broadening the update to unrelated surfaces.
+
+Validation notes
+- Local bounded regression passed the updated `dcoir-session-resume` and `dcoir-memory-preflight` packaged-skill validation path.
+- The next immediate branch is a live workflow validation that a fresh-session resume-status request now stays on the governed GitHub readable-text lane without unnecessary acquisition or execution detours before the primary lane is tried.
+
+[PRIOR]
 Version: 3.9.39
 Current state id: 2026-04-04-session-start-bootstrap-and-prompt-review-v1
 Change class: stateful local-json startup preflight rollout, first-turn bootstrap enforcement, prompt/bootstrap review, and README/parity refresh
@@ -27,8 +48,3 @@ Validation notes
 - Updated `dcoir-session-tracker`, `dcoir-plan-tracker`, `dcoir-session-resume`, and `dcoir-memory-preflight` skill packages passed local packaging validation.
 - Reviewed the current governed parity surface and README surfaces, refreshed the affected README files, and prepared the next governed parity refresh to land after this source update set is applied.
 - The next immediate branch is a live workflow validation of the session-start bootstrap pair and the bounded local-JSON startup-preflight behavior on a real governed push or local plan-tracker branch.
-
-[PRIOR]
-Version: 3.9.38
-Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
-Change class: session-tracker local-state presence guard, explicit re-init signaling, and delivery-bundle preference capture

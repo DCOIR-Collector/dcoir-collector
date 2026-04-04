@@ -27,6 +27,7 @@ Use it to:
 - classify the immediate work family early
 - consult canonical memory before the branch drifts into execution
 - surface the best bounded lane, anti-patterns, and likely flush triggers before high-friction work starts
+- keep simple resume-status work on the bounded governed GitHub readable-text lane instead of drifting into unnecessary execution paths
 
 ### 1. pre-execution mode
 Run this mode before choosing an execution lane when the task family is likely to have reusable canonical guidance.
@@ -82,6 +83,7 @@ Run this skill again after blocker recovery when the recovered lesson could matt
 11. When stateful helper skills are active, tell `dcoir-plan-tracker` and `dcoir-session-tracker` what blocker signature, failed attempt summary, successful mitigation, lesson classification, reusability notes, and flush trigger should stay buffered until flush time.
 12. Surface the next flush-check trigger when buffered state exists.
 13. Return one best next move and the consulted records that justify it.
+14. For `session_start_bootstrap` when the immediate task is simple resume-status or current-state reporting, keep the lane bounded to governed GitHub readable-text fetches unless that primary lane fails or the drift gate cannot be resolved from fetched text alone.
 
 ## GitHub-family defaults
 For GitHub governed-readable-text work:
@@ -147,6 +149,7 @@ When a promotion candidate is recommended, preserve these fields explicitly when
 - Do not silently write every recovered lesson into canonical memory.
 - Do not claim buffered state is cross-session durable unless it was flushed to GitHub or exported in a handoff artifact.
 - If no relevant canonical record exists, say that plainly and recommend the best bounded path.
+- Do not widen simple resume-status work into repo clone, archive download, raw web fetch, container execution, or local script execution unless the primary governed readable-text lane actually fails or cannot resolve the drift gate.
 
 ## References
 Read when needed:

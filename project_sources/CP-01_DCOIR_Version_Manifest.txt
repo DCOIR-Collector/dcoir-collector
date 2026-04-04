@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.39
+DCOIR Version Manifest 3.9.40
 
-Current state id: 2026-04-04-session-start-bootstrap-and-prompt-review-v1
+Current state id: 2026-04-04-resume-status-fast-path-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -34,6 +34,7 @@ Current control plane
 - Stateful local JSON startup preflight rollout: project_sources/LOG-25_DCOIR_Stateful_Local_JSON_Startup_Preflight_Rollout_2026-04-04.txt
 - Session-start bootstrap and project prompt optimization review: project_sources/LOG-26_DCOIR_Session_Start_Bootstrap_And_Project_Prompt_Optimization_Review_2026-04-04.txt
 - Parity verification and README refresh: project_sources/LOG-27_DCOIR_Parity_Verification_And_Readme_Refresh_2026-04-04.txt
+- Resume-status fast path and bounded preflight lane: project_sources/LOG-28_DCOIR_Resume_Status_Fast_Path_And_Bounded_Preflight_Lane_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -65,6 +66,8 @@ Current governed helper-skill source
 - Multi-skill delivery bundles should use one outer zip whose top level contains only the affected per-skill zip files named after the live skill names with no subfolders.
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 - `dcoir-session-resume` and `dcoir-memory-preflight` now form the mandatory first substantive-turn bootstrap pair for every new AFRICOM_SOC_IR / DCOIR session.
+- `dcoir-session-resume` now uses a resume-status fast path for simple current-state checks and should stay on governed GitHub readable-text fetches before considering clone, container, archive-download, raw-web, or local-script detours.
+- `dcoir-memory-preflight` now treats resume-only status work as a bounded routing case and should not widen the lane beyond governed GitHub readable-text fetches unless the primary lane fails or the drift gate cannot be resolved from fetched text alone.
 - `dcoir-source-authority-auditor` acts as the explicit drift gate for shared active-surface current-state alignment.
 - `dcoir-plan-tracker` is the current verbose resume-state and flush/manicure reference candidate.
 - `dcoir-repo-packager`, `dcoir-session-resume`, `dcoir-readme-maintainer`, `dcoir-validation-orchestrator`, `dcoir-parity-verifier`, `dcoir-decision-policy`, and `dcoir-skill-regression-auditor` prefer the governed discovery contract for eligible current-project assumptions where practical.
@@ -73,8 +76,8 @@ Current governed helper-skill source
 - `dcoir_skills/project_discovery_contract.json` is the canonical machine-readable current-project discovery contract for eligible helper skills.
 
 Current next work item
-- Keep the CI/CD-style validation regime branch active and use the refreshed first-turn bootstrap pair, local-JSON startup preflights, parity output, discovery contract, and derived pre-push review behavior to anchor the broader helper-skill deep-dive and code-hygiene campaign.
-- Live-validate the updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and the updated `dcoir-session-tracker` plus `dcoir-plan-tracker` local-JSON startup preflights during the next suitable governed push or local plan-tracker branch.
+- Keep the CI/CD-style validation regime branch active and use the refreshed first-turn bootstrap pair, resume-status fast path, local-JSON startup preflights, parity output, discovery contract, and derived pre-push review behavior to anchor the broader helper-skill deep-dive and code-hygiene campaign.
+- Live-validate the updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path together with the updated `dcoir-session-tracker` plus `dcoir-plan-tracker` local-JSON startup preflights during the next suitable governed push or local plan-tracker branch.
 - Use the recorded delivery-bundle structure preference and GitHub Desktop commit `Summary` preference for future affected-skill deliveries and manual repo-update bundles.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
 - Keep the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.

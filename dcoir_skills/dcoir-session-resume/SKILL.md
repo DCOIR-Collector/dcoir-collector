@@ -16,6 +16,20 @@ Use this first-turn bootstrap path to:
 - consume the explicit drift gate before trusting supporting continuity surfaces
 - establish the current governed state that later skills and workflow choices should inherit
 
+## Resume-status fast path
+When the current request is a simple current-state, resume-status, or "where are we" check, use the governed GitHub readable-text fast path first.
+
+Default fast path order:
+1. `dcoir_skills/project_discovery_contract.json` when present
+2. the current manifest
+3. the current change log
+4. the current supporting continuity surfaces resolved from the control plane and drift gate
+
+For this resume-status fast path:
+- prefer governed GitHub readable-text fetches only
+- do not consider repo clone, archive download, raw web fetch, container execution, or local script execution before trying the governed GitHub connector path
+- escalate to alternate acquisition or execution lanes only when the GitHub connector cannot retrieve the required governed readable files or the drift gate cannot be resolved from fetched text alone
+
 ## Strong trigger phrases
 - `where are we`
 - `resume`
@@ -43,6 +57,7 @@ Use the first available bootstrap anchor in this order:
 9. Use only files or patterns marked current in the manifest as authoritative governed GitHub readable sources.
 10. Use the current todo structure and current session handoff brief only as supporting context after the drift gate clears or bounds the path.
 11. If the manifest, change log, or workspace state conflict, stop and report the conflict plainly.
+12. For `session_start_bootstrap` and explicit resume-status requests, use the resume-status fast path by default unless the current task already shows that the primary GitHub readable-text lane cannot resolve the state.
 
 ## Required rules
 - Treat the first substantive session turn as a mandatory resume bootstrap point for this workspace unless the request is clearly outside DCOIR scope.
@@ -58,6 +73,8 @@ Use the first available bootstrap anchor in this order:
 - Do not treat non-current versions as authoritative unless the user explicitly asks for rollback reference or history.
 - Do not reimplement a weaker duplicate of the current-state drift logic inside this skill.
 - Do not let a superficially familiar work line override an explicit `hard_stop_conflict` result from the drift gate.
+- Do not evaluate alternate acquisition lanes before trying the governed GitHub connector path for resume-only status work.
+- Do not broaden a simple resume-status request into clone, container, archive-download, raw-web, or local-script work unless the primary governed readable-text lane actually fails or cannot resolve the drift gate.
 
 ## Output contract
 Return sections in this exact order:

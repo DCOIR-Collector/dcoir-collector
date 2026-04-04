@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-04-session-start-bootstrap-and-prompt-review-v1
+Current state id: 2026-04-04-resume-status-fast-path-v1
 
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -8,7 +8,7 @@ Current stable artifacts
 - Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
 - GitHub helper-skill source layout and rollout guide: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
-- Helper-skill workflow decision logs: LOG-04 through LOG-25
+- Helper-skill workflow decision logs: LOG-04 through LOG-28
 - Task memory bank root: knowledge/task_memory
 - Governed helper-skill source root: dcoir_skills/
 - Authoritative todo surfaces: project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt
@@ -18,7 +18,7 @@ Current governance state
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
 - The project discovery contract and parity surfaces are now part of the governed helper-skill control posture.
-- The next governance branch remains the broader helper-skill deep-dive and code-hygiene campaign, with the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, stronger pre-push behavior, and the recorded delivery-bundle plus GitHub Desktop commit `Summary` preferences now part of that line.
+- The next governance branch remains the broader helper-skill deep-dive and code-hygiene campaign, with the first-turn bootstrap pair, resume-status fast path, updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, stronger pre-push behavior, and the recorded delivery-bundle plus GitHub Desktop commit `Summary` preferences now part of that line.
 - The stamped active-surface widening hold remains at 2 remaining real resume cycles.
 
 Current validated status
@@ -27,11 +27,11 @@ Current validated status
 - The repaired repo-packager source is aligned to the current repo-style roots and update-mode bootstrap-safe roots.
 - The first executable skill-parity rebaseline and installed-skill verification pass is complete.
 - The practical high-value hard-coded-project-variable audit passes are complete through the remaining GitHub-memory/helper-memory surfaces.
-- The first `dcoir-session-tracker` deep-dive pass is locally validated, the second presence-guard pass is locally validated, and the bounded `dcoir-plan-tracker` local-JSON startup-preflight rollout is locally validated and ready for live workflow validation.
+- The first `dcoir-session-tracker` deep-dive pass is locally validated, the second presence-guard pass is locally validated, the bounded `dcoir-plan-tracker` local-JSON startup-preflight rollout is locally validated, and the bounded resume-status fast-path tightening for `dcoir-session-resume` plus `dcoir-memory-preflight` is locally validated and ready for live workflow validation.
 - The manual delivery-bundle structure preference and GitHub Desktop commit `Summary` preference are now recorded in governed project sources.
 
 Current next planned work item
-- Live-validate the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
-- Keep the CI/CD-style validation regime active and continue the broader helper-skill deep-dive and code-hygiene campaign from that stronger local-state proof baseline.
+- Live-validate the updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path together with the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
+- Keep the CI/CD-style validation regime active and continue the broader helper-skill deep-dive and code-hygiene campaign from that stronger local-state proof and tighter resume-only routing baseline.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
 - Use the recorded delivery-bundle preference and GitHub Desktop commit `Summary` preference for future affected-skill deliveries and manual repo-update bundles.

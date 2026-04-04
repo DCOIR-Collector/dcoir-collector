@@ -1,0 +1,24 @@
+DCOIR Resume-Status Fast Path And Bounded Preflight Lane - 2026-04-04
+
+Current state id: 2026-04-04-resume-status-fast-path-v1
+
+Purpose
+- This log records the bounded efficiency pass for simple DCOIR current-state and resume-status requests so they stay on the governed readable-text lane instead of considering unnecessary acquisition or execution detours.
+
+Decision summary
+- Treat simple current-state, resume-status, and "where are we" requests as a bounded fast-path case inside `dcoir-session-resume`.
+- Keep that fast path on governed GitHub readable-text fetches first: discovery contract, control-plane pair, then drift-gated supporting continuity surfaces.
+- Do not consider repo clone, archive download, raw-web fetch, container execution, or local script execution for resume-only status work unless the primary governed readable-text lane actually fails or the drift gate cannot be resolved from fetched text alone.
+- Reinforce the same rule in `dcoir-memory-preflight` so the first-turn bootstrap pair does not widen a simple status check into unnecessary lane exploration.
+
+Why it matters
+- The operator wants simple status checks to be efficient and predictable.
+- The earlier behavior was correct but too exploratory, which consumed time and reasoning budget without improving result quality.
+- This is a routing-constraint fix, not a change to authority or control-plane posture.
+
+Validation boundary
+- This pass is intentionally narrow and changes only `dcoir-session-resume`, `dcoir-memory-preflight`, and the governed continuity surfaces that describe the current work line.
+- The next step is a live validation on a fresh-session resume-status request to confirm that the response now stays on the governed GitHub readable-text lane before considering alternate paths.
+
+Next immediate move
+- Use a fresh DCOIR session to ask a simple current-state question and verify that the first-turn bootstrap pair completes on the governed GitHub readable-text lane without unnecessary clone, container, raw-web, archive-download, or local-script detours before the primary lane is tried.

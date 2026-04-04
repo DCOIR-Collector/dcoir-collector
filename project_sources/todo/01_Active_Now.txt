@@ -1,18 +1,18 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-session-start-bootstrap-and-prompt-review-v1
+Current state id: 2026-04-04-resume-status-fast-path-v1
 
-1. Live-validate the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
+1. Live-validate the updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path together with the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
    Why it matters:
-   - The operator now expects real local-JSON proof at the beginning of every session that uses these skills, and that startup posture still needs a real workflow validation for trust.
+   - The operator now expects both correct startup bootstrap behavior and a faster, more disciplined lane for simple current-state checks, and that combined posture still needs a real workflow validation for trust.
    Next action:
-   - Use the updated skills on the next real workflow branch and verify that the operator-visible presence or missing-state messaging is strong enough in practice.
+   - Use a fresh-session DCOIR current-state check and then a real workflow branch to verify that the bootstrap pair stays on the governed GitHub readable-text fast path before alternate lanes are considered and that the startup local-JSON messaging remains strong in practice.
 
-2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the stronger local-state proof baseline.
+2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the stronger local-state proof and tighter resume-only routing baseline.
    Why it matters:
-   - The project now has a validation regime, parity baseline, discovery contract, and stronger local-state proof behavior across the confirmed local-JSON skills, so deeper execution and code-hygiene review can proceed with less hidden-state risk.
+   - The project now has a validation regime, parity baseline, discovery contract, stronger local-state proof behavior across the confirmed local-JSON skills, and a more disciplined resume-only routing lane, so deeper execution and code-hygiene review can proceed with less hidden-state risk and less avoidable startup friction.
    Next action:
-   - After the live startup-preflight validation, rank the next deep-dive targets and begin the next highest-value execution and code review pass.
+   - After the combined live validation, rank the next deep-dive targets and begin the next highest-value execution and code review pass.
 
 3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:
