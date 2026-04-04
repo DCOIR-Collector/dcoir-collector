@@ -43,6 +43,8 @@ def main() -> None:
 
     plan_dir = Path(args.plan_dir)
     plan_path = plan_dir / "plan_state.json"
+    if not plan_path.exists():
+        raise SystemExit('no pre-existing local plan_state.json was present for this plan folder; run scripts/ensure_plan_state.py first and do not treat the missing interval as file-backed continuity')
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
 
     now = utc_now()

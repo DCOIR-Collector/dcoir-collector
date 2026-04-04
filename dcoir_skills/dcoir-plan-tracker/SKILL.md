@@ -29,6 +29,7 @@ This skill owns:
 - plan-level and task-level status updates
 - session-local buffer-state review
 - github-backed tracker file creation and updates
+- local `plan_state.json` presence checks and explicit missing-state warnings for local plan folders
 - concise user-visible milestone signaling through `dcoir-attention-signaler`
 
 This skill does not replace:
@@ -90,6 +91,7 @@ Create and maintain these files for every plan:
 - `plan_state.json`
 
 Read `references/file_layout.md` when creating or validating plan surfaces.
+Read `references/local_plan_state_workflow.md` when a local plan folder or `plan_state.json` proof check is in scope.
 
 ## Locked id and naming rules
 
@@ -201,14 +203,15 @@ Supported commands include:
 3. Consult `dcoir-memory-preflight` when the task family requires canonical memory preflight.
 4. Create or open the plan folder.
 5. Update `plan_tracker_registry.json` and `plan_tracker_memory.md`.
-6. Read `00_index.md`, `05_resume_state.md`, and `plan_state.json` first when resuming.
-7. Update markdown and json together whenever the plan changes.
-8. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces buffered state, promotion candidates, what should remain local, the next flush trigger, one best next move, and any staged governed updates that should land in the same grouped push.
-9. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger.
-10. Use the github connector directly for safe governed readable-text writes when available.
-11. Verify repo state after writes instead of trusting success messages alone.
-12. Emit user-visible attention signals only at milestone, blocked, and completion moments.
-13. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
+6. At the beginning of each new session that uses a local plan folder, run `scripts/ensure_plan_state.py` before other substantive local plan actions so the operator can see whether `plan_state.json` was already present or had to be initialized for the current branch.
+7. Read `00_index.md`, `05_resume_state.md`, and `plan_state.json` first when resuming.
+8. Update markdown and json together whenever the plan changes.
+9. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces buffered state, promotion candidates, what should remain local, the next flush trigger, one best next move, and any staged governed updates that should land in the same grouped push.
+10. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger.
+11. Use the github connector directly for safe governed readable-text writes when available.
+12. Verify repo state after writes instead of trusting success messages alone.
+13. Emit user-visible attention signals only at milestone, blocked, and completion moments.
+14. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
 
 ## GitHub write workflow
 Read `references/github_write_workflow.md` when tracker files must be created or updated in GitHub.
@@ -239,6 +242,8 @@ Preferred flush-check trigger points:
 - when the skill reports meaningful state drift
 
 When buffering is active, `05_resume_state.md` should make the pending flush state obvious.
+
+At the beginning of each new session that uses a local plan folder, run the local `plan_state.json` preflight first instead of assuming the local file is already present.
 
 A valid flush/manicure check for this skill must:
 - inspect the current plan state and active task
@@ -363,3 +368,11 @@ Read when needed:
 - `references/github_write_workflow.md`
 - `references/blocker_promotion_workflow.md`
 - `references/session_buffer_workflow.md`
+
+
+## Local plan-state proof rules
+When a local plan folder is being used before a GitHub write:
+- run `scripts/ensure_plan_state.py` at the beginning of each new session that uses that local plan folder
+- do not claim a real local `plan_state.json` file exists until the preflight proves it
+- if the expected local plan folder is missing `plan_state.json`, say that plainly and do not silently treat the missing interval as uninterrupted file-backed continuity
+- only initialize a new local plan-state file automatically when the branch is actually creating a brand-new local plan folder

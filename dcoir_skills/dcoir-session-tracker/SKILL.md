@@ -21,7 +21,7 @@ This skill does not claim hidden persistence across chats.
 ## Core capabilities
 1. Capture casual "don't forget" statements without waiting for a formal task list.
 2. Classify items into the right buckets.
-3. Run a startup local-state preflight and maintain a real local session-state file as the primary working state when code execution and file writing are available.
+3. At the beginning of each new session that uses this skill, run a startup local-state preflight and maintain a real local session-state file as the primary working state when code execution and file writing are available.
 4. Inspect the local session-state file and report its path, filename, size, modified time, checksum, and current item counts.
 5. Answer "what do we still have left" with a deduplicated, priority-ordered inventory grounded in the current local state when that state exists.
 6. Preserve and render tracker items verbosely enough that the operator can understand the carried state without reconstructing prior chat context.
@@ -45,7 +45,7 @@ Primary implementation:
 - use `scripts/render_session_state.py` only to render a markdown export from the local JSON state file
 
 Required local-state workflow:
-1. Run `scripts/session_state_store.py ensure-state` at first substantive tracker use so the operator can see whether a real local session-state file was already present or had to be initialized for the current branch.
+1. At the beginning of each new session that uses this skill, run `scripts/session_state_store.py ensure-state` before other substantive tracker actions so the operator can see whether a real local session-state file was already present or had to be initialized for the current branch.
 2. Initialize the local file before claiming that a maintained session-state file exists.
 3. Use the local file as the primary working state during the chat when code execution and file writing are available.
 4. If the startup preflight or a later write path had to initialize a new local file because no pre-existing file was present, say that plainly and do not imply that the missing interval was still protected by the local file.

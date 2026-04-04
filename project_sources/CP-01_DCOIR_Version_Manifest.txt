@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.38
+DCOIR Version Manifest 3.9.39
 
-Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
+Current state id: 2026-04-04-stateful-local-json-startup-preflight-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -31,6 +31,7 @@ Current control plane
 - Session-tracker deep-dive pass 1: project_sources/LOG-22_DCOIR_Session_Tracker_Deep_Dive_Pass1_2026-04-04.txt
 - Session-tracker local-state presence guard and explicit re-init signaling: project_sources/LOG-23_DCOIR_Session_Tracker_Local_State_Presence_Guard_And_Explicit_Reinit_Signaling_2026-04-04.txt
 - Delivery-bundle structure and GitHub Desktop manual update preference: project_sources/LOG-24_DCOIR_Delivery_Bundle_Structure_And_GitHub_Desktop_Manual_Update_Preference_2026-04-04.txt
+- Stateful local JSON startup preflight rollout: project_sources/LOG-25_DCOIR_Stateful_Local_JSON_Startup_Preflight_Rollout_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -54,9 +55,13 @@ Current governed helper-skill source
 - Helper working-state continuity remains under dcoir_skill_memory/ only for the skills that still legitimately use it and should not be confused with source authority.
 - `dcoir-session-tracker` now derives a pre-push review bundle from local state, including staged governed updates, staged todo actions, and post-push cleanup, instead of relying only on manually staged entries.
 - `dcoir-session-tracker` now performs an explicit first-use local-state presence preflight and emits operator-visible absence or re-init status when a write path initializes a new local session-state file because no pre-existing file was present.
+- `dcoir-session-tracker` should run that local-state preflight at the beginning of each new session that uses the skill.
+- `dcoir-plan-tracker` now uses `scripts/ensure_plan_state.py` as the beginning-of-session local plan-state preflight for local plan folders and emits explicit missing-state warnings when an expected `plan_state.json` file is absent.
+- The confirmed current DCOIR skills with real local JSON working-state files are `dcoir-session-tracker` and `dcoir-plan-tracker`.
 - Manual GitHub Desktop repo-update bundles should unzip directly to only the affected repo-relative folders and files with no extra wrapper root.
 - Single-skill delivery should provide only the affected skill zip.
 - Multi-skill delivery bundles should use one outer zip whose top level contains only the affected per-skill zip files named after the live skill names with no subfolders.
+- GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 - `dcoir-source-authority-auditor` acts as the explicit drift gate for shared active-surface current-state alignment.
 - `dcoir-plan-tracker` is the current verbose resume-state and flush/manicure reference candidate.
 - `dcoir-repo-packager`, `dcoir-session-resume`, `dcoir-readme-maintainer`, `dcoir-validation-orchestrator`, `dcoir-parity-verifier`, `dcoir-decision-policy`, and `dcoir-skill-regression-auditor` prefer the governed discovery contract for eligible current-project assumptions where practical.
@@ -65,8 +70,8 @@ Current governed helper-skill source
 - `dcoir_skills/project_discovery_contract.json` is the canonical machine-readable current-project discovery contract for eligible helper skills.
 
 Current next work item
-- Keep the CI/CD-style validation regime branch active and use the refreshed tracker presence guard, parity output, discovery contract, and derived pre-push review behavior to anchor the broader helper-skill deep-dive and code-hygiene campaign.
-- Live-validate the updated session-tracker presence preflight, explicit absence or re-init signaling, and pre-push review or todo-sync behavior during the next suitable governed push.
-- Use the recorded delivery-bundle structure preference for future affected-skill deliveries and GitHub Desktop manual repo-update bundles.
+- Keep the CI/CD-style validation regime branch active and use the refreshed local-JSON startup preflights, parity output, discovery contract, and derived pre-push review behavior to anchor the broader helper-skill deep-dive and code-hygiene campaign.
+- Live-validate the updated `dcoir-session-tracker` and `dcoir-plan-tracker` local-JSON startup preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
+- Use the recorded delivery-bundle structure preference and GitHub Desktop commit `Summary` preference for future affected-skill deliveries and manual repo-update bundles.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
 - Keep the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.

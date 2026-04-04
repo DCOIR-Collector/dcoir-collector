@@ -4,7 +4,7 @@ Session-tracker may hold notes, promotion candidates, and continuity state local
 
 ## Primary local surface
 When code execution and file writing are available, the primary buffer surface is the real local JSON file at `/mnt/data/dcoir_session_tracker/session_state.json` unless the operator explicitly chose another path.
-Run the first-use `ensure-state` preflight so the operator can see whether that file was already present or had to be initialized in the current branch.
+At the beginning of each new session that uses this skill, run the first-use `ensure-state` preflight so the operator can see whether that file was already present or had to be initialized in the current branch.
 Inspect that file instead of merely paraphrasing the intended state when the operator questions whether the buffer is real.
 If a write path had to initialize a new file because no pre-existing file was present, surface that absence or re-init fact explicitly instead of silently continuing.
 

@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from ensure_plan_state import print_status
 from plan_templates import build_plan_id, make_empty_plan_state, today_yyyymmdd, write_plan_folder
 
 
@@ -28,6 +29,7 @@ def main() -> None:
     write_plan_folder(plan_dir, plan)
     print(plan_id)
     print(plan_dir)
+    print_status(plan_dir / 'plan_state.json', plan, 'initialized_new_local_plan_state', 'no pre-existing local plan_state.json was present, so a new local plan-state file was initialized for this session')
 
 
 if __name__ == "__main__":

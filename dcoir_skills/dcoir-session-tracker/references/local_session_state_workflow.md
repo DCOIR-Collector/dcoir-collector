@@ -84,7 +84,7 @@ Preferred additional fields when useful:
 - `related`
 
 ## Presence and absence rules
-- `ensure-state` is the preferred first substantive local-state command in a tracker branch.
+- `ensure-state` is the required first substantive local-state command at the beginning of each new session that uses this tracker.
 - `ensure-state` may initialize a new file when none exists, but it must say that plainly so the operator knows a pre-existing file was not present.
 - `inspect` remains the strict proof command and should fail when the file is absent instead of silently recreating it.
 - If an upsert, summary update, staging action, or derived pre-push review path had to initialize a new file because no pre-existing file was present, that write path must emit an explicit operator-visible notice.

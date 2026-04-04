@@ -26,6 +26,7 @@
 - `set_active_task`
 
 ### Resume and continuity
+- `ensure_plan_state`
 - `resume_plan`
 - `pause_plan`
 - `update_resume_state`
@@ -73,13 +74,20 @@ Create the full file set, register the plan, and set the initial plan status.
 - capture the mitigation if the blocker is later resolved
 - emit blocked-state signaling
 
+### `ensure_plan_state`
+- run this at the beginning of each new session that uses a local plan folder
+- prove whether `plan_state.json` is already present and inspectable
+- initialize a brand-new local plan folder only when the branch is intentionally starting one and the minimum metadata is available
+- do not silently pretend continuity remained file-backed if an expected local `plan_state.json` file is missing
+
 ### `resume_plan`
 Read in this order:
-1. `00_index.md`
-2. `05_resume_state.md`
-3. `plan_state.json`
-4. `02_execution_table.md`
-5. other files only when needed
+1. run `ensure_plan_state` when a local plan folder is in scope
+2. `00_index.md`
+3. `05_resume_state.md`
+4. `plan_state.json`
+5. `02_execution_table.md`
+6. other files only when needed
 
 ## Ask threshold
 Do not ask the operator for routine branch choices if `dcoir-decision-policy` can resolve the path safely.

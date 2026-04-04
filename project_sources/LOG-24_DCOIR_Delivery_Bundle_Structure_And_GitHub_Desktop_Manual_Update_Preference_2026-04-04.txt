@@ -1,6 +1,6 @@
 DCOIR Delivery Bundle Structure And GitHub Desktop Manual Update Preference - 2026-04-04
 
-Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
+Current state id: 2026-04-04-stateful-local-json-startup-preflight-v1
 
 Purpose
 - This log records the operator preference for how DCOIR deliverable ZIPs should be structured when ChatGPT provides updated skill packages or manual GitHub Desktop repo-update bundles.
@@ -13,6 +13,7 @@ Decision summary
 - Do not place those per-skill ZIP files inside a wrapper folder or any other subfolder.
 - For GitHub Desktop manual repo-update bundles, include only the affected repo-relative folders and files so the operator can drag those paths into the repo working tree and accept overwrite or merge prompts.
 - Do not add an extra wrapper root around the repo-relative paths in a GitHub Desktop manual repo-update bundle.
+- When ChatGPT prepares a GitHub Desktop manual repo-update bundle, also provide a suggested commit `Summary` for that commit unless the operator explicitly overrides that behavior.
 
 Exact preferred structures
 - Single-skill delivery:
@@ -32,10 +33,12 @@ Why it matters
 - The operator wants fewer downloads and a predictable package shape for skill delivery.
 - The operator wants only the affected skills and affected repo files rather than full refresh bundles when a narrower update is sufficient.
 - The operator uses GitHub Desktop for governed repo updates in some sessions and wants the manual repo-update bundle shaped for drag-and-drop replacement into the repo working tree.
+- The operator also wants a suggested GitHub Desktop commit `Summary` delivered with each manual repo-update bundle so the commit step is not left underspecified.
 - Re-recording the same delivery preference in chat wastes time and increases the risk of packaging the right content in the wrong structure or including too much content.
 
 Usage implication
 - Future DCOIR packaging or manual-delivery work should provide only the affected skills or affected repo-relative files unless the operator explicitly asks for more.
+- Future GitHub Desktop manual repo-update deliveries should include a suggested commit `Summary` unless the operator explicitly asks not to include one.
 - Future multi-skill delivery bundles and GitHub Desktop manual repo-update bundles should follow this preference unless the operator explicitly overrides it for that request.
 
 Next immediate move

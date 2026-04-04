@@ -2,6 +2,10 @@
 
 Plan-tracker may keep related tracker changes session-local until the next suitable flush point.
 
+## Local plan-state preflight
+When a local plan folder is being used in the current session, run `scripts/ensure_plan_state.py` at the beginning of the session before other substantive local plan actions so the operator can see whether `plan_state.json` was already present or had to be initialized.
+If an expected local `plan_state.json` file is missing, surface that plainly instead of silently treating the missing interval as file-backed continuity.
+
 ## Buffer when
 - several related tracker files should land together
 - blocker-recovery notes are still settling

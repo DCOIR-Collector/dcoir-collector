@@ -1,32 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 3.9.38
-Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
-Change class: session-tracker local-state presence guard, explicit re-init signaling, and delivery-bundle preference capture
+Version: 3.9.39
+Current state id: 2026-04-04-stateful-local-json-startup-preflight-v1
+Change class: stateful local-json startup preflight rollout and GitHub Desktop commit-summary preference capture
 
 What changed
-- Added `project_sources/LOG-23_DCOIR_Session_Tracker_Local_State_Presence_Guard_And_Explicit_Reinit_Signaling_2026-04-04.txt` as the governed decision record for the second dedicated `dcoir-session-tracker` pass focused on silent local-state absence risk.
-- Added `project_sources/LOG-24_DCOIR_Delivery_Bundle_Structure_And_GitHub_Desktop_Manual_Update_Preference_2026-04-04.txt` as the governed operator-preference record for delivery-bundle structure and GitHub Desktop manual repo-update layout.
-- Updated `dcoir-session-tracker` so `scripts/session_state_store.py` now provides an explicit `ensure-state` first-use preflight that reports whether a real local session-state file was already present or had to be initialized for the current branch.
-- Updated `dcoir-session-tracker` so its local write paths now emit explicit operator-visible absence or re-init status when a new local session-state file had to be initialized because no pre-existing file was present at that step.
-- Kept `inspect` as the strict proof surface instead of silently recreating a missing file during inspection.
-- Updated the local-state, session-buffer, and session-closeout workflow guidance so a newly initialized local file is not treated as proof that the missing interval remained file-backed.
-- Captured the operator preference that delivery should include only the affected skills or affected repo files unless a broader bundle is explicitly requested.
-- Captured the operator preference that single-skill delivery should provide only that one skill zip, while multi-skill delivery should use one outer zip with only the affected top-level per-skill zip files named after the live skills and no subfolders.
-- Captured the operator preference that GitHub Desktop manual repo-update bundles should unzip directly to only the affected repo-relative folders and files so they can be dragged into the repo working tree without a wrapper root.
-- Refreshed the active continuity and todo surfaces so the next immediate live branch now validates the presence preflight and explicit re-init signaling alongside the stronger pre-push review behavior.
+- Added `project_sources/LOG-25_DCOIR_Stateful_Local_JSON_Startup_Preflight_Rollout_2026-04-04.txt` as the governed decision record for the bounded rollout of beginning-of-session local-JSON presence preflights across the confirmed in-scope DCOIR skills.
+- Updated `project_sources/LOG-24_DCOIR_Delivery_Bundle_Structure_And_GitHub_Desktop_Manual_Update_Preference_2026-04-04.txt` so it now also records the operator preference that GitHub Desktop manual repo-update deliveries should include a suggested commit `Summary`.
+- Updated `dcoir-session-tracker` instructions and references so `ensure-state` is explicitly the required beginning-of-session preflight for each new session that uses the skill.
+- Added `dcoir-plan-tracker/scripts/ensure_plan_state.py` and updated `dcoir-plan-tracker` instructions, references, and local scripts so local plan folders now prove `plan_state.json` presence early and emit explicit missing-state warnings instead of silently proceeding when an expected local JSON file is absent.
+- Refreshed the active continuity and todo surfaces so the next immediate live branch validates the new startup local-JSON preflight posture for both affected skills.
 
 Why
-- The operator identified a trust-critical gap: the local session-state file appears to have been absent during the same working line, but the workflow did not surface that strongly enough to show whether later tracker captures were still backed by the real local file.
-- The project needed an explicit presence guard and explicit re-init messaging rather than only stronger downstream staging behavior.
-- The operator also wanted the preferred delivery structures recorded durably so future packaging work does not need repeated clarification.
+- The operator wants every DCOIR skill that actually uses a real local JSON working-state file to initialize or prove that local file at the beginning of the session instead of leaving startup local-state proof implicit.
+- The operator also wants future GitHub Desktop manual repo-update deliveries to include a suggested commit `Summary` without re-stating that preference each time.
+- The rollout needed to stay bounded to the skills that really use local JSON working-state files instead of touching unrelated stateful skills.
 
 Validation notes
-- Local bounded regression passed the updated `dcoir-session-tracker` path for first-use `ensure-state`, repeated `ensure-state`, normal capture with an existing file, capture after forced file absence, and derived pre-push review after forced file absence.
-- Updated skill package passed local packaging validation.
-- Corrected local delivery bundles were rebuilt to the recorded operator-preference structures for both multi-skill delivery and GitHub Desktop manual repo-update use.
-- The next immediate branch is a live workflow validation of the updated tracker presence guard and re-init signaling on a real grouped governed push.
+- Local bounded regression passed the new `dcoir-plan-tracker` startup local-state preflight path for existing local plan-state proof, brand-new local plan initialization, and explicit missing-state warnings when an expected local `plan_state.json` file was absent.
+- Updated `dcoir-session-tracker` and `dcoir-plan-tracker` skill packages passed local packaging validation.
+- The next immediate branch is a live workflow validation of the startup local-JSON preflight behavior on a real governed push or local plan-tracker branch.
 
 [PRIOR]
 Version: 3.9.37

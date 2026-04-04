@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
+Current state id: 2026-04-04-stateful-local-json-startup-preflight-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,10 +8,10 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Live-validate the updated `dcoir-session-tracker` presence preflight, explicit absence or re-init signaling, and pre-push review or todo-sync behavior during the next suitable governed push.
-2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, and stronger tracker baseline.
-3. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other session-memory-enabled or buffer-capable skills before governed pushes.
-4. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+1. Live-validate the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
+2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, and stronger local-state proof baseline.
+3. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other session-memory-enabled or buffer-capable skills before governed pushes.
+4. Use the recorded delivery-bundle and GitHub Desktop commit `Summary` preferences for future manual deliveries unless the operator explicitly overrides them.
 5. Continue using canonical task-memory preflight and grouped GitHub transactions for related governed work.
 
 Todo-file map
@@ -22,4 +22,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Use the updated session-tracker on the next real grouped governed push and verify that the presence preflight, explicit re-init signaling, staged governed updates, staged todo actions, and post-push cleanup are strong enough in practice for operator trust.
+- Use the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights on the next real workflow branch and verify that the operator-visible presence or missing-state messaging is strong enough in practice.

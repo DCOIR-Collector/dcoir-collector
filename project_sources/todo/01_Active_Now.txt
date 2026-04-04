@@ -1,18 +1,18 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
+Current state id: 2026-04-04-stateful-local-json-startup-preflight-v1
 
-1. Live-validate the updated `dcoir-session-tracker` presence preflight, explicit absence or re-init signaling, and pre-push review or todo-sync behavior during the next suitable governed push.
+1. Live-validate the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
    Why it matters:
-   - The tracker now detects and surfaces missing-local-file recovery more honestly, but that path still needs a real grouped-push validation for operator trust.
+   - The operator now expects real local-JSON proof at the beginning of every session that uses these skills, and that startup posture still needs a real workflow validation for trust.
    Next action:
-   - Use the updated tracker on the next governed push and verify that the presence preflight and explicit re-init signaling are strong enough in practice.
+   - Use the updated skills on the next real workflow branch and verify that the operator-visible presence or missing-state messaging is strong enough in practice.
 
-2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the stronger tracker baseline.
+2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the stronger local-state proof baseline.
    Why it matters:
-   - The project now has a validation regime, parity baseline, discovery contract, and a materially stronger tracker path, so deeper execution and code-hygiene review can proceed with less hidden-state risk.
+   - The project now has a validation regime, parity baseline, discovery contract, and stronger local-state proof behavior across the confirmed local-JSON skills, so deeper execution and code-hygiene review can proceed with less hidden-state risk.
    Next action:
-   - After the live tracker validation, rank the next deep-dive targets and begin the next highest-value execution and code review pass.
+   - After the live startup-preflight validation, rank the next deep-dive targets and begin the next highest-value execution and code review pass.
 
 3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:

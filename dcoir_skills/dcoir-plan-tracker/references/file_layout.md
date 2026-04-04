@@ -66,3 +66,9 @@ Keep short entries per plan:
 - active task
 - last meaningful update
 - next recommended action
+
+## Local plan-state proof rules
+- At the beginning of each new session that uses a local plan folder, run `scripts/ensure_plan_state.py` first.
+- Do not claim a real local `plan_state.json` file exists until the preflight proves it.
+- Do not treat a newly initialized local `plan_state.json` file as evidence that an earlier missing interval remained file-backed.
+- If a local plan folder is expected to exist but `plan_state.json` is missing, surface that plainly before any further local plan mutation continues.
