@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.25
+DCOIR Version Manifest 3.9.26
 
-Current state id: 2026-04-04-resume-gate-v1
+Current state id: 2026-04-04-plan-tracker-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -17,6 +17,7 @@ Current control plane
 - Flush/manicure and tracker-verbosity workflow decision: project_sources/LOG-08_DCOIR_Pre_GitHub_Update_Flush_And_Tracker_Verbosity_Workflow_Decision_2026-04-04.txt
 - Current-state and version-checking enforcement workflow decision: project_sources/LOG-09_DCOIR_Current_State_And_Version_Checking_Enforcement_Workflow_Decision_2026-04-04.txt
 - Session-resume direct drift-gate workflow decision: project_sources/LOG-10_DCOIR_Session_Resume_Direct_Drift_Gate_Workflow_Decision_2026-04-04.txt
+- Plan-tracker verbose resume-state and widening-hold workflow decision: project_sources/LOG-11_DCOIR_Plan_Tracker_Verbose_Resume_State_And_Widening_Hold_Workflow_Decision_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -38,9 +39,11 @@ Current governed helper-skill source
 - The tracker now owns a bounded pre-GitHub-update flush/manicure workflow reference model for stateful helper-skill session state.
 - `dcoir-source-authority-auditor` now acts as the first explicit drift gate for the shared active-surface `current_state_id` and control-plane version-checking workflow.
 - `dcoir-session-resume` now consumes that same drift gate directly before trusting supporting continuity surfaces during resume.
+- `dcoir-plan-tracker` now acts as the next stateful-skill reference candidate for verbose resume-state and explicit flush/manicure surfacing.
 
 Current next work item
-- Run bounded regression on the direct `dcoir-session-resume` consumption of the `dcoir-source-authority-auditor` drift gate, using aligned and intentionally drifted active-surface fixtures as the acceptance tests.
-- Decide whether the stamped active-surface set should widen beyond the initial continuity set after the direct resume-gate validation pass.
-- Decide which other stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker, enforcement, and direct-resume reference implementations are validated.
+- Run bounded regression on the `dcoir-plan-tracker` verbose resume-state and flush/manicure upgrade, using the generated plan-state path as the acceptance test and confirming that operator-facing resume state is continuity-rich enough.
+- Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+- After each qualifying real resume cycle, decrement the widening-hold countdown in the governed todo or continuity surfaces and run the widening review only when the countdown reaches 0.
+- Decide which additional stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker, enforcement, direct-resume, and plan-tracker reference implementations are validated.
 - After that bounded pass, continue into the queued CI/CD-style validation regime, GitHub optimization and discovery work, connector research, Agent Mode research, and later redundancy audit captured in the authoritative todo structure.

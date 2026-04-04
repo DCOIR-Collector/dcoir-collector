@@ -1,6 +1,29 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.26
+Current state id: 2026-04-04-plan-tracker-v1
+Change class: plan-tracker verbose resume-state and flush/manicure upgrade with widening-hold countdown tracking
+
+What changed
+- Reviewed `dcoir-plan-tracker` as the next stateful-skill candidate after the tracker, enforcement, and direct-resume reference implementations.
+- Updated the governed `dcoir-plan-tracker` skill instructions, file-layout guidance, session-buffer workflow reference, and deterministic local scripts so plan resume state can preserve richer operator-facing detail by default.
+- Added explicit plan-level flush/manicure surfacing for buffered plan state, pending flush items, promotion candidates, remain-local notes, and one best next move.
+- Added generic plan-level validation-counter support so deferred governance decisions can be tracked with an explicit remaining-count and trigger action instead of staying as vague prose.
+- Added governed todo and continuity language for a stamped-surface widening hold countdown with 2 remaining real resume cycles before any widening review is reconsidered.
+- Added `LOG-11_DCOIR_Plan_Tracker_Verbose_Resume_State_And_Widening_Hold_Workflow_Decision_2026-04-04.txt` as the governed decision record for this bounded workflow branch.
+
+Why
+- `dcoir-plan-tracker` already owns durable plan state, buffered writes, and resume breadcrumbs, so it was the strongest next place for terse or under-surfaced continuity to create operator friction.
+- The project wanted the widening hold to be visible, countable, and review-triggering rather than a chat-only suggestion that could be forgotten.
+- A plan-level validation counter is a more durable way to track deferred governance decisions than relying on prose reminders alone.
+
+Validation notes
+- Local bounded regression passed the deterministic `dcoir-plan-tracker` script path: initialize a plan, update it with verbose resume-state detail, render `05_resume_state.md`, and confirm the richer operator-facing state plus countdown rendering.
+- The updated `dcoir-plan-tracker` skill package passed local skill packaging validation.
+- Wider workflow validation of the patched plan-tracker path remains the next bounded branch.
+
+[PRIOR]
 Version: 3.9.25
 Current state id: 2026-04-04-resume-gate-v1
 Change class: session-resume direct drift-gate consumption and active-surface stamp correction
@@ -21,24 +44,3 @@ Validation notes
 - Local bounded regression passed the deterministic `dcoir-source-authority-auditor` script path against the corrected active-surface set.
 - The updated `dcoir-session-resume` skill package passed local skill packaging validation and the contract-path review for direct drift-gate consumption.
 - Wider workflow validation of the direct resume-gate path remains the next bounded branch.
-
-[PRIOR]
-Version: 3.9.24
-Current state id: 2026-04-04-enforcement-v1
-Change class: current-state/version-checking enforcement workflow definition and source-authority drift-gate upgrade
-
-What changed
-- Defined a governed current-state and version-checking enforcement workflow for the active DCOIR continuity surfaces instead of leaving drift handling as an informal expectation.
-- Rolled out a shared `current_state_id` across the initial active surface set: `CP-01`, `CP-02`, `LOG-03`, `LOG-05`, `LOG-01_DCOIR_Todo_Log.txt`, `LOG-01_DCOIR_Todo_Index.txt`, and `todo/01_Active_Now.txt`.
-- Added `LOG-09_DCOIR_Current_State_And_Version_Checking_Enforcement_Workflow_Decision_2026-04-04.txt` as the governed workflow decision record for the enforcement model.
-- Upgraded the governed `dcoir-source-authority-auditor` skill instructions, audit rules, and deterministic script so it can compare the shared `current_state_id`, compare `CP-01` and `CP-02` version alignment, report exact drift, and stop or bound work appropriately.
-- Refreshed the active todo and continuity surfaces so they now point at bounded validation of the enforcement model and the question of whether the same gate should be consumed directly by `dcoir-session-resume`.
-
-Why
-- The project needed a real coordination mechanism that can prove when the active continuity surfaces are on the same page instead of relying on hopeful interpretation of loosely aligned prose.
-- Version alignment between `CP-01` and `CP-02` is necessary but not sufficient; the broader active continuity surface set also needs a shared machine-checkable signal.
-- The operator wanted a stronger enforcement posture for governance drift, but that posture should still separate drift detection and explicit callout from actual governed-file remediation.
-
-Validation notes
-- Local bounded regression passed the deterministic `dcoir-source-authority-auditor` script path for an aligned active-surface fixture and the drift failure gate for an intentionally mismatched `current_state_id` fixture.
-- The upgraded auditor is ready for bounded workflow validation as the first explicit drift gate on the active continuity surface set.

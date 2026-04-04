@@ -1,24 +1,24 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-resume-gate-v1
+Current state id: 2026-04-04-plan-tracker-v1
 
-1. Run bounded regression on the direct `dcoir-session-resume` consumption of the `dcoir-source-authority-auditor` drift gate.
+1. Run bounded regression on the `dcoir-plan-tracker` verbose resume-state and explicit flush/manicure upgrade.
    Why it matters:
-   - The project now has an explicit drift gate and a machine-checkable active-surface coordination signal, but the resume entry point still needs proof that it stops correctly on drift and resumes cleanly when the active continuity surfaces are aligned.
+   - `dcoir-plan-tracker` owns durable plan state, buffered plan updates, and resume breadcrumbs, so the project needs proof that its operator-facing resume state is now rich enough to support clean continuity without guesswork.
    Next action:
-   - Use aligned and intentionally drifted active-surface fixtures as the acceptance tests, then inspect whether the stop report and the clean resume path are explicit enough to support quick operator understanding and grouped remediation.
+   - Use the generated plan-state path as the acceptance test, inspect the resulting `05_resume_state.md`, and confirm that the carried state, pending flush items, remain-local notes, promotion candidates, and next move are explicit enough for real workflow use.
 
-2. Decide whether the stamped active-surface set should widen beyond the initial continuity set.
+2. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:
-   - The initial stamped surface set is now aligned again and the first explicit drift gate is live, but the project still needs to decide whether a larger stamped set would improve correctness enough to justify the extra maintenance.
+   - The project wants evidence before widening the stamped active-surface set, and that decision should be tracked explicitly rather than left as a vague reminder.
    Next action:
-   - After the bounded direct-resume validation pass, inventory the adjacent continuity surfaces and decide whether widening the stamped set improves real workflow safety without adding avoidable noise.
+   - After each qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable, decrement the hold countdown in the governed todo or continuity surfaces and trigger a bounded widening review only when the countdown reaches 0.
 
-3. Decide which other `dcoir-*` skills truly need the same stateful flush/manicure and verbose-state treatment.
+3. Decide which additional `dcoir-*` skills truly need the same stateful flush/manicure and verbose-state treatment.
    Why it matters:
-   - `dcoir-session-tracker` is the first proving ground, but other stateful helper skills may also need explicit pre-write state surfacing and richer operator-facing continuity.
+   - `dcoir-session-tracker`, `dcoir-source-authority-auditor`, `dcoir-session-resume`, and now `dcoir-plan-tracker` are the first proving grounds, but other stateful helper skills may also need explicit pre-write state surfacing and richer operator-facing continuity.
    Next action:
-   - After the tracker, enforcement, and direct-resume reference implementations are validated, inventory the other stateful skills and decide which ones should adopt the same pattern.
+   - After the patched `dcoir-plan-tracker` path is validated, inventory the remaining stateful skills and decide which should adopt the same pattern next.
 
 4. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:

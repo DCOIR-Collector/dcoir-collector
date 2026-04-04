@@ -23,6 +23,17 @@ def main() -> None:
     parser.add_argument("--blocker-signature")
     parser.add_argument("--blocker-mitigation", default="")
     parser.add_argument("--touch-path", action="append", default=[])
+    parser.add_argument("--resume-detail")
+    parser.add_argument("--why-current-task-matters")
+    parser.add_argument("--carry-forward-note")
+    parser.add_argument("--flush-trigger")
+    parser.add_argument("--pending-flush-item", action="append", default=[])
+    parser.add_argument("--promotion-candidate", action="append", default=[])
+    parser.add_argument("--remain-local-note", action="append", default=[])
+    parser.add_argument("--countdown-label")
+    parser.add_argument("--countdown-remaining", type=int)
+    parser.add_argument("--countdown-trigger-action")
+    parser.add_argument("--countdown-note", default="")
     args = parser.parse_args()
 
     plan_dir = Path(args.plan_dir)
@@ -38,6 +49,37 @@ def main() -> None:
     if args.next_action:
         plan["next_recommended_action"] = args.next_action
 
+    resume = plan.setdefault("resume_state", {})
+
+    if args.task_id and args.task_status == "in_progress":
+        resume.setdefault("exact_resume_goal", plan.get("next_recommended_action", ""))
+    if args.resume_detail:
+        resume["resume_detail"] = args.resume_detail
+    if args.why_current_task_matters:
+        resume["why_current_task_matters"] = args.why_current_task_matters
+    if args.carry_forward_note:
+        resume["carry_forward_note"] = args.carry_forward_note
+    if args.flush_trigger:
+        resume["flush_trigger"] = args.flush_trigger
+    if args.pending_flush_item:
+        existing = resume.setdefault("pending_flush_items", [])
+        existing.extend(item for item in args.pending_flush_item if item not in existing)
+    if args.promotion_candidate:
+        existing = resume.setdefault("promotion_candidates", [])
+        existing.extend(item for item in args.promotion_candidate if item not in existing)
+    if args.remain_local_note:
+        existing = resume.setdefault("remain_local_notes", [])
+        existing.extend(item for item in args.remain_local_note if item not in existing)
+    if args.countdown_label:
+        counters = [c for c in resume.setdefault("validation_counters", []) if c.get("label") != args.countdown_label]
+        counters.append({
+            "label": args.countdown_label,
+            "remaining": args.countdown_remaining if args.countdown_remaining is not None else "",
+            "trigger_action": args.countdown_trigger_action or "",
+            "note": args.countdown_note or "",
+        })
+        resume["validation_counters"] = counters
+
     if args.task_id:
         task = find_task(plan.get("tasks", []), args.task_id)
         if task is None:
@@ -51,6 +93,7 @@ def main() -> None:
                         other["status"] = "todo"
                 plan["active_task_id"] = task["id"]
                 plan["active_task_title"] = task.get("title", "")
+                resume.setdefault("exact_resume_goal", task.get("next_action", "") or plan.get("next_recommended_action", ""))
             elif plan.get("active_task_id") == args.task_id and args.task_status in {"done", "blocked", "skipped"}:
                 plan["active_task_id"] = ""
                 plan["active_task_title"] = ""

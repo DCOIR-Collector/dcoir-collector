@@ -65,6 +65,17 @@ def make_empty_plan_state(plan_id: str, title: str, objective: str, owner: str =
         "artifacts": [],
         "call_log": [],
         "tasks": [],
+        "resume_state": {
+            "exact_resume_goal": "",
+            "resume_detail": "",
+            "why_current_task_matters": "",
+            "carry_forward_note": "",
+            "flush_trigger": "",
+            "pending_flush_items": [],
+            "promotion_candidates": [],
+            "remain_local_notes": [],
+            "validation_counters": [],
+        },
     }
 
 
@@ -94,7 +105,29 @@ def find_task(tasks: List[Dict[str, Any]], task_id: str) -> Dict[str, Any] | Non
 
 
 def render_index_md(plan: Dict[str, Any]) -> str:
-    return f"""# {plan['plan_id']}\n\n- title: {plan['title']}\n- objective: {plan['objective']}\n- owner: {plan['owner']}\n- status: {plan['status']}\n- created_at: {plan['created_at']}\n- updated_at: {plan['updated_at']}\n- active_task_id: {plan['active_task_id']}\n- active_task_title: {plan['active_task_title']}\n- next_recommended_action: {plan['next_recommended_action']}\n"""
+    resume = plan.get("resume_state", {})
+    pending_flush = len(resume.get("pending_flush_items", []))
+    counters = resume.get("validation_counters", [])
+    countdown_line = "none recorded"
+    if counters:
+        countdown_line = "; ".join(
+            f"{item.get('label', 'countdown')}: remaining={item.get('remaining', '')}"
+            for item in counters
+        )
+    return f"""# {plan['plan_id']}
+
+- title: {plan['title']}
+- objective: {plan['objective']}
+- owner: {plan['owner']}
+- status: {plan['status']}
+- created_at: {plan['created_at']}
+- updated_at: {plan['updated_at']}
+- active_task_id: {plan['active_task_id']}
+- active_task_title: {plan['active_task_title']}
+- next_recommended_action: {plan['next_recommended_action']}
+- pending_flush_item_count: {pending_flush}
+- validation_counters: {countdown_line}
+"""
 
 
 def render_scope_md(plan: Dict[str, Any]) -> str:
@@ -157,7 +190,45 @@ def render_resume_state_md(plan: Dict[str, Any]) -> str:
         f"- {item.get('signature', 'blocker')}: {item.get('status', '')} | mitigation: {item.get('mitigation', '')}"
         for item in blockers
     ) or "- none recorded yet"
-    return f"""# Resume State\n\n- plan_status: {plan['status']}\n- active_task_id: {plan['active_task_id']}\n- active_task_title: {plan['active_task_title']}\n- next_recommended_action: {plan['next_recommended_action']}\n\n## Blockers\n{blocker_lines}\n"""
+    resume = plan.get("resume_state", {})
+    pending_flush_items = resume.get("pending_flush_items", [])
+    promotion_candidates = resume.get("promotion_candidates", [])
+    remain_local_notes = resume.get("remain_local_notes", [])
+    counters = resume.get("validation_counters", [])
+    pending_flush_lines = "\n".join(f"- {item}" for item in pending_flush_items) or "- none recorded yet"
+    promotion_lines = "\n".join(f"- {item}" for item in promotion_candidates) or "- none recorded yet"
+    remain_local_lines = "\n".join(f"- {item}" for item in remain_local_notes) or "- none recorded yet"
+    counter_lines = "\n".join(
+        f"- {item.get('label', 'countdown')}: remaining={item.get('remaining', '')} | trigger_action: {item.get('trigger_action', '')} | note: {item.get('note', '')}"
+        for item in counters
+    ) or "- none recorded yet"
+    return f"""# Resume State
+
+- plan_status: {plan['status']}
+- active_task_id: {plan['active_task_id']}
+- active_task_title: {plan['active_task_title']}
+- next_recommended_action: {plan['next_recommended_action']}
+- exact_resume_goal: {resume.get('exact_resume_goal', '') or 'not recorded yet'}
+- why_current_task_matters: {resume.get('why_current_task_matters', '') or 'not recorded yet'}
+- resume_detail: {resume.get('resume_detail', '') or 'not recorded yet'}
+- carry_forward_note: {resume.get('carry_forward_note', '') or 'not recorded yet'}
+- flush_trigger: {resume.get('flush_trigger', '') or 'not recorded yet'}
+
+## Blockers
+{blocker_lines}
+
+## Pending Flush Items
+{pending_flush_lines}
+
+## Promotion Candidates
+{promotion_lines}
+
+## Remain Local For Now
+{remain_local_lines}
+
+## Validation Counters
+{counter_lines}
+"""
 
 
 def render_artifacts_md(plan: Dict[str, Any]) -> str:

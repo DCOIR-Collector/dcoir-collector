@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-04-resume-gate-v1
+Current state id: 2026-04-04-plan-tracker-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -13,7 +13,7 @@ Current stable pointers
 - Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
 
 Current active priority
-- Validate the direct `dcoir-session-resume` consumption of the explicit `dcoir-source-authority-auditor` drift gate, with aligned and intentionally drifted active-surface fixtures as the leading acceptance tests, then use that result to decide whether the stamped continuity surface set should widen and which other stateful skills should adopt the same patterns.
+- Validate the `dcoir-plan-tracker` verbose resume-state and explicit flush/manicure upgrade, track the stamped-surface widening hold countdown at 2 remaining real resume cycles before any widening review, and then use that result to decide which other stateful skills should adopt the same patterns.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt

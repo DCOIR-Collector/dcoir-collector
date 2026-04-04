@@ -20,7 +20,7 @@ This reference defines the fixed durable layout for `dcoir-plan-tracker` plans s
 - `04_call_log.md`
   - load-bearing tool calls, repo actions, validation steps, and noteworthy outputs
 - `05_resume_state.md`
-  - exact next resume breadcrumb, blockers, pending approvals, next action
+  - exact next resume breadcrumb, active task detail, why the current task matters, blockers, pending approvals, next action, flush/manicure state, pending flush items, remain-local notes, promotion candidates, and any active validation countdowns
 - `06_artifacts_and_outputs.md`
   - changed files, produced bundles, related PRs, related docs, related outputs
 - `07_closeout.md`
@@ -41,6 +41,8 @@ This reference defines the fixed durable layout for `dcoir-plan-tracker` plans s
 - Keep markdown and JSON in sync.
 - Keep only one active task per plan.
 - Update `00_index.md`, `05_resume_state.md`, and `plan_state.json` whenever the active task changes.
+- Keep `05_resume_state.md` verbose enough that a future session can understand the carried state without reconstructing prior chat context.
+- When a deferred review depends on a countdown, preserve the remaining count and the trigger condition in `05_resume_state.md` and `plan_state.json`.
 - Update `07_closeout.md` only when the plan is ready for completion or archival.
 
 ## Registry expectations

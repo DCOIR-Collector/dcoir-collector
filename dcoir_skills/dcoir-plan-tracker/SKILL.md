@@ -147,6 +147,17 @@ Use this stable row model in `02_execution_table.md` and mirror it in `plan_stat
 
 When buffering or blocker recovery is active, also preserve the relevant state in `05_resume_state.md`, `03_decisions_and_rationale.md`, and `plan_state.json`.
 
+In addition, preserve these verbose plan-resume fields whenever they are known:
+- `resume_state.exact_resume_goal`
+- `resume_state.resume_detail`
+- `resume_state.why_current_task_matters`
+- `resume_state.carry_forward_note`
+- `resume_state.flush_trigger`
+- `resume_state.pending_flush_items`
+- `resume_state.promotion_candidates`
+- `resume_state.remain_local_notes`
+- `resume_state.validation_counters`
+
 ## Command surface
 Read `references/command_surface.md` when the task requires a specific tracker action.
 
@@ -190,11 +201,12 @@ Supported commands include:
 5. Update `plan_tracker_registry.json` and `plan_tracker_memory.md`.
 6. Read `00_index.md`, `05_resume_state.md`, and `plan_state.json` first when resuming.
 7. Update markdown and json together whenever the plan changes.
-8. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger.
-9. Use the github connector directly for safe governed readable-text writes when available.
-10. Verify repo state after writes instead of trusting success messages alone.
-11. Emit user-visible attention signals only at milestone, blocked, and completion moments.
-12. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
+8. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces buffered state, promotion candidates, what should remain local, the next flush trigger, and one best next move.
+9. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger.
+10. Use the github connector directly for safe governed readable-text writes when available.
+11. Verify repo state after writes instead of trusting success messages alone.
+12. Emit user-visible attention signals only at milestone, blocked, and completion moments.
+13. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
 
 ## GitHub write workflow
 Read `references/github_write_workflow.md` when tracker files must be created or updated in GitHub.
@@ -225,6 +237,16 @@ Preferred flush-check trigger points:
 - when the skill reports meaningful state drift
 
 When buffering is active, `05_resume_state.md` should make the pending flush state obvious.
+
+A valid flush/manicure check for this skill must:
+- inspect the current plan state and active task
+- surface buffered or unsettled plan state
+- surface what is safe to flush now
+- surface what should remain local or plan-buffered for now
+- surface the next flush trigger
+- end with one best next move
+
+When the current workflow includes a deferred governance decision with a countdown, preserve the countdown in operator-facing plan state and decrement it only after the qualifying validation event actually happens. Do not silently widen scope just because a countdown reached zero; surface the review trigger instead.
 
 ## Automatic behavior rules
 
@@ -316,7 +338,8 @@ When using this skill:
 - keep the durable files continuity-rich
 - keep user-visible chat updates concise and milestone-oriented
 - preserve enough rationale that the next session can resume cleanly
-- distinguish observed facts, inferred branch logic, unresolved items, and buffered state awaiting flush
+- default the operator-facing plan summary and `05_resume_state.md` to a verbose form when the current branch is materially important
+- distinguish observed facts, inferred branch logic, unresolved items, buffered state awaiting flush, and countdown-gated follow-up decisions
 - prefer one best next move over broad option lists
 
 ## Hard rules
