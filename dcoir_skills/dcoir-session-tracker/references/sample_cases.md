@@ -39,3 +39,14 @@ Expected handling:
 - preserve imported provenance
 - deduplicate overlapping items with current chat and Project logs
 - report current open items and one best next move
+
+## Case 5: governed push is about to happen
+Input:
+- "the repo batch is ready" or "I’m about to do the GitHub Desktop push"
+
+Expected handling:
+- inspect the local state file
+- derive a pre-push review bundle
+- surface staged governed updates and staged todo actions
+- say plainly what will land in the same grouped push and what will remain local
+- stage post-push cleanup so the next step after confirmation is explicit

@@ -1,26 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.37
+Current state id: 2026-04-04-session-tracker-deep-dive-v1
+Change class: session-tracker deep-dive pass 1 and derived pre-push review / todo-sync support
+
+What changed
+- Added `project_sources/LOG-22_DCOIR_Session_Tracker_Deep_Dive_Pass1_2026-04-04.txt` as the governed decision record for the first dedicated `dcoir-session-tracker` deep-dive pass.
+- Updated `dcoir-session-tracker` so it now derives a pre-push review bundle from current local state, including staged governed updates, staged todo actions, and post-push cleanup, instead of relying only on manually staged entries.
+- Updated `dcoir-session-tracker` so its operator-facing contract now requires an immediate explicit capture confirmation for materially important items when a real local session-state file exists.
+- Updated the tracker export and local-state schema so staged todo actions and the derived pre-push review output are visible in exported or inspected state.
+- Refreshed the active continuity and todo surfaces so they now point at live validation of the updated session-tracker pre-push review behavior as the next immediate deep-dive step.
+
+Why
+- The operator repeatedly observed that tracker state could be preserved locally without producing a strong enough operator-visible confirmation or a derived staged-governed-update / todo-sync bundle before a real push.
+- The workflow docs already expected that behavior, but the implementation was still too manual.
+
+Validation notes
+- Local bounded regression passed the updated `dcoir-session-tracker` state-store path for item capture, derived pre-push review generation, staged todo-action creation, export rendering, and post-push staging counts.
+- Updated skill package passed local packaging validation.
+- The next immediate branch is a live workflow validation of the updated tracker behavior on a real grouped governed push.
+
+[PRIOR]
 Version: 3.9.36
 Current state id: 2026-04-04-hardcoded-audit-v4
 Change class: hard-coded project variable audit pass 4 and discovery-contract adoption for remaining github-memory/helper-memory surfaces
-
-What changed
-- Added `project_sources/LOG-21_DCOIR_Hard_Coded_Project_Variable_Audit_Pass4_2026-04-04.txt` as the governed decision record for the fourth hard-coded-project-variable audit pass.
-- Updated `dcoir-decision-policy` so it now prefers the governed discovery contract for current governed repository naming and helper-memory-root assumptions instead of embedding those values only in skill instructions or helper-memory guidance.
-- Updated `dcoir-skill-regression-auditor` so it now prefers the governed discovery contract for current governed repository naming and helper-memory-root assumptions instead of embedding those values only in skill instructions or helper-memory guidance.
-- Refreshed the active continuity and todo surfaces so they now point at the post-pass-4 broader helper-skill deep-dive and code-hygiene campaign while keeping the remaining hard-coded-assumption review bounded to later exception handling.
-
-Why
-- Passes 1 through 3 moved most practical current-project bootstrap assumptions onto the governed discovery contract, but the remaining GitHub-memory and helper-memory surfaces still carried avoidable embedded project defaults.
-- The operator wants project-specific values to remain explicit governed contract values where practical, with only bounded contractual exceptions left embedded.
-
-Validation notes
-- Local bounded regression passed the updated `dcoir-decision-policy` and `dcoir-skill-regression-auditor` packaged-skill validation path.
-- Updated skill packages passed local packaging validation.
-- The broader helper-skill deep-dive and code-hygiene campaign remains the next branch.
-
-[PRIOR]
-Version: 3.9.35
-Current state id: 2026-04-04-hardcoded-audit-v3
-Change class: hard-coded project variable audit pass 3 and discovery-contract adoption for remaining validation/parity workflow defaults

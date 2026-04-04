@@ -20,6 +20,15 @@ BUCKETS = [
     'follow_on_validation',
     'blocked_or_needs_authority',
 ]
+DEFAULT_TARGETS = {
+    'candidate_log01': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
+    'candidate_log02': ['project_sources/LOG-02_DCOIR_Lessons_Learned_Log.txt'],
+    'candidate_log03': ['project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt'],
+    'durable_preference_candidate': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
+    'new_skill_idea': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
+    'follow_on_validation': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
+    'blocked_or_needs_authority': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
+}
 
 
 def now_utc() -> str:
@@ -46,12 +55,13 @@ def default_state(path: Path) -> dict[str, Any]:
         'completed': [],
         'promotion_ready': {'log01': '', 'log02': '', 'log03': ''},
         'staged_governed_updates': [],
+        'staged_todo_actions': [],
         'post_push_cleanup': [],
         'starter_prompt': '',
         'closeout_verification': [],
         'provenance_notes': [],
         'local_state_metadata': {
-            'schema_version': 3,
+            'schema_version': 4,
             'state_type': 'session_local_working_state',
             'created_at_utc': stamp,
             'updated_at_utc': stamp,
@@ -76,9 +86,10 @@ def load_state(path: Path) -> dict[str, Any]:
     data.setdefault('completed', [])
     data.setdefault('promotion_ready', {'log01': '', 'log02': '', 'log03': ''})
     data.setdefault('staged_governed_updates', [])
+    data.setdefault('staged_todo_actions', [])
     data.setdefault('post_push_cleanup', [])
     data.setdefault('local_state_metadata', {})
-    data['local_state_metadata'].setdefault('schema_version', 3)
+    data['local_state_metadata'].setdefault('schema_version', 4)
     data['local_state_metadata'].setdefault('state_type', 'session_local_working_state')
     data['local_state_metadata'].setdefault('created_at_utc', now_utc())
     data['local_state_metadata']['state_path'] = str(path.resolve())
@@ -90,10 +101,11 @@ def save_state(path: Path, state: dict[str, Any]) -> None:
     stamp = now_utc()
     state['exported_at_utc'] = stamp
     state.setdefault('local_state_metadata', {})
-    state['local_state_metadata']['schema_version'] = 3
+    state['local_state_metadata']['schema_version'] = 4
     state['local_state_metadata']['updated_at_utc'] = stamp
     state['local_state_metadata']['state_path'] = str(path.resolve())
-    path.write_text(json.dumps(state, indent=2, sort_keys=False) + '\n', encoding='utf-8')
+    path.write_text(json.dumps(state, indent=2, sort_keys=False) + '
+', encoding='utf-8')
 
 
 def remove_item_everywhere(state: dict[str, Any], item_id: str) -> tuple[dict[str, Any] | None, str | None]:
@@ -173,8 +185,159 @@ def inspect_payload(path: Path, state: dict[str, Any]) -> dict[str, Any]:
         'open_counts': open_counts,
         'completed_count': len(state.get('completed', [])),
         'staged_governed_update_count': len(state.get('staged_governed_updates', [])),
+        'staged_todo_action_count': len(state.get('staged_todo_actions', [])),
         'post_push_cleanup_count': len(state.get('post_push_cleanup', [])),
     }
+
+
+def as_paths(value: Any, fallback_bucket: str | None = None) -> list[str]:
+    if isinstance(value, list):
+        return [str(x) for x in value if str(x).strip()]
+    if isinstance(value, str) and value.strip():
+        parts = [part.strip() for part in value.replace(';', ',').split(',') if part.strip()]
+        return parts
+    return list(DEFAULT_TARGETS.get(fallback_bucket or '', []))
+
+
+def derive_pre_push_review(state: dict[str, Any]) -> dict[str, Any]:
+    existing_gov = {json.dumps(entry, sort_keys=True) for entry in state.get('staged_governed_updates', [])}
+    existing_todo = {json.dumps(entry, sort_keys=True) for entry in state.get('staged_todo_actions', [])}
+    staged_governed = list(state.get('staged_governed_updates', []))
+    staged_todo = list(state.get('staged_todo_actions', []))
+    cleanup = list(state.get('post_push_cleanup', []))
+    safe_flush_now = []
+    remain_local = []
+    buffered_items = []
+
+    for bucket in BUCKETS:
+        for item in state.get('open_items', {}).get(bucket, []):
+            item_id = item.get('id', '')
+            if item.get('buffer_state', 'buffered_session_local') == 'promoted_to_governed' or item.get('persistence_status') == 'governed_written':
+                continue
+            buffered_items.append(item_id)
+            if bucket == 'session_only' and not item.get('promotion_target'):
+                remain_local.append(item_id)
+                continue
+            targets = as_paths(item.get('promotion_target', ''), bucket)
+            if not targets:
+                remain_local.append(item_id)
+                continue
+            safe_flush_now.append(item_id)
+            if bucket in {'candidate_log02', 'candidate_log03'}:
+                entry = normalize_stage({
+                    'title': f'promote {item_id} into governed target surfaces',
+                    'target_paths': targets,
+                    'source_item_ids': [item_id],
+                    'action': 'update',
+                    'why': item.get('why', '') or 'derived from pre-push review',
+                })
+                key = json.dumps(entry, sort_keys=True)
+                if key not in existing_gov:
+                    staged_governed.append(entry)
+                    existing_gov.add(key)
+            else:
+                entry = normalize_stage({
+                    'title': f'sync {item_id} into active todo surfaces',
+                    'target_paths': targets,
+                    'source_item_ids': [item_id],
+                    'action': 'add_or_update',
+                    'why': item.get('why', '') or 'derived from pre-push review',
+                })
+                key = json.dumps(entry, sort_keys=True)
+                if key not in existing_todo:
+                    staged_todo.append(entry)
+                    existing_todo.add(key)
+            cleanup_note = f"after push: mark {item_id} governed-written and clear staged entries that reference it"
+            if cleanup_note not in cleanup:
+                cleanup.append(cleanup_note)
+
+    for item in state.get('completed', []):
+        item_id = item.get('id', '')
+        bucket = item.get('bucket', '')
+        if not item_id:
+            continue
+        targets = as_paths(item.get('promotion_target', ''), bucket or 'candidate_log01')
+        if bucket in {'candidate_log01', 'durable_preference_candidate', 'new_skill_idea', 'follow_on_validation', 'blocked_or_needs_authority'} or any('todo' in t.lower() or 'LOG-01' in t for t in targets):
+            entry = normalize_stage({
+                'title': f'remove or update completed item {item_id} in active todo surfaces',
+                'target_paths': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
+                'source_item_ids': [item_id],
+                'action': 'remove_or_update',
+                'why': item.get('completion_note', '') or 'completed item should no longer remain as active todo',
+            })
+            key = json.dumps(entry, sort_keys=True)
+            if key not in existing_todo:
+                staged_todo.append(entry)
+                existing_todo.add(key)
+            cleanup_note = f"after push: clear completed staged-todo action for {item_id}"
+            if cleanup_note not in cleanup:
+                cleanup.append(cleanup_note)
+
+    best_next_move = 'apply the staged governed updates and staged todo actions in the same grouped push, then perform the post-push cleanup sequence'
+    return {
+        'inspection_expected': True,
+        'buffered_items': buffered_items,
+        'safe_flush_now': safe_flush_now,
+        'remain_local': remain_local,
+        'staged_governed_updates': staged_governed,
+        'staged_todo_actions': staged_todo,
+        'post_push_cleanup': cleanup,
+        'best_next_move': best_next_move,
+    }
+
+
+def render_pre_push_review(review: dict[str, Any], inspection: dict[str, Any] | None = None) -> str:
+    lines = ['# DCOIR Session Tracker Pre-Push Review', '']
+    if inspection:
+        lines.extend(['## Local session-state inspection', ''])
+        for key in ['path', 'filename', 'size_bytes', 'modified_time_utc', 'sha256', 'created_at_utc', 'updated_at_utc']:
+            lines.append(f'- {key}: {inspection.get(key, "")}')
+        lines.append('- open_counts:')
+        for bucket, count in inspection.get('open_counts', {}).items():
+            lines.append(f'  - {bucket}: {count}')
+        for key in ['completed_count', 'staged_governed_update_count', 'staged_todo_action_count', 'post_push_cleanup_count']:
+            lines.append(f'- {key}: {inspection.get(key, 0)}')
+        lines.append('')
+    for title, key in [
+        ('Buffered items', 'buffered_items'),
+        ('Safe to flush now', 'safe_flush_now'),
+        ('Remain local for now', 'remain_local'),
+    ]:
+        lines.extend([f'## {title}', ''])
+        vals = review.get(key, [])
+        lines.extend([f'- {x}' for x in vals] or ['- none'])
+        lines.append('')
+    lines.extend(['## Staged governed updates', ''])
+    if review.get('staged_governed_updates'):
+        for entry in review['staged_governed_updates']:
+            lines.append(f"- {entry.get('title','untitled staged update')}")
+            lines.append(f"  - action: {entry.get('action','update')}")
+            if entry.get('why'):
+                lines.append(f"  - why: {entry.get('why')}")
+            if entry.get('target_paths'):
+                lines.append(f"  - target_paths: {', '.join(entry['target_paths'])}")
+            if entry.get('source_item_ids'):
+                lines.append(f"  - source_item_ids: {', '.join(entry['source_item_ids'])}")
+    else:
+        lines.append('- none')
+    lines.extend(['', '## Staged todo actions', ''])
+    if review.get('staged_todo_actions'):
+        for entry in review['staged_todo_actions']:
+            lines.append(f"- {entry.get('title','untitled staged todo action')}")
+            lines.append(f"  - action: {entry.get('action','add_or_update')}")
+            if entry.get('why'):
+                lines.append(f"  - why: {entry.get('why')}")
+            if entry.get('target_paths'):
+                lines.append(f"  - target_paths: {', '.join(entry['target_paths'])}")
+            if entry.get('source_item_ids'):
+                lines.append(f"  - source_item_ids: {', '.join(entry['source_item_ids'])}")
+    else:
+        lines.append('- none')
+    lines.extend(['', '## Post-push cleanup', ''])
+    lines.extend([f'- {x}' for x in review.get('post_push_cleanup', [])] or ['- none'])
+    lines.extend(['', '## Best next move', '', review.get('best_next_move', 'not specified'), ''])
+    return '
+'.join(lines)
 
 
 def cmd_init(args: argparse.Namespace) -> int:
@@ -198,7 +361,7 @@ def cmd_upsert(args: argparse.Namespace) -> int:
     remove_item_everywhere(state, item['id'])
     state['open_items'][bucket].append(item)
     save_state(args.path, state)
-    print(f'Upserted {item["id"]} into {bucket}')
+    print(f'Captured {item["id"]} into {bucket} and preserved it in the local session-state file')
     return 0
 
 
@@ -264,11 +427,30 @@ def cmd_stage_governed_update(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_stage_todo_action(args: argparse.Namespace) -> int:
+    state = load_state(args.path)
+    payload = json.loads(args.entry_json) if args.entry_json else json.loads(Path(args.entry_file).read_text(encoding='utf-8'))
+    if not isinstance(payload, dict):
+        raise ValueError('todo action payload must be a JSON object')
+    state.setdefault('staged_todo_actions', []).append(normalize_stage(payload))
+    save_state(args.path, state)
+    print('Staged todo action entry')
+    return 0
+
+
 def cmd_clear_staged_governed_updates(args: argparse.Namespace) -> int:
     state = load_state(args.path)
     state['staged_governed_updates'] = []
     save_state(args.path, state)
     print('Cleared staged governed updates')
+    return 0
+
+
+def cmd_clear_staged_todo_actions(args: argparse.Namespace) -> int:
+    state = load_state(args.path)
+    state['staged_todo_actions'] = []
+    save_state(args.path, state)
+    print('Cleared staged todo actions')
     return 0
 
 
@@ -283,6 +465,27 @@ def cmd_mark_governed_written(args: argparse.Namespace) -> int:
         item['governed_write_note'] = args.note
     save_state(args.path, state)
     print(f'Marked {args.id} governed_written in {bucket}')
+    return 0
+
+
+def cmd_derive_pre_push_review(args: argparse.Namespace) -> int:
+    state = load_state(args.path)
+    inspection = inspect_payload(args.path, state) if args.path.exists() else None
+    review = derive_pre_push_review(state)
+    if args.update_state:
+        state['staged_governed_updates'] = review['staged_governed_updates']
+        state['staged_todo_actions'] = review['staged_todo_actions']
+        state['post_push_cleanup'] = review['post_push_cleanup']
+        state['best_next_move'] = review['best_next_move']
+        save_state(args.path, state)
+        if args.path.exists():
+            inspection = inspect_payload(args.path, load_state(args.path))
+    if args.output_json:
+        Path(args.output_json).write_text(json.dumps({'inspection': inspection, 'review': review}, indent=2) + '
+', encoding='utf-8')
+    if args.output_md:
+        Path(args.output_md).write_text(render_pre_push_review(review, inspection), encoding='utf-8')
+    print(render_pre_push_review(review, inspection))
     return 0
 
 
@@ -303,6 +506,7 @@ def cmd_inspect(args: argparse.Namespace) -> int:
         print(f'  - {bucket}: {count}')
     print(f'completed_count: {payload["completed_count"]}')
     print(f'staged_governed_update_count: {payload["staged_governed_update_count"]}')
+    print(f'staged_todo_action_count: {payload["staged_todo_action_count"]}')
     print(f'post_push_cleanup_count: {payload["post_push_cleanup_count"]}')
     if args.show_state:
         print('state_json:')
@@ -343,9 +547,20 @@ def build_parser() -> argparse.ArgumentParser:
     group.add_argument('--entry-file')
     stage_p.set_defaults(func=cmd_stage_governed_update)
 
+    stage_todo_p = sub.add_parser('stage-todo-action')
+    stage_todo_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)
+    group2 = stage_todo_p.add_mutually_exclusive_group(required=True)
+    group2.add_argument('--entry-json')
+    group2.add_argument('--entry-file')
+    stage_todo_p.set_defaults(func=cmd_stage_todo_action)
+
     clear_p = sub.add_parser('clear-staged-governed-updates')
     clear_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)
     clear_p.set_defaults(func=cmd_clear_staged_governed_updates)
+
+    clear_todo_p = sub.add_parser('clear-staged-todo-actions')
+    clear_todo_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)
+    clear_todo_p.set_defaults(func=cmd_clear_staged_todo_actions)
 
     governed_p = sub.add_parser('mark-governed-written')
     governed_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)
@@ -366,6 +581,13 @@ def build_parser() -> argparse.ArgumentParser:
     summary_p.add_argument('--add-note', action='append')
     summary_p.add_argument('--add-verification', action='append')
     summary_p.set_defaults(func=cmd_set_summary)
+
+    review_p = sub.add_parser('derive-pre-push-review')
+    review_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)
+    review_p.add_argument('--output-md')
+    review_p.add_argument('--output-json')
+    review_p.add_argument('--update-state', action='store_true')
+    review_p.set_defaults(func=cmd_derive_pre_push_review)
 
     inspect_p = sub.add_parser('inspect')
     inspect_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)

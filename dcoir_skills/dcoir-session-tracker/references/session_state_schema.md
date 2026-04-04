@@ -7,7 +7,7 @@ Use this exact high-level structure when exporting session state.
 ```markdown
 ---
 artifact_type: dcoir-session-state
-schema_version: 2
+schema_version: 4
 project: AFRICOM_SOC_IR / DCOIR
 exported_at_utc: 2026-03-27T12:34:56Z
 authority_basis:
@@ -83,6 +83,15 @@ imports_merged:
 
 ### LOG-03 candidate text
 [optional]
+
+## Staged governed updates
+- [optional list]
+
+## Staged todo actions
+- [optional list]
+
+## Post-push cleanup
+- [optional list]
 
 ## Starter prompt for next session
 [required when the operator is moving to another session]

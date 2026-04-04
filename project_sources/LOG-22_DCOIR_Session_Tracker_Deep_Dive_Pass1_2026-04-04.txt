@@ -1,0 +1,29 @@
+DCOIR Session Tracker Deep-Dive Pass 1 - 2026-04-04
+
+Current state id: 2026-04-04-session-tracker-deep-dive-v1
+
+Purpose
+- This log records the first dedicated deep-dive and code-hygiene pass on `dcoir-session-tracker` after the validation regime, parity baseline, discovery contract, and practical hard-coded-project-variable audit passes were materially complete.
+
+Decision summary
+- Treat `dcoir-session-tracker` as the highest-value first deep-dive target because it is central to continuity, session trust, and the shared pre-push flush contract, and because the operator already observed multiple trust-impacting misses in real workflow use.
+- Fix the implementation gap where tracker state could be preserved locally without deriving a staged governed-update and todo-sync bundle before a real push.
+- Make the operator-visible capture acknowledgment explicit when materially important items are captured and a real local state file exists.
+
+What changed in this pass
+- The local state store now supports a derived pre-push review path.
+- The local state store now maintains staged todo actions alongside staged governed updates.
+- The markdown export now renders staged todo actions in addition to staged governed updates and post-push cleanup.
+- The local-state workflow and session-buffer workflow now document the derived pre-push review path instead of treating all staging as purely manual.
+
+Why it matters
+- The operator should not have to infer whether an important item was actually preserved.
+- The tracker should not rely on manually staged governed updates alone when a grouped push is clearly approaching.
+- Todo additions, updates, and removals should be surfaced as first-class grouped-push work instead of being implied or left in chat-only reasoning.
+
+Validation boundary
+- This pass is locally validated on a synthetic session-state fixture.
+- The next step is a live validation on a real grouped governed push to confirm that the derived pre-push review and todo-sync behavior are useful in practice and not merely correct in a lab run.
+
+Next immediate move
+- Use the updated tracker on the next real grouped governed push and verify that it surfaces the staged governed updates, staged todo actions, post-push cleanup, and explicit capture acknowledgment strongly enough for operator trust.

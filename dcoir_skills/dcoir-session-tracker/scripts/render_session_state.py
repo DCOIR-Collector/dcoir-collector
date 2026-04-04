@@ -36,11 +36,24 @@ def fmt_item(item: dict[str, Any]) -> str:
     related = item.get('related', [])
     if related:
         lines.append(f"  - related: {', '.join(str(x) for x in related)}")
-    return '\n'.join(lines)
+    return '
+'.join(lines)
 
 
 def section_lines(items: list[dict[str, Any]]) -> list[str]:
     return [fmt_item(item) for item in items] if items else ['- none']
+
+
+def fmt_stage(entry: dict[str, Any]) -> list[str]:
+    lines = [f"- {entry.get('title', 'untitled entry')}"]
+    for key in ['action', 'status', 'why']:
+        if entry.get(key):
+            lines.append(f"  - {key}: {entry.get(key)}")
+    if entry.get('target_paths'):
+        lines.append(f"  - target_paths: {', '.join(entry['target_paths'])}")
+    if entry.get('source_item_ids'):
+        lines.append(f"  - source_item_ids: {', '.join(entry['source_item_ids'])}")
+    return lines
 
 
 def build_markdown(state: dict[str, Any]) -> str:
@@ -48,7 +61,8 @@ def build_markdown(state: dict[str, Any]) -> str:
     authority_basis = state.get('authority_basis', [])
     imports_merged = state.get('imports_merged', [])
     durability_summary = state.get('durability_summary', {})
-    lines = ['---', 'artifact_type: dcoir-session-state', f"schema_version: {state.get('local_state_metadata', {}).get('schema_version', 3)}", f"project: {state.get('project', 'AFRICOM_SOC_IR / DCOIR')}", f'exported_at_utc: {exported_at}', 'authority_basis:']
+    schema_version = state.get('local_state_metadata', {}).get('schema_version', 4)
+    lines = ['---', 'artifact_type: dcoir-session-state', f"schema_version: {schema_version}", f"project: {state.get('project', 'AFRICOM_SOC_IR / DCOIR')}", f'exported_at_utc: {exported_at}', 'authority_basis:']
     lines.extend([f'  - {item}' for item in authority_basis] or ['  - none-recorded'])
     lines.append(f"merge_mode: {state.get('merge_mode', 'merge')}")
     lines.append('imports_merged:')
@@ -75,14 +89,14 @@ def build_markdown(state: dict[str, Any]) -> str:
     staged = state.get('staged_governed_updates', [])
     if staged:
         for entry in staged:
-            lines.append(f"- {entry.get('title', 'untitled staged update')}")
-            for key in ['action', 'status', 'why']:
-                if entry.get(key):
-                    lines.append(f"  - {key}: {entry.get(key)}")
-            if entry.get('target_paths'):
-                lines.append(f"  - target_paths: {', '.join(entry['target_paths'])}")
-            if entry.get('source_item_ids'):
-                lines.append(f"  - source_item_ids: {', '.join(entry['source_item_ids'])}")
+            lines.extend(fmt_stage(entry))
+    else:
+        lines.append('- none')
+    lines.extend(['', '## Staged todo actions'])
+    staged_todo = state.get('staged_todo_actions', [])
+    if staged_todo:
+        for entry in staged_todo:
+            lines.extend(fmt_stage(entry))
     else:
         lines.append('- none')
     lines.extend(['', '## Post-push cleanup'])
@@ -93,7 +107,8 @@ def build_markdown(state: dict[str, Any]) -> str:
     lines.extend(['', '## Provenance notes'])
     lines.extend([f'- {note}' for note in state.get('provenance_notes', [])] or ['- none'])
     lines.append('')
-    return '\n'.join(lines)
+    return '
+'.join(lines)
 
 
 def main() -> int:

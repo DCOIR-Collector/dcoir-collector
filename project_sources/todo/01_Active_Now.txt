@@ -1,18 +1,18 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-hardcoded-audit-v4
+Current state id: 2026-04-04-session-tracker-deep-dive-v1
 
-1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the explicit validation structure.
+1. Live-validate the updated `dcoir-session-tracker` pre-push review and todo-sync behavior during the next suitable governed push.
    Why it matters:
-   - The project now has a validation regime, parity baseline, and discovery contract strong enough to support deeper execution and code-hygiene review without relying on chat memory.
+   - The tracker now derives staged governed updates, staged todo actions, and post-push cleanup from current local state, but that path still needs a real grouped-push validation for operator trust.
    Next action:
-   - Rank the next deep-dive targets and begin the highest-value execution and code review passes.
+   - Use the updated tracker on the next governed push and verify that the derived pre-push review is strong enough in practice.
 
-2. Use the shared pre-push flush and staged-governed-update contract for session-memory-enabled or buffer-capable skills.
+2. Continue the broader helper-skill deep-dive and code-hygiene campaign from the stronger tracker baseline.
    Why it matters:
-   - Recent grouped updates proved that tracker and helper-memory state can still be missed when a suitable governed push is already happening in the same branch.
+   - The project now has a validation regime, parity baseline, discovery contract, and a materially stronger tracker path, so deeper execution and code-hygiene review can proceed with less hidden-state risk.
    Next action:
-   - Before future governed pushes, require a bounded flush/manicure review for `dcoir-session-tracker`, `dcoir-plan-tracker`, `dcoir-decision-policy`, `dcoir-memory-preflight`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator`.
+   - After the live tracker validation, rank the next deep-dive targets and begin the next highest-value execution and code review pass.
 
 3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:

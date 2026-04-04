@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.36
+DCOIR Version Manifest 3.9.37
 
-Current state id: 2026-04-04-hardcoded-audit-v4
+Current state id: 2026-04-04-session-tracker-deep-dive-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -28,6 +28,7 @@ Current control plane
 - Hard-coded project variable audit pass 2: project_sources/LOG-19_DCOIR_Hard_Coded_Project_Variable_Audit_Pass2_2026-04-04.txt
 - Hard-coded project variable audit pass 3: project_sources/LOG-20_DCOIR_Hard_Coded_Project_Variable_Audit_Pass3_2026-04-04.txt
 - Hard-coded project variable audit pass 4: project_sources/LOG-21_DCOIR_Hard_Coded_Project_Variable_Audit_Pass4_2026-04-04.txt
+- Session-tracker deep-dive pass 1: project_sources/LOG-22_DCOIR_Session_Tracker_Deep_Dive_Pass1_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -49,20 +50,16 @@ Current governed helper-skill source
 - Root: dcoir_skills/
 - Policy decision: all `dcoir-*` skill source is stored in GitHub under the governed source root.
 - Helper working-state continuity remains under dcoir_skill_memory/ only for the skills that still legitimately use it and should not be confused with source authority.
-- `dcoir-source-authority-auditor` acts as the explicit drift gate for shared active-surface current-state alignment and now prefers the governed discovery contract for bootstrap assumptions.
+- `dcoir-session-tracker` now derives a pre-push review bundle from local state, including staged governed updates, staged todo actions, and post-push cleanup, instead of relying only on manually staged entries.
+- `dcoir-source-authority-auditor` acts as the explicit drift gate for shared active-surface current-state alignment.
 - `dcoir-plan-tracker` is the current verbose resume-state and flush/manicure reference candidate.
-- `dcoir-repo-packager`, `dcoir-session-resume`, and `dcoir-readme-maintainer` prefer the governed discovery contract for eligible current-project assumptions where practical.
-- `dcoir-validation-orchestrator`, `dcoir-parity-verifier`, `dcoir-decision-policy`, and `dcoir-skill-regression-auditor` now also prefer the governed discovery contract for eligible governed repository and helper-memory assumptions where practical.
-- `dcoir-repo-packager` is aligned to the current repo-style layout and current bootstrap-safe roots.
-- `dcoir-validation-orchestrator` owns the broader validation-regime branch and the session-memory pre-push-contract validation scenarios.
-- `dcoir-parity-verifier` owns canonical skill parity manifest refresh, installed-skill versus governed-source verification, summary generation, and rebaseline work.
+- `dcoir-repo-packager`, `dcoir-session-resume`, `dcoir-readme-maintainer`, `dcoir-validation-orchestrator`, `dcoir-parity-verifier`, `dcoir-decision-policy`, and `dcoir-skill-regression-auditor` prefer the governed discovery contract for eligible current-project assumptions where practical.
 - `dcoir_skills/skill_parity_manifest.json` is the canonical machine-readable parity surface.
 - `dcoir_skills/skill_parity_summary.md` is the generated human-readable parity companion surface.
 - `dcoir_skills/project_discovery_contract.json` is the canonical machine-readable current-project discovery contract for eligible helper skills.
 
 Current next work item
-- Keep the CI/CD-style validation regime branch active and use the refreshed parity output and the expanded discovery contract to anchor the broader helper-skill deep-dive and code-hygiene campaign.
-- Continue the audit for hard-coded project variables and replace brittle assumptions with current-project discovery where practical, with any remaining non-contractual literals treated as bounded exceptions review rather than default embedded assumptions.
-- Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other buffer-capable skills before any governed push.
+- Keep the CI/CD-style validation regime branch active and use the refreshed parity output, discovery contract, and the improved session-tracker pre-push review behavior to anchor the broader helper-skill deep-dive and code-hygiene campaign.
+- Live-validate the updated session-tracker pre-push review and todo-sync behavior during the next suitable governed push.
+- Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
 - Keep the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
-- Use dcoir-parity-verifier again whenever a future grouped skill update changes the governed skill source or installed packages.

@@ -22,11 +22,15 @@ Inspect that file instead of merely paraphrasing the intended state when the ope
 - what is safe to flush now
 - what should remain session-local for now
 - what staged governed updates should land in the same grouped push
-- what active todo items should be added, updated, or removed in the same grouped push
+- what staged todo additions, updates, or removals should land in the same grouped push
 - what post-push cleanup should occur once the governed update lands
 - what must be exported for handoff if a safe governed Project write is not happening
 - the local session-state inspection result when the file exists
 - one best next move
+
+## Derivation rule
+When a governed push is approaching, derive the pre-push review from the current state instead of relying only on manually entered staged entries.
+The derived review should preserve existing manually staged entries and add the missing governed-update or todo-sync proposals needed for the same grouped push.
 
 ## Close-out-specific rule
 When the operator is moving to another session, a flush check is mandatory.
