@@ -1,6 +1,6 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-04-plan-tracker-v1
+Current state id: 2026-04-04-plan-tracker-v2
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.
@@ -20,7 +20,7 @@ Current governed workflow state
 - `dcoir-session-tracker` now uses the local JSON state file as its only working-state surface.
 - Cross-session continuity for `dcoir-session-tracker` now comes from exported handoff artifacts or governed Project-file promotion.
 - The tracker now preserves and renders richer item detail by default so the operator can understand carried state without reverse-engineering terse summaries.
-- The active continuity surface set now carries the shared `current_state_id` `2026-04-04-plan-tracker-v1`.
+- The active continuity surface set now carries the shared `current_state_id` `2026-04-04-plan-tracker-v2`.
 - `dcoir-source-authority-auditor` now performs an explicit drift check across the initial stamped surface set and hard-stops on mismatched state ids or `CP-01` / `CP-02` version drift.
 - `dcoir-session-resume` now consumes that same drift gate directly before trusting supporting continuity surfaces during resume.
 - `dcoir-plan-tracker` now preserves a more verbose plan resume state and explicit flush/manicure surfacing for buffered plan-state transitions.

@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.26
+DCOIR Version Manifest 3.9.27
 
-Current state id: 2026-04-04-plan-tracker-v1
+Current state id: 2026-04-04-plan-tracker-v2
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -18,6 +18,7 @@ Current control plane
 - Current-state and version-checking enforcement workflow decision: project_sources/LOG-09_DCOIR_Current_State_And_Version_Checking_Enforcement_Workflow_Decision_2026-04-04.txt
 - Session-resume direct drift-gate workflow decision: project_sources/LOG-10_DCOIR_Session_Resume_Direct_Drift_Gate_Workflow_Decision_2026-04-04.txt
 - Plan-tracker verbose resume-state and widening-hold workflow decision: project_sources/LOG-11_DCOIR_Plan_Tracker_Verbose_Resume_State_And_Widening_Hold_Workflow_Decision_2026-04-04.txt
+- Plan-tracker exact-resume-goal autofill fix and validation refresh: project_sources/LOG-12_DCOIR_Plan_Tracker_Exact_Resume_Goal_Autofill_Fix_And_Validation_Refresh_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -40,6 +41,7 @@ Current governed helper-skill source
 - `dcoir-source-authority-auditor` now acts as the first explicit drift gate for the shared active-surface `current_state_id` and control-plane version-checking workflow.
 - `dcoir-session-resume` now consumes that same drift gate directly before trusting supporting continuity surfaces during resume.
 - `dcoir-plan-tracker` now acts as the next stateful-skill reference candidate for verbose resume-state and explicit flush/manicure surfacing.
+- `dcoir-plan-tracker` now auto-populates `resume_state.exact_resume_goal` from the strongest available next-action field when that resume-goal field would otherwise remain blank during active-task transitions.
 
 Current next work item
 - Run bounded regression on the `dcoir-plan-tracker` verbose resume-state and flush/manicure upgrade, using the generated plan-state path as the acceptance test and confirming that operator-facing resume state is continuity-rich enough.

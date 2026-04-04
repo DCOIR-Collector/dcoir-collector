@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-04-plan-tracker-v1
+Current state id: 2026-04-04-plan-tracker-v2
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,9 +8,9 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Run bounded regression on the `dcoir-plan-tracker` verbose resume-state and explicit flush/manicure upgrade, using the generated plan-state path as the acceptance test.
-2. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
-3. Decide which additional stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker, enforcement, direct-resume, and plan-tracker reference implementations are validated.
+1. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review, and do not decrement it for generated-plan validation artifacts.
+2. Decide which additional stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker, enforcement, direct-resume, and repaired plan-tracker reference implementations are validated.
+3. After each qualifying real resume cycle on live governed state, decrement the widening-hold countdown and trigger the widening review only when the count reaches 0.
 4. Build a CI/CD-style end-to-end and edge-case validation regime for the repository, skills, workflows, and deliverables.
 5. Run a dedicated GitHub optimization and discovery pass to reduce operator confirmation friction and improve call efficiency without writing unsupported assumptions into durable guidance.
 6. Research additional connectors and Agent Mode only after the tracker-centered enforcement workflow line is clearer and only promote validated conclusions.
@@ -24,4 +24,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Use the authoritative todo surfaces to validate the patched `dcoir-plan-tracker` path first, keep the widening hold countdown explicit and visible, and only then decide whether to widen the stamped surface set or move the same pattern into the next stateful skill.
+- Keep the widening hold countdown explicit at 2 remaining real resume cycles and review the next strongest stateful-skill candidate for the same flush/manicure and verbose-state pattern.

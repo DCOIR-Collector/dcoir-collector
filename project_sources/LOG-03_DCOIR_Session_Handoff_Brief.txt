@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-04-plan-tracker-v1
+Current state id: 2026-04-04-plan-tracker-v2
 
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -21,7 +21,7 @@ Current governance state
 - Helper working-state continuity remains under `dcoir_skill_memory/` only for the skills that still legitimately use it and should not be confused with source authority.
 - `dcoir-session-tracker` now uses the local JSON state file as its only working-state surface and does not use a GitHub-backed helper-memory branch.
 - The tracker now serves as the reference model for pre-GitHub-update flush/manicure checks on stateful helper-skill session state.
-- The active continuity surface set now carries the shared `current_state_id` `2026-04-04-plan-tracker-v1` as the current machine-checkable coordination signal.
+- The active continuity surface set now carries the shared `current_state_id` `2026-04-04-plan-tracker-v2` as the current machine-checkable coordination signal.
 - `dcoir-source-authority-auditor` is the first explicit drift gate for that shared state id and the `CP-01` / `CP-02` version pair.
 - `dcoir-session-resume` now consumes that same drift gate directly before trusting supporting continuity surfaces during resume.
 - `dcoir-plan-tracker` is now the next bounded reference candidate for verbose resume-state and flush/manicure surfacing.

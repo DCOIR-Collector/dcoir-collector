@@ -1,32 +1,26 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-plan-tracker-v1
+Current state id: 2026-04-04-plan-tracker-v2
 
-1. Run bounded regression on the `dcoir-plan-tracker` verbose resume-state and explicit flush/manicure upgrade.
+1. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:
-   - `dcoir-plan-tracker` owns durable plan state, buffered plan updates, and resume breadcrumbs, so the project needs proof that its operator-facing resume state is now rich enough to support clean continuity without guesswork.
+   - The project wants evidence before widening the stamped active-surface set, and that decision should remain explicit, countable, and review-triggering rather than automatic.
    Next action:
-   - Use the generated plan-state path as the acceptance test, inspect the resulting `05_resume_state.md`, and confirm that the carried state, pending flush items, remain-local notes, promotion candidates, and next move are explicit enough for real workflow use.
+   - Do not decrement the hold for generated-plan validation artifacts; after each qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable, decrement the hold countdown in the governed todo or continuity surfaces and trigger a bounded widening review only when the countdown reaches 0.
 
-2. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+2. Decide which additional `dcoir-*` skills truly need the same stateful flush/manicure and verbose-state treatment next.
    Why it matters:
-   - The project wants evidence before widening the stamped active-surface set, and that decision should be tracked explicitly rather than left as a vague reminder.
+   - `dcoir-session-tracker`, `dcoir-source-authority-auditor`, `dcoir-session-resume`, and the repaired `dcoir-plan-tracker` path are the first proving grounds, but other stateful helper skills may also need explicit pre-write state surfacing and richer operator-facing continuity.
    Next action:
-   - After each qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable, decrement the hold countdown in the governed todo or continuity surfaces and trigger a bounded widening review only when the countdown reaches 0.
+   - Review the next strongest remaining stateful skill candidate and decide whether it should adopt the same pattern next.
 
-3. Decide which additional `dcoir-*` skills truly need the same stateful flush/manicure and verbose-state treatment.
-   Why it matters:
-   - `dcoir-session-tracker`, `dcoir-source-authority-auditor`, `dcoir-session-resume`, and now `dcoir-plan-tracker` are the first proving grounds, but other stateful helper skills may also need explicit pre-write state surfacing and richer operator-facing continuity.
-   Next action:
-   - After the patched `dcoir-plan-tracker` path is validated, inventory the remaining stateful skills and decide which should adopt the same pattern next.
-
-4. Use canonical task-memory preflight before GitHub-family execution work.
+3. Use canonical task-memory preflight before GitHub-family execution work.
    Why it matters:
    - Validated procedures should be consulted before friction, not after avoidable misses or retries.
    Next action:
    - Check knowledge/task_memory and the applicable GitHub procedures before repo writes, deletes, packaging, or structural changes.
 
-5. Treat post-create and post-update helper-skill regression as mandatory.
+4. Treat post-create and post-update helper-skill regression as mandatory.
    Why it matters:
    - Packaging success is not sufficient proof that a helper skill is ready for broader workflow use.
    Next action:

@@ -13,6 +13,11 @@ from pathlib import Path
 from plan_templates import ALLOWED_PLAN_STATUSES, ALLOWED_TASK_STATUSES, find_task, task_lookup, utc_now, write_plan_folder
 
 
+def set_if_blank(mapping: dict, key: str, value: str) -> None:
+    if value and not str(mapping.get(key, '')).strip():
+        mapping[key] = value
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("plan_dir")
@@ -52,7 +57,9 @@ def main() -> None:
     resume = plan.setdefault("resume_state", {})
 
     if args.task_id and args.task_status == "in_progress":
-        resume.setdefault("exact_resume_goal", plan.get("next_recommended_action", ""))
+        set_if_blank(resume, "exact_resume_goal", plan.get("next_recommended_action", ""))
+    if args.next_action:
+        set_if_blank(resume, "exact_resume_goal", args.next_action)
     if args.resume_detail:
         resume["resume_detail"] = args.resume_detail
     if args.why_current_task_matters:
@@ -93,7 +100,7 @@ def main() -> None:
                         other["status"] = "todo"
                 plan["active_task_id"] = task["id"]
                 plan["active_task_title"] = task.get("title", "")
-                resume.setdefault("exact_resume_goal", task.get("next_action", "") or plan.get("next_recommended_action", ""))
+                set_if_blank(resume, "exact_resume_goal", task.get("next_action", "") or plan.get("next_recommended_action", ""))
             elif plan.get("active_task_id") == args.task_id and args.task_status in {"done", "blocked", "skipped"}:
                 plan["active_task_id"] = ""
                 plan["active_task_title"] = ""

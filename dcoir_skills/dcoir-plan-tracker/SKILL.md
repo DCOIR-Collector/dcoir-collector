@@ -158,6 +158,8 @@ In addition, preserve these verbose plan-resume fields whenever they are known:
 - `resume_state.remain_local_notes`
 - `resume_state.validation_counters`
 
+When the active task changes to `in_progress` and `resume_state.exact_resume_goal` is blank, auto-populate it from the strongest available next-action field rather than leaving operator-facing resume state empty.
+
 ## Command surface
 Read `references/command_surface.md` when the task requires a specific tracker action.
 
@@ -269,6 +271,7 @@ Automatically:
 - update `02_execution_table.md`
 - update `05_resume_state.md`
 - update `plan_state.json`
+- auto-populate `resume_state.exact_resume_goal` from the active task `next_action` or plan `next_recommended_action` when that field is still blank
 
 Emit an attention signal only if this transition is a major milestone.
 
