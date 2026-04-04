@@ -1,4 +1,6 @@
-DCOIR Version Manifest 3.9.23
+DCOIR Version Manifest 3.9.24
+
+Current state id: 2026-04-04-enforcement-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -13,6 +15,7 @@ Current control plane
 - GitHub skill-source policy decision: project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt
 - GitHub update-lane correction record: project_sources/LOG-07_DCOIR_GitHub_Update_Lane_Choice_And_Connector_Limitation_2026-04-03.txt
 - Flush/manicure and tracker-verbosity workflow decision: project_sources/LOG-08_DCOIR_Pre_GitHub_Update_Flush_And_Tracker_Verbosity_Workflow_Decision_2026-04-04.txt
+- Current-state and version-checking enforcement workflow decision: project_sources/LOG-09_DCOIR_Current_State_And_Version_Checking_Enforcement_Workflow_Decision_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -32,9 +35,10 @@ Current governed helper-skill source
 - `dcoir-session-tracker` now uses the local JSON state file as its only working-state surface and does not use a GitHub-backed helper-memory branch.
 - `dcoir-session-tracker` now preserves and renders tracker items verbosely enough that the operator can understand the carried state without reconstructing prior chat context.
 - The tracker now owns a bounded pre-GitHub-update flush/manicure workflow reference model for stateful helper-skill session state.
+- `dcoir-source-authority-auditor` now acts as the first explicit drift gate for the shared active-surface `current_state_id` and control-plane version-checking workflow.
 
 Current next work item
-- Run bounded regression on the verbose `dcoir-session-tracker` upgrade and the pre-GitHub-update flush/manicure workflow, using startup-speed and fresh-session resume predictability plus governance-gap detection as the acceptance tests.
-- Establish an authoritative current-state and version-checking enforcement mechanism so the project does not drift across LOG-01, CP-01, CP-02, LOG-03, LOG-05, and other active continuity surfaces.
-- Decide which other stateful `dcoir-*` skills should adopt the same flush/manicure and verbose state model after the tracker reference implementation is validated.
+- Run bounded regression on the initial `current_state_id` rollout and the upgraded `dcoir-source-authority-auditor` drift gate, using aligned and intentionally drifted active-surface fixtures as the acceptance tests.
+- Decide whether `dcoir-session-resume` should consume the same drift gate directly after the auditor validation pass, and whether the stamped surface set should widen beyond the initial active continuity set.
+- Decide which other stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker and enforcement reference implementations are validated.
 - After that bounded pass, continue into the queued CI/CD-style validation regime, GitHub optimization and discovery work, connector research, Agent Mode research, and later redundancy audit captured in the authoritative todo structure.

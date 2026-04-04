@@ -1,5 +1,7 @@
 DCOIR Todo Log
 
+Current state id: 2026-04-04-enforcement-v1
+
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
 - Collector runtime: project_sources/DCOIR_Collector.ps1
@@ -11,7 +13,7 @@ Current stable pointers
 - Extracted readable knowledge folders: knowledge/comparative_reference_agent_markdowns/ and knowledge/generated_agent_markdowns/
 
 Current active priority
-- Validate the verbose local-only `dcoir-session-tracker` reference model and the pre-GitHub-update flush/manicure workflow, with startup-speed or fresh-session resume predictability and governance-gap detection as the leading acceptance tests, then use that result to finalize the authoritative current-state and version-checking enforcement mechanism across control-plane, continuity, and todo surfaces.
+- Validate the initial shared `current_state_id` rollout and the upgraded `dcoir-source-authority-auditor` drift gate using aligned and intentionally drifted active-surface fixtures, then decide whether the same gate should be consumed directly by `dcoir-session-resume` and whether the stamped active-surface set should widen.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -28,4 +30,4 @@ Queued next priorities
 - Explore how Agent Mode could fit the DCOIR workflow more cleanly, but do not adopt or document it as a working line until the available surface is researched and validated.
 - Continue maintaining and extending knowledge/task_memory as validated procedures, limitations, and failure signatures are learned.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge or wiki structure.
-- After the session-tracker and structural-standard passes, audit the repo for true duplicate content or other accidental redundancies and remove only verified overlap.
+- After the tracker-centered enforcement and structural-standard passes, audit the repo for true duplicate content or other accidental redundancies and remove only verified overlap.

@@ -1,6 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.24
+Current state id: 2026-04-04-enforcement-v1
+Change class: current-state/version-checking enforcement workflow definition and source-authority drift-gate upgrade
+
+What changed
+- Defined a governed current-state and version-checking enforcement workflow for the active DCOIR continuity surfaces instead of leaving drift handling as an informal expectation.
+- Rolled out a shared `current_state_id` across the initial active surface set: `CP-01`, `CP-02`, `LOG-03`, `LOG-05`, `LOG-01_DCOIR_Todo_Log.txt`, `LOG-01_DCOIR_Todo_Index.txt`, and `todo/01_Active_Now.txt`.
+- Added `LOG-09_DCOIR_Current_State_And_Version_Checking_Enforcement_Workflow_Decision_2026-04-04.txt` as the governed workflow decision record for the enforcement model.
+- Upgraded the governed `dcoir-source-authority-auditor` skill instructions, audit rules, and deterministic script so it can compare the shared `current_state_id`, compare `CP-01` and `CP-02` version alignment, report exact drift, and stop or bound work appropriately.
+- Refreshed the active todo and continuity surfaces so they now point at bounded validation of the enforcement model and the question of whether the same gate should be consumed directly by `dcoir-session-resume`.
+
+Why
+- The project needed a real coordination mechanism that can prove when the active continuity surfaces are on the same page instead of relying on hopeful interpretation of loosely aligned prose.
+- Version alignment between `CP-01` and `CP-02` is necessary but not sufficient; the broader active continuity surface set also needs a shared machine-checkable signal.
+- The operator wanted a stronger enforcement posture for governance drift, but that posture should still separate drift detection and explicit callout from actual governed-file remediation.
+
+Validation notes
+- Local bounded regression passed the deterministic `dcoir-source-authority-auditor` script path for an aligned active-surface fixture and the drift failure gate for an intentionally mismatched `current_state_id` fixture.
+- The upgraded auditor is ready for bounded workflow validation as the first explicit drift gate on the active continuity surface set.
+
+[PRIOR]
 Version: 3.9.23
 Change class: pre-GitHub-update flush/manicure workflow definition and verbose session-tracker upgrade
 
@@ -19,22 +40,3 @@ Why
 Validation notes
 - Local tracker regression passed the bounded script path: initialize local state, upsert verbose items, inspect the real local JSON file, and render a markdown export with richer item detail.
 - The patched tracker reference model is ready for bounded fresh-session resume and governance-gap regression next.
-
-[PRIOR]
-Version: 3.9.22
-Change class: local-only session-tracker memory model and continuity refresh
-
-What changed
-- Removed the GitHub-backed helper-memory branch from `dcoir-session-tracker` and made the local JSON file the only tracker working-state surface for this skill.
-- Refreshed the tracker skill instructions and references so they now route cross-session continuity through exported handoff artifacts or governed Project-file promotion instead of `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md`.
-- Prepared deletion of `dcoir_skills/dcoir-session-tracker/references/github_memory_workflow.md` and `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md` as part of the local-only model transition.
-- Refreshed the active todo and continuity surfaces so they no longer describe GitHub-backed tracker memory as an open design branch.
-
-Why
-- The tracker now has a real inspectable local JSON state file, so the extra GitHub-backed branch for this skill became unnecessary redundancy.
-- Cross-session continuity for this skill should come from exported handoff artifacts or governed Project-file promotion, not from a parallel helper-memory surface.
-- The project should stop carrying contradictory language about whether tracker GitHub memory still exists.
-
-Validation notes
-- The bounded regression for the local-only model passed the tested path: capture item, inspect local file, ask what remains, trigger move-to-another-session behavior, and verify close-out output against the local file.
-- The local file and regression artifacts proved the tracker can operate without a GitHub-backed helper-memory branch.
