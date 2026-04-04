@@ -27,6 +27,7 @@ The question must:
 
 Good pattern:
 - "For structural multi-file changes, should I default to a full-refresh bundle unless you say otherwise?"
+- "Since the remaining similar skills are already known, should I treat this as one coordinated campaign instead of more onesy-twosey pushes?"
 
 Bad pattern:
 - "How do you want me to handle packaging, validation, naming, promotion, and testing in general?"
@@ -39,6 +40,7 @@ Map the answer into one of these classes:
 - packaging rule: repo vs update, release scope, bundle default
 - validation rule: required test depth or evidence threshold
 - evidence/confidence rule: how strongly to word conclusions under partial evidence
+- campaign or delivery-friction rule: whether to batch similar work instead of trickling it
 - one-off case fact: only for the current task or artifact
 
 ## Safe generalization test

@@ -11,3 +11,13 @@ Preferred flush-check trigger points:
 
 Truth rule:
 - buffered state is session-local only until it is flushed to GitHub or exported in a handoff artifact
+
+## Valid flush/manicure review
+A valid flush/manicure review for this skill should surface:
+- blocker signature or task family
+- failed attempt summary
+- successful mitigation
+- lesson classification
+- whether the lesson stays one-off, promotion-ready, or only buffered for now
+- the next flush trigger
+- one best next move

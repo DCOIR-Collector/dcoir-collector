@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.27
+DCOIR Version Manifest 3.9.28
 
-Current state id: 2026-04-04-plan-tracker-v2
+Current state id: 2026-04-04-stateful-trio-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -19,6 +19,7 @@ Current control plane
 - Session-resume direct drift-gate workflow decision: project_sources/LOG-10_DCOIR_Session_Resume_Direct_Drift_Gate_Workflow_Decision_2026-04-04.txt
 - Plan-tracker verbose resume-state and widening-hold workflow decision: project_sources/LOG-11_DCOIR_Plan_Tracker_Verbose_Resume_State_And_Widening_Hold_Workflow_Decision_2026-04-04.txt
 - Plan-tracker exact-resume-goal autofill fix and validation refresh: project_sources/LOG-12_DCOIR_Plan_Tracker_Exact_Resume_Goal_Autofill_Fix_And_Validation_Refresh_2026-04-04.txt
+- Coordinated stateful candidate trio campaign decision: project_sources/LOG-13_DCOIR_Coordinated_Stateful_Candidate_Trio_Campaign_Decision_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -41,11 +42,11 @@ Current governed helper-skill source
 - `dcoir-source-authority-auditor` now acts as the first explicit drift gate for the shared active-surface `current_state_id` and control-plane version-checking workflow.
 - `dcoir-session-resume` now consumes that same drift gate directly before trusting supporting continuity surfaces during resume.
 - `dcoir-plan-tracker` now acts as the next stateful-skill reference candidate for verbose resume-state and explicit flush/manicure surfacing.
-- `dcoir-plan-tracker` now auto-populates `resume_state.exact_resume_goal` from the strongest available next-action field when that resume-goal field would otherwise remain blank during active-task transitions.
+- `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` now form the coordinated stateful-candidate trio campaign for the remaining highest-value stateful or workflow-control upgrades.
 
 Current next work item
-- Run bounded regression on the `dcoir-plan-tracker` verbose resume-state and flush/manicure upgrade, using the generated plan-state path as the acceptance test and confirming that operator-facing resume state is continuity-rich enough.
+- Run bounded regression on the coordinated stateful-candidate trio campaign, using representative operator-preference capture, post-blocker promotion-candidate staging, and coordinated multi-skill regression-plan output as the acceptance tests.
 - Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
 - After each qualifying real resume cycle, decrement the widening-hold countdown in the governed todo or continuity surfaces and run the widening review only when the countdown reaches 0.
-- Decide which additional stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker, enforcement, direct-resume, and plan-tracker reference implementations are validated.
+- Decide which additional stateful `dcoir-*` skills should adopt the same flush/manicure and verbose-state model after the tracker, enforcement, direct-resume, plan-tracker, and coordinated-trio reference implementations are validated.
 - After that bounded pass, continue into the queued CI/CD-style validation regime, GitHub optimization and discovery work, connector research, Agent Mode research, and later redundancy audit captured in the authoritative todo structure.

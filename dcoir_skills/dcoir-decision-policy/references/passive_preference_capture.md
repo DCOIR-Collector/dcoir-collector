@@ -50,6 +50,7 @@ Examples:
 - bundle multi-file updates into one zip so I have fewer downloads
 - default to the smallest maintainable change
 - keep recommendations narrow instead of giving a large menu
+- when the remaining similar skills are already known, prefer one bounded coordinated campaign instead of a slow trickle of onesy-twosey pushes
 
 ## Situational preference indicators
 
@@ -80,7 +81,7 @@ Do not persist when any of these dominate:
 3. Run the safe generalization test.
 4. Classify it as durable, situational, or non-persistent.
 5. Apply it immediately in the current chat if relevant.
-6. If it affects downloadable outputs, bundle shape, or operator update steps, surface the approval block in the same response turn where practical.
+6. If it affects downloadable outputs, bundle shape, update cadence, campaign scope, or operator update steps, surface the approval block in the same response turn where practical.
 7. Surface a short approval block before persistence.
 
 ## Safe generalization test

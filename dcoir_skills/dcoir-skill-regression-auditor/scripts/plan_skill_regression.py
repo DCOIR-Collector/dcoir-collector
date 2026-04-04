@@ -3,17 +3,29 @@ from __future__ import annotations
 import argparse
 
 
+def ordered_skills(skills: list[str]) -> list[str]:
+    unique = []
+    seen = set()
+    for skill in skills:
+        if skill not in seen:
+            unique.append(skill)
+            seen.add(skill)
+    if 'dcoir-skill-regression-auditor' in seen:
+        unique = ['dcoir-skill-regression-auditor'] + [s for s in unique if s != 'dcoir-skill-regression-auditor']
+    return unique
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--skill', action='append', default=[])
     ap.add_argument('--campaign', default='')
     args = ap.parse_args()
-    skills = args.skill or ['unspecified-dcoir-skill']
+    skills = ordered_skills(args.skill or ['unspecified-dcoir-skill'])
     campaign = args.campaign.strip()
 
     print('# DCOIR Skill Regression Plan')
     print()
-    print('## Skills')
+    print('## Skills in scope')
     for s in skills:
         print(f'- {s}')
     print()
@@ -23,16 +35,26 @@ def main() -> int:
         print(f'- {campaign}')
         print()
 
-    print('## Required suites')
-    for item in [
-        'package validation',
-        'success path',
-        'failure gate',
-        'artifact verification',
-        'post-patch rerun of failing case',
-    ]:
-        print(f'- {item}')
+    print('## Execution order')
+    for idx, skill in enumerate(skills, start=1):
+        if idx == 1 and skill == 'dcoir-skill-regression-auditor':
+            print(f'- {idx}. {skill} (self-first validation because it is the campaign harness)')
+        else:
+            print(f'- {idx}. {skill}')
     print()
+
+    print('## Required suites by skill')
+    for skill in skills:
+        print(f'### {skill}')
+        for item in [
+            'package validation',
+            'success path',
+            'failure gate',
+            'artifact verification',
+            'post-patch rerun of failing case',
+        ]:
+            print(f'- {item}')
+        print()
 
     print('## Recommended fixtures')
     fixture_items = [
@@ -46,11 +68,10 @@ def main() -> int:
         print(f'- {item}')
     print()
 
-    print('## Campaign sequencing')
-    if any('regression-auditor' in s for s in skills):
-        print('- This skill is the test harness for later `dcoir-*` skill checks, so validate it before using it as evidence on the other skills.')
-    else:
-        print('- If this work is part of a broader helper-skill campaign, confirm `dcoir-skill-regression-auditor` has already been validated first.')
+    print('## Grouped campaign readiness summary')
+    print('- Every materially changed skill must have an explicit regression result or a plainly bounded untested reason.')
+    print('- The campaign is not ready merely because all packages validate.')
+    print('- If a grouped repo batch is planned, keep one grouped regression bundle with per-skill evidence and stop reasons.')
     return 0
 
 

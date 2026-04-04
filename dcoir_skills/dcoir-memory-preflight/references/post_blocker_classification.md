@@ -16,4 +16,5 @@ After a blocker or failed attempt is successfully overcome, classify the lesson 
 
 ## Promotion posture
 - do not silently persist
-- stage a promotion-ready candidate with the blocker signature, failed attempt summary, successful mitigation, and why the lesson appears reusable
+- stage a promotion-ready candidate with the blocker signature, failed attempt summary, successful mitigation, why the lesson appears reusable, remain-local note when promotion should wait, and the next flush trigger
+- keep one-off lessons explicit too, but say plainly when no promotion candidate is recommended

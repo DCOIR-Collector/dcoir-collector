@@ -1,4 +1,30 @@
+DCOIR Change Log
+
 [CURRENT]
+Version: 3.9.28
+Current state id: 2026-04-04-stateful-trio-v1
+Change class: coordinated stateful candidate trio campaign and durable batch-first delivery overlay
+
+What changed
+- Reviewed and patched the remaining highest-value stateful or workflow-control skill candidates in one coordinated campaign: `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor`.
+- Added `LOG-13_DCOIR_Coordinated_Stateful_Candidate_Trio_Campaign_Decision_2026-04-04.txt` as the governed decision record for the coordinated campaign.
+- Persisted the operator-approved durable rule that when the remaining similar scope is already known and regression can stay explicit, one bounded coordinated campaign is preferred over a slow stream of onesy-twosey pushes.
+- Updated `dcoir-decision-policy` so it now surfaces coordinated campaign scope, buffered decision state, deferred-review countdowns, and the durable batch-first delivery overlay more explicitly.
+- Updated `dcoir-memory-preflight` so post-blocker promotion candidates now surface richer operator-facing detail and explicit flush-trigger handling.
+- Updated `dcoir-skill-regression-auditor` so coordinated multi-skill campaigns now preserve self-first sequencing, grouped readiness reporting, and more explicit buffered regression state.
+- Refreshed the active todo and continuity surfaces so they now point at bounded validation of the coordinated trio campaign while keeping the stamped-surface widening hold countdown at 2 remaining real resume cycles.
+
+Why
+- The operator explicitly wanted to stop the slow trickle of one-off pushes and instead handle the remaining similar stateful skill candidates in one larger coordinated pass.
+- The remaining trio was coherent enough to patch together without widening the campaign blindly to every remaining skill.
+- `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` were the strongest remaining continuity-sensitive skills after the earlier reference implementations.
+
+Validation notes
+- Local bounded regression passed the coordinated trio artifacts: verbose decision-policy memory rendering, explicit post-blocker candidate staging in memory-preflight guidance, and coordinated multi-skill regression-plan output from the patched regression auditor.
+- The updated `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` skill packages passed local skill packaging validation.
+- Wider workflow validation of the coordinated trio campaign remains the next bounded branch.
+
+[PRIOR]
 Version: 3.9.27
 Current state id: 2026-04-04-plan-tracker-v2
 Change class: plan-tracker exact-resume-goal autofill fix and validation refresh
@@ -18,25 +44,3 @@ Validation notes
 - Local bounded regression passed the repaired `dcoir-plan-tracker` script path: initialize a plan, add a task with a usable `next_action`, mark it `in_progress`, and confirm that `05_resume_state.md` now renders a non-empty `exact_resume_goal` plus the unchanged widening-hold countdown.
 - The updated `dcoir-plan-tracker` skill package passed local skill packaging validation.
 - The repaired plan-tracker path is ready for bounded workflow use.
-
-[PRIOR]
-Version: 3.9.25
-Current state id: 2026-04-04-resume-gate-v1
-Change class: session-resume direct drift-gate consumption and active-surface stamp correction
-
-What changed
-- Bound `dcoir-session-resume` directly to the `dcoir-source-authority-auditor` drift gate so resume now checks the shared active-surface `current_state_id` and the `CP-01` / `CP-02` version pair before trusting supporting continuity surfaces.
-- Added `LOG-10_DCOIR_Session_Resume_Direct_Drift_Gate_Workflow_Decision_2026-04-04.txt` as the governed workflow decision record for the direct resume-gate integration.
-- Corrected the missing shared `current_state_id` on `project_sources/LOG-01_DCOIR_Todo_Log.txt` so the full initial stamped active-surface set is now aligned again.
-- Rolled the active continuity surface set to the new shared `current_state_id` `2026-04-04-resume-gate-v1` to mark the direct-resume integration line.
-- Refreshed the active todo and continuity surfaces so they now point at bounded validation of the direct resume-gate path and the question of whether the stamped surface set should widen.
-
-Why
-- Fresh-session resume is one of the highest-risk places for plausible-but-stale continuity to slip through, so it should consume the same explicit drift gate rather than relying only on human interpretation of supporting notes.
-- Follow-on verification of 3.9.24 exposed that `LOG-01_DCOIR_Todo_Log.txt` had not yet received the shared `current_state_id`, so the initial stamped active-surface set needed a corrective refresh before it could be treated as fully aligned.
-- The project wanted one drift-logic source of truth rather than a weaker reimplementation inside the resume skill.
-
-Validation notes
-- Local bounded regression passed the deterministic `dcoir-source-authority-auditor` script path against the corrected active-surface set.
-- The updated `dcoir-session-resume` skill package passed local skill packaging validation and the contract-path review for direct drift-gate consumption.
-- Wider workflow validation of the direct resume-gate path remains the next bounded branch.

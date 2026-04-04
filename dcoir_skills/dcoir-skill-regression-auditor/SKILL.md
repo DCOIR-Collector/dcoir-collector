@@ -1,6 +1,6 @@
 ---
 name: dcoir-skill-regression-auditor
-description: plan and audit deeper regression for dcoir skills before live use and after every patch. use when chatgpt needs to define regression fixtures, harness expectations, success and failure paths, output-verification checks for one or more dcoir skills, enforce the mandatory post-create or post-update regression rule, stage regression state in a session-local buffer before a grouped github flush, or read and update the dcoir-skill-regression-auditor GitHub skill-memory file in malwaredevil/dcoir-collector.
+description: plan and audit deeper regression for dcoir skills before live use and after every patch. use when chatgpt needs to define regression fixtures, harness expectations, success and failure paths, output-verification checks for one or more dcoir skills, enforce the mandatory post-create or post-update regression rule, stage regression state in a session-local buffer before a grouped github flush, or manage a bounded coordinated multi-skill patch campaign with explicit self-first validation and one grouped regression bundle.
 ---
 
 # DCOIR Skill Regression Auditor
@@ -27,14 +27,14 @@ In a broad helper-skill patch campaign, regression-test `dcoir-skill-regression-
 3. Read `references/regression_fixture_catalog.md`.
 4. Read `references/skill_test_harness_definitions.md`.
 5. Run `scripts/plan_skill_regression.py`.
-6. Produce the regression suites, failure gates, artifact checks, and readiness criteria.
+6. Produce the regression suites, failure gates, artifact checks, readiness criteria, campaign ordering, and grouped regression-bundle expectations.
 7. If regression revealed a blocker that is later overcome, invoke `dcoir-memory-preflight` again when the recovered lesson could improve a reusable procedure, limitation note, failure signature, or helper-skill/process guidance.
 8. Keep regression-state changes session-local until the next suitable flush-check trigger when grouped GitHub writes are preferred.
 9. When the regression-state changed materially and the write lane is safe, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`.
-10. Return the regression suites, failure gates, artifact checks, readiness criteria, buffer state, and any GitHub-memory change that matters.
+10. Return the regression suites, failure gates, artifact checks, readiness criteria, campaign scope, buffer state, and any GitHub-memory change that matters.
 
 ## Session-local buffer behavior
-This skill may stage regression memory, fixture deltas, or follow-through notes session-locally before GitHub flush time.
+This skill may stage regression memory, fixture deltas, follow-through notes, or campaign-scope notes session-locally before GitHub flush time.
 
 Preferred flush-check trigger points:
 - before any GitHub write
@@ -46,6 +46,14 @@ Preferred flush-check trigger points:
 
 Truth rule:
 - buffered regression state is session-local only until it is flushed to GitHub or exported in a handoff artifact
+
+A valid flush/manicure review for this skill should surface:
+- campaign scope or single-skill scope
+- what regression state is buffered
+- what is safe to flush now
+- what should remain buffered for now
+- the next flush trigger
+- one best next move
 
 ## GitHub-backed skill memory
 Use the GitHub connector directly against repository `malwaredevil/dcoir-collector` when reusable regression-planning state should persist outside the current chat.
@@ -60,6 +68,7 @@ Use this memory surface for helper working state such as:
 - fixture baselines worth reusing after later patches
 - failure gates that should remain visible across packaging cycles
 - buffered but unflushed regression deltas awaiting a later grouped write
+- coordinated campaign coverage summaries when a bounded multi-skill patch cycle is in flight
 
 Rules:
 - re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing the memory file
@@ -78,6 +87,7 @@ When rendering memory content locally, use `scripts/render_skill_regression_memo
 - after every helper-skill create or update, require regression coverage before claiming readiness
 - keep the canonical GitHub memory file human-readable and continuously updated after material regression-state changes when repo persistence is available
 - do not claim buffered regression state is durable before GitHub flush or export actually happened
+- do not call a coordinated campaign complete unless every materially changed skill has an explicit regression result or a plainly bounded untested reason
 
 ## References
 - `references/regression_fixture_catalog.md`

@@ -1,6 +1,6 @@
 ---
 name: dcoir-memory-preflight
-description: consult the canonical dcoir github task-memory bank before high-friction or known-procedure work and again after blocker recovery when a reusable lesson may need staging. use when dcoir work involves github read/write/update/delete operations, grouped repo edits, file removals, control-plane changes, packaging or bundle generation, skill maintenance, structural refactors, repeated high-friction workflows, or recovered failures that may justify a reusable procedure, limitation, failure-signature, or helper-skill/process update candidate.
+description: consult the canonical dcoir github task-memory bank before high-friction or known-procedure work and again after blocker recovery when a reusable lesson may need staging. use when dcoir work involves github read/write/update/delete operations, grouped repo edits, file removals, control-plane changes, packaging or bundle generation, skill maintenance, structural refactors, repeated high-friction workflows, coordinated multi-skill campaigns, or recovered failures that may justify a reusable procedure, limitation, failure-signature, or helper-skill/process update candidate.
 ---
 
 # DCOIR Memory Preflight
@@ -49,6 +49,7 @@ Run this skill before choosing the execution lane when the task family includes 
 - control-plane updates or structural repo changes
 - bundle generation or packaging work
 - skill maintenance, repair, or regression work
+- coordinated multi-skill patch campaigns where the same validated procedure may shape several sibling updates
 - any task where the operator asks to remove friction from a repeated GitHub workflow
 
 Run this skill again after blocker recovery when the recovered lesson could matter beyond the current one-off fix.
@@ -69,7 +70,7 @@ Run this skill again after blocker recovery when the recovered lesson could matt
    - `reusable_failure_signature_candidate`
    - `reusable_helper_skill_or_process_doc_candidate`
 10. Stage a promotion-ready candidate instead of silently writing into canonical memory.
-11. When stateful helper skills are active, tell `dcoir-plan-tracker` and `dcoir-session-tracker` what blocker signature, failed attempt summary, successful mitigation, lesson classification, and reusability notes should stay buffered until flush time.
+11. When stateful helper skills are active, tell `dcoir-plan-tracker` and `dcoir-session-tracker` what blocker signature, failed attempt summary, successful mitigation, lesson classification, reusability notes, and flush trigger should stay buffered until flush time.
 12. Surface the next flush-check trigger when buffered state exists.
 13. Return one best next move and the consulted records that justify it.
 
@@ -85,7 +86,7 @@ For GitHub governed-readable-text work:
 ## Required companion routing
 The surrounding workflow should use:
 - `dcoir-decision-policy` to invoke this skill before high-friction execution and after blocker recovery when branch choice or reusable learning requires it
-- `dcoir-plan-tracker` to preserve blocker signature, failed attempt summary, successful mitigation, and promotion-ready candidate state for active plan work
+- `dcoir-plan-tracker` to preserve blocker signature, failed attempt summary, successful mitigation, promotion-ready candidate state, and deferred review counters for active plan work
 - `dcoir-session-tracker` to preserve the same state in session-local continuity when no plan is active or when session export and later resume matter
 
 ## Session-local buffering and flush checks
@@ -100,6 +101,15 @@ Preferred flush-check trigger points:
 - when the operator asks what remains
 - when a helper skill reports meaningful state drift
 
+A valid flush/manicure review for this skill should surface:
+- blocker signature or task family
+- failed attempt summary
+- successful mitigation
+- lesson classification
+- whether the lesson stays one-off, promotion-ready, or only buffered for now
+- the next flush trigger
+- one best next move
+
 ## Output contract
 Return sections in this order:
 1. Invocation mode
@@ -112,6 +122,13 @@ Return sections in this order:
 8. Best next move
 
 For one-off recoveries, say plainly that no reusable promotion candidate is recommended.
+When a promotion candidate is recommended, preserve these fields explicitly whenever they are known:
+- blocker signature
+- failed attempt summary
+- successful mitigation
+- why the lesson appears reusable
+- remain-local note when full promotion should wait
+- next flush trigger
 
 ## Hard rules
 - Do not execute the change by default; this skill is for preflight reasoning.

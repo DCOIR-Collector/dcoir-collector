@@ -21,11 +21,25 @@ def fmt_rule(item: dict[str, Any]) -> str:
     status = item.get("status", "open")
     source = item.get("source", "current_chat")
     parts = [f"- **{title}** (status: {status}; source: {source})"]
-    for key in ["rule", "why", "next_action"]:
+    for key in [
+        "observed_statement",
+        "interpreted_rule",
+        "class",
+        "persistence_target",
+        "current_task_effect",
+        "buffer_state",
+        "flush_trigger",
+        "campaign_scope",
+        "deferred_review_countdown",
+        "rule",
+        "why",
+        "next_action",
+    ]:
         value = item.get(key, "")
         if value:
             parts.append(f"  - {key}: {value}")
-    return "\n".join(parts)
+    return "
+".join(parts)
 
 
 def bullet_list(items: list[str]) -> list[str]:
@@ -42,24 +56,38 @@ def build_markdown(state: dict[str, Any]) -> str:
     lines = [
         "---",
         "artifact_type: dcoir-decision-policy-memory",
-        "schema_version: 1",
+        "schema_version: 2",
         f"project: {state.get('project', 'AFRICOM_SOC_IR / DCOIR')}",
         f"exported_at_utc: {exported_at}",
         "authority_basis:",
     ]
     lines.extend([f"  - {item}" for item in authority_basis] or ["  - none-recorded"])
-    lines.extend(["---", "", "# DCOIR Decision Policy Memory", "", "## Current focus", state.get("current_focus", "not specified"), "", "## Approved overlay snapshot"])
+    lines.extend([
+        "---",
+        "",
+        "# DCOIR Decision Policy Memory",
+        "",
+        "## Current focus",
+        state.get("current_focus", "not specified"),
+        "",
+        "## Approved overlay snapshot",
+    ])
     lines.extend(rule_section(state.get("approved_overlays", [])))
     lines.extend(["", "## Pending or situational learning"])
     lines.extend(rule_section(state.get("pending_candidates", [])))
     lines.extend(["", "## Delivery and update preferences"])
     lines.extend(bullet_list(state.get("delivery_preferences", [])))
+    lines.extend(["", "## Buffered or deferred state"])
+    lines.extend(bullet_list(state.get("buffered_state", [])))
+    lines.extend(["", "## Deferred review counters"])
+    lines.extend(bullet_list(state.get("deferred_review_counters", [])))
     lines.extend(["", "## Next actions"])
     lines.extend(bullet_list(state.get("next_actions", [])))
     lines.extend(["", "## Provenance notes"])
     lines.extend(bullet_list(state.get("provenance_notes", [])))
     lines.append("")
-    return "\n".join(lines)
+    return "
+".join(lines)
 
 
 def main() -> int:
