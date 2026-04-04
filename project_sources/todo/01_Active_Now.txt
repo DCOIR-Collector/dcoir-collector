@@ -1,27 +1,33 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-validation-contract-v1
+Current state id: 2026-04-04-skill-parity-v1
 
-1. Build and use the CI/CD-style validation regime from the current inventory and gap-analysis scope map.
+1. Use `dcoir-parity-verifier` to perform the full repo-source skill parity rebaseline.
    Why it matters:
-   - The project now has enough grounded inventory and validated reference workflows that broader testing should be structured from the real current scope rather than from chat memory.
+   - The current canonical parity manifest is a bootstrap seeded from the installed skill tree plus the new parity-verifier skill, and it should not be treated as a fully repo-verified baseline until a repo-source rebaseline happens.
    Next action:
-   - Use `dcoir-validation-orchestrator` to emit validation plans for end-to-end workflows, edge cases, skill deep dives, docs/readme alignment, packager validation, and the session-memory pre-push contract.
+   - Rebuild the manifest from the governed repo source root, regenerate the summary, and compare installed skill trees or install zips against that canonical baseline.
 
-2. Use the shared pre-push flush and staged-governed-update contract for session-memory-enabled or buffer-capable skills.
+2. Keep the CI/CD-style validation regime active and use the parity output to shape the broader deep-dive and code-hygiene campaign.
    Why it matters:
-   - The latest grouped updates proved that tracker and helper-memory state can still be missed when a suitable governed push is already happening in the same branch.
+   - The project now has a grounded inventory, parity surface, and validated reference workflows, so broader testing and code review can proceed from explicit evidence instead of from chat memory.
    Next action:
-   - Before future governed pushes, require a bounded flush/manicure review for `dcoir-session-tracker`, `dcoir-plan-tracker`, `dcoir-decision-policy`, `dcoir-memory-preflight`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator`.
+   - Feed the parity results into the skill deep-dive ranking and the validation-regime scenarios.
 
-3. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+3. Use the shared pre-push flush and staged-governed-update contract for session-memory-enabled or buffer-capable skills.
+   Why it matters:
+   - Recent grouped updates proved that tracker and helper-memory state can still be missed when a suitable governed push is already happening in the same branch.
+   Next action:
+   - Before future governed pushes, require the bounded flush/manicure review for the affected skills and verify staged updates land in the same grouped push.
+
+4. Audit skills for hard-coded project variables and replace brittle assumptions with current-project discovery where practical.
+   Why it matters:
+   - The project will keep growing and changing, so skills should assume less and read more from the current control plane, current repo state, and current parity surfaces.
+   Next action:
+   - Use the parity output and the deep-dive branch to rank and fix the highest-value hard-coded project assumptions first.
+
+5. Maintain the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
    Why it matters:
    - The project wants evidence before widening the stamped active-surface set, and synthetic or generated-artifact validation should not count as real live resume cycles.
    Next action:
    - Decrement the countdown only after a qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.
-
-4. Begin the broader helper-skill deep-dive and code-hygiene campaign from the explicit validation structure.
-   Why it matters:
-   - The project now has enough validated reference workflows that deeper skill execution and code-hygiene reviews should be selected from an explicit gap and validation map rather than from chat memory.
-   Next action:
-   - After the validation regime is emitted, rank the next deep-dive targets and begin the highest-value execution and code review passes.

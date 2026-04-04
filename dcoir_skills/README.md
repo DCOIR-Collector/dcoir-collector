@@ -19,6 +19,7 @@ Current governed helper-skill source set
 - `dcoir-live-test-remediation-planner`
 - `dcoir-memory-preflight`
 - `dcoir-operator-workflow-hardener`
+- `dcoir-parity-verifier`
 - `dcoir-plan-tracker`
 - `dcoir-prompt-pack-assembler`
 - `dcoir-promotion-readiness-reviewer`
@@ -32,6 +33,11 @@ Current governed helper-skill source set
 - `dcoir-structural-rename-coordinator`
 - `dcoir-triage-to-collector-escalation-designer`
 - `dcoir-validation-orchestrator`
+
+Parity surfaces
+- Canonical machine-readable parity surface: `dcoir_skills/skill_parity_manifest.json`
+- Generated human-readable parity companion: `dcoir_skills/skill_parity_summary.md`
+- Use `dcoir-parity-verifier` to refresh and verify these surfaces.
 
 Companion guidance
 - Use `knowledge/DCOIR_Helper_Skills_Routing_Note.md` for the richer current routing matrix and boundaries.

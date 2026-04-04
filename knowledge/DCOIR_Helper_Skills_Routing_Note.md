@@ -32,6 +32,7 @@ It exists to make helper-skill selection more predictable and stable during proj
 | Deep regression for helper skills | dcoir-skill-regression-auditor | regression plan for skills, fixtures, output checks | Use before or after skill changes |
 | Session-local scratch, follow-ups, and handoff | dcoir-session-tracker | do not forget, what is left, handoff artifact | Session-local continuity aid |
 | Deep task decomposition and resume state | dcoir-plan-tracker | plan work, track tasks, resume plan, blocker capture | Durable execution-plan helper |
+| Skill parity manifest refresh or install-versus-source verification | dcoir-parity-verifier | verify installed skill, parity drift, hash manifest, skill zip mismatch | Use for canonical manifest refresh, summary generation, and governed-source versus installed-skill comparison |
 | Root or folder README maintenance | dcoir-readme-maintainer | improve README, folder README, navigation links | Focused README upkeep, not broad documentation generation |
 | Knowledge and supporting docs maintenance | dcoir-knowledge-doc-maintainer | regenerate docs, maintain knowledge docs, inventory doc changes | Knowledge-doc generation and refresh |
 | Repo-layout zip or bootstrap bundle creation | dcoir-repo-packager | package repo, build bootstrap bundle | Packaging execution helper |
@@ -46,6 +47,7 @@ It exists to make helper-skill selection more predictable and stable during proj
 - dcoir-live-test-remediation-planner
 - dcoir-memory-preflight
 - dcoir-operator-workflow-hardener
+- dcoir-parity-verifier
 - dcoir-plan-tracker
 - dcoir-prompt-pack-assembler
 - dcoir-promotion-readiness-reviewer

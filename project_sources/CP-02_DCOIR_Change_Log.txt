@@ -1,31 +1,29 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.31
+Current state id: 2026-04-04-skill-parity-v1
+Change class: dedicated skill parity verifier, canonical manifest surfaces, and bootstrap parity baseline
+
+What changed
+- Added `LOG-16_DCOIR_Skill_Parity_Verifier_And_Canonical_Manifest_Workflow_Decision_2026-04-04.txt` as the governed decision record for the dedicated parity-verifier branch.
+- Added the new governed helper skill `dcoir-parity-verifier`.
+- Added the canonical machine-readable parity surface `dcoir_skills/skill_parity_manifest.json`.
+- Added the generated human-readable parity companion `dcoir_skills/skill_parity_summary.md`.
+- Updated `dcoir_skills/README.md` and `knowledge/DCOIR_Helper_Skills_Routing_Note.md` so the new skill and parity surfaces are visible in the governed skill inventory.
+- Refreshed the active todo and continuity surfaces so they now point at full repo-source parity rebaseline and later hard-coded-project-variable auditing.
+
+Why
+- Version checks alone are not strong enough to confirm that installed skills and governed repo source still match.
+- The operator wants a repeatable parity process that is less manual, less chat-dependent, and more resilient to project growth.
+- The operator also wants skills to stop assuming brittle hard-coded project variables when current project state can be discovered instead.
+
+Validation notes
+- The new `dcoir-parity-verifier` scripts passed bounded local validation for manifest generation, summary rendering, and tree or zip verification.
+- The packaged `dcoir-parity-verifier` skill passed local packaging validation.
+- The first manifest baseline is explicitly marked as a mixed bootstrap seeded from the current installed skill tree plus the new skill and still requires a full repo-source rebaseline before it should be treated as a fully repo-verified canonical baseline.
+
+[PRIOR]
 Version: 3.9.30
 Current state id: 2026-04-04-validation-contract-v1
 Change class: validation-regime branch activation and session-memory pre-push flush contract
-
-What changed
-- Added `LOG-15_DCOIR_Validation_Regime_And_Session_Memory_Pre_Push_Contract_Decision_2026-04-04.txt` as the governed decision record for the next validation-regime branch and the shared pre-push flush contract.
-- Activated `dcoir-validation-orchestrator` as the owner for the next CI/CD-style end-to-end and edge-case validation regime built from the inventory and gap-analysis scope map.
-- Updated `dcoir-validation-orchestrator` so it can emit validation plans for end-to-end workflows, edge cases, skill deep dives, documentation alignment, packager validation, and the session-memory pre-push contract.
-- Updated `dcoir-session-tracker` so it now supports explicit staged-governed-update tracking, pre-push flush output, and post-push cleanup tracking instead of relying only on informal chat carry-forward.
-- Updated the other buffer-capable or GitHub-memory-backed skills so their flush-check guidance now requires pre-push staging and same-branch governed updates when a suitable grouped push is already happening.
-- Updated `dcoir-decision-policy` so multi-skill delivery now prefers one outer zip with top-level per-skill zips named after the live skill names when more than one updated skill package is being handed to the operator.
-- Refreshed the active todo and continuity surfaces so they now point at the validation-regime and session-memory-contract branch while keeping the widening-hold countdown at 2 real resume cycles.
-
-Why
-- The inventory pass and recent grouped pushes showed that validation planning and session-memory staging were lagging behind the now-broader governed workflow.
-- The operator explicitly wants the next governed push to lose only work since the last push, not buffered tracker or helper-memory state that should have been included in the same grouped update.
-- The operator also clarified a more specific multi-skill delivery preference for one outer zip containing top-level per-skill zips named after the live skills.
-
-Validation notes
-- Bounded source validation confirms the repaired repo-packager now follows the current repo-style bundle model and current update-mode bootstrap roots.
-- Local regression passed the updated `dcoir-validation-orchestrator` plan emission path and the updated `dcoir-session-tracker` staged-governed-update path.
-- Local skill packaging validation passed for the changed skills in this batch.
-- Wider use of the validation regime and the pre-push flush contract remains the next governed branch.
-
-[PRIOR]
-Version: 3.9.29
-Current state id: 2026-04-04-inventory-pass1-v1
-Change class: inventory and documentation alignment pass one plus repo-packager current-project repair

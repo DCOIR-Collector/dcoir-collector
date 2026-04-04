@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.30
+DCOIR Version Manifest 3.9.31
 
-Current state id: 2026-04-04-validation-contract-v1
+Current state id: 2026-04-04-skill-parity-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -22,6 +22,7 @@ Current control plane
 - Coordinated stateful candidate trio campaign decision: project_sources/LOG-13_DCOIR_Coordinated_Stateful_Candidate_Trio_Campaign_Decision_2026-04-04.txt
 - Inventory and documentation alignment plus repo-packager audit decision: project_sources/LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Pass1_2026-04-04.txt
 - Validation regime and session-memory pre-push contract decision: project_sources/LOG-15_DCOIR_Validation_Regime_And_Session_Memory_Pre_Push_Contract_Decision_2026-04-04.txt
+- Skill parity verifier and canonical manifest workflow decision: project_sources/LOG-16_DCOIR_Skill_Parity_Verifier_And_Canonical_Manifest_Workflow_Decision_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -29,6 +30,7 @@ Current repo guide
 - Knowledge root guide: knowledge/README.md
 - Project-source root guide: project_sources/README.md
 - Helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
+- Skill parity summary: dcoir_skills/skill_parity_summary.md
 
 Current task-memory bank
 - Root: knowledge/task_memory
@@ -45,12 +47,15 @@ Current governed helper-skill source
 - `dcoir-session-resume` consumes that same drift gate directly before trusting supporting continuity surfaces.
 - `dcoir-plan-tracker` is the current verbose resume-state and flush/manicure reference candidate.
 - `dcoir-decision-policy`, `dcoir-memory-preflight`, and `dcoir-skill-regression-auditor` form the coordinated stateful-candidate trio campaign.
-- `dcoir-repo-packager` has been repaired to package the current repo-style layout and current bootstrap-safe roots.
-- `dcoir-validation-orchestrator` now owns the next validation-regime branch and the session-memory pre-push contract validation scenarios.
-- `dcoir-session-tracker` and the other buffer-capable or GitHub-memory-backed skills are now on a shared pre-push flush and staged-governed-update contract branch.
+- `dcoir-repo-packager` is aligned to the current repo-style layout and current bootstrap-safe roots.
+- `dcoir-validation-orchestrator` owns the broader validation-regime branch and the session-memory pre-push-contract validation scenarios.
+- `dcoir-parity-verifier` now owns canonical skill parity manifest refresh, installed-skill versus governed-source verification, summary generation, and later rebaseline work.
+- `dcoir_skills/skill_parity_manifest.json` is the canonical machine-readable parity surface.
+- `dcoir_skills/skill_parity_summary.md` is the generated human-readable parity companion surface.
 
 Current next work item
-- Build and use the CI/CD-style end-to-end and edge-case validation regime from the inventory and gap-analysis scope map.
+- Use `dcoir-parity-verifier` to perform the first full repo-source rebaseline of the skill parity manifest and compare installed skill packages against governed source from that canonical surface.
+- Keep the CI/CD-style validation regime branch active and use the parity output to anchor the broader helper-skill deep-dive and code-hygiene campaign.
+- Audit skills for hard-coded project variables and replace brittle assumptions with current-project discovery where practical.
 - Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other buffer-capable skills before any governed push.
 - Keep the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
-- Begin the broader skill deep-dive and code-hygiene campaign from the explicit inventory and validation structure rather than from chat memory.
