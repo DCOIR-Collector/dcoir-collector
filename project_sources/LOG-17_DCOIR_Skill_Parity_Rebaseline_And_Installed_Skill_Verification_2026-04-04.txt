@@ -1,0 +1,33 @@
+DCOIR Skill Parity Rebaseline And Installed Skill Verification - 2026-04-04
+
+Current state id: 2026-04-04-skill-parity-rebaseline-v1
+
+Purpose
+- Record the first executed canonical skill-parity rebaseline after the introduction of dcoir-parity-verifier.
+- Record the current installed-skill and freshly packaged install-zip verification outcome.
+
+What was done
+- Ran dcoir-parity-verifier against the current installed DCOIR skill trees available in the execution environment.
+- Built a refreshed dcoir_skills/skill_parity_manifest.json from the current installed skill trees.
+- Rendered the companion dcoir_skills/skill_parity_summary.md.
+- Built fresh per-skill install zips and compared them against the new manifest.
+- Verified that all current DCOIR installed skill trees and the freshly packaged install zips matched the new parity baseline.
+
+Baseline note
+- This executed rebaseline uses baseline_origin: installed_skill_tree.
+- It should not be mislabeled as a strict checked-out repo-source baseline.
+- Earlier live-governed critical-path parity checks had already shown the currently changed live skill branches matching the repo, but this specific executable rebaseline was performed from the installed skill trees exposed in the environment.
+
+Outcome
+- Overall verification status: match.
+- Current DCOIR installed skills are aligned with the parity baseline generated in this run.
+- The parity manifest and summary are now materially stronger than the earlier bootstrap surfaces.
+
+Why it matters
+- The project now has a repeatable, hash-based, machine-readable parity surface and a generated human-readable companion surface.
+- Installed-skill verification no longer depends only on loose version matching or ad hoc file inspection.
+- The parity surface can now anchor later deep-dive, code-hygiene, and hard-coded-project-variable audits.
+
+Next action
+- Return to the CI/CD-style validation-regime and helper-skill deep-dive branch.
+- Use the parity surface as an input to the broader hard-coded-project-variable audit and code-hygiene campaign.

@@ -26,6 +26,7 @@ Detailed todo structure
 
 Queued next priorities
 - Build and use the CI/CD-style validation regime from the inventory and gap-analysis scope map.
+- Audit current helper skills for hard-coded project variables and replace brittle assumptions with current-project discovery where practical.
 - Review session-memory-enabled and buffer-capable skills for reliable pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior.
 - Use parity results to perform the broader helper-skill deep dive and confirm current skills still execute successfully and remain aligned with project goals and governance.
 - Audit skills for hard-coded project variables and replace brittle assumptions with current-project discovery where practical.

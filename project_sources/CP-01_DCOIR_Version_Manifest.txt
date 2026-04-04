@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.31
+DCOIR Version Manifest 3.9.32
 
-Current state id: 2026-04-04-skill-parity-v1
+Current state id: 2026-04-04-skill-parity-rebaseline-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -23,6 +23,7 @@ Current control plane
 - Inventory and documentation alignment plus repo-packager audit decision: project_sources/LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Pass1_2026-04-04.txt
 - Validation regime and session-memory pre-push contract decision: project_sources/LOG-15_DCOIR_Validation_Regime_And_Session_Memory_Pre_Push_Contract_Decision_2026-04-04.txt
 - Skill parity verifier and canonical manifest workflow decision: project_sources/LOG-16_DCOIR_Skill_Parity_Verifier_And_Canonical_Manifest_Workflow_Decision_2026-04-04.txt
+- Skill parity rebaseline and installed skill verification: project_sources/LOG-17_DCOIR_Skill_Parity_Rebaseline_And_Installed_Skill_Verification_2026-04-04.txt
 
 Current repo guide
 - Root README: README.md
@@ -54,8 +55,8 @@ Current governed helper-skill source
 - `dcoir_skills/skill_parity_summary.md` is the generated human-readable parity companion surface.
 
 Current next work item
-- Use `dcoir-parity-verifier` to perform the first full repo-source rebaseline of the skill parity manifest and compare installed skill packages against governed source from that canonical surface.
-- Keep the CI/CD-style validation regime branch active and use the parity output to anchor the broader helper-skill deep-dive and code-hygiene campaign.
+- Keep the CI/CD-style validation regime branch active and use the refreshed parity output to anchor the broader helper-skill deep-dive and code-hygiene campaign.
 - Audit skills for hard-coded project variables and replace brittle assumptions with current-project discovery where practical.
 - Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker` and the other buffer-capable skills before any governed push.
 - Keep the stamped active-surface widening hold countdown at 2 remaining real resume cycles before any widening review.
+- Use dcoir-parity-verifier again whenever a future grouped skill update changes the governed skill source or installed packages.

@@ -1,15 +1,18 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-04T16:28:34Z
-- baseline_origin: mixed_bootstrap_pending_repo_rebaseline
+- overall_verification_status: `match`
+- note: this rebaseline was executed from the current installed DCOIR skill trees available in the environment and verified against freshly packaged install zips; critical-path repo parity had already been checked on the live governed branch before this batch.
+
+- generated_at_utc: 2026-04-04T16:43:01Z
+- baseline_origin: installed_skill_tree
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
 ## dcoir-attention-signaler
 
 - source_tree_hash: `e191a11fc6594e2b2803e4a9126c084fc5aef7fdb5e05ca1088712f3c23bfca6`
 - release_zip_name: `dcoir-attention-signaler.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `cdf1792c5bc35804d11540bf9f00dddffc7eb08a71d8c2fe3b720fff32912105`
+- status: `verified-installed-tree`
 - file_count: `6`
 
 - `SKILL.md` — `70085d4b34a172057509663b301e47ae23fecc10cb536a628e6b274417fb73e8`
@@ -23,8 +26,8 @@
 
 - source_tree_hash: `14f8b36c51445ef69e44474d03e9f9485defa3279ca8112083cf506605e8acce`
 - release_zip_name: `dcoir-change-impact-analyzer.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `065aca8145b146b34580f3bc47ccec4e0fda3671a0bad80f02228fdebe9861df`
+- status: `verified-installed-tree`
 - file_count: `6`
 
 - `SKILL.md` — `7d661426fcbf108d57fdcdfbdd3ca0dffc1e058447cc4ef6f19cd859ab1c669c`
@@ -38,8 +41,8 @@
 
 - source_tree_hash: `e26b7e0156e9f8f17940a8bde054e763f4c843ce7e726b833f37be6c88477bdd`
 - release_zip_name: `dcoir-collector-qa.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `6998d8f442198ee92cdcbae09e06b49fb2a2dd1bf5d5b77f7d586aa9e7f0595d`
+- status: `verified-installed-tree`
 - file_count: `15`
 
 - `SKILL.md` — `19fa37dcd70ada88347ceb284cd874e4f37e8d2ae8254db678dba30df170254c`
@@ -62,8 +65,8 @@
 
 - source_tree_hash: `fe2eeb196737885ee94587d61c1ba21e5f99e3a449187b7534c4097cdde2d2e2`
 - release_zip_name: `dcoir-decision-policy.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `d836a0ee6d1f3cfaa6aa7101bc6d00ec731c77ffdbf2a568cc1fdfbffa27ab13`
+- status: `verified-installed-tree`
 - file_count: `13`
 
 - `SKILL.md` — `345d7674b8eaa72ef5aa8c77c302c9eb91dbe871d154bc7da8fac6f3208446ed`
@@ -84,8 +87,8 @@
 
 - source_tree_hash: `a8551c3e2afd3444df2a06eca6c0776dfd7b09abeca2b6c0e94b4899a7b23e22`
 - release_zip_name: `dcoir-knowledge-doc-maintainer.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `16389596155c238dc22013e7dd2ceaaf79a64b5980883437d9ea4870f26ca54e`
+- status: `verified-installed-tree`
 - file_count: `8`
 
 - `SKILL.md` — `67cf8c6656fd8e7b72222a8f61a694f59b77127aea879ee0d91f7542c26a1021`
@@ -101,8 +104,8 @@
 
 - source_tree_hash: `d750b2be9152076a8d273c76a164d8ba2818e7b133af984e9eef2d2e45e0f6a8`
 - release_zip_name: `dcoir-large-file-intake-manager.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `7157fc6305ff30d84bc2b405151d9848640d56243b7165b9afd0d7f2dcf7794f`
+- status: `verified-installed-tree`
 - file_count: `5`
 
 - `SKILL.md` — `a074dc1dc41b39dd71d6bba295655cac3af5de972ea05d142767294949b353b2`
@@ -115,8 +118,8 @@
 
 - source_tree_hash: `9b80b285a1d3d5b10d9bd73996357d37cc0585c05c6166fbe95f0682fcf45a36`
 - release_zip_name: `dcoir-live-test-remediation-planner.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `62e0c9baa2164cbd61bd09e8600f4959cdfbf101eaca73ad9c751db22a4f1660`
+- status: `verified-installed-tree`
 - file_count: `8`
 
 - `SKILL.md` — `c0f4b371fb52146afe44b2fcbad6b958afa2d8981ab6dbfbe7411f27a8056f7f`
@@ -132,8 +135,8 @@
 
 - source_tree_hash: `200f46440f61fb78b891d30651569163b056fe9d828c4a6c56959d64e9bf003d`
 - release_zip_name: `dcoir-memory-preflight.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `e63f7db14cf2b07fbb17e6ddad22f58ea9302995132a6d7f49b459b346600846`
+- status: `verified-installed-tree`
 - file_count: `6`
 
 - `SKILL.md` — `c2270ad8451c274ac2588423eb6e9c9dadf9e6f00df16d77ef01882ac21ba724`
@@ -147,8 +150,8 @@
 
 - source_tree_hash: `3a27f1370c293c52a5ac5b34318645e52978680118a7c89887d5d2ec15a30c5e`
 - release_zip_name: `dcoir-operator-workflow-hardener.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `200931324b66f6557e3844c1de7720637ca4381250b507d5d0d82ae58aa315e2`
+- status: `verified-installed-tree`
 - file_count: `6`
 
 - `SKILL.md` — `95c02ed99d938ca9f71e9e02f856282ce4d0638d108214d65a265ecd209a7873`
@@ -162,8 +165,8 @@
 
 - source_tree_hash: `efff332dfbf96b46e99fa0e1b5bc2f2b14f37001ef14767ed64daede7556a0b1`
 - release_zip_name: `dcoir-parity-verifier.zip`
-- release_zip_hash: `ecd0f1e2169733590b03011de442006647f6016f2a87265c42195f31d892fe5a`
-- status: `bootstrap`
+- release_zip_hash: `47594e6cebe2c6ca5ccde091e02bc4ecb26d88f9af37afe42d21d84d6e87ef92`
+- status: `verified-installed-tree`
 - file_count: `9`
 
 - `SKILL.md` — `9b2fff6d1c059ca7682f679f948bcf600c4e53ca5ebf70de3bb7ac551afe22fc`
@@ -180,8 +183,8 @@
 
 - source_tree_hash: `5a95e206ab31622f49ffa5a099402ad842dff25400cffbb3a2da6b6055aa15ec`
 - release_zip_name: `dcoir-plan-tracker.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `6539041a155facc2e9f30bf63a3ad8127979503213e8ad167a4309efe547f6da`
+- status: `verified-installed-tree`
 - file_count: `12`
 
 - `SKILL.md` — `2edd0424b918913a22eaec13e9cb44b567f1485b1f5071f9fb72d25ebad97842`
@@ -201,8 +204,8 @@
 
 - source_tree_hash: `2b642cafd15c48320ba8cb7d76dbaf802b06286050d1237c111ccd8e587553bb`
 - release_zip_name: `dcoir-promotion-readiness-reviewer.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `7e7028590a1ef33777d9055c41e7e7f389bb5045f189bc9ea8dd289f02fb185f`
+- status: `verified-installed-tree`
 - file_count: `5`
 
 - `SKILL.md` — `8e00e203ca327bab4edc4b5968b3d38f4e8c2fc1a8c0f31064c7a021ec112669`
@@ -215,8 +218,8 @@
 
 - source_tree_hash: `536a87d647a725bdc8eba27d87d9c92679fcc32bc2d87019f5bf30f08beccd95`
 - release_zip_name: `dcoir-prompt-pack-assembler.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `e0ace454cd4e67a4a888a334cb372b6203637ffca845ee5089edf993e6a7b8cd`
+- status: `verified-installed-tree`
 - file_count: `6`
 
 - `SKILL.md` — `a4dd7606ae8e41fd1d83bee7319f92a594a48ddb446e96857b17883a942f86d8`
@@ -230,8 +233,8 @@
 
 - source_tree_hash: `8b103e12881b7c855fd39efa3aea59d9b847085fc34b335bf84e4ec0ca975287`
 - release_zip_name: `dcoir-readme-maintainer.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `de5b1ed7f670fed4ab9e4076db19adb1134500b866d3359a239092c2908fca99`
+- status: `verified-installed-tree`
 - file_count: `6`
 
 - `SKILL.md` — `9e60b2261da48b26d902ea958832a80f4db3336c2bc47fc4fbe979772873536a`
@@ -245,8 +248,8 @@
 
 - source_tree_hash: `7b3a22e4e1d38d6aa00757326d23e530c505b29a1ce071329c0cd0d674466c28`
 - release_zip_name: `dcoir-release-scope-builder.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `8012bd9a63ea0e4eb55e3b6548b725545725b13fbc661f815df2ae5232e95a68`
+- status: `verified-installed-tree`
 - file_count: `5`
 
 - `SKILL.md` — `ea7db93091b6f3cc8ceb125a7d1cab155772dd7add34bcbc18b40a1d7f334d40`
@@ -259,8 +262,8 @@
 
 - source_tree_hash: `a28eccd4faf0317f356f336fa0824f1ce48ffa9d0092bdee512934013a96c467`
 - release_zip_name: `dcoir-repo-packager.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `1e3cf9207e83b354250a61c67d0370852e999c506b3c8e909f20ce75018f5563`
+- status: `verified-installed-tree`
 - file_count: `6`
 
 - `SKILL.md` — `6d97b2394c15a6866e03bb1bd49b764716de67defe1e2a4e45e62d19627f907f`
@@ -274,8 +277,8 @@
 
 - source_tree_hash: `641ae1c05e726be18e1804400a20e6fd8f36e4bdcaa2c8a503f8a19a1112fd30`
 - release_zip_name: `dcoir-session-resume.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `5ddb4f6febcefe2dd5cb22e170c2ea39c4d672aa5ac12b349802a47fb9d4ffff`
+- status: `verified-installed-tree`
 - file_count: `4`
 
 - `SKILL.md` — `0cbe046b6e61ff3f70417fefe5173e2c36efbe3a2ee70d96523b01d50f5f4e84`
@@ -287,8 +290,8 @@
 
 - source_tree_hash: `34ad4488a66ea8ff61d701ec68f9c19288e174fea7506907dd9dc0ddf8b8c547`
 - release_zip_name: `dcoir-session-tracker.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `eacc1503d06b650c4ee71ad1ab6594c6c05f79b893719a08fbdce6c5561f6ab1`
+- status: `verified-installed-tree`
 - file_count: `13`
 
 - `SKILL.md` — `82d9d36703458818692e5fdef6068b1b1de3602780951f3a5158a84d3bbefc1a`
@@ -309,8 +312,8 @@
 
 - source_tree_hash: `e6091ee9ee3b2a52fd83f5dc036af86fb1e303a83c3eba8a4f31fb5cfb77fc9c`
 - release_zip_name: `dcoir-skill-regression-auditor.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `429f4cbd2f6541d5cf8f233d85d677bbc98689b01b8153d0389762daf1ca6afb`
+- status: `verified-installed-tree`
 - file_count: `9`
 
 - `SKILL.md` — `45158f9e7df8e118eb90253397f911536ee542a68b2024f04a1e967e5369c3ab`
@@ -327,8 +330,8 @@
 
 - source_tree_hash: `dd7b8cb69d342b2a34507ad38f849d923c24aad301c6de1e94ca042623f6f367`
 - release_zip_name: `dcoir-source-authority-auditor.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `5af1023214ed7dac8e423fc9c4683072129dda838498c4d4bf1d181ec3597cc1`
+- status: `verified-installed-tree`
 - file_count: `5`
 
 - `SKILL.md` — `34d3912fabc861d8725a1d6dc7db9ae6351528ef53d037cdbf684a50347f8521`
@@ -341,8 +344,8 @@
 
 - source_tree_hash: `6d0beb75950aa16ca95c7b5e5af94b613c1e77a7fa88dafcfda4760b3d12a183`
 - release_zip_name: `dcoir-structural-rename-coordinator.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `1f158869d4632a15efc72d894a760fdf3c33e67883655d47f6b6b89493caee61`
+- status: `verified-installed-tree`
 - file_count: `5`
 
 - `SKILL.md` — `2c1bff139331b94648dbacb48466ffda665f716898b45ed436d44c0b1053459c`
@@ -355,8 +358,8 @@
 
 - source_tree_hash: `2a4a7038765fb6ef3c5460244fbb2d02080112e587b23a0fde6f3301ec1a099d`
 - release_zip_name: `dcoir-triage-to-collector-escalation-designer.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `77c7a323d8c9d83221b78f585500945fcbecdce6d0ce14fb99cdb14dc91d5308`
+- status: `verified-installed-tree`
 - file_count: `5`
 
 - `SKILL.md` — `f07038c84e0d95d2fc9237ca4507b337938d522abc7d1628d8666ed83071ac31`
@@ -369,8 +372,8 @@
 
 - source_tree_hash: `53ff49e07e004812e9687b182ba8a1f1f9e9488facf4d718763133b64bff7837`
 - release_zip_name: `dcoir-validation-orchestrator.zip`
-- release_zip_hash: `not-recorded`
-- status: `bootstrap`
+- release_zip_hash: `0000d5b9f5ab5d1fe3cc12b5fa7655673d80a48bed04d8e2135db9e8db846f92`
+- status: `verified-installed-tree`
 - file_count: `7`
 
 - `SKILL.md` — `41abd555115802995eab542402b41ad53e4e4d6c0e43707c3e3ae4b02f94b79a`

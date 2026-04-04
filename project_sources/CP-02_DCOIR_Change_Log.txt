@@ -1,8 +1,8 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 3.9.31
-Current state id: 2026-04-04-skill-parity-v1
+Version: 3.9.32
+Current state id: 2026-04-04-skill-parity-rebaseline-v1
 Change class: dedicated skill parity verifier, canonical manifest surfaces, and bootstrap parity baseline
 
 What changed
@@ -14,14 +14,14 @@ What changed
 - Refreshed the active todo and continuity surfaces so they now point at full repo-source parity rebaseline and later hard-coded-project-variable auditing.
 
 Why
-- Version checks alone are not strong enough to confirm that installed skills and governed repo source still match.
-- The operator wants a repeatable parity process that is less manual, less chat-dependent, and more resilient to project growth.
-- The operator also wants skills to stop assuming brittle hard-coded project variables when current project state can be discovered instead.
+- The project needed an executed parity baseline and a repeatable installed-skill verification result after introducing the parity-verifier workflow.
+- The earlier parity surfaces were intentionally bootstrap-level and needed a stronger rebaseline before they could anchor later deep-dive and hard-coded-variable audits.
 
 Validation notes
-- The new `dcoir-parity-verifier` scripts passed bounded local validation for manifest generation, summary rendering, and tree or zip verification.
-- The packaged `dcoir-parity-verifier` skill passed local packaging validation.
-- The first manifest baseline is explicitly marked as a mixed bootstrap seeded from the current installed skill tree plus the new skill and still requires a full repo-source rebaseline before it should be treated as a fully repo-verified canonical baseline.
+- Executed dcoir-parity-verifier against the current installed DCOIR skill trees available in the environment.
+- Built a refreshed parity manifest and rendered summary successfully.
+- Verified all current DCOIR installed skill trees and freshly packaged install zips against that baseline with overall status match.
+- This executed rebaseline is explicitly labeled baseline_origin: installed_skill_tree and should not be misdescribed as a strict checked-out repo-source baseline.
 
 [PRIOR]
 Version: 3.9.30
