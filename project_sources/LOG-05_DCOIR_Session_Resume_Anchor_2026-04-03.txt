@@ -1,6 +1,6 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-04-stateful-local-json-startup-preflight-v1
+Current state id: 2026-04-04-session-start-bootstrap-and-prompt-review-v1
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.

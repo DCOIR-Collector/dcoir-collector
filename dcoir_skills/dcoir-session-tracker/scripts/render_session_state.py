@@ -36,8 +36,7 @@ def fmt_item(item: dict[str, Any]) -> str:
     related = item.get('related', [])
     if related:
         lines.append(f"  - related: {', '.join(str(x) for x in related)}")
-    return '
-'.join(lines)
+    return '\n'.join(lines)
 
 
 def section_lines(items: list[dict[str, Any]]) -> list[str]:
@@ -107,8 +106,7 @@ def build_markdown(state: dict[str, Any]) -> str:
     lines.extend(['', '## Provenance notes'])
     lines.extend([f'- {note}' for note in state.get('provenance_notes', [])] or ['- none'])
     lines.append('')
-    return '
-'.join(lines)
+    return '\n'.join(lines)
 
 
 def main() -> int:

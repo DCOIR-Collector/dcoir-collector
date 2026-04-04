@@ -1,6 +1,6 @@
 DCOIR Active Now
 
-Current state id: 2026-04-04-stateful-local-json-startup-preflight-v1
+Current state id: 2026-04-04-session-start-bootstrap-and-prompt-review-v1
 
 1. Live-validate the updated `dcoir-session-tracker` and `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, and downstream pre-push behavior during the next suitable governed push or local plan-tracker branch.
    Why it matters:

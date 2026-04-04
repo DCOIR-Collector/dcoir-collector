@@ -2,43 +2,33 @@ DCOIR Change Log
 
 [CURRENT]
 Version: 3.9.39
-Current state id: 2026-04-04-stateful-local-json-startup-preflight-v1
-Change class: stateful local-json startup preflight rollout and GitHub Desktop commit-summary preference capture
+Current state id: 2026-04-04-session-start-bootstrap-and-prompt-review-v1
+Change class: stateful local-json startup preflight rollout, first-turn bootstrap enforcement, prompt/bootstrap review, and README/parity refresh
 
 What changed
 - Added `project_sources/LOG-25_DCOIR_Stateful_Local_JSON_Startup_Preflight_Rollout_2026-04-04.txt` as the governed decision record for the bounded rollout of beginning-of-session local-JSON presence preflights across the confirmed in-scope DCOIR skills.
+- Added `project_sources/LOG-26_DCOIR_Session_Start_Bootstrap_And_Project_Prompt_Optimization_Review_2026-04-04.txt` as the governed decision record for making `dcoir-session-resume` plus `dcoir-memory-preflight` the mandatory first substantive-turn bootstrap pair for every new DCOIR session and for the bounded review of the project prompt plus the attached `CP-00` bootstrap pointer. 
+- Added `project_sources/LOG-27_DCOIR_Parity_Verification_And_Readme_Refresh_2026-04-04.txt` as the governed record for the bounded parity review and README refresh pass.
 - Updated `project_sources/LOG-24_DCOIR_Delivery_Bundle_Structure_And_GitHub_Desktop_Manual_Update_Preference_2026-04-04.txt` so it now also records the operator preference that GitHub Desktop manual repo-update deliveries should include a suggested commit `Summary`.
 - Updated `dcoir-session-tracker` instructions and references so `ensure-state` is explicitly the required beginning-of-session preflight for each new session that uses the skill.
 - Added `dcoir-plan-tracker/scripts/ensure_plan_state.py` and updated `dcoir-plan-tracker` instructions, references, and local scripts so local plan folders now prove `plan_state.json` presence early and emit explicit missing-state warnings instead of silently proceeding when an expected local JSON file is absent.
-- Refreshed the active continuity and todo surfaces so the next immediate live branch validates the new startup local-JSON preflight posture for both affected skills.
+- Updated `dcoir-session-resume` so its description and instructions now treat the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session as a mandatory default bootstrap use case.
+- Updated `dcoir-memory-preflight` so it now has an explicit `session_start_bootstrap` mode that follows `dcoir-session-resume` on the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session.
+- Refreshed `README.md` and `dcoir_skills/README.md` so the visible repo guidance now matches the first-turn bootstrap pair, the bounded local-JSON startup-preflight scope, and the delivery-bundle plus commit-summary preference.
 
 Why
+- The operator wants every new DCOIR session to start from the current governed control plane and canonical memory posture even when the first user message does not explicitly ask to resume or preflight.
 - The operator wants every DCOIR skill that actually uses a real local JSON working-state file to initialize or prove that local file at the beginning of the session instead of leaving startup local-state proof implicit.
-- The operator also wants future GitHub Desktop manual repo-update deliveries to include a suggested commit `Summary` without re-stating that preference each time.
-- The rollout needed to stay bounded to the skills that really use local JSON working-state files instead of touching unrelated stateful skills.
+- The project prompt and the Project-space `CP-00` bootstrap pointer were already strong, but the highest-value optimization was to make the session-start bootstrap pair explicit rather than leaving it as an inferred habit.
+- The README and parity surfaces needed a bounded refresh so the visible repo guidance and skill-source validation posture stay aligned to the new working line.
 
 Validation notes
 - Local bounded regression passed the new `dcoir-plan-tracker` startup local-state preflight path for existing local plan-state proof, brand-new local plan initialization, and explicit missing-state warnings when an expected local `plan_state.json` file was absent.
-- Updated `dcoir-session-tracker` and `dcoir-plan-tracker` skill packages passed local packaging validation.
-- The next immediate branch is a live workflow validation of the startup local-JSON preflight behavior on a real governed push or local plan-tracker branch.
+- Updated `dcoir-session-tracker`, `dcoir-plan-tracker`, `dcoir-session-resume`, and `dcoir-memory-preflight` skill packages passed local packaging validation.
+- Reviewed the current governed parity surface and README surfaces, refreshed the affected README files, and prepared the next governed parity refresh to land after this source update set is applied.
+- The next immediate branch is a live workflow validation of the session-start bootstrap pair and the bounded local-JSON startup-preflight behavior on a real governed push or local plan-tracker branch.
 
 [PRIOR]
-Version: 3.9.37
-Current state id: 2026-04-04-session-tracker-deep-dive-v1
-Change class: session-tracker deep-dive pass 1 and derived pre-push review / todo-sync support
-
-What changed
-- Added `project_sources/LOG-22_DCOIR_Session_Tracker_Deep_Dive_Pass1_2026-04-04.txt` as the governed decision record for the first dedicated `dcoir-session-tracker` deep-dive pass.
-- Updated `dcoir-session-tracker` so it now derives a pre-push review bundle from current local state, including staged governed updates, staged todo actions, and post-push cleanup, instead of relying only on manually staged entries.
-- Updated `dcoir-session-tracker` so its operator-facing contract now requires an immediate explicit capture confirmation for materially important items when a real local session-state file exists.
-- Updated the tracker export and local-state schema so staged todo actions and the derived pre-push review output are visible in exported or inspected state.
-- Refreshed the active continuity and todo surfaces so they now point at live validation of the updated session-tracker pre-push review behavior as the next immediate deep-dive step.
-
-Why
-- The operator repeatedly observed that tracker state could be preserved locally without producing a strong enough operator-visible confirmation or a derived staged-governed-update / todo-sync bundle before a real push.
-- The workflow docs already expected that behavior, but the implementation was still too manual.
-
-Validation notes
-- Local bounded regression passed the updated `dcoir-session-tracker` state-store path for item capture, derived pre-push review generation, staged todo-action creation, export rendering, and post-push staging counts.
-- Updated skill package passed local packaging validation.
-- The next immediate branch is a live workflow validation of the updated tracker behavior on a real grouped governed push.
+Version: 3.9.38
+Current state id: 2026-04-04-session-tracker-presence-guard-and-delivery-preference-v1
+Change class: session-tracker local-state presence guard, explicit re-init signaling, and delivery-bundle preference capture

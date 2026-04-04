@@ -1,12 +1,20 @@
 ---
 name: dcoir-session-resume
-description: resume the africom_soc_ir / dcoir workspace from the current authoritative control plane. use when the user asks where are we, resume, resume where we left off, what is current, what changed, or get me back on track in the africom_soc_ir or dcoir workspace, including a custom gpt that uses a github-primary bootstrap and actions. before trusting supporting continuity surfaces, consume the shared drift gate through dcoir-source-authority-auditor so stale or contradictory current-state signals do not produce a normal resume summary.
+description: resume the africom_soc_ir / dcoir workspace from the current authoritative control plane. use at the first substantive turn of every new africom_soc_ir or dcoir session as the mandatory bootstrap resume step, even when the user did not explicitly ask to resume, and also use when the user asks where are we, resume, resume where we left off, what is current, what changed, or get me back on track. before trusting supporting continuity surfaces, consume the shared drift gate through dcoir-source-authority-auditor so stale or contradictory current-state signals do not produce a normal resume summary.
 ---
 
 Resume the AFRICOM_SOC_IR / DCOIR workspace from the current authoritative control plane.
 
 ## Workspace gate
 Proceed only when the current chat, project, or custom GPT is operating as the AFRICOM_SOC_IR / DCOIR workspace.
+
+## Default first-turn bootstrap use
+On the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session, invoke this skill before other substantive project work even if the user did not explicitly ask to resume.
+
+Use this first-turn bootstrap path to:
+- re-anchor to the current control plane
+- consume the explicit drift gate before trusting supporting continuity surfaces
+- establish the current governed state that later skills and workflow choices should inherit
 
 ## Strong trigger phrases
 - `where are we`
@@ -24,18 +32,20 @@ Use the first available bootstrap anchor in this order:
 4. If no governed discovery contract is available, fall back to repository `malwaredevil/dcoir-collector`.
 
 ## Core workflow
-1. Read `dcoir_skills/project_discovery_contract.json` when it is present and use it to resolve the current manifest path, change-log path, supporting continuity surfaces, and repository name.
-2. Read the current manifest file first. Expected current path remains `project_sources/CP-01_DCOIR_Version_Manifest.txt` when no better contract-driven path is available.
-3. Read the current change log second. Expected current path remains `project_sources/CP-02_DCOIR_Change_Log.txt` when no better contract-driven path is available.
-4. Invoke `dcoir-source-authority-auditor` as the explicit drift gate before trusting the supporting continuity surfaces resolved from the current discovery contract or the current default active-surface set.
-4. If the drift gate returns `hard_stop_conflict`, stop and report the exact conflict plainly instead of producing a normal resume summary.
-5. If the drift gate returns `proceed_bounded`, continue only with bounded claims and say exactly which active surfaces were unavailable.
-6. If the drift gate returns `clear_to_proceed`, continue into the normal resume summary.
-7. Use only files or patterns marked current in the manifest as authoritative governed GitHub readable sources.
-8. Use the current todo structure and current session handoff brief only as supporting context after the drift gate clears or bounds the path.
-9. If the manifest, change log, or workspace state conflict, stop and report the conflict plainly.
+1. Determine whether the current use is `session_start_bootstrap` or an explicit user resume request.
+2. Read `dcoir_skills/project_discovery_contract.json` when it is present and use it to resolve the current manifest path, change-log path, supporting continuity surfaces, and repository name.
+3. Read the current manifest file first. Expected current path remains `project_sources/CP-01_DCOIR_Version_Manifest.txt` when no better contract-driven path is available.
+4. Read the current change log second. Expected current path remains `project_sources/CP-02_DCOIR_Change_Log.txt` when no better contract-driven path is available.
+5. Invoke `dcoir-source-authority-auditor` as the explicit drift gate before trusting the supporting continuity surfaces resolved from the current discovery contract or the current default active-surface set.
+6. If the drift gate returns `hard_stop_conflict`, stop and report the exact conflict plainly instead of producing a normal resume summary.
+7. If the drift gate returns `proceed_bounded`, continue only with bounded claims and say exactly which active surfaces were unavailable.
+8. If the drift gate returns `clear_to_proceed`, continue into the normal resume summary.
+9. Use only files or patterns marked current in the manifest as authoritative governed GitHub readable sources.
+10. Use the current todo structure and current session handoff brief only as supporting context after the drift gate clears or bounds the path.
+11. If the manifest, change log, or workspace state conflict, stop and report the conflict plainly.
 
 ## Required rules
+- Treat the first substantive session turn as a mandatory resume bootstrap point for this workspace unless the request is clearly outside DCOIR scope.
 - Treat the current AFRICOM_SOC_IR / DCOIR workspace as the operational workspace, not the historical archive.
 - Treat the first available bootstrap anchor plus the current manifest plus the current change log as the default control plane.
 - Treat the repository named in `dcoir_skills/project_discovery_contract.json` as the sole working source for readable governed text when that contract is present.

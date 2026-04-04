@@ -36,6 +36,12 @@ Current governed helper-skill source set
 - `dcoir-triage-to-collector-escalation-designer`
 - `dcoir-validation-orchestrator`
 
+Current operating notes
+- On the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session, use `dcoir-session-resume` first and `dcoir-memory-preflight` second before other substantive project work.
+- The confirmed current DCOIR skills with real local JSON working-state files are `dcoir-session-tracker` and `dcoir-plan-tracker`.
+- When one of those local-JSON skills is used in a new session, run its local JSON startup preflight first instead of assuming the file-backed local state is already present.
+- Use only the affected skill zips or affected repo-relative files for manual deliveries unless the operator explicitly asks for a broader bundle.
+
 Companion guidance
 - Use `knowledge/DCOIR_Helper_Skills_Routing_Note.md` for the richer current routing matrix and boundaries.
 - Use the current control plane to determine which skills are materially current for a given working line.

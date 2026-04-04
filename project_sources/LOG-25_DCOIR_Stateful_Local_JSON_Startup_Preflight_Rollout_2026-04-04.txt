@@ -1,6 +1,6 @@
 DCOIR Stateful Local JSON Startup Preflight Rollout - 2026-04-04
 
-Current state id: 2026-04-04-stateful-local-json-startup-preflight-v1
+Current state id: 2026-04-04-session-start-bootstrap-and-prompt-review-v1
 
 Purpose
 - This log records the bounded rollout of startup local-JSON presence preflights and explicit missing-state warnings for the DCOIR skills that currently use real local JSON working-state files.

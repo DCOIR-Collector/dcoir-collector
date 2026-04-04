@@ -25,8 +25,10 @@ This repository is the GitHub-primary working source for the broader DCOIR frame
 
 - GitHub repository `malwaredevil/dcoir-collector` is the sole working source for governed readable text.
 - Project space is the bootstrap and runtime anchor, not a second editable readable-text repository.
+- On the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session, start with `dcoir-session-resume` and then `dcoir-memory-preflight` before other substantive project work.
 - Resume and governance begin with Project Instructions, then `CP-01`, then `CP-02`.
 - The preferred operating posture is the validated GitHub connector low-level lane for chat-managed readable-text updates, with GitHub Desktop as the easiest approved operator path for bulk local placement, extracted-file ingestion, and binary or zip handling.
+- When GitHub Desktop manual repo-update bundles are used, deliver only the affected repo-relative files and provide a suggested commit `Summary` unless the operator explicitly asks otherwise.
 - Helper skills are used for analysis, validation, packaging, workflow support, and maintenance where appropriate.
 - The collector runtime filename remains stable while the readable governed source set may evolve for maintainability.
 

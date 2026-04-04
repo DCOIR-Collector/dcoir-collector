@@ -1,6 +1,6 @@
 ---
 name: dcoir-memory-preflight
-description: consult the canonical dcoir github task-memory bank before high-friction or known-procedure work and again after blocker recovery when a reusable lesson may need staging. use when dcoir work involves github read/write/update/delete operations, grouped repo edits, file removals, control-plane changes, packaging or bundle generation, skill maintenance, structural refactors, repeated high-friction workflows, coordinated multi-skill campaigns, or recovered failures that may justify a reusable procedure, limitation, failure-signature, or helper-skill/process update candidate.
+description: consult the canonical dcoir github task-memory bank before high-friction or known-procedure work and again after blocker recovery when a reusable lesson may need staging. after the session-start resume bootstrap, also use this skill at the first substantive turn of every new africom_soc_ir or dcoir session to classify the immediate work family and avoid rediscovering the right lane later. use when dcoir work involves github read/write/update/delete operations, grouped repo edits, file removals, control-plane changes, packaging or bundle generation, skill maintenance, structural refactors, repeated high-friction workflows, coordinated multi-skill campaigns, or recovered failures that may justify a reusable procedure, limitation, failure-signature, or helper-skill/process update candidate.
 ---
 
 # DCOIR Memory Preflight
@@ -19,6 +19,14 @@ It should help:
 - after blocker recovery so reusable lessons can be classified honestly and staged for later promotion instead of being silently forgotten or silently written into canonical memory
 
 ## Invocation modes
+
+### 0. session-start bootstrap mode
+Run this mode immediately after `dcoir-session-resume` on the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session.
+
+Use it to:
+- classify the immediate work family early
+- consult canonical memory before the branch drifts into execution
+- surface the best bounded lane, anti-patterns, and likely flush triggers before high-friction work starts
 
 ### 1. pre-execution mode
 Run this mode before choosing an execution lane when the task family is likely to have reusable canonical guidance.
@@ -42,6 +50,7 @@ Treat canonical procedure records as higher trust than chat recollection.
 Treat compiled indexes as routing aids, not as sources of truth.
 
 ## When preflight is mandatory
+- At the first substantive DCOIR turn of every new session, run this skill after `dcoir-session-resume` even if the operator did not explicitly ask for preflight.
 Run this skill before choosing the execution lane when the task family includes any of these:
 - GitHub readable-text create, update, overwrite, grouped edit, or delete work
 - multi-file repo changes that should land in one bounded transaction
@@ -56,7 +65,7 @@ Run this skill again after blocker recovery when the recovered lesson could matt
 
 ## Core workflow
 1. Re-anchor to Project Instructions, then CP-01, then CP-02.
-2. Determine whether the current use is `pre_execution` or `post_blocker`.
+2. Determine whether the current use is `session_start_bootstrap`, `pre_execution`, or `post_blocker`.
 3. Classify the task family or recovered-lesson family.
 4. Identify the likely memory domain, preferring `github` first for repo work.
 5. Read the task-memory manifest and compiled lookup.

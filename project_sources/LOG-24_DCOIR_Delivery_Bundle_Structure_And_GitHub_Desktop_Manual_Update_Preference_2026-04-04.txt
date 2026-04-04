@@ -1,6 +1,6 @@
 DCOIR Delivery Bundle Structure And GitHub Desktop Manual Update Preference - 2026-04-04
 
-Current state id: 2026-04-04-stateful-local-json-startup-preflight-v1
+Current state id: 2026-04-04-session-start-bootstrap-and-prompt-review-v1
 
 Purpose
 - This log records the operator preference for how DCOIR deliverable ZIPs should be structured when ChatGPT provides updated skill packages or manual GitHub Desktop repo-update bundles.
