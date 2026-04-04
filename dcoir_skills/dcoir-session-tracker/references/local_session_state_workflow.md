@@ -45,19 +45,24 @@ Mark one item complete and move it to completed:
 python scripts/session_state_store.py complete --id S-001
 ```
 
-Mark one item as governed-written after the push lands:
+Mark one item as governed-written after the push lands and automatically clear staged entries and cleanup notes that still reference it:
 ```bash
 python scripts/session_state_store.py mark-governed-written --id S-001 --note 'promoted in same grouped push as LOG-01 update'
 ```
 
-Clear staged governed updates after post-push cleanup:
+Clear any remaining staged governed updates in bulk when needed:
 ```bash
 python scripts/session_state_store.py clear-staged-governed-updates
 ```
 
-Clear staged todo actions after post-push cleanup:
+Clear any remaining staged todo actions in bulk when needed:
 ```bash
 python scripts/session_state_store.py clear-staged-todo-actions
+```
+
+Clear any remaining post-push cleanup notes in bulk when needed:
+```bash
+python scripts/session_state_store.py clear-post-push-cleanup
 ```
 
 Update summary fields:
@@ -120,4 +125,4 @@ Before any governed Project update that depends on session-tracker state:
 6. surface staged todo additions, updates, or removals for the same grouped transaction
 7. use verbose item detail by default for materially important buffered items
 8. only then propose or execute the Project-file update path
-9. after the governed push lands, mark the promoted items governed-written and clear the completed staged-update and staged-todo entries
+9. after the governed push lands, mark the promoted items governed-written so related staged-update entries, staged-todo entries, and matching cleanup notes are cleared automatically; use the explicit clear commands only for leftover bulk cleanup

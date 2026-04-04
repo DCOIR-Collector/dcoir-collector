@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-continuous-execution-cadence-v1
+Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -13,7 +13,7 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair, resume-status fast path, updated `dcoir-session-tracker` plus `dcoir-plan-tracker` startup local-JSON preflights, explicit missing-state warnings, repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode, and durable continuous-execution cadence for operator-approved coordinated campaigns.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, and repaired `dcoir-session-tracker` post-push cleanup path.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -24,8 +24,8 @@ Detailed todo structure
 - project_sources/todo/05_Deferred_Or_Conditional.txt
 
 Queued next priorities
-- Work the current high-risk wave first: `dcoir-plan-tracker`, `dcoir-session-tracker`, `dcoir-collector-qa`, `dcoir-decision-policy`, `dcoir-live-test-remediation-planner`, `dcoir-memory-preflight`, `dcoir-operator-workflow-hardener`, `dcoir-repo-packager`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator`.
-- Review session-memory-enabled and buffer-capable skills for reliable presence preflight, resume-only routing discipline, pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior from the live-validated startup baseline and repaired manual delivery lane.
-- Keep the operator-facing cadence aligned to the durable no-premature-pause rule so coordinated campaign work continues until there is something real for the operator to do.
+- Run the coordinated all-skills deep dive to confirm current helper skills still execute successfully, remain current with the project's goals and governance, and do not carry obsolete or inefficient logic.
+- Review session-memory-enabled and buffer-capable skills for reliable presence preflight, resume-only routing discipline, pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior, now continuing after the repaired `dcoir-session-tracker` cleanup lane.
+- Start the bounded package-cleanliness enforcement pass so delivered skill zips stay free of runtime residue such as `__pycache__/` and `*.pyc`.
 - Review any remaining literals only as bounded contractual exceptions where discovery-contract replacement would not materially improve portability or maintainability.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge and wiki structure.

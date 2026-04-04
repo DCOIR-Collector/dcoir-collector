@@ -1,32 +1,26 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-continuous-execution-cadence-v1
+Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
 
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline.
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, durable continuous-execution cadence rule, repaired GitHub Desktop manual repo-update bundle mode, and repaired `dcoir-session-tracker` post-push cleanup path.
    Why it matters:
-   - The project now has real-session proof for the first-turn bootstrap pair, tighter resume-only routing, stronger startup local-JSON behavior, and a repaired GitHub Desktop manual repo-update bundle lane, so deeper execution and code-hygiene review can proceed with less hidden-state risk and less avoidable startup friction.
+   - The project now has real-session proof for the startup bootstrap line, a repaired GitHub Desktop delivery lane, and improved session-tracker grouped-push cleanup behavior, so the broader campaign can keep moving with less avoidable operator friction and less residual buffer-state cleanup work.
    Next action:
-   - Keep executing the current high-risk wave under the CI/CD-style validation regime until there is a real GitHub update step, installable artifact, blocker, materially changed evidence state, or decision to surface.
+   - Continue into the next highest-value workflow-state or buffer-capable helper-skill pass under the current CI/CD-style validation regime.
 
-2. Work the current high-risk wave first.
+2. Start and maintain the bounded package-cleanliness enforcement pass across the helper-skill library.
    Why it matters:
-   - The workflow/state/validation family carries the highest concentration of operator-visible continuity, pre-push, packaging, and resume risk.
+   - The all-skills campaign identified package-hygiene risk from runtime residue such as `__pycache__/` and `*.pyc`, and delivered skill packages should stay clean even when local scripts were executed during validation.
    Next action:
-   - Continue with `dcoir-plan-tracker`, `dcoir-session-tracker`, `dcoir-collector-qa`, `dcoir-decision-policy`, `dcoir-live-test-remediation-planner`, `dcoir-memory-preflight`, `dcoir-operator-workflow-hardener`, `dcoir-repo-packager`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator` before the lighter edge skills.
+   - Add package-cleanliness checks or cleanup steps where the current helper-skill delivery workflow still allows runtime residue to leak into installable artifacts.
 
-3. Maintain the durable no-premature-pause cadence in operator-approved coordinated campaigns.
-   Why it matters:
-   - The operator wants the campaign to keep moving until there is something real for them to do instead of stopping at intermediate analytical checkpoints.
-   Next action:
-   - Continue execution and only surface operator-facing interruptions for a GitHub update bundle, installable skill artifact, blocker, materially changed evidence state, or true decision requirement.
-
-4. Maintain the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.
+3. Maintain the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.
    Why it matters:
    - The project wants one more qualifying live resume cycle before widening the stamped active-surface set, and synthetic or generated-artifact validation should not count.
    Next action:
    - Decrement the countdown only after the next qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.
 
-5. Review any remaining hard-coded literals only as bounded contractual exceptions.
+4. Review any remaining hard-coded literals only as bounded contractual exceptions.
    Why it matters:
    - The practical high-value discovery-contract adoption pass is materially complete, so any remaining literals should now be treated as explicit contract review rather than as default embedded assumptions.
    Next action:

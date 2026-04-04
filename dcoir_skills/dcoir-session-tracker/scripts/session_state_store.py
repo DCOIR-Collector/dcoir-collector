@@ -199,6 +199,33 @@ def normalize_stage(entry: dict[str, Any]) -> dict[str, Any]:
     return entry
 
 
+def remove_related_staged_entries(state: dict[str, Any], item_ids: list[str]) -> dict[str, int]:
+    wanted = {item_id for item_id in item_ids if item_id}
+    if not wanted:
+        return {'governed_updates_removed': 0, 'todo_actions_removed': 0, 'cleanup_notes_removed': 0}
+
+    def keep_entry(entry: dict[str, Any]) -> bool:
+        source_ids = {str(x) for x in entry.get('source_item_ids', []) if str(x).strip()}
+        return source_ids.isdisjoint(wanted)
+
+    staged_governed = state.get('staged_governed_updates', [])
+    staged_todo = state.get('staged_todo_actions', [])
+    cleanup = state.get('post_push_cleanup', [])
+
+    new_governed = [entry for entry in staged_governed if keep_entry(entry)]
+    new_todo = [entry for entry in staged_todo if keep_entry(entry)]
+    new_cleanup = [note for note in cleanup if not any(item_id in note for item_id in wanted)]
+
+    state['staged_governed_updates'] = new_governed
+    state['staged_todo_actions'] = new_todo
+    state['post_push_cleanup'] = new_cleanup
+    return {
+        'governed_updates_removed': len(staged_governed) - len(new_governed),
+        'todo_actions_removed': len(staged_todo) - len(new_todo),
+        'cleanup_notes_removed': len(cleanup) - len(new_cleanup),
+    }
+
+
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -522,8 +549,22 @@ def cmd_mark_governed_written(args: argparse.Namespace) -> int:
     item['persistence_status'] = 'governed_written'
     if args.note:
         item['governed_write_note'] = args.note
+    removed = remove_related_staged_entries(state, [args.id])
     save_state(args.path, state)
-    print(f'Marked {args.id} governed_written in {bucket}')
+    print(
+        f"Marked {args.id} governed_written in {bucket}; "
+        f"cleared {removed['governed_updates_removed']} staged governed updates, "
+        f"{removed['todo_actions_removed']} staged todo actions, and "
+        f"{removed['cleanup_notes_removed']} post-push cleanup notes that referenced it"
+    )
+    return 0
+
+
+def cmd_clear_post_push_cleanup(args: argparse.Namespace) -> int:
+    state = load_state(args.path)
+    state['post_push_cleanup'] = []
+    save_state(args.path, state)
+    print('Cleared post-push cleanup notes')
     return 0
 
 
@@ -628,6 +669,10 @@ def build_parser() -> argparse.ArgumentParser:
     clear_todo_p = sub.add_parser('clear-staged-todo-actions')
     clear_todo_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)
     clear_todo_p.set_defaults(func=cmd_clear_staged_todo_actions)
+
+    clear_cleanup_p = sub.add_parser('clear-post-push-cleanup')
+    clear_cleanup_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)
+    clear_cleanup_p.set_defaults(func=cmd_clear_post_push_cleanup)
 
     governed_p = sub.add_parser('mark-governed-written')
     governed_p.add_argument('--path', type=Path, default=DEFAULT_STATE_PATH)

@@ -26,6 +26,7 @@ If a write path had to initialize a new file because no pre-existing file was pr
 - what staged governed updates should land in the same grouped push
 - what staged todo additions, updates, or removals should land in the same grouped push
 - what post-push cleanup should occur once the governed update lands
+- which promoted items should be marked governed-written immediately after the push so related staged entries and cleanup notes are cleared automatically
 - what must be exported for handoff if a safe governed Project write is not happening
 - the local session-state inspection result when the file exists
 - one best next move

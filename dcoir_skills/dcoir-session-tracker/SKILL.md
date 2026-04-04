@@ -31,8 +31,9 @@ This skill does not claim hidden persistence across chats.
 10. Stage governed follow-up actions when session items should be promoted into Project files or skill updates.
 11. Stage governed-update entries explicitly when a grouped GitHub push or repo batch is about to happen so promotion candidates can land in the same governed update instead of waiting for later chat memory.
 12. Derive a pre-push review bundle from the current local state, including staged todo additions, updates, removals, and post-push cleanup.
-13. Give an immediate operator-visible confirmation when a materially important item is captured, including whether it is preserved session-locally only or already staged for the next governed push.
-14. Surface an explicit absence or re-init warning when a tracker write path had to initialize a new local session-state file because no pre-existing file was present.
+13. When an item is marked governed-written after a grouped push, automatically clear staged governed-update entries, staged todo actions, and post-push cleanup notes that still reference that same item.
+14. Give an immediate operator-visible confirmation when a materially important item is captured, including whether it is preserved session-locally only or already staged for the next governed push.
+15. Surface an explicit absence or re-init warning when a tracker write path had to initialize a new local session-state file because no pre-existing file was present.
 
 ## Local session-state file
 When code execution and file writing are available, use a real local JSON file as the primary working-state surface.
@@ -195,6 +196,7 @@ When a flush-check occurs:
 - surface staged governed updates that should land in the same grouped push
 - surface active-todo items that should be added, updated, or removed in the same grouped push
 - stage post-push cleanup actions
+- after the grouped push lands, use `mark-governed-written` for promoted items so related staged entries and cleanup notes are cleared automatically for those items
 - use the verbose tracker-entry standard by default for materially important buffered items
 - end with one best next move
 

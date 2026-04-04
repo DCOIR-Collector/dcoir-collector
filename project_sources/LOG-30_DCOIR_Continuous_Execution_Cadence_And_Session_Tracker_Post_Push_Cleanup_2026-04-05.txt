@@ -1,0 +1,27 @@
+DCOIR Continuous-Execution Cadence And Session-Tracker Post-Push Cleanup - 2026-04-05
+
+Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
+
+Purpose
+- Record the durable low-interruption continuous-execution rule for coordinated campaign work and the next highest-value `dcoir-session-tracker` repair that removes manual cleanup friction after grouped pushes.
+
+Decision summary
+- Treat the operator's instruction to keep working until there is a real operator action, blocker, materially changed evidence state, or true decision requirement as a durable execution-cadence rule for coordinated DCOIR campaigns.
+- Encode that rule in `dcoir-decision-policy` so coordinated campaign work does not stop at routine intermediate milestones.
+- Repair `dcoir-session-tracker` so `mark-governed-written` clears staged governed-update entries, staged todo actions, and matching post-push cleanup notes that still reference the promoted item.
+- Add an explicit `clear-post-push-cleanup` command for bounded bulk cleanup when any cleanup notes remain after item-level promotion handling.
+- Refresh the active continuity surfaces so the coordinated all-skills campaign and the repaired session-tracker cleanup lane are explicit in current governed state.
+
+Why it matters
+- The operator wants the all-skills campaign to keep moving until there is a real action or decision to surface rather than pausing at routine progress points.
+- `dcoir-session-tracker` is one of the highest-value buffer-capable workflow skills, and extra manual cleanup steps after grouped pushes create avoidable friction and drift risk.
+- Encoding both the cadence rule and the cleanup repair in governed sources improves continuity, reduces repeated clarification, and keeps the campaign aligned to the operator's actual preferred workflow.
+
+Validation notes
+- The durable continuous-execution cadence rule is now encoded in `dcoir-decision-policy` in the governed repo.
+- The repaired `dcoir-session-tracker` local-state path was exercised against a fresh local state file.
+- A representative pre-push review still stages todo actions and post-push cleanup as expected.
+- After the grouped-push simulation, `mark-governed-written` now removes the related staged todo action and matching cleanup note for the promoted item.
+
+Next immediate move
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the repaired session-tracker cleanup baseline while carrying the bounded package-cleanliness enforcement pass in parallel.

@@ -1,6 +1,6 @@
 DCOIR Version Manifest 3.9.42
 
-Current state id: 2026-04-05-continuous-execution-cadence-v1
+Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -36,7 +36,7 @@ Current control plane
 - Parity verification and README refresh: project_sources/LOG-27_DCOIR_Parity_Verification_And_Readme_Refresh_2026-04-04.txt
 - Resume-status fast path and bounded preflight lane: project_sources/LOG-28_DCOIR_Resume_Status_Fast_Path_And_Bounded_Preflight_Lane_2026-04-04.txt
 - GitHub Desktop manual repo-update bundle mode fix and delivery correction: project_sources/LOG-29_DCOIR_GitHub_Desktop_Manual_Repo_Update_Bundle_Mode_Fix_2026-04-05.txt
-- Continuous execution cadence and coordinated all-skills campaign progression: project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_All_Skills_Campaign_2026-04-05.txt
+- Continuous-execution cadence and session-tracker post-push cleanup automation: project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_Session_Tracker_Post_Push_Cleanup_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -60,6 +60,7 @@ Current governed helper-skill source
 - Helper working-state continuity remains under dcoir_skill_memory/ only for the skills that still legitimately use it and should not be confused with source authority.
 - `dcoir-session-tracker` now derives a pre-push review bundle from local state, including staged governed updates, staged todo actions, and post-push cleanup, instead of relying only on manually staged entries.
 - `dcoir-session-tracker` now performs an explicit first-use local-state presence preflight and emits operator-visible absence or re-init status when a write path initializes a new local session-state file because no pre-existing file was present.
+- `dcoir-session-tracker` now clears related staged governed-update entries, staged todo actions, and matching post-push cleanup notes automatically when promoted items are marked governed-written after a grouped push.
 - `dcoir-session-tracker` should run that local-state preflight at the beginning of each new session that uses the skill.
 - `dcoir-plan-tracker` now uses `scripts/ensure_plan_state.py` as the beginning-of-session local plan-state preflight for local plan folders and emits explicit missing-state warnings when an expected `plan_state.json` file is absent.
 - The confirmed current DCOIR skills with real local JSON working-state files are `dcoir-session-tracker` and `dcoir-plan-tracker`.
@@ -68,7 +69,7 @@ Current governed helper-skill source
 - Multi-skill delivery bundles should use one outer zip whose top level contains only the affected per-skill zip files named after the live skill names with no subfolders.
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 - `dcoir-repo-packager` now supports a GitHub Desktop manual repo-update bundle mode that packages only the affected repo-relative files or folders, preserves those paths exactly, emits no wrapper root, and surfaces the suggested commit `Summary` in the report and response.
-- `dcoir-decision-policy` now treats operator-approved coordinated campaigns with low-interruption cadence as continuous-execution branches and should not stop at intermediate milestones unless there is a real GitHub update step, installable artifact, blocker, materially changed evidence state, or a decision that genuinely requires operator input.
+- `dcoir-decision-policy` now treats operator-requested continuous execution with low-interruption cadence as a durable execution overlay during coordinated campaigns and should not stop at intermediate milestones unless there is a real operator action, blocker, materially changed evidence state, or a true decision requirement.
 - `dcoir-session-resume` and `dcoir-memory-preflight` now form the mandatory first substantive-turn bootstrap pair for every new AFRICOM_SOC_IR / DCOIR session.
 - `dcoir-session-resume` now uses a resume-status fast path for simple current-state checks and should stay on governed GitHub readable-text fetches before considering clone, container, archive-download, raw-web, or local-script detours.
 - `dcoir-memory-preflight` now treats resume-only status work as a bounded routing case and should not widen the lane beyond governed GitHub readable-text fetches unless the primary lane fails or the drift gate cannot be resolved from fetched text alone.
@@ -80,8 +81,8 @@ Current governed helper-skill source
 - `dcoir_skills/project_discovery_contract.json` is the canonical machine-readable current-project discovery contract for eligible helper skills.
 
 Current next work item
-- Keep the CI/CD-style validation regime active and continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, parity output, discovery contract, and derived pre-push review behavior.
-- Execute the current high-risk wave first: `dcoir-plan-tracker`, `dcoir-session-tracker`, `dcoir-collector-qa`, `dcoir-decision-policy`, `dcoir-live-test-remediation-planner`, `dcoir-memory-preflight`, `dcoir-operator-workflow-hardener`, `dcoir-repo-packager`, `dcoir-skill-regression-auditor`, and `dcoir-validation-orchestrator`.
-- In operator-approved coordinated campaigns with low-interruption cadence, continue executing until there is a real GitHub update step, installable artifact, blocker, materially changed evidence state, or a decision that genuinely requires operator input.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, and durable continuous-execution cadence rule.
+- Continue the workflow-state high-risk wave with the repaired `dcoir-session-tracker` post-push cleanup path and move to the next highest-value buffer-capable skill pass.
+- Start a bounded package-cleanliness enforcement pass across the helper-skill library so runtime residue such as `__pycache__/` and `*.pyc` does not contaminate delivered skill packages.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
 - Keep the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.

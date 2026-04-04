@@ -2,24 +2,26 @@ DCOIR Change Log
 
 [CURRENT]
 Version: 3.9.42
-Current state id: 2026-04-05-continuous-execution-cadence-v1
-Change class: continuous-execution cadence rule and coordinated all-skills campaign progression
+Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
+Change class: continuous-execution cadence alignment and session-tracker post-push cleanup automation
 
 What changed
-- Added `project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_All_Skills_Campaign_2026-04-05.txt` as the governed decision record for the durable no-premature-pause rule and the active coordinated all-skills campaign branch.
-- Updated `dcoir-decision-policy` so operator-approved coordinated campaigns with low-interruption cadence now continue executing without stopping at intermediate analytical milestones unless there is a real GitHub update step, installable artifact, blocker, materially changed evidence state, or a decision that genuinely requires operator input.
-- Updated the approved operator-intent overlays and generic decision matrix so the continuous-execution cadence is durable inside the current project workflow rather than being carried only in transient chat context.
-- Refreshed the active continuity and todo surfaces so the current branch explicitly reflects the coordinated all-skills helper-skill deep-dive campaign, the current high-risk wave ordering, and the no-premature-pause execution rule.
+- Added `project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_Session_Tracker_Post_Push_Cleanup_2026-04-05.txt` as the governed decision record for aligning the operator's low-interruption continuous-execution preference with the all-skills campaign and for repairing the next highest-value `dcoir-session-tracker` workflow gap.
+- Updated `dcoir-session-tracker` so `mark-governed-written` now clears staged governed-update entries, staged todo actions, and matching post-push cleanup notes that still reference the promoted item, reducing manual tracker cleanup after grouped pushes.
+- Added an explicit `clear-post-push-cleanup` command for bounded bulk cleanup when any cleanup notes remain after item-level promotion handling.
+- Updated the `dcoir-session-tracker` local-state workflow guidance and session-buffer workflow guidance so post-push cleanup behavior now matches the repaired automation path.
+- Refreshed the active continuity surfaces so the coordinated all-skills campaign explicitly carries the durable continuous-execution cadence rule and the repaired `dcoir-session-tracker` cleanup behavior.
 
 Why
-- The operator explicitly corrected a premature stop during the coordinated all-skills campaign and wanted work to continue until there was something real for them to do.
-- The project already had the coordinated campaign branch active, but the current helper-skill decision layer did not yet make that low-interruption cadence durable.
-- The highest-value fix was to encode the rule in `dcoir-decision-policy` and align the governed continuity surfaces to the active all-skills campaign rather than keep depending on chat-only reminders.
+- The operator clarified that coordinated campaign work should continue until there is a real operator action, blocker, materially changed evidence state, or true decision requirement rather than pausing at intermediate milestones.
+- The all-skills campaign identified a real workflow friction point in `dcoir-session-tracker`: promoted items could be marked governed-written, but related staged entries and cleanup notes still required separate manual clearing steps.
+- The highest-value next move was to repair that buffer-capable workflow path and align the governed continuity surfaces in the same bounded update set.
 
 Validation notes
-- The updated `dcoir-decision-policy` skill package passes local packaging validation.
-- The coordinated all-skills campaign baseline remains structurally clean at the broad level, with the current high-risk wave now explicitly prioritized in governed continuity.
-- The next immediate branch is to keep executing the all-skills deep-dive wave and surface only real operator actions, blockers, materially changed evidence states, or decision points.
+- The repaired `dcoir-session-tracker` local-state path was retested on a fresh local state file.
+- A representative pre-push review still stages todo actions and post-push cleanup as expected.
+- After the grouped-push simulation, `mark-governed-written` now removes the related staged todo actions and matching cleanup notes for the promoted item.
+- The next immediate branch is to continue the coordinated all-skills campaign into the next highest-value workflow-state skill pass while starting bounded package-cleanliness enforcement across the skill library.
 
 [PRIOR]
 Version: 3.9.41
