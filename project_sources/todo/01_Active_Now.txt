@@ -1,6 +1,6 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-resume-cycle-cleared-and-widening-review-ready-v1
+Current state id: 2026-04-05-github-automation-and-ai-enablement-tracking-v1
 
 1. Run the widening review against the current live governed state.
    Why it matters:
@@ -8,14 +8,20 @@ Current state id: 2026-04-05-resume-cycle-cleared-and-widening-review-ready-v1
    Next action:
    - Review the current live governed surfaces and decide whether the architecture/governance line can be treated as closed except for maintenance-only fixes.
 
-2. If widening review is accepted, shift the main project line to deliverables.
+2. If widening review is accepted, shift the main project line to deliverables and open the approved GitHub automation and AI enablement wave.
    Why it matters:
-   - The project wants to stop spending main-line effort on architecture once the last gating review is complete.
+   - The project wants to stop spending main-line effort on architecture once the last gating review is complete while also improving repeatability for deliverables-side work.
    Next action:
-   - Move the primary work queue to deliverables while keeping helper-skill work in bounded maintenance posture.
+   - Move the primary work queue to deliverables and carry the approved GitHub automation branch forward in the same transition.
 
-3. Keep package-cleanliness, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
+3. Implement the first-wave GitHub automation baseline and explicit Dependabot follow-through.
    Why it matters:
-   - Even after architecture closeout, future small helper-skill fixes still need clean packaging and verification discipline.
+   - The operator wants repeatable browser-visible validation that works in both work and home environments without depending on file downloads.
    Next action:
-   - Continue stripping runtime residue and verifying parity before any future maintenance-only delivery.
+   - Start with validate-on-push, manual-full-validation, scheduled-health-check, browser-readable summaries, light ruleset safety, and an explicit decision on `.github/dependabot.yml` version-update coverage.
+
+4. Pilot optional AI augmentation only where it reduces operator burden.
+   Why it matters:
+   - Copilot, GitHub Models, and OpenAI Codex may add value, but the project does not want them to become mandatory workflow ceremony.
+   Next action:
+   - Use optional pilots after first-wave automation exists and keep PRs as an optional review lane rather than the default daily workflow.

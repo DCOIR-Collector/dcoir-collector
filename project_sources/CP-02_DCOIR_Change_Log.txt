@@ -1,27 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.56
+Current state id: 2026-04-05-github-automation-and-ai-enablement-tracking-v1
+Change class: approved GitHub automation and AI enablement adoption tracking
+
+What changed
+- Added `project_sources/LOG-43_DCOIR_GitHub_Automation_And_AI_Enablement_Strategy_2026-04-05.txt` as the governed decision record for the approved GitHub automation, Dependabot follow-through, and AI enablement strategy.
+- Updated the manifest and active continuity surfaces so the approved GitHub-native automation and AI enablement wave is durably tracked instead of living only in chat.
+- Recorded that first-wave implementation should start with browser-readable GitHub Actions workflows, light ruleset safety, and an explicit Dependabot follow-through decision before broader optional platform features.
+- Recorded that optional AI augmentation should be piloted selectively through GitHub-native surfaces and OpenAI Codex rather than treated as a mandatory new default workflow.
+- Recorded that there is no governed evidence yet of a live `.github/dependabot.yml` in the repository, so Dependabot version updates and GitHub Actions update coverage remain explicit implementation decisions rather than implied current state.
+
+Why
+- The operator approved the full GitHub automation and AI enablement recommendation set and wanted it made durable inside the governed project state so it is not forgotten.
+- The project needs repeatable validation and browser-visible results that work in both work and home environments without assuming file downloads.
+- Tracking the strategy in the same bounded wave as the continuity surfaces reduces drift between the approved deployment strategy, the queued work, and later deliverables-side implementation.
+
+Validation notes
+- This change records strategy and queued work only; it does not create GitHub Actions workflows, rulesets, or AI-agent configuration by itself.
+- Dependabot alert enablement is already visible in the current repository UI, but alert enablement and version-update automation are separate GitHub features.
+- A repo search during this session found no governed `dependabot.yml` in the live repository, so version-update automation still requires an explicit configuration decision.
+
+[PRIOR]
 Version: 3.9.55
 Current state id: 2026-04-05-resume-cycle-cleared-and-widening-review-ready-v1
 Change class: qualifying resume-cycle completion and widening-review readiness
-
-What changed
-- Added `project_sources/LOG-42_DCOIR_Resume_Cycle_Completion_And_Widening_Review_Readiness_2026-04-05.txt` as the governed decision record that the final qualifying real resume cycle completed satisfactorily.
-- Updated the manifest and active continuity surfaces to record that the stamped active-surface widening hold no longer has a remaining resume-cycle requirement.
-- Removed the waiting-language that still said one remaining real resume cycle was required before widening review.
-- Set the current next work item to widening review and deliverables-shift readiness if that review is accepted.
-
-Why
-- The project wanted one more qualifying real resume cycle before treating the widening gate as cleared.
-- Clearing that final waiting gate is the remaining architecture/governance closeout step needed before the main line can shift to deliverables.
-- Recording the cleared gate in the same bounded wave prevents continuity drift across the control plane, handoff, resume, and todo surfaces.
-
-Validation notes
-- The qualifying resume cycle used the required bootstrap path across Project Instructions, the project-space bootstrap anchor, the current GitHub control plane, and the current continuity surfaces.
-- The live governed-state resume check aligned cleanly enough to treat the cycle as satisfactory for the widening-hold countdown.
-- This entry records widening-review readiness, not completion of the widening review itself.
-
-[PRIOR]
-Version: 3.9.54
-Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
-Change class: final remaining helper-skill wave, routing completion, and coordinated campaign closeout

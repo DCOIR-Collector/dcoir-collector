@@ -1,0 +1,54 @@
+DCOIR GitHub Automation And AI Enablement Strategy - 2026-04-05
+
+Current state id: 2026-04-05-github-automation-and-ai-enablement-tracking-v1
+
+Purpose
+- Record the operator-approved GitHub automation, Dependabot follow-through, and AI enablement strategy so the project can adopt repeatable platform support without losing the current manual GitHub Desktop lane or the current in-chat GitHub lane.
+
+Decision summary
+- Keep the normal operator-managed GitHub Desktop lane for grouped manual repo updates and home-session patch application.
+- Keep the validated in-chat GitHub connector lane for bounded readable-text repo work when the operator wants the update done in chat.
+- Use GitHub Actions as the automatic repeatability backbone rather than making pull requests the default daily workflow.
+- Prefer browser-readable workflow outputs first so the operator can use the system from work environments that do not allow file uploads or downloads.
+- Keep pull requests as an optional high-risk or review lane rather than as a mandatory new default.
+
+Approved first-wave implementation items
+- Add a `validate-on-push` workflow.
+- Add a `manual-full-validation` workflow triggered from the GitHub web UI.
+- Add a `scheduled-health-check` workflow.
+- Require every workflow to emit browser-readable summaries.
+- Add only light branch or ruleset safety first, such as force-push and deletion protection, without forcing a PR-first model.
+- Keep Dependabot alerts enabled and make an explicit decision on whether to add `.github/dependabot.yml` for version-update coverage.
+
+Approved GitHub-native AI and prompt or evaluation pilots
+- Pilot Copilot code review for risky or review-worthy pull requests only.
+- Pilot Copilot cloud agent for bounded browser-native assistance where it reduces operator burden.
+- Pilot GitHub Models for prompt, comparison, or evaluation work that belongs in the repository.
+- Keep OpenAI Codex available as a broader engineering assistant layer, especially for home-session or larger engineering work.
+
+Later or conditional items
+- Consider GitHub Pages only after browser-readable workflow summaries already exist and the project wants a dashboard surface.
+- Consider code scanning only if the repo visibility or plan and the actual value justify it.
+- Consider self-hosted runners only if GitHub-hosted runners prove insufficient.
+- Consider OIDC only when workflows need cloud authentication.
+- Consider artifact provenance, attestations, or SLSA-style supply-chain features only after the first-wave automation is stable.
+
+Dependabot current-state note
+- Dependabot alerts are already enabled in the current repository UI.
+- Dependabot alerts and Dependabot version updates are separate GitHub features.
+- A search of the current live repository during this session found no governed `.github/dependabot.yml`, so version-update automation is not yet assumed current.
+- When the project is ready, `dependabot.yml` should be evaluated for both Python dependency updates and GitHub Actions reference updates.
+
+Execution-lane note
+- Work-session constraints favor GitHub-web workflows, browser-visible summaries, and in-chat GitHub help.
+- Home-session conditions still favor GitHub Desktop for grouped local patch application and any workflow that depends on downloading or moving files.
+- The project should maximize automation and browser-readable outputs without removing the existing manual or in-chat lanes that already work.
+
+Why it matters
+- The project wants to be more repeatable and more modern without forcing a workflow that depends on constant pull-request use or local file movement during work sessions.
+- Browser-readable GitHub automation can support both work and home usage while reducing operator burden.
+- AI-native GitHub and OpenAI tools may improve throughput, but they should be introduced only where they add real value.
+
+Next immediate move
+- Run the widening review first.
+- If widening review is accepted, begin the approved GitHub automation and AI enablement implementation wave as the first deliverables-adjacent repeatability branch.
