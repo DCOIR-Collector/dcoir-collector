@@ -1,0 +1,25 @@
+DCOIR Batched Bootstrap, Validation, And Manual-Update Preference Alignment - 2026-04-05
+
+Current state id: 2026-04-05-batched-bootstrap-and-validation-alignment-v1
+
+Purpose
+- Record the bounded multi-skill alignment pass across `dcoir-memory-preflight`, `dcoir-validation-orchestrator`, and `dcoir-decision-policy` so coordinated campaigns, validation ownership, and operator batching preference stay aligned.
+
+Decision summary
+- Treat coordinated multi-skill patch campaigns and GitHub Desktop manual repo-update or grouped governed-push deliveries as explicit mandatory families in `dcoir-memory-preflight` skill instructions and reference maps.
+- Treat coordinated multi-skill delivery waves, GitHub Desktop affected-path bundle checks, and installable skill package-cleanliness checks as explicit validation coverage in `dcoir-validation-orchestrator` instead of leaving them implicit under generic packager wording.
+- Treat operator preference for fewer GitHub Desktop repo updates and fewer one-skill-at-a-time manual installs as a durable batching overlay in `dcoir-decision-policy` when compatible fixes are already known and can still be validated as one bounded batch.
+- Prefer surfacing meaningful grouped manual update/install waves instead of trickling one compatible skill at a time when the campaign already knows the remaining similar scope.
+
+Why it matters
+- The prior memory-preflight alignment attempt did not appear in the live repo state, so the current branch needed to fold that repair forward rather than assume it landed.
+- The coordinated all-skills campaign now has enough evidence and compatible scope to group certain repairs without forcing the operator through one-skill-at-a-time manual update churn.
+- Validation planning needed to recognize grouped delivery waves and package-cleanliness checks explicitly so the batching preference does not bypass readiness discipline.
+
+Validation notes
+- The updated `dcoir-memory-preflight`, `dcoir-validation-orchestrator`, and `dcoir-decision-policy` packages pass clean packaging validation.
+- Reference review confirms that the affected skills now describe the intended grouped campaign and GitHub Desktop delivery posture directly instead of relying on implied surrounding workflow context.
+- The current continuity surfaces were refreshed in the same change set so the active line now reflects grouped manual-update waves by default when compatible fixes are already ready.
+
+Next immediate move
+- Continue the workflow-state and validation-ownership high-risk wave and hold further compatible repairs for the next meaningful grouped manual update/install batch rather than surfacing them one skill at a time.

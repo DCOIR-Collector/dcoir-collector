@@ -172,6 +172,7 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - if the task requires choosing the formal release or packaging class for an already-identified change, use `dcoir-release-scope-builder`
 - once the packaging class is known, prefer one zip bundle when more than one downloadable file would otherwise be handed back, unless a platform constraint or the operator explicitly requires separate files
 - when more than one updated skill package is being handed back, prefer one outer zip with top-level per-skill zip files named after the live skill names unless the operator explicitly requests another shape
+- when the operator wants fewer manual GitHub/Desktop and skill-install cycles, prefer holding compatible skill repairs into a meaningful bounded batch instead of surfacing one-skill-at-a-time manual update steps
 - for multiple updated skills, prefer one bounded coordinated batch when it reduces operator friction and the remaining similar scope is already known, but still ensure every materially changed skill receives regression coverage before readiness claims
 - when the operator has approved a coordinated campaign and has not asked for intermediate status-only pauses, keep executing until there is a real GitHub update step, installable artifact, blocker, materially changed evidence state, or true decision requirement
 - never infer promotions
@@ -254,7 +255,7 @@ When acting under this skill:
 - keep recommendations aligned to the current control plane
 - respect explicit user cadence requests over default sequencing behavior
 - when a new durable operator preference is learned or inferred, summarize the derived rule in one sentence
-- when the learned rule affects downloadable deliverables, say whether it changes bundle shape, file count, or operator update steps
+- when the learned rule affects downloadable deliverables, say whether it changes bundle shape, file count, batching posture, or operator update steps
 - when persistence beyond the current chat is needed, show the approval-ready update candidate rather than implying silent self-modification
 - when a passive preference signal is captured, say whether it was treated as durable, situational, or non-persistent
 

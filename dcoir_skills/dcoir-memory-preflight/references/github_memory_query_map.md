@@ -19,3 +19,7 @@
 ## Coordinated campaign and GitHub Desktop delivery notes
 - coordinated multi-skill patch campaign -> start with `GH-PROC-007`, then add the specific record family for the expected repo action
 - GitHub Desktop manual repo-update delivery or grouped governed push -> pair `GH-PROC-006` with `GH-PROC-005`, and include `GH-PROC-008` when connector-lane or delivery-shape selection is still in doubt
+
+## Additional governed-delivery pairings
+- coordinated multi-skill patch campaign -> `GH-PROC-007` + `GH-PROC-008`, then pair grouped existing-file delivery with `GH-PROC-006` + `GH-PROC-005` when the change set is already known
+- GitHub Desktop manual repo-update delivery or grouped governed-push bundle -> `GH-PROC-006` + `GH-PROC-005`; include `GH-PROC-008` when connector-lane or function-shape choice is still ambiguous

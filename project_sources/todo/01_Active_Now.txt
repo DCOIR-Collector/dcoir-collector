@@ -1,12 +1,12 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-memory-preflight-reference-alignment-v1
+Current state id: 2026-04-05-batched-bootstrap-and-validation-alignment-v1
 
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, durable continuous-execution cadence rule, repaired GitHub Desktop manual repo-update bundle mode, repaired `dcoir-session-tracker` post-push cleanup path, repaired `dcoir-plan-tracker` task-transition guidance, and repaired `dcoir-memory-preflight` coordinated-campaign and delivery-trigger alignment.
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, durable continuous-execution cadence rule, repaired GitHub Desktop manual repo-update bundle mode, repaired `dcoir-session-tracker` post-push cleanup path, repaired `dcoir-plan-tracker` task-transition guidance, and repaired `dcoir-memory-preflight` coordinated-campaign and delivery-trigger alignment, aligned `dcoir-validation-orchestrator` grouped-delivery coverage, and batched manual-update preference handling in `dcoir-decision-policy`.
    Why it matters:
-   - The project now has stronger startup proof, delivery-lane support, grouped-push cleanup behavior, plan-tracker transition guidance, and memory-preflight routing alignment, so the broader campaign can keep moving with less avoidable operator friction and less reference-layer drift.
+   - The project now has stronger startup proof, delivery-lane support, grouped-push cleanup behavior, plan-tracker transition guidance, memory-preflight routing alignment, explicit grouped-delivery validation coverage, and a durable batching preference for manual updates, so the broader campaign can keep moving with less avoidable operator friction and less reference-layer drift.
    Next action:
-   - Continue into the next highest-value workflow-state or buffer-capable helper-skill pass under the current CI/CD-style validation regime.
+   - Continue into the next highest-value workflow-state or validation-ownership helper-skill pass under the current CI/CD-style validation regime while holding compatible fixes for the next meaningful grouped manual update/install wave.
 
 2. Start and maintain the bounded package-cleanliness enforcement pass across the helper-skill library.
    Why it matters:

@@ -80,6 +80,8 @@ Add:
 - emitted tree checks
 - no-duplicate-readable-source checks
 - update-mode bootstrap-safety checks
+- GitHub Desktop affected-path bundle checks when manual repo-update delivery is in scope
+- installable skill package cleanliness checks for runtime residue such as `__pycache__/`, `*.pyc`, and `.DS_Store`
 
 ### session-memory pre-push contract
 Use when buffer-capable or GitHub-memory-backed skills should stage their state before a governed push.
@@ -89,3 +91,12 @@ Add:
 - todo synchronization checks
 - post-push cleanup checks
 - loss-boundary statement: only work since the last push or explicit export may remain at risk
+
+### coordinated multi-skill delivery wave
+Use when multiple compatible helper-skill repairs should be surfaced as one bounded manual GitHub/Desktop update instead of many isolated operator actions.
+Add:
+- batch scope and included skills
+- grouped installability checks
+- package-cleanliness checks across the whole delivery set
+- no-wrapper-root and affected-path bundle checks for manual repo-update zips
+- combined readiness criteria for surfacing the batch to the operator

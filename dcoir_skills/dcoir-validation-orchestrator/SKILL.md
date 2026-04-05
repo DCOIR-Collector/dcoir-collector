@@ -19,8 +19,9 @@ Use this skill to turn a DCOIR change, workflow, campaign, or inventory-derived 
 4. Read `references/validation_scenario_library.md`.
 5. Run `scripts/emit_validation_plan.py`.
 6. If the current branch includes session-memory-enabled or buffer-capable skills and a governed push is likely, include pre-push flush and post-push cleanup validation in the plan.
-7. When the validation state changed materially, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when the connector cannot safely complete the write.
-8. Return the gates, smoke tests, deep-regression set, evidence requirements, live-readiness criteria, buffered validation state, and any GitHub-memory change that matters.
+7. When the operator prefers batched manual GitHub/Desktop updates, group compatible skill changes into bounded delivery waves and include package-cleanliness plus installability checks for the whole batch before surfacing the manual update step.
+8. When the validation state changed materially, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when the connector cannot safely complete the write.
+9. Return the gates, smoke tests, deep-regression set, evidence requirements, live-readiness criteria, buffered validation state, and any GitHub-memory change that matters.
 
 ## Validation regime ownership
 This skill now owns:
@@ -30,6 +31,7 @@ This skill now owns:
 - docs/readme/knowledge alignment validation planning
 - packager live-project validation planning
 - session-memory pre-push contract validation planning
+- coordinated multi-skill delivery-wave validation planning
 
 ## GitHub-backed skill memory
 Use the GitHub connector directly against the current governed repository resolved through `dcoir_skills/project_discovery_contract.json` when reusable validation-plan state should persist outside the current chat.
@@ -61,6 +63,7 @@ When rendering memory content locally, use `scripts/render_validation_memory.py`
 - Keep the plan bounded to the affected area when the scope is narrow.
 - Expand to cross-skill or cross-bundle regression when the change is structural, runtime-affecting, authority-adjacent, or inventory-wide.
 - When session-memory-enabled or buffer-capable skills are in scope, include pre-push flush and post-push cleanup checks instead of assuming that state will promote itself.
+- When a bounded multi-skill batch is being prepared for manual GitHub/Desktop application, include grouped installability, package-cleanliness, and no-wrapper-root delivery checks instead of validating each changed skill in isolation only.
 - Keep the canonical GitHub memory file human-readable and continuously updated after material validation-state changes when repo persistence is available.
 
 ## References

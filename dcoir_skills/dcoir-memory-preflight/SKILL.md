@@ -60,6 +60,7 @@ Run this skill before choosing the execution lane when the task family includes 
 - bundle generation or packaging work
 - skill maintenance, repair, or regression work
 - coordinated multi-skill patch campaigns where the same validated procedure may shape several sibling updates
+- GitHub Desktop manual repo-update bundle preparation or grouped manual governed-push delivery work
 - GitHub Desktop manual repo-update bundle preparation or grouped governed pushes where the same preflight logic should shape the delivery lane
 - any task where the operator asks to remove friction from a repeated GitHub workflow
 

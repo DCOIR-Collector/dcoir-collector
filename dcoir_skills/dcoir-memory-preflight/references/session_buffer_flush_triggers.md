@@ -9,6 +9,7 @@ Preferred flush-check trigger points:
 - before session export or handoff
 - when the operator asks what remains
 - when a helper skill reports meaningful state drift
+- when a GitHub Desktop manual repo-update delivery or grouped governed push is about to happen
 
 Truth rule:
 - buffered state is session-local only until it is flushed to GitHub or exported in a handoff artifact
@@ -25,3 +26,6 @@ A valid flush/manicure review for this skill should surface:
 
 ## Pre-push contract note
 When a suitable governed push or GitHub Desktop manual repo-update delivery is already happening in the same branch, surface what should land in that same grouped push instead of silently leaving the state buffered for later.
+
+## Coordinated-campaign note
+When a compatible multi-skill batch is already being staged for a bounded manual GitHub/Desktop update, surface what should land in that same grouped batch instead of treating each skill fix as an isolated later flush.

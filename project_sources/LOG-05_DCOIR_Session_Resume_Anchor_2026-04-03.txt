@@ -1,6 +1,6 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-05-memory-preflight-reference-alignment-v1
+Current state id: 2026-04-05-batched-bootstrap-and-validation-alignment-v1
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.
@@ -15,14 +15,14 @@ Current stable baseline
 - The authoritative active work queue now points at the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup, repaired delivery, continuous-execution, package-cleanliness, repaired plan-tracker guidance, and repaired memory-preflight routing baseline.
 
 Current governed workflow state
-- The helper-skill workflow, drift-gate, direct-resume, plan-tracker, coordinated stateful-trio, inventory-pass, repaired repo-packager, validation regime, skill parity, hard-coded-variable audit, first session-tracker deep-dive line, second session-tracker presence-guard line, the bounded local-JSON startup preflight rollout, the recorded delivery-bundle plus GitHub Desktop commit `Summary` preferences, the bounded resume-status fast-path tightening line, the live startup-flow validation, the repaired GitHub Desktop manual repo-update bundle lane, the durable continuous-execution cadence rule, the repaired `dcoir-session-tracker` post-push cleanup automation path, the package-cleanliness enforcement pass, the repaired `dcoir-plan-tracker` transition-guidance path, and the repaired `dcoir-memory-preflight` reference alignment are grounded.
+- The helper-skill workflow, drift-gate, direct-resume, plan-tracker, coordinated stateful-trio, inventory-pass, repaired repo-packager, validation regime, skill parity, hard-coded-variable audit, first session-tracker deep-dive line, second session-tracker presence-guard line, the bounded local-JSON startup preflight rollout, the recorded delivery-bundle plus GitHub Desktop commit `Summary` preferences, the bounded resume-status fast-path tightening line, the live startup-flow validation, the repaired GitHub Desktop manual repo-update bundle lane, the durable continuous-execution cadence rule, the repaired `dcoir-session-tracker` post-push cleanup automation path, the package-cleanliness enforcement pass, the repaired `dcoir-plan-tracker` transition-guidance path, and the repaired `dcoir-memory-preflight` reference alignment, aligned `dcoir-validation-orchestrator` grouped-delivery coverage, and batched manual-update preference handling in `dcoir-decision-policy` are grounded.
 - The practical high-value discovery-contract adoption pass is materially complete for the currently identified helper-skill surfaces.
 - The updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path are now live-validated together with the updated `dcoir-session-tracker` plus `dcoir-plan-tracker` startup local-JSON and missing-state behavior.
 - The stamped active-surface widening hold now has 1 remaining real resume cycle and should not be decremented for synthetic or generated-artifact validation alone.
 
 What is still open right now
-1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the live-validated startup, repaired delivery, continuous-execution, package-cleanliness, repaired plan-tracker guidance, and repaired memory-preflight routing baseline.
-2. Rank and execute the next highest-value workflow-state or buffer-capable helper-skill pass under the current CI/CD-style validation regime.
+1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the live-validated startup, repaired delivery, continuous-execution, package-cleanliness, repaired plan-tracker guidance, repaired memory-preflight routing baseline, aligned validation-orchestrator grouped-delivery coverage, and batched manual-update preference handling.
+2. Rank and execute the next highest-value workflow-state or validation-ownership helper-skill pass under the current CI/CD-style validation regime while holding compatible fixes for the next meaningful grouped manual update/install wave.
 3. Use the updated `dcoir-parity-verifier` and `dcoir-skill-regression-auditor` package-cleanliness checks for future delivered skill-package verification and post-patch readiness claims.
 4. Continue enforcing the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other buffer-capable skills before future governed pushes.
 5. Use the repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode and the recorded commit `Summary` preference for future manual deliveries unless a later request overrides them.
