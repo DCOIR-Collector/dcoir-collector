@@ -12,14 +12,13 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 
 ## Overview
 Use this skill to run a controlled QA / V&V / regression loop for the DCOIR collector line.
-The primary scope is the current readable collector source, the current local harness mirrors, the rollback reference, the emitted runtime filename rules, and the maintained documentation surface for those files.
+The primary scope is the current GitHub-readable collector and harness sources, the emitted runtime filename rules, the maintained documentation surface for those files, and rollback reference material only when explicit comparison or historical regression context is needed.
 
 ## Authoritative source set
 Re-anchor to the current control plane first.
-Treat these project-readable files as the primary collector QA scope unless the manifest changes:
+Treat these current GitHub-readable files as the primary collector QA scope unless the manifest changes:
 - `project_sources/DCOIR_Collector.ps1`
 - `project_sources/run_DCOIR_Tests.ps1`
-- `project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt`
 - `project_sources/CP-01_DCOIR_Version_Manifest.txt`
 - `project_sources/CP-02_DCOIR_Change_Log.txt`
 - `project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt`
@@ -27,6 +26,7 @@ Treat these project-readable files as the primary collector QA scope unless the 
 - `project_sources/LOG-01_DCOIR_Todo_Index.txt` and `project_sources/todo/*.txt` when the active work-line split matters to current QA follow-through
 - `project_sources/LOG-02_DCOIR_Lessons_Learned_Log.txt` when lessons or failing cases need preservation
 - `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt` when validating against the current phase handoff
+- Use `project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt` only when explicit rollback comparison, historical regression reference, or bounded rollback analysis is part of the QA question.
 
 ## Default posture
 Use a hybrid posture by default:
@@ -49,7 +49,7 @@ Use a hybrid posture by default:
 7. If the user asks for code repair or in-code documentation refresh, switch into explicit repair mode using `references/repair_mode.md` and run `scripts/render_repair_plan.py` so the changed targets, documentation targets, validation lanes, and stop conditions are explicit before claiming a fix.
 8. Use `scripts/render_collector_qa_report.py` to emit a timestamped markdown report and, when helpful, a companion JSON results file.
 9. When the QA state changed materially, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when the connector cannot safely complete the write.
-10. In repair mode, update the readable source or harness mirrors only for the defect-under-test, refresh targeted in-code documentation when it materially improves future maintenance, regenerate the maintenance code blocks from the current authoritative sources, rerun the motivating failure lane, rerun at least one known-good control lane, and only then report the patch as validated.
+10. In repair mode, update the readable collector or harness source only for the defect-under-test, refresh targeted in-code documentation when it materially improves future maintenance, regenerate the maintenance code blocks from the current authoritative sources, rerun the motivating failure lane, rerun at least one known-good control lane, and only then report the patch as validated.
 
 ## GitHub-backed skill memory
 

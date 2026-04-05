@@ -1,45 +1,45 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.48
+Current state id: 2026-04-05-collector-operator-github-primary-and-control-plane-pair-fix-v1
+Change class: collector/operator github-primary alignment and control-plane version-pair correction
+
+What changed
+- Added `project_sources/LOG-35_DCOIR_Collector_Operator_GitHub_Primary_And_Control_Plane_Pair_Fix_2026-04-05.txt` as the governed decision record for the bounded collector/operator follow-through alignment pass across `dcoir-operator-workflow-hardener` and `dcoir-collector-qa`, together with a correction of the control-plane version-pair mismatch left in the previous live repo state.
+- Updated `dcoir-operator-workflow-hardener` so it now uses GitHub-primary governed-readable-source language consistently instead of older uploaded-source wording when choosing operator execution lanes and reasoning from the current collector source.
+- Updated `dcoir-collector-qa` so the current GitHub-readable collector and harness sources are the default QA scope, rollback material is treated as an explicit comparison or historical-regression lane rather than a primary default source, and the maintenance contract no longer treats a local harness CMD wrapper as a maintained default command block.
+- Updated `dcoir-collector-qa` references so harness guidance points to the current readable harness source instead of older harness-mirror wording.
+- Corrected the live control-plane version pair by bringing `CP-02` forward to match the already-live `CP-01` branch and then advancing both surfaces together in one bounded grouped update.
+
+Why
+- The coordinated campaign found that the collector-follow-through family still carried older uploaded-source or mirror-oriented wording even though the current DCOIR working line is GitHub-primary.
+- The same review found a live control-plane defect: `CP-01` had already advanced to 3.9.47 while `CP-02` still reported 3.9.46, which would eventually undermine the source-authority drift gate if left uncorrected.
+- Grouping the collector/operator wording fixes with the control-plane pair correction reduced operator friction and avoided surfacing a separate one-off patch just to repair the version mismatch.
+
+Validation notes
+- The updated `dcoir-operator-workflow-hardener` and `dcoir-collector-qa` skill packages pass clean packaging validation with no runtime-residue entries included.
+- Reference review confirms that operator guidance and collector QA now point at the current GitHub-readable collector and harness sources, and that rollback material is treated as bounded historical comparison input rather than a default authoritative source.
+- The next immediate branch is to continue the workflow-state, authority, and collector-follow-through high-risk wave from the now corrected control-plane version pair and GitHub-primary collector/operator baseline.
+
+[PRIOR]
 Version: 3.9.47
 Current state id: 2026-04-05-resume-authority-bounded-assets-and-batched-prompts-v1
 Change class: resume-skill packaging repair and source-authority bounded supporting-asset handling
 
 What changed
 - Added `project_sources/LOG-34_DCOIR_Resume_Packaging_And_Source_Authority_Bounded_Asset_Handling_2026-04-05.txt` as the governed decision record for the bounded resume/authority alignment pass across `dcoir-session-resume` and `dcoir-source-authority-auditor`.
-- Updated `dcoir-session-resume` so the packaged skill now includes valid skill frontmatter and grouped follow-up prompt guidance that matches the current batched manual-update workflow.
-- Updated `dcoir-source-authority-auditor` so missing supporting assets now produce a bounded result instead of a hard-stop conflict unless the current task explicitly depends on those assets as authority.
-- Updated the source-authority audit rules and deterministic audit script so authoritative readable-source absence still hard-stops, but supporting-asset absence is surfaced as a bounded note rather than misclassified as an authority conflict.
-- Refreshed the active continuity and todo surfaces so the coordinated campaign now carries valid resume-skill packaging and bounded source-authority handling for missing supporting assets.
+- Repaired `dcoir-session-resume` so the skill packages cleanly with valid skill frontmatter and grouped follow-up prompt guidance that matches the current batched manual-update posture.
+- Repaired `dcoir-source-authority-auditor` so missing supporting assets no longer trigger a hard-stop conflict unless the current task explicitly depends on those assets as authority.
+- Preserved authoritative readable-source absence as a hard-stop conflict and kept the bounded-versus-hard-stop distinction explicit in both the audit rules and the deterministic audit script.
+- Refreshed the active continuity surfaces so the coordinated campaign now carries valid resume packaging and bounded authority-audit asset handling together.
 
 Why
-- The coordinated campaign found that `dcoir-session-resume` still lacked the normal skill frontmatter and did not reflect the grouped follow-up prompt posture now used in batched manual-update waves.
-- The same review found a real contradiction in `dcoir-source-authority-auditor`: its hard rules said supporting assets are not control-plane authority, but the deterministic audit script could still hard-stop when only a supporting asset was absent from the workspace.
-- The highest-value bounded fix was to repair both sides of the resume/authority bootstrap lane together so status checks and drift-gate audits stay valid in partial or batched delivery workspaces.
+- The coordinated campaign found that `dcoir-session-resume` still lacked normal skill frontmatter even though it is part of the mandatory first-turn bootstrap pair.
+- The same review found a contradiction in `dcoir-source-authority-auditor`: the skill said supporting assets are not control-plane authority, but the deterministic audit script could still hard-stop when only a supporting asset was absent from the workspace.
+- Those two issues sit on the same resume/authority bootstrap lane, so repairing them together reduced friction for current-state checks in partial or batched delivery workspaces.
 
 Validation notes
 - The updated `dcoir-session-resume` and `dcoir-source-authority-auditor` skill packages pass clean packaging validation.
 - Representative deterministic audit tests confirm that missing authoritative readable sources still hard-stop, while missing supporting assets now produce a bounded outcome when the task does not depend on them as authority.
-- The next immediate branch is to continue the workflow-state and authority high-risk wave from the now valid resume packaging and bounded source-authority baseline.
-
-[PRIOR]
-Version: 3.9.46
-Current state id: 2026-04-05-batched-bootstrap-and-validation-alignment-v1
-Change class: batched bootstrap and validation alignment plus manual-update batching preference
-
-What changed
-- Added `project_sources/LOG-33_DCOIR_Batched_Bootstrap_Validation_And_Manual_Update_Preference_Alignment_2026-04-05.txt` as the governed decision record for the bounded multi-skill alignment pass across `dcoir-memory-preflight`, `dcoir-validation-orchestrator`, and `dcoir-decision-policy`.
-- Updated `dcoir-memory-preflight` so its skill body and reference layer now explicitly include coordinated multi-skill patch campaigns and GitHub Desktop manual repo-update or grouped governed-push deliveries as mandatory preflight families, with the correct grouped-transaction, post-write-verification, and connector-lane pairings.
-- Updated `dcoir-validation-orchestrator` so validation planning now treats coordinated multi-skill delivery waves, GitHub Desktop affected-path bundle checks, and installable skill package-cleanliness checks as explicit validation coverage instead of leaving them implicit under generic packager wording.
-- Updated `dcoir-decision-policy` so operator preference for fewer manual GitHub/Desktop and one-skill-at-a-time install cycles is treated as a durable batching overlay, preferring meaningful bounded multi-skill manual-update waves when compatible fixes are already known.
-- Refreshed the active continuity and todo surfaces so the coordinated campaign now points at grouped manual-update waves by default rather than trickling one repaired skill at a time when a compatible batch is available.
-
-Why
-- The coordinated all-skills campaign found that the previous memory-preflight alignment patch had not landed in the live repo and that the same general area still had reference-layer drift across bootstrap routing, validation planning, and manual-update batching preference handling.
-- The operator explicitly stated a durable preference for fewer GitHub Desktop repo updates and fewer one-skill-at-a-time manual installs when compatible fixes can be grouped.
-- The highest-value bounded fix was to align the bootstrap-routing owner, the validation-planning owner, and the branch-control owner together and then surface them as one grouped manual update.
-
-Validation notes
-- The updated `dcoir-memory-preflight`, `dcoir-validation-orchestrator`, and `dcoir-decision-policy` skill packages pass clean packaging validation with no runtime-residue entries included.
-- Reference review confirms that coordinated campaigns, GitHub Desktop manual repo-update deliveries, grouped governed pushes, grouped delivery-wave validation, and batched manual-update preference handling are now explicitly represented in the affected skill instructions or references.
-- The next immediate branch is to continue the workflow-state and validation-ownership high-risk wave from the now aligned bootstrap, validation, and batched manual-update baseline.
+- The next immediate branch is to continue the coordinated campaign into the next workflow-state or authority-adjacent helper-skill pass while keeping compatible fixes for the next meaningful grouped manual update/install wave.

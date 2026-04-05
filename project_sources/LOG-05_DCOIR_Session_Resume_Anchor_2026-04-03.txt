@@ -1,6 +1,6 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-05-resume-authority-bounded-assets-and-batched-prompts-v1
+Current state id: 2026-04-05-collector-operator-github-primary-and-control-plane-pair-fix-v1
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.

@@ -33,7 +33,7 @@ Treat any of these as a defect:
 ## Minimum maintained command blocks
 Prefer to keep these current when evidence supports them:
 - local harness PS1 invocation
-- local harness CMD wrapper invocation
+- endpoint-side Elastic collector execution example only when the current evidence or maintained docs actually include it
 - any collector cleanup or delete command emitted directly by the collector source
 
 

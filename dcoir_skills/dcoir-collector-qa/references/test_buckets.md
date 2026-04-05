@@ -8,7 +8,7 @@ Validate the current readable source set before claiming anything about runtime 
 Minimum checks:
 - current authoritative filenames match the control plane
 - runtime alias rules still map readable sources to emitted runtime filenames
-- harness mirrors still point to the expected runtime collector filename
+- current harness source still points to the expected runtime collector filename
 - output-contract markers still exist in the collector source
 - known maintenance command blocks still match current sources
 

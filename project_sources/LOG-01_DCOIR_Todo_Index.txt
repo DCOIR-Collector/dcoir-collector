@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-resume-authority-bounded-assets-and-batched-prompts-v1
+Current state id: 2026-04-05-collector-operator-github-primary-and-control-plane-pair-fix-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.

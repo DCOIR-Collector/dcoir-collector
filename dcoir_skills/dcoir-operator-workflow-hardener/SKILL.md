@@ -19,8 +19,8 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 
 1. Resolve the current manifest first, preferring `CP-01_DCOIR_Version_Manifest.txt`.
 2. Resolve the current change log second, preferring `CP-02_DCOIR_Change_Log.txt`.
-3. Treat only files marked current in the manifest as authoritative uploaded project-readable sources.
-4. Use the readable uploaded collector source for reasoning and the emitted runtime name for operator commands.
+3. Treat only files marked current in the manifest as authoritative governed GitHub-readable sources.
+4. Use the current GitHub-readable collector source for reasoning and the emitted runtime name for operator commands.
 5. Stop if the control plane is missing or inconsistent.
 
 ## Core defaults
@@ -69,7 +69,7 @@ Workflow:
 3. If the user needs both lanes, present them sequentially, never blended into one malformed command.
 
 ### 4. Retrieval and cleanup handling
-Use this path when the operator asks what to retrieve, when to run cleanup, or whether to delete the uploaded script.
+Use this path when the operator asks what to retrieve, when to run cleanup, or whether to delete the staged collector script.
 
 Defaults:
 - If `NEXT_GET_FILE` is present, retrieval is usually the next live operator action.
