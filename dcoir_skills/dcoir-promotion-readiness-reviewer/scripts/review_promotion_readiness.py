@@ -10,6 +10,23 @@ def review(data):
     if data.get('testable') and not data.get('deep_regression_passed'): missing.append('deep_regression_passed')
     if data.get('release_instructions_required') and not data.get('release_instructions_present'): missing.append('release_instructions_present')
     if not data.get('downstream_refreshes_resolved'): missing.append('downstream_refreshes_resolved')
+
+    packaging = data.get('packaging_posture')
+    if packaging == 'batched-skill-update-wave':
+        if not data.get('all_changed_skills_regression_covered'):
+            missing.append('all_changed_skills_regression_covered')
+        if not data.get('batched_skill_bundle_present'):
+            missing.append('batched_skill_bundle_present')
+    if packaging == 'github-desktop-manual-repo-update':
+        if not data.get('repo_update_bundle_present'):
+            missing.append('repo_update_bundle_present')
+        if data.get('commit_summary_required') and not data.get('commit_summary_present'):
+            missing.append('commit_summary_present')
+        if data.get('delivery_instructions_required') and not data.get('delivery_instructions_present'):
+            missing.append('delivery_instructions_present')
+    if data.get('package_cleanliness_required') and not data.get('package_cleanliness_passed'):
+        missing.append('package_cleanliness_passed')
+
     if missing:
         status='not_ready'
         reason='blocking readiness gaps remain'

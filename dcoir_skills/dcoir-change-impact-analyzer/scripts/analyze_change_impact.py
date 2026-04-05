@@ -216,8 +216,10 @@ def build_analysis(source_dir: Path, changed_targets: List[str]) -> Dict[str, An
     deep_regression: List[str] = []
     skill_impacts: List[str] = []
     reasons: List[str] = []
+    skill_change_targets: List[str] = []
     warnings: List[str] = []
     packaging = 'none'
+    secondary_skill_delivery = 'none'
     packaging_order = rules['packaging_priority']
 
     for item in classifications:
@@ -230,6 +232,8 @@ def build_analysis(source_dir: Path, changed_targets: List[str]) -> Dict[str, An
         reasons.append(f"{target}: {rule['reason']}")
         if packaging_rank(rule.get('packaging', 'none'), packaging_order) > packaging_rank(packaging, packaging_order):
             packaging = rule.get('packaging', 'none')
+        if target.startswith('dcoir-'):
+            skill_change_targets.append(target)
         if not target.startswith('dcoir-') and not target_in_current_working_set(target, current_known):
             warnings.append(f'Target not present in the current manifest working set: {target}')
 
@@ -259,6 +263,18 @@ def build_analysis(source_dir: Path, changed_targets: List[str]) -> Dict[str, An
     if any(t.startswith('dcoir-') for t in changed_targets):
         deep_regression.append('production-readiness gate: deep regression required before live use and after every patch')
 
+    skill_count = len({t for t in skill_change_targets})
+    if skill_count > 1:
+        secondary_skill_delivery = 'batched_skill_update_wave'
+    elif skill_count == 1:
+        secondary_skill_delivery = 'targeted_skill_update'
+
+    if packaging == 'targeted_skill_update' and secondary_skill_delivery == 'batched_skill_update_wave':
+        packaging = 'batched_skill_update_wave'
+
+    if packaging == 'none' and any(not t.startswith('dcoir-') for t in changed_targets):
+        packaging = 'github_desktop_manual_repo_update'
+
     stop_conditions = [
         'Stop if the manifest or change log cannot be resolved.',
         'Stop if a changed target is unknown and the classification materially affects authority, packaging, or the live release set.',
@@ -276,6 +292,7 @@ def build_analysis(source_dir: Path, changed_targets: List[str]) -> Dict[str, An
         'deep_regression': unique_preserve(deep_regression),
         'skill_impacts': unique_preserve(skill_impacts),
         'packaging_recommendation': packaging,
+        'secondary_skill_delivery_recommendation': secondary_skill_delivery,
         'reasoning': reasons,
         'warnings': unique_preserve(warnings),
         'stop_conditions': stop_conditions,
@@ -289,6 +306,7 @@ def render_markdown(payload: Dict[str, Any]) -> str:
     lines.append('')
     lines.append(f"- Analysis status: {payload['analysis_status']}")
     lines.append(f"- Packaging recommendation: {payload['packaging_recommendation']}")
+    lines.append(f"- Secondary skill delivery recommendation: {payload.get('secondary_skill_delivery_recommendation', 'none')}")
     lines.append('')
     lines.append('## Change summary')
     lines.append('')
@@ -356,6 +374,7 @@ def main() -> int:
             'deep_regression': [],
             'skill_impacts': [],
             'packaging_recommendation': 'none',
+            'secondary_skill_delivery_recommendation': 'none',
             'reasoning': [],
             'warnings': [],
             'stop_conditions': [str(exc)],

@@ -26,10 +26,12 @@ It does not own general branching, cadence, or operator-preference application a
 3. Confirm required validation evidence exists.
 4. Confirm downstream refreshes and packaging posture are settled.
 5. Run `scripts/review_promotion_readiness.py` when a deterministic checklist helps.
-6. Return `ready`, `ready_with_conditions`, or `not_ready`.
+6. Return `ready`, `ready_with_conditions`, or `not_ready`, with batched-delivery blockers called out explicitly when they apply.
 
 ## Hard rules
 - Do not call something ready without validation evidence.
 - Default to deeper regression for anything testable.
 - If release instructions are required but missing, block readiness.
+- If the settled packaging posture is a batched skill-update wave, block readiness until every changed skill has explicit regression coverage or a plainly bounded untested reason.
+- If the settled packaging posture is a GitHub Desktop manual repo-update wave, block readiness until the repo-update artifact, required delivery instructions, and suggested commit-summary guidance are present when that guidance is required by the current workflow.
 - If downstream refresh obligations are unresolved, block readiness.

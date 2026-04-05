@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-collector-operator-github-primary-and-control-plane-pair-fix-v1
+Current state id: 2026-04-05-release-impact-readiness-delivery-class-fix-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -13,7 +13,7 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired `dcoir-memory-preflight` coordinated-campaign and delivery-trigger alignment, aligned `dcoir-validation-orchestrator` grouped-delivery coverage, batched manual-update preference handling in `dcoir-decision-policy`, valid `dcoir-session-resume` packaging, and bounded `dcoir-source-authority-auditor` supporting-asset handling.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired `dcoir-memory-preflight` coordinated-campaign and delivery-trigger alignment, aligned `dcoir-validation-orchestrator` grouped-delivery coverage, batched manual-update preference handling in `dcoir-decision-policy`, valid `dcoir-session-resume` packaging, and bounded `dcoir-source-authority-auditor` supporting-asset handling, plus aligned release/impact/readiness delivery-class handling.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt

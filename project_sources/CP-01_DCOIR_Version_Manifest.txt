@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.48
+DCOIR Version Manifest 3.9.49
 
-Current state id: 2026-04-05-collector-operator-github-primary-and-control-plane-pair-fix-v1
+Current state id: 2026-04-05-release-impact-readiness-delivery-class-fix-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -39,6 +39,7 @@ Current control plane
 - Batched bootstrap, validation, and manual-update preference alignment: project_sources/LOG-33_DCOIR_Batched_Bootstrap_Validation_And_Manual_Update_Preference_Alignment_2026-04-05.txt
 - Resume-skill packaging repair and source-authority bounded supporting-asset handling: project_sources/LOG-34_DCOIR_Resume_Packaging_And_Source_Authority_Bounded_Asset_Handling_2026-04-05.txt
 - Collector-operator GitHub-primary wording, rollback-scope alignment, and control-plane version-pair correction: project_sources/LOG-35_DCOIR_Collector_Operator_GitHub_Primary_And_Control_Plane_Pair_Fix_2026-04-05.txt
+- Release/impact/readiness delivery-class alignment: project_sources/LOG-36_DCOIR_Release_Impact_And_Readiness_Delivery_Class_Alignment_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -69,6 +70,9 @@ Current governed helper-skill source
 - `dcoir-memory-preflight` now treats coordinated multi-skill campaigns and GitHub Desktop manual repo-update or grouped governed-push deliveries as explicit preflight families.
 - `dcoir-validation-orchestrator` now treats coordinated multi-skill delivery waves, GitHub Desktop affected-path bundle checks, and installable skill package-cleanliness checks as explicit validation coverage.
 - `dcoir-decision-policy` now prefers meaningful bounded multi-skill manual-update waves when the operator wants fewer GitHub Desktop repo updates and fewer one-skill-at-a-time manual installs.
+- `dcoir-change-impact-analyzer` now distinguishes targeted skill updates, batched skill-update waves, GitHub Desktop manual repo-update bundles, and full-refresh project-upload classes instead of collapsing current delivery options into a coarse targeted-versus-full-refresh split.
+- `dcoir-release-scope-builder` now treats GitHub Desktop manual repo-update bundles and batched multi-skill update waves as first-class packaging classes alongside repo-layout local testing, targeted skill updates, and full-refresh project-upload bundles.
+- `dcoir-promotion-readiness-reviewer` now checks readiness for batched skill waves and GitHub Desktop manual repo-update deliveries, including per-skill regression coverage, required delivery artifacts, and commit-summary or instruction presence when the settled posture requires them.
 - The confirmed current DCOIR skills with real local JSON working-state files are `dcoir-session-tracker` and `dcoir-plan-tracker`.
 - Manual GitHub Desktop repo-update bundles should unzip directly to only the affected repo-relative folders and files with no extra wrapper root.
 - Single-skill delivery should provide only the affected skill zip.
@@ -85,5 +89,6 @@ Current next work item
 - Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired memory-preflight routing, aligned validation-orchestrator grouped-delivery coverage, batched manual-update preference handling, valid session-resume packaging, bounded source-authority handling for missing supporting assets, GitHub-primary collector-operator wording, and corrected control-plane version-pair continuity.
 - Continue the workflow-state, authority, and collector-follow-through high-risk wave after the repaired `dcoir-memory-preflight`, aligned `dcoir-validation-orchestrator`, batched `dcoir-decision-policy`, valid `dcoir-session-resume` packaging, repaired `dcoir-source-authority-auditor` bounded-asset handling lane, aligned `dcoir-operator-workflow-hardener`, and corrected `dcoir-collector-qa` source-scope and maintenance-contract lane.
 - Continue the bounded package-cleanliness enforcement pass across the helper-skill library so runtime residue such as `__pycache__/` and `*.pyc` does not contaminate delivered skill packages.
+- Use the repaired release/impact/readiness delivery-class model to keep future grouped GitHub Desktop repo updates and batched skill-install waves aligned to the current operator workflow.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
 - Keep the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.

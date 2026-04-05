@@ -1,6 +1,6 @@
 ---
 name: dcoir-release-scope-builder
-description: determine the right dcoir release or packaging class for an already-identified africom_soc_ir / dcoir project change. use only when working inside the africom_soc_ir / dcoir project context and chatgpt needs to choose whether the change stays local, becomes a targeted skill update, becomes a repo-layout test bundle, or requires a full-refresh project upload bundle with release instructions. this skill owns packaging-class selection, not general decision branching or promotion-readiness judgment.
+description: determine the right dcoir release or packaging class for an already-identified africom_soc_ir / dcoir project change. use only when working inside the africom_soc_ir / dcoir project context and chatgpt needs to choose whether the change stays local, becomes a targeted skill update, becomes a batched multi-skill update wave, becomes a github desktop manual repo-update bundle, becomes a repo-layout test bundle, or requires a full-refresh project upload bundle with release instructions. this skill owns packaging-class selection, not general decision branching or promotion-readiness judgment.
 ---
 
 # DCOIR Release Scope Builder
@@ -30,9 +30,11 @@ It does not judge whether the built change is ready, conditionally ready, or not
 6. Return the recommended release or packaging class, why it fits, and what release notes or instructions are required.
 
 ## Default scope rules
-- local-only testing -> repo-layout or skill-local package
+- local-only testing -> repo-layout local testing
 - one helper skill with no project-source effect -> targeted skill update
-- structural, renamed, broad, or multi-file current-source change -> full-refresh bundle
+- multiple compatible helper-skill changes with no broader repo-readable source change -> batched skill-update wave
+- current governed repo-readable changes in the GitHub-primary line -> GitHub Desktop manual repo-update bundle
+- structural, uploaded-project, or broader project-upload class change -> full-refresh project upload
 - anything authority-adjacent -> explicit review before release
 
 ## References

@@ -4,14 +4,27 @@ import argparse
 
 
 def choose_scope(targets: list[str]) -> tuple[str, str]:
-    joined = ' '.join(targets).lower()
-    if any(x in joined for x in ['manifest', 'change_log', 'layout', 'collector', 'prompt', 'rename', 'structural']):
-        return 'full-refresh', 'structural, runtime, or project-source-affecting change detected'
+    lowered = [t.lower() for t in targets]
+    joined = ' '.join(lowered)
+    skill_targets = [t for t in targets if t.startswith('dcoir-')]
+    non_skill_targets = [t for t in targets if not t.startswith('dcoir-')]
+
     if any(x in joined for x in ['repo', 'local test', 'local-only']):
-        return 'repo-layout', 'request is centered on local execution or testing'
-    if any(x.startswith('dcoir-') for x in targets):
-        return 'targeted-skill-update', 'helper-skill-only change detected with no broader source scope claimed'
-    return 'bounded-review', 'scope is not broad enough for automatic full-refresh but needs explicit review'
+        return 'repo-layout-local-testing', 'request is centered on local execution or testing'
+
+    if any(x in joined for x in ['project upload', 'full refresh upload', 'supporting_assets/', 'project_settings/', 'structural', 'rename']):
+        return 'full-refresh-project-upload', 'broader project-upload or structural change detected'
+
+    if non_skill_targets:
+        return 'github-desktop-manual-repo-update', 'current governed repo-readable change detected in the GitHub-primary working line'
+
+    if len(skill_targets) > 1:
+        return 'batched-skill-update-wave', 'multiple compatible helper-skill changes detected'
+
+    if len(skill_targets) == 1:
+        return 'targeted-skill-update', 'single helper-skill-only change detected'
+
+    return 'bounded-review', 'scope is not broad enough for automatic class selection and needs explicit review'
 
 
 def main() -> int:

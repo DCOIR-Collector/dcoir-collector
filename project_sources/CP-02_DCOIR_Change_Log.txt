@@ -1,6 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.49
+Current state id: 2026-04-05-release-impact-readiness-delivery-class-fix-v1
+Change class: release, impact, and readiness delivery-class alignment for grouped manual-update waves
+
+What changed
+- Added `project_sources/LOG-36_DCOIR_Release_Impact_And_Readiness_Delivery_Class_Alignment_2026-04-05.txt` as the governed decision record for the bounded delivery-class alignment pass across `dcoir-change-impact-analyzer`, `dcoir-release-scope-builder`, and `dcoir-promotion-readiness-reviewer`.
+- Updated `dcoir-change-impact-analyzer` so packaging recommendations now distinguish targeted skill updates, batched skill-update waves, GitHub Desktop manual repo-update bundles, and full-refresh project-upload bundles, and so multi-skill change sets can escalate from a one-skill recommendation to a batched skill wave.
+- Updated `dcoir-release-scope-builder` so GitHub Desktop manual repo-update bundles and batched multi-skill update waves are first-class packaging classes rather than being forced into the older targeted-versus-full-refresh split.
+- Updated `dcoir-promotion-readiness-reviewer` so readiness review now checks batched skill-wave regression coverage and GitHub Desktop manual-update delivery requirements such as repo-update artifacts, delivery instructions, and suggested commit-summary guidance when the settled posture requires them.
+- Refreshed the active continuity and todo surfaces so the coordinated campaign now carries an explicit release/impact/readiness delivery-class model that matches the current GitHub Desktop and batched manual-install workflow.
+
+Why
+- The coordinated campaign found that the release/impact/readiness family still reasoned in a coarse targeted-versus-full-refresh model even though the current operator workflow already uses GitHub Desktop manual repo-update bundles and batched multi-skill install waves as distinct delivery classes.
+- That mismatch risked under-describing the real next delivery step, weakening grouped-update planning and readiness judgment for the current workflow.
+- The highest-value bounded fix was to align the impact-analysis owner, the release-scope owner, and the readiness-check owner together in one grouped wave.
+
+Validation notes
+- The updated `dcoir-change-impact-analyzer`, `dcoir-release-scope-builder`, and `dcoir-promotion-readiness-reviewer` skill packages pass clean packaging validation with no runtime-residue entries included.
+- Representative checks confirm that multi-skill change sets now surface batched skill-wave delivery, GitHub Desktop repo-readable changes now surface manual repo-update delivery, and readiness review now blocks missing batched-wave or manual-update delivery prerequisites when those classes apply.
+- The next immediate branch is to continue the remaining high-risk helper-skill deep-dive from the now aligned release/impact/readiness delivery-class baseline.
+
+[PRIOR]
 Version: 3.9.48
 Current state id: 2026-04-05-collector-operator-github-primary-and-control-plane-pair-fix-v1
 Change class: collector/operator github-primary alignment and control-plane version-pair correction

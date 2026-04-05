@@ -13,12 +13,14 @@ This skill determines what else must be refreshed, reviewed, regression-tested, 
 
 ## Packaging strength order
 - none
-- targeted
-- full_refresh
+- targeted_skill_update
+- batched_skill_update_wave
+- github_desktop_manual_repo_update
+- full_refresh_project_upload
 
 ## Anti-pattern handling
 - Direct edits to `PP-08_Combined_Analyst_Facing_Master_Prompt_*` without corresponding modular prompt changes should trigger a warning because PP-08 is a generated runtime artifact, not the modular source of truth.
-- Structural or naming-model changes should push packaging to `full_refresh`.
+- Structural or naming-model changes should push packaging at least to `github_desktop_manual_repo_update`, and to `full_refresh_project_upload` only when the broader project-upload class is actually required.
 - Current-supporting-asset changes should never be treated as control-plane changes unless the manifest also changes.
 - Old Project-mirror filenames should not be treated as current when the manifest has already moved the working set to GitHub-native readable sources.
 
@@ -34,4 +36,4 @@ The report should be specific enough that ChatGPT can answer:
 - what must be regenerated now
 - what only needs review
 - what must be deep-regression tested
-- whether a targeted bundle is still safe or whether the change now requires a full-refresh bundle
+- whether a targeted skill update, batched skill-update wave, GitHub Desktop manual repo-update bundle, or full-refresh project-upload bundle is the right next delivery class

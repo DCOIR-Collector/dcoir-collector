@@ -1,6 +1,6 @@
 ---
 name: dcoir-change-impact-analyzer
-description: analyze proposed or completed changes in the africom_soc_ir / dcoir project and determine the downstream refresh set, helper-skill impacts, regression requirements, packaging recommendation, and stop conditions. use when chatgpt needs to answer what else must change after a file, asset, skill, workflow, packaging, or prompt-pack update; when validating whether a change is safe to promote; or when deciding whether a targeted update or full-refresh bundle is required. prefer the current gitHub-primary control plane, current manifest roles, and current gitHub-native collector or harness filenames over older project-mirror assumptions. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
+description: analyze proposed or completed changes in the africom_soc_ir / dcoir project and determine the downstream refresh set, helper-skill impacts, regression requirements, primary delivery recommendation, any secondary skill-delivery recommendation, and stop conditions. use when chatgpt needs to answer what else must change after a file, asset, skill, workflow, packaging, or prompt-pack update; when validating whether a change is safe to promote; or when deciding whether a targeted update or full-refresh bundle is required. prefer the current gitHub-primary control plane, current manifest roles, and current gitHub-native collector or harness filenames over older project-mirror assumptions. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
 ---
 
 # DCOIR Change Impact Analyzer
@@ -14,7 +14,7 @@ Use this skill to turn a proposed or completed DCOIR change into an explicit dow
 4. Identify the changed files, changed assets, changed skills, or changed workflow targets from the user request.
 5. Run `scripts/analyze_change_impact.py` with the changed targets.
 6. Read the generated markdown and json reports.
-7. Return the direct refresh set, conditional review set, deep-regression set, packaging recommendation, and stop conditions.
+7. Return the direct refresh set, conditional review set, deep-regression set, primary delivery recommendation, any secondary skill-delivery recommendation, and stop conditions.
 
 ## Inputs this skill supports
 - Explicit file list such as `project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt`, `PP-07_Agent_Guardrails_v1_0_0.txt`, or `project_sources/DCOIR_Collector.ps1`
@@ -46,7 +46,9 @@ Stop if the manifest or change log cannot be resolved.
 - Do not treat supporting assets as control-plane authority.
 - Hard-stop unknown targets that fall outside the current rule set; do not emit a provisional packaging recommendation for them.
 - When the change affects a skill, script, packaging path, or runtime behavior, require deep regression before the result is treated as ready for live or production use.
-- Prefer full-refresh bundles for structural changes, renames, broad multi-file syncs, control-plane changes, or packaging-model changes.
+- Prefer GitHub Desktop manual repo-update bundles for current governed repo-readable changes in the GitHub-primary working line unless the change truly belongs to repo-layout local testing, targeted skill-only delivery, a batched skill-update wave, or a full-refresh project-upload class.
+- Prefer batched skill-update waves over one-skill-at-a-time delivery when multiple compatible helper-skill fixes are already ready.
+- Reserve full-refresh project-upload recommendations for changes that truly require the broader project-upload class rather than ordinary governed GitHub repo updates.
 - Prefer manifest role resolution over brittle filename assumptions.
 
 ## Deep-regression rule
@@ -67,7 +69,7 @@ Return these sections in order:
 3. Required refresh set
 4. Conditional review set
 5. Deep-regression test set
-6. Packaging recommendation
+6. Packaging and delivery recommendation
 7. Stop conditions and warnings
 
 ## Commands
@@ -85,7 +87,7 @@ python scripts/analyze_change_impact.py   --source-dir /mnt/data   --output-dir 
 After the script runs:
 - Read `dcoir_change_impact_report.md` and `dcoir_change_impact_report.json`.
 - If the report says `analysis_status` is `failure`, explain the exact stop reason.
-- If the report says `analysis_status` is `success`, summarize the required refresh set and deep-regression set plainly.
+- If the report says `analysis_status` is `success`, summarize the required refresh set, deep-regression set, and the delivery recommendation plainly.
 - Call out anti-patterns such as direct PP-08 edits without corresponding modular prompt-pack changes.
 - Treat helper-skill refreshes and deep regression as first-class downstream work items when the rules require them.
 
