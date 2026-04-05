@@ -1,15 +1,15 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-05-prompt-intake-design-family-alignment-v1
+Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
 - Project Instructions remain the first bootstrap anchor.
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- The authoritative active work queue now points at the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the aligned prompt/intake design-family baseline.
+- The authoritative active work queue is no longer the broad all-skills deep-dive campaign; that campaign is complete through the current governed helper-skill inventory.
 
 What is still open right now
-1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the aligned prompt/intake design-family baseline.
-2. Rank and execute the next highest-value remaining helper-skill pass under the current CI/CD-style validation regime.
-3. Use the updated package-cleanliness checks for future delivered skill-package verification.
+1. Maintain package-cleanliness enforcement and parity verification for future delivered skill packages.
+2. Handle future helper-skill fixes in bounded grouped waves only when new defects or workflow drift appear.
+3. Keep the stamped active-surface widening hold at 1 remaining real resume cycle before any widening review.

@@ -1,6 +1,20 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-prompt-intake-design-family-alignment-v1
+Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
+
+Current stable pointers
+- Repo: malwaredevil/dcoir-collector
+- Collector runtime: project_sources/DCOIR_Collector.ps1
+- Collector source set: project_sources/collector_parts/*.ps1
+- Harness: project_sources/run_DCOIR_Tests.ps1
+- Task memory bank root: knowledge/task_memory
+- Governed helper-skill source root: dcoir_skills/
+- Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the aligned prompt/intake design-family baseline.
+- Maintain the post-campaign helper-skill library in bounded grouped waves, keeping package-cleanliness enforcement, parity verification, and delivery-shape discipline active under the current GitHub Desktop manual-update posture.
+
+Queued next priorities
+- Keep package-cleanliness enforcement active so delivered skill zips stay free of runtime residue such as `__pycache__/` and `*.pyc`.
+- Use parity verification and representative regression before treating future skill patches as ready.
+- Decrement the widening hold only after the next qualifying real resume cycle.

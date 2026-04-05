@@ -1,7 +1,6 @@
 interface:
   display_name: DCOIR Live Test Remediation Planner
-  short_description: Turn DCOIR live-test findings into a ranked remediation queue
-    with deep-regression requirements.
+  short_description: Turn DCOIR live-test findings into a ranked remediation queue with delivery posture and deep-regression requirements.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

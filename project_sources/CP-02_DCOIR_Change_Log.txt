@@ -1,27 +1,29 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.54
+Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
+Change class: final remaining helper-skill wave, routing completion, and coordinated campaign closeout
+
+What changed
+- Added `project_sources/LOG-41_DCOIR_Final_Remaining_Helper_Skill_Wave_And_Campaign_Closeout_2026-04-05.txt` as the governed decision record for the final remaining helper-skill wave and coordinated campaign closeout.
+- Repaired `dcoir-live-test-remediation-planner` so it resolves the current `project_sources/` control-plane files and uses the current delivery classes instead of the retired coarse targeted-versus-full-refresh split.
+- Repaired `dcoir-structural-rename-coordinator` so it maps rename impact to current repo and skill delivery posture instead of forcing a generic full-refresh answer for every rename.
+- Refreshed `knowledge/DCOIR_Helper_Skills_Routing_Note.md` so the fast routing matrix now includes the final missing current rows for attention signaling, live-test remediation planning, and structural rename coordination.
+- Re-audited `dcoir-attention-signaler` in the final remaining wave and recorded that no governed source change was needed.
+- Refreshed the continuity and todo surfaces so the coordinated all-skills helper-skill deep-dive and code-hygiene campaign is now recorded as complete through the current governed helper-skill inventory.
+
+Why
+- The remaining untouched helper-skill family still carried one real delivery-class drift and one real rename-impact generalization defect.
+- The routing note still lagged behind the visible current inventory for the final untouched family even after earlier documentation waves.
+- Closing those remaining defects in one bounded wave made it safe to move the project from campaign mode to maintenance mode instead of leaving a small but known tail behind.
+
+Validation notes
+- The updated `dcoir-live-test-remediation-planner` and `dcoir-structural-rename-coordinator` skill packages pass clean packaging validation.
+- Representative checks confirm current `project_sources/` control-plane resolution, current delivery-class recommendations, and richer rename-impact mapping.
+- The coordinated all-skills helper-skill deep-dive and code-hygiene campaign is complete through the current governed helper-skill inventory; the remaining standing item is one more qualifying real resume cycle before any widening review.
+
+[PRIOR]
 Version: 3.9.53
 Current state id: 2026-04-05-prompt-intake-design-family-alignment-v1
 Change class: prompt-pack assembly, triage escalation, and large-file intake design-family alignment
-
-What changed
-- Added `project_sources/LOG-40_DCOIR_Prompt_Intake_Design_Family_Alignment_2026-04-05.txt` as the governed decision record for the bounded prompt/intake design-family alignment pass across `dcoir-prompt-pack-assembler`, `dcoir-triage-to-collector-escalation-designer`, and `dcoir-large-file-intake-manager`.
-- Repaired `dcoir-prompt-pack-assembler` so it discovers the live PP-01 through PP-07 modular source set directly from the current GitHub-primary `project_sources/` line.
-- Repaired `dcoir-triage-to-collector-escalation-designer` so it emits an explicit DCOIR escalation contract with the exact next step, expected next evidence, and bounded-confidence note keyed to the trigger class.
-- Repaired `dcoir-large-file-intake-manager` so it returns DCOIR-specific next requested excerpts and confidence limits by artifact type rather than only generic large-file advice.
-- Refreshed the helper-skill routing note so the fast routing matrix now includes explicit prompt-pack assembly, triage escalation, and large-file intake rows.
-
-Why
-- The live manifest no longer exposes the retired prompt-upload role section that the assembler depended on.
-- The escalation and intake companions were still too generic for the current DCOIR evidence-flow and artifact-review posture.
-- Grouping these three fixes together aligned the whole prompt/intake design family in one bounded manual-update wave.
-
-Validation notes
-- The updated three-skill batch passes clean packaging validation.
-- Representative checks confirm live prompt discovery, explicit escalation output, and artifact-type-specific intake output.
-
-[PRIOR]
-Version: 3.9.52
-Current state id: 2026-04-05-readme-routing-and-doc-boundary-alignment-v1
-Change class: README, routing-note, and documentation-boundary alignment

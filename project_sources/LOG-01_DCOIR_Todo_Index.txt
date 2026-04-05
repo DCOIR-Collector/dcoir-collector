@@ -1,11 +1,13 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-prompt-intake-design-family-alignment-v1
+Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
 
 Current priority summary
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the aligned prompt/intake design-family handling.
-2. Continue the remaining high-risk helper-skill wave after the aligned prompt/intake family lane.
-3. Maintain the bounded package-cleanliness enforcement pass.
+1. The coordinated all-skills helper-skill deep-dive and code-hygiene campaign is complete through the current governed helper-skill inventory.
+2. Maintain the library through bounded grouped waves only when new issues appear.
+3. Maintain the bounded package-cleanliness enforcement pass so delivered skill zips stay free of runtime residue.
+4. Use parity verification and representative regression before treating future patches as ready.
+5. Keep the stamped active-surface widening hold at 1 remaining real resume cycle before any widening review.
 
 Current best next move
-- Continue the coordinated campaign by taking the next highest-value remaining helper-skill pass after the aligned prompt/intake family lane.
+- Hold the library in maintenance posture and wait for the next issue-driven grouped wave or the next qualifying real resume cycle.

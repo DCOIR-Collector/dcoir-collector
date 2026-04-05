@@ -1,9 +1,21 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-prompt-intake-design-family-alignment-v1
+Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
 
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the aligned prompt/intake design-family baseline.
+1. Hold the helper-skill library in maintenance posture after completing the coordinated all-skills deep-dive campaign.
    Why it matters:
-   - The project now has a cleaner prompt/intake family with less live design drift and less avoidable operator friction.
+   - The governed helper-skill inventory has now been hard-reviewed and aligned across the major workflow, documentation, delivery, and prompt/intake families.
    Next action:
-   - Continue into the next highest-value remaining helper-skill pass under the current CI/CD-style validation regime.
+   - Open a new grouped wave only when a real new defect, drift, or validated improvement need appears.
+
+2. Maintain the bounded package-cleanliness enforcement pass across future delivered skill packages.
+   Why it matters:
+   - Runtime residue such as `__pycache__/` and `*.pyc` should not leak into installable artifacts.
+   Next action:
+   - Keep stripping runtime residue and validating packaged skill zips before delivery.
+
+3. Maintain the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.
+   Why it matters:
+   - The project still wants one more qualifying real resume cycle before widening the stamped active-surface set.
+   Next action:
+   - Decrement the countdown only after the next qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.

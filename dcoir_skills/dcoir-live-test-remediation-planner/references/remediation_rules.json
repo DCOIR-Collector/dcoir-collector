@@ -1,19 +1,40 @@
 {
   "control_file_roles": {
-    "manifest": ["CP-01_DCOIR_Version_Manifest.txt", "DCOIR_Version_Manifest.txt"],
-    "change_log": ["CP-02_DCOIR_Change_Log.txt", "DCOIR_Change_Log.txt"],
-    "todo": ["LOG-01_DCOIR_Todo_Log.txt"],
-    "handoff": ["LOG-03_DCOIR_Session_Handoff_Brief.txt"]
+    "manifest": [
+      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "CP-01_DCOIR_Version_Manifest.txt",
+      "DCOIR_Version_Manifest.txt"
+    ],
+    "change_log": [
+      "project_sources/CP-02_DCOIR_Change_Log.txt",
+      "CP-02_DCOIR_Change_Log.txt",
+      "DCOIR_Change_Log.txt"
+    ],
+    "todo": [
+      "project_sources/LOG-01_DCOIR_Todo_Log.txt",
+      "LOG-01_DCOIR_Todo_Log.txt"
+    ],
+    "handoff": [
+      "project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt",
+      "LOG-03_DCOIR_Session_Handoff_Brief.txt"
+    ]
   },
+  "packaging_priority": [
+    "none",
+    "targeted_skill_update",
+    "batched_skill_update_wave",
+    "github_desktop_manual_repo_update_bundle",
+    "full_refresh_project_upload"
+  ],
   "rules": [
     {
       "id": "collector-output-interpretation",
       "keywords": ["output interpretation", "next_get_file", "retrieval guidance", "collector output", "enrich-session", "cleanup guidance"],
       "priority": 1,
       "remediation": "repair collector-output interpretation and exact next-step guidance",
-      "impacted": ["PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt", "PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt", "supporting_knowledge_docs.zip", "dcoir-operator-workflow-hardener"],
+      "impacted": ["project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt", "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt", "supporting_assets/supporting_knowledge_docs.zip", "dcoir-operator-workflow-hardener"],
       "deep_regression": ["re-test pasted collector-output interpretation paths", "re-test retrieval guidance and NEXT_GET_FILE handling", "re-test enrich-session and cleanup guidance"],
-      "packaging": "full_refresh",
+      "packaging": "full_refresh_project_upload",
       "reason": "Wrong output interpretation can block or mislead operators during collection follow-through."
     },
     {
@@ -21,9 +42,9 @@
       "keywords": ["staging guidance", "collect execution", "response-action", "elastic", "operator workflow", "command lane"],
       "priority": 1,
       "remediation": "repair operator workflow guidance and command-lane separation",
-      "impacted": ["PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt", "PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt", "DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt"],
+      "impacted": ["project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt", "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt", "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt"],
       "deep_regression": ["re-test staging guidance", "re-test collector execution guidance", "re-test command quoting and command-lane separation"],
-      "packaging": "full_refresh",
+      "packaging": "full_refresh_project_upload",
       "reason": "Operator-side workflow issues can break collection even when source files are otherwise correct."
     },
     {
@@ -31,9 +52,9 @@
       "keywords": ["large-file", "too large", "fallback", "metadata-first", "staged artifact"],
       "priority": 2,
       "remediation": "repair large-file fallback and staged-intake guidance",
-      "impacted": ["PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt", "PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt", "supporting_knowledge_docs.zip", "dcoir-large-file-intake-manager"],
+      "impacted": ["project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt", "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt", "supporting_assets/supporting_knowledge_docs.zip", "dcoir-large-file-intake-manager"],
       "deep_regression": ["re-test large-file fallback path", "re-test staged artifact intake guidance", "re-test bounded guidance when full upload is impossible"],
-      "packaging": "full_refresh",
+      "packaging": "full_refresh_project_upload",
       "reason": "Large-file handling failures can dead-end the workflow on realistic operator inputs."
     },
     {
@@ -41,19 +62,19 @@
       "keywords": ["confidence", "scope discipline", "evidence-bounded", "overconfident", "bounded"],
       "priority": 2,
       "remediation": "repair bounded-confidence and scope-discipline behavior",
-      "impacted": ["PP-01_System_Prompt_v1_0_1.txt", "PP-07_Agent_Guardrails_v1_0_0.txt", "PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt", "PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt"],
+      "impacted": ["project_sources/PP-01_System_Prompt_v1_0_1.txt", "project_sources/PP-07_Agent_Guardrails_v1_0_0.txt", "project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt", "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt"],
       "deep_regression": ["re-test evidence-bounded confidence language", "re-test refusal to overclaim from partial scope", "re-test narrow next-step recommendations"],
-      "packaging": "full_refresh",
+      "packaging": "full_refresh_project_upload",
       "reason": "Confidence and scope errors degrade trust and can misstate case posture."
     },
     {
       "id": "packaging-drift",
-      "keywords": ["retired collector name", "older folder model", "packaging drift", "repo bundle", "full-refresh bundle", "knowledge zip"],
+      "keywords": ["packaging drift", "repo bundle", "manual update bundle", "knowledge zip", "skill zip", "wrapper root"],
       "priority": 2,
       "remediation": "repair packaging assumptions and bundle generation alignment",
-      "impacted": ["DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt", "dcoir-repo-packager", "dcoir-knowledge-doc-maintainer", "DCOIR_Collector.zip", "supporting_knowledge_docs.zip"],
-      "deep_regression": ["re-test repo bundle generation", "re-test full-refresh bundle generation", "verify knowledge-doc asset handling and collector runtime mapping"],
-      "packaging": "full_refresh",
+      "impacted": ["project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt", "dcoir-repo-packager", "dcoir-knowledge-doc-maintainer", "supporting_assets/DCOIR_Collector.zip", "supporting_assets/supporting_knowledge_docs.zip"],
+      "deep_regression": ["re-test GitHub Desktop repo-update bundle generation", "re-test affected skill-package generation", "verify knowledge-doc asset handling and collector runtime mapping"],
+      "packaging": "github_desktop_manual_repo_update_bundle",
       "reason": "Packaging drift can make otherwise-correct fixes unusable in practice."
     },
     {
@@ -61,10 +82,20 @@
       "keywords": ["triage", "escalation", "routing", "parent agent", "sub-agent", "description field"],
       "priority": 3,
       "remediation": "repair Gemini routing and alert-triage-to-collector escalation behavior",
-      "impacted": ["PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt", "PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt", "comparative_reference_agent_markdowns.zip", "generated_agent_markdowns.zip"],
+      "impacted": ["project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt", "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt", "supporting_assets/comparative_reference_agent_markdowns.zip", "supporting_assets/generated_agent_markdowns.zip", "dcoir-triage-to-collector-escalation-designer"],
       "deep_regression": ["re-test parent-agent routing", "re-test collector-escalation recommendations during alert triage", "re-test generated companion markdown alignment"],
-      "packaging": "full_refresh",
+      "packaging": "full_refresh_project_upload",
       "reason": "Routing and escalation defects distort the merged Gemini workflow even when downstream steps are sound."
+    },
+    {
+      "id": "multi-skill-helper-wave",
+      "keywords": ["multiple skills", "batch install", "skill wave", "coordinated campaign"],
+      "priority": 3,
+      "remediation": "repair the compatible helper-skill set in one grouped install wave",
+      "impacted": ["affected dcoir-* skills", "project_sources/CP-01_DCOIR_Version_Manifest.txt", "project_sources/CP-02_DCOIR_Change_Log.txt"],
+      "deep_regression": ["re-test each changed skill", "re-test grouped install bundle shape", "re-test delivery instructions"],
+      "packaging": "batched_skill_update_wave",
+      "reason": "Compatible helper-skill fixes should stay grouped when that reduces operator burden without hiding validation gaps."
     },
     {
       "id": "polish-only",
@@ -73,7 +104,7 @@
       "remediation": "apply wording-only polish after correctness items are complete",
       "impacted": ["affected prompt or documentation file"],
       "deep_regression": ["targeted spot-check after the wording fix"],
-      "packaging": "targeted",
+      "packaging": "github_desktop_manual_repo_update_bundle",
       "reason": "Polish-only issues should not preempt correctness or operator-blocking fixes."
     },
     {
@@ -83,7 +114,7 @@
       "remediation": "classify the live-test issue explicitly before fixing it",
       "impacted": ["manual classification required"],
       "deep_regression": ["apply deep regression if the repaired path is testable"],
-      "packaging": "targeted",
+      "packaging": "github_desktop_manual_repo_update_bundle",
       "reason": "Unclassified findings should still be turned into explicit next actions instead of being ignored."
     }
   ]

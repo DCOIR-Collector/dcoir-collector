@@ -1,17 +1,22 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-05-prompt-intake-design-family-alignment-v1
+Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
-- The next governance branch remains the coordinated all-skills helper-skill deep-dive and code-hygiene campaign, now carrying the aligned prompt/intake design-family handling together with the earlier workflow, delivery, and documentation repairs.
+- The coordinated all-skills helper-skill deep-dive and code-hygiene campaign is now complete through the current governed helper-skill inventory.
+- The current standing maintenance posture is grouped GitHub Desktop delivery, package-cleanliness enforcement, parity checks, and future issue-driven helper-skill updates.
+- The stamped active-surface widening hold now has 1 remaining real resume cycle.
 
 Current validated status
 - The repaired repo-packager source is aligned to GitHub Desktop manual repo-update patch-bundle delivery needs.
 - The aligned prompt/intake design family now uses a live GitHub-primary prompt discovery path, explicit escalation contracts, and artifact-type-specific bounded intake guidance.
+- The final remaining helper-skill wave now uses current delivery classes for live-test remediation planning and richer current rename-impact mapping.
+- The helper-skill routing note now covers the full remaining current family audited in the closeout wave.
 
 Current next planned work item
-- Continue the coordinated campaign from the aligned prompt/intake design-family baseline.
-- Move to the next highest-value remaining helper-skill family.
+- Maintain the helper-skill library in issue-driven grouped waves rather than reopening the completed all-skills campaign.
+- Keep package-cleanliness enforcement and parity verification active for future delivered skill packages.
+- Wait for the next qualifying real resume cycle before any widening review.

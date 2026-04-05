@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -66,9 +65,11 @@ def unique_preserve(items: List[str]) -> List[str]:
     return out
 
 
-def packaging_rank(value: str) -> int:
-    order = ["none", "targeted", "full_refresh"]
-    return order.index(value) if value in order else -1
+def packaging_rank(value: str, ordering: List[str]) -> int:
+    try:
+        return ordering.index(value)
+    except ValueError:
+        return -1
 
 
 def build_plan(source_dir: Path, findings: List[str]) -> Dict[str, Any]:
@@ -76,6 +77,7 @@ def build_plan(source_dir: Path, findings: List[str]) -> Dict[str, Any]:
     resolved = resolve_control_files(source_dir, rules["control_file_roles"])
     todo_text = read_text(source_dir / resolved["todo"])
     handoff_text = read_text(source_dir / resolved["handoff"])
+    packaging_order = rules.get("packaging_priority", [])
 
     ranked_items: List[Dict[str, Any]] = []
     impacted: List[str] = []
@@ -93,21 +95,20 @@ def build_plan(source_dir: Path, findings: List[str]) -> Dict[str, Any]:
         })
         impacted.extend(rule.get("impacted", []))
         deep_regression.extend(rule.get("deep_regression", []))
-        if packaging_rank(rule.get("packaging", "none")) > packaging_rank(packaging):
+        if packaging_rank(rule.get("packaging", "none"), packaging_order) > packaging_rank(packaging, packaging_order):
             packaging = rule.get("packaging", "none")
 
     ranked_items.sort(key=lambda x: (x["priority"], x["finding"]))
 
     active_themes = []
     for needle in [
-        "alert-triage-to-collector workflow",
-        "operator workflow quality",
-        "collector output interpretation",
-        "large-file fallback",
-        "bounded-confidence",
-        "older per-file Knowledge-doc upload model"
+        "remaining high-risk helper-skill wave",
+        "package-cleanliness enforcement",
+        "prompt-or-intake design-family",
+        "docs-navigation surfaces",
+        "one remaining real resume cycle"
     ]:
-        if needle.lower().replace('-', ' ')[:12] in (todo_text + handoff_text).lower().replace('-', ' '):
+        if needle.lower() in (todo_text + handoff_text).lower():
             active_themes.append(needle)
 
     if any("manual classification required" in item for item in impacted):
@@ -139,7 +140,7 @@ def render_markdown(payload: Dict[str, Any]) -> str:
     lines.append('# DCOIR Live Test Remediation Report')
     lines.append('')
     lines.append(f"- Remediation status: {payload['remediation_status']}")
-    lines.append(f"- Packaging recommendation: {payload['packaging_recommendation']}")
+    lines.append(f"- Delivery recommendation: {payload['packaging_recommendation']}")
     lines.append('')
     lines.append('## Live-test finding summary')
     lines.append('')
@@ -151,7 +152,7 @@ def render_markdown(payload: Dict[str, Any]) -> str:
     lines.append('## Ranked remediation queue')
     lines.append('')
     for item in payload.get('ranked_queue', []):
-        lines.append(f"- P{item['priority']}: {item['remediation']} — {item['finding']} ({item['reason']})")
+        lines.append(f"- P{item['priority']}: {item['remediation']} - {item['finding']} ({item['reason']})")
     lines.append('')
     lines.append('## Impacted files and skills')
     lines.append('')
@@ -163,7 +164,7 @@ def render_markdown(payload: Dict[str, Any]) -> str:
     for item in payload.get('deep_regression', []):
         lines.append(f'- {item}')
     lines.append('')
-    lines.append('## Packaging recommendation')
+    lines.append('## Delivery recommendation')
     lines.append('')
     lines.append(f"- {payload.get('packaging_recommendation', 'none')}")
     lines.append('')
