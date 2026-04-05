@@ -17,6 +17,7 @@ The human-readable companion surface is `dcoir_skills/skill_parity_summary.md`.
 
 Prefer a normalized tree hash and per-file `sha256` values as the primary parity evidence.
 Treat zip hash as a secondary package or install check only.
+Treat runtime residue in packaged skill zips such as `__pycache__/` and `*.pyc` as an explicit package-cleanliness failure signal even when the normalized tree hash still matches after exclusions.
 
 ## Core workflows
 
@@ -37,7 +38,8 @@ Use when the operator wants to know whether the installed skill package still ma
 3. Compare per-file hashes first.
 4. Compare normalized tree hash second.
 5. Report zip hash only as a secondary package check.
-6. Call out missing files, extra files, and hash mismatches explicitly.
+6. Run a package-cleanliness check on the zip contents and call out runtime residue such as `__pycache__/`, `*.pyc`, or equivalent packaging contamination explicitly.
+7. Call out missing files, extra files, hash mismatches, and contamination separately.
 
 ### 3. Bootstrap or rebaseline parity inventory
 Use when the parity surface does not exist yet or when the project needs a controlled rebaseline.

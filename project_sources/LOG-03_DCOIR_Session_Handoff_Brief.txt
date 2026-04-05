@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
+Current state id: 2026-04-05-package-cleanliness-enforcement-v1
 
 Current stable artifacts
 - Working GitHub repository: malwaredevil/dcoir-collector
@@ -8,7 +8,7 @@ Current stable artifacts
 - Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
 - GitHub helper-skill source layout and rollout guide: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
-- Helper-skill workflow decision logs: LOG-04 through LOG-30
+- Helper-skill workflow decision logs: LOG-04 through LOG-31
 - Task memory bank root: knowledge/task_memory
 - Governed helper-skill source root: dcoir_skills/
 - Authoritative todo surfaces: project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt
@@ -33,7 +33,7 @@ Current validated status
 - The durable continuous-execution cadence rule is now encoded in `dcoir-decision-policy` for coordinated campaigns that should not stop at routine intermediate milestones.
 
 Current next planned work item
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, repaired manual delivery lane, durable continuous-execution cadence rule, and repaired `dcoir-session-tracker` cleanup behavior.
-- Rank and begin the next highest-value workflow-state or buffer-capable helper-skill pass under the current CI/CD-style validation regime.
-- Start the bounded package-cleanliness enforcement pass so delivered skill zips stay free of runtime residue such as `__pycache__/` and `*.pyc`.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup, repaired delivery, continuous-execution, and package-cleanliness enforcement baseline.
+- Move to the next highest-value workflow-state or buffer-capable helper-skill pass after the repaired `dcoir-session-tracker` and package-cleanliness enforcement branch.
+- Use the updated `dcoir-parity-verifier` and `dcoir-skill-regression-auditor` package-cleanliness checks for future delivered skill-package verification and post-patch readiness claims.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.

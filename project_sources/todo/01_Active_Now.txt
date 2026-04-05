@@ -1,6 +1,6 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
+Current state id: 2026-04-05-package-cleanliness-enforcement-v1
 
 1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, durable continuous-execution cadence rule, repaired GitHub Desktop manual repo-update bundle mode, and repaired `dcoir-session-tracker` post-push cleanup path.
    Why it matters:

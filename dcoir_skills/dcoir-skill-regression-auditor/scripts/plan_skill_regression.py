@@ -48,6 +48,7 @@ def main() -> int:
         print(f'### {skill}')
         for item in [
             'package validation',
+            'package cleanliness check',
             'success path',
             'failure gate',
             'artifact verification',
@@ -61,6 +62,7 @@ def main() -> int:
         'current-workspace success fixture',
         'current-control-plane narrative-manifest fixture',
         'missing-control-plane fixture',
+        'package cleanliness fixture',
     ]
     if any('regression-auditor' in s for s in skills):
         fixture_items.append('helper-memory read-write fixture')

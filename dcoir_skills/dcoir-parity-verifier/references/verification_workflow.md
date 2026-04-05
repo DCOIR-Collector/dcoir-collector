@@ -12,7 +12,8 @@
 2. extract the installed zip or inspect the installed skill tree
 3. compare file hashes against the canonical manifest
 4. compare the normalized tree hash against the canonical manifest
-5. treat zip hash as secondary evidence only
+5. inspect the packaged zip for runtime residue such as `__pycache__/`, `*.pyc`, or equivalent contamination
+6. treat zip hash as secondary evidence only and report package cleanliness separately
 
 ## README / summary verification
 - verify that the summary matches the canonical manifest

@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
+Current state id: 2026-04-05-package-cleanliness-enforcement-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.

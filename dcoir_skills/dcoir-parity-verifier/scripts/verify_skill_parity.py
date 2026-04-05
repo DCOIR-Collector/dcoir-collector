@@ -13,6 +13,21 @@ EXCLUDE_SUFFIXES = {'.pyc'}
 EXCLUDE_NAMES = {'.DS_Store'}
 
 
+def is_runtime_residue_name(rel_name: str) -> bool:
+    rel_path = Path(rel_name)
+    return any(part in EXCLUDE_DIRS for part in rel_path.parts) or rel_path.suffix in EXCLUDE_SUFFIXES or rel_path.name in EXCLUDE_NAMES
+
+
+def scan_zip_runtime_residue(zip_file: zipfile.ZipFile) -> list[str]:
+    residue = []
+    for info in zip_file.infolist():
+        if info.is_dir():
+            continue
+        if is_runtime_residue_name(info.filename):
+            residue.append(info.filename)
+    return sorted(residue)
+
+
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -68,14 +83,20 @@ def verify_zip(manifest_entry: dict, zip_path: Path) -> dict:
     zip_hash = sha256_file(zip_path)
     with tempfile.TemporaryDirectory() as td:
         with zipfile.ZipFile(zip_path) as zf:
+            runtime_residue_entries = scan_zip_runtime_residue(zf)
             zf.extractall(td)
         extracted = Path(td)
         skill_dirs = [p for p in extracted.iterdir() if p.is_dir() and (p / 'SKILL.md').exists()]
         root = skill_dirs[0] if skill_dirs else extracted
         result = verify_dir(manifest_entry, root)
+        result['parity_status'] = result['status']
+        result['runtime_residue_entries'] = runtime_residue_entries
+        result['package_cleanliness_status'] = 'clean' if not runtime_residue_entries else 'contaminated'
         result['expected_zip_hash'] = manifest_entry.get('release_zip_hash', '')
         result['actual_zip_hash'] = zip_hash
         result['zip_hash_status'] = 'match' if manifest_entry.get('release_zip_hash', '') and manifest_entry.get('release_zip_hash', '') == zip_hash else 'secondary-check-only'
+        if runtime_residue_entries:
+            result['status'] = 'contaminated'
         return result
 
 

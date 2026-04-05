@@ -27,7 +27,7 @@ In a broad helper-skill patch campaign, regression-test `dcoir-skill-regression-
 3. Read `references/regression_fixture_catalog.md`.
 4. Read `references/skill_test_harness_definitions.md`.
 5. Run `scripts/plan_skill_regression.py`.
-6. Produce the regression suites, failure gates, artifact checks, readiness criteria, campaign ordering, and grouped regression-bundle expectations.
+6. Produce the regression suites, failure gates, artifact checks, package-cleanliness checks, readiness criteria, campaign ordering, and grouped regression-bundle expectations.
 7. If regression revealed a blocker that is later overcome, invoke `dcoir-memory-preflight` again when the recovered lesson could improve a reusable procedure, limitation note, failure signature, or helper-skill/process guidance.
 8. Keep regression-state changes session-local until the next suitable flush-check trigger when grouped GitHub writes are preferred.
 9. When the regression-state changed materially and the write lane is safe, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`.
@@ -82,6 +82,7 @@ When rendering memory content locally, use `scripts/render_skill_regression_memo
 - do not treat packaging success as sufficient proof of runtime correctness
 - include both success-path and failure-gate testing where possible
 - verify emitted artifacts and content, not only exit status
+- verify that delivered skill packages are free of runtime residue such as `__pycache__/`, `*.pyc`, `.DS_Store`, or equivalent contamination
 - in a broad helper-skill patch campaign, patch and regression-test this skill first before using it to judge other skills
 - after a patch, rerun the same failing case that motivated the fix, then expand outward
 - after every helper-skill create or update, require regression coverage before claiming readiness

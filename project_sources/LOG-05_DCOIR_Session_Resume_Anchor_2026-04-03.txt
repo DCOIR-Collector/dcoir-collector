@@ -1,6 +1,6 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
+Current state id: 2026-04-05-package-cleanliness-enforcement-v1
 
 Purpose
 - This file is the authoritative dated resume anchor for the latest 2026-04-03 workflow session family.
@@ -21,10 +21,9 @@ Current governed workflow state
 - The stamped active-surface widening hold now has 1 remaining real resume cycle and should not be decremented for synthetic or generated-artifact validation alone.
 
 What is still open right now
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup and repaired delivery baseline plus the durable continuous-execution cadence rule.
-2. Continue the workflow-state and buffer-capable high-risk wave after the repaired `dcoir-session-tracker` post-push cleanup path.
-3. Start and carry the bounded package-cleanliness enforcement pass so delivered skill zips stay free of runtime residue.
-4. Use the repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode for future affected-file governed repo-update deliveries and keep validating it as the workflow evolves.
-5. Continue enforcing the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other buffer-capable skills before future governed pushes.
-6. Use the recorded delivery-bundle structure preference and GitHub Desktop commit `Summary` preference for future manual deliveries unless a later request overrides them.
-7. Keep the stamped active-surface widening hold at 1 remaining real resume cycle before any widening review.
+1. Continue the broader helper-skill deep-dive and code-hygiene campaign from the live-validated startup, repaired delivery, continuous-execution, and package-cleanliness enforcement baseline.
+2. Rank and execute the next highest-value workflow-state or buffer-capable helper-skill pass under the current CI/CD-style validation regime.
+3. Use the updated `dcoir-parity-verifier` and `dcoir-skill-regression-auditor` package-cleanliness checks for future delivered skill-package verification and post-patch readiness claims.
+4. Continue enforcing the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other buffer-capable skills before future governed pushes.
+5. Use the repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode and the recorded commit `Summary` preference for future manual deliveries unless a later request overrides them.
+6. Keep the stamped active-surface widening hold at 1 remaining real resume cycle before any widening review.

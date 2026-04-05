@@ -2,6 +2,7 @@
 
 ## Common checks
 - package validation
+- package cleanliness check for runtime residue such as `__pycache__/`, `*.pyc`, or `.DS_Store`
 - representative command execution where scripts exist
 - success-path output verification
 - failure-gate verification
@@ -11,7 +12,7 @@
 - grouped campaign coverage check when more than one materially changed skill is in scope
 
 ## Output verification rule
-When a skill emits files, inspect the file presence and the content cues that matter for the contract. Do not rely on a zero exit code alone.
+When a skill emits files, inspect the file presence and the content cues that matter for the contract. Do not rely on a zero exit code alone. For delivered skill zips, also verify that no runtime residue such as `__pycache__/`, `*.pyc`, or `.DS_Store` was packaged.
 
 ## Campaign sequencing rule
 When the project is scanning or patching multiple `dcoir-*` skills, validate `dcoir-skill-regression-auditor` first, then use the same refreshed fixture language and failure gates across the remaining skills.

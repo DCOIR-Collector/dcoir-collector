@@ -10,6 +10,7 @@
 - anti-pattern detection fixture
 - helper-memory read-write fixture
 - package replacement smoke fixture
+- package cleanliness fixture
 
 ## Usage principle
 Choose the smallest fixture set that still proves:

@@ -1,47 +1,46 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 3.9.42
-Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
-Change class: continuous-execution cadence alignment and session-tracker post-push cleanup automation
+Version: 3.9.43
+Current state id: 2026-04-05-package-cleanliness-enforcement-v1
+Change class: package-cleanliness enforcement pass, parity/regression hardening, and clean skill reissue set
 
 What changed
-- Added `project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_Session_Tracker_Post_Push_Cleanup_2026-04-05.txt` as the governed decision record for aligning the operator's low-interruption continuous-execution preference with the all-skills campaign and for repairing the next highest-value `dcoir-session-tracker` workflow gap.
-- Updated `dcoir-session-tracker` so `mark-governed-written` now clears staged governed-update entries, staged todo actions, and matching post-push cleanup notes that still reference the promoted item, reducing manual tracker cleanup after grouped pushes.
-- Added an explicit `clear-post-push-cleanup` command for bounded bulk cleanup when any cleanup notes remain after item-level promotion handling.
-- Updated the `dcoir-session-tracker` local-state workflow guidance and session-buffer workflow guidance so post-push cleanup behavior now matches the repaired automation path.
-- Refreshed the active continuity surfaces so the coordinated all-skills campaign explicitly carries the durable continuous-execution cadence rule and the repaired `dcoir-session-tracker` cleanup behavior.
+- Added `project_sources/LOG-31_DCOIR_Package_Cleanliness_Enforcement_And_Clean_Skill_Reissue_2026-04-05.txt` as the governed decision record for the bounded package-cleanliness enforcement pass across the helper-skill library.
+- Updated `dcoir-parity-verifier` so packaged skill verification now reports package-cleanliness status and explicit runtime-residue entries such as `__pycache__/`, `*.pyc`, and `.DS_Store` instead of hiding residue completely behind parity exclusions.
+- Updated `dcoir-skill-regression-auditor` so regression planning now requires a package-cleanliness check for delivered skill zips in addition to package validation, success-path, failure-gate, and artifact verification.
+- Reissued clean install packages for the affected skills found contaminated in the campaign audit: `dcoir-change-impact-analyzer`, `dcoir-collector-qa`, `dcoir-knowledge-doc-maintainer`, `dcoir-source-authority-auditor`, and `dcoir-validation-orchestrator`, together with the updated `dcoir-parity-verifier` and `dcoir-skill-regression-auditor` packages.
+- Refreshed the active continuity and todo surfaces so the coordinated all-skills campaign now treats package cleanliness as an explicit enforced check rather than an ad hoc cleanup note.
 
 Why
-- The operator clarified that coordinated campaign work should continue until there is a real operator action, blocker, materially changed evidence state, or true decision requirement rather than pausing at intermediate milestones.
-- The all-skills campaign identified a real workflow friction point in `dcoir-session-tracker`: promoted items could be marked governed-written, but related staged entries and cleanup notes still required separate manual clearing steps.
-- The highest-value next move was to repair that buffer-capable workflow path and align the governed continuity surfaces in the same bounded update set.
+- The all-skills campaign found that a subset of delivered skill packages could include runtime residue such as `__pycache__/` and `*.pyc`, which is unnecessary packaging contamination even when normalized parity hashes still match after exclusions.
+- The project needed a durable detection and regression rule, not just one-off cleaned reissues.
+- The highest-value bounded fix was to harden the parity-verification and regression-auditing skills and then reissue the affected packages cleanly in the same pass.
 
 Validation notes
-- The repaired `dcoir-session-tracker` local-state path was retested on a fresh local state file.
-- A representative pre-push review still stages todo actions and post-push cleanup as expected.
-- After the grouped-push simulation, `mark-governed-written` now removes the related staged todo actions and matching cleanup notes for the promoted item.
-- The next immediate branch is to continue the coordinated all-skills campaign into the next highest-value workflow-state skill pass while starting bounded package-cleanliness enforcement across the skill library.
+- A broad package audit across the current helper-skill library confirmed that the contamination was limited to a bounded subset of skill packages rather than the entire library.
+- The updated `dcoir-parity-verifier` and `dcoir-skill-regression-auditor` skill packages pass clean packaging validation with no runtime-residue entries included.
+- Clean reissued packages were built for the affected skills with no `__pycache__/`, `*.pyc`, or `.DS_Store` entries present in the delivered zips.
+- The next immediate branch is to continue the workflow-state high-risk wave from the now live-validated startup, repaired delivery, continuous-execution, and package-cleanliness baseline.
 
 [PRIOR]
-Version: 3.9.41
-Current state id: 2026-04-05-startup-validated-and-manual-bundle-fix-v1
-Change class: startup-flow live validation completion and github desktop manual repo-update bundle mode fix
+Version: 3.9.42
+Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
+Change class: continuous-execution cadence and session-tracker post-push cleanup automation
 
 What changed
-- Added `project_sources/LOG-29_DCOIR_GitHub_Desktop_Manual_Repo_Update_Bundle_Mode_Fix_2026-04-05.txt` as the governed decision record for diagnosing and repairing the missing GitHub Desktop manual repo-update bundle lane.
-- Recorded that the updated `dcoir-session-resume` plus `dcoir-memory-preflight` first-turn bootstrap pair and resume-status fast path were proven in a real fresh-session workflow.
-- Updated `dcoir-repo-packager` so it now supports `github-desktop-manual-update` mode, which packages only the requested affected repo-relative files or folders with no wrapper root and surfaces the suggested commit `Summary` in the report and response.
-- Updated the packager references so the GitHub Desktop manual repo-update bundle class is explicitly documented alongside the existing repo and bootstrap bundle classes.
-- Refreshed the active continuity and todo surfaces so startup-flow proof is no longer treated as pending work, the broader helper-skill deep-dive line is promoted, and the stamped active-surface widening hold countdown moves from 2 remaining real resume cycles to 1 remaining real resume cycle.
+- Added `project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_Session_Tracker_Post_Push_Cleanup_2026-04-05.txt` as the governed decision record for the coordinated all-skills campaign cadence rule and the first post-push cleanup automation repair inside `dcoir-session-tracker`.
+- Updated `dcoir-decision-policy` so operator-approved coordinated campaigns now keep executing without status-only pauses unless there is a real operator action, blocker, materially changed evidence state, or a true decision requirement.
+- Updated `dcoir-session-tracker` so `mark-governed-written` now clears related staged governed-update entries, staged todo actions, and matching post-push cleanup notes automatically after a grouped push.
+- Refreshed the active continuity and todo surfaces so the coordinated all-skills campaign is the governed current line and the next work item explicitly points at the next buffer-capable skill pass plus the bounded package-cleanliness enforcement branch.
 
 Why
-- The operator confirmed that the new startup flow works in a real session, so the governed state needed to stop treating that validation as still pending.
-- The operator expected ZIP deliverables for GitHub Desktop repo updates, but the recorded delivery preference and the actual repo-packager behavior had drifted apart.
-- The highest-value fix was to repair the existing packaging skill and align the governed continuity surfaces rather than keep responding with copy-paste file-content patches during GitHub Desktop delivery sessions.
+- The operator wants the coordinated helper-skill campaign to continue without premature status-only pauses.
+- The session-tracker deep-dive exposed a real post-push cleanup drift risk: promoted items could remain staged or listed for cleanup even after they were marked governed-written.
+- The project needed both the cadence rule and the post-push cleanup repair to make the coordinated campaign reliable enough to keep pushing forward.
 
 Validation notes
-- The updated startup bootstrap pair and bounded resume-status fast path are now live-validated in a real session.
-- The updated `dcoir-repo-packager` skill package passes local packaging validation.
-- The repaired GitHub Desktop manual repo-update bundle mode was exercised against a repo-shaped working tree to emit the current affected-path bundle with no wrapper root.
-- The next immediate branch is to continue the broader helper-skill deep-dive and code-hygiene campaign from the stronger validated startup and repaired delivery baseline.
+- The updated `dcoir-decision-policy` skill package passes clean packaging validation.
+- The updated `dcoir-session-tracker` skill package passes clean packaging validation.
+- The repaired `dcoir-session-tracker` post-push cleanup path was exercised against a representative local-state scenario and cleared the related staged entries and matching cleanup notes as intended.
+- The next immediate branch is the bounded package-cleanliness enforcement pass across the helper-skill library.

@@ -15,3 +15,6 @@ Ignore runtime residue such as:
 - `*.pyc`
 - `.DS_Store`
 - empty temporary directories
+
+## Package cleanliness rule
+Ignore runtime residue for normalized tree-hash parity calculations, but do not hide it in packaged-skill verification. When verifying a skill zip, report runtime residue explicitly and treat a contaminated package as a package-cleanliness failure even if the normalized tree hash still matches after exclusions.
