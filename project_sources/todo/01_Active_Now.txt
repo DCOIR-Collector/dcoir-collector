@@ -1,27 +1,27 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
+Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
 
-1. Re-run the first live GitHub Actions passes after workflow-summary hardening.
+1. Keep the stabilized first-wave GitHub automation baseline in place while the main project line stays on deliverables.
    Why it matters:
-   - The first-wave automation baseline is real repo content, and the underlying Core harness already proved it can pass, but the browser-readable summary step still needs to be proven after hardening.
+   - The first-wave baseline is now live and proven, so the project can stop churning on the same setup work and simply use it.
    Next action:
-   - Trigger the manual full-validation workflow again with the Core suite and confirm the summary now renders without failing the job.
+   - Leave the baseline alone unless a real defect appears, and keep the main project effort on deliverables.
 
-2. Apply light branch or ruleset safety manually in the GitHub UI.
+2. Preserve the remaining approved platform-adoption items as queued later work rather than forced immediate follow-through.
    Why it matters:
-   - The project wants safer branches without forcing a PR-first workflow that does not match daily use.
+   - The operator approved those items and wants them remembered durably, but also chose to stop and enjoy the stable baseline first.
    Next action:
-   - Add force-push and deletion protection first, and keep stronger PR-gated rules optional.
+   - Keep the queue durable in the governed project state and open each later item only as a bounded next branch.
 
-3. Review or merge Dependabot GitHub Actions update PRs only after the fixed workflows pass.
+3. When ready, start with a bounded Copilot code review pilot.
    Why it matters:
-   - Dependabot GitHub Actions update coverage is now proven live, but the workflow baseline should be clean before those update PRs are trusted.
+   - It is the smallest approved next pilot and keeps pull requests optional rather than forcing a new daily workflow.
    Next action:
-   - Wait for passing reruns, then inspect the Dependabot PRs or branches for checkout, setup-python, and upload-artifact updates.
+   - Use Copilot code review only on review-worthy or higher-risk PRs when the operator explicitly opens that pilot.
 
-4. Pilot optional AI augmentation only where it reduces operator burden.
+4. After that, keep the remaining approved pilot order intact.
    Why it matters:
-   - Copilot, GitHub Models, and OpenAI Codex may add value, but the project still does not want them to become mandatory workflow ceremony.
+   - The operator approved the broader set and wants the sequence remembered without having to reconstruct it later.
    Next action:
-   - Pilot optional GitHub-native AI and selective Codex use only after the baseline workflows have produced stable live evidence.
+   - Follow this order when later work opens: Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners if needed, OIDC if needed, and artifact provenance or attestation or SLSA-style work later.

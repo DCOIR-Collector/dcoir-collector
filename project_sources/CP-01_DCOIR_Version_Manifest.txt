@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.58
+DCOIR Version Manifest 3.9.59
 
-Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
+Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -17,6 +17,7 @@ Current control plane
 - GitHub automation and AI enablement strategy: project_sources/LOG-43_DCOIR_GitHub_Automation_And_AI_Enablement_Strategy_2026-04-05.txt
 - First-wave GitHub automation baseline: project_sources/LOG-44_DCOIR_First_Wave_GitHub_Automation_Baseline_2026-04-05.txt
 - GitHub workflow summary hardening: project_sources/LOG-45_DCOIR_GitHub_Workflow_Summary_Hardening_2026-04-05.txt
+- First-wave automation stabilization and follow-on queue: project_sources/LOG-46_DCOIR_First_Wave_GitHub_Automation_Stabilized_And_Follow_On_Queue_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -44,7 +45,6 @@ Current governed helper-skill source
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 
 Current next work item
-- Re-run the first live GitHub Actions passes after summary hardening and inspect the browser-readable workflow summaries again.
-- Apply the light branch or ruleset safety follow-through manually in the GitHub UI without forcing a PR-first model.
-- Let the live GitHub Actions Dependabot branches and PRs prove out after the workflow reruns pass.
-- Keep the main project line on deliverables while piloting optional AI augmentation only where it reduces operator burden.
+- Keep the stabilized first-wave GitHub automation baseline in service while the main project line stays on deliverables.
+- Queue the remaining approved platform-adoption items in this order: Copilot code review pilot, Copilot cloud agent pilot, GitHub Models pilot, selective OpenAI Codex pilot, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners only if GitHub-hosted runners prove insufficient, OIDC only when cloud authentication is needed, and artifact provenance or attestation or SLSA-style work only after those earlier layers justify it.
+- Maintain package-cleanliness enforcement, parity checks, and representative regression for future maintenance-only helper-skill fixes.

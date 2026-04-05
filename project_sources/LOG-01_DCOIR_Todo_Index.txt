@@ -1,14 +1,14 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
+Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
 
 Current priority summary
-1. Widening review has been accepted and the remaining architecture or governance line is now closed except for maintenance-only fixes.
-2. Re-run the first live GitHub Actions passes after workflow-summary hardening.
-3. Apply light branch or ruleset safety manually in the GitHub UI without forcing a PR-first workflow.
-4. Review or merge Dependabot GitHub Actions update PRs only after the fixed workflows pass.
-5. Pilot GitHub-native AI and prompt or evaluation surfaces selectively: Copilot code review, Copilot cloud agent, GitHub Models, and OpenAI Codex where it reduces operator burden.
+1. Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
+2. The first-wave GitHub automation baseline is now stabilized in live use.
+3. The light ruleset protections and Dependabot GitHub Actions flow are now complete.
+4. The main project line should remain on deliverables while the remaining approved platform-adoption items stay queued rather than forced immediately.
+5. The remaining approved items stay ordered as bounded later work: Copilot code review, Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners if needed, OIDC if needed, and artifact provenance or attestation or SLSA-style work later.
 6. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
 
 Current best next move
-- Trigger the manual full-validation workflow again with the Core suite after this patch lands, inspect the browser-readable summary, then check validate-on-push on the next push-driven run.
+- No immediate platform change is required. Keep the stable baseline in place and start with a bounded Copilot code review pilot only when the operator decides to open the next implementation branch.

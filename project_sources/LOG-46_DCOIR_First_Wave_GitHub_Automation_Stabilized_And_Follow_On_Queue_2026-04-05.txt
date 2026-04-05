@@ -1,0 +1,41 @@
+DCOIR First-Wave GitHub Automation Stabilized And Follow-On Queue - 2026-04-05
+
+Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
+
+Purpose
+- Record that the first-wave GitHub automation baseline is now stabilized in live use.
+- Record that the operator wants the remaining approved platform-adoption items from this session durably queued inside the project rather than remembered only in chat.
+
+What is now complete
+- The first-wave GitHub Actions baseline is live in the repository: validate-on-push, manual-full-validation, and scheduled-health-check.
+- The browser-readable summary defect that originally caused late workflow failure has been corrected.
+- The light branch or ruleset safety follow-through is complete.
+- Dependabot GitHub Actions version-update coverage is now proven live and the current Dependabot GitHub Actions PRs merged successfully.
+- The earlier Node.js 20 deprecation warning is no longer present after the GitHub Actions dependency updates.
+- Manual FullRegression passed after the workflow-fix and Dependabot follow-through.
+
+Operator decision
+- Stop here and enjoy the stable baseline first.
+- Do not force the remaining approved platform-adoption items immediately.
+- Keep those remaining items durably tracked in the project for later bounded execution.
+
+Remaining approved items in the remembered order
+1. Copilot code review pilot.
+2. Copilot cloud agent pilot.
+3. GitHub Models pilot.
+4. Selective OpenAI Codex pilot.
+5. Later conditional GitHub Pages dashboard consideration.
+6. Later conditional code scanning consideration if the repo eligibility, visibility, and value justify it.
+7. Later conditional self-hosted runner consideration only if GitHub-hosted runners prove insufficient.
+8. Later conditional OIDC consideration only when workflows need cloud authentication.
+9. Later conditional artifact provenance or attestation or SLSA-style supply-chain consideration only after the earlier layers justify it.
+
+Why it matters
+- The operator wants the project to keep the completed first wave stable rather than constantly churning the same GitHub setup.
+- The operator also wants the remaining approved items remembered durably so future sessions do not have to reconstruct the queue from chat history.
+- The project can now keep the main line on deliverables while preserving an explicit later queue for repeatability and AI-adoption improvements.
+
+Best next move
+- No immediate platform change is required.
+- Keep using the stable baseline.
+- When the operator wants the next bounded implementation branch, start with the Copilot code review pilot.

@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
+Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -12,12 +12,17 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Re-run the first live GitHub Actions passes after workflow-summary hardening so the automation baseline is proven without a late non-essential summary-render failure.
+- Keep the stabilized first-wave GitHub automation baseline in service while the main project line stays on deliverables and the remaining approved platform-adoption items stay durably queued for bounded later work.
 
 Queued next priorities
-- Apply light branch or ruleset safety manually in the GitHub UI without forcing a PR-first model.
-- Review or merge Dependabot GitHub Actions update PRs only after the fixed workflows pass cleanly.
-- Pilot GitHub-native AI and prompt or evaluation surfaces where they reduce operator burden: Copilot code review, Copilot cloud agent, GitHub Models, and selective OpenAI Codex use.
+- Pilot Copilot code review only on review-worthy or higher-risk pull requests.
+- Pilot Copilot cloud agent only for bounded browser-native assistance where it clearly reduces operator burden.
+- Pilot GitHub Models for prompt, comparison, or evaluation work that belongs in the repository.
+- Pilot selective OpenAI Codex use as a broader engineering assistant layer where it reduces operator burden.
+- Consider GitHub Pages later only if a browser dashboard still feels worthwhile after the baseline is stable and the earlier AI pilots are understood.
+- Consider code scanning later only if the repo eligibility, repo visibility, and actual value justify it.
+- Consider self-hosted runners later only if GitHub-hosted runners prove insufficient.
+- Consider OIDC later only when workflows need cloud authentication.
+- Consider artifact provenance or attestation or SLSA-style supply-chain work later only after the earlier layers justify it.
 - Keep package-cleanliness enforcement active so delivered skill zips stay free of runtime residue such as `__pycache__/`, `*.pyc`, and `.DS_Store`.
 - Use parity verification and representative regression before treating future skill patches as ready.
-- Keep the main project line on deliverables while the repeatability baseline stabilizes.

@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
+Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
@@ -9,17 +9,16 @@ Current governance state
 - The coordinated all-skills helper-skill deep-dive and code-hygiene campaign remains complete through the current governed helper-skill inventory.
 - The current standing maintenance posture is grouped GitHub Desktop delivery, package-cleanliness enforcement, parity checks, and future issue-driven helper-skill updates.
 - Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
-- The approved GitHub automation baseline remains live, but the initial live passes exposed a late summary-render defect that is now addressed in the first workflow-fix wave.
+- The first-wave GitHub automation baseline, light ruleset safety, and Dependabot GitHub Actions flow are now stabilized in live use.
 
 Current validated status
 - The repaired repo-packager source remains aligned to GitHub Desktop manual repo-update patch-bundle delivery needs.
 - The prompt/intake design family remains aligned to the live GitHub-primary prompt discovery path, explicit escalation contracts, and artifact-type-specific bounded intake guidance.
-- The first-wave automation baseline still matches the intended browser-first validation model and the correct collector zip override path.
-- The uploaded manual validation artifact showed a successful Core harness pass even though the workflow run still failed in the browser-readable summary phase.
-- Live GitHub UI evidence now shows Dependabot-created GitHub Actions update branches, so GitHub Actions version-update coverage is proven live for the configured ecosystem.
+- The first-wave automation baseline now has live passing evidence for validate-on-push, manual full-validation, and FullRegression after the summary-step correction.
+- The light branch ruleset protections are active without forcing a PR-first workflow.
+- Dependabot GitHub Actions update PRs have been proven live and merged successfully, and the earlier Node.js 20 deprecation warning is no longer present after those updates.
 
 Current next planned work item
-- Re-run the GitHub Actions workflows after the summary-hardening patch lands.
-- If the reruns pass, apply the light ruleset safety follow-through in the GitHub UI.
-- Review or merge Dependabot GitHub Actions update PRs only after the fixed workflows prove out.
-- Keep the main project line on deliverables while optional GitHub-native AI and selective OpenAI Codex pilots stay strictly optional.
+- Keep the stabilized first-wave baseline in place while the main project line stays on deliverables.
+- Preserve the remaining approved platform-adoption items as queued later work in this order: Copilot code review, Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners only if needed, OIDC only when cloud authentication is required, and artifact provenance or attestation or SLSA-style work later.
+- Keep optional GitHub-native AI and selective OpenAI Codex strictly optional unless and until a bounded pilot is explicitly opened.
