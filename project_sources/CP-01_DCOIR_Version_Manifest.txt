@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.54
+DCOIR Version Manifest 3.9.55
 
-Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
+Current state id: 2026-04-05-resume-cycle-cleared-and-widening-review-ready-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -13,6 +13,7 @@ Current control plane
 - README, routing-note, and documentation-boundary alignment: project_sources/LOG-39_DCOIR_Readme_Routing_And_Documentation_Boundary_Alignment_2026-04-05.txt
 - Prompt-pack assembly, triage escalation, and large-file intake alignment: project_sources/LOG-40_DCOIR_Prompt_Intake_Design_Family_Alignment_2026-04-05.txt
 - Final remaining helper-skill wave and campaign closeout: project_sources/LOG-41_DCOIR_Final_Remaining_Helper_Skill_Wave_And_Campaign_Closeout_2026-04-05.txt
+- Resume-cycle completion and widening-review readiness: project_sources/LOG-42_DCOIR_Resume_Cycle_Completion_And_Widening_Review_Readiness_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -32,16 +33,14 @@ Current task-memory bank
 
 Current governed helper-skill source
 - Root: dcoir_skills/
-- `dcoir-live-test-remediation-planner` now resolves the current `project_sources/` control-plane files and uses the current delivery classes instead of the retired targeted-versus-full-refresh split.
-- `dcoir-structural-rename-coordinator` now maps rename impact to current repo and skill delivery posture instead of forcing a generic full-refresh answer for every rename.
-- `knowledge/DCOIR_Helper_Skills_Routing_Note.md` now includes explicit routing rows for attention signaling, live-test remediation planning, and structural rename coordination in the same wave.
-- `dcoir-attention-signaler` was re-audited in the final remaining wave and required no governed source change.
+- The coordinated all-skills helper-skill deep-dive and code-hygiene campaign remains complete through the current governed helper-skill inventory.
+- The helper-skill library remains in bounded maintenance posture under grouped GitHub Desktop manual-update delivery.
 - Manual GitHub Desktop repo-update bundles should unzip directly to only the affected repo-relative folders and files with no extra wrapper root.
 - Single-skill delivery should provide only the affected skill zip.
 - Multi-skill delivery bundles should use one outer zip whose top level contains only the affected per-skill zip files named after the live skill names with no subfolders.
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 
 Current next work item
-- The coordinated all-skills helper-skill deep-dive and code-hygiene campaign is complete through the current governed helper-skill inventory.
+- Run the widening review against the current live governed state.
+- If the widening review is accepted, close the remaining architecture/governance line except for maintenance-only fixes and move the main project line to deliverables.
 - Maintain package-cleanliness enforcement, parity checks, and future issue-driven helper-skill fixes under the current grouped GitHub Desktop delivery posture.
-- Keep the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.

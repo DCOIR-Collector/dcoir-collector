@@ -1,29 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.55
+Current state id: 2026-04-05-resume-cycle-cleared-and-widening-review-ready-v1
+Change class: qualifying resume-cycle completion and widening-review readiness
+
+What changed
+- Added `project_sources/LOG-42_DCOIR_Resume_Cycle_Completion_And_Widening_Review_Readiness_2026-04-05.txt` as the governed decision record that the final qualifying real resume cycle completed satisfactorily.
+- Updated the manifest and active continuity surfaces to record that the stamped active-surface widening hold no longer has a remaining resume-cycle requirement.
+- Removed the waiting-language that still said one remaining real resume cycle was required before widening review.
+- Set the current next work item to widening review and deliverables-shift readiness if that review is accepted.
+
+Why
+- The project wanted one more qualifying real resume cycle before treating the widening gate as cleared.
+- Clearing that final waiting gate is the remaining architecture/governance closeout step needed before the main line can shift to deliverables.
+- Recording the cleared gate in the same bounded wave prevents continuity drift across the control plane, handoff, resume, and todo surfaces.
+
+Validation notes
+- The qualifying resume cycle used the required bootstrap path across Project Instructions, the project-space bootstrap anchor, the current GitHub control plane, and the current continuity surfaces.
+- The live governed-state resume check aligned cleanly enough to treat the cycle as satisfactory for the widening-hold countdown.
+- This entry records widening-review readiness, not completion of the widening review itself.
+
+[PRIOR]
 Version: 3.9.54
 Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
 Change class: final remaining helper-skill wave, routing completion, and coordinated campaign closeout
-
-What changed
-- Added `project_sources/LOG-41_DCOIR_Final_Remaining_Helper_Skill_Wave_And_Campaign_Closeout_2026-04-05.txt` as the governed decision record for the final remaining helper-skill wave and coordinated campaign closeout.
-- Repaired `dcoir-live-test-remediation-planner` so it resolves the current `project_sources/` control-plane files and uses the current delivery classes instead of the retired coarse targeted-versus-full-refresh split.
-- Repaired `dcoir-structural-rename-coordinator` so it maps rename impact to current repo and skill delivery posture instead of forcing a generic full-refresh answer for every rename.
-- Refreshed `knowledge/DCOIR_Helper_Skills_Routing_Note.md` so the fast routing matrix now includes the final missing current rows for attention signaling, live-test remediation planning, and structural rename coordination.
-- Re-audited `dcoir-attention-signaler` in the final remaining wave and recorded that no governed source change was needed.
-- Refreshed the continuity and todo surfaces so the coordinated all-skills helper-skill deep-dive and code-hygiene campaign is now recorded as complete through the current governed helper-skill inventory.
-
-Why
-- The remaining untouched helper-skill family still carried one real delivery-class drift and one real rename-impact generalization defect.
-- The routing note still lagged behind the visible current inventory for the final untouched family even after earlier documentation waves.
-- Closing those remaining defects in one bounded wave made it safe to move the project from campaign mode to maintenance mode instead of leaving a small but known tail behind.
-
-Validation notes
-- The updated `dcoir-live-test-remediation-planner` and `dcoir-structural-rename-coordinator` skill packages pass clean packaging validation.
-- Representative checks confirm current `project_sources/` control-plane resolution, current delivery-class recommendations, and richer rename-impact mapping.
-- The coordinated all-skills helper-skill deep-dive and code-hygiene campaign is complete through the current governed helper-skill inventory; the remaining standing item is one more qualifying real resume cycle before any widening review.
-
-[PRIOR]
-Version: 3.9.53
-Current state id: 2026-04-05-prompt-intake-design-family-alignment-v1
-Change class: prompt-pack assembly, triage escalation, and large-file intake design-family alignment

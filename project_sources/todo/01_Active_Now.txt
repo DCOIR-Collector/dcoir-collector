@@ -1,21 +1,21 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
+Current state id: 2026-04-05-resume-cycle-cleared-and-widening-review-ready-v1
 
-1. Hold the helper-skill library in maintenance posture after completing the coordinated all-skills deep-dive campaign.
+1. Run the widening review against the current live governed state.
    Why it matters:
-   - The governed helper-skill inventory has now been hard-reviewed and aligned across the major workflow, documentation, delivery, and prompt/intake families.
+   - The final qualifying resume-cycle gate has now been cleared, so widening review is the remaining architecture/governance closeout step.
    Next action:
-   - Open a new grouped wave only when a real new defect, drift, or validated improvement need appears.
+   - Review the current live governed surfaces and decide whether the architecture/governance line can be treated as closed except for maintenance-only fixes.
 
-2. Maintain the bounded package-cleanliness enforcement pass across future delivered skill packages.
+2. If widening review is accepted, shift the main project line to deliverables.
    Why it matters:
-   - Runtime residue such as `__pycache__/` and `*.pyc` should not leak into installable artifacts.
+   - The project wants to stop spending main-line effort on architecture once the last gating review is complete.
    Next action:
-   - Keep stripping runtime residue and validating packaged skill zips before delivery.
+   - Move the primary work queue to deliverables while keeping helper-skill work in bounded maintenance posture.
 
-3. Maintain the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.
+3. Keep package-cleanliness, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
    Why it matters:
-   - The project still wants one more qualifying real resume cycle before widening the stamped active-surface set.
+   - Even after architecture closeout, future small helper-skill fixes still need clean packaging and verification discipline.
    Next action:
-   - Decrement the countdown only after the next qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.
+   - Continue stripping runtime residue and verifying parity before any future maintenance-only delivery.

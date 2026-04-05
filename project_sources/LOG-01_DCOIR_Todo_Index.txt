@@ -1,13 +1,12 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-final-remaining-wave-and-campaign-closeout-v1
+Current state id: 2026-04-05-resume-cycle-cleared-and-widening-review-ready-v1
 
 Current priority summary
-1. The coordinated all-skills helper-skill deep-dive and code-hygiene campaign is complete through the current governed helper-skill inventory.
-2. Maintain the library through bounded grouped waves only when new issues appear.
-3. Maintain the bounded package-cleanliness enforcement pass so delivered skill zips stay free of runtime residue.
-4. Use parity verification and representative regression before treating future patches as ready.
-5. Keep the stamped active-surface widening hold at 1 remaining real resume cycle before any widening review.
+1. The qualifying real resume-cycle requirement has been satisfied and the project is now ready for widening review.
+2. Run the widening review against the current live governed state.
+3. If the widening review is accepted, close the remaining architecture/governance line and move the main project line to deliverables.
+4. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
 
 Current best next move
-- Hold the library in maintenance posture and wait for the next issue-driven grouped wave or the next qualifying real resume cycle.
+- Execute the widening review now, then shift the main project line to deliverables if the review is accepted.
