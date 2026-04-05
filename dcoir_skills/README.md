@@ -41,6 +41,8 @@ Current operating notes
 - The confirmed current DCOIR skills with real local JSON working-state files are `dcoir-session-tracker` and `dcoir-plan-tracker`.
 - When one of those local-JSON skills is used in a new session, run its local JSON startup preflight first instead of assuming the file-backed local state is already present.
 - Use only the affected skill zips or affected repo-relative files for manual deliveries unless the operator explicitly asks for a broader bundle.
+- When multiple compatible skills change in one wave, prefer one outer zip whose top level contains only the affected per-skill zips.
+- When the visible skill inventory or helper-skill workflow rules change materially, refresh `knowledge/DCOIR_Helper_Skills_Routing_Note.md` in the same grouped documentation wave so README and routing surfaces do not drift apart.
 
 Companion guidance
 - Use `knowledge/DCOIR_Helper_Skills_Routing_Note.md` for the richer current routing matrix and boundaries.

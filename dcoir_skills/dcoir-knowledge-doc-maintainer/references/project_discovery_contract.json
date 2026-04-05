@@ -4,11 +4,34 @@
   },
   "control_file_roles": {
     "manifest": [
-      "project_sources/CP-01_DCOIR_Version_Manifest.txt"
+      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/DCOIR_Version_Manifest.txt",
+      "DCOIR_Version_Manifest.txt"
     ],
     "change_log": [
-      "project_sources/CP-02_DCOIR_Change_Log.txt"
+      "project_sources/CP-02_DCOIR_Change_Log.txt",
+      "CP-02_DCOIR_Change_Log.txt",
+      "project_sources/DCOIR_Change_Log.txt",
+      "DCOIR_Change_Log.txt"
+    ],
+    "setup": [
+      "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
+      "DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt"
+    ],
+    "layout": [
+      "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
+      "DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt"
     ]
+  },
+  "active_surface_paths": {
+    "manifest": "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+    "change_log": "project_sources/CP-02_DCOIR_Change_Log.txt",
+    "session_handoff": "project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt",
+    "session_resume": "project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt",
+    "todo_log": "project_sources/LOG-01_DCOIR_Todo_Log.txt",
+    "todo_index": "project_sources/LOG-01_DCOIR_Todo_Index.txt",
+    "active_now": "project_sources/todo/01_Active_Now.txt"
   },
   "manifest_sections": {
     "CURRENT GOVERNED GITHUB READABLE SOURCES": "governed_github_readable_sources",
@@ -23,5 +46,22 @@
     "current task-memory bank": "governed_github_readable_sources",
     "current governed knowledge notes": "governed_knowledge_sources",
     "current governed helper-skill source": "governed_github_readable_sources"
+  },
+  "collector_runtime_alias_contract": {
+    "manifest_required_strings": [
+      "project_sources/DCOIR_Collector.ps1",
+      "project_sources/run_DCOIR_Tests.ps1"
+    ],
+    "layout_any_strings": [
+      "project_sources/DCOIR_Collector.ps1",
+      "project_sources/run_DCOIR_Tests.ps1",
+      "GitHub repository malwaredevil/dcoir-collector is the sole working source for readable governed text files.",
+      "GitHub repository malwaredevil/dcoir-collector is the sole readable working-source location for governed text."
+    ],
+    "harness_runtime_alias": ".\DCOIR_Collector.ps1"
+  },
+  "parity_surfaces": {
+    "manifest": "dcoir_skills/skill_parity_manifest.json",
+    "summary": "dcoir_skills/skill_parity_summary.md"
   }
 }

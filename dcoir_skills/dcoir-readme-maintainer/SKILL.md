@@ -1,6 +1,6 @@
 ---
 name: dcoir-readme-maintainer
-description: maintain root and folder readme surfaces for africom_soc_ir / dcoir work. use when chatgpt needs to improve the repository root readme, improve or create a major folder readme such as knowledge/readme.md or project_sources/readme.md, refresh readme navigation or cross-links after repo changes, detect missing readme coverage in major governed folders, or align readme summaries to the current control plane and visible governed working line. do not use for broader knowledge-doc generation, source-authority judgment, release readiness, or package-class choice.
+description: maintain root and folder readme surfaces for africom_soc_ir / dcoir work. use when chatgpt needs to improve the repository root readme, improve or create a major folder readme such as knowledge/readme.md or project_sources/readme.md, refresh readme navigation or cross-links after repo changes, detect missing readme coverage in major governed folders, align readme summaries to the current control plane and visible governed working line, or refresh the helper-skill routing note when inventory or workflow rules changed materially and the note would otherwise drift from the maintained readme surfaces. do not use for broader knowledge-doc generation, source-authority judgment, release readiness, or package-class choice.
 ---
 
 # DCOIR README Maintainer
@@ -19,16 +19,17 @@ If authority is unclear or the control plane conflicts, stop and report the exac
 ## Scope boundary
 This skill owns:
 - root `README.md` maintenance
-- major folder README maintenance such as `knowledge/README.md` and `project_sources/README.md`
+- major folder README maintenance such as `knowledge/README.md`, `project_sources/README.md`, and `dcoir_skills/README.md`
 - README navigation and cross-link upkeep
 - missing-README detection for major governed folders
-- README refresh after meaningful repo, deliverable, or control-plane changes
+- README refresh after meaningful repo, deliverable, helper-skill inventory, or control-plane changes
+- narrow refresh of `knowledge/DCOIR_Helper_Skills_Routing_Note.md` when current helper-skill inventory or workflow rules changed materially and that routing note would otherwise drift from the maintained README surfaces
 
 This skill does not own:
 - broad knowledge-doc generation or wiki expansion
 - source-authority decisions
 - release readiness or package-class choice
-- general markdown maintenance outside README surfaces, except narrow summary or link refresh needed to keep a README accurate
+- general markdown maintenance outside README surfaces, except narrow summary or link refresh needed to keep a README accurate and the routing note aligned to those README surfaces
 
 Read `references/scope_boundary.md` when the task risks drifting into broader documentation work.
 
@@ -38,17 +39,18 @@ Read `references/scope_boundary.md` when the task risks drifting into broader do
    - **Existing folder README refresh** -> follow "Folder README workflow"
    - **Missing folder README creation** -> follow "Missing README workflow"
    - **Navigation or cross-link cleanup** -> follow "Navigation workflow"
+   - **Routing-note alignment** -> refresh `knowledge/DCOIR_Helper_Skills_Routing_Note.md` only when current helper-skill inventory or workflow rules changed materially and the note would otherwise contradict the maintained README surfaces
 
 2. For all job types:
    - inspect the current discovery contract when present before deciding which README surfaces are the current repo-guide surfaces
    - inspect the target README surface first
    - inspect nearby repo context that the README summarizes or links to
    - inspect the current documentation lane if priorities or scope are ambiguous
-   - prefer the smallest durable README change set that materially improves usability
+   - prefer the smallest durable README or routing-note change set that materially improves usability
 
 3. Before GitHub writes:
    - invoke `dcoir-memory-preflight` for GitHub-family write work or grouped repo updates
-   - prefer one grouped transaction when multiple related README files belong together
+   - prefer one grouped transaction when multiple related README files or the routing note belong together
    - verify by readback after write instead of trusting success messages alone
 
 4. When multiple reasonable paths exist and the operator did not choose one:
@@ -70,7 +72,7 @@ Do not turn the root README into a long-form manual. Keep it a high-signal entry
 See `references/readme_patterns.md` for the default root README pattern.
 
 ## Folder README workflow
-Use this for local folder guides such as `knowledge/README.md` or `project_sources/README.md`.
+Use this for local folder guides such as `knowledge/README.md`, `project_sources/README.md`, or `dcoir_skills/README.md`.
 
 Focus on:
 - short purpose statement
@@ -102,6 +104,7 @@ Focus on:
 - folder-to-subfolder or related-doc pointers when helpful
 - removing stale README references
 - aligning README links to the current visible governed working line
+- keeping README pointers and the helper-skill routing note mutually consistent when helper-skill inventory or workflow rules changed materially
 
 Do not add speculative links to work that is not actually present.
 
@@ -112,14 +115,15 @@ Do not add speculative links to work that is not actually present.
 - Prefer a specific README fix over a broad narrative rewrite.
 - When a broader documentation need is discovered, route that follow-on work to the appropriate broader documentation workflow instead of silently expanding scope.
 - Preserve the DCOIR GitHub-primary working-source posture.
+- Treat `dcoir-knowledge-doc-maintainer` as the owner of broad knowledge-doc generation and retained knowledge-doc ZIP refresh, not this skill.
 
 ## Output contract
 When acting under this skill:
-- identify the README job type
+- identify the README or routing-note job type
 - state the minimal surface being changed
-- produce the updated README content or a bounded README change proposal
+- produce the updated README or routing-note content or a bounded change proposal
 - keep the rationale short and grounded to current repo state
-- if the task requires broader documentation work, say that plainly and narrow the README work instead of absorbing the larger job
+- if the task requires broader documentation work, say that plainly and narrow the README or routing-note work instead of absorbing the larger job
 
 ## References
 Read when needed:

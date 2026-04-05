@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.51
+DCOIR Version Manifest 3.9.52
 
-Current state id: 2026-04-05-knowledge-doc-stale-cluster-completion-v1
+Current state id: 2026-04-05-readme-routing-and-doc-boundary-alignment-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -11,11 +11,11 @@ Current control plane
 - Helper-skill workflow rules: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
 - GitHub helper-skill source layout and rollout: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
-- Helper-skill workflow decisions: project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt
 - Delivery-bundle structure and GitHub Desktop manual update preference: project_sources/LOG-24_DCOIR_Delivery_Bundle_Structure_And_GitHub_Desktop_Manual_Update_Preference_2026-04-04.txt
 - Release/impact/readiness delivery-class alignment: project_sources/LOG-36_DCOIR_Release_Impact_And_Readiness_Delivery_Class_Alignment_2026-04-05.txt
 - Knowledge-doc GitHub-primary refresh: project_sources/LOG-37_DCOIR_Knowledge_Doc_GitHub_Primary_Refresh_2026-04-05.txt
 - Knowledge-doc stale-cluster completion: project_sources/LOG-38_DCOIR_Knowledge_Doc_Stale_Cluster_Completion_2026-04-05.txt
+- README, routing-note, and documentation-boundary alignment: project_sources/LOG-39_DCOIR_Readme_Routing_And_Documentation_Boundary_Alignment_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -36,19 +36,18 @@ Current task-memory bank
 Current governed helper-skill source
 - Root: dcoir_skills/
 - Policy decision: all `dcoir-*` skill source is stored in GitHub under the governed source root.
-- `dcoir-knowledge-doc-maintainer` now treats repeated stale source-name, removed-wrapper, or delivery-model drift across multiple current Knowledge docs as a grouped refresh case rather than a one-page partial correction.
-- The maintained knowledge-doc set under `knowledge/*.md` now uses GitHub-readable provenance and current runtime filenames consistently across the remaining previously stale current pages.
-- The retained `supporting_assets/supporting_knowledge_docs.zip` asset was refreshed in the same wave so the supporting ZIP remains aligned to the current maintained Knowledge-doc set.
-- The current Knowledge docs no longer document a removed default `run_DCOIR_Tests.cmd` wrapper as though it were current.
-- The current Knowledge docs still remain supporting human-readable documentation only and do not override the control plane.
-- `dcoir-change-impact-analyzer` distinguishes targeted skill updates, batched skill-update waves, GitHub Desktop manual repo-update bundles, and full-refresh project-upload classes.
-- `dcoir-release-scope-builder` treats GitHub Desktop manual repo-update bundles and batched multi-skill update waves as first-class packaging classes.
-- `dcoir-promotion-readiness-reviewer` checks batched skill-wave regression coverage and GitHub Desktop manual-update delivery prerequisites.
-- `dcoir-repo-packager` supports a GitHub Desktop manual repo-update bundle mode that packages only affected repo-relative files or folders with no wrapper root and surfaces a suggested commit summary.
+- `dcoir-readme-maintainer` now explicitly owns narrow helper-skill routing-note alignment when current skill inventory or workflow rules changed materially and the routing note would otherwise drift from maintained README surfaces.
+- `dcoir-knowledge-doc-maintainer` now uses GitHub-primary governed-readable-source wording consistently in its workflow references and reinventory prompt instead of older uploaded-project wording.
+- `knowledge/DCOIR_Helper_Skills_Routing_Note.md` now carries a fuller current routing matrix across the visible helper-skill inventory rather than leaving the fast-routing surface partially stale.
+- `knowledge/README.md` and `dcoir_skills/README.md` now describe the maintained knowledge-doc lane, retained knowledge-doc ZIP posture, grouped skill-wave delivery shape, and routing-note refresh rule more explicitly.
+- Manual GitHub Desktop repo-update bundles should unzip directly to only the affected repo-relative folders and files with no extra wrapper root.
+- Single-skill delivery should provide only the affected skill zip.
+- Multi-skill delivery bundles should use one outer zip whose top level contains only the affected per-skill zip files named after the live skill names with no subfolders.
+- GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 
 Current next work item
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired memory-preflight routing, aligned validation-orchestrator grouped-delivery coverage, batched manual-update preference handling, valid session-resume packaging, bounded source-authority handling for missing supporting assets, GitHub-primary collector-operator wording, corrected control-plane version-pair continuity, aligned release/impact/readiness delivery classes, refreshed GitHub-primary knowledge-doc lane, and completed stale-doc cluster handling.
-- Continue the workflow-state, authority, collector-follow-through, and documentation high-risk wave after the completed knowledge-doc stale-cluster lane.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired memory-preflight routing, aligned validation-orchestrator grouped-delivery coverage, batched manual-update preference handling, valid session-resume packaging, bounded source-authority handling for missing supporting assets, GitHub-primary collector-operator wording, corrected control-plane version-pair continuity, aligned release/impact/readiness delivery classes, refreshed GitHub-primary knowledge-doc lane, completed stale-doc cluster handling, and aligned README or routing-note navigation surfaces.
+- Continue the workflow-state, authority, collector-follow-through, documentation, and prompt-or-intake high-risk wave after the README or routing-note and documentation-boundary alignment lane.
 - Continue the bounded package-cleanliness enforcement pass across the helper-skill library so runtime residue such as `__pycache__/` and `*.pyc` does not contaminate delivered skill packages.
 - Use the repaired release/impact/readiness delivery-class model to keep future grouped GitHub Desktop repo updates and batched skill-install waves aligned to the current operator workflow.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.

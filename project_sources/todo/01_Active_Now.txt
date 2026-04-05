@@ -1,21 +1,21 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-knowledge-doc-stale-cluster-completion-v1
+Current state id: 2026-04-05-readme-routing-and-doc-boundary-alignment-v1
 
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, durable continuous-execution cadence rule, repaired GitHub Desktop manual repo-update bundle mode, aligned delivery-class handling, and completed GitHub-primary Knowledge-doc stale-cluster baseline.
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, durable continuous-execution cadence rule, repaired GitHub Desktop manual repo-update bundle mode, repaired workflow-state tracker paths, repaired `dcoir-memory-preflight` coordinated-campaign and delivery-trigger alignment, aligned `dcoir-validation-orchestrator` grouped-delivery coverage, batched manual-update preference handling in `dcoir-decision-policy`, aligned release/impact/readiness delivery classes, completed Knowledge-doc stale-cluster handling, and aligned README/routing-note plus documentation-boundary surfaces.
    Why it matters:
-   - The project now has a stronger grouped-update model and a cleaner supporting-doc baseline, so the broader campaign can keep moving with less avoidable operator friction and less stale guidance drift.
+   - The project now has stronger startup proof, grouped-delivery support, tracker behavior, routing alignment, knowledge-doc alignment, and clearer documentation boundaries, so the remaining helper-skill deep-dive passes can proceed with less avoidable operator friction and less docs drift.
    Next action:
-   - Continue into the next highest-value README or documentation-navigation alignment pass under the current CI/CD-style validation regime while holding compatible fixes for the next meaningful grouped manual update/install wave.
+   - Continue into the next highest-value prompt-pack assembly, triage-escalation, or large-file-intake helper-skill pass under the current CI/CD-style validation regime while holding compatible fixes for the next meaningful grouped manual update/install wave.
 
-2. Maintain the bounded package-cleanliness enforcement pass across the helper-skill library.
+2. Keep the bounded package-cleanliness enforcement pass active across the helper-skill library.
    Why it matters:
-   - The all-skills campaign identified package-hygiene risk from runtime residue such as `__pycache__/` and `*.pyc`, and delivered skill packages should stay clean even when local scripts were executed during validation.
+   - Delivered skill packages should stay clean even when local scripts were executed during validation.
    Next action:
    - Add package-cleanliness checks or cleanup steps where the current helper-skill delivery workflow still allows runtime residue to leak into installable artifacts.
 
 3. Maintain the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.
    Why it matters:
-   - The project wants one more qualifying live resume cycle before widening the stamped active-surface set, and synthetic or generated-artifact validation should not count.
+   - The project still wants one more qualifying live resume cycle before widening the stamped active-surface set.
    Next action:
    - Decrement the countdown only after the next qualifying real resume cycle that uses the direct drift gate on live governed state and is judged acceptable.

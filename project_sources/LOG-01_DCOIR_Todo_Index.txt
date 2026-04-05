@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-knowledge-doc-stale-cluster-completion-v1
+Current state id: 2026-04-05-readme-routing-and-doc-boundary-alignment-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,8 +8,8 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired memory-preflight routing, aligned validation-orchestrator grouped-delivery coverage, batched manual-update preference handling, valid session-resume packaging, bounded source-authority asset handling, aligned release/impact/readiness delivery classes, and completed Knowledge-doc stale-cluster handling.
-2. Continue the workflow-state, authority, collector-follow-through, and documentation high-risk wave by moving to the next highest-value README or documentation-navigation helper-skill pass after the completed Knowledge-doc stale-cluster lane.
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired `dcoir-memory-preflight` routing alignment, aligned `dcoir-validation-orchestrator` grouped-delivery coverage, batched manual-update preference handling, valid `dcoir-session-resume` packaging, bounded `dcoir-source-authority-auditor` supporting-asset handling, aligned release/impact/readiness delivery classes, completed Knowledge-doc stale-cluster handling, and aligned README/routing-note plus documentation-boundary surfaces.
+2. Continue the workflow-state, authority, collector-follow-through, documentation, and prompt-or-intake high-risk wave by moving to the next highest-value prompt-pack assembly, triage-escalation, or large-file-intake helper-skill pass after the completed documentation-navigation alignment lane.
 3. Maintain the bounded package-cleanliness enforcement pass so delivered skill zips stay free of runtime residue.
 4. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other session-memory-enabled or buffer-capable skills before governed pushes.
 5. Use the repaired GitHub Desktop manual repo-update bundle mode together with the recorded delivery-bundle and GitHub Desktop commit `Summary` preferences for future manual deliveries unless the operator explicitly overrides them.
@@ -23,4 +23,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Continue the coordinated campaign by taking the next highest-value README or documentation-navigation helper-skill pass after the completed Knowledge-doc stale-cluster lane while carrying the bounded package-cleanliness enforcement line in parallel.
+- Continue the coordinated campaign by taking the next highest-value prompt-pack assembly, triage-escalation, or large-file-intake helper-skill pass after the completed documentation-navigation alignment lane while carrying the bounded package-cleanliness enforcement line in parallel.

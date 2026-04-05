@@ -18,11 +18,11 @@ DCOIR Documentation And Knowledge Lane
    Next action:
    - Build a stronger knowledge index and topic-specific documents after the first inventory pass.
 
-4. Evaluate the ownership boundary between dcoir-readme-maintainer and dcoir-knowledge-doc-maintainer.
+4. Ownership boundary between dcoir-readme-maintainer and dcoir-knowledge-doc-maintainer is now clarified, but should remain under review as the documentation surface grows.
    Why it matters:
-   - The current skill boundaries do not yet cover every broader documentation and discovery need implied by the project goals.
+   - README/navigation upkeep and broad knowledge-doc generation now have a clearer split, reducing accidental scope drift during docs maintenance waves.
    Next action:
-   - Decide whether one or both maintainer skills need discovery-trigger awareness, broader link integration logic, or a coordinated documentation campaign workflow.
+   - Revisit the boundary only if future documentation work needs discovery-trigger awareness, broader link integration logic, or a coordinated documentation campaign workflow beyond the current split.
 
 5. Keep the master prompt, Gemini design line, DFIR operating principles, and enrichment posture visible in human-readable docs.
    Why it matters:
