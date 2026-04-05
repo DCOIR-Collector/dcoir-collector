@@ -1,44 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 3.9.52
-Current state id: 2026-04-05-readme-routing-and-doc-boundary-alignment-v1
-Change class: readme, routing-note, and documentation-boundary alignment
+Version: 3.9.53
+Current state id: 2026-04-05-prompt-intake-design-family-alignment-v1
+Change class: prompt-pack assembly, triage escalation, and large-file intake design-family alignment
 
 What changed
-- Added `project_sources/LOG-39_DCOIR_Readme_Routing_And_Documentation_Boundary_Alignment_2026-04-05.txt` as the governed decision record for the documentation-navigation alignment pass across `dcoir-readme-maintainer`, `dcoir-knowledge-doc-maintainer`, `knowledge/DCOIR_Helper_Skills_Routing_Note.md`, `knowledge/README.md`, and `dcoir_skills/README.md`.
-- Updated `dcoir-readme-maintainer` so it now explicitly owns narrow routing-note refresh when current helper-skill inventory or workflow rules changed materially and the routing note would otherwise drift from the maintained README surfaces.
-- Updated `dcoir-knowledge-doc-maintainer` so its workflow references and reinventory prompt now use GitHub-primary governed-readable-source wording consistently instead of older uploaded-project wording.
-- Refreshed `knowledge/DCOIR_Helper_Skills_Routing_Note.md` so the fast-routing matrix covers the current visible helper-skill inventory more completely and so the routing surface no longer lags behind the current helper-skill workflow rules.
-- Refreshed `knowledge/README.md` and `dcoir_skills/README.md` so the maintained knowledge-doc lane, retained `supporting_knowledge_docs.zip` posture, grouped skill-wave delivery shape, and routing-note refresh rule are all explicit in the local-guide surfaces.
+- Added `project_sources/LOG-40_DCOIR_Prompt_Intake_Design_Family_Alignment_2026-04-05.txt` as the governed decision record for the bounded prompt/intake design-family alignment pass across `dcoir-prompt-pack-assembler`, `dcoir-triage-to-collector-escalation-designer`, and `dcoir-large-file-intake-manager`.
+- Repaired `dcoir-prompt-pack-assembler` so it discovers the live PP-01 through PP-07 modular source set directly from the current GitHub-primary `project_sources/` line.
+- Repaired `dcoir-triage-to-collector-escalation-designer` so it emits an explicit DCOIR escalation contract with the exact next step, expected next evidence, and bounded-confidence note keyed to the trigger class.
+- Repaired `dcoir-large-file-intake-manager` so it returns DCOIR-specific next requested excerpts and confidence limits by artifact type rather than only generic large-file advice.
+- Refreshed the helper-skill routing note so the fast routing matrix now includes explicit prompt-pack assembly, triage escalation, and large-file intake rows.
 
 Why
-- The documentation lane called for keeping the README surfaces and the helper-skill routing note aligned to the visible governed working line and for clarifying the boundary between `dcoir-readme-maintainer` and `dcoir-knowledge-doc-maintainer`.
-- The live routing note still had a partial fast-routing matrix even though the current governed skill inventory is broader.
-- The knowledge-doc maintainer still carried older uploaded-project wording in its workflow references even after the knowledge-doc content lane had been moved to GitHub-primary wording.
+- The live manifest no longer exposes the retired prompt-upload role section that the assembler depended on.
+- The escalation and intake companions were still too generic for the current DCOIR evidence-flow and artifact-review posture.
+- Grouping these three fixes together aligned the whole prompt/intake design family in one bounded manual-update wave.
 
 Validation notes
-- The updated `dcoir-readme-maintainer` and `dcoir-knowledge-doc-maintainer` skill packages pass clean packaging validation.
-- Readback review confirms that the refreshed routing note, `knowledge/README.md`, and `dcoir_skills/README.md` now match the current visible helper-skill set and current GitHub Desktop grouped-delivery posture.
-- The next immediate branch is to continue the remaining prompt-or-intake design family deep-dive from the now aligned README, routing-note, and documentation-boundary baseline.
+- The updated three-skill batch passes clean packaging validation.
+- Representative checks confirm live prompt discovery, explicit escalation output, and artifact-type-specific intake output.
 
 [PRIOR]
-Version: 3.9.51
-Current state id: 2026-04-05-knowledge-doc-stale-cluster-completion-v1
-Change class: knowledge-doc stale-cluster completion
-
-What changed
-- Added `project_sources/LOG-38_DCOIR_Knowledge_Doc_Stale_Cluster_Completion_2026-04-05.txt` as the governed decision record for the grouped completion pass across the remaining stale current Knowledge docs.
-- Updated the remaining stale current Knowledge docs so they use GitHub-readable provenance and current runtime filenames consistently instead of older uploaded-source names or the removed default `run_DCOIR_Tests.cmd` wrapper.
-- Refreshed the retained `supporting_assets/supporting_knowledge_docs.zip` asset in the same wave so the supporting ZIP stays aligned to the maintained `knowledge/*.md` working set.
-- Updated `dcoir-knowledge-doc-maintainer` so repeated stale source-name, removed-wrapper, or delivery-model drift across multiple current Knowledge docs is treated as a grouped refresh case rather than a one-page partial correction.
-
-Why
-- The coordinated campaign found that a remaining cluster of current Knowledge docs still preserved older uploaded-source names and the removed default CMD wrapper even after the first GitHub-primary knowledge-doc refresh.
-- Refreshing that stale cluster in one pass was lower-friction and more trustworthy than drip-feeding one-page doc corrections.
-- The retained supporting ZIP needed to stay aligned with the maintained markdown set in the same wave.
-
-Validation notes
-- The refreshed current Knowledge docs now use GitHub-readable provenance and current runtime filenames consistently across the previously stale pages.
-- The retained `supporting_assets/supporting_knowledge_docs.zip` asset was refreshed in the same wave so the ZIP does not lag behind the maintained docs.
-- The next immediate branch is to continue the documentation-navigation lane or the next highest-value helper-skill deep-dive family from the refreshed knowledge-doc baseline.
+Version: 3.9.52
+Current state id: 2026-04-05-readme-routing-and-doc-boundary-alignment-v1
+Change class: README, routing-note, and documentation-boundary alignment

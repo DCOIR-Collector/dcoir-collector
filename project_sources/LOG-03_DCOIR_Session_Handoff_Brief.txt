@@ -1,36 +1,17 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-05-readme-routing-and-doc-boundary-alignment-v1
-
-Current stable artifacts
-- Working GitHub repository: malwaredevil/dcoir-collector
-- GitHub control-plane files: project_sources/CP-01_DCOIR_Version_Manifest.txt and project_sources/CP-02_DCOIR_Change_Log.txt
-- Setup and workflow guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
-- Helper-skill workflow guide: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
-- GitHub helper-skill source layout and rollout guide: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
-- Helper-skill workflow decision logs: LOG-04 through LOG-39
-- Task memory bank root: knowledge/task_memory
-- Governed helper-skill source root: dcoir_skills/
-- Authoritative todo surfaces: project_sources/LOG-01_DCOIR_Todo_Log.txt, project_sources/LOG-01_DCOIR_Todo_Index.txt, and project_sources/todo/*.txt
+Current state id: 2026-04-05-prompt-intake-design-family-alignment-v1
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
-- The project discovery contract and parity surfaces are now part of the governed helper-skill control posture.
-- The next governance branch remains the coordinated all-skills helper-skill deep-dive and code-hygiene campaign, now carrying the durable continuous-execution cadence rule, the live-validated startup baseline, the repaired GitHub Desktop manual repo-update bundle mode, repaired workflow-state tracker paths, repaired memory-preflight routing, aligned validation-orchestrator grouped-delivery coverage, batched manual-update preference handling, valid session-resume packaging, bounded source-authority handling for missing supporting assets, aligned release/impact/readiness delivery-class handling, the completed GitHub-primary knowledge-doc stale-cluster baseline, and the aligned README, routing-note, and documentation-boundary surfaces.
-- The stamped active-surface widening hold now has 1 remaining real resume cycle.
+- The next governance branch remains the coordinated all-skills helper-skill deep-dive and code-hygiene campaign, now carrying the aligned prompt/intake design-family handling together with the earlier workflow, delivery, and documentation repairs.
 
 Current validated status
-- The repaired `dcoir-repo-packager` GitHub Desktop manual repo-update bundle mode is locally validated and used to emit affected-path delivery artifacts with no wrapper root.
-- The durable continuous-execution cadence rule is encoded in `dcoir-decision-policy` for coordinated campaigns that should not stop at routine intermediate milestones.
-- The repaired `dcoir-memory-preflight` reference layer is aligned to coordinated multi-skill campaign and GitHub Desktop grouped-delivery routing.
-- The aligned `dcoir-validation-orchestrator` coverage now treats grouped delivery waves and package-cleanliness checks as first-class validation scope.
-- The current Knowledge-doc set now uses GitHub-readable provenance and current runtime filenames consistently across the previously stale pages.
-- The refreshed routing note, `knowledge/README.md`, and `dcoir_skills/README.md` now match the current visible helper-skill set and grouped manual-delivery posture, and the boundary between `dcoir-readme-maintainer` and `dcoir-knowledge-doc-maintainer` is more explicit.
+- The repaired repo-packager source is aligned to GitHub Desktop manual repo-update patch-bundle delivery needs.
+- The aligned prompt/intake design family now uses a live GitHub-primary prompt discovery path, explicit escalation contracts, and artifact-type-specific bounded intake guidance.
 
 Current next planned work item
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup, repaired delivery, continuous-execution, package-cleanliness enforcement, repaired tracker behavior, repaired memory-preflight routing, aligned validation coverage, batched manual-update preference handling, valid resume packaging, bounded authority-audit asset handling, aligned release/impact/readiness delivery classes, completed knowledge-doc stale-cluster baseline, and aligned README/routing-note surfaces.
-- Move to the next highest-value prompt-pack assembly, triage-escalation, or large-file-intake helper-skill pass after the completed documentation-navigation alignment lane.
-- Use the updated `dcoir-parity-verifier` and `dcoir-skill-regression-auditor` package-cleanliness checks for future delivered skill-package verification and post-patch readiness claims.
-- Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
+- Continue the coordinated campaign from the aligned prompt/intake design-family baseline.
+- Move to the next highest-value remaining helper-skill family.

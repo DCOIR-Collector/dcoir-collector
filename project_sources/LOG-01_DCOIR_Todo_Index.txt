@@ -1,26 +1,11 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-readme-routing-and-doc-boundary-alignment-v1
-
-Purpose
-- This file is the short-form entry point for current DCOIR work.
-- It provides the current priority order, the child todo-file map, and one best next move.
-- Detailed queued work lives in project_sources/todo/.
+Current state id: 2026-04-05-prompt-intake-design-family-alignment-v1
 
 Current priority summary
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired `dcoir-memory-preflight` routing alignment, aligned `dcoir-validation-orchestrator` grouped-delivery coverage, batched manual-update preference handling, valid `dcoir-session-resume` packaging, bounded `dcoir-source-authority-auditor` supporting-asset handling, aligned release/impact/readiness delivery classes, completed Knowledge-doc stale-cluster handling, and aligned README/routing-note plus documentation-boundary surfaces.
-2. Continue the workflow-state, authority, collector-follow-through, documentation, and prompt-or-intake high-risk wave by moving to the next highest-value prompt-pack assembly, triage-escalation, or large-file-intake helper-skill pass after the completed documentation-navigation alignment lane.
-3. Maintain the bounded package-cleanliness enforcement pass so delivered skill zips stay free of runtime residue.
-4. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other session-memory-enabled or buffer-capable skills before governed pushes.
-5. Use the repaired GitHub Desktop manual repo-update bundle mode together with the recorded delivery-bundle and GitHub Desktop commit `Summary` preferences for future manual deliveries unless the operator explicitly overrides them.
-6. Continue using canonical task-memory preflight and grouped GitHub transactions for related governed work.
-
-Todo-file map
-- todo/01_Active_Now.txt
-- todo/02_Queued_Next.txt
-- todo/03_Documentation_And_Knowledge_Lane.txt
-- todo/04_Structure_And_Refactor_Lane.txt
-- todo/05_Deferred_Or_Conditional.txt
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the aligned prompt/intake design-family handling.
+2. Continue the remaining high-risk helper-skill wave after the aligned prompt/intake family lane.
+3. Maintain the bounded package-cleanliness enforcement pass.
 
 Current best next move
-- Continue the coordinated campaign by taking the next highest-value prompt-pack assembly, triage-escalation, or large-file-intake helper-skill pass after the completed documentation-navigation alignment lane while carrying the bounded package-cleanliness enforcement line in parallel.
+- Continue the coordinated campaign by taking the next highest-value remaining helper-skill pass after the aligned prompt/intake family lane.
