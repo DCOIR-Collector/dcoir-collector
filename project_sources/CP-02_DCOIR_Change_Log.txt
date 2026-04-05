@@ -1,6 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.47
+Current state id: 2026-04-05-resume-authority-bounded-assets-and-batched-prompts-v1
+Change class: resume-skill packaging repair and source-authority bounded supporting-asset handling
+
+What changed
+- Added `project_sources/LOG-34_DCOIR_Resume_Packaging_And_Source_Authority_Bounded_Asset_Handling_2026-04-05.txt` as the governed decision record for the bounded resume/authority alignment pass across `dcoir-session-resume` and `dcoir-source-authority-auditor`.
+- Updated `dcoir-session-resume` so the packaged skill now includes valid skill frontmatter and grouped follow-up prompt guidance that matches the current batched manual-update workflow.
+- Updated `dcoir-source-authority-auditor` so missing supporting assets now produce a bounded result instead of a hard-stop conflict unless the current task explicitly depends on those assets as authority.
+- Updated the source-authority audit rules and deterministic audit script so authoritative readable-source absence still hard-stops, but supporting-asset absence is surfaced as a bounded note rather than misclassified as an authority conflict.
+- Refreshed the active continuity and todo surfaces so the coordinated campaign now carries valid resume-skill packaging and bounded source-authority handling for missing supporting assets.
+
+Why
+- The coordinated campaign found that `dcoir-session-resume` still lacked the normal skill frontmatter and did not reflect the grouped follow-up prompt posture now used in batched manual-update waves.
+- The same review found a real contradiction in `dcoir-source-authority-auditor`: its hard rules said supporting assets are not control-plane authority, but the deterministic audit script could still hard-stop when only a supporting asset was absent from the workspace.
+- The highest-value bounded fix was to repair both sides of the resume/authority bootstrap lane together so status checks and drift-gate audits stay valid in partial or batched delivery workspaces.
+
+Validation notes
+- The updated `dcoir-session-resume` and `dcoir-source-authority-auditor` skill packages pass clean packaging validation.
+- Representative deterministic audit tests confirm that missing authoritative readable sources still hard-stop, while missing supporting assets now produce a bounded outcome when the task does not depend on them as authority.
+- The next immediate branch is to continue the workflow-state and authority high-risk wave from the now valid resume packaging and bounded source-authority baseline.
+
+[PRIOR]
 Version: 3.9.46
 Current state id: 2026-04-05-batched-bootstrap-and-validation-alignment-v1
 Change class: batched bootstrap and validation alignment plus manual-update batching preference
@@ -21,24 +43,3 @@ Validation notes
 - The updated `dcoir-memory-preflight`, `dcoir-validation-orchestrator`, and `dcoir-decision-policy` skill packages pass clean packaging validation with no runtime-residue entries included.
 - Reference review confirms that coordinated campaigns, GitHub Desktop manual repo-update deliveries, grouped governed pushes, grouped delivery-wave validation, and batched manual-update preference handling are now explicitly represented in the affected skill instructions or references.
 - The next immediate branch is to continue the workflow-state and validation-ownership high-risk wave from the now aligned bootstrap, validation, and batched manual-update baseline.
-
-[PRIOR]
-Version: 3.9.44
-Current state id: 2026-04-05-plan-tracker-next-step-and-blocked-state-fix-v1
-Change class: plan-tracker next-step advancement and blocked-state guidance fix
-
-What changed
-- Added `project_sources/LOG-32_DCOIR_Plan_Tracker_Next_Step_And_Blocked_State_Fix_2026-04-05.txt` as the governed decision record for the bounded `dcoir-plan-tracker` transition-guidance repair.
-- Updated `dcoir-plan-tracker` so completing or skipping the active task now advances `next_recommended_action` and `resume_state.exact_resume_goal` to the next eligible task instead of leaving stale starter text in operator-facing resume state.
-- Updated `dcoir-plan-tracker` so blocking the active task now surfaces blocked-state guidance in operator-facing resume state instead of leaving the same stale next-step wording that applied before the blocker.
-- Refreshed the active continuity and todo surfaces so the workflow-state high-risk wave now carries the repaired `dcoir-plan-tracker` transition-guidance behavior.
-
-Why
-- The coordinated campaign deep-dive found a real operator-facing continuity defect: marking the active task `done`, `skipped`, or `blocked` could leave `next_recommended_action` and `resume_state.exact_resume_goal` stuck on stale starter text.
-- That behavior weakened the very resume quality the plan tracker is supposed to protect in long-running DCOIR work.
-- The highest-value bounded fix was to repair the plan-state transition logic and then carry the new behavior into the governed continuity surfaces.
-
-Validation notes
-- The updated `dcoir-plan-tracker` skill package passes clean packaging validation.
-- Representative local plan-state tests confirm that `done`, `skipped`, and `blocked` transitions now update the operator-facing next-step and blocked-state guidance instead of leaving stale resume text behind.
-- The next immediate branch is to continue the workflow-state high-risk wave with the next buffer-capable or routing-critical helper-skill pass.

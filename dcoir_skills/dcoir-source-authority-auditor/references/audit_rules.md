@@ -13,15 +13,17 @@ Use when the control plane is clear but the reviewed evidence or workspace is pa
 
 Typical cases:
 - the workspace is intentionally partial and one or more non-control active surfaces are unavailable
+- one or more supporting assets are missing from the workspace, but the current task does not depend on them for authority
 - the active enforcement set cannot be fully checked, but the available surfaces do not contradict each other
 
-The task may continue only with bounded claims and an explicit note about which surfaces were unavailable.
+The task may continue only with bounded claims and an explicit note about which surfaces or supporting assets were unavailable.
 
 ## hard_stop_conflict
 Use when any of these are true:
 - manifest missing
 - change log missing
-- current file listed in the manifest is missing from the workspace
+- current authoritative readable source listed in the manifest is missing from the workspace
+- task explicitly depends on a missing supporting asset as though it were authoritative current-state basis
 - task depends on a non-current file as authority
 - `CP-01` / `CP-02` version mismatch
 - `current_state_id` mismatch across the in-scope active enforcement surfaces

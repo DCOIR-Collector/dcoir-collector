@@ -1,7 +1,9 @@
 ---
 name: dcoir-session-resume
-description: resume the africom_soc_ir / dcoir workspace from the current authoritative control plane. use at the first substantive turn of every new africom_soc_ir or dcoir session as the mandatory bootstrap resume step, even when the user did not explicitly ask to resume, and also use when the user asks where are we, resume, resume where we left off, what is current, what changed, or get me back on track. before trusting supporting continuity surfaces, consume the shared drift gate through dcoir-source-authority-auditor so stale or contradictory current-state signals do not produce a normal resume summary.
+description: resume the africom_soc_ir / dcoir workspace from the current authoritative control plane. use at the first substantive turn of every new africom_soc_ir or dcoir session to re-anchor to the current state, and use when the operator asks where are we, resume, what is current, what changed, or get me back on track. prefer the governed github readable-text fast path for simple current-state checks and use grouped, state-aware follow-up prompts when the current workflow favors batched manual updates or skill-install waves.
 ---
+
+# DCOIR Session Resume
 
 Resume the AFRICOM_SOC_IR / DCOIR workspace from the current authoritative control plane.
 
@@ -58,6 +60,7 @@ Use the first available bootstrap anchor in this order:
 10. Use the current todo structure and current session handoff brief only as supporting context after the drift gate clears or bounds the path.
 11. If the manifest, change log, or workspace state conflict, stop and report the conflict plainly.
 12. For `session_start_bootstrap` and explicit resume-status requests, use the resume-status fast path by default unless the current task already shows that the primary GitHub readable-text lane cannot resolve the state.
+13. When the current workflow favors grouped manual updates or grouped skill-install waves, prefer grouped ready follow-up prompts over one-skill-at-a-time prompts.
 
 ## Required rules
 - Treat the first substantive session turn as a mandatory resume bootstrap point for this workspace unless the request is clearly outside DCOIR scope.
@@ -94,6 +97,7 @@ Return sections in this exact order:
 - Then give 2 to 4 short ready follow-up prompts.
 - Use plain-language prompts, not internal tool syntax.
 - Include packaging prompts only when relevant to the current state.
+- Prefer grouped prompts when the current workflow favors batched manual updates or grouped skill-install waves.
 - Prefer the next most useful artifact or action, not a broad menu.
 - When the path is bounded, say which active surfaces were unavailable.
 - When the path hard-stops, do not continue into the normal nine-section resume summary.

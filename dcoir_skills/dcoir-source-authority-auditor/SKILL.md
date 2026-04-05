@@ -1,6 +1,6 @@
 ---
 name: dcoir-source-authority-auditor
-description: audit whether a requested dcoir task is grounded in the current authoritative source set and stop when control-plane, current_state_id, or continuity drift would make the result unsafe or misleading. use when chatgpt must verify current authority, compare active continuity surfaces for alignment, detect stale or contradictory current-state signals, flag historical-versus-current confusion, or decide whether work can proceed, must stay bounded, or must stop for an exact conflict report. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
+description: audit whether a requested dcoir task is grounded in the current authoritative source set and stop when control-plane, current_state_id, or continuity drift would make the result unsafe or misleading. use when chatgpt must verify current authority, compare active continuity surfaces for alignment, detect stale or contradictory current-state signals, flag historical-versus-current confusion, or decide whether work can proceed, must stay bounded, or must stop for an exact conflict report. supporting-asset absence alone should bound the path rather than hard-stop it unless the current task depends on that asset as authority.
 ---
 
 # DCOIR Source Authority Auditor
@@ -32,8 +32,9 @@ This skill verifies the control plane, checks current-versus-historical file han
 5. Compare the shared `current_state_id` across that set and compare the `CP-01` / `CP-02` version pair.
 6. Compare the manifest-defined current source set with the workspace state.
 7. Check whether the task is trying to rely on non-current files or Project-space mirror assumptions.
-8. Run `scripts/audit_source_authority.py` when a deterministic audit will help.
-9. Emit one of these outcomes:
+8. Treat missing authoritative readable sources as a hard-stop conflict, but treat missing supporting assets as a bounded-state note unless the current task explicitly depends on those assets as authority.
+9. Run `scripts/audit_source_authority.py` when a deterministic audit will help.
+10. Emit one of these outcomes:
    - `clear_to_proceed`
    - `proceed_bounded`
    - `hard_stop_conflict`
@@ -61,3 +62,4 @@ Return:
 - Prefer control-plane role and manifest section over brittle filename assumptions.
 - Treat Project space as bootstrap/runtime anchor, not as a duplicate readable text repository.
 - Detect and report drift; do not silently rewrite governed files from this skill.
+- Do not hard-stop only because a supporting asset is absent unless the current task explicitly depends on that asset as authority.

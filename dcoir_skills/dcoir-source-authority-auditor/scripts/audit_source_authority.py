@@ -23,7 +23,6 @@ ACTIVE_SURFACE_PATHS = CONTRACT.get("active_surface_paths", {})
 MANIFEST_SECTIONS = CONTRACT.get("manifest_sections", {})
 CURRENT_PROSE_HEADINGS = CONTRACT.get("current_prose_headings", {})
 
-# legacy packaged defaults preserved below only as initial fallback structure
 CONTROL_FILE_CANDIDATES = {
     "manifest": [
         "project_sources/CP-01_DCOIR_Version_Manifest.txt",
@@ -42,7 +41,6 @@ CONTROL_FILE_CANDIDATES = {
 ACTIVE_SURFACE_PATHS = CONTRACT.get("active_surface_paths", ACTIVE_SURFACE_PATHS)
 MANIFEST_SECTIONS = CONTRACT.get("manifest_sections", MANIFEST_SECTIONS)
 CURRENT_PROSE_HEADINGS = CONTRACT.get("current_prose_headings", CURRENT_PROSE_HEADINGS)
-
 
 STATE_ID_RE = re.compile(r"^Current state id\s*:?\s*(.+?)\s*$", re.IGNORECASE)
 CP01_VERSION_RE = re.compile(r"^DCOIR Version Manifest\s+(\S+)\s*$", re.IGNORECASE)
@@ -98,9 +96,14 @@ def parse_manifest(text: str) -> Dict[str, List[str]]:
             continue
         if current_section and line.startswith('- '):
             payload = line[2:].strip()
+            if payload.lower() == 'none currently tracked in the authoritative working set.':
+                continue
             if ':' in payload:
                 _, value = payload.split(':', 1)
-                parsed[current_section].append(value.strip())
+                value = value.strip()
+                if value.lower() == 'none currently tracked in the authoritative working set.':
+                    continue
+                parsed[current_section].append(value)
             else:
                 parsed[current_section].append(payload)
     if any(parsed.values()):
@@ -154,23 +157,31 @@ def request_is_current(requested_item: str, authority: Dict[str, set[str]]) -> b
     )
 
 
-def verify_workspace_state(source_dir: Path, parsed: Dict[str, List[str]]) -> List[str]:
-    missing: List[str] = []
+def verify_workspace_state(source_dir: Path, parsed: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    missing_required: List[str] = []
+    missing_supporting: List[str] = []
     for section in (
         'governed_github_readable_sources',
         'governed_settings_mirrors',
-        'supporting_assets',
     ):
         for item in parsed[section]:
             if '*' in item:
                 continue
             if not (source_dir / item).exists():
-                missing.append(item)
+                missing_required.append(item)
+    for item in parsed['supporting_assets']:
+        if '*' in item:
+            continue
+        if not (source_dir / item).exists():
+            missing_supporting.append(item)
     if 'knowledge/*.md' in parsed['governed_knowledge_sources']:
         knowledge_dir = source_dir / 'knowledge'
         if not knowledge_dir.exists() or not any(knowledge_dir.glob('*.md')):
-            missing.append('knowledge/*.md')
-    return missing
+            missing_required.append('knowledge/*.md')
+    return {
+        'missing_required': missing_required,
+        'missing_supporting': missing_supporting,
+    }
 
 
 def parse_current_state_id(text: str) -> Optional[str]:
@@ -290,18 +301,20 @@ def audit(source_dir: Path, requested: List[str]) -> dict:
 
     parsed = parse_manifest(manifest.read_text(encoding='utf-8'))
     authority = build_authority_sets(parsed)
-    missing = verify_workspace_state(source_dir, parsed)
-    if missing:
+    workspace = verify_workspace_state(source_dir, parsed)
+    missing_required = sorted(workspace['missing_required'])
+    missing_supporting = sorted(workspace['missing_supporting'])
+    if missing_required:
         return {
             'outcome': 'hard_stop_conflict',
-            'reason': 'current manifest-listed source or asset missing from workspace',
-            'missing_items': sorted(missing),
+            'reason': 'current authoritative readable source or asset missing from workspace',
+            'missing_items': missing_required,
             'authoritative_basis_used': {
                 'manifest': str(manifest.relative_to(source_dir)),
                 'change_log': str(change.relative_to(source_dir)),
                 'manifest_sections': list(MANIFEST_SECTIONS.keys()),
             },
-            'best_next_move': 'restore the missing current file set before proceeding',
+            'best_next_move': 'restore the missing current authoritative file set before proceeding',
         }
 
     normalized_requested = [item.strip() for item in requested if item and item.strip()]
@@ -339,7 +352,7 @@ def audit(source_dir: Path, requested: List[str]) -> dict:
 
     outcome = alignment['outcome']
     reason = 'current control plane resolves, requested items are compatible with the GitHub-primary authority model, and the available active-surface checks did not contradict each other'
-    return {
+    result = {
         'outcome': outcome,
         'reason': reason,
         'authoritative_basis_used': {
@@ -350,6 +363,12 @@ def audit(source_dir: Path, requested: List[str]) -> dict:
         'active_surface_alignment': alignment,
         'best_next_move': alignment['best_next_move'],
     }
+    if missing_supporting:
+        result['outcome'] = 'proceed_bounded'
+        result['reason'] = 'current control plane resolves, but one or more supporting assets are missing from the workspace and should not be treated as authority for the current task'
+        result['missing_supporting_assets'] = missing_supporting
+        result['best_next_move'] = 'continue with bounded claims and call out the missing supporting assets explicitly unless the current task needs them directly'
+    return result
 
 
 def main() -> int:

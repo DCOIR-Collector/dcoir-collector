@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-batched-bootstrap-and-validation-alignment-v1
+Current state id: 2026-04-05-resume-authority-bounded-assets-and-batched-prompts-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,8 +8,8 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired `dcoir-session-tracker` cleanup behavior, repaired `dcoir-plan-tracker` transition guidance, and repaired `dcoir-memory-preflight` routing alignment, aligned `dcoir-validation-orchestrator` grouped-delivery coverage, and batched manual-update preference handling.
-2. Continue the workflow-state and validation-ownership high-risk wave by moving to the next highest-value helper-skill pass after the repaired `dcoir-memory-preflight`, aligned `dcoir-validation-orchestrator`, and batched `dcoir-decision-policy` lane.
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired `dcoir-memory-preflight` routing alignment, aligned `dcoir-validation-orchestrator` grouped-delivery coverage, batched manual-update preference handling, valid `dcoir-session-resume` packaging, and bounded `dcoir-source-authority-auditor` supporting-asset handling.
+2. Continue the workflow-state and authority high-risk wave by moving to the next highest-value helper-skill pass after the repaired `dcoir-session-resume` and `dcoir-source-authority-auditor` lane.
 3. Maintain the bounded package-cleanliness enforcement pass so delivered skill zips stay free of runtime residue.
 4. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other session-memory-enabled or buffer-capable skills before governed pushes.
 5. Use the repaired GitHub Desktop manual repo-update bundle mode together with the recorded delivery-bundle and GitHub Desktop commit `Summary` preferences for future manual deliveries unless the operator explicitly overrides them.
@@ -23,4 +23,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Continue the coordinated campaign by taking the next highest-value workflow-state or validation-ownership helper-skill pass after the repaired `dcoir-memory-preflight`, aligned `dcoir-validation-orchestrator`, and batched `dcoir-decision-policy` lane while carrying the bounded package-cleanliness enforcement line in parallel.
+- Continue the coordinated campaign by taking the next highest-value workflow-state or authority-adjacent helper-skill pass after the repaired `dcoir-session-resume` and `dcoir-source-authority-auditor` lane while carrying the bounded package-cleanliness enforcement line in parallel.

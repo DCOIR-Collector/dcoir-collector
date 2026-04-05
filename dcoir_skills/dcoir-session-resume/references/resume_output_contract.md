@@ -46,6 +46,7 @@ Give 2 to 4 short prompts that the user can paste next.
 ## Prompt-selection rules
 - Always include one prompt to continue the next planned work item.
 - Include packaging prompts only when relevant.
+- When the current workflow favors batched manual updates or batched skill-install waves, prefer grouped follow-up prompts over one-skill-at-a-time prompts.
 - Do not exceed 4 prompts.
 - Keep prompts plain-language and state-aware.
 - Do not emit internal tool syntax.
