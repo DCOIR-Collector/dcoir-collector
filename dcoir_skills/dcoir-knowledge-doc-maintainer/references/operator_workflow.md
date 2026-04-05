@@ -5,10 +5,11 @@
 3. If any code intent is unclear, ask targeted clarification questions or provide a targeted prompt to improve in-code documentation.
 4. Gather only authoritative external facts from Microsoft Learn, Sysinternals, Elastic Docs, or official PowerShell docs.
 5. When documenting execution or testing, reference the current GitHub-readable source path for provenance and the runtime filename the operator will actually use. Do not keep older uploaded-source names or removed wrapper examples unless the current control plane restores them.
-6. Draft the document content model.
-7. Run `scripts/build_knowledge_docs.py` to create the stable `Knowledge - ## - Title.md.txt` set and one ZIP named `supporting_knowledge_docs.zip`.
-8. Open every generated markdown file directly and inspect the title, source table, sections, tables, and footer note.
-9. Return the ZIP plus operator next steps:
+6. If multiple current Knowledge docs share the same stale source-name, removed-wrapper, or delivery-model drift, refresh that whole affected cluster in one grouped wave instead of landing a one-page partial fix.
+7. Draft the document content model.
+8. Run `scripts/build_knowledge_docs.py` to create the stable `Knowledge - ## - Title.md.txt` set and one ZIP named `supporting_knowledge_docs.zip`.
+9. Open every generated markdown file directly and inspect the title, source table, sections, tables, and footer note.
+10. Return the ZIP plus operator next steps:
    - REPLACE the current `supporting_knowledge_docs.zip` file in retained supporting assets when replacing Knowledge docs and a ZIP delivery artifact is still required.
    - DO NOT recreate the retired extracted folder `knowledge/supporting_knowledge_docs/` unless the control plane explicitly restores that model.
    - DELETE any truly legacy `Knowledge - ## - *.docx` artifacts or out-of-band side copies only if they still exist outside the current GitHub-primary working line.

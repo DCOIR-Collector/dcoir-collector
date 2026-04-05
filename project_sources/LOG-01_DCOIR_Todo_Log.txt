@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-knowledge-doc-github-primary-refresh-v1
+Current state id: 2026-04-05-knowledge-doc-stale-cluster-completion-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -13,7 +13,7 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, aligned release/impact/readiness delivery classes, and refreshed GitHub-primary knowledge-doc lane.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired memory-preflight routing, aligned validation-orchestrator grouped-delivery coverage, batched manual-update preference handling, valid session-resume packaging, bounded source-authority asset handling, aligned release/impact/readiness delivery-class handling, and the completed GitHub-primary Knowledge-doc stale-cluster baseline.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -25,7 +25,6 @@ Detailed todo structure
 
 Queued next priorities
 - Run the coordinated all-skills deep dive to confirm current helper skills still execute successfully, remain current with the project's goals and governance, and do not carry obsolete or inefficient logic.
-- Review remaining session-memory-enabled and buffer-capable skills for reliable presence preflight, resume-only routing discipline, pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior.
+- Review session-memory-enabled and buffer-capable skills for reliable presence preflight, resume-only routing discipline, pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior, now continuing after the repaired tracker paths, repaired memory-preflight routing lane, aligned validation coverage, batched manual-update preference handling, valid resume packaging, bounded source-authority asset handling, aligned release/impact/readiness delivery classes, and completed stale-doc cluster handling.
 - Keep the bounded package-cleanliness enforcement pass active so delivered skill zips stay free of runtime residue such as `__pycache__/` and `*.pyc`.
-- Continue cleaning up documentation and README surfaces that still carry older uploaded-source assumptions after the project moved to the GitHub-primary model.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge and wiki structure.

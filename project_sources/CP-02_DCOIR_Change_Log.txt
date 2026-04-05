@@ -1,34 +1,44 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 3.9.50
-Current state id: 2026-04-05-knowledge-doc-github-primary-refresh-v1
-Change class: knowledge-doc github-primary refresh and knowledge-doc maintainer alignment
+Version: 3.9.51
+Current state id: 2026-04-05-knowledge-doc-stale-cluster-completion-v1
+Change class: knowledge-doc stale-cluster completion and grouped docs-maintenance rule tightening
 
 What changed
-- Added `project_sources/LOG-37_DCOIR_Knowledge_Doc_GitHub_Primary_Refresh_2026-04-05.txt` as the governed decision record for the bounded knowledge-doc refresh wave.
-- Updated `dcoir-knowledge-doc-maintainer` so its workflow and scan guidance explicitly prefer current GitHub-readable source paths for provenance, preserve runtime filenames for operator-facing steps, and only document a harness CMD wrapper when the current control plane actually carries one.
-- Refreshed the current maintained knowledge docs in `knowledge/` so the local testing and collector usage pages now reference `project_sources/DCOIR_Collector.ps1` and `project_sources/run_DCOIR_Tests.ps1` as the current readable sources instead of older uploaded-source names or the removed harness CMD wrapper.
-- Refreshed the active continuity and todo surfaces so the coordinated campaign now carries an explicit GitHub-primary knowledge-doc baseline instead of leaving that lane partially stale after the earlier collector and governance updates.
+- Added `project_sources/LOG-38_DCOIR_Knowledge_Doc_Stale_Cluster_Completion_2026-04-05.txt` as the governed decision record for the bounded completion pass across the remaining stale current Knowledge docs and `dcoir-knowledge-doc-maintainer`.
+- Updated `dcoir-knowledge-doc-maintainer` so repeated stale source-name, removed-wrapper, or delivery-model drift across multiple current Knowledge docs is treated as a grouped refresh case instead of stopping after a one-page partial correction.
+- Refreshed the remaining current Knowledge docs that still preserved older uploaded-source naming, removed CMD-wrapper assumptions, or older delivery-model language after the first GitHub-primary docs refresh wave.
+- Refreshed the active continuity and todo surfaces so the coordinated campaign now carries the completed Knowledge-doc stale-cluster baseline rather than only the earlier partial GitHub-primary docs refresh.
 
 Why
-- The coordinated campaign found that several current maintained knowledge docs still reflected older uploaded-source names or the removed harness CMD wrapper even though the governed line is GitHub-primary.
-- That documentation drift risked reintroducing outdated operator assumptions even after the control plane and helper-skill lane had already moved forward.
-- The highest-value bounded fix was to refresh the current knowledge-doc pages and align the maintainer skill in the same grouped wave.
+- The first GitHub-primary docs refresh wave corrected the local-test and runbook cluster, but several current pages still preserved older source names or removed wrapper assumptions.
+- Leaving a half-refreshed current Knowledge-doc set would keep operator guidance inconsistent and would invite another avoidable docs cleanup cycle.
+- The highest-value bounded fix was to finish the stale current doc cluster and encode the grouped-cluster refresh rule into the maintainer skill itself.
 
 Validation notes
 - The updated `dcoir-knowledge-doc-maintainer` skill package passes clean packaging validation with no runtime-residue entries included.
-- The refreshed Knowledge docs now point at the current GitHub-readable collector and harness sources and no longer treat a separate harness CMD wrapper as part of the default governed line.
-- The next immediate branch is to continue the remaining high-risk helper-skill and documentation deep-dive from the now refreshed knowledge-doc baseline.
+- The refreshed current Knowledge docs now use GitHub-readable provenance and current runtime filenames consistently, and no longer document the removed default harness CMD wrapper as though it were current.
+- The retained `supporting_assets/supporting_knowledge_docs.zip` asset was refreshed from the current maintained Knowledge-doc set in the same wave.
+- The next immediate branch is to continue the remaining README and documentation-navigation alignment work while keeping package-cleanliness enforcement active.
 
 [PRIOR]
-Version: 3.9.49
-Current state id: 2026-04-05-release-impact-readiness-delivery-class-fix-v1
-Change class: release, impact, and readiness delivery-class alignment for grouped manual-update waves
+Version: 3.9.50
+Current state id: 2026-04-05-knowledge-doc-github-primary-refresh-v1
+Change class: knowledge-doc github-primary refresh
 
 What changed
-- Added `project_sources/LOG-36_DCOIR_Release_Impact_And_Readiness_Delivery_Class_Alignment_2026-04-05.txt` as the governed decision record for the bounded delivery-class alignment pass across `dcoir-change-impact-analyzer`, `dcoir-release-scope-builder`, and `dcoir-promotion-readiness-reviewer`.
-- Updated `dcoir-change-impact-analyzer` so packaging recommendations now distinguish targeted skill updates, batched skill-update waves, GitHub Desktop manual repo-update bundles, and full-refresh project-upload bundles, and so multi-skill change sets can escalate from a one-skill recommendation to a batched skill wave.
-- Updated `dcoir-release-scope-builder` so GitHub Desktop manual repo-update bundles and batched multi-skill update waves are first-class packaging classes rather than being forced into the older targeted-versus-full-refresh split.
-- Updated `dcoir-promotion-readiness-reviewer` so readiness review now checks batched skill-wave regression coverage and GitHub Desktop manual-update delivery requirements such as repo-update artifacts, delivery instructions, and suggested commit-summary guidance when the settled posture requires them.
-- Refreshed the active continuity and todo surfaces so the coordinated campaign now carries an explicit release/impact/readiness delivery-class model that matches the current GitHub Desktop and batched manual-install workflow.
+- Added `project_sources/LOG-37_DCOIR_Knowledge_Doc_GitHub_Primary_Refresh_2026-04-05.txt` as the governed decision record for the bounded GitHub-primary docs refresh pass across `dcoir-knowledge-doc-maintainer` and the maintained Knowledge-doc set.
+- Updated `dcoir-knowledge-doc-maintainer` so the skill now uses current GitHub-readable source paths as provenance for generated Knowledge docs, preserves runtime filenames for operator-facing steps, and only documents a harness CMD wrapper when the current control plane explicitly carries one.
+- Refreshed the maintained Knowledge docs so the local test, runbook, and enrichment pages now point at the current GitHub-readable collector and harness line instead of older uploaded-source naming.
+- Refreshed the active continuity and todo surfaces so the coordinated campaign now carries an explicit GitHub-primary knowledge-doc maintenance baseline.
+
+Why
+- The coordinated campaign found that the current maintained Knowledge docs still preserved older uploaded-source names and a removed default harness wrapper even though the governed working line is now GitHub-primary.
+- That mismatch weakened operator guidance and kept the human-readable docs behind the current collector and harness posture.
+- The highest-value bounded fix was to align the Knowledge-doc maintainer and the most affected current docs together in one grouped docs wave.
+
+Validation notes
+- The updated `dcoir-knowledge-doc-maintainer` skill package passes clean packaging validation with no runtime-residue entries included.
+- Reference review confirms that the refreshed Knowledge docs now use current GitHub-readable provenance and current runtime filenames instead of older uploaded-source naming for the affected pages.
+- The next immediate branch is to continue the remaining documentation and README alignment work from the refreshed GitHub-primary knowledge-doc baseline.

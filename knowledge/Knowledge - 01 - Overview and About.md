@@ -1,39 +1,39 @@
 # Knowledge - 01 - Overview and About
 
-_AFRICOM_SOC_IR / DCOIR project context and document set charter_
+_AFRICOM_SOC_IR / DCOIR project context and supporting knowledge-doc charter_
 
-**Summary:** This page explains what the current DCOIR project is, what is authoritative, and how the Knowledge-doc set fits into the workflow without becoming control-plane authority.
+**Summary:** This page explains what the current DCOIR project is, what is authoritative, and how the maintained Knowledge-doc set supports the workflow without becoming control-plane authority.
 
 | Source class | Authoritative basis |
 | --- | --- |
-| Project sources | CP-01_DCOIR_Version_Manifest.txt; DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; LOG-01_DCOIR_Todo_Log.txt; DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt |
+| Project sources | project_sources/CP-01_DCOIR_Version_Manifest.txt; project_sources/CP-02_DCOIR_Change_Log.txt; project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt; project_sources/LOG-01_DCOIR_Todo_Log.txt |
 | Official external sources | Not required for this page |
-| Scope note | Generated from current project governance, baseline, and roadmap files. |
+| Scope note | Generated from the current GitHub-primary control plane and maintained supporting knowledge lane. |
 
 ## Current project posture
 
-- The Project is the current operational workspace, not the historical archive.
-- The default control plane is Project Instructions, CP-01_DCOIR_Version_Manifest.txt, and CP-02_DCOIR_Change_Log.txt.
-- Current stable baselines are the collector DCOIR_Collector.314.ps1.txt, the run_DCOIR_Tests harness line, and the single rollback reference RB-01_DCOIR_Collector_refinement_2_1_3.txt.314.ps1.txt, the run_DCOIR_Tests harness line, and the single rollback reference RB-01_DCOIR_Collector_refinement_2_1_3.txt.
-- The approved dual-form prompt-pack line now includes the validated modular prompt-pack set, the promoted combined analyst-facing master prompt runtime source PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt, the companion Gemini workflow source PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt, and the promoted bounded Gemini design artifact source PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt.
-- The current prompt-pack and AI-workflow maintenance task is to keep the modular prompt-pack line, PP-08, PP-09, PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt, and supporting Knowledge docs aligned after future stable script or workflow changes.
+- The GitHub repository `malwaredevil/dcoir-collector` is the sole working source for governed readable text files.
+- Project Instructions, `project_sources/CP-01_DCOIR_Version_Manifest.txt`, and `project_sources/CP-02_DCOIR_Change_Log.txt` form the default control plane for current-state work.
+- The current collector runtime is `project_sources/DCOIR_Collector.ps1` and the current local regression harness is `project_sources/run_DCOIR_Tests.ps1`.
+- The governed helper-skill source lives under `dcoir_skills/` and now supports grouped GitHub Desktop repo-update bundles, batched skill-install waves, and bounded current-state resume behavior.
+- The maintained Knowledge-doc set under `knowledge/` is supporting human-readable documentation only. It helps explain the current workflow but never overrides the control plane.
 
 ## Source classes that matter
 
 | Class | Examples | How to treat it |
 | --- | --- | --- |
-| Control plane | Project Instructions, manifest, change log | Authoritative for current status and governance |
-| Uploaded Project-readable sources | Collector, harnesses, prompt-pack files, setup guide, logs | Authoritative when marked CURRENT in the manifest |
-| Supporting assets | DCOIR_Collector.zip | Important for packaging and local execution, but not control-plane authority |
-| Knowledge docs | Knowledge - ## - Title.md.txt | Supporting human-readable docs only; never override control-plane behavior |
+| Control plane | Project Instructions; `project_sources/CP-01_DCOIR_Version_Manifest.txt`; `project_sources/CP-02_DCOIR_Change_Log.txt` | Authoritative for current status, governance, and what is current |
+| Governed GitHub-readable sources | `project_sources/DCOIR_Collector.ps1`; `project_sources/run_DCOIR_Tests.ps1`; current prompt-pack and workflow files | Authoritative when marked current in the manifest |
+| Supporting assets | `supporting_assets/DCOIR_Collector.zip`; `supporting_assets/supporting_knowledge_docs.zip` | Important for delivery or local execution, but not control-plane authority |
+| Knowledge docs | `knowledge/Knowledge - ## - *.md` | Supporting human-readable docs only; never override the control plane |
 
 ## What this Knowledge-doc set is for
 
-- Give the operator a readable markdown explanation of the current collector, harness, workflow, and prompt-pack posture.
+- Give the operator readable explanations of the current collector, harness, workflow, enrichment, artifact-review, and AI-design posture.
 - Stay grounded in current approved sources and official vendor references where external truth is required.
-- Use stable filenames so the docs can be replaced as a complete set during a refresh.
-- Promotion and broad sync bundles should default to full-refresh replacement of uploaded Project sources, supporting Knowledge docs, and supporting assets unless release instructions explicitly say targeted update.
-- Remain easy to delete and re-upload without changing project authority rules.
+- Keep stable filenames so the docs can be refreshed as a current maintained set without changing authority rules.
+- Support GitHub-primary maintenance while still allowing a retained `supporting_knowledge_docs.zip` delivery asset when the workflow still wants that convenience bundle.
+- Reduce stale guidance drift by refreshing affected doc clusters together when the same outdated source-name or delivery-model assumption appears on multiple current pages.
 
 ## Current planned Knowledge-doc pages
 
@@ -48,9 +48,3 @@ _AFRICOM_SOC_IR / DCOIR project context and document set charter_
 - FAQ
 - AI Prompt and Agent Design
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
-
-
-## Packaging update
-
-- The default uploaded delivery form for the Knowledge-doc set is now one supporting asset named `supporting_knowledge_docs.zip`.
-- Workflows or skills that need Knowledge content should unzip or otherwise reference that asset when needed.

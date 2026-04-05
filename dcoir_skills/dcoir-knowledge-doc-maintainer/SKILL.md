@@ -19,10 +19,11 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 6. Review the status report before drafting docs.
 7. If code intent is unclear, ask targeted clarification questions or provide a targeted prompt that asks the main project workflow to add clearer in-code documentation.
 8. Use project sources first. Prefer current control-plane roles and manifest keys over brittle exact filenames when the workspace naming model changes. Use official vendor documentation only when external truth is needed.
-9. Build the document content model.
-10. Run `scripts/build_knowledge_docs.py` to create the full current markdown Knowledge-doc set and one ZIP.
-11. Open every generated `.md.txt` file directly and inspect the title, source table, section order, bullets, tables, and footer note before delivery.
-12. Return the ZIP, operator next steps, and a conditional reinventory prompt when the Knowledge-doc existence set changed.
+9. If multiple current knowledge docs share the same stale source-name, removed-wrapper, or delivery-model drift, refresh that whole affected cluster in one grouped docs wave instead of leaving half-stale current pages behind.
+10. Build the document content model.
+11. Run `scripts/build_knowledge_docs.py` to create the full current markdown Knowledge-doc set and one ZIP.
+12. Open every generated `.md.txt` file directly and inspect the title, source table, section order, bullets, tables, and footer note before delivery.
+13. Return the ZIP, operator next steps, and a conditional reinventory prompt when the Knowledge-doc existence set changed.
 
 ## Hard rules
 - Do not decide authority, promotions, or content edits.
@@ -32,6 +33,7 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 - Prefer current GitHub-native readable script sources such as `project_sources/DCOIR_Collector.ps1` and `project_sources/run_DCOIR_Tests.ps1` when reasoning about the current project files.
 - When documenting execution, testing, or operator usage for a script-like file, keep the current GitHub-readable path for provenance and use the runtime filename the operator will actually run.
 - Document CMD wrapper behavior only when the current control plane still carries an explicit wrapper source.
+- When the same stale assumption appears across several current Knowledge docs, do not stop after repairing only one page if the rest of that current cluster would remain misleading.
 - Keep Windows PowerShell 5.1 compatibility as a hard requirement unless the project changes it.
 - Distinguish endpoint response-action syntax from local workstation or local test commands.
 - Use authoritative-only external sources: Microsoft Learn / Sysinternals, official PowerShell docs, and Elastic Docs.

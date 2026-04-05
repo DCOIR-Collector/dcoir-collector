@@ -1,0 +1,26 @@
+DCOIR Knowledge Doc Stale Cluster Completion - 2026-04-05
+
+Current state id: 2026-04-05-knowledge-doc-stale-cluster-completion-v1
+
+Purpose
+- Record the bounded GitHub-primary stale-cluster completion pass across the current maintained Knowledge-doc set and `dcoir-knowledge-doc-maintainer`.
+
+Decision summary
+- Refresh the remaining current Knowledge docs that still preserved older uploaded-source naming, removed CMD-wrapper assumptions, or older delivery-model language after the first GitHub-primary docs refresh wave.
+- Refresh the retained `supporting_assets/supporting_knowledge_docs.zip` delivery asset in the same bounded wave so the supporting ZIP does not drift behind the current maintained Knowledge-doc set.
+- Update `dcoir-knowledge-doc-maintainer` so repeated stale-doc patterns in a current doc cluster are refreshed together in one grouped wave instead of stopping after a partial single-page correction.
+- Refresh the maintained supporting-knowledge guidance so current docs consistently use GitHub-readable provenance, current runtime filenames, and the current GitHub Desktop grouped-update posture.
+
+Why it matters
+- The first GitHub-primary docs refresh wave corrected the local test and runbook cluster, but several current pages still preserved older source names or removed wrapper assumptions.
+- Leaving a half-refreshed current Knowledge-doc set would keep operator guidance inconsistent and would invite another avoidable docs cleanup cycle.
+- The highest-value bounded fix was to finish the stale current doc cluster and encode the grouped-cluster refresh rule into the maintainer skill itself.
+
+Validation notes
+- The updated `dcoir-knowledge-doc-maintainer` skill package passes clean packaging validation.
+- The refreshed current Knowledge docs now use GitHub-readable provenance and current runtime filenames consistently, and no longer document the removed default harness CMD wrapper as though it were current.
+- The retained `supporting_assets/supporting_knowledge_docs.zip` asset was refreshed from the current maintained Knowledge-doc set in the same wave.
+- The next immediate branch is to continue the coordinated campaign into the remaining README and documentation-navigation alignment work while keeping package-cleanliness enforcement active.
+
+Next immediate move
+- Continue the coordinated campaign into the README and documentation-navigation lane from the now completed knowledge-doc stale-cluster baseline.

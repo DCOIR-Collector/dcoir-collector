@@ -1,12 +1,12 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-knowledge-doc-github-primary-refresh-v1
+Current state id: 2026-04-05-knowledge-doc-stale-cluster-completion-v1
 
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, durable continuous-execution cadence rule, repaired GitHub Desktop manual repo-update bundle mode, aligned delivery-class handling, and refreshed GitHub-primary knowledge-doc lane.
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, durable continuous-execution cadence rule, repaired GitHub Desktop manual repo-update bundle mode, aligned delivery-class handling, and completed GitHub-primary Knowledge-doc stale-cluster baseline.
    Why it matters:
-   - The project now has a stronger grouped-update model and a cleaner documentation baseline, so the broader campaign can keep moving with less avoidable operator friction and less stale guidance drift.
+   - The project now has a stronger grouped-update model and a cleaner supporting-doc baseline, so the broader campaign can keep moving with less avoidable operator friction and less stale guidance drift.
    Next action:
-   - Continue into the next highest-value remaining helper-skill or documentation-maintenance pass under the current CI/CD-style validation regime while holding compatible fixes for the next meaningful grouped manual update/install wave.
+   - Continue into the next highest-value README or documentation-navigation alignment pass under the current CI/CD-style validation regime while holding compatible fixes for the next meaningful grouped manual update/install wave.
 
 2. Maintain the bounded package-cleanliness enforcement pass across the helper-skill library.
    Why it matters:
