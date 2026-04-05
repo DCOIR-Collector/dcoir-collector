@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-package-cleanliness-enforcement-v1
+Current state id: 2026-04-05-plan-tracker-next-step-and-blocked-state-fix-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -13,7 +13,7 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, and repaired `dcoir-session-tracker` post-push cleanup path.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired `dcoir-session-tracker` post-push cleanup path, package-cleanliness enforcement baseline, and repaired `dcoir-plan-tracker` next-step and blocked-state guidance.
 
 Detailed todo structure
 - project_sources/LOG-01_DCOIR_Todo_Index.txt
@@ -25,7 +25,7 @@ Detailed todo structure
 
 Queued next priorities
 - Run the coordinated all-skills deep dive to confirm current helper skills still execute successfully, remain current with the project's goals and governance, and do not carry obsolete or inefficient logic.
-- Review session-memory-enabled and buffer-capable skills for reliable presence preflight, resume-only routing discipline, pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior, now continuing after the repaired `dcoir-session-tracker` cleanup lane.
+- Review session-memory-enabled and buffer-capable skills for reliable presence preflight, resume-only routing discipline, pre-push flush, memory-update, todo-synchronization, and post-push cleanup behavior, now continuing after the repaired `dcoir-session-tracker` cleanup lane and repaired `dcoir-plan-tracker` transition lane.
 - Start the bounded package-cleanliness enforcement pass so delivered skill zips stay free of runtime residue such as `__pycache__/` and `*.pyc`.
 - Review any remaining literals only as bounded contractual exceptions where discovery-contract replacement would not materially improve portability or maintainability.
 - Improve the main README and folder-level documentation and continue building the fuller knowledge and wiki structure.

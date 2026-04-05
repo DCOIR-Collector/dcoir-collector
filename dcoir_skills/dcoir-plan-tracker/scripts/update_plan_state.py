@@ -10,12 +10,36 @@ import argparse
 import json
 from pathlib import Path
 
-from plan_templates import ALLOWED_PLAN_STATUSES, ALLOWED_TASK_STATUSES, find_task, task_lookup, utc_now, write_plan_folder
+from plan_templates import ALLOWED_PLAN_STATUSES, ALLOWED_TASK_STATUSES, find_task, flatten_tasks, task_lookup, utc_now, write_plan_folder
 
 
 def set_if_blank(mapping: dict, key: str, value: str) -> None:
     if value and not str(mapping.get(key, '')).strip():
         mapping[key] = value
+
+
+def first_next_eligible_task(plan: dict) -> dict | None:
+    for row in flatten_tasks(plan.get('tasks', [])):
+        if row.get('status') == 'todo':
+            return row
+    return None
+
+
+def set_next_step_from_task(plan: dict, resume: dict, task: dict) -> None:
+    next_action = task.get('next_action', '').strip() or f"start {task.get('id', '')} {task.get('title', '').strip()}".strip()
+    why = task.get('why_it_matters', '').strip()
+    if next_action:
+        plan['next_recommended_action'] = next_action
+        resume['exact_resume_goal'] = next_action
+    if why:
+        resume['why_current_task_matters'] = why
+
+
+def set_no_remaining_next_step(plan: dict, resume: dict) -> None:
+    next_action = 'review plan completion or close the plan'
+    plan['next_recommended_action'] = next_action
+    resume['exact_resume_goal'] = next_action
+    resume['why_current_task_matters'] = 'all current tasks are complete, skipped, or otherwise non-actionable from the current local plan state'
 
 
 def main() -> None:
@@ -100,12 +124,27 @@ def main() -> None:
                 for other in task_lookup(plan.get("tasks", [])).values():
                     if other["id"] != args.task_id and other.get("status") == "in_progress":
                         other["status"] = "todo"
+                plan["status"] = "active"
                 plan["active_task_id"] = task["id"]
                 plan["active_task_title"] = task.get("title", "")
+                plan["next_recommended_action"] = task.get("next_action", "") or plan.get("next_recommended_action", "")
                 set_if_blank(resume, "exact_resume_goal", task.get("next_action", "") or plan.get("next_recommended_action", ""))
+                set_if_blank(resume, "why_current_task_matters", task.get("why_it_matters", ""))
             elif plan.get("active_task_id") == args.task_id and args.task_status in {"done", "blocked", "skipped"}:
                 plan["active_task_id"] = ""
                 plan["active_task_title"] = ""
+                if args.task_status in {"done", "skipped"}:
+                    next_task = first_next_eligible_task(plan)
+                    if next_task is not None:
+                        set_next_step_from_task(plan, resume, next_task)
+                    else:
+                        set_no_remaining_next_step(plan, resume)
+                elif args.task_status == "blocked":
+                    plan["status"] = "blocked"
+                    blocker_step = (args.blocker_mitigation or "").strip() or f"resolve blocker for {task.get('id', '')} {task.get('title', '').strip()}".strip()
+                    plan["next_recommended_action"] = blocker_step
+                    resume["exact_resume_goal"] = blocker_step
+                    resume["why_current_task_matters"] = task.get("why_it_matters", "") or resume.get("why_current_task_matters", "")
         if args.touch_path:
             existing = set(task.get("touched_paths", []))
             existing.update(args.touch_path)

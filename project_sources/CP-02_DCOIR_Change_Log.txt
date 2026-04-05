@@ -1,6 +1,29 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.44
+Current state id: 2026-04-05-plan-tracker-next-step-and-blocked-state-fix-v1
+Change class: plan-tracker next-step advancement and blocked-state guidance fix
+
+What changed
+- Added `project_sources/LOG-32_DCOIR_Plan_Tracker_Next_Step_And_Blocked_State_Fix_2026-04-05.txt` as the governed decision record for the bounded `dcoir-plan-tracker` transition-path repair.
+- Updated `dcoir-plan-tracker` so when an active task is marked `done` or `skipped`, the local plan state now advances `next_recommended_action` and `resume_state.exact_resume_goal` to the next eligible task instead of leaving stale starter guidance in place.
+- Updated `dcoir-plan-tracker` so when an active task is marked `blocked`, the local plan state now sets explicit blocked-state next-step guidance and keeps operator-facing resume state aligned to the blocker-resolution path.
+- Updated `dcoir-plan-tracker` so `in_progress` transitions now keep plan status and operator-facing next-step guidance aligned to the active task rather than leaving the plan anchored to older placeholder text.
+- Refreshed the active continuity and todo surfaces so the coordinated all-skills campaign now treats the repaired `dcoir-plan-tracker` transition path as part of the workflow-state high-risk baseline.
+
+Why
+- The coordinated campaign found a real workflow-state defect: after a task was marked `done`, the local plan could leave `next_recommended_action` and `resume_state.exact_resume_goal` stuck on the original starter text instead of moving the operator cleanly to the next eligible task.
+- The same transition family needed clearer blocked-state guidance so the operator-facing resume path reflects the blocker-resolution branch rather than an outdated generic next step.
+- The highest-value bounded fix was to repair `dcoir-plan-tracker` transition rendering directly and then fold that repaired behavior into the governed campaign state.
+
+Validation notes
+- Representative local plan flows confirmed that after `done` transitions the next eligible task is now surfaced in `next_recommended_action` and `resume_state.exact_resume_goal`.
+- Representative local blocked-task flows confirmed that blocked-state mitigation guidance is now promoted into the operator-facing resume state.
+- The updated `dcoir-plan-tracker` skill package passes clean packaging validation with no runtime-residue entries included.
+- The next immediate branch is to continue the workflow-state high-risk wave after the repaired `dcoir-plan-tracker` transition path.
+
+[PRIOR]
 Version: 3.9.43
 Current state id: 2026-04-05-package-cleanliness-enforcement-v1
 Change class: package-cleanliness enforcement pass, parity/regression hardening, and clean skill reissue set
@@ -22,25 +45,3 @@ Validation notes
 - The updated `dcoir-parity-verifier` and `dcoir-skill-regression-auditor` skill packages pass clean packaging validation with no runtime-residue entries included.
 - Clean reissued packages were built for the affected skills with no `__pycache__/`, `*.pyc`, or `.DS_Store` entries present in the delivered zips.
 - The next immediate branch is to continue the workflow-state high-risk wave from the now live-validated startup, repaired delivery, continuous-execution, and package-cleanliness baseline.
-
-[PRIOR]
-Version: 3.9.42
-Current state id: 2026-04-05-continuous-exec-and-session-tracker-cleanup-v1
-Change class: continuous-execution cadence and session-tracker post-push cleanup automation
-
-What changed
-- Added `project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_Session_Tracker_Post_Push_Cleanup_2026-04-05.txt` as the governed decision record for the coordinated all-skills campaign cadence rule and the first post-push cleanup automation repair inside `dcoir-session-tracker`.
-- Updated `dcoir-decision-policy` so operator-approved coordinated campaigns now keep executing without status-only pauses unless there is a real operator action, blocker, materially changed evidence state, or a true decision requirement.
-- Updated `dcoir-session-tracker` so `mark-governed-written` now clears related staged governed-update entries, staged todo actions, and matching post-push cleanup notes automatically after a grouped push.
-- Refreshed the active continuity and todo surfaces so the coordinated all-skills campaign is the governed current line and the next work item explicitly points at the next buffer-capable skill pass plus the bounded package-cleanliness enforcement branch.
-
-Why
-- The operator wants the coordinated helper-skill campaign to continue without premature status-only pauses.
-- The session-tracker deep-dive exposed a real post-push cleanup drift risk: promoted items could remain staged or listed for cleanup even after they were marked governed-written.
-- The project needed both the cadence rule and the post-push cleanup repair to make the coordinated campaign reliable enough to keep pushing forward.
-
-Validation notes
-- The updated `dcoir-decision-policy` skill package passes clean packaging validation.
-- The updated `dcoir-session-tracker` skill package passes clean packaging validation.
-- The repaired `dcoir-session-tracker` post-push cleanup path was exercised against a representative local-state scenario and cleared the related staged entries and matching cleanup notes as intended.
-- The next immediate branch is the bounded package-cleanliness enforcement pass across the helper-skill library.

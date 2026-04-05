@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.43
+DCOIR Version Manifest 3.9.44
 
-Current state id: 2026-04-05-package-cleanliness-enforcement-v1
+Current state id: 2026-04-05-plan-tracker-next-step-and-blocked-state-fix-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -37,7 +37,8 @@ Current control plane
 - Resume-status fast path and bounded preflight lane: project_sources/LOG-28_DCOIR_Resume_Status_Fast_Path_And_Bounded_Preflight_Lane_2026-04-04.txt
 - GitHub Desktop manual repo-update bundle mode fix and delivery correction: project_sources/LOG-29_DCOIR_GitHub_Desktop_Manual_Repo_Update_Bundle_Mode_Fix_2026-04-05.txt
 - Continuous-execution cadence and session-tracker post-push cleanup automation: project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_Session_Tracker_Post_Push_Cleanup_2026-04-05.txt
-- Package-cleanliness enforcement and clean skill reissue pass: project_sources/LOG-31_DCOIR_Package_Cleanliness_Enforcement_And_Clean_Skill_Reissue_2026-04-05.txt
+- Package-cleanliness enforcement and clean skill reissue set: project_sources/LOG-31_DCOIR_Package_Cleanliness_Enforcement_And_Clean_Skill_Reissue_2026-04-05.txt
+- Plan-tracker next-step advancement and blocked-state guidance fix: project_sources/LOG-32_DCOIR_Plan_Tracker_Next_Step_And_Blocked_State_Fix_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -64,6 +65,7 @@ Current governed helper-skill source
 - `dcoir-session-tracker` now clears related staged governed-update entries, staged todo actions, and matching post-push cleanup notes automatically when promoted items are marked governed-written after a grouped push.
 - `dcoir-session-tracker` should run that local-state preflight at the beginning of each new session that uses the skill.
 - `dcoir-plan-tracker` now uses `scripts/ensure_plan_state.py` as the beginning-of-session local plan-state preflight for local plan folders and emits explicit missing-state warnings when an expected `plan_state.json` file is absent.
+- `dcoir-plan-tracker` now advances `next_recommended_action`, `resume_state.exact_resume_goal`, and blocked-state guidance automatically when the active task is completed, skipped, or blocked so operator-facing resume state does not remain stuck on stale starter text.
 - The confirmed current DCOIR skills with real local JSON working-state files are `dcoir-session-tracker` and `dcoir-plan-tracker`.
 - Manual GitHub Desktop repo-update bundles should unzip directly to only the affected repo-relative folders and files with no extra wrapper root.
 - Single-skill delivery should provide only the affected skill zip.
@@ -80,13 +82,10 @@ Current governed helper-skill source
 - `dcoir_skills/skill_parity_manifest.json` is the canonical machine-readable parity surface.
 - `dcoir_skills/skill_parity_summary.md` is the generated human-readable parity companion surface.
 - `dcoir_skills/project_discovery_contract.json` is the canonical machine-readable current-project discovery contract for eligible helper skills.
-- `dcoir-parity-verifier` now reports package-cleanliness status and explicit runtime-residue entries for packaged skill zips instead of hiding residue entirely behind parity exclusions.
-- `dcoir-skill-regression-auditor` now requires a package-cleanliness check for delivered skill zips and treats runtime residue such as `__pycache__/`, `*.pyc`, or `.DS_Store` as a regression failure signal.
-- The previously contaminated install packages for `dcoir-change-impact-analyzer`, `dcoir-collector-qa`, `dcoir-knowledge-doc-maintainer`, `dcoir-source-authority-auditor`, and `dcoir-validation-orchestrator` were reissued clean after the campaign audit.
 
 Current next work item
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, and package-cleanliness enforcement baseline.
-- Continue the workflow-state high-risk wave and move to the next highest-value buffer-capable skill pass after the repaired `dcoir-session-tracker` and the package-cleanliness enforcement pass.
-- Use the updated `dcoir-parity-verifier` and `dcoir-skill-regression-auditor` package-cleanliness checks for future helper-skill package verification and post-patch readiness claims.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired `dcoir-session-tracker` post-push cleanup path, and repaired `dcoir-plan-tracker` task-transition guidance.
+- Continue the workflow-state high-risk wave after the repaired `dcoir-session-tracker` cleanup lane, bounded package-cleanliness enforcement branch, and repaired `dcoir-plan-tracker` next-step and blocked-state path.
+- Continue the bounded package-cleanliness enforcement pass across the helper-skill library so runtime residue such as `__pycache__/` and `*.pyc` does not contaminate delivered skill packages.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
 - Keep the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.
