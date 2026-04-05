@@ -6,7 +6,7 @@ _Baseline collection workflow for standard first-pass collection_
 
 | Source class | Authoritative basis |
 | --- | --- |
-| Project sources | DCOIR_Collector.314.ps1.txt; LOG-01_DCOIR_Todo_Log.txt |
+| Project sources | project_sources/DCOIR_Collector.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
 | Official external sources | Not required for this page |
 | Scope note | Commands shown here follow the current collector parameter model and quick aliases. |
 

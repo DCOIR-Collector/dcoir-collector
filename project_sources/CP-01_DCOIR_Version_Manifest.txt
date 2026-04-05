@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.49
+DCOIR Version Manifest 3.9.50
 
-Current state id: 2026-04-05-release-impact-readiness-delivery-class-fix-v1
+Current state id: 2026-04-05-knowledge-doc-github-primary-refresh-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -12,34 +12,9 @@ Current control plane
 - GitHub helper-skill source layout and rollout: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 - Helper-skill workflow decisions: project_sources/LOG-04_DCOIR_Helper_Skill_Workflow_Decisions_2026-04-03.txt
-- GitHub skill-source policy decision: project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt
-- GitHub update-lane correction record: project_sources/LOG-07_DCOIR_GitHub_Update_Lane_Choice_And_Connector_Limitation_2026-04-03.txt
-- Flush/manicure and tracker-verbosity workflow decision: project_sources/LOG-08_DCOIR_Pre_GitHub_Update_Flush_And_Tracker_Verbosity_Workflow_Decision_2026-04-04.txt
-- Current-state and version-checking enforcement workflow decision: project_sources/LOG-09_DCOIR_Current_State_And_Version_Checking_Enforcement_Workflow_Decision_2026-04-04.txt
-- Session-resume direct drift-gate workflow decision: project_sources/LOG-10_DCOIR_Session_Resume_Direct_Drift_Gate_Workflow_Decision_2026-04-04.txt
-- Plan-tracker verbose resume-state and widening-hold workflow decision: project_sources/LOG-11_DCOIR_Plan_Tracker_Verbose_Resume_State_And_Widening_Hold_Workflow_Decision_2026-04-04.txt
-- Plan-tracker exact-resume-goal autofill fix and validation refresh: project_sources/LOG-12_DCOIR_Plan_Tracker_Exact_Resume_Goal_Autofill_Fix_And_Validation_Refresh_2026-04-04.txt
-- Coordinated stateful candidate trio campaign decision: project_sources/LOG-13_DCOIR_Coordinated_Stateful_Candidate_Trio_Campaign_Decision_2026-04-04.txt
-- Inventory and documentation alignment plus repo-packager audit decision: project_sources/LOG-14_DCOIR_Inventory_And_Documentation_Alignment_Pass1_2026-04-04.txt
-- Validation regime and session-memory pre-push contract decision: project_sources/LOG-15_DCOIR_Validation_Regime_And_Session_Memory_Pre_Push_Contract_Decision_2026-04-04.txt
-- Skill parity verifier and canonical manifest workflow decision: project_sources/LOG-16_DCOIR_Skill_Parity_Verifier_And_Canonical_Manifest_Workflow_Decision_2026-04-04.txt
-- Skill parity rebaseline and installed skill verification: project_sources/LOG-17_DCOIR_Skill_Parity_Rebaseline_And_Installed_Skill_Verification_2026-04-04.txt
-- Hard-coded project variable audit passes 1 through 4: project_sources/LOG-18_DCOIR_Hard_Coded_Project_Variable_Audit_Pass1_2026-04-04.txt through project_sources/LOG-21_DCOIR_Hard_Coded_Project_Variable_Audit_Pass4_2026-04-04.txt
-- Session-tracker deep-dive pass 1: project_sources/LOG-22_DCOIR_Session_Tracker_Deep_Dive_Pass1_2026-04-04.txt
-- Session-tracker local-state presence guard and explicit re-init signaling: project_sources/LOG-23_DCOIR_Session_Tracker_Local_State_Presence_Guard_And_Explicit_Reinit_Signaling_2026-04-04.txt
 - Delivery-bundle structure and GitHub Desktop manual update preference: project_sources/LOG-24_DCOIR_Delivery_Bundle_Structure_And_GitHub_Desktop_Manual_Update_Preference_2026-04-04.txt
-- Stateful local JSON startup preflight rollout: project_sources/LOG-25_DCOIR_Stateful_Local_JSON_Startup_Preflight_Rollout_2026-04-04.txt
-- Session-start bootstrap and project prompt optimization review: project_sources/LOG-26_DCOIR_Session_Start_Bootstrap_And_Project_Prompt_Optimization_Review_2026-04-04.txt
-- Parity verification and README refresh: project_sources/LOG-27_DCOIR_Parity_Verification_And_Readme_Refresh_2026-04-04.txt
-- Resume-status fast path and bounded preflight lane: project_sources/LOG-28_DCOIR_Resume_Status_Fast_Path_And_Bounded_Preflight_Lane_2026-04-04.txt
-- GitHub Desktop manual repo-update bundle mode fix and delivery correction: project_sources/LOG-29_DCOIR_GitHub_Desktop_Manual_Repo_Update_Bundle_Mode_Fix_2026-04-05.txt
-- Continuous-execution cadence and session-tracker post-push cleanup automation: project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_Session_Tracker_Post_Push_Cleanup_2026-04-05.txt
-- Package-cleanliness enforcement and clean skill reissue set: project_sources/LOG-31_DCOIR_Package_Cleanliness_Enforcement_And_Clean_Skill_Reissue_2026-04-05.txt
-- Plan-tracker next-step advancement and blocked-state guidance fix: project_sources/LOG-32_DCOIR_Plan_Tracker_Next_Step_And_Blocked_State_Fix_2026-04-05.txt
-- Batched bootstrap, validation, and manual-update preference alignment: project_sources/LOG-33_DCOIR_Batched_Bootstrap_Validation_And_Manual_Update_Preference_Alignment_2026-04-05.txt
-- Resume-skill packaging repair and source-authority bounded supporting-asset handling: project_sources/LOG-34_DCOIR_Resume_Packaging_And_Source_Authority_Bounded_Asset_Handling_2026-04-05.txt
-- Collector-operator GitHub-primary wording, rollback-scope alignment, and control-plane version-pair correction: project_sources/LOG-35_DCOIR_Collector_Operator_GitHub_Primary_And_Control_Plane_Pair_Fix_2026-04-05.txt
 - Release/impact/readiness delivery-class alignment: project_sources/LOG-36_DCOIR_Release_Impact_And_Readiness_Delivery_Class_Alignment_2026-04-05.txt
+- Knowledge-doc GitHub-primary refresh: project_sources/LOG-37_DCOIR_Knowledge_Doc_GitHub_Primary_Refresh_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -60,34 +35,16 @@ Current task-memory bank
 Current governed helper-skill source
 - Root: dcoir_skills/
 - Policy decision: all `dcoir-*` skill source is stored in GitHub under the governed source root.
-- Helper working-state continuity remains under dcoir_skill_memory/ only for the skills that still legitimately use it and should not be confused with source authority.
-- `dcoir-session-resume` now contains valid skill frontmatter and grouped follow-up prompt guidance so packaged installs remain valid and state-aware under batched manual-update waves.
-- `dcoir-source-authority-auditor` now treats missing supporting assets as a bounded condition instead of a hard-stop conflict unless the current task depends on that asset as authority.
-- `dcoir-operator-workflow-hardener` now uses GitHub-primary governed-readable-source language consistently instead of older uploaded-source wording when choosing operator execution lanes.
-- `dcoir-collector-qa` now treats the current GitHub-readable collector and harness sources as the primary QA scope, limits rollback material to explicit comparison cases, and no longer treats a local harness CMD wrapper as a maintained default command block.
-- `dcoir-session-tracker` derives a pre-push review bundle and clears related staged entries and matching cleanup notes when promoted items are marked governed-written after a grouped push.
-- `dcoir-plan-tracker` uses `scripts/ensure_plan_state.py` for beginning-of-session local plan-state preflight and advances next-step guidance automatically when the active task is completed, skipped, or blocked.
-- `dcoir-memory-preflight` now treats coordinated multi-skill campaigns and GitHub Desktop manual repo-update or grouped governed-push deliveries as explicit preflight families.
-- `dcoir-validation-orchestrator` now treats coordinated multi-skill delivery waves, GitHub Desktop affected-path bundle checks, and installable skill package-cleanliness checks as explicit validation coverage.
-- `dcoir-decision-policy` now prefers meaningful bounded multi-skill manual-update waves when the operator wants fewer GitHub Desktop repo updates and fewer one-skill-at-a-time manual installs.
-- `dcoir-change-impact-analyzer` now distinguishes targeted skill updates, batched skill-update waves, GitHub Desktop manual repo-update bundles, and full-refresh project-upload classes instead of collapsing current delivery options into a coarse targeted-versus-full-refresh split.
-- `dcoir-release-scope-builder` now treats GitHub Desktop manual repo-update bundles and batched multi-skill update waves as first-class packaging classes alongside repo-layout local testing, targeted skill updates, and full-refresh project-upload bundles.
-- `dcoir-promotion-readiness-reviewer` now checks readiness for batched skill waves and GitHub Desktop manual repo-update deliveries, including per-skill regression coverage, required delivery artifacts, and commit-summary or instruction presence when the settled posture requires them.
-- The confirmed current DCOIR skills with real local JSON working-state files are `dcoir-session-tracker` and `dcoir-plan-tracker`.
-- Manual GitHub Desktop repo-update bundles should unzip directly to only the affected repo-relative folders and files with no extra wrapper root.
-- Single-skill delivery should provide only the affected skill zip.
-- Multi-skill delivery bundles should use one outer zip whose top level contains only the affected per-skill zip files named after the live skill names with no subfolders.
-- GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
-- `dcoir-repo-packager` now supports a GitHub Desktop manual repo-update bundle mode that packages only the affected repo-relative files or folders, preserves those paths exactly, emits no wrapper root, and surfaces the suggested commit `Summary` in the report and response.
-- `dcoir-decision-policy` now treats operator-requested continuous execution with low-interruption cadence as a durable execution overlay during coordinated campaigns and should not stop at intermediate milestones unless there is a real operator action, blocker, materially changed evidence state, or a true decision requirement.
-- `dcoir-source-authority-auditor` acts as the explicit drift gate for shared active-surface current-state alignment and now preserves bounded progress when only supporting assets are absent.
-- `dcoir_skills/skill_parity_manifest.json` is the canonical machine-readable parity surface.
-- `dcoir_skills/skill_parity_summary.md` is the generated human-readable parity companion surface.
-- `dcoir_skills/project_discovery_contract.json` is the canonical machine-readable current-project discovery contract for eligible helper skills.
+- `dcoir-knowledge-doc-maintainer` now treats current GitHub-readable source paths as the provenance basis for knowledge docs, preserves runtime filenames for operator-facing steps, and only documents a harness CMD wrapper when the current control plane explicitly carries one.
+- The current maintained knowledge-doc set is the human-readable supporting lane and should keep `knowledge/*.md` aligned to the GitHub-primary collector and harness line.
+- `dcoir-change-impact-analyzer` distinguishes targeted skill updates, batched skill-update waves, GitHub Desktop manual repo-update bundles, and full-refresh project-upload classes.
+- `dcoir-release-scope-builder` treats GitHub Desktop manual repo-update bundles and batched multi-skill update waves as first-class packaging classes.
+- `dcoir-promotion-readiness-reviewer` checks batched skill-wave regression coverage and GitHub Desktop manual-update delivery prerequisites.
+- `dcoir-repo-packager` supports a GitHub Desktop manual repo-update bundle mode that packages only affected repo-relative files or folders with no wrapper root and surfaces a suggested commit summary.
 
 Current next work item
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired memory-preflight routing, aligned validation-orchestrator grouped-delivery coverage, batched manual-update preference handling, valid session-resume packaging, bounded source-authority handling for missing supporting assets, GitHub-primary collector-operator wording, and corrected control-plane version-pair continuity.
-- Continue the workflow-state, authority, and collector-follow-through high-risk wave after the repaired `dcoir-memory-preflight`, aligned `dcoir-validation-orchestrator`, batched `dcoir-decision-policy`, valid `dcoir-session-resume` packaging, repaired `dcoir-source-authority-auditor` bounded-asset handling lane, aligned `dcoir-operator-workflow-hardener`, and corrected `dcoir-collector-qa` source-scope and maintenance-contract lane.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired workflow-state tracker paths, repaired memory-preflight routing, aligned validation-orchestrator grouped-delivery coverage, batched manual-update preference handling, valid session-resume packaging, bounded source-authority handling for missing supporting assets, GitHub-primary collector-operator wording, corrected control-plane version-pair continuity, aligned release/impact/readiness delivery classes, and refreshed GitHub-primary knowledge-doc lane.
+- Continue the workflow-state, authority, collector-follow-through, and documentation high-risk wave after the refreshed knowledge-doc lane.
 - Continue the bounded package-cleanliness enforcement pass across the helper-skill library so runtime residue such as `__pycache__/` and `*.pyc` does not contaminate delivered skill packages.
 - Use the repaired release/impact/readiness delivery-class model to keep future grouped GitHub Desktop repo updates and batched skill-install waves aligned to the current operator workflow.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.

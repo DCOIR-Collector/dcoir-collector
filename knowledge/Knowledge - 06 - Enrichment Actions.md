@@ -6,7 +6,7 @@ _Quick-alias enrichment map and tool-backed actions_
 
 | Source class | Authoritative basis |
 | --- | --- |
-| Project sources | DCOIR_Collector.314.ps1.txt; run_DCOIR_Tests.ps1.txt |
+| Project sources | project_sources/DCOIR_Collector.ps1; project_sources/run_DCOIR_Tests.ps1 |
 | Official external sources | Microsoft Learn / Sysinternals tool pages |
 | Scope note | Current quick aliases cover TCP, log text, raw log export, tool-backed checks, and several retrieval actions. |
 

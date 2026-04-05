@@ -4,7 +4,7 @@
 2. Review the status report before writing docs.
 3. If any code intent is unclear, ask targeted clarification questions or provide a targeted prompt to improve in-code documentation.
 4. Gather only authoritative external facts from Microsoft Learn, Sysinternals, Elastic Docs, or official PowerShell docs.
-5. When documenting execution or testing, reference the emitted runtime/downloaded filename the operator will use after repo-style or local bundle emission, while keeping the uploaded readable source name for provenance.
+5. When documenting execution or testing, reference the current GitHub-readable source path for provenance and the runtime filename the operator will actually use. Do not keep older uploaded-source names or removed wrapper examples unless the current control plane restores them.
 6. Draft the document content model.
 7. Run `scripts/build_knowledge_docs.py` to create the stable `Knowledge - ## - Title.md.txt` set and one ZIP named `supporting_knowledge_docs.zip`.
 8. Open every generated markdown file directly and inspect the title, source table, sections, tables, and footer note.

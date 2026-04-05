@@ -6,9 +6,9 @@ _Endpoint response-console usage versus local workstation usage_
 
 | Source class | Authoritative basis |
 | --- | --- |
-| Project sources | DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; DCOIR_Collector.314.ps1.txt; LOG-01_DCOIR_Todo_Log.txt |
+| Project sources | project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DCOIR_Collector.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
 | Official external sources | Elastic Docs / endpoint response actions |
-| Scope note | Examples are grounded in the collector quick next-step output and the project workflow rule that endpoint instructions use response-action syntax. |
+| Scope note | Examples are grounded in the current collector quick-alias model and the project workflow rule that endpoint instructions use response-action syntax. |
 
 ## Execution context split
 
@@ -23,7 +23,7 @@ _Endpoint response-console usage versus local workstation usage_
 | --- | --- |
 | Run TCP enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment" |
 | Run raw Security-log enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment" |
-| Cleanup current DCOIR run | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector" |
+| Cleanup current DCOIR run | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick cleanup" --comment "Run DCOIR cleanup" |
 
 ## When to use Elastic quick start
 

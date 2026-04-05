@@ -1,0 +1,21 @@
+DCOIR Knowledge Doc GitHub-Primary Refresh - 2026-04-05
+
+Current state id: 2026-04-05-knowledge-doc-github-primary-refresh-v1
+
+Purpose
+- Record the bounded knowledge-doc refresh wave focused on the current GitHub-primary knowledge working set and the helper skill that maintains it.
+
+Decision summary
+- Refresh the current maintained knowledge docs so they use the current GitHub-readable collector and harness sources rather than older uploaded-source names or the removed harness CMD wrapper.
+- Repair `dcoir-knowledge-doc-maintainer` so its workflow and scanning guidance explicitly prefer current GitHub-readable source paths for provenance and only document a CMD wrapper when the current control plane actually carries one.
+- Keep retained delivery ZIP handling explicit while preserving `knowledge/*.md` as the editable working set.
+
+Why it matters
+- The coordinated campaign found that current maintained knowledge docs such as `Knowledge - 02`, `Knowledge - 03`, `Knowledge - 04`, `Knowledge - 05`, and `Knowledge - 06` still reflected older uploaded-source names or the removed `run_DCOIR_Tests.cmd` wrapper even though the governed line is GitHub-primary.
+- That kind of documentation drift weakens operator trust and can reintroduce outdated execution assumptions even after the control plane and helper skills have already moved forward.
+- Grouping the knowledge-doc refresh with the maintainer-skill alignment keeps the docs lane from drifting back on the next regeneration pass.
+
+Validation notes
+- The updated `dcoir-knowledge-doc-maintainer` skill package passes clean packaging validation.
+- The refreshed Knowledge docs now point at `project_sources/DCOIR_Collector.ps1` and `project_sources/run_DCOIR_Tests.ps1` as the current readable sources, and no longer treat a separate harness CMD wrapper as part of the default governed line.
+- The next immediate move is to continue the coordinated campaign into the next documentation or remaining high-risk helper-skill pass while keeping compatible fixes for the next meaningful grouped manual update/install wave.

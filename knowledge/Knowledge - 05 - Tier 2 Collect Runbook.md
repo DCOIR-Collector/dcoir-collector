@@ -6,7 +6,7 @@ _Deeper collection workflow for additional persistence and configuration checks_
 
 | Source class | Authoritative basis |
 | --- | --- |
-| Project sources | DCOIR_Collector.314.ps1.txt; LOG-01_DCOIR_Todo_Log.txt |
+| Project sources | project_sources/DCOIR_Collector.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
 | Official external sources | Not required for this page |
 | Scope note | The quick alias collect-t2 sets Mode=Collect and Tier=T2, and uses a longer default time window than Tier 1. |
 
