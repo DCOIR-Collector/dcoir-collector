@@ -1,0 +1,43 @@
+DCOIR GitHub Workflow Summary Hardening - 2026-04-05
+
+Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
+
+Purpose
+- Record the first focused workflow-fix wave for the new GitHub automation baseline after the initial live runs exposed a late browser-readable summary-render failure.
+- Preserve the browser-first workflow-output goal without letting summary rendering act as an avoidable failure point when the underlying harness work already succeeded.
+
+Observed live evidence
+- The first manual `manual-full-validation` run reported failure in the GitHub UI at the browser-readable summary stage.
+- The uploaded validation artifact from that same run showed a clean Core harness pass with successful restore, collect, enrich, finalize, and cleanup steps.
+- The `validate-on-push` workflow also showed failing live runs, including runs on Dependabot-created GitHub Actions update branches.
+- The separate GitHub UI warning about Node.js 20 deprecation for JavaScript-based actions was observed, but that warning is not treated as the workflow-breaking defect fixed by this wave.
+
+Implemented fix
+- Hardened the summary-render step in `validate-on-push`, `manual-full-validation`, and `scheduled-health-check`.
+- The summary step now:
+  - verifies `GITHUB_STEP_SUMMARY` is present before trying to write to it
+  - tolerates missing `TestResults` content cleanly
+  - builds the Markdown summary in a temporary file first
+  - appends that temporary content to the GitHub summary file only after the temporary render succeeds
+  - catches non-fatal summary-render exceptions and degrades to a warning rather than failing the whole workflow
+
+What this wave does not change
+- It does not change the harness zip override path.
+- It does not remove uploaded artifacts.
+- It does not force a PR-first workflow.
+- It does not apply light ruleset safety automatically.
+- It does not resolve the separate Node.js 20 action deprecation warning yet.
+
+Dependabot note
+- Live GitHub UI evidence now proves that `.github/dependabot.yml` is functioning for the configured `github-actions` ecosystem because Dependabot-created update branches or PRs now exist for GitHub Actions references.
+- The dependency graph still shows no supported package manifests, so package-ecosystem update coverage remains intentionally deferred.
+
+Why it matters
+- The project wants browser-readable validation evidence that works in work and home environments without unnecessary workflow breakage.
+- A late summary-render failure can hide the fact that the real DCOIR collector harness already succeeded.
+- Hardening the summary step keeps the browser-first operator experience while reducing false-negative workflow outcomes.
+
+Next immediate move
+- Re-run `manual-full-validation` with the Core suite first.
+- If that passes, inspect the rendered summary and then let `validate-on-push` prove out on the next push-driven run.
+- After the workflows pass cleanly, apply the light ruleset safety and then review the Dependabot GitHub Actions update PRs.

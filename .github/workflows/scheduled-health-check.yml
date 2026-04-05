@@ -106,37 +106,57 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summaryTxt = Get-ChildItem -Path project_sources/TestResults -Recurse -File -Filter summary.txt -ErrorAction SilentlyContinue |
-            Sort-Object LastWriteTime -Descending |
-            Select-Object -First 1
-          $summaryJson = Get-ChildItem -Path project_sources/TestResults -Recurse -File -Filter summary.json -ErrorAction SilentlyContinue |
-            Sort-Object LastWriteTime -Descending |
-            Select-Object -First 1
-
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '## scheduled-health-check'
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value ''
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- Routine purpose: weekly drift, hygiene, and representative regression.'
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- Representative suite: `Retrieval`'
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- Harness zip path override: `..\\supporting_assets\\DCOIR_Collector.zip`'
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value ''
-
-          if ($summaryTxt) {
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '### Latest harness summary'
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '```text'
-            Get-Content -LiteralPath $summaryTxt.FullName | ForEach-Object {
-              Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $_
+          try {
+            if (-not $env:GITHUB_STEP_SUMMARY) {
+              Write-Warning 'GITHUB_STEP_SUMMARY is not set. Skipping summary render.'
+              exit 0
             }
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '```'
-          }
-          else {
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '_No harness summary.txt was found._'
-          }
 
-          if ($summaryJson) {
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value ''
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- Summary JSON: \\`$($summaryJson.FullName)\\`"
-          }
+            $summaryRoot = 'project_sources/TestResults'
+            $summaryTxt = $null
+            $summaryJson = $null
+            if (Test-Path -LiteralPath $summaryRoot) {
+              $summaryTxt = Get-ChildItem -Path $summaryRoot -Recurse -File -Filter summary.txt -ErrorAction SilentlyContinue |
+                Sort-Object LastWriteTime -Descending |
+                Select-Object -First 1
+              $summaryJson = Get-ChildItem -Path $summaryRoot -Recurse -File -Filter summary.json -ErrorAction SilentlyContinue |
+                Sort-Object LastWriteTime -Descending |
+                Select-Object -First 1
+            }
 
+            $lines = New-Object System.Collections.Generic.List[string]
+            $lines.Add('## scheduled-health-check')
+            $lines.Add('')
+            $lines.Add('- Routine purpose: weekly drift, hygiene, and representative regression.')
+            $lines.Add('- Representative suite: `Retrieval`')
+            $lines.Add('- Harness zip path override: `..\\supporting_assets\\DCOIR_Collector.zip`')
+            $lines.Add('')
+
+            if ($summaryTxt) {
+              $lines.Add('### Latest harness summary')
+              $lines.Add('```text')
+              foreach ($line in (Get-Content -LiteralPath $summaryTxt.FullName -ErrorAction SilentlyContinue)) {
+                $lines.Add([string]$line)
+              }
+              $lines.Add('```')
+            }
+            else {
+              $lines.Add('_No harness summary.txt was found._')
+            }
+
+            if ($summaryJson) {
+              $lines.Add('')
+              $lines.Add('- Summary JSON artifact was generated.')
+            }
+
+            $tempSummary = Join-Path $env:RUNNER_TEMP 'scheduled-health-check-summary.md'
+            $lines | Set-Content -LiteralPath $tempSummary -Encoding utf8
+            Get-Content -LiteralPath $tempSummary | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Encoding utf8
+          }
+          catch {
+            Write-Warning ("Non-fatal summary render issue: {0}" -f $_.Exception.Message)
+            exit 0
+          }
       - name: Upload health-check artifacts
         if: always()
         uses: actions/upload-artifact@v4

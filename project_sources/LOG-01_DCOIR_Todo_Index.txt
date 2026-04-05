@@ -1,14 +1,14 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
+Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
 
 Current priority summary
 1. Widening review has been accepted and the remaining architecture or governance line is now closed except for maintenance-only fixes.
-2. Run the first live GitHub Actions passes and inspect browser-readable summaries.
+2. Re-run the first live GitHub Actions passes after workflow-summary hardening.
 3. Apply light branch or ruleset safety manually in the GitHub UI without forcing a PR-first workflow.
-4. Evaluate the new GitHub Actions Dependabot coverage after the workflow files land.
+4. Review or merge Dependabot GitHub Actions update PRs only after the fixed workflows pass.
 5. Pilot GitHub-native AI and prompt or evaluation surfaces selectively: Copilot code review, Copilot cloud agent, GitHub Models, and OpenAI Codex where it reduces operator burden.
 6. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
 
 Current best next move
-- Trigger the manual full-validation workflow first, inspect its browser-readable summary and uploaded artifacts, then let validate-on-push and scheduled-health-check prove out under normal use.
+- Trigger the manual full-validation workflow again with the Core suite after this patch lands, inspect the browser-readable summary, then check validate-on-push on the next push-driven run.

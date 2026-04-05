@@ -1,30 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.58
+Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
+Change class: first-wave GitHub automation workflow-summary hardening and live follow-through correction
+
+What changed
+- Hardened `.github/workflows/validate-on-push.yml`, `.github/workflows/manual-full-validation.yml`, and `.github/workflows/scheduled-health-check.yml` so browser-readable summary rendering becomes a non-fatal helper step instead of an avoidable workflow-breaking point.
+- Added `project_sources/LOG-45_DCOIR_GitHub_Workflow_Summary_Hardening_2026-04-05.txt` as the governed decision record for the summary-render failure analysis, the hardened summary approach, and the corrected live follow-through guidance.
+- Updated the manifest and active continuity surfaces to record that the first workflow-fix wave is now the live governed next move after the initial baseline implementation exposed the summary-render defect.
+- Updated the operator-facing next steps to re-run the workflows after the fix, then apply light ruleset safety, then review Dependabot update branches or PRs only after the reruns pass.
+
+Why
+- The first live workflow passes showed that the underlying harness could succeed while the summary-render step still failed late in the job.
+- Fixing that late summary-render failure preserves the browser-first output goal without letting a non-essential helper step invalidate otherwise good validation runs.
+- The repo also now has live evidence that Dependabot GitHub Actions update coverage is functioning, so the post-fix next step should be rerun validation first rather than re-questioning whether Dependabot is live.
+
+Validation notes
+- The uploaded manual validation artifact from the live run showed a clean Core harness pass even though the workflow run still failed.
+- The workflow PDFs and repo-side workflow files indicate the failure happened in or around the browser-readable summary step rather than in the underlying DCOIR collector harness.
+- The current repo UI evidence now shows Dependabot-created branches for GitHub Actions updates, which is sufficient live proof that `.github/dependabot.yml` is functioning for the configured ecosystem.
+- This wave does not yet resolve the separate Node.js 20 deprecation warning shown by GitHub-hosted JavaScript actions; that remains a later update or Dependabot-review item rather than part of this focused fix wave.
+
+[PRIOR]
 Version: 3.9.57
 Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
 Change class: widening-review acceptance and first-wave GitHub automation baseline implementation
-
-What changed
-- Added `.github/workflows/validate-on-push.yml` as the automatic baseline validation workflow for push-driven repo validation with browser-readable summaries and uploaded run artifacts.
-- Added `.github/workflows/manual-full-validation.yml` as the manual GitHub web UI trigger for deeper suite selection and browser-readable validation output.
-- Added `.github/workflows/scheduled-health-check.yml` as the routine weekly repo-health workflow with residue checks, required-surface checks, representative regression, and browser-readable summaries.
-- Added `.github/dependabot.yml` for explicit GitHub Actions reference update coverage while leaving package-ecosystem version-update coverage deferred until supported dependency manifests exist in the repo.
-- Added `project_sources/LOG-44_DCOIR_First_Wave_GitHub_Automation_Baseline_2026-04-05.txt` as the governed decision record for the first-wave implementation details, including the harness path correction needed for the current collector zip location.
-- Updated the manifest and active continuity surfaces to record that the widening review is now accepted, the remaining architecture or governance line is closed except for maintenance-only fixes, and the first-wave automation baseline is now part of the live governed working line.
-
-Why
-- The project wanted to move from strategy-only tracking into a real browser-first GitHub automation baseline that works in both work and home environments.
-- The user explicitly approved the recommendation set, approved durable tracking, and then approved proceeding into actual implementation.
-- Opening the first-wave baseline only after the widening review preserves the project rule that architecture closeout happens before the main line shifts to deliverables-adjacent repeatability work.
-
-Validation notes
-- The live repo search and current UI evidence showed no existing governed `.github` workflow baseline before this wave.
-- The live repo dependency graph showed no supported package manifests, so Dependabot package-ecosystem coverage is not assumed current.
-- The current test harness exists and is suitable for workflow use, but its default master zip path is not present in the live repo; this baseline therefore calls the harness with `-MasterZipPath ..\supporting_assets\DCOIR_Collector.zip`.
-- Light branch or ruleset safety remains a manual GitHub UI follow-through item because it is not represented by readable repo files in this wave.
-
-[PRIOR]
-Version: 3.9.56
-Current state id: 2026-04-05-github-automation-and-ai-enablement-tracking-v1
-Change class: approved GitHub automation and AI enablement adoption tracking

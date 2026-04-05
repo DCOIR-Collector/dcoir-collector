@@ -1,17 +1,16 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
+Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
 - Project Instructions remain the first bootstrap anchor.
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- The authoritative active work queue is no longer widening review first; that gate is now treated as satisfied and the project is working from the first-wave GitHub automation baseline while keeping the main line on deliverables.
+- The authoritative active work queue remains deliverables plus repeatability follow-through, not a fresh architecture build-out from scratch.
 
 What is still open right now
-1. Run the first live GitHub Actions passes and review the browser-readable summaries.
-2. Apply light branch or ruleset safety manually in the GitHub UI without forcing a PR-first workflow.
-3. Keep Dependabot alerts enabled and evaluate the new GitHub Actions version-update coverage after the workflow files land.
-4. Pilot GitHub-native AI and selective OpenAI Codex use only where they reduce operator burden.
-5. Maintain package-cleanliness enforcement, parity verification, and bounded grouped helper-skill fixes for future maintenance-only work.
+1. Re-run the first live GitHub Actions passes after the workflow-summary hardening patch lands.
+2. If the reruns pass, apply light ruleset safety and then review Dependabot GitHub Actions update PRs.
+3. Keep the main line on deliverables while the repeatability baseline stabilizes.
+4. Maintain package-cleanliness enforcement, parity verification, and bounded grouped helper-skill fixes for future maintenance-only work.

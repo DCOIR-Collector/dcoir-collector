@@ -1,24 +1,25 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
+Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
 - After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
 - The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
 - The coordinated all-skills helper-skill deep-dive and code-hygiene campaign remains complete through the current governed helper-skill inventory.
-- The remaining architecture or governance line has now been treated as closed except for maintenance-only fixes after widening review acceptance.
-- The current standing maintenance posture remains grouped GitHub Desktop delivery, package-cleanliness enforcement, parity checks, and future issue-driven helper-skill updates.
-- The first-wave GitHub automation baseline is now part of the live governed working line.
+- The current standing maintenance posture is grouped GitHub Desktop delivery, package-cleanliness enforcement, parity checks, and future issue-driven helper-skill updates.
+- Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
+- The approved GitHub automation baseline remains live, but the initial live passes exposed a late summary-render defect that is now addressed in the first workflow-fix wave.
 
 Current validated status
 - The repaired repo-packager source remains aligned to GitHub Desktop manual repo-update patch-bundle delivery needs.
 - The prompt/intake design family remains aligned to the live GitHub-primary prompt discovery path, explicit escalation contracts, and artifact-type-specific bounded intake guidance.
-- The first-wave automation baseline now exists as readable repo content: validate-on-push, manual-full-validation, scheduled-health-check, and GitHub Actions Dependabot follow-through.
-- The workflow baseline is browser-first and keeps the manual GitHub Desktop lane plus the in-chat GitHub lane intact.
-- The current harness integration uses the live governed collector zip location under `supporting_assets/` rather than the absent default project-sources asset path.
+- The first-wave automation baseline still matches the intended browser-first validation model and the correct collector zip override path.
+- The uploaded manual validation artifact showed a successful Core harness pass even though the workflow run still failed in the browser-readable summary phase.
+- Live GitHub UI evidence now shows Dependabot-created GitHub Actions update branches, so GitHub Actions version-update coverage is proven live for the configured ecosystem.
 
 Current next planned work item
-- Run the first live GitHub Actions passes and inspect the browser-readable summaries plus uploaded artifacts.
-- Apply the light branch or ruleset safety follow-through manually in the GitHub UI without forcing a PR-first workflow model.
-- Keep the main project line on deliverables while piloting Copilot code review, Copilot cloud agent, GitHub Models, and selective OpenAI Codex use only where they reduce operator burden.
+- Re-run the GitHub Actions workflows after the summary-hardening patch lands.
+- If the reruns pass, apply the light ruleset safety follow-through in the GitHub UI.
+- Review or merge Dependabot GitHub Actions update PRs only after the fixed workflows prove out.
+- Keep the main project line on deliverables while optional GitHub-native AI and selective OpenAI Codex pilots stay strictly optional.

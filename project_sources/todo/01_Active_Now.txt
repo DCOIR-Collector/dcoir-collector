@@ -1,12 +1,12 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
+Current state id: 2026-04-05-first-wave-github-automation-summary-hardening-v1
 
-1. Run the first live GitHub Actions passes and inspect the browser-readable summaries.
+1. Re-run the first live GitHub Actions passes after workflow-summary hardening.
    Why it matters:
-   - The first-wave automation baseline is now real repo content, but the project still needs the first live browser-visible validation evidence before treating the baseline as proven.
+   - The first-wave automation baseline is real repo content, and the underlying Core harness already proved it can pass, but the browser-readable summary step still needs to be proven after hardening.
    Next action:
-   - Trigger the manual full-validation workflow first and review the summary plus artifacts in GitHub.
+   - Trigger the manual full-validation workflow again with the Core suite and confirm the summary now renders without failing the job.
 
 2. Apply light branch or ruleset safety manually in the GitHub UI.
    Why it matters:
@@ -14,14 +14,14 @@ Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
    Next action:
    - Add force-push and deletion protection first, and keep stronger PR-gated rules optional.
 
-3. Evaluate the new Dependabot coverage after the workflow files land.
+3. Review or merge Dependabot GitHub Actions update PRs only after the fixed workflows pass.
    Why it matters:
-   - The repo now has explicit GitHub Actions version-update coverage, but package-ecosystem coverage is still intentionally deferred because no supported dependency manifests are present.
+   - Dependabot GitHub Actions update coverage is now proven live, but the workflow baseline should be clean before those update PRs are trusted.
    Next action:
-   - Watch for GitHub Actions update PRs and keep package dependency automation deferred until supported manifests exist.
+   - Wait for passing reruns, then inspect the Dependabot PRs or branches for checkout, setup-python, and upload-artifact updates.
 
 4. Pilot optional AI augmentation only where it reduces operator burden.
    Why it matters:
    - Copilot, GitHub Models, and OpenAI Codex may add value, but the project still does not want them to become mandatory workflow ceremony.
    Next action:
-   - Pilot optional GitHub-native AI and selective Codex use only after the baseline workflows have produced live evidence.
+   - Pilot optional GitHub-native AI and selective Codex use only after the baseline workflows have produced stable live evidence.
