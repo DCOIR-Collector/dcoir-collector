@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.56
+DCOIR Version Manifest 3.9.57
 
-Current state id: 2026-04-05-github-automation-and-ai-enablement-tracking-v1
+Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -15,6 +15,7 @@ Current control plane
 - Final remaining helper-skill wave and campaign closeout: project_sources/LOG-41_DCOIR_Final_Remaining_Helper_Skill_Wave_And_Campaign_Closeout_2026-04-05.txt
 - Resume-cycle completion and widening-review readiness: project_sources/LOG-42_DCOIR_Resume_Cycle_Completion_And_Widening_Review_Readiness_2026-04-05.txt
 - GitHub automation and AI enablement strategy: project_sources/LOG-43_DCOIR_GitHub_Automation_And_AI_Enablement_Strategy_2026-04-05.txt
+- First-wave GitHub automation baseline: project_sources/LOG-44_DCOIR_First_Wave_GitHub_Automation_Baseline_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -42,7 +43,7 @@ Current governed helper-skill source
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 
 Current next work item
-- Run the widening review against the current live governed state.
-- If the widening review is accepted, close the remaining architecture/governance line except for maintenance-only fixes, move the main project line to deliverables, and open the approved GitHub automation and AI enablement implementation wave.
-- Implement the first-wave GitHub automation baseline with browser-readable validation outputs: validate-on-push, manual-full-validation, scheduled-health-check, light ruleset safety, and explicit Dependabot follow-through.
-- Pilot GitHub-native AI and prompt/eval surfaces selectively where they reduce operator burden: Copilot code review, Copilot cloud agent, GitHub Models, and selective OpenAI Codex use.
+- Run the first live GitHub Actions passes and inspect the browser-readable workflow summaries.
+- Apply the light branch or ruleset safety follow-through manually in the GitHub UI without forcing a PR-first model.
+- Keep Dependabot alerts enabled and let the new `github-actions` version-update coverage prove out after the workflow files land.
+- Keep the main project line on deliverables while piloting optional AI augmentation only where it reduces operator burden.

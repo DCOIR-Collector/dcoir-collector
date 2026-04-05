@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-github-automation-and-ai-enablement-tracking-v1
+Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -12,12 +12,12 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Run the widening review against the live governed state and, if accepted, shift the main project line to deliverables while carrying the approved GitHub automation and AI enablement wave as the next durable implementation branch.
+- Run the first live GitHub Actions passes and inspect the browser-readable summaries so the new automation baseline is proven in the live repository.
 
 Queued next priorities
-- Implement the first-wave GitHub automation baseline: `validate-on-push`, `manual-full-validation`, `scheduled-health-check`, browser-readable workflow summaries, and light branch or ruleset safety.
-- Keep Dependabot alerts enabled and explicitly decide whether to add `.github/dependabot.yml` coverage for Python package version updates and GitHub Actions reference updates.
+- Apply light branch or ruleset safety manually in the GitHub UI without forcing a PR-first model.
+- Keep Dependabot alerts enabled and evaluate the new `.github/dependabot.yml` coverage for GitHub Actions references.
 - Pilot GitHub-native AI and prompt or evaluation surfaces where they reduce operator burden: Copilot code review, Copilot cloud agent, GitHub Models, and selective OpenAI Codex use.
-- Evaluate later or conditional platform features only after the first-wave automation is real: Pages dashboards, code scanning if eligible, self-hosted runners, OIDC, and artifact provenance or attestation features.
 - Keep package-cleanliness enforcement active so delivered skill zips stay free of runtime residue such as `__pycache__/`, `*.pyc`, and `.DS_Store`.
 - Use parity verification and representative regression before treating future skill patches as ready.
+- Keep the main project line on deliverables while the repeatability baseline stabilizes.

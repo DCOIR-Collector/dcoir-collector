@@ -1,27 +1,27 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-github-automation-and-ai-enablement-tracking-v1
+Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
 
-1. Run the widening review against the current live governed state.
+1. Run the first live GitHub Actions passes and inspect the browser-readable summaries.
    Why it matters:
-   - The final qualifying resume-cycle gate has now been cleared, so widening review is the remaining architecture/governance closeout step.
+   - The first-wave automation baseline is now real repo content, but the project still needs the first live browser-visible validation evidence before treating the baseline as proven.
    Next action:
-   - Review the current live governed surfaces and decide whether the architecture/governance line can be treated as closed except for maintenance-only fixes.
+   - Trigger the manual full-validation workflow first and review the summary plus artifacts in GitHub.
 
-2. If widening review is accepted, shift the main project line to deliverables and open the approved GitHub automation and AI enablement wave.
+2. Apply light branch or ruleset safety manually in the GitHub UI.
    Why it matters:
-   - The project wants to stop spending main-line effort on architecture once the last gating review is complete while also improving repeatability for deliverables-side work.
+   - The project wants safer branches without forcing a PR-first workflow that does not match daily use.
    Next action:
-   - Move the primary work queue to deliverables and carry the approved GitHub automation branch forward in the same transition.
+   - Add force-push and deletion protection first, and keep stronger PR-gated rules optional.
 
-3. Implement the first-wave GitHub automation baseline and explicit Dependabot follow-through.
+3. Evaluate the new Dependabot coverage after the workflow files land.
    Why it matters:
-   - The operator wants repeatable browser-visible validation that works in both work and home environments without depending on file downloads.
+   - The repo now has explicit GitHub Actions version-update coverage, but package-ecosystem coverage is still intentionally deferred because no supported dependency manifests are present.
    Next action:
-   - Start with validate-on-push, manual-full-validation, scheduled-health-check, browser-readable summaries, light ruleset safety, and an explicit decision on `.github/dependabot.yml` version-update coverage.
+   - Watch for GitHub Actions update PRs and keep package dependency automation deferred until supported manifests exist.
 
 4. Pilot optional AI augmentation only where it reduces operator burden.
    Why it matters:
-   - Copilot, GitHub Models, and OpenAI Codex may add value, but the project does not want them to become mandatory workflow ceremony.
+   - Copilot, GitHub Models, and OpenAI Codex may add value, but the project still does not want them to become mandatory workflow ceremony.
    Next action:
-   - Use optional pilots after first-wave automation exists and keep PRs as an optional review lane rather than the default daily workflow.
+   - Pilot optional GitHub-native AI and selective Codex use only after the baseline workflows have produced live evidence.

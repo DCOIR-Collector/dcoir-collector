@@ -1,28 +1,30 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.57
+Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
+Change class: widening-review acceptance and first-wave GitHub automation baseline implementation
+
+What changed
+- Added `.github/workflows/validate-on-push.yml` as the automatic baseline validation workflow for push-driven repo validation with browser-readable summaries and uploaded run artifacts.
+- Added `.github/workflows/manual-full-validation.yml` as the manual GitHub web UI trigger for deeper suite selection and browser-readable validation output.
+- Added `.github/workflows/scheduled-health-check.yml` as the routine weekly repo-health workflow with residue checks, required-surface checks, representative regression, and browser-readable summaries.
+- Added `.github/dependabot.yml` for explicit GitHub Actions reference update coverage while leaving package-ecosystem version-update coverage deferred until supported dependency manifests exist in the repo.
+- Added `project_sources/LOG-44_DCOIR_First_Wave_GitHub_Automation_Baseline_2026-04-05.txt` as the governed decision record for the first-wave implementation details, including the harness path correction needed for the current collector zip location.
+- Updated the manifest and active continuity surfaces to record that the widening review is now accepted, the remaining architecture or governance line is closed except for maintenance-only fixes, and the first-wave automation baseline is now part of the live governed working line.
+
+Why
+- The project wanted to move from strategy-only tracking into a real browser-first GitHub automation baseline that works in both work and home environments.
+- The user explicitly approved the recommendation set, approved durable tracking, and then approved proceeding into actual implementation.
+- Opening the first-wave baseline only after the widening review preserves the project rule that architecture closeout happens before the main line shifts to deliverables-adjacent repeatability work.
+
+Validation notes
+- The live repo search and current UI evidence showed no existing governed `.github` workflow baseline before this wave.
+- The live repo dependency graph showed no supported package manifests, so Dependabot package-ecosystem coverage is not assumed current.
+- The current test harness exists and is suitable for workflow use, but its default master zip path is not present in the live repo; this baseline therefore calls the harness with `-MasterZipPath ..\supporting_assets\DCOIR_Collector.zip`.
+- Light branch or ruleset safety remains a manual GitHub UI follow-through item because it is not represented by readable repo files in this wave.
+
+[PRIOR]
 Version: 3.9.56
 Current state id: 2026-04-05-github-automation-and-ai-enablement-tracking-v1
 Change class: approved GitHub automation and AI enablement adoption tracking
-
-What changed
-- Added `project_sources/LOG-43_DCOIR_GitHub_Automation_And_AI_Enablement_Strategy_2026-04-05.txt` as the governed decision record for the approved GitHub automation, Dependabot follow-through, and AI enablement strategy.
-- Updated the manifest and active continuity surfaces so the approved GitHub-native automation and AI enablement wave is durably tracked instead of living only in chat.
-- Recorded that first-wave implementation should start with browser-readable GitHub Actions workflows, light ruleset safety, and an explicit Dependabot follow-through decision before broader optional platform features.
-- Recorded that optional AI augmentation should be piloted selectively through GitHub-native surfaces and OpenAI Codex rather than treated as a mandatory new default workflow.
-- Recorded that there is no governed evidence yet of a live `.github/dependabot.yml` in the repository, so Dependabot version updates and GitHub Actions update coverage remain explicit implementation decisions rather than implied current state.
-
-Why
-- The operator approved the full GitHub automation and AI enablement recommendation set and wanted it made durable inside the governed project state so it is not forgotten.
-- The project needs repeatable validation and browser-visible results that work in both work and home environments without assuming file downloads.
-- Tracking the strategy in the same bounded wave as the continuity surfaces reduces drift between the approved deployment strategy, the queued work, and later deliverables-side implementation.
-
-Validation notes
-- This change records strategy and queued work only; it does not create GitHub Actions workflows, rulesets, or AI-agent configuration by itself.
-- Dependabot alert enablement is already visible in the current repository UI, but alert enablement and version-update automation are separate GitHub features.
-- A repo search during this session found no governed `dependabot.yml` in the live repository, so version-update automation still requires an explicit configuration decision.
-
-[PRIOR]
-Version: 3.9.55
-Current state id: 2026-04-05-resume-cycle-cleared-and-widening-review-ready-v1
-Change class: qualifying resume-cycle completion and widening-review readiness

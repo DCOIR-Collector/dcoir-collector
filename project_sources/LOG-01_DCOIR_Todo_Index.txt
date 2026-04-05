@@ -1,14 +1,14 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-github-automation-and-ai-enablement-tracking-v1
+Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
 
 Current priority summary
-1. The qualifying real resume-cycle requirement has been satisfied and the project is now ready for widening review.
-2. Run the widening review against the current live governed state.
-3. If the widening review is accepted, shift the main project line to deliverables and open the approved GitHub automation and AI enablement implementation wave.
-4. Implement the first-wave GitHub automation baseline: validate-on-push, manual-full-validation, scheduled-health-check, browser-readable summaries, light ruleset safety, and explicit Dependabot follow-through.
+1. Widening review has been accepted and the remaining architecture or governance line is now closed except for maintenance-only fixes.
+2. Run the first live GitHub Actions passes and inspect browser-readable summaries.
+3. Apply light branch or ruleset safety manually in the GitHub UI without forcing a PR-first workflow.
+4. Evaluate the new GitHub Actions Dependabot coverage after the workflow files land.
 5. Pilot GitHub-native AI and prompt or evaluation surfaces selectively: Copilot code review, Copilot cloud agent, GitHub Models, and OpenAI Codex where it reduces operator burden.
 6. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
 
 Current best next move
-- Execute the widening review now, then open the approved GitHub automation and AI enablement wave as the first deliverables-adjacent repeatability branch if the review is accepted.
+- Trigger the manual full-validation workflow first, inspect its browser-readable summary and uploaded artifacts, then let validate-on-push and scheduled-health-check prove out under normal use.

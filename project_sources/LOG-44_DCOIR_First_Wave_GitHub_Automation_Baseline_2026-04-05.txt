@@ -1,0 +1,48 @@
+DCOIR First-Wave GitHub Automation Baseline - 2026-04-05
+
+Current state id: 2026-04-05-first-wave-github-automation-baseline-v1
+
+Purpose
+- Record the first real GitHub-native automation baseline for the DCOIR repository after the widening review was accepted.
+- Preserve a browser-first validation model that works in both work and home environments without removing the current manual GitHub Desktop lane or the in-chat GitHub lane.
+
+Implemented repo files
+- `.github/workflows/validate-on-push.yml`
+- `.github/workflows/manual-full-validation.yml`
+- `.github/workflows/scheduled-health-check.yml`
+- `.github/dependabot.yml`
+
+Workflow summary
+- `validate-on-push` runs on repository pushes and provides Python syntax validation, PowerShell syntax validation, required-governed-surface checks, a core harness run, browser-readable summaries, and uploaded artifacts.
+- `manual-full-validation` provides a GitHub web UI trigger with selectable suites so the operator can run deeper validation on demand without local file movement.
+- `scheduled-health-check` provides weekly routine hygiene checks, residue detection, required-surface checks, representative regression, browser-readable summaries, and uploaded artifacts.
+
+Harness integration note
+- The current harness file is `project_sources/run_DCOIR_Tests.ps1`.
+- Its default master zip path does not exist in the live repository.
+- The live governed collector zip currently exists under `supporting_assets/DCOIR_Collector.zip`.
+- The first-wave workflows therefore call the harness with `-MasterZipPath ..\supporting_assets\DCOIR_Collector.zip` rather than assuming the absent default path.
+
+Dependabot note
+- The repository UI already showed Dependabot alerts enabled during this session.
+- Dependabot alerts and Dependabot version updates are separate GitHub features.
+- The live repo showed no governed dependency-manifest support in the dependency graph view and no pre-existing `.github/dependabot.yml`.
+- This first-wave baseline therefore adds explicit version-update coverage for the `github-actions` ecosystem only.
+- Package-ecosystem coverage remains deferred until supported dependency manifests exist in the repository.
+
+What this wave intentionally does not do
+- It does not force a PR-first workflow.
+- It does not implement branch or ruleset safety through readable repo files; those remain manual GitHub UI follow-through items.
+- It does not enable GitHub Pages, self-hosted runners, code scanning, OIDC, or artifact attestation features yet.
+- It does not make Copilot or OpenAI Codex mandatory workflow components.
+
+Why it matters
+- The project wanted real repeatability that works at work and at home without depending on file uploads or downloads.
+- Browser-readable GitHub workflow summaries reduce operator burden.
+- The automation baseline now exists as a governed readable source set that can be reviewed, maintained, and extended deliberately.
+
+Next immediate move
+- Trigger `manual-full-validation` first and inspect the browser-readable summary plus uploaded artifacts.
+- Let `validate-on-push` and `scheduled-health-check` prove out after that.
+- Apply light branch or ruleset safety manually in the GitHub UI.
+- Keep the main project line on deliverables while optional GitHub-native AI and selective OpenAI Codex pilots are introduced only where they add value.
