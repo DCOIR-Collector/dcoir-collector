@@ -60,6 +60,7 @@ Run this skill before choosing the execution lane when the task family includes 
 - bundle generation or packaging work
 - skill maintenance, repair, or regression work
 - coordinated multi-skill patch campaigns where the same validated procedure may shape several sibling updates
+- GitHub Desktop manual repo-update bundle preparation or grouped governed pushes where the same preflight logic should shape the delivery lane
 - any task where the operator asks to remove friction from a repeated GitHub workflow
 
 Run this skill again after blocker recovery when the recovered lesson could matter beyond the current one-off fix.
@@ -71,7 +72,7 @@ Run this skill again after blocker recovery when the recovered lesson could matt
 4. Identify the likely memory domain, preferring `github` first for repo work.
 5. Read the task-memory manifest and compiled lookup.
 6. Select the smallest relevant set of canonical records.
-7. If the task is GitHub-family lane selection or connector-shape selection, include `GH-PROC-007` and `GH-PROC-008` when relevant.
+7. If the task is GitHub-family lane selection or connector-shape selection, include `GH-PROC-007` and `GH-PROC-008` when relevant. For GitHub Desktop manual repo-update deliveries or grouped governed pushes, also pair the grouped-transaction and post-write-verification records so the delivery lane stays aligned to the same governed write posture.
 8. For `pre_execution`, summarize the recommended lane, preconditions, anti-patterns, and required verification.
 9. For `post_blocker`, classify the recovered lesson as one of:
    - `one_off_only`
@@ -105,6 +106,7 @@ This skill may participate in session-local write buffering, but buffered state 
 
 Preferred flush-check trigger points:
 - before GitHub writes
+- when a GitHub Desktop push or manual repo-update delivery is about to happen
 - after blocker resolution
 - when switching major tasks
 - at major milestones

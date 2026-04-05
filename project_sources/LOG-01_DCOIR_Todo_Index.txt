@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-plan-tracker-next-step-and-blocked-state-fix-v1
+Current state id: 2026-04-05-memory-preflight-reference-alignment-v1
 
 Purpose
 - This file is the short-form entry point for current DCOIR work.
@@ -8,8 +8,8 @@ Purpose
 - Detailed queued work lives in project_sources/todo/.
 
 Current priority summary
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired `dcoir-session-tracker` cleanup behavior, package-cleanliness enforcement, and repaired `dcoir-plan-tracker` transition guidance.
-2. Continue the workflow-state and buffer-capable high-risk wave by moving to the next highest-value helper-skill pass after the repaired `dcoir-session-tracker` and `dcoir-plan-tracker` lanes.
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the current validation regime, parity output, discovery contract, live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired `dcoir-session-tracker` cleanup behavior, repaired `dcoir-plan-tracker` transition guidance, and repaired `dcoir-memory-preflight` routing alignment.
+2. Continue the workflow-state and buffer-capable high-risk wave by moving to the next highest-value helper-skill pass after the repaired `dcoir-memory-preflight` lane.
 3. Start and maintain the bounded package-cleanliness enforcement pass so delivered skill zips stay free of runtime residue.
 4. Use the shared pre-push flush and staged-governed-update contract for `dcoir-session-tracker`, `dcoir-plan-tracker`, and the other session-memory-enabled or buffer-capable skills before governed pushes.
 5. Use the repaired GitHub Desktop manual repo-update bundle mode together with the recorded delivery-bundle and GitHub Desktop commit `Summary` preferences for future manual deliveries unless the operator explicitly overrides them.
@@ -23,4 +23,4 @@ Todo-file map
 - todo/05_Deferred_Or_Conditional.txt
 
 Current best next move
-- Continue the coordinated campaign by taking the next highest-value workflow-state or buffer-capable helper-skill pass after the repaired `dcoir-plan-tracker` transition lane while carrying the bounded package-cleanliness enforcement line in parallel.
+- Continue the coordinated campaign by taking the next highest-value workflow-state or buffer-capable helper-skill pass after the repaired `dcoir-memory-preflight` lane while carrying the bounded package-cleanliness enforcement line in parallel.

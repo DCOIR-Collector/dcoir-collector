@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.44
+DCOIR Version Manifest 3.9.45
 
-Current state id: 2026-04-05-plan-tracker-next-step-and-blocked-state-fix-v1
+Current state id: 2026-04-05-memory-preflight-reference-alignment-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -39,6 +39,7 @@ Current control plane
 - Continuous-execution cadence and session-tracker post-push cleanup automation: project_sources/LOG-30_DCOIR_Continuous_Execution_Cadence_And_Session_Tracker_Post_Push_Cleanup_2026-04-05.txt
 - Package-cleanliness enforcement and clean skill reissue set: project_sources/LOG-31_DCOIR_Package_Cleanliness_Enforcement_And_Clean_Skill_Reissue_2026-04-05.txt
 - Plan-tracker next-step advancement and blocked-state guidance fix: project_sources/LOG-32_DCOIR_Plan_Tracker_Next_Step_And_Blocked_State_Fix_2026-04-05.txt
+- Memory-preflight coordinated-campaign and GitHub Desktop trigger alignment: project_sources/LOG-33_DCOIR_Memory_Preflight_Campaign_And_GitHub_Desktop_Alignment_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -66,6 +67,7 @@ Current governed helper-skill source
 - `dcoir-session-tracker` should run that local-state preflight at the beginning of each new session that uses the skill.
 - `dcoir-plan-tracker` now uses `scripts/ensure_plan_state.py` as the beginning-of-session local plan-state preflight for local plan folders and emits explicit missing-state warnings when an expected `plan_state.json` file is absent.
 - `dcoir-plan-tracker` now advances `next_recommended_action`, `resume_state.exact_resume_goal`, and blocked-state guidance automatically when the active task is completed, skipped, or blocked so operator-facing resume state does not remain stuck on stale starter text.
+- `dcoir-memory-preflight` now treats coordinated multi-skill campaigns and GitHub Desktop manual repo-update or grouped governed-push deliveries as explicit preflight families in its reference maps and flush triggers, reducing routing drift between the core skill instructions and the reference layer.
 - The confirmed current DCOIR skills with real local JSON working-state files are `dcoir-session-tracker` and `dcoir-plan-tracker`.
 - Manual GitHub Desktop repo-update bundles should unzip directly to only the affected repo-relative folders and files with no extra wrapper root.
 - Single-skill delivery should provide only the affected skill zip.
@@ -84,8 +86,8 @@ Current governed helper-skill source
 - `dcoir_skills/project_discovery_contract.json` is the canonical machine-readable current-project discovery contract for eligible helper skills.
 
 Current next work item
-- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired `dcoir-session-tracker` post-push cleanup path, and repaired `dcoir-plan-tracker` task-transition guidance.
-- Continue the workflow-state high-risk wave after the repaired `dcoir-session-tracker` cleanup lane, bounded package-cleanliness enforcement branch, and repaired `dcoir-plan-tracker` next-step and blocked-state path.
+- Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the live-validated startup baseline, repaired GitHub Desktop manual repo-update bundle mode, durable continuous-execution cadence rule, repaired `dcoir-session-tracker` post-push cleanup path, repaired `dcoir-plan-tracker` task-transition guidance, and repaired `dcoir-memory-preflight` reference alignment.
+- Continue the workflow-state high-risk wave after the repaired `dcoir-session-tracker` cleanup lane, bounded package-cleanliness enforcement branch, repaired `dcoir-plan-tracker` next-step and blocked-state path, and repaired `dcoir-memory-preflight` coordinated-campaign and delivery-trigger maps.
 - Continue the bounded package-cleanliness enforcement pass across the helper-skill library so runtime residue such as `__pycache__/` and `*.pyc` does not contaminate delivered skill packages.
 - Continue enforcing the shared pre-push flush and staged-governed-update contract before governed pushes.
 - Keep the stamped active-surface widening hold countdown at 1 remaining real resume cycle before any widening review.

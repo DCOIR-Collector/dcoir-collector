@@ -1,10 +1,10 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-plan-tracker-next-step-and-blocked-state-fix-v1
+Current state id: 2026-04-05-memory-preflight-reference-alignment-v1
 
-1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, durable continuous-execution cadence rule, repaired GitHub Desktop manual repo-update bundle mode, repaired `dcoir-session-tracker` post-push cleanup path, package-cleanliness enforcement baseline, and repaired `dcoir-plan-tracker` transition guidance.
+1. Continue the coordinated all-skills helper-skill deep-dive and code-hygiene campaign from the now live-validated startup baseline, durable continuous-execution cadence rule, repaired GitHub Desktop manual repo-update bundle mode, repaired `dcoir-session-tracker` post-push cleanup path, repaired `dcoir-plan-tracker` task-transition guidance, and repaired `dcoir-memory-preflight` coordinated-campaign and delivery-trigger alignment.
    Why it matters:
-   - The project now has real-session proof for the startup bootstrap line, a repaired GitHub Desktop delivery lane, improved session-tracker grouped-push cleanup behavior, package-cleanliness enforcement, and repaired plan-tracker operator-facing transition guidance, so the broader campaign can keep moving with less avoidable operator friction and less stale workflow-state carryover.
+   - The project now has stronger startup proof, delivery-lane support, grouped-push cleanup behavior, plan-tracker transition guidance, and memory-preflight routing alignment, so the broader campaign can keep moving with less avoidable operator friction and less reference-layer drift.
    Next action:
    - Continue into the next highest-value workflow-state or buffer-capable helper-skill pass under the current CI/CD-style validation regime.
 

@@ -1,47 +1,44 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.45
+Current state id: 2026-04-05-memory-preflight-reference-alignment-v1
+Change class: memory-preflight coordinated-campaign and GitHub Desktop trigger alignment
+
+What changed
+- Added `project_sources/LOG-33_DCOIR_Memory_Preflight_Campaign_And_GitHub_Desktop_Alignment_2026-04-05.txt` as the governed decision record for repairing reference-layer drift inside `dcoir-memory-preflight`.
+- Updated `dcoir-memory-preflight` so its reference maps now explicitly include coordinated multi-skill patch campaigns and GitHub Desktop manual repo-update or grouped governed-push deliveries as preflight families.
+- Updated `dcoir-memory-preflight` so the reference layer now pairs GitHub Desktop manual repo-update deliveries with grouped transaction, post-write verification, and connector-lane selection records when those delivery decisions are in scope.
+- Updated the memory-preflight flush-trigger guidance so GitHub Desktop pushes and manual repo-update deliveries are surfaced explicitly instead of being left implicit under generic GitHub writes.
+- Refreshed the active continuity and todo surfaces so the workflow-state high-risk wave now includes the repaired memory-preflight reference layer.
+
+Why
+- The coordinated all-skills campaign exposed a real routing drift: the core `dcoir-memory-preflight` instructions already said coordinated campaigns and delivery-lane work should use preflight, but the bundled reference maps still omitted those families.
+- That mismatch increased the risk that future preflight responses could skip the right canonical record family during GitHub Desktop delivery sessions or broad coordinated patch cycles.
+- The highest-value bounded fix was to align the skill's reference layer to the already-governed execution posture instead of widening into unrelated helper-skill changes.
+
+Validation notes
+- The updated `dcoir-memory-preflight` skill package passes clean packaging validation.
+- Reference-layer review confirms that coordinated campaigns, GitHub Desktop manual repo-update deliveries, and grouped governed pushes are now explicitly represented in the preflight family map, GitHub record map, and flush-trigger guidance.
+- The next immediate branch is to continue the workflow-state high-risk wave from the now repaired memory-preflight routing baseline.
+
+[PRIOR]
 Version: 3.9.44
 Current state id: 2026-04-05-plan-tracker-next-step-and-blocked-state-fix-v1
 Change class: plan-tracker next-step advancement and blocked-state guidance fix
 
 What changed
-- Added `project_sources/LOG-32_DCOIR_Plan_Tracker_Next_Step_And_Blocked_State_Fix_2026-04-05.txt` as the governed decision record for the bounded `dcoir-plan-tracker` transition-path repair.
-- Updated `dcoir-plan-tracker` so when an active task is marked `done` or `skipped`, the local plan state now advances `next_recommended_action` and `resume_state.exact_resume_goal` to the next eligible task instead of leaving stale starter guidance in place.
-- Updated `dcoir-plan-tracker` so when an active task is marked `blocked`, the local plan state now sets explicit blocked-state next-step guidance and keeps operator-facing resume state aligned to the blocker-resolution path.
-- Updated `dcoir-plan-tracker` so `in_progress` transitions now keep plan status and operator-facing next-step guidance aligned to the active task rather than leaving the plan anchored to older placeholder text.
-- Refreshed the active continuity and todo surfaces so the coordinated all-skills campaign now treats the repaired `dcoir-plan-tracker` transition path as part of the workflow-state high-risk baseline.
+- Added `project_sources/LOG-32_DCOIR_Plan_Tracker_Next_Step_And_Blocked_State_Fix_2026-04-05.txt` as the governed decision record for the bounded `dcoir-plan-tracker` transition-guidance repair.
+- Updated `dcoir-plan-tracker` so completing or skipping the active task now advances `next_recommended_action` and `resume_state.exact_resume_goal` to the next eligible task instead of leaving stale starter text in operator-facing resume state.
+- Updated `dcoir-plan-tracker` so blocking the active task now surfaces blocked-state guidance in operator-facing resume state instead of leaving the same stale next-step wording that applied before the blocker.
+- Refreshed the active continuity and todo surfaces so the workflow-state high-risk wave now carries the repaired `dcoir-plan-tracker` transition-guidance behavior.
 
 Why
-- The coordinated campaign found a real workflow-state defect: after a task was marked `done`, the local plan could leave `next_recommended_action` and `resume_state.exact_resume_goal` stuck on the original starter text instead of moving the operator cleanly to the next eligible task.
-- The same transition family needed clearer blocked-state guidance so the operator-facing resume path reflects the blocker-resolution branch rather than an outdated generic next step.
-- The highest-value bounded fix was to repair `dcoir-plan-tracker` transition rendering directly and then fold that repaired behavior into the governed campaign state.
+- The coordinated campaign deep-dive found a real operator-facing continuity defect: marking the active task `done`, `skipped`, or `blocked` could leave `next_recommended_action` and `resume_state.exact_resume_goal` stuck on stale starter text.
+- That behavior weakened the very resume quality the plan tracker is supposed to protect in long-running DCOIR work.
+- The highest-value bounded fix was to repair the plan-state transition logic and then carry the new behavior into the governed continuity surfaces.
 
 Validation notes
-- Representative local plan flows confirmed that after `done` transitions the next eligible task is now surfaced in `next_recommended_action` and `resume_state.exact_resume_goal`.
-- Representative local blocked-task flows confirmed that blocked-state mitigation guidance is now promoted into the operator-facing resume state.
-- The updated `dcoir-plan-tracker` skill package passes clean packaging validation with no runtime-residue entries included.
-- The next immediate branch is to continue the workflow-state high-risk wave after the repaired `dcoir-plan-tracker` transition path.
-
-[PRIOR]
-Version: 3.9.43
-Current state id: 2026-04-05-package-cleanliness-enforcement-v1
-Change class: package-cleanliness enforcement pass, parity/regression hardening, and clean skill reissue set
-
-What changed
-- Added `project_sources/LOG-31_DCOIR_Package_Cleanliness_Enforcement_And_Clean_Skill_Reissue_2026-04-05.txt` as the governed decision record for the bounded package-cleanliness enforcement pass across the helper-skill library.
-- Updated `dcoir-parity-verifier` so packaged skill verification now reports package-cleanliness status and explicit runtime-residue entries such as `__pycache__/`, `*.pyc`, and `.DS_Store` instead of hiding residue completely behind parity exclusions.
-- Updated `dcoir-skill-regression-auditor` so regression planning now requires a package-cleanliness check for delivered skill zips in addition to package validation, success-path, failure-gate, and artifact verification.
-- Reissued clean install packages for the affected skills found contaminated in the campaign audit: `dcoir-change-impact-analyzer`, `dcoir-collector-qa`, `dcoir-knowledge-doc-maintainer`, `dcoir-source-authority-auditor`, and `dcoir-validation-orchestrator`, together with the updated `dcoir-parity-verifier` and `dcoir-skill-regression-auditor` packages.
-- Refreshed the active continuity and todo surfaces so the coordinated all-skills campaign now treats package cleanliness as an explicit enforced check rather than an ad hoc cleanup note.
-
-Why
-- The all-skills campaign found that a subset of delivered skill packages could include runtime residue such as `__pycache__/` and `*.pyc`, which is unnecessary packaging contamination even when normalized parity hashes still match after exclusions.
-- The project needed a durable detection and regression rule, not just one-off cleaned reissues.
-- The highest-value bounded fix was to harden the parity-verification and regression-auditing skills and then reissue the affected packages cleanly in the same pass.
-
-Validation notes
-- A broad package audit across the current helper-skill library confirmed that the contamination was limited to a bounded subset of skill packages rather than the entire library.
-- The updated `dcoir-parity-verifier` and `dcoir-skill-regression-auditor` skill packages pass clean packaging validation with no runtime-residue entries included.
-- Clean reissued packages were built for the affected skills with no `__pycache__/`, `*.pyc`, or `.DS_Store` entries present in the delivered zips.
-- The next immediate branch is to continue the workflow-state high-risk wave from the now live-validated startup, repaired delivery, continuous-execution, and package-cleanliness baseline.
+- The updated `dcoir-plan-tracker` skill package passes clean packaging validation.
+- Representative local plan-state tests confirm that `done`, `skipped`, and `blocked` transitions now update the operator-facing next-step and blocked-state guidance instead of leaving stale resume text behind.
+- The next immediate branch is to continue the workflow-state high-risk wave with the next buffer-capable or routing-critical helper-skill pass.

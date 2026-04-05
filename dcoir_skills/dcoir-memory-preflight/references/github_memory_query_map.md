@@ -15,3 +15,7 @@
 - for grouped changes, pair the transaction procedure with post-write verification
 - for connector-function choice or lane-shape ambiguity, pair `GH-PROC-007` with `GH-PROC-008`
 - after blocker recovery, reuse the same canonical record family first before proposing any new promotion candidate
+
+## Coordinated campaign and GitHub Desktop delivery notes
+- coordinated multi-skill patch campaign -> start with `GH-PROC-007`, then add the specific record family for the expected repo action
+- GitHub Desktop manual repo-update delivery or grouped governed push -> pair `GH-PROC-006` with `GH-PROC-005`, and include `GH-PROC-008` when connector-lane or delivery-shape selection is still in doubt

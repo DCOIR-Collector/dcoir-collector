@@ -7,6 +7,8 @@ Use memory preflight before execution for these task families:
 - control-plane updates
 - bundle generation and packaging
 - skill repair, maintenance, or regression
+- coordinated multi-skill patch campaigns
+- GitHub Desktop manual repo-update bundle preparation or grouped governed pushes
 - repeated workflows with known prior friction
 
 Use memory preflight again after blocker recovery when the resolved lesson could improve:

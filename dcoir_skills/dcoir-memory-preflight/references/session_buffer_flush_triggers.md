@@ -2,6 +2,7 @@
 
 Preferred flush-check trigger points:
 - before GitHub writes
+- when a GitHub Desktop push or manual repo-update delivery is about to happen
 - after blocker resolution
 - when switching major tasks
 - at major milestones
@@ -23,4 +24,4 @@ A valid flush/manicure review for this skill should surface:
 - one best next move
 
 ## Pre-push contract note
-When a suitable governed push is already happening in the same branch, surface what should land in that same grouped push instead of silently leaving the state buffered for later.
+When a suitable governed push or GitHub Desktop manual repo-update delivery is already happening in the same branch, surface what should land in that same grouped push instead of silently leaving the state buffered for later.
