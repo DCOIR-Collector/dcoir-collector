@@ -120,7 +120,7 @@ jobs:
             $lines = New-Object System.Collections.Generic.List[string]
             $lines.Add('## manual-full-validation')
             $lines.Add('')
-            $lines.Add("- Selected suite: `$suite`")
+            $lines.Add("- Selected suite: $suite")
             $lines.Add('- Harness zip path override: `..\\supporting_assets\\DCOIR_Collector.zip`')
             $lines.Add('')
 
