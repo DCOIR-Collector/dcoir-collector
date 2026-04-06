@@ -1,21 +1,27 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-scheduled-health-check-residue-cleanup-v1
+Current state id: 2026-04-05-first-wave-github-automation-fully-restabilized-v1
 
-1. Remove the confirmed committed residue file or files and keep the new root `.gitignore` residue guards.
+1. Keep the fully re-stabilized first-wave GitHub automation baseline in place while the main project line stays on deliverables.
    Why it matters:
-   - The latest `scheduled-health-check` run is now correctly flagging a real committed `.pyc` file in the repo instead of tripping on workflow logic.
+   - The automation baseline is now proven end to end again, including the post-cleanup scheduled-health-check rerun.
    Next action:
-   - Delete the committed residue file or files, keep the root `.gitignore` in place, and commit both changes together.
+   - Leave the baseline alone unless a real defect appears, and keep the main project effort on deliverables.
 
-2. Rerun `scheduled-health-check` once after the cleanup commit lands.
+2. Preserve the remaining approved platform-adoption items as queued later work rather than forced immediate follow-through.
    Why it matters:
-   - That one rerun is the remaining proof point before the first-wave automation baseline can honestly be treated as fully stabilized again.
+   - The operator approved those items and wants them remembered durably, but also chose to stop and enjoy the stable baseline first.
    Next action:
-   - Trigger `scheduled-health-check` manually on `main` and confirm it passes.
+   - Keep the queue durable in the governed project state and open each later item only as a bounded next branch.
 
-3. After that, return to the stable baseline posture and keep the main project line on deliverables.
+3. When ready, start with a bounded Copilot code review pilot.
    Why it matters:
-   - The operator wanted to stop and enjoy the stable baseline first, with the later platform-adoption queue preserved for bounded future work.
+   - It is the smallest approved next pilot and keeps pull requests optional rather than forcing a new daily workflow.
    Next action:
-   - Resume the stable-baseline posture only after the post-cleanup scheduled-health-check rerun passes.
+   - Use Copilot code review only on review-worthy or higher-risk PRs when the operator explicitly opens that pilot.
+
+4. After that, keep the remaining approved pilot order intact.
+   Why it matters:
+   - The operator approved the broader set and wants the sequence remembered without having to reconstruct it later.
+   Next action:
+   - Follow this order when later work opens: Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners if needed, OIDC if needed, and artifact provenance or attestation or SLSA-style work later.

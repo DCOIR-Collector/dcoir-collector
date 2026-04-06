@@ -1,26 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.63
+Current state id: 2026-04-05-first-wave-github-automation-fully-restabilized-v1
+Change class: first-wave GitHub automation fully re-stabilized after residue cleanup and passing scheduled-health-check rerun
+
+What changed
+- Added `project_sources/LOG-49_DCOIR_First_Wave_GitHub_Automation_Fully_Restabilized_2026-04-05.txt` as the governed record that the residue cleanup landed, the cleanup push was completed, and `scheduled-health-check` passed on rerun.
+- Updated the manifest and active continuity surfaces so the repo no longer describes one more scheduled-health-check proof step as pending.
+- Restored the stable-baseline posture for the first GitHub automation wave while keeping the later approved platform-adoption queue intact.
+
+Why
+- The latest chat-confirmed execution path now closed the last open proof point for the first-wave baseline: committed residue was cleaned, ignore rules are in place, and `scheduled-health-check` passed.
+- Without this final closeout update, the governed repo would still incorrectly claim that one more scheduled-health-check rerun was required.
+- Recording the successful rerun in the control plane prevents the next session from reopening already-resolved cleanup work.
+
+Validation notes
+- `cleanup pushed` was confirmed after the local residue-cleanup script removed tracked residue and the resulting commit was pushed.
+- `scheduled-health-check passed` was then confirmed in chat as the final workflow proof point.
+- The repo now returns to the stable-baseline posture: validate-on-push, manual full-validation, FullRegression, scheduled-health-check, light ruleset safety, and Dependabot GitHub Actions flow are all proven.
+
+[PRIOR]
 Version: 3.9.62
 Current state id: 2026-04-05-scheduled-health-check-residue-cleanup-v1
 Change class: scheduled-health-check residue cleanup and repo ignore-baseline follow-through
-
-What changed
-- Added a root `.gitignore` with residue guards for `__pycache__/`, `*.pyc`, and `.DS_Store` so future generated packaging residue does not get re-committed easily.
-- Added `project_sources/LOG-48_DCOIR_Scheduled_Health_Check_Residue_Cleanup_And_Ignore_Baseline_2026-04-05.txt` as the governed record for the live scheduled-health-check failure that exposed a real committed `.pyc` file in the repository.
-- Updated the manifest and active continuity surfaces so the project now records the correct next step: remove the committed residue file or files, keep the ignore rules in place, rerun `scheduled-health-check` once, and only then return to the stable-baseline posture.
-
-Why
-- Live workflow evidence now shows `scheduled-health-check` is no longer failing on workflow logic. It is correctly detecting a real committed `.pyc` file in the repository.
-- A residue-cleanliness workflow only adds value if the repository also carries matching ignore rules.
-- Recording the cleanup and ignore-baseline step prevents future sessions from treating this as another workflow-code bug when it is now a real repository-cleanliness issue.
-
-Validation notes
-- The corrected workflow no longer fails on the invalid residue regex pattern.
-- The latest live run fails in `Check for packaging residue` because it finds a real committed `.pyc` file under `dcoir_skills/dcoir-change-impact-analyzer/scripts/__pycache__/analyze_change_impact.cpython-313.pyc`.
-- This patch does not claim the baseline is fully re-stabilized yet; one rerun after residue cleanup is still required.
-
-[PRIOR]
-Version: 3.9.61
-Current state id: 2026-04-05-scheduled-health-check-residue-pattern-fix-v1
-Change class: scheduled-health-check residue-pattern correction and final first-wave prove-out follow-through

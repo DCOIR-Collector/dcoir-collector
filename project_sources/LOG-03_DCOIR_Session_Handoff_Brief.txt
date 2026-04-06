@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-05-scheduled-health-check-residue-cleanup-v1
+Current state id: 2026-04-05-first-wave-github-automation-fully-restabilized-v1
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
@@ -9,15 +9,15 @@ Current governance state
 - The coordinated all-skills helper-skill deep-dive and code-hygiene campaign remains complete through the current governed helper-skill inventory.
 - The current standing maintenance posture is grouped GitHub Desktop delivery, package-cleanliness enforcement, parity checks, and future issue-driven helper-skill updates.
 - Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
-- The first-wave GitHub automation baseline remains substantially proven, but one final rerun of `scheduled-health-check` is still required after committed residue cleanup.
+- The first-wave GitHub automation baseline is now fully re-stabilized in live use after residue cleanup and a passing scheduled-health-check rerun.
 
 Current validated status
-- Validate-on-push, manual full-validation, FullRegression, light ruleset safety, and Dependabot GitHub Actions flow are already proven.
+- Validate-on-push, manual full-validation, FullRegression, light ruleset safety, and Dependabot GitHub Actions flow are proven.
 - The scheduled-health-check workflow logic has been corrected past the earlier summary and residue-pattern defects.
-- The latest scheduled-health-check failure now reflects a real committed repository residue file rather than a workflow-code bug.
-- A root `.gitignore` residue baseline is now part of the corrective patch so future generated `__pycache__/`, `*.pyc`, and `.DS_Store` files are less likely to be recommitted.
+- The committed packaging residue issue was cleaned up and the root `.gitignore` residue guards are now in place.
+- The post-cleanup scheduled-health-check rerun passed, restoring the stable-baseline posture.
 
 Current next planned work item
-- Remove the confirmed committed residue file or files from the repo, apply the root `.gitignore`, and rerun `scheduled-health-check` once.
-- If that rerun passes, return to the stable baseline posture and keep the main project line on deliverables.
+- Keep the fully re-stabilized first-wave baseline in place while the main project line stays on deliverables.
 - Preserve the approved later queue in the remembered order: Copilot code review, Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners if needed, OIDC if needed, and artifact provenance or attestation or SLSA-style work later.
+- Keep optional GitHub-native AI and selective OpenAI Codex strictly optional unless and until a bounded pilot is explicitly opened.

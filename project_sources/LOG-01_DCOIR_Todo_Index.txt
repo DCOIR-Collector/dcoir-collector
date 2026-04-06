@@ -1,15 +1,14 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-scheduled-health-check-residue-cleanup-v1
+Current state id: 2026-04-05-first-wave-github-automation-fully-restabilized-v1
 
 Current priority summary
 1. Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
-2. Validate-on-push, manual full-validation, FullRegression, light ruleset safety, and Dependabot GitHub Actions flow are already proven.
-3. One focused remaining corrective step is still required: remove the real committed packaging residue file or files and rerun `scheduled-health-check` once.
-4. The root `.gitignore` residue guards should land as part of that cleanup.
-5. After the rerun passes, return to the stable baseline posture and keep the main project line on deliverables.
-6. Preserve the later approved platform-adoption items as queued bounded work in the earlier remembered order.
-7. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
+2. The first-wave GitHub automation baseline is fully re-stabilized in live use.
+3. Validate-on-push, manual full-validation, FullRegression, scheduled-health-check, light ruleset safety, and Dependabot GitHub Actions flow are all proven.
+4. The main project line should remain on deliverables while the remaining approved platform-adoption items stay queued rather than forced immediately.
+5. The remaining approved items stay ordered as bounded later work: Copilot code review, Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners if needed, OIDC if needed, and artifact provenance or attestation or SLSA-style work later.
+6. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
 
 Current best next move
-- Remove the confirmed committed residue file or files now, apply the root `.gitignore`, rerun `scheduled-health-check` once, and only then treat the first-wave automation baseline as fully stabilized again.
+- No immediate platform change is required. Keep the stable baseline in place and start with a bounded Copilot code review pilot only when the operator decides to open the next implementation branch.

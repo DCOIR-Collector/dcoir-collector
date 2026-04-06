@@ -1,0 +1,38 @@
+DCOIR First-Wave GitHub Automation Fully Re-Stabilized - 2026-04-05
+
+Current state id: 2026-04-05-first-wave-github-automation-fully-restabilized-v1
+
+Purpose
+- Record that the residue cleanup was pushed, `scheduled-health-check` passed on rerun, and the first-wave GitHub automation baseline is fully re-stabilized again.
+- Close out the final remaining corrective branch so the next session can safely resume from the stable baseline instead of reopening cleanup work.
+
+What is now complete
+- The root `.gitignore` residue guards are in place for `__pycache__/`, `*.pyc`, and `.DS_Store`.
+- The local residue cleanup was pushed to GitHub.
+- The post-cleanup `scheduled-health-check` rerun passed.
+- The first-wave baseline is now fully proven again across validate-on-push, manual full-validation, FullRegression, scheduled-health-check, light ruleset safety, and Dependabot GitHub Actions flow.
+
+Operator decision
+- Stop here and enjoy the stable baseline first.
+- Keep the remaining approved platform-adoption items durably queued for later bounded execution.
+
+Remaining approved items in the remembered order
+1. Copilot code review pilot.
+2. Copilot cloud agent pilot.
+3. GitHub Models pilot.
+4. Selective OpenAI Codex pilot.
+5. Later conditional GitHub Pages dashboard consideration.
+6. Later conditional code scanning consideration if the repo eligibility, visibility, and value justify it.
+7. Later conditional self-hosted runner consideration only if GitHub-hosted runners prove insufficient.
+8. Later conditional OIDC consideration only when workflows need cloud authentication.
+9. Later conditional artifact provenance or attestation or SLSA-style supply-chain consideration only after the earlier layers justify it.
+
+Why it matters
+- The governed repo previously still said one more scheduled-health-check rerun was needed.
+- The successful rerun is the final proof point that restores the honest stable-baseline posture.
+- Capturing that fact durably prevents the next chat from rediscovering or repeating resolved cleanup work.
+
+Best next move
+- No immediate platform change is required.
+- Keep using the stable baseline.
+- When the operator wants the next bounded implementation branch, start with the Copilot code review pilot.
