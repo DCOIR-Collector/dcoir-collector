@@ -1,13 +1,13 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-06-standalone-prompt-full-mission-refresh-v1
+Current state id: 2026-04-06-viable-deliverable-generation-contract-durable-v1
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
 - Project Instructions remain the first bootstrap anchor.
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- The authoritative active work queue is now stated in deliverable terms: the modular prompt-pack line, the combined analyst-facing master prompt, the PP-09 and PP-10 Gemini design line, and the generated and comparative Gemini markdown deliverable surfaces.
+- The authoritative active work queue is now stated in deliverable terms: the modular prompt-pack line, the combined analyst-facing master prompt, the PP-09 and PP-10 Gemini design line, the generated and comparative Gemini markdown deliverable surfaces, and the durable deliverable-generation contract in DOC-04.
 - The transcript-confirmed operating constraint remains explicit: during work hours prefer browser-native, no-upload or download required workflows whenever they can achieve the same governed result.
 - GitHub Desktop manual grouped repo-update delivery remains the default governed write posture, with PR and review flows optional and bounded.
 
@@ -15,6 +15,7 @@ What is still open right now
 1. Keep the fully re-stabilized first-wave GitHub automation baseline in place while the main line stays on deliverables.
 2. Maintain and validate PP-01 through PP-07 as the authoritative modular prompt-pack source line, regenerate PP-08 when the modular source changes, and keep the standalone analyst-facing prompt aligned.
 3. Maintain PP-09 and PP-10 as the current authoritative Gemini workflow and bounded design artifact for the merged parent-plus-seven-sub-agent line.
-4. Keep the generated and comparative Gemini markdown surfaces clearly packaged, easy to navigate, and separate from legacy extracted bundle material.
-5. Preserve GitHub Desktop manual grouped repo-update delivery as the default governed write posture unless a bounded branch explicitly opens another lane.
-6. Maintain package-cleanliness enforcement, parity verification, and bounded grouped helper-skill fixes for future maintenance-only work.
+4. Use DOC-04 and the hardened PP-09 workflow as the durable method for fresh standalone and Gemini generation instead of defaulting to stored generated outputs.
+5. Continue bounded live testing of the regenerated v2 standalone and Gemini bundles and refine the durable generation contract when operator feedback proves another repeatable improvement.
+6. Preserve GitHub Desktop manual grouped repo-update delivery as the default governed write posture unless a bounded branch explicitly opens another lane.
+7. Maintain package-cleanliness enforcement, parity verification, and bounded grouped helper-skill fixes for future maintenance-only work.

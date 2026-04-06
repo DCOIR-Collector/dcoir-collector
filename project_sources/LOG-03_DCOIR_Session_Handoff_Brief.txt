@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-06-standalone-prompt-full-mission-refresh-v1
+Current state id: 2026-04-06-viable-deliverable-generation-contract-durable-v1
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
@@ -19,11 +19,12 @@ Current validated status
 - The committed packaging residue issue was cleaned up and the root `.gitignore` residue guards remain in place.
 - The post-cleanup scheduled-health-check rerun passed and the stable-baseline posture remains restored.
 - The deliverables-first structure pass did not reveal a missing urgent blocker; it clarified the current deliverable authority chain and removed current-vs-legacy ambiguity around the Gemini build materials.
+- The current viable generation contract for operator-facing standalone and Gemini deliverables is now durably captured in DOC-04 and the hardened PP-09 workflow.
 
 Current next planned work item
 - Keep the fully re-stabilized first-wave baseline in place while the main project line stays on the real deliverables.
 - Maintain PP-01 through PP-07 as the authoritative modular prompt-pack source line and keep PP-08 aligned to it as the standalone analyst-facing runtime prompt.
 - Maintain PP-09 and PP-10 as the current authoritative Gemini design workflow and bounded design artifact for the merged parent-plus-seven-sub-agent topology.
-- Treat `knowledge/generated_agent_markdowns/` and `knowledge/comparative_reference_agent_markdowns/` as current readable working-output and comparison surfaces, and use their retained ZIPs in `supporting_assets/` as the current portable asset form.
-- Keep `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` demoted to extracted legacy reference until a future bounded refresh rebuilds it to the current topology.
-- Keep optional GitHub-native AI and selective OpenAI Codex strictly optional unless and until a bounded pilot is explicitly opened.
+- Use the durable generation contract to produce fresh standalone and Gemini deliverables instead of shipping stored generated artifacts by default.
+- Treat `project_sources/original_alert_triage_gemini_agents/` as the writing-density and field-quality benchmark, and treat `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` as structure and naming reference only.
+- Continue bounded live testing of the regenerated v2 Gemini and standalone bundles, capture operator feedback, and refine the governed generation contract further if later rounds prove a better repeatable method.

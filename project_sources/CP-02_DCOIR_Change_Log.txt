@@ -1,27 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.67
+Current state id: 2026-04-06-viable-deliverable-generation-contract-durable-v1
+Change class: durable viable deliverable generation contract capture and PP-09 workflow hardening
+
+What changed
+- Added `project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt` to capture the durable rules that produced the first operator-acceptable v2 standalone prompt and Gemini bundle shape.
+- Hardened `project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt` so future Gemini bundle work must use fresh generation, the approved reference hierarchy, the accepted v2 bundle layout, and thin-output rejection gates.
+- Updated the control plane and continuity surfaces so the project now preserves the accepted structure/content-generation method instead of relying on buried chat history.
+
+Why
+- The project repeatedly drifted into packaging stored artifacts, under-dense Gemini fields, and standalone-prompt rewrites that did not preserve full prompt-pack substance.
+- The first acceptable v2 bundles clarified the practical method that actually works: old alert-triage agents as the writing-density benchmark, the old DCOIR Gemini email bundle only as structure reference, fresh generation each round, and a true full prompt-pack assembly for the standalone prompt.
+- Without promoting those rules into governed sources, future sessions would likely rediscover the same failure pattern.
+
+Validation notes
+- The durable contract now explicitly separates authority, reference, generated-output, and shipping-deliverable roles.
+- PP-09 now states that stored generated outputs are not the default shipment surface, that Gemini sub-agents must be rejected when materially thinner than the successful alert-triage benchmark, and that the standalone deliverable must be a true full assembly of PP-01 through PP-07 rather than a condensed substitute.
+- The continuity surfaces now reflect the current viable generation baseline as an active deliverable-production rule set while later live testing continues.
+
+[PRIOR]
 Version: 3.9.66
 Current state id: 2026-04-06-standalone-prompt-full-mission-refresh-v1
 Change class: standalone prompt-pack full-mission refresh and PP-08 regeneration
-
-What changed
-- Refreshed PP-01 through PP-07 so the standalone analyst-facing prompt line now starts cleanly from Elastic alert triage as well as DCOIR collector output.
-- Added explicit triage-to-DCOIR escalation language, explicit next-expected-evidence language, and stronger authoritative IOC-enrichment handling to the modular prompt-pack authority line.
-- Regenerated `project_sources/PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt` from the refreshed modular source line.
-- Updated the control plane and continuity surfaces so the current project story now treats the standalone prompt deliverable as covering the full alert-triage-to-DCOIR mission rather than collector-output review only.
-
-Why
-- The repo mission and Gemini design line already covered Elastic alert triage plus DCOIR escalation, but the standalone prompt line still read as collector-output-first and therefore understated the actual deliverable scope.
-- Without refreshing the modular authority line first, PP-08 would continue to drift from the project's real deliverable intent and from the already-merged Gemini design posture.
-- Recording the refresh in the control plane prevents future sessions from rediscovering the same standalone-prompt gap.
-
-Validation notes
-- The refreshed modular line now includes alert_triage in the operating-model and schema contract, explicit escalation outcomes such as `dcoir_collection` and `dcoir_targeted_enrichment`, and stronger authoritative-source IOC-enrichment language.
-- PP-08 was regenerated from the refreshed PP-01 through PP-07 line and now reflects alert triage, explicit DCOIR escalation, and authoritative IOC-enrichment behavior in the runtime parity output.
-- A bounded parity spot-check against PP-09, PP-10, and the generated Gemini markdown surface indicates that the current parent-plus-seven-sub-agent Gemini topology already matches the refreshed standalone mission closely enough that no immediate structural Gemini rewrite is required.
-
-[PRIOR]
-Version: 3.9.65
-Current state id: 2026-04-06-deliverables-first-structure-recentering-v1
-Change class: deliverables-first structure re-centering and Gemini bundle drift alignment

@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-06-standalone-prompt-full-mission-refresh-v1
+Current state id: 2026-04-06-viable-deliverable-generation-contract-durable-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -10,18 +10,21 @@ Current stable pointers
 - Task memory bank root: knowledge/task_memory
 - Governed helper-skill source root: dcoir_skills/
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
+- Durable deliverable-generation contract: project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt
 
 Current active priority
-- Keep the fully re-stabilized first-wave GitHub automation baseline in service while the main project line stays on the real deliverables: the modular prompt-pack line, the standalone analyst-facing master prompt, the PP-09 and PP-10 Gemini design line, and the current generated/comparative markdown deliverable surfaces.
+- Keep the fully re-stabilized first-wave GitHub automation baseline in service while the main project line stays on the real deliverables, and use DOC-04 plus hardened PP-09 as the durable method for generating fresh standalone and Gemini deliverables.
 
 Queued next priorities
 - Maintain PP-01 through PP-07 as the authoritative modular prompt-pack source line.
 - Regenerate and verify PP-08 whenever the modular prompt-pack source line changes.
 - Keep PP-09 and PP-10 aligned to the current merged Gemini Enterprise parent-plus-seven-sub-agent design target.
-- Keep `knowledge/generated_agent_markdowns/` easy to inspect and package as the current readable generated-output surface.
-- Keep `knowledge/comparative_reference_agent_markdowns/` easy to inspect and package as the current readable comparison surface.
-- Keep `supporting_assets/generated_agent_markdowns.zip`, `supporting_assets/comparative_reference_agent_markdowns.zip`, and `supporting_assets/supporting_knowledge_docs.zip` aligned to the current deliverable line when those readable surfaces change materially.
-- Keep the extracted Gemini email build bundle demoted to legacy reference status unless and until it is rebuilt to the current merged topology.
+- Keep `project_sources/original_alert_triage_gemini_agents/` as the writing-density and field-quality benchmark for future Gemini refreshes.
+- Keep `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` available as structure and naming reference only, not as wording authority.
+- Generate fresh standalone and Gemini deliverables every round instead of shipping stored generated outputs by default.
+- Keep the standalone shipped prompt as a true full assembly from PP-01 through PP-07 rather than a condensed rewrite.
+- Keep the regenerated v2 standalone and Gemini bundle folder shapes as the current preferred operator-facing test bundle layout until later operator feedback changes that preference.
+- Continue bounded live testing of the regenerated v2 Gemini and standalone bundles and refine DOC-04 plus PP-09 when operator feedback proves another repeatable improvement.
 - During work hours, prefer browser-native, no-upload or download required workflows whenever that lane can achieve the same governed result.
 - Keep GitHub Desktop manual grouped repo-update delivery as the default governed write posture.
 - Keep PR and review flows optional and bounded rather than mandatory.

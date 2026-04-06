@@ -1,0 +1,160 @@
+DCOIR Viable Deliverable Generation Contract v1.0.0
+
+Purpose
+- Capture the durable rules that produced the first operator-acceptable v2 standalone prompt bundle and v2 Gemini email build bundle shape.
+- Prevent future drift back into packaging old generated artifacts, under-dense Gemini fields, or standalone prompt rewrites that omit prompt-pack substance.
+- Keep the project aligned to fresh generation, explicit validation gates, and operator-facing bundle shapes that can be tested directly.
+
+Scope
+- This contract governs two deliverable classes:
+  1. the standalone analyst-facing all-in-one prompt bundle
+  2. the Gemini parent-agent plus seven-sub-agent bundle
+- This contract is for deliverable generation and test-facing packaging, not for replacing behavioral authority.
+
+Role hierarchy
+1. Behavioral authority
+- PP-01 through PP-07 remain the design-time behavioral source of truth.
+
+2. Standalone runtime deliverable
+- The shipped standalone prompt must be freshly generated from PP-01 through PP-07 as a true full assembly.
+- PP-08 may exist in GitHub as the regenerated runtime parity artifact, but PP-08 is not the design-time source of truth and is not a license to ship a condensed rewrite.
+
+3. Gemini generation authority
+- PP-09 is the Gemini generation workflow source.
+- PP-10 is the bounded Gemini design artifact.
+- Supporting knowledge docs may shape runtime support material, but they must not substitute for missing field content in the final generated agent files.
+
+4. Gold-standard style and density benchmark
+- `project_sources/original_alert_triage_gemini_agents/` is the approved style, density, routing, and field-writing benchmark.
+- Its Description and Instructions posture is the minimum acceptable baseline for future Gemini refreshes.
+- Future Gemini generations should be at least as explicit, routing-rich, and operationally dense as that benchmark set.
+
+5. Structure and naming reference only
+- `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` is an approved structure and naming reference only.
+- Use its bundle shape, folder model, and naming lessons when they help the operator-facing delivery shape.
+- Do not treat its wording or agent text as current quality authority.
+
+6. Failure-reference surfaces
+- `project_sources/original_collector_artifact_gemini_agents/` is a historical failure reference for what not to ship when the generated fields are too thin.
+- Earlier stored generated markdowns are generated-output working surfaces only. They are not the default shipment surface unless the operator explicitly asks for the stored version.
+
+Fresh-generation rules
+- Generate fresh deliverables every round.
+- Do not default to shipping stored generated markdowns or older repo artifacts as live deliverables.
+- Use stored generated outputs for reference, parity checking, gap analysis, or version history only.
+- Version or retain generated outputs in GitHub only after operator review and acceptance of the current round.
+
+Gemini content-generation rules
+- Generate one parent agent and seven sub-agents every round.
+- Keep the merged topology:
+  1. Prime agent / parent orchestrator
+  2. Session Readiness and Intake
+  3. Environment and Coverage Mapper
+  4. Alert Family Classifier
+  5. Evidence and Provenance Analyst
+  6. Query Planner and Syntax Guard
+  7. DCOIR Collection and Artifact Orchestrator
+  8. Decision and Report Composer
+- Treat Gemini Description as routing-critical and write it to maximize delegation quality.
+- Treat Gemini Instructions as the primary workflow-preservation field and write them as if they must stand alone under operational pressure.
+- Preserve DCOIR evidence discipline, bounded confidence, command-lane separation, one-best-next-step behavior, collector awareness, alert-to-DCOIR escalation, artifact review, IOC enrichment, and final synthesis behavior directly in the generated fields.
+- Avoid asynchronous, hidden-handoff, or background-work language.
+- Runtime outputs must be self-contained and must not depend on dcoir-* helper skills, hidden project memory, hidden workflows, or unattached workspace files.
+
+Standalone prompt-generation rules
+- The standalone prompt must be a true full prompt-pack assembly from PP-01 through PP-07.
+- Do not ship a condensed rewrite that drops material from the modular source line.
+- Attachments may support runtime use, but they must not substitute for omitted prompt-pack substance.
+- The standalone prompt must preserve the full mission:
+  - Elastic alert triage
+  - explicit triage-to-DCOIR escalation
+  - DCOIR collection or targeted enrichment decisioning
+  - collector-output review
+  - authoritative IOC enrichment
+  - retrieved-artifact review
+  - final case synthesis
+
+Preferred operator-facing bundle shapes
+
+Gemini bundle
+- Top-level folder name pattern:
+  - `DCOIR_Gemini_Email_Build_Bundle_<version>/`
+- Preferred subfolders:
+  - `00_START_HERE/`
+  - `01_GEMINI_AGENT_BUILD/`
+  - `02_PRIME_AGENT_ATTACHMENTS/`
+- Preferred `00_START_HERE/` files:
+  - `README_FIRST.md.txt`
+  - `Gemini_Build_Quick_Start.md.txt`
+  - `Agent_Attachment_Map.md.txt`
+- Preferred `01_GEMINI_AGENT_BUILD/` files:
+  - `Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt`
+  - `Sub_Agent_01_Session_Readiness_and_Intake.md.txt`
+  - `Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt`
+  - `Sub_Agent_03_Alert_Family_Classifier.md.txt`
+  - `Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt`
+  - `Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt`
+  - `Sub_Agent_06_DCOIR_Collection_and_Artifact_Orchestrator.md.txt`
+  - `Sub_Agent_07_Decision_and_Report_Composer.md.txt`
+  - `Generated_DCOIR_Gemini_Agent_Index.md.txt`
+- Preferred `02_PRIME_AGENT_ATTACHMENTS/` baseline attachment set:
+  - `Knowledge - 01 - Overview and About.md.txt`
+  - `Knowledge - 02 - Elastic Quick Start.md.txt`
+  - `Knowledge - 03 - Local Test and Regression.md.txt`
+  - `Knowledge - 04 - Tier 1 Collect Runbook.md.txt`
+  - `Knowledge - 05 - Tier 2 Collect Runbook.md.txt`
+  - `Knowledge - 06 - Enrichment Actions.md.txt`
+  - `Knowledge - 07 - Artifact Review Guide.md.txt`
+  - `Knowledge - 08 - Troubleshooting.md.txt`
+  - `Knowledge - 09 - FAQ.md.txt`
+  - `Knowledge - 10 - AI Prompt and Agent Design.md.txt`
+  - `Knowledge - 11 - IOC Enrichment and Public Sources.md.txt`
+
+Standalone prompt bundle
+- Top-level folder name pattern:
+  - `DCOIR_Standalone_Prompt_Build_Bundle_<version>/`
+- Preferred subfolders:
+  - `00_START_HERE/`
+  - `01_STANDALONE_PROMPT/`
+  - `02_PROMPT_ATTACHMENTS/`
+- Preferred `00_START_HERE/` files:
+  - `README_FIRST.md.txt`
+  - `Standalone_Prompt_Quick_Start.md.txt`
+  - `Prompt_Attachment_Map.md.txt`
+- Preferred `01_STANDALONE_PROMPT/` file:
+  - `AFRICOM_SOC_DCOIR_Standalone_Master_Prompt_Full_Assembly.txt`
+- Preferred `02_PROMPT_ATTACHMENTS/` baseline attachment set:
+  - the same Knowledge 01 through Knowledge 11 files listed above unless a later bounded generation round explicitly changes that attachment baseline
+
+Packaging and clarity rules
+- Keep the shipped test-facing bundles minimal and operator-facing.
+- Do not mix control-plane logs, packager reports, helper-workflow notes, collector internals, harness files, or other unrelated repo material into the Gemini or standalone test bundles by default.
+- Keep agent-definition files and attachment files in clearly separate folders.
+- Add `.txt` to mail-sensitive markdown or zip-like payload names when the operator needs the bundle to pass email filters.
+- Do not assume every future round must include ZIP copies of supporting assets inside the same test-facing bundle unless the operator explicitly asks for them.
+
+Hard validation gates
+Reject a Gemini bundle if any of these are true:
+- the parent or any sub-agent is materially thinner or less explicit than the approved alert-triage benchmark set
+- Description is not routing-rich enough to support delegation well
+- Instructions are not operationally explicit enough to preserve workflow, error handling, stop conditions, and output contract
+- the generated fields omit collector awareness, alert-to-DCOIR escalation, IOC enrichment, artifact review, or bounded-confidence behavior expected by the design line
+- extra confusing materials are mixed into the main build folder
+- the output depends on hidden project helpers or hidden memory
+
+Reject a standalone prompt if any of these are true:
+- the all-in-one prompt is a condensed rewrite rather than a true full prompt-pack assembly
+- attachments are being used to replace missing prompt-pack substance
+- the prompt omits alert triage, escalation logic, IOC enrichment, artifact review, or final synthesis behavior that exists in the modular source line
+
+Operator-feedback loop rules
+- Keep iterating until the operator says the deliverables are viable.
+- Do not treat one merely improved bundle as final solely because it is better than prior failures.
+- Once a bundle shape or generation method becomes operator-acceptable, promote the learned rules into governed sources so the same inputs and requirements can produce the same class of output later.
+- Live test feedback should refine this contract before broader helper-skill promotion when needed.
+
+End state
+- The durable success condition is repeatable generation of:
+  1. a fresh standalone all-in-one prompt that truly preserves prompt-pack substance
+  2. a fresh Gemini parent-plus-seven-sub-agent bundle written at the accepted density and packaged in the accepted operator-facing structure
+- Both deliverables must be shippable for operator testing without requiring reconstruction from buried chat history.
