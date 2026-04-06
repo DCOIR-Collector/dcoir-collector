@@ -1,27 +1,21 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-order-fix-v1
 
-1. Keep the stabilized first-wave GitHub automation baseline in place while the main project line stays on deliverables.
+1. Apply the focused scheduled-health-check fix now.
    Why it matters:
-   - The first-wave baseline is now live and proven, so the project can stop churning on the same setup work and simply use it.
+   - The workflow is currently failing on `.pyc` residue that it generates itself during earlier Python syntax validation.
    Next action:
-   - Leave the baseline alone unless a real defect appears, and keep the main project effort on deliverables.
+   - Reorder the workflow so the packaging-residue check runs before Python syntax validation.
 
-2. Preserve the remaining approved platform-adoption items as queued later work rather than forced immediate follow-through.
+2. Re-run scheduled-health-check once after the patch lands.
    Why it matters:
-   - The operator approved those items and wants them remembered durably, but also chose to stop and enjoy the stable baseline first.
+   - That one rerun is enough to prove the remaining first-wave workflow path honestly.
    Next action:
-   - Keep the queue durable in the governed project state and open each later item only as a bounded next branch.
+   - Manually trigger scheduled-health-check on `main` and confirm it passes.
 
-3. When ready, start with a bounded Copilot code review pilot.
+3. If that rerun passes, return to the stable baseline posture.
    Why it matters:
-   - It is the smallest approved next pilot and keeps pull requests optional rather than forcing a new daily workflow.
+   - The rest of the first-wave automation proof set is already good; this is the last focused corrective item.
    Next action:
-   - Use Copilot code review only on review-worthy or higher-risk PRs when the operator explicitly opens that pilot.
-
-4. After that, keep the remaining approved pilot order intact.
-   Why it matters:
-   - The operator approved the broader set and wants the sequence remembered without having to reconstruct it later.
-   Next action:
-   - Follow this order when later work opens: Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners if needed, OIDC if needed, and artifact provenance or attestation or SLSA-style work later.
+   - Keep the main project line on deliverables and preserve the approved later platform-adoption queue unchanged.

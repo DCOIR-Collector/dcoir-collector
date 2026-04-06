@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.59
+DCOIR Version Manifest 3.9.60
 
-Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-order-fix-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -18,6 +18,7 @@ Current control plane
 - First-wave GitHub automation baseline: project_sources/LOG-44_DCOIR_First_Wave_GitHub_Automation_Baseline_2026-04-05.txt
 - GitHub workflow summary hardening: project_sources/LOG-45_DCOIR_GitHub_Workflow_Summary_Hardening_2026-04-05.txt
 - First-wave automation stabilization and follow-on queue: project_sources/LOG-46_DCOIR_First_Wave_GitHub_Automation_Stabilized_And_Follow_On_Queue_2026-04-05.txt
+- Scheduled health-check residue-order fix: project_sources/LOG-47_DCOIR_Scheduled_Health_Check_Residue_Order_Fix_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -45,6 +46,6 @@ Current governed helper-skill source
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 
 Current next work item
-- Keep the stabilized first-wave GitHub automation baseline in service while the main project line stays on deliverables.
-- Queue the remaining approved platform-adoption items in this order: Copilot code review pilot, Copilot cloud agent pilot, GitHub Models pilot, selective OpenAI Codex pilot, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners only if GitHub-hosted runners prove insufficient, OIDC only when cloud authentication is needed, and artifact provenance or attestation or SLSA-style work only after those earlier layers justify it.
-- Maintain package-cleanliness enforcement, parity checks, and representative regression for future maintenance-only helper-skill fixes.
+- Apply the focused scheduled-health-check fix so the residue scan runs before Python syntax validation and no longer trips on workflow-generated `__pycache__` or `.pyc` files.
+- Re-run scheduled-health-check once after the patch lands.
+- If it passes, return to the stable baseline posture: keep the main project line on deliverables and preserve the remaining approved platform-adoption queue in the earlier remembered order.

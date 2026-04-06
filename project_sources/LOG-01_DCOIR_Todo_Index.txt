@@ -1,14 +1,14 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-order-fix-v1
 
 Current priority summary
 1. Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
-2. The first-wave GitHub automation baseline is now stabilized in live use.
-3. The light ruleset protections and Dependabot GitHub Actions flow are now complete.
-4. The main project line should remain on deliverables while the remaining approved platform-adoption items stay queued rather than forced immediately.
-5. The remaining approved items stay ordered as bounded later work: Copilot code review, Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners if needed, OIDC if needed, and artifact provenance or attestation or SLSA-style work later.
+2. Validate-on-push, manual full-validation, FullRegression, light ruleset safety, and Dependabot GitHub Actions flow are already proven.
+3. One focused remaining corrective patch is still required: scheduled-health-check must stop failing on residue it generates itself.
+4. After that fix and one successful rerun, return to the stable baseline posture and keep the main project line on deliverables.
+5. Preserve the later approved platform-adoption items as queued bounded work in the earlier remembered order.
 6. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
 
 Current best next move
-- No immediate platform change is required. Keep the stable baseline in place and start with a bounded Copilot code review pilot only when the operator decides to open the next implementation branch.
+- Apply the scheduled-health-check residue-order fix now, rerun scheduled-health-check once, and only then treat the first-wave automation baseline as fully stabilized again.

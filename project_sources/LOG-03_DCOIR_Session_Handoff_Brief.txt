@@ -1,6 +1,6 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-order-fix-v1
 
 Current governance state
 - Project Instructions remain the first bootstrap anchor.
@@ -9,16 +9,17 @@ Current governance state
 - The coordinated all-skills helper-skill deep-dive and code-hygiene campaign remains complete through the current governed helper-skill inventory.
 - The current standing maintenance posture is grouped GitHub Desktop delivery, package-cleanliness enforcement, parity checks, and future issue-driven helper-skill updates.
 - Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
-- The first-wave GitHub automation baseline, light ruleset safety, and Dependabot GitHub Actions flow are now stabilized in live use.
+- The first-wave GitHub automation baseline remains almost fully stabilized, but one focused corrective patch is still needed for scheduled-health-check.
 
 Current validated status
 - The repaired repo-packager source remains aligned to GitHub Desktop manual repo-update patch-bundle delivery needs.
 - The prompt/intake design family remains aligned to the live GitHub-primary prompt discovery path, explicit escalation contracts, and artifact-type-specific bounded intake guidance.
-- The first-wave automation baseline now has live passing evidence for validate-on-push, manual full-validation, and FullRegression after the summary-step correction.
+- Validate-on-push, manual full-validation, and FullRegression already proved out after the earlier summary-step correction.
 - The light branch ruleset protections are active without forcing a PR-first workflow.
 - Dependabot GitHub Actions update PRs have been proven live and merged successfully, and the earlier Node.js 20 deprecation warning is no longer present after those updates.
+- Live manual execution of scheduled-health-check then exposed one remaining self-conflict: the workflow generates `.pyc` residue during Python syntax validation and later fails its own residue scan.
 
 Current next planned work item
-- Keep the stabilized first-wave baseline in place while the main project line stays on deliverables.
-- Preserve the remaining approved platform-adoption items as queued later work in this order: Copilot code review, Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners only if needed, OIDC only when cloud authentication is required, and artifact provenance or attestation or SLSA-style work later.
-- Keep optional GitHub-native AI and selective OpenAI Codex strictly optional unless and until a bounded pilot is explicitly opened.
+- Apply the focused scheduled-health-check fix so the residue scan runs before Python syntax validation.
+- Re-run scheduled-health-check once after the patch lands.
+- If it passes, return to the stable baseline posture while keeping the main project line on deliverables and the approved platform-adoption items queued for later bounded work.

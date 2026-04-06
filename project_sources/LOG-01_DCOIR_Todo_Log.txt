@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-order-fix-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -12,17 +12,10 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Keep the stabilized first-wave GitHub automation baseline in service while the main project line stays on deliverables and the remaining approved platform-adoption items stay durably queued for bounded later work.
+- Apply the focused scheduled-health-check fix and rerun that workflow once so the first-wave automation baseline is fully proven without a self-generated residue failure.
 
 Queued next priorities
-- Pilot Copilot code review only on review-worthy or higher-risk pull requests.
-- Pilot Copilot cloud agent only for bounded browser-native assistance where it clearly reduces operator burden.
-- Pilot GitHub Models for prompt, comparison, or evaluation work that belongs in the repository.
-- Pilot selective OpenAI Codex use as a broader engineering assistant layer where it reduces operator burden.
-- Consider GitHub Pages later only if a browser dashboard still feels worthwhile after the baseline is stable and the earlier AI pilots are understood.
-- Consider code scanning later only if the repo eligibility, repo visibility, and actual value justify it.
-- Consider self-hosted runners later only if GitHub-hosted runners prove insufficient.
-- Consider OIDC later only when workflows need cloud authentication.
-- Consider artifact provenance or attestation or SLSA-style supply-chain work later only after the earlier layers justify it.
+- If scheduled-health-check passes after the fix, return to the stable baseline posture and keep the main project line on deliverables.
+- After that, preserve the approved later queue in this order: Copilot code review, Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners only if GitHub-hosted runners prove insufficient, OIDC only when workflows need cloud authentication, and artifact provenance or attestation or SLSA-style work only after those earlier layers justify it.
 - Keep package-cleanliness enforcement active so delivered skill zips stay free of runtime residue such as `__pycache__/`, `*.pyc`, and `.DS_Store`.
 - Use parity verification and representative regression before treating future skill patches as ready.
