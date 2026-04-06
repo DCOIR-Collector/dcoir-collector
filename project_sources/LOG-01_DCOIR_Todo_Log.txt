@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-scheduled-health-check-residue-order-fix-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-pattern-fix-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -12,7 +12,7 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Apply the focused scheduled-health-check fix and rerun that workflow once so the first-wave automation baseline is fully proven without a self-generated residue failure.
+- Apply the focused scheduled-health-check residue-pattern fix and rerun that workflow once so the first-wave automation baseline is fully proven without a regex-induced false failure.
 
 Queued next priorities
 - If scheduled-health-check passes after the fix, return to the stable baseline posture and keep the main project line on deliverables.

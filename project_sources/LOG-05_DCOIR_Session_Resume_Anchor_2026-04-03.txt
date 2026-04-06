@@ -1,16 +1,16 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-05-scheduled-health-check-residue-order-fix-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-pattern-fix-v1
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
 - Project Instructions remain the first bootstrap anchor.
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- The authoritative active work queue remains deliverables first plus one focused workflow corrective patch, not a fresh architecture build-out from scratch.
+- The authoritative active work queue remains deliverables first plus one final scheduled-health-check correction before the repeatability baseline can be treated as fully settled again.
 
 What is still open right now
-1. Apply the focused scheduled-health-check fix so the residue scan runs before Python syntax validation.
-2. Re-run scheduled-health-check once after the patch lands.
-3. If that rerun passes, return to the stable baseline posture: keep the main project line on deliverables and preserve the approved later platform-adoption queue.
+1. Apply the scheduled-health-check residue-pattern fix.
+2. Rerun scheduled-health-check once.
+3. If it passes, return to the stable-baseline posture and keep the later approved platform-adoption items queued for bounded future work.
 4. Maintain package-cleanliness enforcement, parity verification, and bounded grouped helper-skill fixes for future maintenance-only work.

@@ -45,8 +45,8 @@ jobs:
         run: |
           $residue = Get-ChildItem -Path . -Recurse -Force -File |
             Where-Object {
-              $_.FullName -match '\__pycache__\' -or
-              $_.Name -match '\.pyc$' -or
+              $_.FullName.Contains('\__pycache__\') -or
+              $_.Extension -eq '.pyc' -or
               $_.Name -eq '.DS_Store'
             }
           if ($residue) {

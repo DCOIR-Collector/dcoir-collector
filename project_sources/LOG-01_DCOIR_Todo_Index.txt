@@ -1,14 +1,14 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-05-scheduled-health-check-residue-order-fix-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-pattern-fix-v1
 
 Current priority summary
 1. Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
 2. Validate-on-push, manual full-validation, FullRegression, light ruleset safety, and Dependabot GitHub Actions flow are already proven.
-3. One focused remaining corrective patch is still required: scheduled-health-check must stop failing on residue it generates itself.
+3. One focused remaining corrective patch is still required: scheduled-health-check must stop failing on an invalid residue-matching expression.
 4. After that fix and one successful rerun, return to the stable baseline posture and keep the main project line on deliverables.
 5. Preserve the later approved platform-adoption items as queued bounded work in the earlier remembered order.
 6. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
 
 Current best next move
-- Apply the scheduled-health-check residue-order fix now, rerun scheduled-health-check once, and only then treat the first-wave automation baseline as fully stabilized again.
+- Apply the scheduled-health-check residue-pattern fix now, rerun scheduled-health-check once, and only then treat the first-wave automation baseline as fully stabilized again.

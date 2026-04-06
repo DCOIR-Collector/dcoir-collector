@@ -1,21 +1,21 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-scheduled-health-check-residue-order-fix-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-pattern-fix-v1
 
-1. Apply the focused scheduled-health-check fix now.
+1. Apply the focused scheduled-health-check residue-pattern fix now.
    Why it matters:
-   - The workflow is currently failing on `.pyc` residue that it generates itself during earlier Python syntax validation.
+   - The workflow is currently failing on an invalid regex pattern rather than on real residue or on the DCOIR harness.
    Next action:
-   - Reorder the workflow so the packaging-residue check runs before Python syntax validation.
+   - Replace the regex-based residue matcher with safe path and extension checks.
 
-2. Re-run scheduled-health-check once after the patch lands.
+2. Rerun scheduled-health-check once after the fix lands.
    Why it matters:
-   - That one rerun is enough to prove the remaining first-wave workflow path honestly.
+   - That one rerun is needed to prove the full first-wave baseline end to end.
    Next action:
-   - Manually trigger scheduled-health-check on `main` and confirm it passes.
+   - Trigger scheduled-health-check manually on main and confirm it passes.
 
-3. If that rerun passes, return to the stable baseline posture.
+3. If it passes, return to the stable-baseline posture.
    Why it matters:
-   - The rest of the first-wave automation proof set is already good; this is the last focused corrective item.
+   - The project can then stop churning on the automation baseline and keep the main line on deliverables.
    Next action:
-   - Keep the main project line on deliverables and preserve the approved later platform-adoption queue unchanged.
+   - Leave the baseline alone unless a real defect appears, and preserve the later approved platform-adoption queue for bounded future work.
