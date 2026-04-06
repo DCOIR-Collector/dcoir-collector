@@ -1,6 +1,6 @@
 DCOIR Active Now
 
-Current state id: 2026-04-06-deliverables-first-structure-recentering-v1
+Current state id: 2026-04-06-standalone-prompt-full-mission-refresh-v1
 
 1. Keep the real project deliverables explicit.
    Why it matters:

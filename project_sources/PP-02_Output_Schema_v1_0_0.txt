@@ -4,6 +4,7 @@ Purpose
 - This file defines the preferred analyst-facing output schema for the DCOIR_Collector 3.1.4 prompt pack.
 - It is the canonical output contract for the validated modular prompt-pack line.
 - It is designed for the current DCOIR workflow:
+  - alert triage
   - baseline triage
   - enrichment review
   - retrieved artifact review
@@ -53,7 +54,7 @@ Use this top-level structure for every substantial response.
 {
   "schema_name": "DCOIR_Collector_3_1_4_Output_Schema",
   "schema_version": "1.0.0",
-  "workflow_mode": "baseline_triage | enrichment_review | retrieved_artifact_review | final_case_synthesis",
+  "workflow_mode": "alert_triage | baseline_triage | enrichment_review | retrieved_artifact_review | final_case_synthesis",
   "response_type": "substantial_analysis | quick_followup | final_case_summary",
   "case_scope_status": {
     "review_scope": "full_case_package | partial_artifact_batch | single_artifact | analyst_observation_only",
@@ -86,15 +87,49 @@ Use this top-level structure for every substantial response.
   "recommended_next_step": {
     "summary": "string",
     "goal": "string",
-    "action_type": "review_existing_artifact | request_artifact | enrichment_action | containment_action | hunting_action | close_case | monitor_only",
+    "action_type": "review_existing_artifact | request_artifact | enrichment_action | dcoir_collection | dcoir_targeted_enrichment | ioc_enrichment | containment_action | hunting_action | close_case | monitor_only",
     "execution_context": "elastic_endpoint | analyst_workstation | none",
     "why_this_next": "string"
   }
 }
 
 Mode-specific required fields
-A. Baseline triage mode
+A. Alert triage mode
+Use when reviewing an Elastic alert, alert summary, or other first-pass telemetry before DCOIR collection is already in scope.
+
+{
+  "alert_triage": {
+    "alert_summary": "string",
+    "alert_or_signal_family": "string",
+    "telemetry_scope_and_gaps": {
+      "evidence_present": ["string"],
+      "missing_host_evidence": ["string"],
+      "scope_limiters": ["string"]
+    },
+    "ioc_candidates": [
+      {
+        "indicator": "string",
+        "indicator_type": "domain | ip | url | hash | file_path | signer | service | task | user | other",
+        "why_it_matters": "string",
+        "external_context_priority": "authoritative_first | corroboration_only | no_lookup_needed_yet"
+      }
+    ],
+    "triage_decision": "alert_only_triage | dcoir_collection | dcoir_targeted_enrichment | request_artifact | monitor_only",
+    "decision_basis": ["string"],
+    "next_expected_evidence": ["string"]
+  }
+}
+
+Alert triage response order
+1. current_assessment
+2. key_evidence
+3. confidence_and_uncertainty
+4. recommended_next_step
+5. alert_triage
+
+B. Baseline triage mode
 Use when reviewing the merged baseline report, metadata report, or flat final_artifacts baseline outputs.
+
 
 {
   "baseline_triage": {
@@ -136,7 +171,7 @@ Baseline triage response order
 4. recommended_next_step
 5. baseline_triage.top_findings_ranked
 
-B. Enrichment review mode
+C. Enrichment review mode
 Use when reviewing targeted enrichment output generated after a baseline lead.
 
 {
@@ -161,7 +196,7 @@ Enrichment review response order
 4. recommended_next_step
 5. enrichment_review
 
-C. Retrieved artifact review mode
+D. Retrieved artifact review mode
 Use when reviewing a script, config, XML file, exported event data, raw text artifact, or similar staged artifact.
 
 {
@@ -195,7 +230,7 @@ Mapping note
 - key_indicators maps to retrieved_artifact_review.key_indicators and suspicious_logic_or_behavior
 - analyst_follow_up maps to recommended_next_step and follow_up_leads
 
-D. Final case synthesis mode
+E. Final case synthesis mode
 Use when the analyst has provided enough reviewed artifacts to summarize the case.
 
 {
@@ -235,7 +270,7 @@ Short-form response schema
 Use this when the analyst asks a narrow follow-up and a full envelope would be excessive.
 
 {
-  "workflow_mode": "baseline_triage | enrichment_review | retrieved_artifact_review | final_case_synthesis",
+  "workflow_mode": "alert_triage | baseline_triage | enrichment_review | retrieved_artifact_review | final_case_synthesis",
   "current_assessment": "string",
   "key_evidence": ["string"],
   "confidence_and_uncertainty": "string",

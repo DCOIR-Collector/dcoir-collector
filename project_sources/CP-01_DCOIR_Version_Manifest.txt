@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.65
+DCOIR Version Manifest 3.9.66
 
-Current state id: 2026-04-06-deliverables-first-structure-recentering-v1
+Current state id: 2026-04-06-standalone-prompt-full-mission-refresh-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -23,6 +23,7 @@ Current control plane
 - First-wave automation fully re-stabilized after cleanup: project_sources/LOG-49_DCOIR_First_Wave_GitHub_Automation_Fully_Restabilized_2026-04-05.txt
 - Work-safe browser-first and manual write posture alignment: project_sources/LOG-50_DCOIR_Work_Safe_Browser_First_And_Manual_Write_Posture_Alignment_2026-04-06.txt
 - Deliverables-first structure re-centering and Gemini bundle drift alignment: project_sources/LOG-51_DCOIR_Deliverables_First_Structure_Recentering_And_Gemini_Bundle_Drift_Alignment_2026-04-06.txt
+- Standalone prompt full-mission refresh and PP-08 regeneration: project_sources/LOG-52_DCOIR_Standalone_Prompt_Full_Mission_Refresh_And_PP08_Regeneration_2026-04-06.txt
 
 Current repo guide
 - Root README: README.md
@@ -50,9 +51,9 @@ Current governed helper-skill source
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 
 Current next work item
-- Keep the fully re-stabilized first-wave GitHub automation baseline in service, but treat it as support for the real deliverables rather than the primary project story.
-- Maintain and validate PP-01 through PP-07 as the authoritative modular prompt-pack source line, regenerate PP-08 when that source line changes, and keep the standalone analyst-facing master prompt aligned to the modular authority.
-- Keep PP-09 and PP-10 aligned to the current merged Gemini Enterprise design target so the parent-plus-seven-sub-agent line remains the current operator-facing design authority for Elastic alert triage, DCOIR collector-output triage, IOC enrichment, artifact review, and final synthesis.
-- Keep the generated and comparative Gemini markdown surfaces easy to navigate, properly packaged in supporting_assets/, and clearly separated into authoritative, working-output, and legacy-reference roles.
+- Use the refreshed PP-01 through PP-07 modular prompt-pack line as the authoritative standalone analyst-assistant source for Elastic alert triage, explicit triage-to-DCOIR escalation, collector-output review, authoritative IOC enrichment, retrieved-artifact review, and final synthesis.
+- Keep PP-08 regenerated from the modular authority whenever PP-01 through PP-07 change, and treat PP-08 only as the runtime parity output rather than the design-time source of truth.
+- Keep PP-09 and PP-10 aligned to the refreshed modular behavioral line; the current bounded spot-check indicates that the merged Gemini parent-plus-seven-sub-agent topology already matches the refreshed alert-triage-to-DCOIR mission closely enough that no immediate structural Gemini rewrite is required.
+- Refresh generated Gemini markdowns and retained generated/comparative ZIP assets only when a later bounded Gemini content pass materially changes the approved design line or the operator-facing generated wording.
 - Keep the legacy Gemini email build bundle demoted to extracted reference status until it is fully rebuilt to the current merged topology instead of letting it act like the current build authority.
 - Maintain package-cleanliness enforcement, parity checks, and representative regression for future maintenance-only helper-skill fixes.

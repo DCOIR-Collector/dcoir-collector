@@ -1,6 +1,6 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-06-deliverables-first-structure-recentering-v1
+Current state id: 2026-04-06-standalone-prompt-full-mission-refresh-v1
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
