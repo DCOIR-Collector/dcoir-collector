@@ -1,0 +1,25 @@
+DCOIR Scheduled Health-Check Residue Cleanup And Ignore Baseline - 2026-04-05
+
+Current state id: 2026-04-05-scheduled-health-check-residue-cleanup-v1
+
+Purpose
+- Record that the latest `scheduled-health-check` failure now reflects a real committed residue file in the repository rather than another workflow-code bug.
+- Record the corrective follow-through: remove the committed residue file or files, add root ignore guards, rerun `scheduled-health-check` once, and then return to the stable baseline posture.
+
+What happened
+- The earlier workflow defects in `scheduled-health-check` were corrected in two waves: residue-step ordering and residue-pattern matching.
+- The next live rerun then failed because the residue check found a real committed `.pyc` file in the repository.
+- The confirmed residue file surfaced by the live run was `dcoir_skills/dcoir-change-impact-analyzer/scripts/__pycache__/analyze_change_impact.cpython-313.pyc`.
+
+Corrective action
+- Remove the committed residue file or files from the repository.
+- Add a root `.gitignore` with residue guards for `__pycache__/`, `*.pyc`, and `.DS_Store`.
+- Rerun `scheduled-health-check` once after the cleanup commit lands.
+
+Why it matters
+- The workflow is now doing its job: it is no longer failing on false-positive workflow bugs and is correctly flagging real repo cleanliness drift.
+- The root `.gitignore` reduces the chance of recommitting the same residue class later.
+- Recording this as a governed follow-through step keeps the project state honest and prevents future sessions from misclassifying the issue.
+
+Best next move
+- Apply the cleanup patch, manually delete the confirmed residue file or files in the repo working tree, commit both together, rerun `scheduled-health-check` once, and if it passes return to the stable baseline posture.

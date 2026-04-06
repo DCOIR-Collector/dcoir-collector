@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-05-scheduled-health-check-residue-pattern-fix-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-cleanup-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -12,10 +12,10 @@ Current stable pointers
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 
 Current active priority
-- Apply the focused scheduled-health-check residue-pattern fix and rerun that workflow once so the first-wave automation baseline is fully proven without a regex-induced false failure.
+- Remove the confirmed committed residue file or files, keep the new root `.gitignore` residue guards, and rerun `scheduled-health-check` once so the baseline is fully proven again.
 
 Queued next priorities
-- If scheduled-health-check passes after the fix, return to the stable baseline posture and keep the main project line on deliverables.
+- If scheduled-health-check passes after residue cleanup, return to the stable baseline posture and keep the main project line on deliverables.
 - After that, preserve the approved later queue in this order: Copilot code review, Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners only if GitHub-hosted runners prove insufficient, OIDC only when workflows need cloud authentication, and artifact provenance or attestation or SLSA-style work only after those earlier layers justify it.
 - Keep package-cleanliness enforcement active so delivered skill zips stay free of runtime residue such as `__pycache__/`, `*.pyc`, and `.DS_Store`.
 - Use parity verification and representative regression before treating future skill patches as ready.

@@ -1,26 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.62
+Current state id: 2026-04-05-scheduled-health-check-residue-cleanup-v1
+Change class: scheduled-health-check residue cleanup and repo ignore-baseline follow-through
+
+What changed
+- Added a root `.gitignore` with residue guards for `__pycache__/`, `*.pyc`, and `.DS_Store` so future generated packaging residue does not get re-committed easily.
+- Added `project_sources/LOG-48_DCOIR_Scheduled_Health_Check_Residue_Cleanup_And_Ignore_Baseline_2026-04-05.txt` as the governed record for the live scheduled-health-check failure that exposed a real committed `.pyc` file in the repository.
+- Updated the manifest and active continuity surfaces so the project now records the correct next step: remove the committed residue file or files, keep the ignore rules in place, rerun `scheduled-health-check` once, and only then return to the stable-baseline posture.
+
+Why
+- Live workflow evidence now shows `scheduled-health-check` is no longer failing on workflow logic. It is correctly detecting a real committed `.pyc` file in the repository.
+- A residue-cleanliness workflow only adds value if the repository also carries matching ignore rules.
+- Recording the cleanup and ignore-baseline step prevents future sessions from treating this as another workflow-code bug when it is now a real repository-cleanliness issue.
+
+Validation notes
+- The corrected workflow no longer fails on the invalid residue regex pattern.
+- The latest live run fails in `Check for packaging residue` because it finds a real committed `.pyc` file under `dcoir_skills/dcoir-change-impact-analyzer/scripts/__pycache__/analyze_change_impact.cpython-313.pyc`.
+- This patch does not claim the baseline is fully re-stabilized yet; one rerun after residue cleanup is still required.
+
+[PRIOR]
 Version: 3.9.61
 Current state id: 2026-04-05-scheduled-health-check-residue-pattern-fix-v1
 Change class: scheduled-health-check residue-pattern correction and final first-wave prove-out follow-through
-
-What changed
-- Fixed `.github/workflows/scheduled-health-check.yml` so the packaging-residue check uses safe non-regex path and extension checks instead of the invalid PowerShell regex pattern that caused the live workflow to fail before real validation work began.
-- Added `project_sources/LOG-47_DCOIR_Scheduled_Health_Check_Residue_Pattern_Fix_2026-04-05.txt` as the governed record for the detected failure, the root cause, and the corrective patch.
-- Updated the manifest and active continuity surfaces so the repo now honestly records that one final scheduled-health-check prove-out run is still required before treating the baseline as fully stabilized again.
-
-Why
-- The first scheduled-health-check correction moved the residue step ahead of Python syntax validation, but the residue matcher itself still used an invalid regex string.
-- Live workflow evidence showed the run was now failing on an invalid pattern error, not on actual packaging residue.
-- Correcting the matcher preserves the hygiene goal without creating a false failure before the representative retrieval suite can run.
-
-Validation notes
-- The live workflow run failed in `Check for packaging residue` with an invalid pattern error for the `__pycache__` matcher.
-- The summary panel also showed no harness summary or artifacts, which is consistent with the workflow failing before the retrieval suite ran.
-- This patch only corrects the residue matcher and does not widen the workflow scope.
-
-[PRIOR]
-Version: 3.9.59
-Current state id: 2026-04-05-first-wave-github-automation-stabilized-and-follow-on-queue-v1
-Change class: first-wave GitHub automation stabilization and approved follow-on implementation queue capture

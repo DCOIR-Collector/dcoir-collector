@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.61
+DCOIR Version Manifest 3.9.62
 
-Current state id: 2026-04-05-scheduled-health-check-residue-pattern-fix-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-cleanup-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -19,6 +19,7 @@ Current control plane
 - GitHub workflow summary hardening: project_sources/LOG-45_DCOIR_GitHub_Workflow_Summary_Hardening_2026-04-05.txt
 - First-wave automation stabilization and follow-on queue: project_sources/LOG-46_DCOIR_First_Wave_GitHub_Automation_Stabilized_And_Follow_On_Queue_2026-04-05.txt
 - Scheduled health-check residue-pattern fix: project_sources/LOG-47_DCOIR_Scheduled_Health_Check_Residue_Pattern_Fix_2026-04-05.txt
+- Scheduled health-check residue cleanup and ignore baseline: project_sources/LOG-48_DCOIR_Scheduled_Health_Check_Residue_Cleanup_And_Ignore_Baseline_2026-04-05.txt
 
 Current repo guide
 - Root README: README.md
@@ -46,7 +47,7 @@ Current governed helper-skill source
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 
 Current next work item
-- Apply the scheduled-health-check residue-pattern fix and rerun that workflow once.
-- If the rerun passes, return to the stable baseline posture and keep the main project line on deliverables.
+- Remove the confirmed committed residue file or files from the repo, apply the root `.gitignore` residue guards, and rerun `scheduled-health-check` once.
+- If that rerun passes, return to the stable baseline posture and keep the main project line on deliverables.
 - Preserve the later approved platform-adoption items in the remembered order as bounded future work.
 - Maintain package-cleanliness enforcement, parity checks, and representative regression for future maintenance-only helper-skill fixes.

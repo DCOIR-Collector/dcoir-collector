@@ -1,21 +1,21 @@
 DCOIR Active Now
 
-Current state id: 2026-04-05-scheduled-health-check-residue-pattern-fix-v1
+Current state id: 2026-04-05-scheduled-health-check-residue-cleanup-v1
 
-1. Apply the focused scheduled-health-check residue-pattern fix now.
+1. Remove the confirmed committed residue file or files and keep the new root `.gitignore` residue guards.
    Why it matters:
-   - The workflow is currently failing on an invalid regex pattern rather than on real residue or on the DCOIR harness.
+   - The latest `scheduled-health-check` run is now correctly flagging a real committed `.pyc` file in the repo instead of tripping on workflow logic.
    Next action:
-   - Replace the regex-based residue matcher with safe path and extension checks.
+   - Delete the committed residue file or files, keep the root `.gitignore` in place, and commit both changes together.
 
-2. Rerun scheduled-health-check once after the fix lands.
+2. Rerun `scheduled-health-check` once after the cleanup commit lands.
    Why it matters:
-   - That one rerun is needed to prove the full first-wave baseline end to end.
+   - That one rerun is the remaining proof point before the first-wave automation baseline can honestly be treated as fully stabilized again.
    Next action:
-   - Trigger scheduled-health-check manually on main and confirm it passes.
+   - Trigger `scheduled-health-check` manually on `main` and confirm it passes.
 
-3. If it passes, return to the stable-baseline posture.
+3. After that, return to the stable baseline posture and keep the main project line on deliverables.
    Why it matters:
-   - The project can then stop churning on the automation baseline and keep the main line on deliverables.
+   - The operator wanted to stop and enjoy the stable baseline first, with the later platform-adoption queue preserved for bounded future work.
    Next action:
-   - Leave the baseline alone unless a real defect appears, and preserve the later approved platform-adoption queue for bounded future work.
+   - Resume the stable-baseline posture only after the post-cleanup scheduled-health-check rerun passes.
