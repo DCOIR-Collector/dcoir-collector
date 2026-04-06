@@ -11,8 +11,9 @@ How to use this folder
 
 Current status
 - This folder is part of the current governed repo working line and is explicitly named in the current manifest as an extracted readable knowledge folder.
-- The folder is valuable as supporting comparison material, but it still benefits from stronger local navigation and curated downstream references.
+- The folder is valuable as supporting comparison material, but it now has a matching retained portable package in `supporting_assets/comparative_reference_agent_markdowns.zip`.
 
 Structural note
 - This README provides the stable index-plus-child-file entrypoint required by the structural refactor standard.
 - Current project authority still begins with Project Instructions, CP-01, and CP-02.
+- Comparative references remain style and structure aids; they do not override the DCOIR behavioral authority line.

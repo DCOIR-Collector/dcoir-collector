@@ -1,26 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.65
+Current state id: 2026-04-06-deliverables-first-structure-recentering-v1
+Change class: deliverables-first structure re-centering and Gemini bundle drift alignment
+
+What changed
+- Added `project_sources/LOG-51_DCOIR_Deliverables_First_Structure_Recentering_And_Gemini_Bundle_Drift_Alignment_2026-04-06.txt` as the governed record for the deliverables re-centering pass.
+- Updated the manifest and active continuity surfaces so the current agenda now names the actual deliverables explicitly: the modular prompt-pack line, the combined analyst-facing master prompt, the PP-09 and PP-10 Gemini design line, and the generated and comparative Gemini markdown surfaces.
+- Updated the repo guide surfaces to make the deliverable authority chain easier to follow and to mark the old `DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` folder as extracted legacy reference rather than the current operator-facing Gemini build authority.
+- Added `supporting_assets/generated_agent_markdowns.zip` and `supporting_assets/comparative_reference_agent_markdowns.zip` so the current Gemini deliverable line now has the expected retained supporting asset packages.
+
+Why
+- The repo mission and prompt-pack sources already remained deliverable-centered, but the active continuity surfaces had drifted into an operational-posture-first emphasis that understated the actual project end-state.
+- The extracted Gemini email build bundle still described an older one-prime-plus-four-sub-agent topology, which could send the operator down a stale build path if left insufficiently marked.
+- Closing the packaging gap for the generated and comparative markdown assets makes the current Gemini design line easier to move, inspect, and reuse without hidden folder assumptions.
+
+Validation notes
+- The root README, project_sources README, supporting_assets README, generated-agent-markdowns README, and comparative-reference README now state the deliverable authority chain and folder roles more plainly.
+- The extracted Gemini email build bundle README and quick-start file now explicitly identify the bundle as legacy extracted reference material rather than current operator build authority.
+- The continuity surfaces now state the deliverables-first agenda in concrete terms instead of only saying deliverables in the abstract.
+- The retained supporting asset inventory now includes the generated and comparative Gemini markdown ZIPs in addition to `supporting_knowledge_docs.zip`.
+
+[PRIOR]
 Version: 3.9.64
 Current state id: 2026-04-06-work-safe-browser-first-and-manual-write-posture-alignment-v1
 Change class: transcript-derived work-safe browser-first and manual write posture alignment
-
-What changed
-- Added `project_sources/LOG-50_DCOIR_Work_Safe_Browser_First_And_Manual_Write_Posture_Alignment_2026-04-06.txt` as the governed record for the full-pass transcript review result.
-- Updated the manifest and active continuity surfaces so the current agenda now states the work-safe browser-first operating constraint explicitly.
-- Recorded that GitHub Desktop manual grouped repo-update delivery remains the default governed write posture while PR and review flows stay optional and bounded.
-
-Why
-- The unstable prior session already contained the practical operating constraint, but the current governed agenda did not preserve it plainly enough.
-- Without this alignment pass, later platform or tooling choices could drift toward workflows that assume uploads, downloads, or PR-first operation during work hours.
-- Promoting the clarified posture into the control plane keeps future resume cycles aligned with the operator's real environment and preferred governed write lane.
-
-Validation notes
-- A full transcript pass was used to confirm there was no missed urgent blocker or missed top-priority agenda item.
-- The review instead identified one durable operating constraint worth promotion: prefer browser-native, no-upload or download required workflows during work hours whenever they can achieve the same governed result.
-- The review also confirmed that GitHub Desktop manual grouped repo-update delivery should remain the default governed write posture, with PR and review flows optional and bounded rather than mandatory.
-
-[PRIOR]
-Version: 3.9.63
-Current state id: 2026-04-05-first-wave-github-automation-fully-restabilized-v1
-Change class: first-wave GitHub automation fully re-stabilized after residue cleanup and passing scheduled-health-check rerun

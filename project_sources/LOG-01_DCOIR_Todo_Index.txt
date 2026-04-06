@@ -1,16 +1,16 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-06-work-safe-browser-first-and-manual-write-posture-alignment-v1
+Current state id: 2026-04-06-deliverables-first-structure-recentering-v1
 
 Current priority summary
 1. Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
 2. The first-wave GitHub automation baseline remains fully re-stabilized in live use.
-3. The work-safe browser-first operating constraint is now explicit in governed state: during work hours prefer browser-native, no-upload or download required workflows whenever that lane can achieve the same governed result.
+3. The work-safe browser-first operating constraint remains explicit in governed state: during work hours prefer browser-native, no-upload or download required workflows whenever that lane can achieve the same governed result.
 4. GitHub Desktop manual grouped repo-update delivery remains the default governed write posture, and PR or review flows remain optional and bounded rather than mandatory.
-5. Validate-on-push, manual full-validation, FullRegression, scheduled-health-check, light ruleset safety, and Dependabot GitHub Actions flow are all proven.
-6. The main project line should remain on deliverables while the remaining approved platform-adoption items stay queued rather than forced immediately.
-7. The remaining approved items stay ordered as bounded later work: Copilot code review, Copilot cloud agent, GitHub Models, selective OpenAI Codex, then later conditional GitHub Pages, code scanning if eligible and worthwhile, self-hosted runners if needed, OIDC if needed, and artifact provenance or attestation or SLSA-style work later.
+5. The current active deliverables are now stated explicitly: PP-01 through PP-07, PP-08, PP-09, PP-10, generated agent markdowns, comparative reference markdowns, and their retained supporting asset packages.
+6. The extracted Gemini email build bundle is now treated as legacy extracted reference rather than current operator build authority until it is rebuilt to the merged parent-plus-seven-sub-agent topology.
+7. Validate-on-push, manual full-validation, FullRegression, scheduled-health-check, light ruleset safety, and Dependabot GitHub Actions flow are all proven.
 8. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
 
 Current best next move
-- No immediate platform change is required. Keep the stable baseline in place, keep the browser-first work-safe posture explicit, and start with a bounded Copilot code review pilot only when the operator decides to open the next implementation branch.
+- No immediate platform change is required. Keep the stable baseline in place, keep the browser-first work-safe posture explicit, and use GitHub Desktop manual grouped repo updates to maintain the current prompt-pack and Gemini deliverable line.

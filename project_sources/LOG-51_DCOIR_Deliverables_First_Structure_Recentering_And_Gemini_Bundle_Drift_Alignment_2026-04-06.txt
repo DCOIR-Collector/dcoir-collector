@@ -1,0 +1,31 @@
+DCOIR Deliverables-First Structure Re-Centering And Gemini Bundle Drift Alignment - 2026-04-06
+
+Current state id: 2026-04-06-deliverables-first-structure-recentering-v1
+
+Purpose
+- Re-center the governed project narrative on the actual deliverables rather than leaving the continuity layer focused mainly on operational posture.
+- Remove current-vs-legacy ambiguity around the Gemini operator build materials.
+- Close the supporting-asset packaging gap for the current generated and comparative Gemini markdown lines.
+
+What was changed
+- The control plane and continuity surfaces now name the real deliverables explicitly: PP-01 through PP-07, PP-08, PP-09, PP-10, the generated Gemini markdown set, the comparative reference markdown set, and their retained supporting asset ZIPs.
+- Root and folder README surfaces were refreshed so the deliverable authority chain is easier to follow.
+- The extracted `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` folder is now clearly marked as extracted legacy reference rather than current operator build authority.
+- The legacy quick-start file in that bundle now tells the operator to use the current PP-09, PP-10, and generated-markdown surfaces instead of following the stale one-prime-plus-four-sub-agent path.
+- `supporting_assets/generated_agent_markdowns.zip` and `supporting_assets/comparative_reference_agent_markdowns.zip` were added so the current Gemini design line now has portable retained asset forms alongside `supporting_knowledge_docs.zip`.
+
+Why it matters
+- The root README and the prompt-pack sources already made the project mission clear, but the active continuity surfaces had drifted toward a baseline-and-operations emphasis that understated the actual end-state.
+- The extracted Gemini email build bundle still described an older topology and could misroute later build work if left insufficiently marked.
+- Retained ZIP assets for the current generated and comparative Gemini markdown sets reduce ambiguity and make the current design line easier to ship, inspect, and reuse.
+
+What this does not change
+- The first-wave GitHub automation baseline remains in stable service.
+- The work-safe browser-first operating constraint remains in force.
+- GitHub Desktop manual grouped repo-update delivery remains the default governed write posture.
+- A future full content refresh of the old Gemini email build bundle is still optional bounded work; this pass removes the structural ambiguity now rather than rewriting the old bundle contents into the current topology.
+
+Best next move
+- Keep the active work on the authoritative prompt-pack and Gemini design line.
+- Treat the legacy Gemini email build bundle only as readable historical reference until a later bounded refresh chooses to rebuild it fully.
+- When the authoritative prompt-pack or Gemini design line changes materially, refresh the retained supporting ZIP assets in the same bounded update wave.

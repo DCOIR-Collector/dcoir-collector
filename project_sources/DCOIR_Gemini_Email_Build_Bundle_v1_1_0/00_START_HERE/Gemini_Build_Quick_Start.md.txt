@@ -1,30 +1,26 @@
 # Gemini Build Quick Start
 
-## Goal
-Build one prime Gemini agent plus four sub-agents for the DCOIR workflow, then attach the full Knowledge doc set to the prime agent so it can answer operator questions about the collector, harness, workflow, enrichment, artifact review, troubleshooting, FAQ topics, and the current Gemini/DCOIR operating model.
+## Legacy status
+This quick-start file is retained for historical reference only.
 
-## Build order
-1. Create the prime agent from `01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt`.
-2. Create the four sub-agents from the remaining files in `01_GEMINI_AGENT_BUILD/`.
-3. Attach every file in `02_PRIME_AGENT_ATTACHMENTS/` to the prime agent.
-4. Do not attach `90_OPTIONAL_TECHNICAL_REFERENCE/` by default.
-5. Use `03_OPERATOR_RUNTIME_NOTES/` and `04_COLLECTOR_ZIP_REBUILD/` for operator support.
+Do not use this file as the current operator-facing Gemini build path.
+The older one-prime-plus-four-sub-agent instructions below no longer match the current approved merged DCOIR Gemini topology.
 
-## Prime agent attachment rule
-Attach the full Knowledge doc set to the prime agent. The Knowledge docs are the intended reference corpus when the operator asks the agent a question that is covered by those documents.
+## Current operator-facing build authority
+Use these current surfaces instead:
+1. `project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt`
+2. `project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt`
+3. `knowledge/generated_agent_markdowns/README.md` and the current child markdowns in that folder
+4. `knowledge/comparative_reference_agent_markdowns/README.md` for comparison-only reference material
+5. `supporting_assets/generated_agent_markdowns.zip`
+6. `supporting_assets/comparative_reference_agent_markdowns.zip`
+7. `supporting_assets/supporting_knowledge_docs.zip`
 
-## What the agent should be able to help with
-- baseline triage routing and review
-- enrichment review routing and review
-- retrieved artifact review routing and review
-- final case synthesis routing and review
-- collector and harness usage questions
-- Tier 1 and Tier 2 collection questions
-- troubleshooting and FAQ questions
-- questions about current Gemini/DCOIR agent behavior and boundaries
+## Current topology target
+Build the merged DCOIR Gemini design as:
+- 1 parent orchestrator
+- 7 sub-agents
+- explicit Elastic alert triage plus DCOIR collection, enrichment, artifact review, and final synthesis support
 
-## Runtime-file note
-The collector and harness script bodies are intentionally not included in this bundle. Use the note files in `03_OPERATOR_RUNTIME_NOTES/` for target runtime names, intended usage, and reconstruction reminders.
-
-## Optional material
-Anything in `90_OPTIONAL_TECHNICAL_REFERENCE/` is supporting technical context only. It is not needed for first-time setup.
+## Historical note
+The older content in this extracted bundle remains useful for comparison and migration review, but it should not be followed as the current build recipe unless a future bounded refresh explicitly rebuilds the entire bundle to the current approved topology.

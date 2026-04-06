@@ -39,11 +39,38 @@ This repository is the GitHub-primary working source for the broader DCOIR frame
 - `project_sources/collector_parts/*.ps1` as the governed readable collector source set
 - `project_sources/run_DCOIR_Tests.ps1` as the regression and validation harness
 
-### 2. Analyst-facing DCOIR master prompt
+### 2. Analyst-facing DCOIR standalone master prompt
 A combined analyst-facing prompt built from the governed modular prompt-pack that an analyst can paste into an LLM chat to perform disciplined baseline triage, enrichment review, retrieved-artifact review, and final case synthesis for DCOIR collector artifacts.
 
-### 3. Gemini triage and DCOIR agent system
+Current authority chain:
+- `project_sources/PP-01_System_Prompt_v1_0_1.txt`
+- `project_sources/PP-02_Output_Schema_v1_0_0.txt`
+- `project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt`
+- `project_sources/PP-04_Enrichment_Review_Prompt_v0_1_1.txt`
+- `project_sources/PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt`
+- `project_sources/PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt`
+- `project_sources/PP-07_Agent_Guardrails_v1_0_0.txt`
+- `project_sources/PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt` as the current runtime parity output
+
+### 3. Gemini Enterprise triage and DCOIR agent system
 A fully developed Gemini parent-agent and sub-agent system that merges Elastic alert triage with DCOIR escalation, collection, enrichment, artifact review, and synthesis while preserving evidence-first DFIR discipline, bounded confidence, and exact command-lane separation.
+
+Current authority chain:
+- `project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt`
+- `project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt`
+- `knowledge/generated_agent_markdowns/`
+- `knowledge/comparative_reference_agent_markdowns/`
+- `supporting_assets/generated_agent_markdowns.zip`
+- `supporting_assets/comparative_reference_agent_markdowns.zip`
+- `supporting_assets/supporting_knowledge_docs.zip`
+
+Current topology target:
+- 1 parent orchestrator
+- 7 sub-agents
+- merged Elastic alert triage plus DCOIR collection, enrichment, artifact review, and final synthesis
+
+Legacy note:
+- `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` is retained as extracted legacy reference material, not as the current operator-facing Gemini build authority.
 
 ### 4. Project control plane and continuity layer
 The governed manifest, change log, workflow/layout guidance, todo and handoff structure, and task-memory bank that keep the project resumable, auditable, and maintainable across sessions.
@@ -57,7 +84,7 @@ The `dcoir-*` helper skills under `dcoir_skills/` that support routing, validati
 ## Repository Navigation
 
 - [project_sources](project_sources/) — control plane, logs, prompt-pack sources, collector sources, and extracted readable project-source folders
-- [knowledge](knowledge/) — knowledge docs, routing notes, connector reference material, and task memory
+- [knowledge](knowledge/) — knowledge docs, routing notes, connector reference material, generated/comparative Gemini markdowns, and task memory
 - [dcoir_skills](dcoir_skills/) — governed helper-skill source root for current DCOIR skills
 - [project_settings](project_settings/) — bootstrap and settings surfaces used for Project-space anchoring
 - [release_notes](release_notes/) — release instructions and bounded handoff notes when a bundle needs them
@@ -69,5 +96,6 @@ The documentation goal is to make the repository understandable without hidden c
 - stronger local-guide README surfaces at the repo root and major folders
 - a fuller wiki-style knowledge structure in `knowledge/`
 - maintained helper-skill routing guidance
-- clearer documentation of the master prompt, Gemini design line, DFIR operating posture, and enrichment model
+- clearer documentation of the modular prompt-pack, standalone master prompt, Gemini design line, DFIR operating posture, and enrichment model
+- one current operator-facing Gemini build path and clear labeling for legacy extracted materials
 - documentation and validation guidance that stays aligned to the current governed working line instead of historical assumptions
