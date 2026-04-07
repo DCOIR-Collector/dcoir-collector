@@ -9,9 +9,11 @@ Current priority summary
 4. GitHub Desktop manual grouped repo-update delivery remains the default governed write posture, and PR or review flows remain optional and bounded rather than mandatory.
 5. The current active deliverables remain explicit: PP-01 through PP-07, PP-08, PP-09, PP-10, generated agent markdowns, comparative reference markdowns, and their retained supporting asset packages.
 6. DOC-04, DOC-07, and DOC-08 now preserve the durable generation, validation, and legacy-surface rules for fresh standalone and Gemini deliverables.
-7. The open validation queue now centers on collector-artifact interpretation, collector execution, IOC enrichment, repeated-session behavior, and upload-size-aware artifact intake.
-8. The baseline report surface is now an explicit candidate redesign target so the agent-facing baseline payload can become smaller, more uploadable, or removable when the same analyst value can be preserved through smaller targeted artifacts.
-9. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
+7. The current refinement queue now starts with upload-size-aware artifact intake and baseline-surface minimization so Gemini-facing artifact packaging stays practical for real operator upload paths.
+8. Deterministic generation verification, generated-bundle quality control, and later fixture-driven automation are now explicit follow-on work items for the standalone prompt bundle and the Gemini bundle.
+9. The open validation queue still includes collector-artifact interpretation, collector execution, IOC enrichment, repeated-session behavior, and operator-helpfulness during live execution.
+10. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
+11. Lower-priority workflow follow-ons now include governed installed-skill parity checks and a bounded decision on whether a Google Drive staging folder should exist for document-side convenience without replacing GitHub-readable authority.
 
 Current best next move
-- Keep the current April 7 governance set in place, refresh only the affected continuity surfaces, use smaller uploadable artifact slices when Gemini file-size limits block full baseline uploads, and continue bounded live testing under GitHub Desktop manual grouped repo-update delivery.
+- Keep the current April 7 governance set in place, prefer smaller uploadable artifact slices when Gemini file-size or practical quality limits block full baseline uploads, build deterministic verification and quality-control checks before broader automation, and continue bounded live testing under GitHub Desktop manual grouped repo-update delivery.

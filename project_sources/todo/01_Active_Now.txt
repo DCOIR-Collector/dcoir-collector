@@ -2,56 +2,86 @@ DCOIR Active Now
 
 Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
 
-1. Build and use a firm Gemini agent grading test plan.
+1. Define an upload-size-aware artifact intake method.
    Why it matters:
-   - The April 7 live test proved useful, but future grading still needs a repeatable pass or fail contract tied to explicit artifact sets and expected behaviors.
+   - The recent Gemini live testing showed that at least one large baseline artifact was not practical to upload, which means the current agent-facing artifact flow needs a bounded smaller-slice intake method instead of assuming full broad uploads will always work.
+   Next action:
+   - Define the default intake order for Gemini-facing review as metadata, high-value summary, tree or manifest view, representative artifacts, and only then targeted excerpts or additional slices as needed.
+
+2. Revisit the purpose of the baseline report surface.
+   Why it matters:
+   - The baseline report may currently carry too much data for reliable Gemini-facing upload and may no longer be the best default operator artifact if the same analyst value can be preserved through smaller targeted slices.
+   Next action:
+   - Evaluate whether the baseline report should be reduced in scope, repurposed, split into smaller analyst-facing sections, or removed from the default Gemini upload path altogether.
+
+3. Build a deterministic generation-verification action for the standalone prompt bundle and the Gemini bundle.
+   Why it matters:
+   - The project now needs a repeatable way to verify that fresh generation produced the expected all-in-one prompt deliverable, agent markdown set, topology map, attachment map, and bundle structure before operator testing starts.
+   Next action:
+   - Define the exact expected outputs, naming checks, presence checks, source-mapping checks, and bundle-structure checks that should pass after each generation round.
+
+4. Build a generated-bundle quality-control action.
+   Why it matters:
+   - Passing generation is not enough if the Gemini bundle still drifts from the operator's expectations for writing density, collector coverage, enrichment ownership, false-positive discipline, starter prompts, or singular-command consistency.
+   Next action:
+   - Define explicit quality-control checks and acceptance metrics for generated Gemini bundles so each round can be graded consistently instead of by memory alone.
+
+5. Plan a bounded automation path for fixture-driven bundle testing.
+   Why it matters:
+   - Later automation should save time and catch regressions, but it should come after deterministic verification and quality control are defined clearly enough to automate without hiding judgment errors.
+   Next action:
+   - Design a bounded harness approach that can test the standalone prompt bundle and the Gemini bundle against fake Elastic alerts and representative fake collector artifacts without confusing fixture behavior with live-evidence behavior.
+
+6. Build and use a firm Gemini agent grading test plan.
+   Why it matters:
+   - The earlier live test was useful, but future grading still needs a repeatable pass or fail contract tied to explicit artifact sets and expected behaviors.
    Next action:
    - Define the minimum useful test set, expected outputs, pass conditions, fail conditions, and repeated-session checks.
 
-2. Validate the collector-analysis and collector-artifact interpretation path.
+7. Validate the collector-analysis and collector-artifact interpretation path.
    Why it matters:
    - Elastic alert triage was the strongest validated path, but the collector-analysis path still needs direct validation against real collector outputs.
    Next action:
    - Run a dedicated collector-artifact interpretation test and record whether Gemini explains collector artifacts, workflow phase, uncertainty limits, and the exact next operator step correctly.
 
-3. Validate the IOC-enrichment trigger and ownership path.
+8. Validate the IOC-enrichment trigger and ownership path.
    Why it matters:
    - IOC enrichment still needs a dedicated trigger and ownership test so the path is intentional, visible, and not only incidental.
    Next action:
    - Build a bounded IOC-enrichment validation case and verify triggerability, ownership clarity, and next-step behavior.
 
-4. Research Gemini Agent upload-size limits and define a smaller-slice artifact intake method.
-   Why it matters:
-   - The April 7 transcript showed that at least one large baseline artifact could not be uploaded to Gemini, which means the current agent-facing artifact packaging may exceed platform limits.
-   Next action:
-   - Determine the practical upload-size ceiling and define a DCOIR intake pattern that prefers metadata, tree, high-value representative artifacts, and targeted excerpts before broad dumps.
-
-5. Revisit the purpose of the baseline report surface.
-   Why it matters:
-   - The baseline report may currently carry too much data for reliable Gemini upload and may no longer be the best default agent-facing artifact if the same analyst value can be preserved in smaller targeted slices.
-   Next action:
-   - Evaluate whether the baseline report should be reduced in scope, repurposed, split into smaller analyst-facing sections, or removed from the default Gemini upload path altogether.
-
-6. Preserve live-fire operator workflow corrections in future collector execution guidance.
+9. Preserve live-fire operator workflow corrections in future collector execution guidance.
    Why it matters:
    - The live test exposed concrete remote-execution lessons such as runtime filename, quoting, slash usage, upload-directory expectations, and the harness not being the right first lane for live response-action testing.
    Next action:
    - Fold those corrections into future collector execution guidance and validation instructions.
 
-7. Keep improving Gemini operator-helpfulness during live execution.
+10. Keep improving Gemini operator-helpfulness during live execution.
    Why it matters:
    - The operator explicitly wants stepwise, adaptive, walkthrough-friendly help during live execution, not only solid analysis after the fact.
    Next action:
    - Preserve walkthrough-friendly behavior as an explicit quality target in future Gemini validation and generation work.
 
-8. Research whether Gemini Enterprise Agents can expose an attached collector zip plus PowerShell script as usable links for users.
+11. Research whether Gemini Enterprise Agents can expose an attached collector zip plus PowerShell script as usable links for users.
    Why it matters:
    - This remains a research topic with potential delivery implications, but it is not yet an approved operating pattern.
    Next action:
    - Confirm whether the platform supports it and only then decide whether that path belongs in a future delivery design.
 
-9. Verify whether enrich-add actions truly append to an existing open session.
+12. Verify whether enrich-add actions truly append to an existing open session.
    Why it matters:
    - Repeated-session correctness remains important, and the transcript preserved this as one of the next most valuable functional tests.
    Next action:
    - Run a bounded enrich-add session test and confirm whether the action appends to the existing session or silently creates a new one.
+
+13. Verify installed-skill parity against governed GitHub source.
+   Why it matters:
+   - Installed skills and governed repo source should remain identical so parity drift does not hide whether the live behavior comes from the repo, the installed package, or stale local packaging.
+   Next action:
+   - Use the governed parity workflow to compare installed skill packages against the repo source, then decide whether any mismatch should be resolved by updating the repo source, the package, or both.
+
+14. Decide whether a dedicated Google Drive staging folder should be formalized.
+   Why it matters:
+   - A bounded Drive staging lane may improve convenience for document-side workflows, but it must not blur the GitHub-primary readable-source rule for governed text.
+   Next action:
+   - Decide whether Drive should remain ad hoc, be formalized as a staging-only surface, or stay out of the governed workflow entirely.

@@ -12,15 +12,20 @@ Current stable baseline
 - GitHub Desktop manual grouped repo-update delivery remains the default governed write posture, with PR and review flows optional and bounded.
 
 What is still open right now
-1. Build and use a firm Gemini agent grading test plan with expected artifact sets and pass or fail criteria.
-2. Validate the collector-analysis and collector-artifact interpretation path with real collector outputs.
-3. Validate the IOC-enrichment trigger and ownership path with a dedicated test plan.
-4. Research Gemini Agent upload-size limits and define a smaller-slice artifact intake method for baseline, enrichment, retrieved artifact, and final synthesis review.
-5. Treat the baseline report surface as a candidate redesign item so the agent-facing baseline payload is smaller, more uploadable, or removable when the same analyst value can be preserved through smaller targeted artifacts.
-6. Preserve live-fire operator workflow corrections in future collector execution guidance.
-7. Keep improving Gemini operator-helpfulness during live execution, not only during analysis.
-8. Research whether Gemini Enterprise Agents can support an attached collector zip plus PowerShell script delivery model and expose usable links to those assets for users.
-9. Verify whether enrich-add actions truly append to the same open session instead of silently creating a new one.
+1. Define an upload-size-aware artifact intake method for Gemini-facing baseline, enrichment, retrieved artifact, and final synthesis review.
+2. Revisit the purpose of the baseline report surface so the default Gemini-facing baseline payload can become smaller, more uploadable, split into bounded slices, or removable when the same analyst value can be preserved another way.
+3. Build and use a deterministic generation-verification action for the all-in-one standalone prompt bundle and the Gemini bundle.
+4. Build and use a generated-bundle quality-control action so the Gemini bundle is checked against explicit expectations every round instead of relying on ad hoc inspection.
+5. Plan a bounded automation path for fixture-driven testing of the standalone prompt bundle and the Gemini bundle against fake Elastic alerts and representative fake collector artifacts.
+6. Build and use a firm Gemini agent grading test plan with expected artifact sets and pass or fail criteria.
+7. Validate the collector-analysis and collector-artifact interpretation path with real collector outputs.
+8. Validate the IOC-enrichment trigger and ownership path with a dedicated test plan.
+9. Preserve live-fire operator workflow corrections in future collector execution guidance.
+10. Keep improving Gemini operator-helpfulness during live execution, not only during analysis.
+11. Research whether Gemini Enterprise Agents can support an attached collector zip plus PowerShell script delivery model and expose usable links to those assets for users.
+12. Verify whether enrich-add actions truly append to the same open session instead of silently creating a new one.
+13. Verify that installed skill packages match the governed GitHub skill source exactly, then decide whether any drift should be resolved in the repo source or in the installed package set.
+14. Decide whether a dedicated Google Drive staging folder should be formalized for bounded document-side workflows while still preserving GitHub as the sole readable governed text authority.
 
 Recommended next move
-- Keep the current April 7 governance set in place, continue bounded live testing, and use smaller uploadable artifact slices whenever Gemini file-size limits block full baseline uploads.
+- Keep the current April 7 governance set in place, use smaller uploadable artifact slices whenever Gemini file-size or practical quality limits block full baseline uploads, and prioritize deterministic verification plus quality control before attempting broader automation.
