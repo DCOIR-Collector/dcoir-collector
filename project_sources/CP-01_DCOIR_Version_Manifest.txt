@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.68
+DCOIR Version Manifest 3.9.69
 
-Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
+Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -10,6 +10,7 @@ Current control plane
 - Viable deliverable generation contract: project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt
 - Gemini live-test generation and legacy surface rules: project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt
 - Gemini legacy surface inventory and hygiene plan: project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt
+- Gemini upload-budget and validation-automation queue: project_sources/LOG-55_DCOIR_Gemini_Upload_Budget_And_Validation_Automation_Queue_2026-04-07.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 - Delivery-bundle structure and GitHub Desktop manual update preference: project_sources/LOG-24_DCOIR_Delivery_Bundle_Structure_And_GitHub_Desktop_Manual_Update_Preference_2026-04-04.txt
 - Release/impact/readiness delivery-class alignment: project_sources/LOG-36_DCOIR_Release_Impact_And_Readiness_Delivery_Class_Alignment_2026-04-05.txt
@@ -56,10 +57,9 @@ Current governed helper-skill source
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 
 Current next work item
-- Use DOC-04, DOC-07, DOC-08, and the hardened PP-09 workflow as the durable governance set for fresh standalone prompt and Gemini bundle creation.
-- Preserve the older alert-triage agent set as the verbosity and field-quality benchmark while integrating explicit collector handling, explicit IOC-enrichment ownership, false-positive-aware validation, and singular-command consistency expectations into future generations.
-- Treat knowledge/generated_agent_markdowns and knowledge/comparative_reference_agent_markdowns as supporting readable working surfaces, and treat supporting_assets generated/comparative/knowledge zips as retained delivery artifacts rather than editable readable authority.
-- Keep project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0 as structure and naming reference only, project_sources/original_alert_triage_gemini_agents as the approved quality benchmark, project_sources/original_collector_artifact_gemini_agents as the failure reference, and project_sources/legacy_reference_gemini_agents as the governed home for clearly labeled manual or curated legacy captures.
-- Continue bounded live testing of regenerated Gemini and standalone bundles under the hardened governance set and verify collector-artifact, collector-execution, IOC-enrichment, security-product negative-control, and repeated-session singular-command validation.
-- Continue a bounded repo-hygiene inventory pass for any remaining Gemini-related legacy or retained-delivery surfaces before any broader move, rename, or archival consolidation.
+- Use DOC-04, DOC-07, DOC-08, LOG-55, and the hardened PP-09 workflow as the active governance set for fresh standalone prompt and Gemini bundle creation.
+- Treat the operator-tested office Gemini limits as the current practical ceiling: 1000 KB maximum per file, 2000 KB maximum total attachments per prompt, and unknown session-total capacity until a later live test proves otherwise.
+- Use 900 KB or less per file and 1800 KB or less total per prompt as the default safe design targets for analyst-facing Gemini attachment sets.
+- Prefer chunk-first artifact intake and do not assume a monolithic baseline report is the default single-file Gemini upload surface.
+- Continue the open validation and design queue for baseline-surface redesign, bundle-generation verification, generated-bundle quality control, automation planning, collector-artifact validation, IOC-enrichment validation, repeated-session checks, skill-source parity, and optional Drive staging evaluation.
 - Maintain package-cleanliness enforcement, parity checks, and representative regression for future maintenance-only helper-skill fixes.

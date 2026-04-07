@@ -1,42 +1,42 @@
 DCOIR Active Now
 
-Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
+Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
 
-1. Define an upload-size-aware artifact intake method.
+1. Finalize the upload-budget-aware artifact-intake pattern.
    Why it matters:
-   - The recent Gemini live testing showed that at least one large baseline artifact was not practical to upload, which means the current agent-facing artifact flow needs a bounded smaller-slice intake method instead of assuming full broad uploads will always work.
+   - The office Gemini environment has a proven practical ceiling of 1000 KB per file and 2000 KB total attachments per prompt, so the DCOIR analyst-facing path must prefer uploadable bounded slices over broad dumps.
    Next action:
-   - Define the default intake order for Gemini-facing review as metadata, high-value summary, tree or manifest view, representative artifacts, and only then targeted excerpts or additional slices as needed.
+   - Define the default uploadable slice set for baseline, enrichment, retrieved-artifact, and final-synthesis review and keep the safe working targets at 900 KB or less per file and 1800 KB or less per prompt.
 
 2. Revisit the purpose of the baseline report surface.
    Why it matters:
-   - The baseline report may currently carry too much data for reliable Gemini-facing upload and may no longer be the best default operator artifact if the same analyst value can be preserved through smaller targeted slices.
+   - The baseline report may now carry too much data for reliable Gemini use and may no longer be the best default agent-facing artifact if the same analyst value can be preserved in smaller targeted slices.
    Next action:
-   - Evaluate whether the baseline report should be reduced in scope, repurposed, split into smaller analyst-facing sections, or removed from the default Gemini upload path altogether.
+   - Decide whether the baseline surface should be reduced in scope, repurposed, split into smaller sections, or removed from the default Gemini upload path.
 
-3. Build a deterministic generation-verification action for the standalone prompt bundle and the Gemini bundle.
+3. Build a deterministic generation-verification action or workflow.
    Why it matters:
-   - The project now needs a repeatable way to verify that fresh generation produced the expected all-in-one prompt deliverable, agent markdown set, topology map, attachment map, and bundle structure before operator testing starts.
+   - The project needs a repeatable way to verify that the Gemini bundle and the standalone all-in-one prompt bundle were actually generated correctly rather than only assumed correct from inspection.
    Next action:
-   - Define the exact expected outputs, naming checks, presence checks, source-mapping checks, and bundle-structure checks that should pass after each generation round.
+   - Define the required files, expected structure, minimum field checks, and explicit pass or fail criteria for both bundle lines.
 
-4. Build a generated-bundle quality-control action.
+4. Build explicit generated-bundle quality-control review criteria.
    Why it matters:
-   - Passing generation is not enough if the Gemini bundle still drifts from the operator's expectations for writing density, collector coverage, enrichment ownership, false-positive discipline, starter prompts, or singular-command consistency.
+   - The operator wants a reliable way to know that each generated Gemini bundle still meets the expected benchmark, density, routing quality, and workflow quality every time.
    Next action:
-   - Define explicit quality-control checks and acceptance metrics for generated Gemini bundles so each round can be graded consistently instead of by memory alone.
+   - Define the quality-control rubric covering benchmark density, collector visibility, enrichment ownership, false-positive discipline, singular-command consistency, walkthrough usefulness, and upload-budget readiness.
 
-5. Plan a bounded automation path for fixture-driven bundle testing.
+5. Plan future automation for testing the standalone all-in-one prompt bundle.
    Why it matters:
-   - Later automation should save time and catch regressions, but it should come after deterministic verification and quality control are defined clearly enough to automate without hiding judgment errors.
+   - A future automated harness could reduce manual validation friction by replaying fake Elastic alerts and fake collector artifacts against the all-in-one prompt path.
    Next action:
-   - Design a bounded harness approach that can test the standalone prompt bundle and the Gemini bundle against fake Elastic alerts and representative fake collector artifacts without confusing fixture behavior with live-evidence behavior.
+   - Define the fixture set, execution model, expected outputs, and evidence thresholds for the standalone bundle automation concept.
 
-6. Build and use a firm Gemini agent grading test plan.
+6. Plan future automation for testing the Gemini parent plus sub-agent bundle.
    Why it matters:
-   - The earlier live test was useful, but future grading still needs a repeatable pass or fail contract tied to explicit artifact sets and expected behaviors.
+   - A future automated harness could reduce manual validation friction by replaying fake Elastic alerts and fake collector artifacts against the Gemini parent and sub-agent topology.
    Next action:
-   - Define the minimum useful test set, expected outputs, pass conditions, fail conditions, and repeated-session checks.
+   - Define the fixture set, agent-setup model, expected outputs, routing expectations, and evidence thresholds for the Gemini automation concept.
 
 7. Validate the collector-analysis and collector-artifact interpretation path.
    Why it matters:
@@ -50,38 +50,32 @@ Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clar
    Next action:
    - Build a bounded IOC-enrichment validation case and verify triggerability, ownership clarity, and next-step behavior.
 
-9. Preserve live-fire operator workflow corrections in future collector execution guidance.
+9. Verify repeated-session enrich-add behavior.
    Why it matters:
-   - The live test exposed concrete remote-execution lessons such as runtime filename, quoting, slash usage, upload-directory expectations, and the harness not being the right first lane for live response-action testing.
-   Next action:
-   - Fold those corrections into future collector execution guidance and validation instructions.
-
-10. Keep improving Gemini operator-helpfulness during live execution.
-   Why it matters:
-   - The operator explicitly wants stepwise, adaptive, walkthrough-friendly help during live execution, not only solid analysis after the fact.
-   Next action:
-   - Preserve walkthrough-friendly behavior as an explicit quality target in future Gemini validation and generation work.
-
-11. Research whether Gemini Enterprise Agents can expose an attached collector zip plus PowerShell script as usable links for users.
-   Why it matters:
-   - This remains a research topic with potential delivery implications, but it is not yet an approved operating pattern.
-   Next action:
-   - Confirm whether the platform supports it and only then decide whether that path belongs in a future delivery design.
-
-12. Verify whether enrich-add actions truly append to an existing open session.
-   Why it matters:
-   - Repeated-session correctness remains important, and the transcript preserved this as one of the next most valuable functional tests.
+   - Repeated-session correctness remains important, and the enrich-add append-versus-new-session question is still open.
    Next action:
    - Run a bounded enrich-add session test and confirm whether the action appends to the existing session or silently creates a new one.
 
-13. Verify installed-skill parity against governed GitHub source.
+10. Verify installed-skill parity against governed GitHub source.
    Why it matters:
-   - Installed skills and governed repo source should remain identical so parity drift does not hide whether the live behavior comes from the repo, the installed package, or stale local packaging.
+   - The installed skills and the governed GitHub skill source should be identical. If they drift, the operator needs an explicit diff and an explicit keep-or-replace decision instead of silent mismatch.
    Next action:
-   - Use the governed parity workflow to compare installed skill packages against the repo source, then decide whether any mismatch should be resolved by updating the repo source, the package, or both.
+   - Run a governed parity comparison, identify any mismatch, and decide which side remains authoritative before later skill maintenance.
 
-14. Decide whether a dedicated Google Drive staging folder should be formalized.
+11. Evaluate whether an optional Google Drive staging folder would help.
    Why it matters:
-   - A bounded Drive staging lane may improve convenience for document-side workflows, but it must not blur the GitHub-primary readable-source rule for governed text.
+   - A bounded Drive staging lane may reduce friction for non-governed working documents, but it must not blur the GitHub-primary readable-source rule.
    Next action:
-   - Decide whether Drive should remain ad hoc, be formalized as a staging-only surface, or stay out of the governed workflow entirely.
+   - Decide whether one dedicated DCOIR staging folder should be formalized for non-authoritative working documents only.
+
+12. Preserve live-fire operator workflow corrections and walkthrough-friendly behavior.
+   Why it matters:
+   - The operator explicitly wants accurate live-fire guidance and adaptive walkthrough help during execution, not only solid analysis after the fact.
+   Next action:
+   - Keep those traits visible in future collector execution guidance, Gemini validation, and generated-bundle quality review.
+
+13. Preserve the unknown session-total Gemini file budget as an open live-test item.
+   Why it matters:
+   - The current measured limits solved the per-file and per-prompt problem, but the broader session-total capacity is still unknown.
+   Next action:
+   - Keep the observation open until a later live test hits that limit or proves it is not practically constraining.

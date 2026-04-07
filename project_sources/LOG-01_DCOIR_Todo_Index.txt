@@ -1,6 +1,6 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
+Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
 
 Current priority summary
 1. Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
@@ -8,12 +8,11 @@ Current priority summary
 3. The work-safe browser-first operating constraint remains explicit in governed state: during work hours prefer browser-native, no-upload or download required workflows whenever that lane can achieve the same governed result.
 4. GitHub Desktop manual grouped repo-update delivery remains the default governed write posture, and PR or review flows remain optional and bounded rather than mandatory.
 5. The current active deliverables remain explicit: PP-01 through PP-07, PP-08, PP-09, PP-10, generated agent markdowns, comparative reference markdowns, and their retained supporting asset packages.
-6. DOC-04, DOC-07, and DOC-08 now preserve the durable generation, validation, and legacy-surface rules for fresh standalone and Gemini deliverables.
-7. The current refinement queue now starts with upload-size-aware artifact intake and baseline-surface minimization so Gemini-facing artifact packaging stays practical for real operator upload paths.
-8. Deterministic generation verification, generated-bundle quality control, and later fixture-driven automation are now explicit follow-on work items for the standalone prompt bundle and the Gemini bundle.
-9. The open validation queue still includes collector-artifact interpretation, collector execution, IOC enrichment, repeated-session behavior, and operator-helpfulness during live execution.
+6. DOC-04, DOC-07, DOC-08, LOG-55, and PP-09 now preserve the durable generation, upload-budget, validation, and legacy-surface rules for fresh standalone and Gemini deliverables.
+7. The open validation queue now centers on upload-budget-aware artifact intake, baseline-surface redesign, bundle-generation verification, generated-bundle quality control, automation planning, collector-artifact interpretation, IOC enrichment, repeated-session behavior, and skill-source parity.
+8. The baseline report surface is now an explicit redesign target because the measured office Gemini file limits make the older broad single-file assumption unsafe.
+9. The office Gemini environment is now treated as having a practical ceiling of 1000 KB per file and 2000 KB total attachments per prompt, with 900 KB and 1800 KB as the current safe working targets.
 10. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
-11. Lower-priority workflow follow-ons now include governed installed-skill parity checks and a bounded decision on whether a Google Drive staging folder should exist for document-side convenience without replacing GitHub-readable authority.
 
 Current best next move
-- Keep the current April 7 governance set in place, prefer smaller uploadable artifact slices when Gemini file-size or practical quality limits block full baseline uploads, build deterministic verification and quality-control checks before broader automation, and continue bounded live testing under GitHub Desktop manual grouped repo-update delivery.
+- Keep the current April 7 governance set in place, use chunk-first uploadable artifact slices under the measured Gemini budget, and continue bounded live testing under GitHub Desktop manual grouped repo-update delivery.

@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
+Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -13,25 +13,26 @@ Current stable pointers
 - Durable deliverable-generation contract: project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt
 - Gemini live-test generation and legacy-surface rules: project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt
 - Gemini legacy-surface inventory and hygiene plan: project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt
+- Gemini upload-budget and validation-automation queue: project_sources/LOG-55_DCOIR_Gemini_Upload_Budget_And_Validation_Automation_Queue_2026-04-07.txt
 
 Current active priority
-- Keep the fully re-stabilized first-wave GitHub automation baseline in service while the main project line stays on the real deliverables, and continue bounded live testing of the standalone and Gemini deliverables under DOC-04, DOC-07, DOC-08, and PP-09 with upload-size-aware artifact intake as the first current refinement line.
+- Keep the fully re-stabilized first-wave GitHub automation baseline in service while the main project line stays on the real deliverables, and continue bounded live testing of the standalone and Gemini deliverables under DOC-04, DOC-07, DOC-08, LOG-55, and PP-09 with measured upload-budget awareness.
 
 Queued next priorities
-- Define an upload-size-aware artifact intake method for Gemini-facing baseline, enrichment, retrieved artifact, and final synthesis review.
-- Revisit the purpose of the baseline report surface so the default Gemini-facing baseline payload can become smaller, more uploadable, split into bounded slices, or removable when the same analyst value can be preserved another way.
-- Build and use a deterministic generation-verification action for the all-in-one standalone prompt bundle and the Gemini bundle.
-- Build and use a generated-bundle quality-control action so the Gemini bundle is checked against explicit expectations every round instead of relying on ad hoc inspection.
-- Plan a bounded automation path for fixture-driven testing of the standalone prompt bundle and the Gemini bundle against fake Elastic alerts and representative fake collector artifacts.
-- Build and use a firm Gemini agent grading test plan with expected artifact sets and pass or fail criteria.
+- Finalize the upload-budget-aware artifact-intake pattern for baseline, enrichment, retrieved artifact, and final-synthesis review.
+- Revisit the purpose of the baseline report surface and decide whether it should be reduced, split, repurposed, or removed from the default Gemini upload path.
+- Build a deterministic generation-verification action or workflow for the Gemini bundle and the standalone all-in-one prompt bundle.
+- Build explicit generated-bundle quality-control review criteria so each new Gemini bundle can be checked against the expected benchmark and operator expectations.
+- Plan future automation for testing the standalone all-in-one prompt bundle against fake Elastic alerts and fake collector artifacts.
+- Plan future automation for testing the Gemini parent plus sub-agent bundle against fake Elastic alerts and fake collector artifacts.
 - Validate the collector-analysis and collector-artifact interpretation path with real collector outputs.
 - Validate the IOC-enrichment trigger and ownership path with a dedicated test plan.
-- Preserve live-fire operator workflow corrections in future collector execution guidance.
-- Keep improving Gemini operator-helpfulness during live execution, not only during analysis.
-- Research whether Gemini Enterprise Agents can support an attached collector zip plus PowerShell script delivery model and expose usable links to those assets for users.
 - Verify whether enrich-add actions truly append to the same open session instead of silently creating a new one.
-- Verify that installed skill packages match the governed GitHub skill source exactly, then decide whether any drift should be resolved in the repo source or in the installed package set.
-- Decide whether a dedicated Google Drive staging folder should be formalized for bounded document-side workflows while still preserving GitHub as the sole readable governed text authority.
+- Preserve live-fire operator workflow corrections and walkthrough-friendly behavior in future collector execution guidance and Gemini quality review.
+- Verify installed-skill parity against governed GitHub source and resolve any mismatch explicitly.
+- Evaluate whether an optional Google Drive staging folder would reduce document-handling friction without violating the GitHub-primary readable-source rule.
+- Research whether Gemini Enterprise Agents can support an attached collector zip plus PowerShell script delivery model and expose usable links to those assets for users.
+- Preserve the unknown session-total Gemini file budget as an open live-test item until later operator testing proves the practical limit.
 - During work hours, prefer browser-native, no-upload or download required workflows whenever that lane can achieve the same governed result.
 - Keep GitHub Desktop manual grouped repo-update delivery as the default governed write posture.
 - Keep PR and review flows optional and bounded rather than mandatory.

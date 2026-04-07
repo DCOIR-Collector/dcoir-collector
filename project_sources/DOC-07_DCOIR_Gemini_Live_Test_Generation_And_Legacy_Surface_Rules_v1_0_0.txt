@@ -62,6 +62,14 @@ Section 1: April 7 live-test generation rules
 - The April 7 live testing confirmed that the older AFRICOM SOC Elastic Defend Triage Agent set remains highly effective for Elastic alert handling.
 - Future DCOIR-enhanced Gemini generations should preserve that same level of thoroughness, field specificity, and workflow explicitness while adding collector-specific handling, enrichment handling, and related improvements.
 
+11. Measured Gemini upload-budget rule for this office environment
+- Until a later governed change replaces it, use the operator-tested office Gemini Enterprise Agent limits as the current practical ceiling: 1000 KB maximum per file and 2000 KB maximum total attachments per prompt.
+- Treat those measured limits as stronger for this workflow than general public guidance because they were proven in the target operator environment.
+- Use 900 KB or less per file and 1800 KB or less total per prompt as the default safe working targets for analyst-facing upload sets.
+- Prefer chunk-first artifact intake. Do not assume a monolithic baseline report remains the default single-file Gemini upload surface.
+- Prefer smaller bounded slices such as metadata summary, file-tree or path summary, representative process evidence, representative network evidence, enrichment slices, retrieved-artifact slices, and final-synthesis slices before broad dumps.
+- The session-total upload budget remains unknown and should stay an open live-test item until a later round proves a practical limit.
+
 Section 2: Validation and regression rules derived from the live test
 
 1. Collector-artifact interpretation test plan
@@ -88,6 +96,11 @@ Section 2: Validation and regression rules derived from the live test
 - Future Gemini validation must include repeated fresh-session checks for the singular-command contract.
 - The validation should fail if Tool chosen is populated while SINGULAR TRIAGE COMMAND is empty.
 - The validation should also flag unstable cross-session behavior where a similar case alternates between command-present and command-missing outputs without a case-driven reason.
+
+6. Upload-budget conformance and artifact-chunking test plan
+- Future Gemini validation must include a dedicated upload-budget conformance check for default analyst-facing attachment sets.
+- The plan should verify that each default uploadable file remains within the safe per-file target, that the normal prompt-level attachment set remains within the safe total target, and that the workflow still functions when the baseline path is represented through smaller bounded slices instead of one large monolithic artifact.
+- The plan should also preserve the unknown session-total limit as an explicit observation field rather than pretending the broader capacity is already known.
 
 Section 3: Legacy and supporting Gemini surface roles
 
@@ -147,5 +160,5 @@ Section 4: Repo-hygiene rules for future legacy work
 6. When broader cleanup is needed, perform a bounded inventory first so the repo does not blur current authority, working surfaces, and historical reference material.
 
 End state
-- Future Gemini generations should now be governed not only by the earlier viable-generation contract, but also by the more explicit April 7 live-test rules and the clearer readable-surface role map captured here.
-- The intended result is better collector handling, clearer enrichment ownership, stronger false-positive discipline, stable singular-command behavior, and less repo confusion around legacy Gemini materials.
+- Future Gemini generations should now be governed not only by the earlier viable-generation contract, but also by the more explicit April 7 live-test rules, the clearer readable-surface role map captured here, and the measured office upload-budget rule derived from operator testing.
+- The intended result is better collector handling, clearer enrichment ownership, stronger false-positive discipline, stable singular-command behavior, less repo confusion around legacy Gemini materials, and operator-facing attachment sets that actually fit the target Gemini environment.

@@ -1,12 +1,12 @@
 DCOIR Gemini Agent Build Live Test Findings - 2026-04-07
 
 Current state id
-- 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
+- 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
 
 Status
 - These are operator live-test findings captured during a work-safe browser-first session.
 - They are review notes for later build and output-route improvement.
-- They are not yet treated as fixed unless separately promoted into governed control-plane or design-authority surfaces.
+- They are not yet treated as fixed unless the control plane later promotes them into governed current-state surfaces.
 
 Operator preferences and output-route requirements
 - Main agent should ship with three starter prompts in the next build.
@@ -21,31 +21,32 @@ Live-test findings to verify and likely remediate
 Validation additions requested for the next bundle
 - Add a collector-artifact test plan so the collector-artifact interpretation path is explicitly tested.
 - Add a collector execution or collection-path test plan that covers collection success, harness-style paths such as FullRegression or core-style runs, and any pull or retrieval behavior needed to generate agent-consumable artifacts.
-- Add an IOC-enrichment trigger and ownership test plan so the path can be reached intentionally and evaluated cleanly.
-- Add a repeated-session test that verifies whether enrich-add actions truly append to the same open session instead of silently creating a new one.
 
-Research items
-- Research whether Google Gemini Enterprise Agents can support an attached collector zip plus PowerShell script model and expose usable links to those assets for users.
+Research item
+- Research whether Google Gemini Enterprise Agents can support an attached collector zip plus PowerShell script model and expose usable links to those assets for users on request.
 - Treat this as a capability-check topic, not an approved delivery pattern yet.
-- Research the practical Gemini Agent upload-size ceiling for DCOIR artifacts.
-- Define a smaller-slice artifact intake pattern for baseline, enrichment, retrieved-artifact, and final-synthesis review when full artifacts are too large to upload.
 
-Baseline-surface redesign candidate
-- The April 7 transcript showed that a large baseline artifact could not be uploaded to Gemini during live testing.
-- Treat the current baseline report surface as a candidate redesign item.
-- First-pass options to evaluate:
-  - reduce its scope so it contains less data
-  - split it into smaller analyst-facing sections
-  - demote it from the default Gemini upload set when smaller targeted artifacts preserve the same analyst value
-  - remove it from the default Gemini upload path altogether if it is no longer the best agent-facing artifact
+Post-session measured office Gemini limits
+- Practical maximum single-file attachment size in the office Gemini Enterprise Agent environment: 1000 KB.
+- Practical maximum total attachment size per prompt in the same environment: 2000 KB.
+- Safe working targets derived from those limits: 900 KB or less per file and 1800 KB or less total attachments per prompt.
+- Session-total file capacity remains unknown and should stay an open live-test item.
+
+Follow-on queue extended after the measured limit test
+- Finalize an upload-budget-aware artifact-intake pattern for baseline, enrichment, retrieved-artifact, and final-synthesis review.
+- Revisit the purpose of the baseline report surface because a broad default baseline file may no longer be the best Gemini-facing artifact under the measured limit.
+- Build a deterministic generation-verification action or workflow for the Gemini bundle and the standalone all-in-one prompt bundle.
+- Build explicit generated-bundle quality-control review criteria.
+- Plan future automation for testing the standalone all-in-one prompt bundle and the Gemini parent plus sub-agent bundle with fake Elastic alerts and fake collector artifacts.
+- Verify installed-skill parity against governed GitHub source.
+- Evaluate whether an optional Google Drive staging folder would reduce non-governed document-handling friction without violating the GitHub-primary readable-source rule.
 
 Suggested next review focus
-1. Prime-agent wording for explicit collector-artifact triage and interpretation.
-2. Explicit ownership for IOC OSINT enrichment.
-3. Standardized Description and Instructions field shape.
-4. Three starter prompts for the main agent.
-5. Collector-artifact and collector-execution test-plan coverage.
-6. Upload-size-aware artifact intake and baseline-surface redesign.
+1. Upload-budget-aware artifact intake and baseline-surface redesign.
+2. Deterministic generation verification for both bundle lines.
+3. Generated-bundle quality-control criteria.
+4. Collector-artifact and collector-execution test-plan coverage.
+5. Future automation planning for standalone and Gemini bundle validation.
 
 Truth boundary
 - This note preserves live-test observations and requested follow-up.

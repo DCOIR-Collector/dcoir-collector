@@ -1,0 +1,43 @@
+DCOIR Gemini Upload Budget And Validation Automation Queue - 2026-04-07
+
+Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
+
+Purpose
+- Record the operator-tested office Gemini Enterprise Agent upload limits that now materially shape DCOIR analyst-facing artifact design.
+- Preserve the resulting safe working targets, artifact-intake implications, and the expanded validation and automation queue that follows from those limits.
+
+Measured operator-environment limits
+- Maximum practical single-file attachment size: 1000 KB.
+- Maximum practical total attachment size per prompt: 2000 KB.
+- Session-total file capacity: not yet known in the office environment.
+
+Governed working targets derived from those limits
+- Safe target per file: 900 KB or less.
+- Safe target per prompt: 1800 KB or less total attachments.
+- Prefer budget headroom instead of operating at the hard edge of the measured limit.
+
+Immediate workflow implications
+- Treat baseline-heavy review paths as chunk-first by default rather than monolithic by default.
+- Do not assume a single baseline report remains the default Gemini upload surface.
+- Prefer attachment sets built from smaller bounded slices such as metadata, file-tree summary, representative evidence, enrichment slices, retrieved-artifact slices, and final-synthesis slices.
+- Keep the unknown session-total budget visible as an open live-test item rather than assuming it is large enough to ignore.
+
+Open queue expanded now
+1. Finalize an upload-budget-aware artifact-intake pattern for baseline, enrichment, retrieved-artifact, and final-synthesis review.
+2. Revisit the purpose of the baseline report surface and decide whether it should be reduced, split, repurposed, or removed from the default Gemini upload path.
+3. Build a deterministic generation-verification action or workflow for the Gemini bundle and the standalone all-in-one prompt bundle.
+4. Build explicit generated-bundle quality-control review criteria so each new Gemini bundle can be checked against the expected benchmark and operator expectations.
+5. Plan future automation for testing the standalone all-in-one prompt bundle against fake Elastic alerts and fake collector artifacts.
+6. Plan future automation for testing the Gemini parent plus sub-agent bundle against fake Elastic alerts and fake collector artifacts.
+7. Continue the previously open collector-artifact interpretation, IOC-enrichment, repeated-session, and operator-guidance validation items.
+8. Verify installed-skill parity against governed GitHub source and resolve any mismatch by explicit diff and decision rather than silent drift.
+9. Evaluate whether an optional Google Drive staging folder would reduce document-handling friction without violating the GitHub-primary readable-source rule.
+
+What this log does not yet claim
+- It does not claim the session-total file budget is known.
+- It does not claim the baseline redesign decision is complete.
+- It does not claim deterministic bundle verification, quality-control automation, or test automation already exists.
+- It does preserve the measured limit and the new queue so later work does not rediscover the same constraint.
+
+Best next move
+- Keep the measured upload-budget rule active in current governance, continue using GitHub Desktop manual grouped repo-update delivery, and implement one bounded design-and-validation pass that updates the upload-budget rules, the active todo surfaces, and the operator-facing generation workflow in one wave.

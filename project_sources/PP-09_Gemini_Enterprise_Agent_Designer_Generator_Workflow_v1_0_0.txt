@@ -15,7 +15,7 @@ Authority order
 3. CP-02_DCOIR_Change_Log.txt
 4. PP-01 through PP-07 as the authoritative behavioral source line
 5. PP-08 as a runtime parity reference only
-6. DOC-01, DOC-03, DOC-04, LOG-01, LOG-02, LOG-03, and Knowledge guidance as secondary supporting references
+6. DOC-01, DOC-03, DOC-04, DOC-07, LOG-01, LOG-02, LOG-03, and Knowledge guidance as secondary supporting references
 7. Approved comparative reference agent markdowns as field-style and routing-language exemplars only
 
 Non-negotiable source rules
@@ -83,6 +83,14 @@ Collector-awareness requirements
 - The generated design must explain fields such as STATUS, RUN_ID, SESSION_STATUS, ENRICH_BUNDLE_PATH, COLLECT_BUNDLE_PATH, NEXT_GET_FILE, DELETE_SCRIPT_COMMAND, and NEXT_QUICK_COMMANDS.
 - The generated design must surface exact next-step guidance once pasted collector output is available.
 
+Gemini upload-budget and attachment-budget rules
+- For the current office Gemini Enterprise Agent environment, treat 1000 KB maximum per file and 2000 KB maximum total attachments per prompt as the practical hard ceiling until later governed testing supersedes it.
+- Use 900 KB or less per file and 1800 KB or less total attachments per prompt as the default safe design target.
+- Do not assume a monolithic baseline report is the default analyst-facing attachment surface.
+- Prefer chunk-first attachment sets built from metadata summaries, representative evidence slices, enrichment slices, retrieved-artifact slices, and final-synthesis slices when the same analyst value can be preserved without a large single file.
+- When an operator-facing bundle is intended for manual Gemini use, the file set should make the likely upload path obvious and should avoid requiring the operator to guess which files exceed the environment budget.
+- The session-total upload ceiling remains unknown and should be carried as a live-test observation item rather than an assumed fixed rule.
+
 Preferred operator-facing bundle shapes
 - Gemini bundle top-level folder pattern:
   - `DCOIR_Gemini_Email_Build_Bundle_<version>/`
@@ -126,6 +134,7 @@ Required outputs from a compliant generation pass
 6. Exact packaging instructions for the generated markdown assets.
 7. If supporting Knowledge guidance changed materially, a regenerated supporting_knowledge_docs.zip.
 8. When a standalone deliverable is requested, one full-assembly standalone prompt file plus a clear attachment map.
+9. When an operator-facing Gemini or standalone test bundle is in scope, one bundle-verification note or checklist covering required files, likely upload path, and attachment-budget readiness.
 
 Required validation checks
 - Control-plane alignment check
@@ -142,6 +151,9 @@ Required validation checks
 - Runtime self-sufficiency and helper-leakage check
 - Thin-output rejection check against the approved alert-triage benchmark set
 - Standalone full-assembly check when a standalone prompt is in scope
+- Upload-budget conformance check for operator-facing attachment sets
+- Bundle completeness and field-presence check for generated Gemini and standalone deliverables
+- Manual quality-control review against benchmark density, collector visibility, enrichment ownership, false-positive discipline, singular-command consistency, and operator-facing usability
 - Reject any generated output that mentions or depends on dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files
 
 Stop conditions
@@ -151,6 +163,7 @@ Stop conditions
 - Stop if the requested bundle structure conflicts with the current repo-layout spec and the operator has not approved changing the layout spec.
 - Stop if the generated parent or any generated sub-agent is materially thinner than the approved alert-triage benchmark set.
 - Stop if the standalone all-in-one prompt is not a true full assembly of PP-01 through PP-07.
+- Stop if the default operator-facing attachment set exceeds the current practical upload budget without a deliberate operator override and a stated workaround.
 
 Packaging rules for generated deliverables
 - Full-refresh bundles should use project_sources/, supporting_assets/, release_notes/, and optional project_settings/.
