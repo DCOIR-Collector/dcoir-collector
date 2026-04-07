@@ -1,0 +1,30 @@
+AFRICOM SOC Elastic Defend Triage Agent Legacy Capture Catalog - 2026-04-07
+
+Status
+- Legacy reference capture only.
+- Not the current working Gemini build authority.
+- Not the current DCOIR Gemini build under active development.
+- Branch-local staging for later review and possible merge.
+
+Purpose
+- Preserve a verbatim manual capture of the older AFRICOM SOC Elastic Defend Triage Agent configuration so it is not lost if the session crashes.
+- Keep this older Gemini agent lineage distinct from the current DCOIR Gemini design and deliverable line.
+- Provide a clearly labeled legacy reference surface that can be reused later for comparison, migration, salvage, decomposition, or selective feature carry-forward.
+
+Authority boundary
+- Current working DCOIR Gemini authority remains the current control plane, prompt-pack line, PP-09, PP-10, and related governed project sources.
+- Files in this folder are historical or legacy reference captures only unless a later governed change explicitly promotes them for another purpose.
+
+Capture basis
+- Manual operator transcription from the Gemini Agent Designer because the designer export path was malfunctioning.
+- Capture date: 2026-04-07.
+- Capture branch: chatgpt/live-gemini-build-findings-2026-04-07.
+
+Current contents
+- 01_Primary_Agent_Verbatim.md.txt
+- Additional sub-agent verbatim captures should be added to this same folder as they are provided.
+
+Handling rule
+- Keep all captured agent files verbatim.
+- Do not normalize, rewrite, merge, or silently modernize the captured text inside the verbatim files.
+- Add tracking or interpretation only in separate catalog or note files.
