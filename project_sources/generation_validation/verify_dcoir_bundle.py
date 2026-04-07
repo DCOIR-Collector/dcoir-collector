@@ -28,6 +28,11 @@ KEY_PHRASES = {
     'singular_command': ['SINGULAR TRIAGE COMMAND'],
 }
 
+BUDGET_SCOPE_PREFIXES = {
+    'gemini': ['02_PRIME_AGENT_ATTACHMENTS/'],
+    'standalone': ['02_PROMPT_ATTACHMENTS/'],
+}
+
 
 def kb(path: Path) -> int:
     return int((path.stat().st_size + 1023) / 1024)
@@ -35,6 +40,11 @@ def kb(path: Path) -> int:
 
 def find_files(root: Path) -> list[Path]:
     return sorted([p for p in root.rglob('*') if p.is_file()])
+
+
+def within_budget_scope(bundle_type: str, rel_path: str) -> bool:
+    prefixes = BUDGET_SCOPE_PREFIXES[bundle_type]
+    return any(rel_path.startswith(prefix) for prefix in prefixes)
 
 
 def main() -> int:
@@ -62,10 +72,18 @@ def main() -> int:
             if any(term.lower() in text for term in terms):
                 phrase_hits[key] = True
 
-    upload_candidates = [p for p in files if p.suffix == '.txt']
-    upload_sizes = [{'path': str(p.relative_to(root)).replace('\\','/'), 'size_kb': kb(p)} for p in upload_candidates]
-    upload_total = sum(x['size_kb'] for x in upload_sizes)
-    oversize = [x for x in upload_sizes if x['size_kb'] > SAFE_PER_FILE_KB]
+    budget_scoped = []
+    backbone_scoped = []
+    for p in files:
+        rel = str(p.relative_to(root)).replace('\\','/')
+        row = {'path': rel, 'size_kb': kb(p)}
+        if p.suffix == '.txt' and within_budget_scope(args.bundle_type, rel):
+            budget_scoped.append(row)
+        else:
+            backbone_scoped.append(row)
+
+    upload_total = sum(x['size_kb'] for x in budget_scoped)
+    oversize = [x for x in budget_scoped if x['size_kb'] > SAFE_PER_FILE_KB]
 
     report = {
         'bundle_root': str(root),
@@ -75,6 +93,10 @@ def main() -> int:
         'phrase_hits': phrase_hits,
         'safe_total_kb': SAFE_TOTAL_KB,
         'safe_per_file_kb': SAFE_PER_FILE_KB,
+        'budget_scope_prefixes': BUDGET_SCOPE_PREFIXES[args.bundle_type],
+        'budget_scope_note': 'Budget checks apply only to attachment folders, not backbone deliverables or core build files.',
+        'budget_scoped_files': budget_scoped,
+        'backbone_files_not_budgeted': backbone_scoped,
         'upload_total_kb': upload_total,
         'oversize_files': oversize,
         'pass': not missing and not txt_suffix_violations and not oversize and upload_total <= SAFE_TOTAL_KB and all(phrase_hits.values())

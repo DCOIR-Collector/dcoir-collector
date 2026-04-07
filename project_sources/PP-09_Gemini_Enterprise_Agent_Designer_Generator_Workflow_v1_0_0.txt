@@ -10,7 +10,7 @@ AUTHORITY ORDER
 3. CP-02
 4. PP-01 through PP-07
 5. PP-08 as parity reference only
-6. DOC-04, DOC-07, generation-validation docs, and current logs as supporting guidance
+6. DOC-04, DOC-07, DOC-09, generation-validation docs, and current logs as supporting guidance
 
 NON-NEGOTIABLE RULES
 - PP-01 through PP-07 remain design-time authority.
@@ -24,6 +24,9 @@ GEMINI ATTACHMENT BUDGET
 - Safe target: 900 KB per file, 1800 KB total per prompt.
 - Prefer chunk-first attachment sets.
 - Do not assume a monolithic baseline report is the default uploadable surface.
+- Scope clarification: this budget governs collector-emitted analyst-facing artifacts and default Gemini attachment sets built from them.
+- It does not require shrinking, chunking, or thinning backbone deliverables such as DCOIR_Collector.ps1, collector part source files, run_DCOIR_Tests.ps1, PP-01 through PP-10, the full standalone master prompt assembly, or parent/sub-agent definition markdowns.
+- If transport, email, or platform limits affect a backbone deliverable, preserve the full governed substance and solve the transport problem separately unless the operator explicitly directs a reduced deliverable.
 
 REQUIRED VALIDATION FOR GENERATED BUNDLES
 - required files present
@@ -36,10 +39,12 @@ REQUIRED VALIDATION FOR GENERATED BUNDLES
 - false-positive-aware security-product behavior
 - SINGULAR TRIAGE COMMAND contract conformance
 - operator-state awareness and no filler
+- scope-guard conformance: reject any generation or QC result that applies collector-output attachment-budget ceilings to backbone deliverables or core source bundles
 
 REQUIRED GENERATION VERIFICATION
 - Gemini bundle verification must check structure, required files, required field presence, attachment map completeness, and attachment-budget readiness.
 - Standalone bundle verification must check full assembly from PP-01 through PP-07, required files, and .txt-safe packaging.
+- Verification must distinguish between budget-scoped attachment files and backbone deliverables so the core bundle files are not falsely rejected for exceeding collector-artifact attachment targets.
 - Use the deterministic verification and QC artifacts under project_sources/generation_validation/ when they are in scope.
 
 AUTOMATION POSTURE
@@ -60,3 +65,4 @@ PREFERRED OUTPUTS
 
 END STATE
 - Fresh Gemini and standalone bundles should be smaller, more deterministic, easier to quality-check, and easier to use in the operator’s real office Gemini environment.
+- Smaller and more deterministic applies to default attachment sets and shipping clarity; it does not authorize thinning or fragmenting the backbone deliverables unless the operator explicitly asks for that tradeoff.

@@ -1,0 +1,36 @@
+DCOIR Attachment-Budget Scope Clarification v1.0.0
+
+PURPOSE
+- Prevent future confusion between collector-emitted analyst-facing artifacts and the project’s backbone deliverables.
+- Preserve the full substance of governed source and runtime deliverables while still enforcing realistic Gemini upload limits for actual analyst-facing attachment sets.
+
+SCOPE RULE
+- The office Gemini upload-budget rule applies only to:
+  - collector-emitted analyst-facing artifacts
+  - default Gemini attachment sets built from those artifacts
+  - other explicitly operator-facing attachment bundles whose purpose is direct prompt upload
+
+BACKBONE DELIVERABLES EXCLUDED FROM ATTACHMENT BUDGETING
+- The upload-budget rule does not require shrinking, chunking, or thinning the backbone deliverables.
+- Backbone deliverables include at minimum:
+  - project_sources/DCOIR_Collector.ps1
+  - project_sources/collector_parts/*.ps1
+  - project_sources/run_DCOIR_Tests.ps1
+  - project_sources/PP-01 through project_sources/PP-10
+  - the full standalone master prompt assembly
+  - Gemini parent-agent and sub-agent definition markdowns
+  - other governed source bundles whose job is to preserve full project behavior rather than serve as prompt-upload artifacts
+
+PACKAGING RULE
+- If email, transport, or platform constraints affect a backbone deliverable, solve the transport problem separately.
+- Mail-safe suffixing, wrapper files, or delivery reshaping are acceptable when they preserve the full governed substance.
+- Do not silently reduce, condense, or fragment a backbone deliverable just to satisfy attachment-size targets unless the operator explicitly directs that tradeoff.
+
+VALIDATION RULE
+- Bundle verification and QC must distinguish between:
+  - budget-scoped attachment files
+  - backbone deliverables
+- It is a validation failure to apply collector-artifact attachment ceilings to a backbone deliverable and then present the reduced result as if it were the intended governed bundle.
+
+END STATE
+- The project should preserve full-strength collector, prompt-pack, standalone, and Gemini-definition deliverables while separately enforcing realistic upload limits for the actual analyst-facing artifacts that must be attached to Gemini prompts.
