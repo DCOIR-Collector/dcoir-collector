@@ -1,0 +1,24 @@
+DCOIR Gemini Agent Build Live Test Findings Addendum 01 - 2026-04-07
+
+Current state id
+- 2026-04-06-viable-deliverable-generation-contract-durable-v1
+
+Additional live-test results
+- Elastic alert triage is working excellently so far in this session.
+- The collector path has not yet been fully tested.
+- The collector-item translation / reading / analysis path has not yet been fully tested.
+- IOC enrichment could not be reliably triggered or tested in this Gemini Agent session.
+
+Additional validation requirements
+- Build a dedicated collector-analysis test plan for the next bundle so collector outputs and artifacts can be exercised deliberately.
+- Build a dedicated IOC-enrichment test plan for the next bundle so IOC-to-OSINT or IOC-enrichment behavior can be triggered and verified intentionally.
+
+Suggested next review focus
+1. Keep the strong Elastic triage behavior intact.
+2. Add explicit collector-analysis test coverage.
+3. Add explicit IOC-enrichment trigger coverage.
+4. Verify whether missing coverage is a build gap, a routing gap, or only a visibility gap.
+
+Truth boundary
+- This addendum records additional live-test observations only.
+- It does not claim that collector-analysis or IOC-enrichment behavior is absent; only that they were not successfully triggered or verified in this session.
