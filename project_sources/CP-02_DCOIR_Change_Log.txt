@@ -1,6 +1,27 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.68
+Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
+Change class: Gemini live-test governance hardening, control-plane weave, and legacy surface clarity
+
+What changed
+- Added `project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt` to promote the specific April 7 live-test findings into governed Gemini-generation rules.
+- Added `project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt` to establish the bounded role map and hygiene plan for current, generated, comparative, retained, and legacy Gemini-readable surfaces.
+- Updated `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/CP-02_DCOIR_Change_Log.txt`, `README.md`, `knowledge/README.md`, and `project_sources/README.md` so the new governance and legacy-surface rules are woven into the active current-state and repo-guide surfaces.
+- Updated the active continuity surfaces so the new state id and current guidance align across the control plane, handoff, todo, and resume files.
+
+Why
+- The project already had a viable-generation contract, but the April 7 live test exposed more specific repeatable rules that needed to become durable generation guidance.
+- The repo also contains several generated, comparative, extracted, retained, and legacy Gemini surfaces whose roles needed to be made more explicit so future work does not confuse reference material with current operator-facing authority.
+- Leaving the new governance only in additive docs without weaving it into the active current-state path would keep the control plane and repo guides unnecessarily stale.
+
+Validation notes
+- The April 7 generation rules are now durably governed, including high-density field writing, merged Description mapping, standardized direct instruction openings by default, parent starter prompts, explicit collector-artifact handling, explicit collector pivoting, explicit IOC-enrichment ownership, false-positive-aware security-product validation, and singular-triage-command consistency.
+- The bounded legacy-surface map is now durably governed for generated markdowns, comparative markdowns, retained supporting ZIPs, extracted legacy bundles, benchmark reference sets, failure-reference sets, and the new manual legacy-capture area.
+- The current state and repo-guide surfaces were refreshed to point to DOC-07 and DOC-08 instead of leaving those new governance rules isolated from the normal resume and reporting path.
+
+[PRIOR]
 Version: 3.9.67
 Current state id: 2026-04-06-viable-deliverable-generation-contract-durable-v1
 Change class: durable viable deliverable generation contract capture and PP-09 workflow hardening
@@ -19,8 +40,3 @@ Validation notes
 - The durable contract now explicitly separates authority, reference, generated-output, and shipping-deliverable roles.
 - PP-09 now states that stored generated outputs are not the default shipment surface, that Gemini sub-agents must be rejected when materially thinner than the successful alert-triage benchmark, and that the standalone deliverable must be a true full assembly of PP-01 through PP-07 rather than a condensed substitute.
 - The continuity surfaces now reflect the current viable generation baseline as an active deliverable-production rule set while later live testing continues.
-
-[PRIOR]
-Version: 3.9.66
-Current state id: 2026-04-06-standalone-prompt-full-mission-refresh-v1
-Change class: standalone prompt-pack full-mission refresh and PP-08 regeneration

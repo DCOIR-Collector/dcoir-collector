@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.67
+DCOIR Version Manifest 3.9.68
 
-Current state id: 2026-04-06-viable-deliverable-generation-contract-durable-v1
+Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -8,6 +8,8 @@ Current control plane
 - Setup guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Layout spec: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
 - Viable deliverable generation contract: project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt
+- Gemini live-test generation and legacy surface rules: project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt
+- Gemini legacy surface inventory and hygiene plan: project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 - Delivery-bundle structure and GitHub Desktop manual update preference: project_sources/LOG-24_DCOIR_Delivery_Bundle_Structure_And_GitHub_Desktop_Manual_Update_Preference_2026-04-04.txt
 - Release/impact/readiness delivery-class alignment: project_sources/LOG-36_DCOIR_Release_Impact_And_Readiness_Delivery_Class_Alignment_2026-04-05.txt
@@ -26,6 +28,7 @@ Current control plane
 - Deliverables-first structure re-centering and Gemini bundle drift alignment: project_sources/LOG-51_DCOIR_Deliverables_First_Structure_Recentering_And_Gemini_Bundle_Drift_Alignment_2026-04-06.txt
 - Standalone prompt full-mission refresh and PP-08 regeneration: project_sources/LOG-52_DCOIR_Standalone_Prompt_Full_Mission_Refresh_And_PP08_Regeneration_2026-04-06.txt
 - Viable deliverable generation contract and v2 bundle-method capture: project_sources/LOG-53_DCOIR_Viable_Deliverable_Generation_Contract_And_V2_Bundle_Method_2026-04-06.txt
+- Gemini live-test governance and legacy surface clarity: project_sources/LOG-54_DCOIR_Gemini_Live_Test_Governance_And_Legacy_Surface_Clarity_2026-04-07.txt
 
 Current repo guide
 - Root README: README.md
@@ -53,9 +56,10 @@ Current governed helper-skill source
 - GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 
 Current next work item
-- Use DOC-04 and the hardened PP-09 workflow as the durable generation contract for fresh standalone prompt and Gemini bundle creation.
-- Treat the regenerated v2 Gemini and standalone bundle folder shapes as the current preferred operator-facing test bundle layout until later operator feedback says otherwise.
-- Keep `project_sources/original_alert_triage_gemini_agents/` as the verbosity and field-writing benchmark for Gemini Description and Instructions, while keeping `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` as structure and naming reference only rather than wording authority.
-- Keep PP-01 through PP-07 as the authoritative modular prompt-pack source line, regenerate PP-08 from that line, and require the standalone shipped prompt to be a true full assembly rather than a condensed rewrite.
-- Continue bounded live testing of the regenerated v2 Gemini bundle and v2 standalone prompt bundle, capture operator feedback, and refine the durable generation contract further before wider helper-skill promotion if needed.
+- Use DOC-04, DOC-07, DOC-08, and the hardened PP-09 workflow as the durable governance set for fresh standalone prompt and Gemini bundle creation.
+- Preserve the older alert-triage agent set as the verbosity and field-quality benchmark while integrating explicit collector handling, explicit IOC-enrichment ownership, false-positive-aware validation, and singular-command consistency expectations into future generations.
+- Treat knowledge/generated_agent_markdowns and knowledge/comparative_reference_agent_markdowns as supporting readable working surfaces, and treat supporting_assets generated/comparative/knowledge zips as retained delivery artifacts rather than editable readable authority.
+- Keep project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0 as structure and naming reference only, project_sources/original_alert_triage_gemini_agents as the approved quality benchmark, project_sources/original_collector_artifact_gemini_agents as the failure reference, and project_sources/legacy_reference_gemini_agents as the governed home for clearly labeled manual or curated legacy captures.
+- Continue bounded live testing of regenerated Gemini and standalone bundles under the hardened governance set and verify collector-artifact, collector-execution, IOC-enrichment, security-product negative-control, and repeated-session singular-command validation.
+- Continue a bounded repo-hygiene inventory pass for any remaining Gemini-related legacy or retained-delivery surfaces before any broader move, rename, or archival consolidation.
 - Maintain package-cleanliness enforcement, parity checks, and representative regression for future maintenance-only helper-skill fixes.

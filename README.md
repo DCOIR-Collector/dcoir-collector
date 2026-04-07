@@ -56,21 +56,25 @@ Current authority chain:
 A fully developed Gemini parent-agent and sub-agent system that merges Elastic alert triage with DCOIR escalation, collection, enrichment, artifact review, and synthesis while preserving evidence-first DFIR discipline, bounded confidence, and exact command-lane separation.
 
 Current authority chain:
+- `project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt`
+- `project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt`
+- `project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt`
 - `project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt`
 - `project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt`
-- `knowledge/generated_agent_markdowns/`
-- `knowledge/comparative_reference_agent_markdowns/`
-- `supporting_assets/generated_agent_markdowns.zip`
-- `supporting_assets/comparative_reference_agent_markdowns.zip`
-- `supporting_assets/supporting_knowledge_docs.zip`
+- `knowledge/generated_agent_markdowns/` as the readable generated-agent working surface
+- `knowledge/comparative_reference_agent_markdowns/` as the readable comparative-reference working surface
+- `supporting_assets/generated_agent_markdowns.zip`, `supporting_assets/comparative_reference_agent_markdowns.zip`, and `supporting_assets/supporting_knowledge_docs.zip` as retained delivery artifacts rather than editable readable authority
 
 Current topology target:
 - 1 parent orchestrator
 - 7 sub-agents
 - merged Elastic alert triage plus DCOIR collection, enrichment, artifact review, and final synthesis
 
-Legacy note:
-- `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` is retained as extracted legacy reference material, not as the current operator-facing Gemini build authority.
+Legacy and reference notes:
+- `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` is retained as extracted legacy reference material for structure and naming only.
+- `project_sources/original_alert_triage_gemini_agents/` is retained as the approved verbosity and field-quality benchmark set.
+- `project_sources/original_collector_artifact_gemini_agents/` is retained as a failure-reference surface for thin collector-oriented output.
+- `project_sources/legacy_reference_gemini_agents/` is the governed home for clearly labeled manual or curated legacy Gemini captures with ongoing reference value.
 
 ### 4. Project control plane and continuity layer
 The governed manifest, change log, workflow/layout guidance, todo and handoff structure, and task-memory bank that keep the project resumable, auditable, and maintainable across sessions.
@@ -83,7 +87,7 @@ The `dcoir-*` helper skills under `dcoir_skills/` that support routing, validati
 
 ## Repository Navigation
 
-- [project_sources](project_sources/) — control plane, logs, prompt-pack sources, collector sources, and extracted readable project-source folders
+- [project_sources](project_sources/) — control plane, logs, prompt-pack sources, collector sources, current Gemini governance docs, and extracted readable project-source folders
 - [knowledge](knowledge/) — knowledge docs, routing notes, connector reference material, generated/comparative Gemini markdowns, and task memory
 - [dcoir_skills](dcoir_skills/) — governed helper-skill source root for current DCOIR skills
 - [project_settings](project_settings/) — bootstrap and settings surfaces used for Project-space anchoring
@@ -97,5 +101,5 @@ The documentation goal is to make the repository understandable without hidden c
 - a fuller wiki-style knowledge structure in `knowledge/`
 - maintained helper-skill routing guidance
 - clearer documentation of the modular prompt-pack, standalone master prompt, Gemini design line, DFIR operating posture, and enrichment model
-- one current operator-facing Gemini build path and clear labeling for legacy extracted materials
+- one current operator-facing Gemini build path and clear labeling for generated, comparative, retained, and legacy Gemini surfaces
 - documentation and validation guidance that stays aligned to the current governed working line instead of historical assumptions
