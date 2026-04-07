@@ -1,179 +1,62 @@
 PP-09 Gemini Enterprise Agent Designer Generator Workflow v1.0.0
 
-Purpose
-- This file defines the current approved workflow for designing, refreshing, validating, and packaging Gemini parent-agent and sub-agent field sets for the DCOIR project line.
-- It exists to keep Gemini design work bounded by the validated DCOIR prompt-pack, current control plane, approved comparative references, current packaging rules, and the durable viable-deliverable generation contract.
-- It is a design-and-generation workflow source, not a runtime investigative prompt.
+PURPOSE
+- Approved workflow for designing, validating, and packaging Gemini parent-agent and sub-agent field sets for the DCOIR line.
+- Generate fresh standalone and Gemini deliverables from the current authoritative modular source line.
 
-Primary outcome
-- Produce high-quality Gemini parent-agent and sub-agent field sets that preserve DCOIR evidence discipline, incorporate the approved alert-triage-to-collector merge path, exploit Gemini field space fully and intentionally, and emit companion markdown artifacts that are readable, reviewable, and reusable.
-- Produce a standalone analyst-facing all-in-one prompt only through fresh full assembly from PP-01 through PP-07 when the operator requests the standalone deliverable in the same generation wave.
-
-Authority order
+AUTHORITY ORDER
 1. Project Instructions
-2. CP-01_DCOIR_Version_Manifest.txt
-3. CP-02_DCOIR_Change_Log.txt
-4. PP-01 through PP-07 as the authoritative behavioral source line
-5. PP-08 as a runtime parity reference only
-6. DOC-01, DOC-03, DOC-04, DOC-07, LOG-01, LOG-02, LOG-03, and Knowledge guidance as secondary supporting references
-7. Approved comparative reference agent markdowns as field-style and routing-language exemplars only
+2. CP-01
+3. CP-02
+4. PP-01 through PP-07
+5. PP-08 as parity reference only
+6. DOC-04, DOC-07, generation-validation docs, and current logs as supporting guidance
 
-Non-negotiable source rules
-- PP-01 through PP-07 remain the design-time authority for DCOIR behavior and guardrails.
-- PP-08 may be used only as a parity check after design extraction; it must never override contradictory modular-source authority.
-- `project_sources/original_alert_triage_gemini_agents/` is the approved comparative design reference set for field style, routing density, instruction explicitness, startup behavior richness, and delegation-aware Description writing. Treat it as the gold-standard writing benchmark.
-- `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` is approved as a structure and naming reference only. Use its folder model and naming lessons when helpful, but do not treat its wording as current quality authority.
-- `project_sources/original_collector_artifact_gemini_agents/` is a historical failure reference that helps identify thin-output anti-patterns. Do not ship outputs that resemble its under-dense failure posture.
-- Comparative references do not override DCOIR behavior, schema, or guardrails. They do influence how Gemini fields should be written and optimized.
-- If the control plane, modular prompt-pack, and comparative references conflict, preserve the DCOIR behavioral authority and absorb only the style or structural lessons that do not break it.
+NON-NEGOTIABLE RULES
+- PP-01 through PP-07 remain design-time authority.
+- Generated outputs must be runtime-self-sufficient.
+- Preserve evidence-first behavior, bounded confidence, command-lane separation, collector-awareness, and explicit next-step guidance.
+- Generated outputs must explicitly cover collector-artifact interpretation, collector pivoting, IOC-enrichment ownership, false-positive-aware security-product validation, and operator-state awareness.
+- Reject filler endings and weak “assistant chatter” in analyst-facing outputs.
 
-Fresh-generation-only rule
-- Generate fresh Gemini deliverables every round.
-- Do not default to shipping stored generated markdowns from the repo as live deliverables.
-- Stored generated markdowns may be used for gap checking, parity review, version history, or comparative review only.
-- When a standalone deliverable is requested, generate a fresh all-in-one prompt by full assembly from PP-01 through PP-07.
-- Do not ship a condensed standalone rewrite that omits prompt-pack substance and pushes that missing substance into attachments.
+GEMINI ATTACHMENT BUDGET
+- Hard ceiling for the office environment: 1000 KB per file, 2000 KB total per prompt.
+- Safe target: 900 KB per file, 1800 KB total per prompt.
+- Prefer chunk-first attachment sets.
+- Do not assume a monolithic baseline report is the default uploadable surface.
 
-Field optimization rules
-- Treat Gemini Description as a routing-critical field used for automatic delegation and routing.
-- Treat Gemini Instructions as the primary field for preserving workflow, tool usage, scope discipline, error handling, stop conditions, and output contract.
-- Do not waste field budget by leaving core role, scope, and routing behavior implicit when it can be stated explicitly.
-- Use the available field budget aggressively enough to preserve operational fidelity.
-- Compare every generated parent and sub-agent against the approved alert-triage reference density and reject materially thinner output.
-- Merge the strongest useful material from purpose, role summary, description, duplicated scope text, and equivalent fields into Gemini Description when that improves routing clarity.
-- Do not preserve weak duplication for its own sake. Merge for runtime effectiveness.
-- Preserve intentional repetition only when repetition reinforces routing boundaries, startup behavior, tool limits, or safety constraints.
-- Write Instructions as if they must stand alone under operational pressure.
-- Prefer documentation-maximal field writing when fuller wording materially improves routing, continuity, operator understanding, validation fidelity, or future maintenance.
+REQUIRED VALIDATION FOR GENERATED BUNDLES
+- required files present
+- required fields present
+- .txt suffix on operator-facing deliverables that may cross mail scanners
+- upload-budget conformance for default attachment sets
+- collector-artifact interpretation visibility
+- explicit collector pivot behavior
+- explicit IOC ownership
+- false-positive-aware security-product behavior
+- SINGULAR TRIAGE COMMAND contract conformance
+- operator-state awareness and no filler
 
-Required design goals for every Gemini refresh
-- Preserve DCOIR evidence-first discipline.
-- Preserve partial-scope discipline and bounded confidence.
-- Preserve command-lane separation between Elastic endpoint syntax and analyst workstation syntax.
-- Preserve one-best-next-step behavior where the workflow expects it.
-- Add an explicit escalation path from alert triage into DCOIR collection when host-based evidence is justified.
-- Preserve clear behavior after collector output is pasted back into chat.
-- Preserve authoritative IOC-enrichment behavior using freely readable public sources only as supporting context and never as case-evidence replacement.
-- Avoid asynchronous, hidden-handoff, or background-work language.
-- Final standalone combined-prompt outputs and generated Gemini parent/sub-agent outputs must be runtime-self-sufficient and must not mention or assume dcoir-* skills, hidden project helper workflows, hidden memory, or unattached workspace files.
-- Required runtime behavior must live in the generated fields plus approved attached files, not in unstated project-side helpers.
-- Produce human-readable companion markdowns for every generated agent.
-- Preserve rationale, assumptions, evidence boundaries, workflow explanations, validation notes, and source-mapping detail in generated artifacts whenever that context would help a future worker or operator understand the design.
+REQUIRED GENERATION VERIFICATION
+- Gemini bundle verification must check structure, required files, required field presence, attachment map completeness, and attachment-budget readiness.
+- Standalone bundle verification must check full assembly from PP-01 through PP-07, required files, and .txt-safe packaging.
+- Use the deterministic verification and QC artifacts under project_sources/generation_validation/ when they are in scope.
 
-Approved merged topology target
-- The default generated topology should now be a merged parent-agent design that combines:
-  - Elastic alert triage readiness and evidence planning
-  - explicit escalation into DCOIR collection or enrichment when warranted
-  - DCOIR artifact review, enrichment review, and final synthesis discipline
-- The default merged parent/sub-agent topology is:
-  1. Parent orchestrator / entry agent
-  2. Session Readiness and Intake
-  3. Environment and Coverage Mapper
-  4. Alert Family Classifier
-  5. Evidence and Provenance Analyst
-  6. Query Planner and Syntax Guard
-  7. DCOIR Collection and Artifact Orchestrator
-  8. Decision and Report Composer
-- A future design may expand this topology only when the bounded design artifact explicitly records the reason.
+AUTOMATION POSTURE
+- Automate what is feasible before live use:
+  - bundle structure verification
+  - field/section presence checks
+  - upload-budget checks
+  - fixture-driven prompt and artifact review checks where practical
+- Do not overclaim full Gemini Enterprise UI automation when the platform path still requires manual operator setup.
+- Treat the manual Enterprise UI run as a separate live-validation lane after repo-side verification passes.
 
-Collector-awareness requirements
-- The generated design must understand what the collector can and cannot do.
-- The generated design must distinguish collector actions from Elastic response actions such as get-file.
-- The generated design must interpret pasted collector outputs in human terms.
-- The generated design must explain fields such as STATUS, RUN_ID, SESSION_STATUS, ENRICH_BUNDLE_PATH, COLLECT_BUNDLE_PATH, NEXT_GET_FILE, DELETE_SCRIPT_COMMAND, and NEXT_QUICK_COMMANDS.
-- The generated design must surface exact next-step guidance once pasted collector output is available.
+PREFERRED OUTPUTS
+- one standalone bundle
+- one Gemini bundle
+- one source-mapping artifact
+- one verification/QC note
+- one attachment map
 
-Gemini upload-budget and attachment-budget rules
-- For the current office Gemini Enterprise Agent environment, treat 1000 KB maximum per file and 2000 KB maximum total attachments per prompt as the practical hard ceiling until later governed testing supersedes it.
-- Use 900 KB or less per file and 1800 KB or less total attachments per prompt as the default safe design target.
-- Do not assume a monolithic baseline report is the default analyst-facing attachment surface.
-- Prefer chunk-first attachment sets built from metadata summaries, representative evidence slices, enrichment slices, retrieved-artifact slices, and final-synthesis slices when the same analyst value can be preserved without a large single file.
-- When an operator-facing bundle is intended for manual Gemini use, the file set should make the likely upload path obvious and should avoid requiring the operator to guess which files exceed the environment budget.
-- The session-total upload ceiling remains unknown and should be carried as a live-test observation item rather than an assumed fixed rule.
-
-Preferred operator-facing bundle shapes
-- Gemini bundle top-level folder pattern:
-  - `DCOIR_Gemini_Email_Build_Bundle_<version>/`
-- Preferred Gemini subfolders:
-  - `00_START_HERE/`
-  - `01_GEMINI_AGENT_BUILD/`
-  - `02_PRIME_AGENT_ATTACHMENTS/`
-- Preferred `00_START_HERE/` files:
-  - `README_FIRST.md.txt`
-  - `Gemini_Build_Quick_Start.md.txt`
-  - `Agent_Attachment_Map.md.txt`
-- Preferred `01_GEMINI_AGENT_BUILD/` files:
-  - `Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt`
-  - one markdown per numbered sub-agent using the current approved names
-  - `Generated_DCOIR_Gemini_Agent_Index.md.txt`
-- Preferred standalone bundle top-level folder pattern:
-  - `DCOIR_Standalone_Prompt_Build_Bundle_<version>/`
-- Preferred standalone subfolders:
-  - `00_START_HERE/`
-  - `01_STANDALONE_PROMPT/`
-  - `02_PROMPT_ATTACHMENTS/`
-- Preferred standalone prompt file:
-  - `AFRICOM_SOC_DCOIR_Standalone_Master_Prompt_Full_Assembly.txt`
-- Keep the shipped test-facing bundles minimal and operator-facing. Do not mix control-plane logs, packager reports, helper notes, collector internals, harness files, or unrelated repo material into the default Gemini or standalone test bundle.
-- When email filters require it, use mail-safe `.txt` suffixes on markdown-style or zip-style payload names.
-
-Knowledge and packaging rules
-- The standard uploaded supporting-Knowledge delivery form is supporting_knowledge_docs.zip.
-- Do not assume individual Knowledge docs are uploaded into the Project workspace.
-- If Knowledge content is required during generation, unzip or otherwise reference supporting_knowledge_docs.zip.
-- Full-refresh bundles must place Knowledge docs inside supporting_knowledge_docs.zip and ship that zip as a supporting asset.
-- Full-refresh bundles must also place comparative reference agent markdowns and generated DCOIR agent markdowns in supporting_assets/.
-- For operator-facing test bundles, keep agent-definition files and attachment files clearly separated and include only the knowledge files that are actually part of the accepted attachment baseline for that round.
-
-Required outputs from a compliant generation pass
-1. One bounded design artifact source file suitable for Project upload.
-2. One parent-agent markdown.
-3. One markdown per generated sub-agent.
-4. One agent index or topology map.
-5. One verbose source-mapping and rationale artifact that explains which project sources, comparative references, and design choices informed each generated field set.
-6. Exact packaging instructions for the generated markdown assets.
-7. If supporting Knowledge guidance changed materially, a regenerated supporting_knowledge_docs.zip.
-8. When a standalone deliverable is requested, one full-assembly standalone prompt file plus a clear attachment map.
-9. When an operator-facing Gemini or standalone test bundle is in scope, one bundle-verification note or checklist covering required files, likely upload path, and attachment-budget readiness.
-
-Required validation checks
-- Control-plane alignment check
-- Behavioral-authority check against PP-01 through PP-07
-- Runtime parity spot-check against PP-08
-- Description richness check for routing quality
-- Instructions explicitness check for operational fidelity
-- Collector-awareness check
-- Command-lane separation check
-- Partial-scope and bounded-confidence check
-- Generated markdown presence check
-- Packaging conformance check
-- Documentation-maximalism check for generated fields, companion markdowns, topology maps, and release instructions
-- Runtime self-sufficiency and helper-leakage check
-- Thin-output rejection check against the approved alert-triage benchmark set
-- Standalone full-assembly check when a standalone prompt is in scope
-- Upload-budget conformance check for operator-facing attachment sets
-- Bundle completeness and field-presence check for generated Gemini and standalone deliverables
-- Manual quality-control review against benchmark density, collector visibility, enrichment ownership, false-positive discipline, singular-command consistency, and operator-facing usability
-- Reject any generated output that mentions or depends on dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files
-
-Stop conditions
-- Stop if CP-01 and CP-02 do not clearly establish the current working set.
-- Stop if the modular prompt-pack line is missing or internally contradictory.
-- Stop if a requested design would bypass DCOIR evidence discipline, command-lane separation, or safety constraints.
-- Stop if the requested bundle structure conflicts with the current repo-layout spec and the operator has not approved changing the layout spec.
-- Stop if the generated parent or any generated sub-agent is materially thinner than the approved alert-triage benchmark set.
-- Stop if the standalone all-in-one prompt is not a true full assembly of PP-01 through PP-07.
-- Stop if the default operator-facing attachment set exceeds the current practical upload budget without a deliberate operator override and a stated workaround.
-
-Packaging rules for generated deliverables
-- Full-refresh bundles should use project_sources/, supporting_assets/, release_notes/, and optional project_settings/.
-- Generated agent markdowns belong in a supporting asset package such as generated_agent_markdowns.zip unless the operator explicitly wants them uploaded individually.
-- Comparative reference markdowns may be normalized and repackaged as a supporting asset for future reuse.
-- supporting_knowledge_docs.zip belongs in supporting_assets/.
-- RELEASE_INSTRUCTIONS.txt must state exact DELETE and UPLOAD actions.
-- Operator-facing test bundles should remain minimal, human-readable, and free of unrelated repo-maintenance material.
-
-Delivery posture
-- Prefer full-refresh bundles for structural Gemini design work.
-- Present the bounded design artifact and supporting generated agent markdowns together so the operator can update both the Project and the Gemini environment with aligned materials.
-- Version or retain generated outputs in GitHub only after the operator has accepted the current round as viable enough to preserve.
+END STATE
+- Fresh Gemini and standalone bundles should be smaller, more deterministic, easier to quality-check, and easier to use in the operator’s real office Gemini environment.

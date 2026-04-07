@@ -33,25 +33,15 @@ param(
   [string]$Action,
 
   [int]$TargetPid,
-
   [string]$Path,
-
   [string]$ServiceName,
-
   [string]$RegistryPath,
-
   [string]$LogName,
-
   [int[]]$EventId,
-
   [int]$MaxEvents = 500,
-
   [string]$EnrichSessionId,
-
   [switch]$NewEnrichSession,
-
   [switch]$FinalizeEnrichSession,
-
   [string]$Quick,
   [string]$Target,
   [string]$Target2
@@ -60,7 +50,7 @@ param(
 Set-StrictMode -Version 2
 $ErrorActionPreference = "Continue"
 $ScriptFilePath = $MyInvocation.MyCommand.Path
-$ScriptVersion = "3.1.5"
+$ScriptVersion = "3.1.6"
 
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList

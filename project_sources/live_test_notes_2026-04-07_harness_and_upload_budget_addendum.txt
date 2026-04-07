@@ -1,0 +1,7 @@
+DCOIR Live Test Addendum - Harness And Upload Budget - 2026-04-07
+
+Observed and now implemented
+- collector output shaping must support Gemini upload budgets
+- harness must verify artifact-size outputs, not only artifact presence
+- direct collector first remains the preferred first live-fire lane
+- session start/add/finalize behavior needs explicit validation

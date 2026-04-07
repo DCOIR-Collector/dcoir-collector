@@ -41,10 +41,14 @@ try {
         PackagePath = $packagePath
         BaselineReportPath = $baselineReportPath
         MetadataReportPath = $metadataReportPath
+        UploadSummaryPath = $null
+        UploadBudgetManifestPath = $null
+        DefaultGeminiUploadSetStatus = $null
         CollectBundlePath = $null
         EnrichSessions = @()
         EnrichSessionCounter = 0
         OpenEnrichSessionId = $null
+        LastSessionResolutionMode = $null
         CreatedLocal = (Get-Date).ToString("o")
         CreatedUTC = (Get-Date).ToUniversalTime().ToString("o")
         CollectorVersion = $ScriptVersion
@@ -52,17 +56,31 @@ try {
 
       $baseline = New-BaselineReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $baselineReportPath -Text $baseline.ReportText
+      $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
+      Write-ReportFile -Path $metadataReportPath -Text $metadataText
+
+      $uploadArtifacts = New-CollectUploadArtifacts -State $state -Baseline $baseline
+      $state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath
+      $state.UploadBudgetManifestPath = $uploadArtifacts.UploadManifestPath
+      $state.DefaultGeminiUploadSetStatus = $uploadArtifacts.DefaultSetStatus
 
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
 
       $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
-      ) -ToolMap $toolMap -Extra @{ collect_bundle = $null }
+        @($baselineReportPath, $metadataReportPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+      ) -ToolMap $toolMap -Extra @{
+        collect_bundle = $null
+        upload_summary = $state.UploadSummaryPath
+        attachment_budget_manifest = $state.UploadBudgetManifestPath
+        default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
+      }
 
       $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId) -Paths @(
         $baselineReportPath,
         $metadataReportPath,
+        $state.UploadSummaryPath,
+        $state.UploadBudgetManifestPath,
         $state.ArtifactsDir,
         $Global:ExecutionTxtPath,
         $Global:ExecutionJsonlPath,
@@ -75,9 +93,14 @@ try {
 
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
-      $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
-      ) -ToolMap $toolMap -Extra @{ collect_bundle = $bundlePath }
+      [void](New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
+        @($baselineReportPath, $metadataReportPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+      ) -ToolMap $toolMap -Extra @{
+        collect_bundle = $bundlePath
+        upload_summary = $state.UploadSummaryPath
+        attachment_budget_manifest = $state.UploadBudgetManifestPath
+        default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
+      })
 
       $status = "SUCCESS"
       if (@($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
@@ -89,10 +112,14 @@ try {
       Write-Output ("RUN_ID={0}" -f $RunId)
       Write-Output ("BASELINE_REPORT_PATH={0}" -f $baselineReportPath)
       Write-Output ("METADATA_REPORT_PATH={0}" -f $metadataReportPath)
+      Write-Output ("UPLOAD_SUMMARY_PATH={0}" -f $state.UploadSummaryPath)
+      Write-Output ("ATTACHMENT_BUDGET_MANIFEST_PATH={0}" -f $state.UploadBudgetManifestPath)
+      Write-Output ("DEFAULT_GEMINI_UPLOAD_SET_STATUS={0}" -f $state.DefaultGeminiUploadSetStatus)
       Write-Output ("COLLECT_BUNDLE_PATH={0}" -f $bundlePath)
       Write-Output ('NEXT_GET_FILE=get-file --path "{0}" --comment "Retrieve DCOIR collect bundle"' -f $bundlePath)
       Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
       Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
+      Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, METADATA_REPORT_PATH, and representative final_artifacts slices before the full baseline report.')
       Write-QuickNextSteps -Phase "Collect"
     }
 
@@ -112,7 +139,7 @@ try {
       $Global:ExecutionTxtPath = Join-Path $session.LogsDir ("enrich_{0}_{1}_execution_log.txt" -f $actionLabel, $logStamp)
       $Global:ExecutionJsonlPath = Join-Path $session.LogsDir ("enrich_{0}_{1}_execution_log.jsonl" -f $actionLabel, $logStamp)
       $Global:ErrorsLogPath = Join-Path $session.LogsDir ("enrich_{0}_{1}_errors.log" -f $actionLabel, $logStamp)
-      Set-Content -Path $Global:ExecutionTxtPath -Value ("DCOIR Enrich Execution Log`r`nRunId={0}`r`nEnrichSessionId={1}`r`nAction={2}" -f $state.RunId, $session.SessionId, $actionLabel) -Encoding UTF8
+      Set-Content -Path $Global:ExecutionTxtPath -Value ("DCOIR Enrich Execution Log`r`nRunId={0}`r`nEnrichSessionId={1}`r`nAction={2}`r`nSessionResolutionMode={3}" -f $state.RunId, $session.SessionId, $actionLabel, $session.SessionResolutionMode) -Encoding UTF8
       Set-Content -Path $Global:ExecutionJsonlPath -Value "" -Encoding UTF8
       Set-Content -Path $Global:ErrorsLogPath -Value "" -Encoding UTF8
 
@@ -140,12 +167,11 @@ try {
       Write-Output ("STATUS={0}" -f $status)
       Write-Output ("RUN_ID={0}" -f $state.RunId)
       Write-Output ("ENRICH_SESSION_ID={0}" -f $session.SessionId)
+      Write-Output ("SESSION_RESOLUTION_MODE={0}" -f $session.SessionResolutionMode)
       if ($result) {
         Write-Output ("ENRICH_REPORT_PATH={0}" -f $result.ReportPath)
         Write-Output ("ACTION_ARTIFACT_PATH={0}" -f $result.ActionArtifactPath)
-        if ($result.StagedPath) {
-          Write-Output ("STAGED_PATH={0}" -f $result.StagedPath)
-        }
+        if ($result.StagedPath) { Write-Output ("STAGED_PATH={0}" -f $result.StagedPath) }
       } else {
         Write-Output ("ENRICH_REPORT_PATH={0}" -f $session.SummaryPath)
       }

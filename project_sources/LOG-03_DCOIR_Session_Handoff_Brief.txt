@@ -1,38 +1,14 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
+Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
 
-Current governance state
-- Project Instructions remain the first bootstrap anchor.
-- After that, readable governed text is read from GitHub repository malwaredevil/dcoir-collector.
-- The validated GitHub connector low-level lane remains the approved chat-managed path for governed readable-text updates.
-- GitHub Desktop manual grouped repo-update delivery remains the default governed write posture, while PR and review flows stay optional and bounded rather than mandatory.
-- The transcript-confirmed operating constraint remains explicit in governed state: during work hours prefer browser-native, no-upload or download required workflows whenever they can achieve the same governed result.
-- DOC-07, DOC-08, LOG-55, and PP-09 now jointly carry the active Gemini governance for live-test hardening, legacy-surface clarity, upload-budget-aware attachment design, and the next validation queue.
+Stable baseline
+- GitHub-primary readable-source model remains in force.
+- The collector and harness line now includes upload-budget-aware output shaping and verification scaffolding.
+- The active generation line now includes deterministic bundle verification and QC assets under project_sources/generation_validation.
 
-Current validated status
-- The April 7 Gemini live-test rules remain durably governed in DOC-07, including explicit collector-artifact coverage, explicit collector pivoting, explicit IOC-enrichment ownership, false-positive-aware validation, and singular-command consistency.
-- The office Gemini Enterprise Agent environment now has a measured practical file budget for this workflow: 1000 KB maximum per file and 2000 KB maximum total attachments per prompt, with session-total capacity still unknown.
-- The current safe design targets are 900 KB or less per file and 1800 KB or less total attachments per prompt.
-- Elastic alert triage remains the strongest validated path from the recent Gemini live test.
-
-Current next planned work item
-- Keep DOC-04, DOC-07, DOC-08, LOG-55, and PP-09 as the durable governance set for future standalone and Gemini regeneration.
-- Continue bounded live testing with an explicit open-items queue focused on upload-budget-aware intake, baseline-surface redesign, bundle-generation verification, generated-bundle quality control, automation planning, collector-artifact interpretation, IOC enrichment, repeated-session behavior, skill-source parity, and optional Drive staging evaluation.
-- Preserve GitHub Desktop manual grouped repo-update delivery as the default governed write posture.
-
-Current open items carried forward
-1. Finalize the upload-budget-aware artifact-intake pattern for baseline, enrichment, retrieved-artifact, and final-synthesis review.
-2. Revisit the purpose of the baseline report surface and decide whether it should be reduced, split, repurposed, or removed from the default Gemini upload path.
-3. Build a deterministic generation-verification action or workflow for the Gemini bundle and the standalone all-in-one prompt bundle.
-4. Build explicit generated-bundle quality-control review criteria so each new Gemini bundle can be checked against the expected benchmark and operator expectations.
-5. Plan future automation for testing the standalone all-in-one prompt bundle against fake Elastic alerts and fake collector artifacts.
-6. Plan future automation for testing the Gemini parent plus sub-agent bundle against fake Elastic alerts and fake collector artifacts.
-7. Validate the collector-analysis and collector-artifact interpretation path with real collector outputs.
-8. Validate the IOC-enrichment trigger and ownership path with a dedicated test plan.
-9. Verify whether enrich-add actions truly append to an existing open session or silently create a new one.
-10. Preserve live-fire operator workflow corrections and walkthrough-friendly behavior in future collector execution guidance and Gemini quality review.
-11. Verify installed-skill parity against governed GitHub source and resolve any mismatch explicitly.
-12. Evaluate whether an optional Google Drive staging folder would reduce document-handling friction without violating the GitHub-primary readable-source rule.
-13. Research whether Gemini Enterprise Agents can expose an attached collector zip plus PowerShell script as usable links for users.
-14. Preserve the unknown session-total Gemini file budget as an open live-test item until later testing proves the practical limit.
+Open follow-through
+- apply and validate this implementation wave
+- generate the next collector bundle, standalone bundle, and Gemini bundle from the updated source line
+- run bounded live tests tomorrow against the office Gemini environment
+- then revisit parity and optional Drive staging

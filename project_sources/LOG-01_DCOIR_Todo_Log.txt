@@ -1,40 +1,14 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
-
-Current stable pointers
-- Repo: malwaredevil/dcoir-collector
-- Collector runtime: project_sources/DCOIR_Collector.ps1
-- Collector source set: project_sources/collector_parts/*.ps1
-- Harness: project_sources/run_DCOIR_Tests.ps1
-- Task memory bank root: knowledge/task_memory
-- Governed helper-skill source root: dcoir_skills/
-- Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
-- Durable deliverable-generation contract: project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt
-- Gemini live-test generation and legacy-surface rules: project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt
-- Gemini legacy-surface inventory and hygiene plan: project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt
-- Gemini upload-budget and validation-automation queue: project_sources/LOG-55_DCOIR_Gemini_Upload_Budget_And_Validation_Automation_Queue_2026-04-07.txt
+Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
 
 Current active priority
-- Keep the fully re-stabilized first-wave GitHub automation baseline in service while the main project line stays on the real deliverables, and continue bounded live testing of the standalone and Gemini deliverables under DOC-04, DOC-07, DOC-08, LOG-55, and PP-09 with measured upload-budget awareness.
+- Finish the implementation wave by shipping the repo update bundle, then generate fresh collector, standalone, and Gemini bundles from the updated source line.
 
 Queued next priorities
-- Finalize the upload-budget-aware artifact-intake pattern for baseline, enrichment, retrieved artifact, and final-synthesis review.
-- Revisit the purpose of the baseline report surface and decide whether it should be reduced, split, repurposed, or removed from the default Gemini upload path.
-- Build a deterministic generation-verification action or workflow for the Gemini bundle and the standalone all-in-one prompt bundle.
-- Build explicit generated-bundle quality-control review criteria so each new Gemini bundle can be checked against the expected benchmark and operator expectations.
-- Plan future automation for testing the standalone all-in-one prompt bundle against fake Elastic alerts and fake collector artifacts.
-- Plan future automation for testing the Gemini parent plus sub-agent bundle against fake Elastic alerts and fake collector artifacts.
-- Validate the collector-analysis and collector-artifact interpretation path with real collector outputs.
-- Validate the IOC-enrichment trigger and ownership path with a dedicated test plan.
-- Verify whether enrich-add actions truly append to the same open session instead of silently creating a new one.
-- Preserve live-fire operator workflow corrections and walkthrough-friendly behavior in future collector execution guidance and Gemini quality review.
-- Verify installed-skill parity against governed GitHub source and resolve any mismatch explicitly.
-- Evaluate whether an optional Google Drive staging folder would reduce document-handling friction without violating the GitHub-primary readable-source rule.
-- Research whether Gemini Enterprise Agents can support an attached collector zip plus PowerShell script delivery model and expose usable links to those assets for users.
-- Preserve the unknown session-total Gemini file budget as an open live-test item until later operator testing proves the practical limit.
-- During work hours, prefer browser-native, no-upload or download required workflows whenever that lane can achieve the same governed result.
-- Keep GitHub Desktop manual grouped repo-update delivery as the default governed write posture.
-- Keep PR and review flows optional and bounded rather than mandatory.
-- Keep package-cleanliness enforcement active so delivered skill zips stay free of runtime residue such as __pycache__/, *.pyc, and .DS_Store.
-- Use parity verification and representative regression before treating future skill patches as ready.
+- live-validate collector upload summary and attachment-budget manifest behavior
+- live-validate harness attachment-budget checks and session-behavior suite
+- live-validate start/add/finalize semantics in the office environment
+- generate tomorrow's collector, standalone, and Gemini test bundles
+- verify installed-skill parity vs governed GitHub source
+- decide whether a Drive staging lane is worth formalizing

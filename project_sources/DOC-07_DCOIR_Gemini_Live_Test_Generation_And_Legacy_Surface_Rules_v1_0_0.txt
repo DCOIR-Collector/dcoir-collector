@@ -1,164 +1,42 @@
 DCOIR Gemini Live-Test Generation and Legacy Surface Rules v1.0.0
 
-Purpose
-- Capture the specific April 7, 2026 live-test findings that should govern future Gemini-agent generation rounds.
-- Preserve a repo-hygiene map for current-versus-legacy Gemini-related readable surfaces so future work does not confuse reference material with current operator-facing authority.
-- Supplement DOC-04 and PP-09 with more explicit generation, validation, and legacy-surface-handling rules.
+PURPOSE
+- Preserve the April 7 live-test findings that must govern future Gemini-generation rounds.
+- Supplement DOC-04 and PP-09 with more explicit generation, validation, and live-lane rules.
 
-Scope
-- This document governs future Gemini-agent generation behavior, validation expectations, and readable-surface role handling for the DCOIR project line.
-- This document does not replace PP-01 through PP-07, PP-09, PP-10, DOC-04, or the control plane. It sharpens how those sources should be applied after the April 7 live-test cycle.
+APRIL 7 LIVE-TEST RULES STILL IN FORCE
+- preserve high-density field writing
+- merge role/purpose into one strong Description field when that improves routing
+- default Instructions to the “You are …” style
+- include parent starter prompts by default when supported
+- make collector-artifact interpretation explicit
+- make collector pivoting explicit when SIEM-native evidence leaves host-side gaps
+- make IOC ownership explicit
+- add false-positive-aware security-product validation
+- enforce SINGULAR TRIAGE COMMAND consistency
 
-Section 1: April 7 live-test generation rules
+OFFICE GEMINI UPLOAD-BUDGET RULE
+- hard ceiling: 1000 KB per file and 2000 KB total attachments per prompt
+- safe target: 900 KB per file and 1800 KB total per prompt
+- prefer chunk-first artifact intake
+- do not assume the monolithic baseline report is the default upload surface
 
-1. Preserve high-density field writing
-- Future Gemini generations should preserve the high-specificity, high-density writing posture proven by the older AFRICOM SOC Elastic Defend Triage Agent set.
-- Near-full use of the available Description and Instructions field budgets is acceptable when the added wording materially improves predictability, routing quality, workflow preservation, or analyst reliability.
-- Do not optimize Gemini Description or Instructions for superficial brevity when that would make the output materially thinner than the proven benchmark set.
+HARNESS / LIVE-FIRE RULES DERIVED FROM THE TRANSCRIPT
+- for the first true live response-action collector test, prefer the direct collector lane before the harness
+- align live-test guidance to the C:\Temp lane
+- use the canonical runtime filename DCOIR_Collector.ps1
+- use cmd.exe-native move/delete examples when file relocation is the task in that lane
+- prefer simple response-action commands: single backslashes, no unnecessary backslash-escaped quotes, one command at a time
+- preserve the distinction between local harness validation and remote live-fire endpoint execution
 
-2. Description-field merge rule
-- When generating agent markdowns for Gemini Agent Designer, merge the strongest useful content from role, purpose, and description into one best-of-breed field named Description when that improves clean field mapping.
-- Do not keep a separate Agent role / purpose field in the generated markdowns when that separation would create mapping friction in Agent Designer.
-- Keep the Description field routing-rich and explicit enough to support automatic delegation quality.
+VALIDATION RULES
+- include a dedicated collector-artifact interpretation test plan
+- include a dedicated collector execution / collection-path and harness test plan
+- include a dedicated IOC-enrichment trigger / ownership test plan
+- include repeated-session checks for start/add/finalize semantics
+- include repeated-session checks for SINGULAR TRIAGE COMMAND consistency
+- include upload-budget conformance checks for default uploadable artifact sets
+- include manual QC for operator-state awareness and no-filler behavior
 
-3. Instructions opening-style rule
-- Standardize generated Instructions to the "You are ..." style when that improves directness, runtime clarity, and parity with the successful older benchmark set.
-- Deviate from the "You are ..." opening only when a bounded design artifact explicitly records why another style is stronger for that specific agent.
-
-4. Parent starter-prompt rule
-- The generated parent or main agent should include three starter prompts by default unless the operator overrides that requirement or the target platform cannot support starter prompts.
-- Starter prompts should help the operator begin the most common live workflows quickly without changing the underlying generation authority.
-
-5. Collector-artifact coverage rule
-- The generated main or parent agent must explicitly cover triage, interpretation, and explanation of DCOIR collector artifacts rather than focusing only on Elastic alert triage.
-- The generated topology must make collector-artifact interpretation visibly discoverable to the operator.
-- Do not leave collector-artifact handling implicit if the generated wording would cause an operator to miss that capability.
-
-6. Collector-pivot rule when SIEM-native evidence is insufficient
-- When KQL, ESQL, osquery, Elastic response actions, or other SIEM-native paths leave material evidence gaps, the generated design must present the DCOIR collector path as an explicit next-step option.
-- The collector pivot should be framed as a bounded analyst-facing option to reduce uncertainty, not only as an internal or hidden fallback.
-- The generated design should prefer collector pivoting before overcommitting to a strong compromise conclusion when host-side evidence is still materially missing.
-
-7. IOC-enrichment ownership rule
-- Ownership of IOC-to-OSINT or IOC-to-public-source enrichment must be explicit in the generated topology and wording.
-- Do not leave IOC-enrichment responsibility ambiguous across the parent and sub-agents.
-- Public-source enrichment should remain supporting context and should not replace direct case evidence.
-
-8. Security-product false-positive validation rule
-- When the evidence chain includes a known security product, the generated design must branch into a false-positive-aware validation path before overcommitting.
-- That validation path should:
-  - test whether the product appears to be the legitimate product rather than a renamed folder, executable, or lookalike path
-  - warn the operator that the activity may represent legitimate product behavior or a possible false positive
-  - distinguish between verified legitimate behavior, suspicious masquerading, and unresolved ambiguity
-- If ambiguity remains after SIEM-native validation, the generated design should offer the collector path as a next-step option.
-- Bounded product-behavior or vendor-validation web research may be used when it materially improves this branch and does not replace case evidence.
-
-9. Singular-triage-command contract rule
-- If a generated analyst-facing response names a tool under Tool chosen, it must also emit one corresponding SINGULAR TRIAGE COMMAND unless it explicitly states why no safe command can be formed.
-- A blank SINGULAR TRIAGE COMMAND section is a contract failure.
-- Repeated-session consistency matters. The same class of case should not alternate unpredictably between command-present and command-missing behavior without a real case-driven reason.
-
-10. Elastic-alert-strength preservation rule
-- The April 7 live testing confirmed that the older AFRICOM SOC Elastic Defend Triage Agent set remains highly effective for Elastic alert handling.
-- Future DCOIR-enhanced Gemini generations should preserve that same level of thoroughness, field specificity, and workflow explicitness while adding collector-specific handling, enrichment handling, and related improvements.
-
-11. Measured Gemini upload-budget rule for this office environment
-- Until a later governed change replaces it, use the operator-tested office Gemini Enterprise Agent limits as the current practical ceiling: 1000 KB maximum per file and 2000 KB maximum total attachments per prompt.
-- Treat those measured limits as stronger for this workflow than general public guidance because they were proven in the target operator environment.
-- Use 900 KB or less per file and 1800 KB or less total per prompt as the default safe working targets for analyst-facing upload sets.
-- Prefer chunk-first artifact intake. Do not assume a monolithic baseline report remains the default single-file Gemini upload surface.
-- Prefer smaller bounded slices such as metadata summary, file-tree or path summary, representative process evidence, representative network evidence, enrichment slices, retrieved-artifact slices, and final-synthesis slices before broad dumps.
-- The session-total upload budget remains unknown and should stay an open live-test item until a later round proves a practical limit.
-
-Section 2: Validation and regression rules derived from the live test
-
-1. Collector-artifact interpretation test plan
-- Future Gemini validation must include a dedicated test plan for pasted or uploaded collector-artifact interpretation.
-- The plan should verify that the generated agent can explain collector outputs, translate status fields into analyst meaning, and provide an exact next-step recommendation when collector outputs are present.
-
-2. Collector execution and collection-path test plan
-- Future Gemini validation must include a dedicated test plan for the collector execution and collection path.
-- The plan should cover at least:
-  - collection success and failure handling
-  - harness-style paths such as core and FullRegression-style validation when relevant
-  - pull or retrieval handling needed to produce agent-consumable artifacts
-  - the distinction between collector actions and Elastic response-action retrieval behavior
-
-3. IOC-enrichment trigger test plan
-- Future Gemini validation must include a dedicated test plan for IOC-enrichment trigger behavior.
-- The plan should verify that IOC-enrichment ownership is visible, that a plausible trigger path exists, and that public-source enrichment can be reached intentionally rather than only incidentally.
-
-4. Security-product negative-control testing
-- Future Gemini validation should include a negative-control case where the host is ultimately benign or not compromised, but the generated agent still encounters a known security product in the lineage.
-- The plan should verify that the agent warns about possible false-positive conditions, validates the product or path, and avoids premature overconfidence.
-
-5. Singular-command consistency regression
-- Future Gemini validation must include repeated fresh-session checks for the singular-command contract.
-- The validation should fail if Tool chosen is populated while SINGULAR TRIAGE COMMAND is empty.
-- The validation should also flag unstable cross-session behavior where a similar case alternates between command-present and command-missing outputs without a case-driven reason.
-
-6. Upload-budget conformance and artifact-chunking test plan
-- Future Gemini validation must include a dedicated upload-budget conformance check for default analyst-facing attachment sets.
-- The plan should verify that each default uploadable file remains within the safe per-file target, that the normal prompt-level attachment set remains within the safe total target, and that the workflow still functions when the baseline path is represented through smaller bounded slices instead of one large monolithic artifact.
-- The plan should also preserve the unknown session-total limit as an explicit observation field rather than pretending the broader capacity is already known.
-
-Section 3: Legacy and supporting Gemini surface roles
-
-1. Current generation authority
-- Current Gemini generation authority remains the current control plane, DOC-04, PP-09, PP-10, and the current modular prompt-pack line where behavior authority is involved.
-- Generated output surfaces and comparative surfaces do not override the current control plane.
-
-2. `knowledge/generated_agent_markdowns/`
-- This folder is the current readable generated-agent working surface.
-- It is useful for inspection, parity checking, packaging support, and readable generated-output review.
-- It is not by itself the design-time authority over PP-09, PP-10, or the control plane.
-- It should not be treated as the default source of truth for future agent generation when a fresher generation round is required.
-
-3. `knowledge/comparative_reference_agent_markdowns/`
-- This folder is the current readable comparative-reference working surface.
-- It is useful for comparing generated output against known reference sets.
-- It is supporting reference material, not control-plane authority.
-
-4. `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/`
-- This folder is an extracted legacy reference bundle.
-- It remains useful for structure and naming lessons only.
-- It is not the current operator-facing Gemini build authority.
-- Its wording must not override the current governed generation workflow.
-
-5. `project_sources/original_alert_triage_gemini_agents/`
-- This folder is the approved historical benchmark set for verbosity, field-writing quality, routing richness, and Instructions explicitness.
-- It is reference material that should influence quality and density expectations.
-- It is not itself the current DCOIR operator-facing Gemini build.
-
-6. `project_sources/original_collector_artifact_gemini_agents/`
-- This folder is a historical failure-reference surface.
-- Use it to recognize what under-dense or insufficient collector-oriented generated output looks like.
-- Do not ship new outputs that resemble its failure posture.
-
-7. `project_sources/legacy_reference_gemini_agents/`
-- This folder is the governed home for clearly labeled manual or curated legacy Gemini captures that have ongoing reference value.
-- Files in this folder are legacy-reference captures only unless a later governed change explicitly promotes them for another purpose.
-- The manual AFRICOM SOC Elastic Defend Triage Agent capture added on April 7, 2026 belongs to this category.
-
-8. Supporting asset zips
-- Supporting zips such as generated-agent-markdown archives, comparative-reference archives, and supporting-knowledge-doc archives are retained delivery artifacts.
-- They are not the editable readable source of truth.
-
-Section 4: Repo-hygiene rules for future legacy work
-
-1. Keep current authority and legacy reference clearly separated.
-2. Do not let any extracted legacy reference folder pose as the current operator-facing build authority.
-3. Do not silently move broad legacy material into the new legacy-reference structure without a bounded inventory pass.
-4. When legacy material has ongoing value, preserve its role explicitly as one of:
-- current generated working surface
-- comparative readable reference surface
-- structure-and-naming reference only
-- quality-and-density benchmark
-- failure reference
-- manual verbatim legacy capture
-5. Prefer additive labeling and README clarification before major repo moves or renames.
-6. When broader cleanup is needed, perform a bounded inventory first so the repo does not blur current authority, working surfaces, and historical reference material.
-
-End state
-- Future Gemini generations should now be governed not only by the earlier viable-generation contract, but also by the more explicit April 7 live-test rules, the clearer readable-surface role map captured here, and the measured office upload-budget rule derived from operator testing.
-- The intended result is better collector handling, clearer enrichment ownership, stronger false-positive discipline, stable singular-command behavior, less repo confusion around legacy Gemini materials, and operator-facing attachment sets that actually fit the target Gemini environment.
+END STATE
+- Future Gemini generations and bundle workflows should now be governed by the measured office upload budget, the transcript-derived live-lane lessons, and stronger validation/QC expectations.

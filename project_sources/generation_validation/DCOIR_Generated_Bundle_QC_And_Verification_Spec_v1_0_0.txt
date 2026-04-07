@@ -1,0 +1,24 @@
+DCOIR Generated Bundle QC And Verification Spec v1.0.0
+
+Checks
+- required files present
+- required folders present
+- operator-facing files use .txt suffix when needed for mail-safe delivery
+- attachment map present when attachments are in scope
+- default attachment set stays within 900 KB per file and 1800 KB total
+- collector-artifact interpretation is explicit
+- collector pivot is explicit
+- IOC-enrichment ownership is explicit
+- security-product false-positive branch is explicit
+- SINGULAR TRIAGE COMMAND contract text is present where required
+- operator-state awareness is present
+- filler or trailing chatty endings are absent
+
+Fail conditions
+- missing required output files
+- no attachment map when attachments are in scope
+- default upload set exceeds safe budget without explicit operator override
+- output is materially thinner than the benchmark density target
+- output omits collector-artifact interpretation or collector pivoting
+- output leaves IOC ownership ambiguous
+- output lacks the singular-command contract where tool-choice behavior is expected

@@ -1,30 +1,19 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
+Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
-- Project Instructions remain the first bootstrap anchor.
-- Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- DOC-07, DOC-08, LOG-55, and PP-09 are now part of the active governance and current-state route for Gemini live-test hardening, legacy-surface clarity, measured upload-budget handling, and validation-queue expansion.
-- The transcript-confirmed operating constraint remains explicit: during work hours prefer browser-native, no-upload or download required workflows whenever they can achieve the same governed result.
-- GitHub Desktop manual grouped repo-update delivery remains the default governed write posture, with PR and review flows optional and bounded.
+- The collector/harness line now includes upload-summary and attachment-budget-manifest output shaping.
+- The generation line now includes deterministic verification and QC assets.
 
 What is still open right now
-1. Finalize the upload-budget-aware artifact-intake pattern for baseline, enrichment, retrieved artifact, and final-synthesis review.
-2. Revisit the purpose of the baseline report surface and decide whether it should be reduced, split, repurposed, or removed from the default Gemini upload path.
-3. Build a deterministic generation-verification action or workflow for the Gemini bundle and the standalone all-in-one prompt bundle.
-4. Build explicit generated-bundle quality-control review criteria so each new Gemini bundle can be checked against the expected benchmark and operator expectations.
-5. Plan future automation for testing the standalone all-in-one prompt bundle against fake Elastic alerts and fake collector artifacts.
-6. Plan future automation for testing the Gemini parent plus sub-agent bundle against fake Elastic alerts and fake collector artifacts.
-7. Validate the collector-analysis and collector-artifact interpretation path with real collector outputs.
-8. Validate the IOC-enrichment trigger and ownership path with a dedicated test plan.
-9. Verify whether enrich-add actions truly append to the same open session instead of silently creating a new one.
-10. Verify installed-skill parity against governed GitHub source and resolve any mismatch explicitly.
-11. Evaluate whether an optional Google Drive staging folder would reduce document-handling friction without violating the GitHub-primary readable-source rule.
-12. Research whether Gemini Enterprise Agents can support an attached collector zip plus PowerShell script delivery model and expose usable links to those assets for users.
-13. Preserve the unknown session-total Gemini file budget as an open live-test item until later testing proves the practical limit.
+1. Live validation of the patched collector and harness.
+2. Fresh standalone bundle generation from the updated source line.
+3. Fresh Gemini bundle generation from the updated source line.
+4. Installed-skill parity vs governed source.
+5. Optional Drive staging decision.
 
 Recommended next move
-- Keep the current April 7 governance set in place, treat 900 KB per file and 1800 KB total attachments per prompt as the default safe Gemini design target, and continue bounded live testing with chunk-first uploadable artifact slices.
+- Generate the new test bundles from the updated source line and use tomorrow’s live run to validate the patched collector/harness behavior in the office environment.

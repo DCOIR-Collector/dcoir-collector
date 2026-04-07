@@ -1,81 +1,10 @@
 DCOIR Active Now
 
-Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
+Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
 
-1. Finalize the upload-budget-aware artifact-intake pattern.
-   Why it matters:
-   - The office Gemini environment has a proven practical ceiling of 1000 KB per file and 2000 KB total attachments per prompt, so the DCOIR analyst-facing path must prefer uploadable bounded slices over broad dumps.
-   Next action:
-   - Define the default uploadable slice set for baseline, enrichment, retrieved-artifact, and final-synthesis review and keep the safe working targets at 900 KB or less per file and 1800 KB or less per prompt.
-
-2. Revisit the purpose of the baseline report surface.
-   Why it matters:
-   - The baseline report may now carry too much data for reliable Gemini use and may no longer be the best default agent-facing artifact if the same analyst value can be preserved in smaller targeted slices.
-   Next action:
-   - Decide whether the baseline surface should be reduced in scope, repurposed, split into smaller sections, or removed from the default Gemini upload path.
-
-3. Build a deterministic generation-verification action or workflow.
-   Why it matters:
-   - The project needs a repeatable way to verify that the Gemini bundle and the standalone all-in-one prompt bundle were actually generated correctly rather than only assumed correct from inspection.
-   Next action:
-   - Define the required files, expected structure, minimum field checks, and explicit pass or fail criteria for both bundle lines.
-
-4. Build explicit generated-bundle quality-control review criteria.
-   Why it matters:
-   - The operator wants a reliable way to know that each generated Gemini bundle still meets the expected benchmark, density, routing quality, and workflow quality every time.
-   Next action:
-   - Define the quality-control rubric covering benchmark density, collector visibility, enrichment ownership, false-positive discipline, singular-command consistency, walkthrough usefulness, and upload-budget readiness.
-
-5. Plan future automation for testing the standalone all-in-one prompt bundle.
-   Why it matters:
-   - A future automated harness could reduce manual validation friction by replaying fake Elastic alerts and fake collector artifacts against the all-in-one prompt path.
-   Next action:
-   - Define the fixture set, execution model, expected outputs, and evidence thresholds for the standalone bundle automation concept.
-
-6. Plan future automation for testing the Gemini parent plus sub-agent bundle.
-   Why it matters:
-   - A future automated harness could reduce manual validation friction by replaying fake Elastic alerts and fake collector artifacts against the Gemini parent and sub-agent topology.
-   Next action:
-   - Define the fixture set, agent-setup model, expected outputs, routing expectations, and evidence thresholds for the Gemini automation concept.
-
-7. Validate the collector-analysis and collector-artifact interpretation path.
-   Why it matters:
-   - Elastic alert triage was the strongest validated path, but the collector-analysis path still needs direct validation against real collector outputs.
-   Next action:
-   - Run a dedicated collector-artifact interpretation test and record whether Gemini explains collector artifacts, workflow phase, uncertainty limits, and the exact next operator step correctly.
-
-8. Validate the IOC-enrichment trigger and ownership path.
-   Why it matters:
-   - IOC enrichment still needs a dedicated trigger and ownership test so the path is intentional, visible, and not only incidental.
-   Next action:
-   - Build a bounded IOC-enrichment validation case and verify triggerability, ownership clarity, and next-step behavior.
-
-9. Verify repeated-session enrich-add behavior.
-   Why it matters:
-   - Repeated-session correctness remains important, and the enrich-add append-versus-new-session question is still open.
-   Next action:
-   - Run a bounded enrich-add session test and confirm whether the action appends to the existing session or silently creates a new one.
-
-10. Verify installed-skill parity against governed GitHub source.
-   Why it matters:
-   - The installed skills and the governed GitHub skill source should be identical. If they drift, the operator needs an explicit diff and an explicit keep-or-replace decision instead of silent mismatch.
-   Next action:
-   - Run a governed parity comparison, identify any mismatch, and decide which side remains authoritative before later skill maintenance.
-
-11. Evaluate whether an optional Google Drive staging folder would help.
-   Why it matters:
-   - A bounded Drive staging lane may reduce friction for non-governed working documents, but it must not blur the GitHub-primary readable-source rule.
-   Next action:
-   - Decide whether one dedicated DCOIR staging folder should be formalized for non-authoritative working documents only.
-
-12. Preserve live-fire operator workflow corrections and walkthrough-friendly behavior.
-   Why it matters:
-   - The operator explicitly wants accurate live-fire guidance and adaptive walkthrough help during execution, not only solid analysis after the fact.
-   Next action:
-   - Keep those traits visible in future collector execution guidance, Gemini validation, and generated-bundle quality review.
-
-13. Preserve the unknown session-total Gemini file budget as an open live-test item.
-   Why it matters:
-   - The current measured limits solved the per-file and per-prompt problem, but the broader session-total capacity is still unknown.
-   Next action:
-   - Keep the observation open until a later live test hits that limit or proves it is not practically constraining.
+1. Apply and validate the collector output-shaping and harness-validation patch wave.
+2. Generate a fresh collector bundle from the updated source line.
+3. Generate a fresh standalone prompt bundle from the updated source line.
+4. Generate a fresh Gemini agent bundle from the updated source line.
+5. Run tomorrow's bounded live validation against the office Gemini environment.
+6. After that, return to parity and optional Drive staging.

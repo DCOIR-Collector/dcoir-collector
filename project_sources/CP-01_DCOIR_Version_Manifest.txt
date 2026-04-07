@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.69
+DCOIR Version Manifest 3.9.70
 
-Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
+Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -11,55 +11,11 @@ Current control plane
 - Gemini live-test generation and legacy surface rules: project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt
 - Gemini legacy surface inventory and hygiene plan: project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt
 - Gemini upload-budget and validation-automation queue: project_sources/LOG-55_DCOIR_Gemini_Upload_Budget_And_Validation_Automation_Queue_2026-04-07.txt
+- Collector output shaping and bundle-validation implementation: project_sources/LOG-56_DCOIR_Collector_Output_Shaping_And_Bundle_Validation_Implementation_2026-04-07.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
-- Delivery-bundle structure and GitHub Desktop manual update preference: project_sources/LOG-24_DCOIR_Delivery_Bundle_Structure_And_GitHub_Desktop_Manual_Update_Preference_2026-04-04.txt
-- Release/impact/readiness delivery-class alignment: project_sources/LOG-36_DCOIR_Release_Impact_And_Readiness_Delivery_Class_Alignment_2026-04-05.txt
-- README, routing-note, and documentation-boundary alignment: project_sources/LOG-39_DCOIR_Readme_Routing_And_Documentation_Boundary_Alignment_2026-04-05.txt
-- Prompt-pack assembly, triage escalation, and large-file intake alignment: project_sources/LOG-40_DCOIR_Prompt_Intake_Design_Family_Alignment_2026-04-05.txt
-- Final remaining helper-skill wave and campaign closeout: project_sources/LOG-41_DCOIR_Final_Remaining_Helper_Skill_Wave_And_Campaign_Closeout_2026-04-05.txt
-- Resume-cycle completion and widening-review readiness: project_sources/LOG-42_DCOIR_Resume_Cycle_Completion_And_Widening_Review_Readiness_2026-04-05.txt
-- GitHub automation and AI enablement strategy: project_sources/LOG-43_DCOIR_GitHub_Automation_And_AI_Enablement_Strategy_2026-04-05.txt
-- First-wave GitHub automation baseline: project_sources/LOG-44_DCOIR_First_Wave_GitHub_Automation_Baseline_2026-04-05.txt
-- GitHub workflow summary hardening: project_sources/LOG-45_DCOIR_GitHub_Workflow_Summary_Hardening_2026-04-05.txt
-- First-wave automation stabilization and follow-on queue: project_sources/LOG-46_DCOIR_First_Wave_GitHub_Automation_Stabilized_And_Follow_On_Queue_2026-04-05.txt
-- Scheduled health-check residue-pattern fix: project_sources/LOG-47_DCOIR_Scheduled_Health_Check_Residue_Pattern_Fix_2026-04-05.txt
-- Scheduled health-check residue cleanup and ignore baseline: project_sources/LOG-48_DCOIR_Scheduled_Health_Check_Residue_Cleanup_And_Ignore_Baseline_2026-04-05.txt
-- First-wave automation fully re-stabilized after cleanup: project_sources/LOG-49_DCOIR_First_Wave_GitHub_Automation_Fully_Restabilized_2026-04-05.txt
-- Work-safe browser-first and manual write posture alignment: project_sources/LOG-50_DCOIR_Work_Safe_Browser_First_And_Manual_Write_Posture_Alignment_2026-04-06.txt
-- Deliverables-first structure re-centering and Gemini bundle drift alignment: project_sources/LOG-51_DCOIR_Deliverables_First_Structure_Recentering_And_Gemini_Bundle_Drift_Alignment_2026-04-06.txt
-- Standalone prompt full-mission refresh and PP-08 regeneration: project_sources/LOG-52_DCOIR_Standalone_Prompt_Full_Mission_Refresh_And_PP08_Regeneration_2026-04-06.txt
-- Viable deliverable generation contract and v2 bundle-method capture: project_sources/LOG-53_DCOIR_Viable_Deliverable_Generation_Contract_And_V2_Bundle_Method_2026-04-06.txt
-- Gemini live-test governance and legacy surface clarity: project_sources/LOG-54_DCOIR_Gemini_Live_Test_Governance_And_Legacy_Surface_Clarity_2026-04-07.txt
-
-Current repo guide
-- Root README: README.md
-- Governed helper-skill source root: dcoir_skills/README.md
-- Knowledge root guide: knowledge/README.md
-- Project-source root guide: project_sources/README.md
-- Helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
-- Skill parity summary: dcoir_skills/skill_parity_summary.md
-- Project discovery contract: dcoir_skills/project_discovery_contract.json
-
-Current task-memory bank
-- Root: knowledge/task_memory
-- Existing-file update procedure: knowledge/task_memory/10_domains/github/procedures/GH-PROC-001-existing-file-update.yaml
-- Grouped multi-file transaction procedure: knowledge/task_memory/10_domains/github/procedures/GH-PROC-006-grouped-multi-file-transaction.yaml
-- GitHub preflight routing procedure: knowledge/task_memory/10_domains/github/procedures/GH-PROC-007-memory-preflight-routing.yaml
-- GitHub connector reference usage procedure: knowledge/task_memory/10_domains/github/procedures/GH-PROC-008-connector-reference-assisted-lane-selection.yaml
-
-Current governed helper-skill source
-- Root: dcoir_skills/
-- The coordinated all-skills helper-skill deep-dive and code-hygiene campaign remains complete through the current governed helper-skill inventory.
-- The helper-skill library remains in bounded maintenance posture under grouped GitHub Desktop manual-update delivery.
-- Manual GitHub Desktop repo-update bundles should unzip directly to only the affected repo-relative folders and files with no extra wrapper root.
-- Single-skill delivery should provide only the affected skill zip.
-- Multi-skill delivery bundles should use one outer zip whose top level contains only the affected per-skill zip files named after the live skill names with no subfolders.
-- GitHub Desktop manual repo-update deliveries should also include a suggested commit `Summary` unless the operator explicitly overrides that behavior.
 
 Current next work item
-- Use DOC-04, DOC-07, DOC-08, LOG-55, and the hardened PP-09 workflow as the active governance set for fresh standalone prompt and Gemini bundle creation.
-- Treat the operator-tested office Gemini limits as the current practical ceiling: 1000 KB maximum per file, 2000 KB maximum total attachments per prompt, and unknown session-total capacity until a later live test proves otherwise.
-- Use 900 KB or less per file and 1800 KB or less total per prompt as the default safe design targets for analyst-facing Gemini attachment sets.
-- Prefer chunk-first artifact intake and do not assume a monolithic baseline report is the default single-file Gemini upload surface.
-- Continue the open validation and design queue for baseline-surface redesign, bundle-generation verification, generated-bundle quality control, automation planning, collector-artifact validation, IOC-enrichment validation, repeated-session checks, skill-source parity, and optional Drive staging evaluation.
-- Maintain package-cleanliness enforcement, parity checks, and representative regression for future maintenance-only helper-skill fixes.
+- Use the updated collector, harness, PP-07, PP-09, DOC-07, and generation_validation assets as the active implementation line for tomorrow’s standalone and Gemini bundle generation.
+- Treat the office Gemini limits as the practical ceiling: 1000 KB maximum per file, 2000 KB maximum total attachments per prompt.
+- Use the collector upload summary and attachment-budget manifest as the default Gemini-facing collect-bundle intake path instead of assuming the full baseline report is uploadable.
+- Keep the remaining open queue focused on live validation, parity, optional Drive staging, and final generated-bundle production after this implementation wave lands.

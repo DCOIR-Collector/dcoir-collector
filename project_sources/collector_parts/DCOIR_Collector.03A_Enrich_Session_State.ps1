@@ -22,15 +22,25 @@ function Initialize-EnrichSession {
     $State.EnrichSessionCounter = 0
   }
 
+  if (-not $State.ContainsKey('LastSessionResolutionMode')) {
+    $State.LastSessionResolutionMode = $null
+  }
+
   if (-not [string]::IsNullOrWhiteSpace($RequestedSessionId)) {
     $existing = Get-SessionById -State $State -SessionId $RequestedSessionId
-    if ($existing) { return $existing }
+    if ($existing) {
+      $existing.SessionResolutionMode = 'REUSED_REQUESTED_SESSION'
+      $State.LastSessionResolutionMode = 'REUSED_REQUESTED_SESSION'
+      return $existing
+    }
     throw "Requested enrichment session was not found: $RequestedSessionId"
   }
 
   if (-not $ForceNew -and -not [string]::IsNullOrWhiteSpace([string]$State.OpenEnrichSessionId)) {
     $open = Get-SessionById -State $State -SessionId ([string]$State.OpenEnrichSessionId)
     if ($open -and -not $open.Finalized) {
+      $open.SessionResolutionMode = 'REUSED_OPEN_SESSION'
+      $State.LastSessionResolutionMode = 'REUSED_OPEN_SESSION'
       return $open
     }
   }
@@ -61,16 +71,19 @@ function Initialize-EnrichSession {
     CreatedLocal = (Get-Date).ToString("o")
     Finalized = $false
     ActionCount = 0
+    SessionResolutionMode = 'CREATED_NEW_SESSION'
   }
 
   $State.EnrichSessions = @($State.EnrichSessions) + @($session)
   $State.OpenEnrichSessionId = $sessionId
+  $State.LastSessionResolutionMode = 'CREATED_NEW_SESSION'
 
   $header = @(
     "CollectorVersion=$ScriptVersion"
     "Mode=Enrich"
     "RunId=$($State.RunId)"
     "EnrichSessionId=$sessionId"
+    "SessionResolutionMode=CREATED_NEW_SESSION"
     "Host=$env:COMPUTERNAME"
     "SessionCreatedLocal=$(Get-Date -Format o)"
     "SessionRoot=$sessionRoot"
@@ -95,6 +108,8 @@ function Finalize-EnrichSession {
   ) -ToolMap $ToolMap -Extra @{
     enrich_session_id = $Session.SessionId
     action_count = $Session.ActionCount
+    session_resolution_mode = $Session.SessionResolutionMode
+    append_model = 'enrich-start creates a new session; enrich-add reuses the current open session unless explicitly overridden; enrich-finalize finalizes the current open session.'
   }
 
   $bundleInputs = @(

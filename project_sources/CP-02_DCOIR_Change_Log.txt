@@ -1,44 +1,30 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.70
+Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
+Change class: collector output shaping, harness live-lane hardening, and deterministic bundle-validation scaffolding
+
+What changed
+- Updated the collector line so collect runs now emit an upload summary and attachment-budget manifest alongside the existing baseline and metadata surfaces.
+- Updated the collect workflow so the large merged baseline report is no longer treated as the default Gemini-facing upload surface.
+- Updated the enrichment session path so session-resolution behavior is explicit and easier to validate across enrich-start, enrich-add, and enrich-finalize.
+- Updated the harness so it can run a live-response-aligned lane, verify collector attachment-budget outputs, and validate enrich session reuse behavior.
+- Updated PP-07, PP-09, and DOC-07 so the generated-bundle line now preserves upload-budget awareness, operator-state awareness, explicit collector behavior, no-filler behavior, and the singular-command contract.
+- Added generation_validation assets for deterministic bundle verification, QC, fixture-driven pre-live testing, and a firm Gemini/standalone test plan.
+- Updated the current-state, handoff, resume, and todo surfaces to point to this implementation wave.
+
+Why
+- The testing transcript showed that collector output shaping is upstream of Gemini upload success.
+- The transcript also exposed concrete harness and live-lane issues that needed durable source changes rather than todo-only notes.
+- The project needed deterministic repo-side verification and QC before tomorrow’s new standalone and Gemini bundle generation round.
+
+Validation notes
+- The attachment-budget checks are implemented as repo-side verification and harness checks, not yet claimed as live-operator-proven in the office environment after this patch.
+- The new generation-validation assets are scaffolding for deterministic verification and bounded automation where feasible; they do not claim full Gemini Enterprise UI automation.
+- Tomorrow’s bundle generation should use this implementation wave as the new source basis.
+
+[PRIOR]
 Version: 3.9.69
 Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
 Change class: Gemini upload-budget hardening and validation-automation queue expansion
-
-What changed
-- Updated `project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt` so the April 7 live-test governance now also records the measured office Gemini upload limits, the safer working targets derived from them, and the chunk-first artifact-intake rule that follows from those limits.
-- Updated `project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt` so future Gemini and standalone bundle work must honor upload-budget-aware attachment design, explicit bundle-verification expectations, and manual quality-control review of generated deliverables.
-- Added `project_sources/LOG-55_DCOIR_Gemini_Upload_Budget_And_Validation_Automation_Queue_2026-04-07.txt` to preserve the measured office Gemini limits, the resulting safe targets, the baseline-surface redesign direction, and the expanded open queue for bundle verification, quality control, automation planning, parity, and optional Drive staging evaluation.
-- Updated `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/CP-02_DCOIR_Change_Log.txt`, `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt`, `project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt`, `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, `project_sources/todo/01_Active_Now.txt`, and `project_sources/live_test_notes/2026-04-07_Gemini_Agent_Build_Live_Test_Findings.md.txt` so the current-state, resume, and todo path now carries the measured upload-budget constraint and the expanded follow-on queue.
-
-Why
-- The public Gemini guidance was not strong enough for this office environment because live operator testing proved a materially smaller practical limit than the general public help suggested.
-- The measured upload limits materially change DCOIR analyst-facing artifact design, especially for baseline-heavy review paths that cannot safely assume one large text file remains uploadable.
-- The project also needed the next wave of validation work to be stated more explicitly: deterministic generation verification, quality control, and future automation planning for both the standalone and Gemini bundle lines.
-
-Validation notes
-- Operator testing confirmed a practical maximum of 1000 KB for one file and 2000 KB total attachments per prompt in the office Gemini Enterprise Agent environment.
-- The session-total file budget remains unknown and stays an open live-test item until later operator testing reaches that limit or proves it unimportant.
-- The current safe working targets are now 900 KB or less per file and 1800 KB or less total per prompt.
-- The automation, parity, and Drive items were queued as governed open work and are not claimed as implemented by this change.
-
-[PRIOR]
-Version: 3.9.68
-Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
-Change class: Gemini live-test governance hardening, control-plane weave, and legacy surface clarity
-
-What changed
-- Added `project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt` to promote the specific April 7 live-test findings into governed Gemini-generation rules.
-- Added `project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt` to establish the bounded role map and hygiene plan for current, generated, comparative, retained, and legacy Gemini-readable surfaces.
-- Updated `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/CP-02_DCOIR_Change_Log.txt`, `README.md`, `knowledge/README.md`, and `project_sources/README.md` so the new governance and legacy-surface rules are woven into the active current-state and repo-guide surfaces.
-- Updated the active continuity surfaces so the new state id and current guidance align across the control plane, handoff, todo, and resume files.
-
-Why
-- The project already had a viable-generation contract, but the April 7 live test exposed more specific repeatable rules that needed to become durable generation guidance.
-- The repo also contains several generated, comparative, extracted, retained, and legacy Gemini surfaces whose roles needed to be made more explicit so future work does not confuse reference material with current operator-facing authority.
-- Leaving the new governance only in additive docs without weaving it into the active current-state path would keep the control plane and repo guides unnecessarily stale.
-
-Validation notes
-- The April 7 generation rules are now durably governed, including high-density field writing, merged Description mapping, standardized direct instruction openings by default, parent starter prompts, explicit collector-artifact handling, explicit collector pivoting, explicit IOC-enrichment ownership, false-positive-aware security-product validation, and singular-triage-command consistency.
-- The bounded legacy-surface map is now durably governed for generated markdowns, comparative markdowns, retained supporting ZIPs, extracted legacy bundles, benchmark reference sets, failure-reference sets, and the new manual legacy-capture area.
-- The current state and repo-guide surfaces were refreshed to point to DOC-07 and DOC-08 instead of leaving those new governance rules isolated from the normal resume and reporting path.
