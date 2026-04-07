@@ -1,0 +1,28 @@
+DCOIR Gemini Agent Build Live Test Findings Addendum 02 - 2026-04-07
+
+Current state id
+- 2026-04-06-viable-deliverable-generation-contract-durable-v1
+
+Key workflow defect observed
+- In a case where the host is not actually compromised, the Gemini Agent still produced a strong malicious assessment and did not walk the analyst through pivoting to DCOIR collector-based evidence collection.
+- This is a workflow defect because the agent should present the collector script as an explicit next-step option whenever SIEM-native evidence is insufficient or cannot be resolved through osquery, KQL/ESQL, response actions, or similar platform-native methods.
+
+Why this matters
+- The sample response itself still reported major visibility gaps:
+  - initial compromise vector unknown
+  - full malicious PowerShell command line not found
+  - full extent of activity not visible from provided data
+- Under those conditions, the agent should not stop at a high-confidence summary alone. It should pivot the analyst toward collector-assisted evidence gathering, at least as an explicit option.
+
+Required behavior change for the next build
+- Whenever evidence cannot be found or validated adequately in the SIEM using osquery, KQL/ESQL, response actions, or comparable native methods, the agent should explicitly offer pivot to the DCOIR collector script.
+- The collector pivot should be presented as an analyst-facing option even if the agent is not certain compromise is present.
+- The agent should explain that the collector path helps close visibility gaps before final confidence is treated as durable.
+
+Concrete validation need
+- Add a test case where SIEM evidence is incomplete, ambiguous, or missing key fields, and verify that the agent recommends collector-script collection as a next-step option.
+- Add a negative-control case where the host is ultimately benign but the agent still correctly uses the collector pivot to resolve uncertainty rather than overcommitting early.
+
+Truth boundary
+- This note records an observed workflow gap from live testing.
+- It does not prove the collector path is absent everywhere in the build; it does show that it was not surfaced when it should have been in this test scenario.
