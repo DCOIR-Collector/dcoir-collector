@@ -1,0 +1,31 @@
+DCOIR Gemini Agent Build Live Test Findings Addendum 03 - 2026-04-07
+
+Current state id
+- 2026-04-06-viable-deliverable-generation-contract-durable-v1
+
+Additional workflow defect observed
+- When the agent identified trusted security products in the process chain, it did not pivot into a false-positive-aware validation path.
+- Instead of treating the presence of a known security product as a possible alternative explanation to test, it continued toward a strong malicious conclusion too early.
+
+Required behavior change for the next build
+- If the reported parent process or related executable appears to be a known security product, the agent should explicitly branch into a validation path before locking in a strong compromise conclusion.
+- That validation path should include:
+  - verify the product appears legitimate and not just a renamed folder, binary, or lookalike path
+  - warn the analyst that the activity may represent legitimate security-product behavior or a possible false positive
+  - distinguish between verified legitimate product behavior, suspicious masquerading, and unresolved ambiguity
+- If ambiguity remains after SIEM-native checks, the agent should offer the DCOIR collector path as a next-step option.
+
+Potential later research topic
+- Consider whether bounded OSINT lookup on the identified product may help validate that the product name, executable, path, and normal behavior are consistent with a legitimate security tool.
+- Leave this open for later design discussion rather than treating it as mandatory behavior yet.
+
+Concrete validation need
+- Add a test case where a known security product appears in the parent chain and verify that the agent:
+  1. recognizes the product as potentially legitimate
+  2. warns about possible false positive conditions
+  3. validates legitimacy versus masquerading
+  4. avoids premature overconfidence
+
+Truth boundary
+- This note records an additional live-test workflow gap.
+- It does not claim the product was legitimate in every possible case; it does require the next build to test that branch explicitly before overcommitting.
