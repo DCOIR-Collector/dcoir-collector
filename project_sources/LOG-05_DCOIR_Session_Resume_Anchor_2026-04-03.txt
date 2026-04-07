@@ -1,21 +1,26 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-06-viable-deliverable-generation-contract-durable-v1
+Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Readable governed text follows the GitHub-primary model.
 - Project Instructions remain the first bootstrap anchor.
 - Resume order is still Project Instructions, then CP-01, then CP-02, then current continuity surfaces.
-- The authoritative active work queue is now stated in deliverable terms: the modular prompt-pack line, the combined analyst-facing master prompt, the PP-09 and PP-10 Gemini design line, the generated and comparative Gemini markdown deliverable surfaces, and the durable deliverable-generation contract in DOC-04.
+- DOC-07 and DOC-08 are now part of the active governance and current-state route for Gemini live-test hardening and legacy-surface clarity.
 - The transcript-confirmed operating constraint remains explicit: during work hours prefer browser-native, no-upload or download required workflows whenever they can achieve the same governed result.
 - GitHub Desktop manual grouped repo-update delivery remains the default governed write posture, with PR and review flows optional and bounded.
 
 What is still open right now
-1. Keep the fully re-stabilized first-wave GitHub automation baseline in place while the main line stays on deliverables.
-2. Maintain and validate PP-01 through PP-07 as the authoritative modular prompt-pack source line, regenerate PP-08 when the modular source changes, and keep the standalone analyst-facing prompt aligned.
-3. Maintain PP-09 and PP-10 as the current authoritative Gemini workflow and bounded design artifact for the merged parent-plus-seven-sub-agent line.
-4. Use DOC-04 and the hardened PP-09 workflow as the durable method for fresh standalone and Gemini generation instead of defaulting to stored generated outputs.
-5. Continue bounded live testing of the regenerated v2 standalone and Gemini bundles and refine the durable generation contract when operator feedback proves another repeatable improvement.
-6. Preserve GitHub Desktop manual grouped repo-update delivery as the default governed write posture unless a bounded branch explicitly opens another lane.
-7. Maintain package-cleanliness enforcement, parity verification, and bounded grouped helper-skill fixes for future maintenance-only work.
+1. Build and use a firm Gemini agent grading test plan with expected artifact sets and pass or fail criteria.
+2. Validate the collector-analysis and collector-artifact interpretation path with real collector outputs.
+3. Validate the IOC-enrichment trigger and ownership path with a dedicated test plan.
+4. Research Gemini Agent upload-size limits and define a smaller-slice artifact intake method for baseline, enrichment, retrieved artifact, and final synthesis review.
+5. Treat the baseline report surface as a candidate redesign item so the agent-facing baseline payload is smaller, more uploadable, or removable when the same analyst value can be preserved through smaller targeted artifacts.
+6. Preserve live-fire operator workflow corrections in future collector execution guidance.
+7. Keep improving Gemini operator-helpfulness during live execution, not only during analysis.
+8. Research whether Gemini Enterprise Agents can support an attached collector zip plus PowerShell script delivery model and expose usable links to those assets for users.
+9. Verify whether enrich-add actions truly append to the same open session instead of silently creating a new one.
+
+Recommended next move
+- Keep the current April 7 governance set in place, continue bounded live testing, and use smaller uploadable artifact slices whenever Gemini file-size limits block full baseline uploads.

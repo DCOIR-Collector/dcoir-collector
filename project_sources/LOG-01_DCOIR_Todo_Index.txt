@@ -1,17 +1,17 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-06-viable-deliverable-generation-contract-durable-v1
+Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
 
 Current priority summary
 1. Widening review remains accepted and the remaining architecture or governance line remains closed except for maintenance-only fixes.
 2. The first-wave GitHub automation baseline remains fully re-stabilized in live use.
 3. The work-safe browser-first operating constraint remains explicit in governed state: during work hours prefer browser-native, no-upload or download required workflows whenever that lane can achieve the same governed result.
 4. GitHub Desktop manual grouped repo-update delivery remains the default governed write posture, and PR or review flows remain optional and bounded rather than mandatory.
-5. The current active deliverables are now stated explicitly: PP-01 through PP-07, PP-08, PP-09, PP-10, generated agent markdowns, comparative reference markdowns, and their retained supporting asset packages.
-6. DOC-04 and the hardened PP-09 workflow now preserve the current viable generation method for fresh standalone and Gemini deliverables, including the accepted v2 bundle shapes and the benchmark/reference hierarchy.
-7. The extracted Gemini email build bundle remains legacy extracted reference for structure and naming only; it is not current wording authority.
-8. Validate-on-push, manual full-validation, FullRegression, scheduled-health-check, light ruleset safety, and Dependabot GitHub Actions flow are all proven.
+5. The current active deliverables remain explicit: PP-01 through PP-07, PP-08, PP-09, PP-10, generated agent markdowns, comparative reference markdowns, and their retained supporting asset packages.
+6. DOC-04, DOC-07, and DOC-08 now preserve the durable generation, validation, and legacy-surface rules for fresh standalone and Gemini deliverables.
+7. The open validation queue now centers on collector-artifact interpretation, collector execution, IOC enrichment, repeated-session behavior, and upload-size-aware artifact intake.
+8. The baseline report surface is now an explicit candidate redesign target so the agent-facing baseline payload can become smaller, more uploadable, or removable when the same analyst value can be preserved through smaller targeted artifacts.
 9. Keep package-cleanliness enforcement, parity verification, and representative regression active for future maintenance-only helper-skill fixes.
 
 Current best next move
-- No immediate platform change is required. Keep the stable baseline in place, keep the browser-first work-safe posture explicit, use GitHub Desktop manual grouped repo updates, and continue testing/refining the v2 standalone and Gemini deliverables under DOC-04 plus PP-09.
+- Keep the current April 7 governance set in place, refresh only the affected continuity surfaces, use smaller uploadable artifact slices when Gemini file-size limits block full baseline uploads, and continue bounded live testing under GitHub Desktop manual grouped repo-update delivery.

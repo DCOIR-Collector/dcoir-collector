@@ -1,6 +1,6 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-06-viable-deliverable-generation-contract-durable-v1
+Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
 
 Current stable pointers
 - Repo: malwaredevil/dcoir-collector
@@ -11,22 +11,24 @@ Current stable pointers
 - Governed helper-skill source root: dcoir_skills/
 - Current helper-skill routing note: knowledge/DCOIR_Helper_Skills_Routing_Note.md
 - Durable deliverable-generation contract: project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt
+- Gemini live-test generation and legacy-surface rules: project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt
+- Gemini legacy-surface inventory and hygiene plan: project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt
 
 Current active priority
-- Keep the fully re-stabilized first-wave GitHub automation baseline in service while the main project line stays on the real deliverables, and use DOC-04 plus hardened PP-09 as the durable method for generating fresh standalone and Gemini deliverables.
+- Keep the fully re-stabilized first-wave GitHub automation baseline in service while the main project line stays on the real deliverables, and continue bounded live testing of the standalone and Gemini deliverables under DOC-04, DOC-07, DOC-08, and PP-09.
 
 Queued next priorities
-- Maintain PP-01 through PP-07 as the authoritative modular prompt-pack source line.
-- Regenerate and verify PP-08 whenever the modular prompt-pack source line changes.
-- Keep PP-09 and PP-10 aligned to the current merged Gemini Enterprise parent-plus-seven-sub-agent design target.
-- Keep `project_sources/original_alert_triage_gemini_agents/` as the writing-density and field-quality benchmark for future Gemini refreshes.
-- Keep `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` available as structure and naming reference only, not as wording authority.
-- Generate fresh standalone and Gemini deliverables every round instead of shipping stored generated outputs by default.
-- Keep the standalone shipped prompt as a true full assembly from PP-01 through PP-07 rather than a condensed rewrite.
-- Keep the regenerated v2 standalone and Gemini bundle folder shapes as the current preferred operator-facing test bundle layout until later operator feedback changes that preference.
-- Continue bounded live testing of the regenerated v2 Gemini and standalone bundles and refine DOC-04 plus PP-09 when operator feedback proves another repeatable improvement.
+- Build and use a firm Gemini agent grading test plan with expected artifact sets and pass or fail criteria.
+- Validate the collector-analysis and collector-artifact interpretation path with real collector outputs.
+- Validate the IOC-enrichment trigger and ownership path with a dedicated test plan.
+- Research Gemini Agent upload-size limits and define a smaller-slice artifact intake method for baseline, enrichment, retrieved artifact, and final synthesis review.
+- Treat the baseline report surface as a candidate redesign item so the agent-facing baseline payload is smaller, more uploadable, or removable when the same analyst value can be preserved through smaller targeted artifacts.
+- Preserve live-fire operator workflow corrections in future collector execution guidance.
+- Keep improving Gemini operator-helpfulness during live execution, not only during analysis.
+- Research whether Gemini Enterprise Agents can support an attached collector zip plus PowerShell script delivery model and expose usable links to those assets for users.
+- Verify whether enrich-add actions truly append to the same open session instead of silently creating a new one.
 - During work hours, prefer browser-native, no-upload or download required workflows whenever that lane can achieve the same governed result.
 - Keep GitHub Desktop manual grouped repo-update delivery as the default governed write posture.
 - Keep PR and review flows optional and bounded rather than mandatory.
-- Keep package-cleanliness enforcement active so delivered skill zips stay free of runtime residue such as `__pycache__/`, `*.pyc`, and `.DS_Store`.
+- Keep package-cleanliness enforcement active so delivered skill zips stay free of runtime residue such as __pycache__/, *.pyc, and .DS_Store.
 - Use parity verification and representative regression before treating future skill patches as ready.

@@ -1,30 +1,43 @@
 DCOIR Gemini Agent Build Live Test Findings - 2026-04-07
 
 Current state id
-- 2026-04-06-viable-deliverable-generation-contract-durable-v1
+- 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
 
 Status
 - These are operator live-test findings captured during a work-safe browser-first session.
-- They are review notes for later build/output-route improvement.
-- They are not yet treated as fixed.
+- They are review notes for later build and output-route improvement.
+- They are not yet treated as fixed unless separately promoted into governed control-plane or design-authority surfaces.
 
 Operator preferences and output-route requirements
 - Main agent should ship with three starter prompts in the next build.
-- Prime-agent and sub-agent markdowns should merge Agent role / purpose plus Description into one best-of-breed field named Description so the markdowns map cleanly into Agent Designer.
+- Prime-agent and sub-agent markdowns should merge Agent role or purpose plus Description into one best-of-breed field named Description so the markdowns map cleanly into Agent Designer.
 - Instructions should be standardized to the "You are ..." style across the main agent and sub-agents.
 
 Live-test findings to verify and likely remediate
 - The primary agent appears to over-focus on Elastic Defend triage and does not visibly state that it also triages or interprets DCOIR collector artifacts.
 - IOC-to-OSINT lookup ownership is not visibly explicit in the current agent set.
-- If either capability already exists, the current issue may still be a visibility/discoverability problem and should be corrected in the next build.
+- If either capability already exists, the current issue may still be a visibility or discoverability problem and should be corrected in the next build.
 
 Validation additions requested for the next bundle
 - Add a collector-artifact test plan so the collector-artifact interpretation path is explicitly tested.
-- Add a collector execution / collection-path test plan that covers collection success, harness-style paths such as FullRegression/core-style runs, and any pull/retrieval behavior needed to generate agent-consumable artifacts.
+- Add a collector execution or collection-path test plan that covers collection success, harness-style paths such as FullRegression or core-style runs, and any pull or retrieval behavior needed to generate agent-consumable artifacts.
+- Add an IOC-enrichment trigger and ownership test plan so the path can be reached intentionally and evaluated cleanly.
+- Add a repeated-session test that verifies whether enrich-add actions truly append to the same open session instead of silently creating a new one.
 
-Research item
-- Research whether Google Gemini Enterprise Agents can support an attached collector zip plus PowerShell script model and expose usable links to those assets for users on request.
+Research items
+- Research whether Google Gemini Enterprise Agents can support an attached collector zip plus PowerShell script model and expose usable links to those assets for users.
 - Treat this as a capability-check topic, not an approved delivery pattern yet.
+- Research the practical Gemini Agent upload-size ceiling for DCOIR artifacts.
+- Define a smaller-slice artifact intake pattern for baseline, enrichment, retrieved-artifact, and final-synthesis review when full artifacts are too large to upload.
+
+Baseline-surface redesign candidate
+- The April 7 transcript showed that a large baseline artifact could not be uploaded to Gemini during live testing.
+- Treat the current baseline report surface as a candidate redesign item.
+- First-pass options to evaluate:
+  - reduce its scope so it contains less data
+  - split it into smaller analyst-facing sections
+  - demote it from the default Gemini upload set when smaller targeted artifacts preserve the same analyst value
+  - remove it from the default Gemini upload path altogether if it is no longer the best agent-facing artifact
 
 Suggested next review focus
 1. Prime-agent wording for explicit collector-artifact triage and interpretation.
@@ -32,6 +45,7 @@ Suggested next review focus
 3. Standardized Description and Instructions field shape.
 4. Three starter prompts for the main agent.
 5. Collector-artifact and collector-execution test-plan coverage.
+6. Upload-size-aware artifact intake and baseline-surface redesign.
 
 Truth boundary
 - This note preserves live-test observations and requested follow-up.

@@ -1,33 +1,57 @@
 DCOIR Active Now
 
-Current state id: 2026-04-06-viable-deliverable-generation-contract-durable-v1
+Current state id: 2026-04-07-gemini-live-test-governance-and-legacy-surface-clarity-v1
 
-1. Keep the real project deliverables explicit.
+1. Build and use a firm Gemini agent grading test plan.
    Why it matters:
-   - The prompt-pack line, standalone analyst-facing master prompt, PP-09 and PP-10 Gemini design line, and the generated/comparative markdown surfaces are the actual project end-state, not side notes behind the automation framework.
+   - The April 7 live test proved useful, but future grading still needs a repeatable pass or fail contract tied to explicit artifact sets and expected behaviors.
    Next action:
-   - Use the current continuity surfaces and repo guide files to keep those deliverables named explicitly in future work instead of referring to deliverables only in the abstract.
+   - Define the minimum useful test set, expected outputs, pass conditions, fail conditions, and repeated-session checks.
 
-2. Keep the durable deliverable-generation contract active.
+2. Validate the collector-analysis and collector-artifact interpretation path.
    Why it matters:
-   - DOC-04 now preserves the first viable method for generating the operator-facing v2 standalone and Gemini bundles instead of relying on buried chat history.
+   - Elastic alert triage was the strongest validated path, but the collector-analysis path still needs direct validation against real collector outputs.
    Next action:
-   - Generate fresh standalone and Gemini deliverables from the current authority line, use the original alert-triage agents as the writing-density benchmark, and use the old Gemini email bundle as structure/naming reference only.
+   - Run a dedicated collector-artifact interpretation test and record whether Gemini explains collector artifacts, workflow phase, uncertainty limits, and the exact next operator step correctly.
 
-3. Maintain the authoritative prompt-pack and standalone prompt line.
+3. Validate the IOC-enrichment trigger and ownership path.
    Why it matters:
-   - PP-01 through PP-07 are the behavioral authority and PP-08 is the current standalone runtime prompt that analysts can use directly.
+   - IOC enrichment still needs a dedicated trigger and ownership test so the path is intentional, visible, and not only incidental.
    Next action:
-   - Edit PP-01 through PP-07 when behavior changes, then regenerate and verify PP-08 rather than patching PP-08 directly, and keep the shipped standalone prompt as a true full assembly rather than a condensed rewrite.
+   - Build a bounded IOC-enrichment validation case and verify triggerability, ownership clarity, and next-step behavior.
 
-4. Maintain the current Gemini Enterprise design line.
+4. Research Gemini Agent upload-size limits and define a smaller-slice artifact intake method.
    Why it matters:
-   - PP-09 and PP-10 are the current design workflow and bounded design artifact for the merged parent-plus-seven-sub-agent topology that covers Elastic alert triage, DCOIR collection, IOC enrichment, artifact review, and final synthesis.
+   - The April 7 transcript showed that at least one large baseline artifact could not be uploaded to Gemini, which means the current agent-facing artifact packaging may exceed platform limits.
    Next action:
-   - Keep PP-09, PP-10, and the generated/comparative markdown surfaces aligned, and reject future Gemini outputs that are materially thinner than the accepted alert-triage benchmark set.
+   - Determine the practical upload-size ceiling and define a DCOIR intake pattern that prefers metadata, tree, high-value representative artifacts, and targeted excerpts before broad dumps.
 
-5. Continue bounded live testing of the regenerated v2 bundles.
+5. Revisit the purpose of the baseline report surface.
    Why it matters:
-   - The current v2 Gemini and standalone bundles are the first acceptable structural baseline, but later operator feedback may still refine the governed generation contract further.
+   - The baseline report may currently carry too much data for reliable Gemini upload and may no longer be the best default agent-facing artifact if the same analyst value can be preserved in smaller targeted slices.
    Next action:
-   - Capture concrete test feedback, refine DOC-04 and PP-09 when a repeatable improvement becomes clear, and only then widen the durable rule set further if needed.
+   - Evaluate whether the baseline report should be reduced in scope, repurposed, split into smaller analyst-facing sections, or removed from the default Gemini upload path altogether.
+
+6. Preserve live-fire operator workflow corrections in future collector execution guidance.
+   Why it matters:
+   - The live test exposed concrete remote-execution lessons such as runtime filename, quoting, slash usage, upload-directory expectations, and the harness not being the right first lane for live response-action testing.
+   Next action:
+   - Fold those corrections into future collector execution guidance and validation instructions.
+
+7. Keep improving Gemini operator-helpfulness during live execution.
+   Why it matters:
+   - The operator explicitly wants stepwise, adaptive, walkthrough-friendly help during live execution, not only solid analysis after the fact.
+   Next action:
+   - Preserve walkthrough-friendly behavior as an explicit quality target in future Gemini validation and generation work.
+
+8. Research whether Gemini Enterprise Agents can expose an attached collector zip plus PowerShell script as usable links for users.
+   Why it matters:
+   - This remains a research topic with potential delivery implications, but it is not yet an approved operating pattern.
+   Next action:
+   - Confirm whether the platform supports it and only then decide whether that path belongs in a future delivery design.
+
+9. Verify whether enrich-add actions truly append to an existing open session.
+   Why it matters:
+   - Repeated-session correctness remains important, and the transcript preserved this as one of the next most valuable functional tests.
+   Next action:
+   - Run a bounded enrich-add session test and confirm whether the action appends to the existing session or silently creates a new one.
