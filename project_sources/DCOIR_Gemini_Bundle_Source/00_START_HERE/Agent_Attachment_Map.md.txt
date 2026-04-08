@@ -1,14 +1,36 @@
 # Agent Attachment Map
 
-Prime agent attachments
-- Attach every file in 02_PRIME_AGENT_ATTACHMENTS to the prime agent.
-- The prime agent is the runtime entry point and should have the knowledge/support set.
+This map is intentionally explicit. It exists so the operator, the maintainer, and the future validation workflow can see exactly which shared knowledge files feed the prime-agent attachment set and why they matter.
 
-Sub-agent attachments
-- No extra attachment pack is required for the sub-agent definition files in this bundle.
-- The sub-agents rely on the prime-agent knowledge set plus their own explicit Description and Instructions.
+1. Knowledge - 01 - Overview and About
+- Purpose: define what DCOIR is, what the collector line is, what the Gemini bundle is, and what the workflow is trying to achieve.
 
-Attachment-set intent
-- The attachments are support and runtime knowledge files.
-- They are not substitutes for weak agent fields.
-- The prime and sub-agent definition files are expected to be self-contained enough to work even if an attachment is missing, although the attachments should still be supplied for best performance.
+2. Knowledge - 02 - Elastic Quick Start
+- Purpose: preserve command-lane, response-action, and telemetry-query startup guidance.
+
+3. Knowledge - 03 - Local Test and Regression
+- Purpose: preserve local versus response-action lane distinctions and test expectations.
+
+4. Knowledge - 04 - Tier 1 Collect Runbook
+- Purpose: preserve baseline and targeted collection initiation guidance.
+
+5. Knowledge - 05 - Tier 2 Collect Runbook
+- Purpose: preserve deeper-collection logic and escalation context.
+
+6. Knowledge - 06 - Enrichment Actions
+- Purpose: preserve enrich-session behavior, action selection, finalize behavior, and retrieval expectations.
+
+7. Knowledge - 07 - Artifact Review Guide
+- Purpose: preserve collector-artifact interpretation, upload-order guidance, and retrieved-artifact review logic.
+
+8. Knowledge - 08 - Troubleshooting
+- Purpose: preserve bounded troubleshooting rules and non-overreach behavior.
+
+9. Knowledge - 09 - FAQ
+- Purpose: preserve operator-facing answers for repeated workflow questions.
+
+10. Knowledge - 10 - AI Prompt and Agent Design
+- Purpose: preserve the major-version prompt and agent design posture, including verbosity and explicitness requirements.
+
+11. Knowledge - 11 - IOC Enrichment and Public Sources
+- Purpose: preserve mixed-format IOC parsing, IOC typing, enrichment boundaries, and public-source corroboration rules.

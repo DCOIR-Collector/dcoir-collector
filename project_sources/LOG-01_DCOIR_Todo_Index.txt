@@ -1,12 +1,11 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
+Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
 
 Current priority summary
-1. Gemini now follows a manifest-topology, maintained-knowledge-sync, and compile model instead of ad hoc bundle generation.
-2. Collector now follows a maintained-source single-runtime compile plus transport-safe delivery package model.
-3. The package smoke tests in the validation workflows now use the same governed build scripts as the manual package workflows.
-4. The next required follow-through is no longer only generic live-test-delta propagation; it is one bounded end-to-end implementation wave driven by the new durable collector-and-Gemini completion punch list.
-5. That punch list now includes the remaining April 7 Gemini live-test deltas plus the newly requested mixed-format IOC parsing capability, targeted collection parameterization, and collector multithreading or parallelism assessment.
-6. Both bundle lines should be rebuilt after that implementation wave so tomorrow's separate chat can focus on functionality testing rather than build setup.
-7. Bounded duplicate-readable-surface cleanup remains queued only after the implementation-and-rebuild wave.
+1. Gemini now follows a larger, more verbose major-version runtime topology under the governed stored-source compile model.
+2. Collector now includes targeted collection parameterization in the maintained source line while preserving the compiled single-runtime delivery path.
+3. The associated build and validation workflows were updated alongside the source changes so the major-version deliverables stay synchronized with their governed package algorithms.
+4. The immediate next step is bundle generation plus tomorrow's functionality test wave, not another source-refactor wave tonight.
+5. Bounded duplicate-readable-surface cleanup remains queued only after the functionality test wave.
+6. Later-only items such as parity follow-through, optional Drive staging, and restore-refresh decisions remain queued for later.

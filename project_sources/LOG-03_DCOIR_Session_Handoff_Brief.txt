@@ -1,18 +1,17 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
+Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
 
 Stable baseline
 - GitHub-primary readable-source model remains in force.
 - Standalone remains the PP-01 through PP-07 assembly lane.
-- Gemini now has a governed stored runtime source tree plus a build path that syncs the shared knowledge attachments from the maintained `knowledge/*.md` set before validation and compile.
-- Collector now has a maintained-source single-runtime compile path plus a transport-safe delivery package path.
+- Gemini now has a larger, more verbose major-version stored runtime source tree plus a maintained-knowledge-sync, validation, and compile path.
+- Collector now has a maintained-source single-runtime compile path, a transport-safe delivery package path, and a bounded targeted-collection feature wave.
 
 Open follow-through
-- use `project_sources/live_test_notes/2026-04-08_DCOIR_Collector_And_Gemini_Completion_Punch_List.md.txt` as the durable next-wave implementation punch list
-- finish the remaining Gemini runtime-content deltas from the April 7 live-test findings and addenda
-- finish the remaining collector maintained-source deltas and newly requested collector-adjacent feature work
-- rebuild the Gemini and collector bundles after the implementation wave
-- use tomorrow's separate chat for functionality testing after the rebuilds are complete
-- after that, do the bounded duplicate-readable-surface cleanup
+- generate the major-version Gemini bundle through the associated GitHub Action
+- generate the major-version collector delivery package through the associated GitHub Action
+- carry the resulting bundle outputs into tomorrow's dedicated functionality test chat
+- use the major-version functionality test plan during that chat
+- after that, run the bounded duplicate-readable-surface cleanup
 - later, decide whether a bounded workflow should regenerate `supporting_assets/DCOIR_Collector.zip` from the approved collector delivery package path

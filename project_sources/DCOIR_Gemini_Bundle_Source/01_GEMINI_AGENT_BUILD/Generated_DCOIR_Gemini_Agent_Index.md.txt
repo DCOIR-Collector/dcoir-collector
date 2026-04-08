@@ -1,27 +1,26 @@
 # Generated DCOIR Gemini Agent Index
 
-Bundle purpose
-- This bundle is a fresh-generated Gemini parent-agent and sub-agent field set for the merged AFRICOM SOC Elastic alert triage and DCOIR workflow.
-- The file and folder layout intentionally follows the preferred operator-facing build-bundle structure while the content is freshly generated for the merged mission.
+Bundle version: 3_0_0
 
-Topology
-1. Prime Agent - DCOIR Gemini Orchestrator
-2. Sub Agent 01 - Session Readiness and Intake
-3. Sub Agent 02 - Environment and Coverage Mapper
-4. Sub Agent 03 - Alert Family Classifier
-5. Sub Agent 04 - Evidence and Provenance Analyst
-6. Sub Agent 05 - Query Planner and Syntax Guard
-7. Sub Agent 06 - DCOIR Collection and Artifact Orchestrator
-8. Sub Agent 07 - Decision and Report Composer
+## Prime agent
+- Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt
 
-Attachment guidance
-- The prime agent is expected to receive the supporting knowledge files in 02_PRIME_AGENT_ATTACHMENTS.
-- The sub-agents are definition files, not attachment files.
-- The runtime bundle is intentionally minimal: start-here docs, agent-definition files, and the attachment folder only.
+## Active sub-agents
+- 01. Sub_Agent_01_Session_Readiness_and_Intake.md.txt
+- 02. Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt
+- 03. Sub_Agent_03_Alert_Family_Classifier_and_Known_Benign_Technology_Differentiator.md.txt
+- 04. Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt
+- 05. Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt
+- 06. Sub_Agent_06_DCOIR_Collector_Execution_and_Bundle_Workflow_Orchestrator.md.txt
+- 07. Sub_Agent_07_DCOIR_Collector_Artifact_Interpreter_and_Report_Extractor.md.txt
+- 08. Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt
+- 09. Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt
+- 10. Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt
 
-Mission summary
-- Start from alert text, pasted collector output, merged baseline evidence, enrichment output, retrieved artifact text, or final-synthesis request.
-- Preserve evidence-first reasoning, bounded confidence, exact source labeling, exact lane separation, and one best next step.
-- Support explicit alert-only triage versus DCOIR escalation decisions.
-- Interpret collector output in plain analyst terms.
-- Support evidence-grounded public IOC enrichment without letting outside context override case artifacts.
+## Major-version feature coverage
+- explicit collector-artifact interpretation
+- mixed-format IOC parsing
+- targeted collection design
+- stricter singular-command consistency
+- stronger false-positive-aware handling of known products
+- extremely verbose description and instruction fields for predictable behavior

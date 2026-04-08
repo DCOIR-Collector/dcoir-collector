@@ -1,41 +1,84 @@
 # Knowledge - 07 - Artifact Review Guide
 
-_How the current prompt-pack and combined-master-prompt line expects analysts to review DCOIR artifacts_
+Purpose
+- This knowledge file provides a deliberately expanded, operationally explicit reference for collector artifact interpretation and upload guidance.
+- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
+- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
 
-**Summary:** This guide summarizes the current evidence-driven review flow used by the DCOIR prompt-pack line and the promoted combined analyst-facing master prompt runtime source.
+What this file is expected to do in the major-version build
+- Spell out upload summary in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out attachment-budget manifest in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out metadata report in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out analyst follow-up queue in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out high-signal summary in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out retrieved enrich artifacts in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out baseline report limits in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 
-| Source class | Authoritative basis |
-| --- | --- |
-| Project sources | PP-01_System_Prompt_v1_0_1.txt; PP-02_Output_Schema_v1_0_0.txt; PP-03_Baseline_Triage_Prompt_v1_0_0.txt; PP-04_Enrichment_Review_Prompt_v0_1_1.txt; PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt; PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt; PP-07_Agent_Guardrails_v1_0_0.txt; PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt |
-| Official external sources | Not required for this page |
-| Scope note | This page is project-grounded; it does not redefine the schema or the prompts. |
+Operational detail
+## 1. Upload Summary
+This section is intentionally long-form. The goal is to make upload summary explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## Current review sequence
+For upload summary, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-- Review baseline collection output first.
-- Review the merged baseline report and the flat final_artifacts output.
-- Identify suspicious findings, notable absences, and the next best enrichment step.
-- Review enrichment output as it is produced.
-- Review retrieved files or raw exports in retrieved artifact review mode when they are staged.
-- Treat scripts, configs, scheduled-task XML, registry exports, and event-log-derived excerpts as evidence-first artifact-review inputs rather than enrichment-only narrative.
-- End with final case synthesis after enough reviewed evidence exists to support a case-level conclusion.
+The current major-version bundle also assumes that upload summary may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-## Review posture
+When writing or reviewing functionality tied to upload summary, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
 
-- Treat user-provided case artifacts as the primary source of truth.
-- Separate observed evidence, inference, uncertainty, and recommendations.
-- Do not overstate confidence, maliciousness, benignity, or batch completeness.
-- Recommend one best next step when possible rather than shotgun lists.
+## 2. Attachment-Budget Manifest
+This section is intentionally long-form. The goal is to make attachment-budget manifest explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## Common input priority
+For attachment-budget manifest, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-| Priority | Preferred artifact |
-| --- | --- |
-| 1 | Merged baseline report |
-| 2 | Metadata report |
-| 3 | Flat final_artifacts baseline outputs |
-| 4 | Enrichment report content and staged retrieval handoff |
-| 5 | Retrieved script, config, task XML, registry export, or event-log-derived excerpt |
-| 6 | Final case synthesis only after the reviewed evidence chain is broad enough to justify case-level closure or decision support |
+The current major-version bundle also assumes that attachment-budget manifest may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+When writing or reviewing functionality tied to attachment-budget manifest, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 3. Metadata Report
+This section is intentionally long-form. The goal is to make metadata report explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For metadata report, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that metadata report may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to metadata report, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 4. Analyst Follow-Up Queue
+This section is intentionally long-form. The goal is to make analyst follow-up queue explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For analyst follow-up queue, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that analyst follow-up queue may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to analyst follow-up queue, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 5. High-Signal Summary
+This section is intentionally long-form. The goal is to make high-signal summary explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For high-signal summary, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that high-signal summary may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to high-signal summary, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 6. Retrieved Enrich Artifacts
+This section is intentionally long-form. The goal is to make retrieved enrich artifacts explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For retrieved enrich artifacts, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that retrieved enrich artifacts may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to retrieved enrich artifacts, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 7. Baseline Report Limits
+This section is intentionally long-form. The goal is to make baseline report limits explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For baseline report limits, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that baseline report limits may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to baseline report limits, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+Major-version bundle rule
+- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
+- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
+- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.

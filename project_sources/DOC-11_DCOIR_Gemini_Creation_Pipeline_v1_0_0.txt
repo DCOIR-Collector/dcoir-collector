@@ -3,15 +3,13 @@ DCOIR Gemini Creation Pipeline v1.1.0
 Purpose
 - Define the governed create-and-ship path for the operator-facing Gemini bundle after the stored-source compile model was adopted.
 - Make the Gemini bundle manifest the explicit source of topology truth for the prime agent and sub-agent set.
-- Make the maintained `knowledge/*.md` set the single source of truth for the shared prime-agent knowledge attachments.
 - Keep future topology changes governed, reviewable, and repeatable.
 
 Current authority and source model
 - PP-01 through PP-07 remain design-time behavioral authority.
-- `project_sources/DCOIR_Gemini_Bundle_Source/` remains the editable runtime source tree for the agent-definition files and bundle layout.
-- `Gemini_Bundle_Source_Manifest.json.txt` remains the compile contract and carries the explicit topology contract.
-- `knowledge/Knowledge - 01` through `knowledge/Knowledge - 11` are the maintained readable source of truth for the shared prime-agent knowledge attachment content.
-- Ordinary shipment remains sync, validation, and compilation, not ad hoc regeneration.
+- `project_sources/DCOIR_Gemini_Bundle_Source/` remains the editable runtime source tree.
+- `Gemini_Bundle_Source_Manifest.json.txt` remains the compile contract and now also carries the explicit topology contract.
+- Ordinary shipment remains validation plus compilation, not ad hoc regeneration.
 
 Topology truth rules
 - The manifest is the explicit source of truth for:
@@ -21,25 +19,19 @@ Topology truth rules
   - the required-file set that must ship
 - Validation must compare the manifest topology against the actual source-tree contents and fail on drift.
 
-Knowledge attachment truth rules
-- The maintained `knowledge/*.md` set is the source of truth for shared prime-agent attachment content.
-- The attachment files under `project_sources/DCOIR_Gemini_Bundle_Source/02_PRIME_AGENT_ATTACHMENTS/` are synchronized runtime copies used for bundle compilation.
-- The governed build path must refresh those attachment copies from `knowledge/*.md` before validation and compilation.
-- Do not hand-maintain duplicate wording in both places and assume they will stay aligned.
-
 Required behavior when adding or removing sub-agents
 1. Edit the relevant runtime source files in `project_sources/DCOIR_Gemini_Bundle_Source/`.
 2. Update the manifest topology section.
 3. Update `required_files` in the manifest.
 4. Update the generated index and quick-start guidance when the build instructions or topology changed.
-5. Re-run sync, validation, and build.
+5. Re-run validation and build.
 6. Do not treat a new source file as active topology until the manifest and index both reflect it.
 
 Workflow
 1. Confirm the current control plane.
 2. Edit the affected source files in `project_sources/DCOIR_Gemini_Bundle_Source/`.
 3. Update the manifest topology and required-file contract when the topology changed.
-4. Update `knowledge/*.md` when shared attachment content changed.
+4. Run `validate_dcoir_gemini_bundle.py`.
 5. Run `build_dcoir_gemini_release.py`.
 6. Review the workflow summary and uploaded build artifacts.
 7. Ship the compiled zip only after the validation path passes.
@@ -49,7 +41,6 @@ Hard rules
 - Do not add or remove sub-agents by file drop alone.
 - Do not let the workflow report a successful bundle when manifest topology and source-tree contents drift.
 - Keep the validation summary explicit enough that the operator can see the manifest-listed and discovered sub-agent counts.
-- Do not let the shared prime-agent knowledge attachments drift away from the maintained `knowledge/*.md` set.
 
 Recommended next move
-- Use the manifest-driven topology contract and knowledge-sync staging path for future Gemini changes, then propagate the approved live-test behavior deltas into the stored runtime source tree.
+- Use the manifest-driven topology contract for the larger major-version Gemini runtime bundle, then validate the new ten-sub-agent topology through the associated Actions workflow before tomorrow's functionality test.

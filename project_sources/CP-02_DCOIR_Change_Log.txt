@@ -1,32 +1,35 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 4.0.0
+Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
+Change class: major-version collector and Gemini implementation wave with verbose runtime-content refresh, targeted collection scope expansion, and associated workflow updates
+
+What changed
+- Expanded the governed Gemini stored runtime source tree from one parent plus seven sub-agents to one parent plus ten verbose sub-agents.
+- Rewrote the parent and sub-agent runtime files to be substantially more explicit, more verbose, and more operationally specific.
+- Kept manifest-topology governance in place so the new larger agent set remains explicit and reviewable.
+- Updated Gemini validation and build surfaces for the larger topology and the stronger runtime-content contract.
+- Reworked the maintained knowledge set so the shared Gemini attachment sources are intentionally more verbose and more informational than the earlier versions.
+- Preserved the maintained-knowledge-sync build path so the Gemini bundle still stages shared knowledge from `knowledge/*.md` before validation and compile.
+- Added major-version-ready collector targeted collection parameterization to the maintained collector source line.
+- Added a collector feature-wave assessment surface for multithreading or parallelism feasibility without claiming unsafe runtime parallelism was implemented.
+- Updated collector quick shortcuts, collector output guidance, and harness suites so the new targeted-collection path is explicit and testable.
+- Updated the associated GitHub Actions workflows for Gemini and collector deliverables plus the broader repo validation workflows so the major-version source line and test surfaces remain synchronized.
+
+Why
+- The operator wants the next major version of the collector and Gemini bundle to carry forward all collector- and Gemini-relevant todo work that belongs in those deliverables.
+- The operator also wants the Gemini runtime files and shared knowledge files to be much more verbose, more explicit, and less likely to leave edge cases or interpretation gaps.
+- The operator wants the associated workflows to stay aligned to the same governed build and validation paths as the manual bundle workflows.
+- The operator wants mixed-format IOC handling, targeted collection design, and collector-parallelism assessment to become durable major-version features or feature-wave surfaces rather than remaining only in chat continuity.
+
+Validation notes
+- This change claims the source wave and workflow alignment are implemented.
+- It does not claim tomorrow's end-to-end functionality testing has already happened.
+- Bounded duplicate-readable-surface cleanup remains queued after the functionality test wave.
+- Later-only items that do not directly belong in the collector or Gemini deliverables remain queued for later.
+
+[PRIOR]
 Version: 3.9.72
 Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
 Change class: package-pipeline alignment, collector single-runtime compile delivery, Gemini knowledge-source sync, and approved-delta catch-up governance
-
-What changed
-- Added a governed Gemini attachment sync step so the shared prime-agent attachment set is refreshed from the maintained `knowledge/*.md` source set before validation and compile.
-- Added a maintained `knowledge/Knowledge - 11 - IOC Enrichment and Public Sources.md` source file so the Gemini shared attachment set now has a readable maintained source for Knowledge 11 as well.
-- Updated the Gemini build wrapper and manual build workflow so the normal Gemini bundle path is now sync, validate, and compile through the same governed script chain.
-- Reworked the collector delivery package line so it compiles a single runtime `DCOIR_Collector.ps1` from the maintained source parts before packaging.
-- Updated the collector delivery package manifest and workflow so the downloadable artifact contains the compiled collector runtime and the harness as transport-safe `.txt`-suffixed script files.
-- Updated `validate-on-push`, `manual-full-validation`, and `scheduled-health-check` so they smoke-test the same governed Gemini and collector package build scripts used by the manual package workflows.
-- Added a governed catch-up queue for approved live-test deltas that still need propagation into the runtime source lines.
-
-Why
-- The operator needs the collector download artifact to be a single runtime script that can be uploaded to a target machine, not a wrapper that still depends on separate source-part files.
-- The operator also needs the downloadable collector artifact to remain transport-safe under current mail-filter constraints.
-- The operator wants the internal package algorithms and the GitHub Actions workflows to stay synchronized as much as possible.
-- The shared Gemini knowledge attachment set needed a single maintained source of truth to reduce drift risk.
-- The earlier pipeline creation wave interrupted propagation of some approved live-test deltas, so the project needed a governed catch-up queue instead of losing those items in chat context.
-
-Validation notes
-- This change aligns the build algorithms and workflow surfaces. It does not claim that all approved live-test deltas have already been propagated into the Gemini stored runtime source tree or the collector maintained source line.
-- The collector delivery package is transport-safe and is not itself a direct replacement for `supporting_assets/DCOIR_Collector.zip` without a later restore-and-refresh step.
-- Bounded duplicate-readable-surface cleanup remains a follow-on item after the approved-delta catch-up wave.
-
-[PRIOR]
-Version: 3.9.71
-Current state id: 2026-04-08-gemini-stored-source-compile-model-v1
-Change class: Gemini bundle stored-source and compile model adoption

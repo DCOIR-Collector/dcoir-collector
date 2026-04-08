@@ -1,10 +1,8 @@
 DCOIR Active Now
 
-Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
+Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
 
-1. Use the aligned Gemini and collector build scripts as the single governed package algorithms.
-2. Use `project_sources/live_test_notes/2026-04-08_DCOIR_Collector_And_Gemini_Completion_Punch_List.md.txt` as the durable implementation source of truth for the next wave.
-3. Finish the remaining Gemini stored-runtime-source deltas and the remaining collector maintained-source deltas in one bounded implementation push tonight.
-4. Treat mixed-format IOC parsing, targeted collection parameterization, and collector multithreading or parallelism assessment as durable queued feature work now that they are captured in the governed punch list.
-5. Rebuild both bundle lines after the implementation wave, then use tomorrow's separate chat for functionality testing.
-6. Run the bounded duplicate-readable-surface cleanup only after the implementation-and-rebuild wave.
+1. Use the aligned major-version Gemini and collector build scripts as the single governed package algorithms.
+2. Generate the new major-version Gemini and collector bundles through their associated Actions workflows.
+3. Use `project_sources/live_test_notes/2026-04-08_DCOIR_Major_Version_Functionality_Test_Plan.md.txt` as tomorrow's functionality-test source of truth.
+4. Keep bounded duplicate-readable-surface cleanup queued until after the functionality test wave.

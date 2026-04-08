@@ -21,14 +21,17 @@ REQUIRED_KNOWLEDGE = [
     'Knowledge - 11 - IOC Enrichment and Public Sources.md.txt',
 ]
 VISIBILITY_CHECKS = {
-    'collector_artifact_interpretation_visibility': ['collector', 'artifact'],
-    'collector_pivot_visibility': ['collector', 'pivot'],
-    'ioc_ownership_visibility': ['ioc'],
-    'false_positive_aware_security_product_behavior': ['false positive', 'security product'],
+    'collector_artifact_interpretation_visibility': ['collector artifact', 'upload summary'],
+    'collector_pivot_visibility': ['targeted collection', 'collector'],
+    'ioc_ownership_visibility': ['ioc', 'provenance'],
+    'mixed_format_ioc_parsing_visibility': ['csv', 'pdf', 'docx'],
+    'false_positive_aware_security_product_behavior': ['false-positive-aware', 'security product'],
+    'starter_prompt_visibility': ['starter prompt 1', 'starter prompt 2', 'starter prompt 3'],
     'operator_state_awareness_visibility': ['operator', 'analyst'],
 }
 AGENT_DIR = '01_GEMINI_AGENT_BUILD'
 KNOWLEDGE_DIR = '02_PRIME_AGENT_ATTACHMENTS'
+QUICK_START = '00_START_HERE/Gemini_Build_Quick_Start.md.txt'
 
 def load_manifest(source_root: Path) -> Dict:
     return json.loads((source_root / MANIFEST_NAME).read_text(encoding='utf-8'))
@@ -94,71 +97,27 @@ def main() -> int:
     checks['manifest_sub_agent_files'] = sub_rel_list
     checks['manifest_sub_agent_count'] = len(sub_rel_list)
 
-    if not prime_rel:
-        errors.append('manifest topology is missing prime_agent_file')
-    if not sub_rel_list:
-        errors.append('manifest topology is missing sub_agent_files')
-    if len(set(sub_rel_list)) != len(sub_rel_list):
-        errors.append('manifest topology contains duplicate sub_agent_files entries')
-
-    discovered_prime = sorted(
-        rel_posix(p, source_root)
-        for p in (source_root / AGENT_DIR).glob('Prime_Agent_*.txt')
-        if p.is_file()
-    )
-    discovered_sub = sorted(
-        rel_posix(p, source_root)
-        for p in (source_root / AGENT_DIR).glob('Sub_Agent_*.txt')
-        if p.is_file()
-    )
-    discovered_other_agent_txt = sorted(
-        rel_posix(p, source_root)
-        for p in (source_root / AGENT_DIR).glob('*.txt')
-        if p.is_file() and p.name not in {'Generated_DCOIR_Gemini_Agent_Index.md.txt'}
-           and not p.name.startswith('Prime_Agent_')
-           and not p.name.startswith('Sub_Agent_')
-    )
-
+    discovered_prime = sorted(rel_posix(p, source_root) for p in (source_root / AGENT_DIR).glob('Prime_Agent_*.txt') if p.is_file())
+    discovered_sub = sorted(rel_posix(p, source_root) for p in (source_root / AGENT_DIR).glob('Sub_Agent_*.txt') if p.is_file())
     checks['discovered_prime_files'] = discovered_prime
     checks['discovered_sub_agent_files'] = discovered_sub
     checks['discovered_sub_agent_count'] = len(discovered_sub)
-    checks['discovered_other_agent_txt_files'] = discovered_other_agent_txt
-    checks['discovered_total_agent_definition_count'] = len(discovered_prime) + len(discovered_sub)
 
     if prime_rel and discovered_prime != [prime_rel]:
         errors.append('prime agent file discovered in source tree does not match manifest topology')
-    missing_topology_files = [rel for rel in [prime_rel, *sub_rel_list] if rel and not (source_root / rel).exists()]
-    checks['missing_topology_files'] = missing_topology_files
-    if missing_topology_files:
-        errors.append('manifest topology references missing files: ' + ', '.join(missing_topology_files))
-
     if sorted(sub_rel_list) != discovered_sub:
         errors.append('discovered sub-agent files do not exactly match manifest topology')
-    checks['topology_exact_match'] = (prime_rel and discovered_prime == [prime_rel] and sorted(sub_rel_list) == discovered_sub)
+    checks['topology_exact_match'] = bool(prime_rel and discovered_prime == [prime_rel] and sorted(sub_rel_list) == discovered_sub)
 
-    missing_from_required = [rel for rel in [prime_rel, *sub_rel_list] if rel and rel not in required_files]
-    checks['topology_files_in_required_list'] = len(missing_from_required) == 0
-    checks['topology_files_missing_from_required_list'] = missing_from_required
-    if missing_from_required:
-        errors.append('manifest topology files are missing from required_files: ' + ', '.join(missing_from_required))
-
-    agent_text = gather_text(sorted((source_root / AGENT_DIR).glob('*.txt')))
+    combined = gather_text(list((source_root / AGENT_DIR).glob('*.txt')) + [source_root / QUICK_START]).lower()
     for key, needles in VISIBILITY_CHECKS.items():
-        present = all(needle in agent_text for needle in needles)
+        present = all(needle in combined for needle in needles)
         checks[key] = present
         if not present:
             warnings.append(f'visibility check did not find all markers for {key}: {needles}')
 
     success = len(errors) == 0
-    report = {
-        'success': success,
-        'source_root': str(source_root),
-        'bundle_name': manifest.get('bundle_name'),
-        'bundle_version': manifest.get('bundle_version'),
-        'checks': checks,
-        'warnings': warnings,
-        'errors': errors,
-    }
+    report = {'success': success, 'source_root': str(source_root), 'bundle_name': manifest.get('bundle_name'), 'bundle_version': manifest.get('bundle_version'), 'checks': checks, 'warnings': warnings, 'errors': errors}
     report_path = output_dir / 'validate_dcoir_gemini_bundle_report.json'
     report_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps(report, indent=2))

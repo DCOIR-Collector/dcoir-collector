@@ -4,6 +4,8 @@ function Get-QuickUsageText {
     "Quick command examples:",
     "  $cmd -Quick collect-t1",
     "  $cmd -Quick collect-t2",
+    "  $cmd -Quick collect-targeted-popup -Target "User reported popup around 2026-04-08T09:00Z"",
+    "  $cmd -Quick collect-targeted-script -Target "Suspicious script execution follow-up" -Target2 "powershell.exe"",
     "  $cmd -Quick enrich-start-tcp",
     "  $cmd -Quick enrich-add-tcp",
     "  $cmd -Quick enrich-start-logtext -Target Security",
@@ -21,6 +23,12 @@ function Get-QuickUsageText {
     "  - enrich-start-* creates a new enrichment session.",
     "  - enrich-add-* reuses the current open session unless -EnrichSessionId or -NewEnrichSession changes the behavior.",
     "  - enrich-finalize finalizes the current open session.",
+    "",
+    "Targeted collection semantics:",
+    "  - collect-targeted-popup enables Targeted mode and prioritizes popup-window style review artifacts.",
+    "  - collect-targeted-script enables Targeted mode and prioritizes script execution review artifacts.",
+    "  - Use -WindowStart and -WindowEnd for explicit time-window annotations when needed.",
+    "  - Use -Target, -Target2, -FocusPath, -FocusIndicator, or -UserReport for narrow analyst context.",
     "",
     "Live-response guidance:",
     "  - For first live-fire endpoint tests, prefer the direct collector lane before the harness.",
@@ -56,6 +64,25 @@ function Apply-QuickShortcut {
   switch ($q) {
     "collect-t1" { $script:Mode = "Collect"; $script:Tier = "T1"; if ($Hours -eq 24) { $script:Hours = 24 }; return }
     "collect-t2" { $script:Mode = "Collect"; $script:Tier = "T2"; if ($Hours -eq 24) { $script:Hours = 72 }; return }
+    "collect-targeted-popup" {
+      $script:Mode = "Collect"
+      $script:Tier = "T1"
+      $script:Targeted = $true
+      $script:TargetProfile = "PopupWindow"
+      if ($Hours -eq 24) { $script:Hours = 12 }
+      if (-not [string]::IsNullOrWhiteSpace($Target)) { $script:UserReport = $Target }
+      return
+    }
+    "collect-targeted-script" {
+      $script:Mode = "Collect"
+      $script:Tier = "T1"
+      $script:Targeted = $true
+      $script:TargetProfile = "ScriptExecution"
+      if ($Hours -eq 24) { $script:Hours = 12 }
+      if (-not [string]::IsNullOrWhiteSpace($Target)) { $script:UserReport = $Target }
+      if (-not [string]::IsNullOrWhiteSpace($Target2)) { $script:FocusProcess = $Target2 }
+      return
+    }
     "enrich-start-tcp" { $script:Mode = "Enrich"; $script:NewEnrichSession = $true; $script:Action = "TcpvconRefresh"; return }
     "enrich-add-tcp" { $script:Mode = "Enrich"; $script:Action = "TcpvconRefresh"; return }
     "enrich-start-logtext" { $script:Mode = "Enrich"; $script:NewEnrichSession = $true; $script:Action = "LogText"; $script:LogName = if ([string]::IsNullOrWhiteSpace($Target)) { "Security" } else { $Target }; return }
@@ -102,7 +129,7 @@ function Write-QuickNextSteps {
     "Collect" {
       Write-Output ('1. execute --command "{0} -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment"' -f $cmd)
       Write-Output ('2. execute --command "{0} -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment"' -f $cmd)
-      Write-Output ('3. If Gemini upload is the next step, prefer UPLOAD_SUMMARY_PATH plus ATTACHMENT_BUDGET_MANIFEST_PATH before the full baseline report.')
+      Write-Output ('3. If Gemini upload is the next step, prefer UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, and representative final_artifacts slices before the full baseline report.' )
       Write-Output ('4. execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $cmd)
     }
     "EnrichOpen" {
@@ -117,7 +144,7 @@ function Write-QuickNextSteps {
     "Cleanup" {
       Write-Output '1. Local script file remains in place by design unless you run the explicit delete command.'
       Write-Output ('2. execute --command "{0} -Quick collect-t1" --comment "Run DCOIR collect T1"' -f $cmd)
-      Write-Output ('3. execute --command "{0} -Quick collect-t2" --comment "Run DCOIR collect T2"' -f $cmd)
+      Write-Output ('3. execute --command "{0} -Quick collect-targeted-popup -Target "User reported popup follow-up"" --comment "Run DCOIR targeted popup-style collect"' -f $cmd)
     }
   }
 }

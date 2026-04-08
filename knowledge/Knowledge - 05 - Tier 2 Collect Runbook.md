@@ -1,33 +1,64 @@
 # Knowledge - 05 - Tier 2 Collect Runbook
 
-_Deeper collection workflow for additional persistence and configuration checks_
+Purpose
+- This knowledge file provides a deliberately expanded, operationally explicit reference for tier 2 deep-collection runbook.
+- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
+- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
 
-**Summary:** Tier 2 collection goes deeper than Tier 1 and is meant for cases that need extra persistence, registry, firewall, WMI, or share/session context.
+What this file is expected to do in the major-version build
+- Spell out deeper persistence and host triage in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out when to escalate beyond targeted collect in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out how to preserve narrow scope in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out retrieval and finalization behavior in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out what broad collection still does better in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 
-| Source class | Authoritative basis |
-| --- | --- |
-| Project sources | project_sources/DCOIR_Collector.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
-| Official external sources | Not required for this page |
-| Scope note | The quick alias collect-t2 sets Mode=Collect and Tier=T2, and uses a longer default time window than Tier 1. |
+Operational detail
+## 1. Deeper Persistence And Host Triage
+This section is intentionally long-form. The goal is to make deeper persistence and host triage explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## Collector entry points
+For deeper persistence and host triage, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-| Approach | Command |
-| --- | --- |
-| Local collector quick alias | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t2 |
-| Explicit parameter form | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T2 -Hours 72 |
-| Elastic endpoint form | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t2" --comment "Run DCOIR Tier 2 collect" |
+The current major-version bundle also assumes that deeper persistence and host triage may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-## What Tier 2 adds
+When writing or reviewing functionality tied to deeper persistence and host triage, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
 
-- Additional registry checks such as Image File Execution Options, Winlogon, and LSA paths.
-- WMI subscription and persistence inspection.
-- Network-share, network-session, and firewall-profile checks.
-- A longer default time window than the standard Tier 1 baseline run.
+## 2. When To Escalate Beyond Targeted Collect
+This section is intentionally long-form. The goal is to make when to escalate beyond targeted collect explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## When to choose Tier 2
+For when to escalate beyond targeted collect, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-- Baseline review showed suspicious persistence, service, task, or identity activity that needs deeper context.
-- You need more host configuration detail before deciding the best enrichment step.
-- The case warrants additional persistence hunting without immediately retrieving files.
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+The current major-version bundle also assumes that when to escalate beyond targeted collect may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to when to escalate beyond targeted collect, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 3. How To Preserve Narrow Scope
+This section is intentionally long-form. The goal is to make how to preserve narrow scope explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For how to preserve narrow scope, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that how to preserve narrow scope may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to how to preserve narrow scope, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 4. Retrieval And Finalization Behavior
+This section is intentionally long-form. The goal is to make retrieval and finalization behavior explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For retrieval and finalization behavior, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that retrieval and finalization behavior may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to retrieval and finalization behavior, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 5. What Broad Collection Still Does Better
+This section is intentionally long-form. The goal is to make what broad collection still does better explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For what broad collection still does better, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that what broad collection still does better may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to what broad collection still does better, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+Major-version bundle rule
+- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
+- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
+- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.

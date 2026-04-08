@@ -1,17 +1,13 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
+Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
 
 Current active priority
-- Execute one bounded end-to-end propagation wave that makes the remaining approved collector and Gemini completion items durable in the maintained source lines and bundle outputs.
+- Generate the new major-version Gemini and collector bundles through the aligned governed Actions workflows and carry them into tomorrow's dedicated functionality test chat.
 
 Queued next priorities
-- use `project_sources/live_test_notes/2026-04-08_DCOIR_Collector_And_Gemini_Completion_Punch_List.md.txt` as the durable implementation punch list for the next wave
-- finish the remaining Gemini runtime-content deltas from the April 7 live-test notes and addenda before tomorrow's functionality test chat
-- finish the remaining collector maintained-source deltas and collector-facing feature work before tomorrow's functionality test chat
-- make the newly requested mixed-format IOC parsing, targeted collection parameterization, and collector multithreading or parallelism assessment durable in the governed queue and treat them as part of the next implementation review
-- rebuild the Gemini and collector bundles after the propagation wave using the aligned governed build scripts
-- run the bounded duplicate-readable-surface cleanup only after the implementation and rebuild wave
+- use `project_sources/live_test_notes/2026-04-08_DCOIR_Major_Version_Functionality_Test_Plan.md.txt` as the functionality-test source of truth for tomorrow
+- keep bounded duplicate-readable-surface cleanup queued until after the major-version functionality test wave
 - decide whether to add a bounded restore-and-refresh workflow for regenerating `supporting_assets/DCOIR_Collector.zip` from the approved collector delivery package path after the maintained-source line is stable
+- revisit parity and optional Drive staging after the major-version feature wave is proven stable
 - keep standalone on the prompt-pack assembly path
-- revisit parity and optional Drive staging after the end-to-end implementation and build wave is complete

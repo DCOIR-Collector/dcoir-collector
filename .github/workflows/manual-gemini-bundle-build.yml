@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       bundle_version_override:
-        description: Optional bundle version override (for example 2_0_1)
+        description: Optional bundle version override (for example 3_0_1)
         required: false
         default: ''
         type: string
@@ -56,6 +56,8 @@ jobs:
           $required = @(
             'project_sources/CP-01_DCOIR_Version_Manifest.txt',
             'project_sources/CP-02_DCOIR_Change_Log.txt',
+            'project_sources/LOG-60_DCOIR_Major_Version_Collector_And_Gemini_Feature_Wave_Implementation_2026-04-08.txt',
+            'project_sources/live_test_notes/2026-04-08_DCOIR_Major_Version_Functionality_Test_Plan.md.txt',
             'project_sources/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt',
             'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
             'project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt',
@@ -63,11 +65,12 @@ jobs:
             'project_sources/DCOIR_Gemini_Bundle_Source/README.md',
             'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/README_FIRST.md.txt',
             'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt',
+            'knowledge/README.md',
+            'knowledge/Knowledge - 11 - IOC Enrichment and Public Sources.md',
             'project_sources/generation_validation/sync_dcoir_gemini_knowledge_attachments.py',
             'project_sources/generation_validation/validate_dcoir_gemini_bundle.py',
             'project_sources/generation_validation/compile_dcoir_gemini_bundle.py',
-            'project_sources/generation_validation/build_dcoir_gemini_release.py',
-            'knowledge/Knowledge - 11 - IOC Enrichment and Public Sources.md'
+            'project_sources/generation_validation/build_dcoir_gemini_release.py'
           )
           $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
           if ($missing.Count -gt 0) {
@@ -99,97 +102,6 @@ jobs:
           & $cmd[0] $cmd[1..($cmd.Count - 1)]
           if ($LASTEXITCODE -ne 0) {
             throw 'Gemini bundle build failed.'
-          }
-
-      - name: Render browser-readable summary
-        if: always()
-        shell: pwsh
-        run: |
-          try {
-            if (-not $env:GITHUB_STEP_SUMMARY) {
-              Write-Warning 'GITHUB_STEP_SUMMARY is not set. Skipping summary render.'
-              exit 0
-            }
-
-            $outRoot = 'project_sources/generation_validation/out'
-            $syncReport = Join-Path $outRoot 'sync_dcoir_gemini_knowledge_attachments_report.json'
-            $buildReport = Join-Path $outRoot 'build_dcoir_gemini_release_report.json'
-            $validateReport = Join-Path $outRoot 'validate_dcoir_gemini_bundle_report.json'
-            $compileReport = Join-Path $outRoot 'compile_dcoir_gemini_bundle_report.json'
-            $zipFile = Get-ChildItem -Path $outRoot -File -Filter '*.zip' -ErrorAction SilentlyContinue |
-              Sort-Object LastWriteTime -Descending |
-              Select-Object -First 1
-
-            $lines = New-Object System.Collections.Generic.List[string]
-            $lines.Add('## manual-gemini-bundle-build')
-            $lines.Add('')
-            $lines.Add(('- Version override: {0}' -f $env:BUNDLE_VERSION_OVERRIDE))
-            $lines.Add(('- Skip validation: {0}' -f $env:SKIP_VALIDATION))
-            $lines.Add('')
-
-            if (Test-Path -LiteralPath $syncReport) {
-              $sync = Get-Content -LiteralPath $syncReport -Raw | ConvertFrom-Json
-              $lines.Add(('- Knowledge sync success: {0}' -f $sync.success))
-              $lines.Add(('- Knowledge attachment files refreshed: {0}' -f $sync.changed_files.Count))
-            }
-            else {
-              $lines.Add('- Knowledge sync report not found.')
-            }
-
-            if (Test-Path -LiteralPath $buildReport) {
-              $build = Get-Content -LiteralPath $buildReport -Raw | ConvertFrom-Json
-              $lines.Add(('- Build success: {0}' -f $build.success))
-              $lines.Add(('- Final stage: {0}' -f $build.stage))
-            }
-            else {
-              $lines.Add('- Build report not found.')
-            }
-
-            if (Test-Path -LiteralPath $validateReport) {
-              $validate = Get-Content -LiteralPath $validateReport -Raw | ConvertFrom-Json
-              $checks = $validate.checks
-              $lines.Add(('- Validation success: {0}' -f $validate.success))
-              $lines.Add(('- Topology source: {0}' -f $checks.topology_source))
-              $lines.Add(('- Manifest prime agent: {0}' -f $checks.manifest_prime_agent_file))
-              $lines.Add(('- Manifest-listed sub-agents: {0}' -f $checks.manifest_sub_agent_count))
-              $lines.Add(('- Discovered sub-agent files: {0}' -f $checks.discovered_sub_agent_count))
-              $lines.Add(('- Topology exact match: {0}' -f $checks.topology_exact_match))
-              if ($null -ne $validate.errors -and $validate.errors.Count -gt 0) {
-                $lines.Add('- Validation errors:')
-                foreach ($err in $validate.errors) {
-                  $lines.Add(('  - {0}' -f $err))
-                }
-              }
-            }
-            else {
-              $lines.Add('- Validation report not found.')
-            }
-
-            if (Test-Path -LiteralPath $compileReport) {
-              $compile = Get-Content -LiteralPath $compileReport -Raw | ConvertFrom-Json
-              $lines.Add(('- Bundle name: {0}' -f $compile.bundle_name))
-              $lines.Add(('- Bundle version: {0}' -f $compile.bundle_version))
-              $lines.Add(('- Top-level folder: {0}' -f $compile.top_level_folder))
-              $lines.Add(('- File count: {0}' -f $compile.file_count))
-            }
-            else {
-              $lines.Add('- Compile report not found.')
-            }
-
-            if ($zipFile) {
-              $lines.Add(('- Built zip: {0}' -f $zipFile.Name))
-            }
-            else {
-              $lines.Add('- No zip artifact was found in the output directory.')
-            }
-
-            $tempSummary = Join-Path $env:RUNNER_TEMP 'manual-gemini-bundle-build-summary.md'
-            $lines | Set-Content -LiteralPath $tempSummary -Encoding utf8
-            Get-Content -LiteralPath $tempSummary | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Encoding utf8
-          }
-          catch {
-            Write-Warning ("Non-fatal summary render issue: {0}" -f $_.Exception.Message)
-            exit 0
           }
 
       - name: Upload Gemini bundle artifacts

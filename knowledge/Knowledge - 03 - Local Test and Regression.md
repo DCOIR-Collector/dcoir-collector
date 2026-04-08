@@ -1,46 +1,74 @@
 # Knowledge - 03 - Local Test and Regression
 
-_How the local harness works and when to use each suite_
+Purpose
+- This knowledge file provides a deliberately expanded, operationally explicit reference for local test and regression strategy.
+- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
+- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
 
-**Summary:** The local harness exists to test the stable collector line from a local repo-style layout without changing the collector engine for every test case.
+What this file is expected to do in the major-version build
+- Spell out local vs response-action execution in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out bundle smoke tests in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out manual workflows in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out regression buckets in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out what a failed run means in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out why repeated-session checks matter in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 
-| Source class | Authoritative basis |
-| --- | --- |
-| Project sources | project_sources/run_DCOIR_Tests.ps1; project_sources/DCOIR_Collector.ps1; project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt |
-| Official external sources | Not required for this page |
-| Scope note | This page explains the current GitHub-readable harness source and the runtime filenames the operator will actually use in a local repo-style layout. |
+Operational detail
+## 1. Local Vs Response-Action Execution
+This section is intentionally long-form. The goal is to make local vs response-action execution explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## Why these files exist
+For local vs response-action execution, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-- The current GitHub-readable harness source is `project_sources/run_DCOIR_Tests.ps1`.
-- The current runtime collector filename remains `DCOIR_Collector.ps1`.
-- The harness is designed to restage and exercise the stable collector line from a local repo-style layout without inventing a separate test-only engine.
-- The current governed line does not carry a separate default CMD wrapper for the harness.
+The current major-version bundle also assumes that local vs response-action execution may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-## Harness parameters
+When writing or reviewing functionality tied to local vs response-action execution, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
 
-| Parameter | Purpose | Current default |
-| --- | --- | --- |
-| -Suite | Select Core, Retrieval, QuickAliases, or FullRegression | Core |
-| -CollectorPath | Path to the local runtime collector | .\DCOIR_Collector.ps1 |
-| -OutputRoot | Directory for test outputs | .\TestResults |
-| -MasterZipPath | Path to the master collector ZIP used for restaging | .\assets\DCOIR_Collector.zip |
-| -ContinueOnError | Keep running even if a step fails | off |
-| -SkipCleanup | Leave DCOIR run output in place for inspection | off |
+## 2. Bundle Smoke Tests
+This section is intentionally long-form. The goal is to make bundle smoke tests explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## Common local commands
+For bundle smoke tests, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-| Use case | Command |
-| --- | --- |
-| Run the Core suite directly | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite Core |
-| Run the Retrieval suite directly | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite Retrieval |
-| Run the QuickAliases suite directly | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite QuickAliases |
-| Run the full regression directly | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite FullRegression |
+The current major-version bundle also assumes that bundle smoke tests may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-## What the harness actually does
+When writing or reviewing functionality tied to bundle smoke tests, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
 
-- Restages the working `DCOIR_Collector.zip` from the master ZIP before each suite.
-- Invokes the stable collector runtime with quick aliases rather than inventing separate test-only code paths.
-- Writes logs and summary outputs under the run output root.
-- Lets the operator leave artifacts in place with `-SkipCleanup` when needed for debugging.
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+## 3. Manual Workflows
+This section is intentionally long-form. The goal is to make manual workflows explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For manual workflows, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that manual workflows may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to manual workflows, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 4. Regression Buckets
+This section is intentionally long-form. The goal is to make regression buckets explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For regression buckets, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that regression buckets may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to regression buckets, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 5. What A Failed Run Means
+This section is intentionally long-form. The goal is to make what a failed run means explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For what a failed run means, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that what a failed run means may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to what a failed run means, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 6. Why Repeated-Session Checks Matter
+This section is intentionally long-form. The goal is to make why repeated-session checks matter explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For why repeated-session checks matter, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that why repeated-session checks matter may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to why repeated-session checks matter, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+Major-version bundle rule
+- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
+- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
+- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.

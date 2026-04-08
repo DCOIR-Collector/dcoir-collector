@@ -1,50 +1,74 @@
 # Knowledge - 01 - Overview and About
 
-_AFRICOM_SOC_IR / DCOIR project context and supporting knowledge-doc charter_
+Purpose
+- This knowledge file provides a deliberately expanded, operationally explicit reference for DCOIR overview, bundle scope, and workflow context.
+- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
+- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
 
-**Summary:** This page explains what the current DCOIR project is, what is authoritative, and how the maintained Knowledge-doc set supports the workflow without becoming control-plane authority.
+What this file is expected to do in the major-version build
+- Spell out what DCOIR is in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out what the collector does in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out what the Gemini bundle does in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out how the workflow moves from alert to collection to artifact review to synthesis in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out why evidence discipline matters in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out how tonight's build and tomorrow's functionality test fit together in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 
-| Source class | Authoritative basis |
-| --- | --- |
-| Project sources | project_sources/CP-01_DCOIR_Version_Manifest.txt; project_sources/CP-02_DCOIR_Change_Log.txt; project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt; project_sources/LOG-01_DCOIR_Todo_Log.txt |
-| Official external sources | Not required for this page |
-| Scope note | Generated from the current GitHub-primary control plane and maintained supporting knowledge lane. |
+Operational detail
+## 1. What Dcoir Is
+This section is intentionally long-form. The goal is to make what DCOIR is explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## Current project posture
+For what DCOIR is, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-- The GitHub repository `malwaredevil/dcoir-collector` is the sole working source for governed readable text files.
-- Project Instructions, `project_sources/CP-01_DCOIR_Version_Manifest.txt`, and `project_sources/CP-02_DCOIR_Change_Log.txt` form the default control plane for current-state work.
-- The current collector runtime is `project_sources/DCOIR_Collector.ps1` and the current local regression harness is `project_sources/run_DCOIR_Tests.ps1`.
-- The governed helper-skill source lives under `dcoir_skills/` and now supports grouped GitHub Desktop repo-update bundles, batched skill-install waves, and bounded current-state resume behavior.
-- The maintained Knowledge-doc set under `knowledge/` is supporting human-readable documentation only. It helps explain the current workflow but never overrides the control plane.
+The current major-version bundle also assumes that what DCOIR is may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-## Source classes that matter
+When writing or reviewing functionality tied to what DCOIR is, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
 
-| Class | Examples | How to treat it |
-| --- | --- | --- |
-| Control plane | Project Instructions; `project_sources/CP-01_DCOIR_Version_Manifest.txt`; `project_sources/CP-02_DCOIR_Change_Log.txt` | Authoritative for current status, governance, and what is current |
-| Governed GitHub-readable sources | `project_sources/DCOIR_Collector.ps1`; `project_sources/run_DCOIR_Tests.ps1`; current prompt-pack and workflow files | Authoritative when marked current in the manifest |
-| Supporting assets | `supporting_assets/DCOIR_Collector.zip`; `supporting_assets/supporting_knowledge_docs.zip` | Important for delivery or local execution, but not control-plane authority |
-| Knowledge docs | `knowledge/Knowledge - ## - *.md` | Supporting human-readable docs only; never override the control plane |
+## 2. What The Collector Does
+This section is intentionally long-form. The goal is to make what the collector does explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## What this Knowledge-doc set is for
+For what the collector does, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-- Give the operator readable explanations of the current collector, harness, workflow, enrichment, artifact-review, and AI-design posture.
-- Stay grounded in current approved sources and official vendor references where external truth is required.
-- Keep stable filenames so the docs can be refreshed as a current maintained set without changing authority rules.
-- Support GitHub-primary maintenance while still allowing a retained `supporting_knowledge_docs.zip` delivery asset when the workflow still wants that convenience bundle.
-- Reduce stale guidance drift by refreshing affected doc clusters together when the same outdated source-name or delivery-model assumption appears on multiple current pages.
+The current major-version bundle also assumes that what the collector does may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-## Current planned Knowledge-doc pages
+When writing or reviewing functionality tied to what the collector does, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
 
-- Overview and About
-- Elastic Quick Start
-- Local Test and Regression
-- Tier 1 Collect Runbook
-- Tier 2 Collect Runbook
-- Enrichment Actions
-- Artifact Review Guide
-- Troubleshooting
-- FAQ
-- AI Prompt and Agent Design
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+## 3. What The Gemini Bundle Does
+This section is intentionally long-form. The goal is to make what the Gemini bundle does explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For what the Gemini bundle does, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that what the Gemini bundle does may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to what the Gemini bundle does, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 4. How The Workflow Moves From Alert To Collection To Artifact Review To Synthesis
+This section is intentionally long-form. The goal is to make how the workflow moves from alert to collection to artifact review to synthesis explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For how the workflow moves from alert to collection to artifact review to synthesis, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that how the workflow moves from alert to collection to artifact review to synthesis may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to how the workflow moves from alert to collection to artifact review to synthesis, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 5. Why Evidence Discipline Matters
+This section is intentionally long-form. The goal is to make why evidence discipline matters explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For why evidence discipline matters, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that why evidence discipline matters may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to why evidence discipline matters, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 6. How Tonight'S Build And Tomorrow'S Functionality Test Fit Together
+This section is intentionally long-form. The goal is to make how tonight's build and tomorrow's functionality test fit together explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For how tonight's build and tomorrow's functionality test fit together, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that how tonight's build and tomorrow's functionality test fit together may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to how tonight's build and tomorrow's functionality test fit together, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+Major-version bundle rule
+- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
+- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
+- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.

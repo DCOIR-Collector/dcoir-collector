@@ -26,8 +26,11 @@ jobs:
             'README.md',
             'project_sources/CP-01_DCOIR_Version_Manifest.txt',
             'project_sources/CP-02_DCOIR_Change_Log.txt',
+            'project_sources/LOG-60_DCOIR_Major_Version_Collector_And_Gemini_Feature_Wave_Implementation_2026-04-08.txt',
+            'project_sources/live_test_notes/2026-04-08_DCOIR_Major_Version_Functionality_Test_Plan.md.txt',
             'project_sources/DCOIR_Collector.ps1',
             'project_sources/run_DCOIR_Tests.ps1',
+            'project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1',
             'project_sources/Collector_Runtime_Package_Manifest.json.txt',
             'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
             'project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt',
@@ -101,11 +104,11 @@ jobs:
             throw 'PowerShell syntax validation failed.'
           }
 
-      - name: Run representative retrieval suite
+      - name: Run representative major-version suite
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite Retrieval -MasterZipPath ..\supporting_assets\DCOIR_Collector.zip
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite MajorVersion -MasterZipPath ..\supporting_assets\DCOIR_Collector.zip
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh
@@ -127,74 +130,6 @@ jobs:
             throw 'Collector delivery package smoke test failed.'
           }
 
-      - name: Render browser-readable summary
-        if: always()
-        shell: pwsh
-        run: |
-          try {
-            if (-not $env:GITHUB_STEP_SUMMARY) {
-              Write-Warning 'GITHUB_STEP_SUMMARY is not set. Skipping summary render.'
-              exit 0
-            }
-
-            $summaryRoot = 'project_sources/TestResults'
-            $summaryTxt = $null
-            $summaryJson = $null
-            if (Test-Path -LiteralPath $summaryRoot) {
-              $summaryTxt = Get-ChildItem -Path $summaryRoot -Recurse -File -Filter summary.txt -ErrorAction SilentlyContinue |
-                Sort-Object LastWriteTime -Descending |
-                Select-Object -First 1
-              $summaryJson = Get-ChildItem -Path $summaryRoot -Recurse -File -Filter summary.json -ErrorAction SilentlyContinue |
-                Sort-Object LastWriteTime -Descending |
-                Select-Object -First 1
-            }
-
-            $gemBuildReport = 'project_sources/generation_validation/out_health_gemini/build_dcoir_gemini_release_report.json'
-            $collectorBuildReport = 'project_sources/generation_validation/out_health_collector/build_dcoir_collector_runtime_package_report.json'
-
-            $lines = New-Object System.Collections.Generic.List[string]
-            $lines.Add('## scheduled-health-check')
-            $lines.Add('')
-            $lines.Add('- Routine purpose: weekly drift, hygiene, representative regression, and package-algorithm alignment.')
-            $lines.Add('- Representative suite: `Retrieval`')
-            $lines.Add('- Harness zip path override: `..\supporting_assets\DCOIR_Collector.zip`')
-            $lines.Add('')
-
-            if ($summaryTxt) {
-              $lines.Add('### Latest harness summary')
-              $lines.Add('```text')
-              foreach ($line in (Get-Content -LiteralPath $summaryTxt.FullName -ErrorAction SilentlyContinue)) {
-                $lines.Add([string]$line)
-              }
-              $lines.Add('```')
-            }
-            else {
-              $lines.Add('_No harness summary.txt was found._')
-            }
-
-            if (Test-Path -LiteralPath $gemBuildReport) {
-              $gem = Get-Content -LiteralPath $gemBuildReport -Raw | ConvertFrom-Json
-              $lines.Add('')
-              $lines.Add(("- Gemini build smoke test success: {0}" -f $gem.success))
-            }
-            if (Test-Path -LiteralPath $collectorBuildReport) {
-              $collector = Get-Content -LiteralPath $collectorBuildReport -Raw | ConvertFrom-Json
-              $lines.Add(("- Collector package smoke test success: {0}" -f $collector.success))
-            }
-
-            if ($summaryJson) {
-              $lines.Add('')
-              $lines.Add('- Summary JSON artifact was generated.')
-            }
-
-            $tempSummary = Join-Path $env:RUNNER_TEMP 'scheduled-health-check-summary.md'
-            $lines | Set-Content -LiteralPath $tempSummary -Encoding utf8
-            Get-Content -LiteralPath $tempSummary | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Encoding utf8
-          }
-          catch {
-            Write-Warning (("Non-fatal summary render issue: {0}" -f $_.Exception.Message))
-            exit 0
-          }
       - name: Upload health-check artifacts
         if: always()
         uses: actions/upload-artifact@v7

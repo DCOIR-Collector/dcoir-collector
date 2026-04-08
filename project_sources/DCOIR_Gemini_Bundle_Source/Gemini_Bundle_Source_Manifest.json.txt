@@ -1,7 +1,7 @@
 {
   "bundle_name": "DCOIR_Gemini_Email_Build_Bundle",
-  "bundle_version": "2_0_0",
-  "top_level_folder": "DCOIR_Gemini_Email_Build_Bundle_v2_0_0",
+  "bundle_version": "3_0_0",
+  "top_level_folder": "DCOIR_Gemini_Email_Build_Bundle_v3_0_0",
   "source_strategy": "stored_source_compile",
   "authoritative_runtime_source": "project_sources/DCOIR_Gemini_Bundle_Source",
   "behavioral_authority": [
@@ -19,20 +19,26 @@
     "sub_agent_files": [
       "01_GEMINI_AGENT_BUILD/Sub_Agent_01_Session_Readiness_and_Intake.md.txt",
       "01_GEMINI_AGENT_BUILD/Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt",
-      "01_GEMINI_AGENT_BUILD/Sub_Agent_03_Alert_Family_Classifier.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_03_Alert_Family_Classifier_and_Known_Benign_Technology_Differentiator.md.txt",
       "01_GEMINI_AGENT_BUILD/Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt",
       "01_GEMINI_AGENT_BUILD/Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt",
-      "01_GEMINI_AGENT_BUILD/Sub_Agent_06_DCOIR_Collection_and_Artifact_Orchestrator.md.txt",
-      "01_GEMINI_AGENT_BUILD/Sub_Agent_07_Decision_and_Report_Composer.md.txt"
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_06_DCOIR_Collector_Execution_and_Bundle_Workflow_Orchestrator.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_07_DCOIR_Collector_Artifact_Interpreter_and_Report_Extractor.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt"
     ],
     "generated_index_file": "01_GEMINI_AGENT_BUILD/Generated_DCOIR_Gemini_Agent_Index.md.txt",
     "quick_start_file": "00_START_HERE/Gemini_Build_Quick_Start.md.txt"
   },
   "notes": [
-    "This tree stores the accepted operator-facing Gemini runtime bundle as editable source files.",
-    "Normal shipment should compile this tree directly instead of regenerating agent fields on the fly.",
-    "When requirements change, edit the relevant files in this tree, update the topology and required_files lists when the topology changes, then recompile the bundle.",
-    "The manifest is the explicit source of topology truth for the current parent and sub-agent layout."
+    "This major-version tree stores the accepted operator-facing Gemini runtime bundle as editable source files.",
+    "Normal shipment should compile this tree directly after syncing the maintained knowledge set.",
+    "The manifest is the explicit source of topology truth for the current parent and sub-agent layout.",
+    "This major-version build intentionally increases verbosity and branch specificity to improve behavioral predictability.",
+    "The active topology was expanded to separate collector artifact interpretation, IOC parsing, targeted collection design, and output-contract enforcement into dedicated sub-agents.",
+    "This major-version bundle intentionally expands the runtime topology and the verbosity of both the agent files and the maintained shared knowledge set.",
+    "If the operator asks for predictability over brevity, the runtime files should bias toward explicit instructions and explicit branch handling rather than compression."
   ],
   "required_files": [
     "00_START_HERE/Agent_Attachment_Map.md.txt",
@@ -42,11 +48,14 @@
     "01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_01_Session_Readiness_and_Intake.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt",
-    "01_GEMINI_AGENT_BUILD/Sub_Agent_03_Alert_Family_Classifier.md.txt",
+    "01_GEMINI_AGENT_BUILD/Sub_Agent_03_Alert_Family_Classifier_and_Known_Benign_Technology_Differentiator.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt",
-    "01_GEMINI_AGENT_BUILD/Sub_Agent_06_DCOIR_Collection_and_Artifact_Orchestrator.md.txt",
-    "01_GEMINI_AGENT_BUILD/Sub_Agent_07_Decision_and_Report_Composer.md.txt",
+    "01_GEMINI_AGENT_BUILD/Sub_Agent_06_DCOIR_Collector_Execution_and_Bundle_Workflow_Orchestrator.md.txt",
+    "01_GEMINI_AGENT_BUILD/Sub_Agent_07_DCOIR_Collector_Artifact_Interpreter_and_Report_Extractor.md.txt",
+    "01_GEMINI_AGENT_BUILD/Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt",
+    "01_GEMINI_AGENT_BUILD/Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt",
+    "01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt",
     "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 01 - Overview and About.md.txt",
     "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 02 - Elastic Quick Start.md.txt",
     "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 03 - Local Test and Regression.md.txt",

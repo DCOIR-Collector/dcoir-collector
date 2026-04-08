@@ -1,19 +1,54 @@
 # Gemini Build Quick Start
 
-1. Create the prime agent using:
-   - Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt
+This quick-start file is intentionally verbose because the operator-facing Gemini bundle is expected to remain predictable under mixed evidence and mixed workflow starting points. Use this file as the first operator guide for building, reviewing, and testing the major-version Gemini bundle.
 
-2. Create these seven sub-agents using the files in numerical order:
-   - Sub_Agent_01_Session_Readiness_and_Intake.md.txt
-   - Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt
-   - Sub_Agent_03_Alert_Family_Classifier.md.txt
-   - Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt
-   - Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt
-   - Sub_Agent_06_DCOIR_Collection_and_Artifact_Orchestrator.md.txt
-   - Sub_Agent_07_Decision_and_Report_Composer.md.txt
+## What changed in this major-version wave
 
-3. Attach the files in 02_PRIME_AGENT_ATTACHMENTS to the prime agent.
+This major-version build expands the bundle from a narrower alert-triage-plus-collector-orchestration posture into a more explicit end-to-end investigation assistant. The active source tree now assumes:
+- the operator may start from an alert
+- the operator may start from collector output
+- the operator may start from retrieved artifacts
+- the operator may start from an IOC package in mixed format
+- the operator may need a targeted collection design instead of a broad baseline
 
-4. Do not mix the attachment files into the agent-definition folder.
+The active agent topology now includes ten sub-agents:
+1. Session readiness and intake
+2. Environment, coverage, and schema mapping
+3. Alert-family classification and known-benign-technology differentiation
+4. Evidence, provenance, and timeline analysis
+5. Query planning and syntax guard
+6. DCOIR collector execution and bundle workflow orchestration
+7. DCOIR collector artifact interpretation and report extraction
+8. IOC parsing and evidence-grounded public enrichment planning
+9. Targeted collection design and evidence-gap reduction
+10. Output-contract consistency guard and report composition
 
-5. Use Generated_DCOIR_Gemini_Agent_Index.md.txt as the topology reference while building.
+## Starter prompts
+
+Starter Prompt 1:
+"I am pasting an Elastic alert and I want the single best next triage command. Assume I can run KQL, ESQL, and Elastic response actions. Follow the exact continue format and do not skip the singular command."
+
+Starter Prompt 2:
+"I already ran the collector and I am uploading the DCOIR upload summary and the analyst follow-up queue. Interpret what the collector is telling us, tell me the best next file or artifact to upload, and keep the case in collector-aware mode."
+
+Starter Prompt 3:
+"I have a mixed IOC package in CSV, PDF text, and copied notes. Parse the indicators, classify them by type, show them in analyst-facing grouped form, then give me the narrowest useful KQL, ESQL, response-action, and collector follow-up options."
+
+## Build process
+
+1. Edit the maintained `knowledge/*.md` files first when the shared knowledge layer changes.
+2. Edit the agent source files in `01_GEMINI_AGENT_BUILD/` when behavior changes.
+3. Update the manifest topology whenever the prime-agent or sub-agent set changes.
+4. Rebuild through the governed GitHub Action or the governed build script.
+5. Review the build artifact and its JSON reports before treating the bundle as test-ready.
+
+## Major-version review focus for tomorrow
+
+Tomorrow's functionality test should explicitly cover:
+- starter prompt behavior
+- collector artifact interpretation
+- mixed-format IOC parsing
+- targeted collection recommendations
+- false-positive-aware handling of known enterprise products
+- SINGULAR TRIAGE COMMAND consistency
+- leadership-writeup behavior

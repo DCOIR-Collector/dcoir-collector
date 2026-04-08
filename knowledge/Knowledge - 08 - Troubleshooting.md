@@ -1,35 +1,74 @@
 # Knowledge - 08 - Troubleshooting
 
-_Common operational, packaging, and lane-separation issues on the current DCOIR line_
+Purpose
+- This knowledge file provides a deliberately expanded, operationally explicit reference for bounded troubleshooting and failure handling.
+- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
+- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
 
-**Summary:** Use this page when the local harness, collector package, current GitHub-readable source line, or tool-backed enrichment actions do not behave as expected.
+What this file is expected to do in the major-version build
+- Spell out zero rows in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out tool availability ambiguity in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out syntax vs coverage issues in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out response-action command shape in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out collector package pitfalls in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out when not to overreact in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 
-| Source class | Authoritative basis |
-| --- | --- |
-| Project sources | project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DCOIR_Collector.ps1; project_sources/run_DCOIR_Tests.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
-| Official external sources | Microsoft Learn / Sysinternals tool pages; Microsoft Learn / PowerShell help references; Elastic Docs / endpoint response actions |
-| Scope note | This page focuses on current durable lessons rather than speculative fixes. |
+Operational detail
+## 1. Zero Rows
+This section is intentionally long-form. The goal is to make zero rows explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## First things to verify
+For zero rows, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-- Reason from the current GitHub-readable source paths in the repo, but run the native runtime filenames the operator will actually use.
-- The local harness can find `./DCOIR_Collector.ps1` and `./assets/DCOIR_Collector.zip` from the repo-style or local test layout.
-- You are using PowerShell 5.1-compatible syntax and not assuming PowerShell 7 features.
-- You are not mixing Elastic response-console syntax with local workstation or local regression syntax.
-- The current governed line does not include a default `run_DCOIR_Tests.cmd` harness wrapper, so local regression should use `run_DCOIR_Tests.ps1` unless the control plane later restores a wrapper.
+The current major-version bundle also assumes that zero rows may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-## Known safety and usability lessons
+When writing or reviewing functionality tied to zero rows, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
 
-- Native Windows and PowerShell collection is the safest baseline foundation.
-- Some tools that can trigger blocked-driver behavior should not be part of unattended baseline collection.
-- Local regression is safer as a separate harness than as ad hoc edits to the collector engine.
-- GitHub Desktop manual repo-update bundles and batched skill-install waves reduce operator friction when the changed set is already known and compatible.
-- Full-refresh bundles are simpler than partial replace lists only when the change truly touches current project-source breadth, not by default for every small docs or skill fix.
+## 2. Tool Availability Ambiguity
+This section is intentionally long-form. The goal is to make tool availability ambiguity explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## When documentation is too ambiguous
+For tool availability ambiguity, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-- Do not guess what a new function, flag, quick alias, or wrapper branch is supposed to do.
-- Ask for targeted clarification or ask the main project workflow to add clearer comment-based help or parameter descriptions.
-- Prefer exact parameter names, accepted values, emitted markers, and observed command examples over prose interpretation.
-- When multiple current docs preserve the same stale source-name or removed-wrapper assumption, refresh the whole affected doc cluster together instead of leaving related pages misleading.
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+The current major-version bundle also assumes that tool availability ambiguity may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to tool availability ambiguity, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 3. Syntax Vs Coverage Issues
+This section is intentionally long-form. The goal is to make syntax vs coverage issues explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For syntax vs coverage issues, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that syntax vs coverage issues may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to syntax vs coverage issues, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 4. Response-Action Command Shape
+This section is intentionally long-form. The goal is to make response-action command shape explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For response-action command shape, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that response-action command shape may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to response-action command shape, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 5. Collector Package Pitfalls
+This section is intentionally long-form. The goal is to make collector package pitfalls explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For collector package pitfalls, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that collector package pitfalls may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to collector package pitfalls, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 6. When Not To Overreact
+This section is intentionally long-form. The goal is to make when not to overreact explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For when not to overreact, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that when not to overreact may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to when not to overreact, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+Major-version bundle rule
+- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
+- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
+- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.

@@ -44,13 +44,25 @@ param(
   [switch]$FinalizeEnrichSession,
   [string]$Quick,
   [string]$Target,
-  [string]$Target2
+  [string]$Target2,
+
+  [switch]$Targeted,
+  [ValidateSet("Generic","PopupWindow","ScriptExecution","PersistenceFollowUp","NetworkOnly","ProcessAndPowerShell")]
+  [string]$TargetProfile = "Generic",
+  [string]$WindowStart,
+  [string]$WindowEnd,
+  [string[]]$IncludeArtifactCategory,
+  [string]$FocusProcess,
+  [string]$FocusPath,
+  [string]$FocusIndicator,
+  [string]$FocusIndicatorType,
+  [string]$UserReport
 )
 
 Set-StrictMode -Version 2
 $ErrorActionPreference = "Continue"
 $ScriptFilePath = $MyInvocation.MyCommand.Path
-$ScriptVersion = "3.1.6"
+$ScriptVersion = "4.0.0"
 
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList
@@ -68,6 +80,7 @@ $collectorPartFiles = @(
   "DCOIR_Collector.03B_Enrich_Actions_Review.ps1",
   "DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1",
   "DCOIR_Collector.04_Quick_Interface_And_Output.ps1",
+  "DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1",
   "DCOIR_Collector.05_Main_Entry.ps1"
 )
 

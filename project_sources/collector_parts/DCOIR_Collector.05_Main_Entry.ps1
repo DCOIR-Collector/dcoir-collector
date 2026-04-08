@@ -45,6 +45,9 @@ try {
         UploadBudgetManifestPath = $null
         DefaultGeminiUploadSetStatus = $null
         CollectBundlePath = $null
+        CollectionScopePath = $null
+        ParallelismAssessmentPath = $null
+        TargetedCollectionPlanPath = $null
         EnrichSessions = @()
         EnrichSessionCounter = 0
         OpenEnrichSessionId = $null
@@ -56,6 +59,9 @@ try {
 
       $baseline = New-BaselineReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $baselineReportPath -Text $baseline.ReportText
+      Apply-FeatureWaveCollectEnhancements -State $state -Baseline $baseline
+      Write-ReportFile -Path $baselineReportPath -Text $baseline.ReportBuilder.ToString()
+
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
 
@@ -68,12 +74,17 @@ try {
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
 
       $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($baselineReportPath, $metadataReportPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $null
         upload_summary = $state.UploadSummaryPath
         attachment_budget_manifest = $state.UploadBudgetManifestPath
         default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
+        collection_scope = $state.CollectionScopePath
+        parallelism_assessment = $state.ParallelismAssessmentPath
+        targeted_collection_plan = $state.TargetedCollectionPlanPath
+        targeted_mode = [bool]$Targeted
+        target_profile = $TargetProfile
       }
 
       $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId) -Paths @(
@@ -81,6 +92,9 @@ try {
         $metadataReportPath,
         $state.UploadSummaryPath,
         $state.UploadBudgetManifestPath,
+        $state.CollectionScopePath,
+        $state.ParallelismAssessmentPath,
+        $state.TargetedCollectionPlanPath,
         $state.ArtifactsDir,
         $Global:ExecutionTxtPath,
         $Global:ExecutionJsonlPath,
@@ -94,12 +108,17 @@ try {
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
       [void](New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($baselineReportPath, $metadataReportPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $bundlePath
         upload_summary = $state.UploadSummaryPath
         attachment_budget_manifest = $state.UploadBudgetManifestPath
         default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
+        collection_scope = $state.CollectionScopePath
+        parallelism_assessment = $state.ParallelismAssessmentPath
+        targeted_collection_plan = $state.TargetedCollectionPlanPath
+        targeted_mode = [bool]$Targeted
+        target_profile = $TargetProfile
       })
 
       $status = "SUCCESS"
@@ -114,12 +133,15 @@ try {
       Write-Output ("METADATA_REPORT_PATH={0}" -f $metadataReportPath)
       Write-Output ("UPLOAD_SUMMARY_PATH={0}" -f $state.UploadSummaryPath)
       Write-Output ("ATTACHMENT_BUDGET_MANIFEST_PATH={0}" -f $state.UploadBudgetManifestPath)
+      Write-Output ("COLLECTION_SCOPE_PATH={0}" -f $state.CollectionScopePath)
+      Write-Output ("PARALLELISM_ASSESSMENT_PATH={0}" -f $state.ParallelismAssessmentPath)
+      if ($state.TargetedCollectionPlanPath) { Write-Output ("TARGETED_COLLECTION_PLAN_PATH={0}" -f $state.TargetedCollectionPlanPath) }
       Write-Output ("DEFAULT_GEMINI_UPLOAD_SET_STATUS={0}" -f $state.DefaultGeminiUploadSetStatus)
       Write-Output ("COLLECT_BUNDLE_PATH={0}" -f $bundlePath)
       Write-Output ('NEXT_GET_FILE=get-file --path "{0}" --comment "Retrieve DCOIR collect bundle"' -f $bundlePath)
       Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
       Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
-      Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, METADATA_REPORT_PATH, and representative final_artifacts slices before the full baseline report.')
+      Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices before the full baseline report. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
       Write-QuickNextSteps -Phase "Collect"
     }
 

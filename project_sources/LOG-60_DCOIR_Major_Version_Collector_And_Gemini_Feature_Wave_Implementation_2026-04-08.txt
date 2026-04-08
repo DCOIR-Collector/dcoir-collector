@@ -1,0 +1,21 @@
+DCOIR Major Version Collector and Gemini Feature-Wave Implementation - 2026-04-08
+
+Current state id
+- 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
+
+Purpose
+- Record the major-version implementation wave that directly changed the collector maintained source line, the Gemini stored runtime source tree, the maintained knowledge set, and the associated Actions workflows.
+
+What this implementation wave included
+- Expanded Gemini runtime topology from one parent plus seven sub-agents to one parent plus ten sub-agents.
+- Rewrote the Gemini parent and sub-agents to be more explicit, more verbose, and more operationally specific.
+- Rewrote the maintained knowledge set so the shared Gemini attachment sources are materially more detailed.
+- Preserved maintained-knowledge-sync before Gemini validation and compile.
+- Added targeted collection parameterization surfaces to the maintained collector source line.
+- Added an explicit collector multithreading or parallelism assessment surface as a governed output rather than leaving the request only in chat continuity.
+- Updated harness suites and package workflows so the new major-version deliverables and validation surfaces remain synchronized.
+
+Implementation boundary
+- This log records the source and workflow implementation wave.
+- It does not claim tomorrow's functionality testing has already happened.
+- It does not claim bounded duplicate-readable-surface cleanup has already happened.

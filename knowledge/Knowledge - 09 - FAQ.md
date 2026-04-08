@@ -1,24 +1,64 @@
 # Knowledge - 09 - FAQ
 
-_Short answers to recurring operator and project questions_
+Purpose
+- This knowledge file provides a deliberately expanded, operationally explicit reference for operator faq.
+- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
+- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
 
-**Summary:** This page answers common workflow, packaging, and documentation questions using the current project rules.
+What this file is expected to do in the major-version build
+- Spell out why not jump to containment in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out why the collector may be better than another query in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out why a targeted collect may be enough in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out how to use the bundle in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out how to ask the agent to parse IOCs in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 
-| Source class | Authoritative basis |
-| --- | --- |
-| Project sources | project_sources/CP-01_DCOIR_Version_Manifest.txt; project_sources/CP-02_DCOIR_Change_Log.txt; project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt |
-| Official external sources | Not required for this page |
-| Scope note | Answers here summarize current project rules; they do not replace the control plane. |
+Operational detail
+## 1. Why Not Jump To Containment
+This section is intentionally long-form. The goal is to make why not jump to containment explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## Questions and answers
+For why not jump to containment, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-| Question | Answer |
-| --- | --- |
-| Why do some historical references still mention `.ps1.txt` or `.cmd.txt` files? | Older Project-space or bundle-oriented workflow references used readable text suffixes more heavily. The current GitHub-primary governed working line keeps current readable sources at native repo paths such as `project_sources/DCOIR_Collector.ps1` and `project_sources/run_DCOIR_Tests.ps1`. |
-| Why is `DCOIR_Collector.zip` treated differently from the script sources? | It is a retained supporting asset used for packaging and local execution support, but it is not part of the control plane. |
-| Why are Knowledge docs non-authoritative? | They are supporting human-readable docs meant to help the operator. They must not override the control plane or other authoritative project sources. |
-| Why is there no default `.cmd` harness wrapper in current guidance? | The current governed line does not carry a default `run_DCOIR_Tests.cmd` wrapper. Local regression should use `run_DCOIR_Tests.ps1` directly unless the control plane later restores a wrapper source. |
-| When do I use local PowerShell syntax instead of `execute --command`? | Use local PowerShell syntax for local test and workstation tasks. Use `execute --command` only for endpoint response-console actions. |
-| Why do GitHub Desktop manual repo-update bundles include a suggested commit summary? | The current operator workflow uses GitHub Desktop as the easiest approved path for grouped repo-relative file placement, and the suggested commit summary reduces manual friction during those waves. |
+The current major-version bundle also assumes that why not jump to containment may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+When writing or reviewing functionality tied to why not jump to containment, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 2. Why The Collector May Be Better Than Another Query
+This section is intentionally long-form. The goal is to make why the collector may be better than another query explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For why the collector may be better than another query, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that why the collector may be better than another query may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to why the collector may be better than another query, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 3. Why A Targeted Collect May Be Enough
+This section is intentionally long-form. The goal is to make why a targeted collect may be enough explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For why a targeted collect may be enough, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that why a targeted collect may be enough may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to why a targeted collect may be enough, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 4. How To Use The Bundle
+This section is intentionally long-form. The goal is to make how to use the bundle explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For how to use the bundle, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that how to use the bundle may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to how to use the bundle, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 5. How To Ask The Agent To Parse Iocs
+This section is intentionally long-form. The goal is to make how to ask the agent to parse IOCs explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For how to ask the agent to parse IOCs, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that how to ask the agent to parse IOCs may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to how to ask the agent to parse IOCs, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+Major-version bundle rule
+- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
+- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
+- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.

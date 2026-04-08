@@ -1,18 +1,16 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
+Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Standalone remains the PP-01 through PP-07 assembly lane.
-- Gemini now uses a manifest-topology, maintained-knowledge-sync, and compile path under `project_sources/DCOIR_Gemini_Bundle_Source/`.
-- Collector now uses a maintained-source single-runtime compile path plus a transport-safe delivery package workflow.
+- Gemini now uses a manifest-topology, maintained-knowledge-sync, validation, and compile path with a larger major-version agent set.
+- Collector now uses a maintained-source single-runtime compile path plus a transport-safe delivery package workflow with bounded targeted-collection support.
 
 What is still open right now
-1. Use `project_sources/live_test_notes/2026-04-08_DCOIR_Collector_And_Gemini_Completion_Punch_List.md.txt` as the durable next-wave implementation punch list.
-2. Finish the remaining Gemini runtime-content deltas from the April 7 live-test findings and addenda.
-3. Finish the remaining collector maintained-source deltas and newly requested collector-adjacent feature work.
-4. Rebuild both bundle lines after that.
-5. Use tomorrow's separate chat for functionality testing.
-6. Run the bounded duplicate-readable-surface cleanup after the implementation-and-rebuild wave.
-7. Decide later whether a bounded workflow should regenerate `supporting_assets/DCOIR_Collector.zip` from the approved collector delivery package path.
+1. Generate the new major-version Gemini bundle through the associated Action.
+2. Generate the new major-version collector delivery package through the associated Action.
+3. Use tomorrow's separate chat for functionality testing with the rebuilt bundles.
+4. Run bounded duplicate-readable-surface cleanup after the functionality test wave.
+5. Decide later whether a bounded workflow should regenerate `supporting_assets/DCOIR_Collector.zip` from the approved collector delivery package path.

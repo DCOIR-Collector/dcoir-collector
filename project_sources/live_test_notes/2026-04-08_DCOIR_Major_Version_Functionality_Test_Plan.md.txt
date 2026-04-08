@@ -1,0 +1,26 @@
+DCOIR Major Version Functionality Test Plan - 2026-04-08
+
+Current state id
+- 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
+
+Purpose
+- Provide the bounded source of truth for tomorrow's functionality test chat after the major-version Gemini and collector bundles are generated.
+
+Collector functionality checks
+1. Confirm the delivery package still contains a single compiled `DCOIR_Collector.ps1.txt` and `run_DCOIR_Tests.ps1.txt`.
+2. Confirm the collector still runs the baseline collection path successfully.
+3. Confirm the collector now emits `COLLECTION_SCOPE_PATH` and `PARALLELISM_ASSESSMENT_PATH`.
+4. Confirm targeted collection mode emits `TARGETED_COLLECTION_PLAN_PATH` when narrow context is supplied.
+5. Confirm upload guidance prefers smaller decisive artifacts over the monolithic baseline report.
+6. Confirm repeated-session enrich-add behavior still reuses the open session when expected.
+
+Gemini functionality checks
+1. Confirm the bundle compiles successfully with the larger topology.
+2. Confirm the main agent visibly supports collector-artifact interpretation, collector pivoting, mixed-format IOC intake, and targeted collection design.
+3. Confirm the agent ships with three starter prompts.
+4. Confirm the output contract remains stable and still emits the required SINGULAR TRIAGE COMMAND consistently.
+5. Confirm the larger, more explicit knowledge set improves predictability instead of breaking routing.
+
+Later-only items
+- Bounded duplicate-readable-surface cleanup happens after this functionality test wave.
+- Later queue items such as parity and optional Drive staging remain outside this immediate test scope.

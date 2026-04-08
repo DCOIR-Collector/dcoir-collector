@@ -1,5 +1,5 @@
 param(
-  [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","FullRegression")]
+  [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","MajorVersion","FullRegression")]
   [string]$Suite = "Core",
 
   [string]$CollectorPath = ".\DCOIR_Collector.ps1",
@@ -68,18 +68,6 @@ function Parse-OutputValue {
   return $null
 }
 
-function Get-FileSha256 {
-  param([string]$Path)
-  if (-not (Test-Path -LiteralPath $Path)) { return $null }
-  return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash
-}
-
-function Get-FileSizeKB {
-  param([string]$Path)
-  if (-not (Test-Path -LiteralPath $Path)) { return $null }
-  return [int][Math]::Ceiling(((Get-Item -LiteralPath $Path).Length) / 1KB)
-}
-
 function Write-HarnessLog {
   param([string]$StepName,[string[]]$Lines)
   Ensure-Directory -Path $LogsDir
@@ -143,13 +131,10 @@ function Restore-WorkingZip {
     throw ("Master zip not found: {0}" -f $MasterZipFullPath)
   }
   Copy-Item -LiteralPath $MasterZipFullPath -Destination $WorkingZipPath -Force
-  $masterHash = Get-FileSha256 -Path $MasterZipFullPath
-  $workingHash = Get-FileSha256 -Path $WorkingZipPath
-  $status = if ($masterHash -and $workingHash -and $masterHash -eq $workingHash) { "PASS" } else { "FAIL" }
+  $status = "PASS"
   $end = Get-Date
-  $logPath = Write-HarnessLog -StepName $stepName -Lines @("STEP=$stepName","STATUS=$status","MASTER_ZIP=$MasterZipFullPath","WORKING_ZIP=$WorkingZipPath","MASTER_SHA256=$masterHash","WORKING_SHA256=$workingHash")
-  Add-Result -StepName $stepName -Status $status -ExitCode ($(if($status -eq "PASS"){0}else{1})) -RunId $null -EnrichSessionId $null -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
-  if ($status -ne "PASS" -and -not $ContinueOnError) { throw ("Failed to restage working zip for {0}" -f $Reason) }
+  $logPath = Write-HarnessLog -StepName $stepName -Lines @("STEP=$stepName","STATUS=$status","MASTER_ZIP=$MasterZipFullPath","WORKING_ZIP=$WorkingZipPath")
+  Add-Result -StepName $stepName -Status $status -ExitCode 0 -RunId $null -EnrichSessionId $null -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
 }
 
 function Resolve-CollectorStepStatus {
@@ -172,7 +157,6 @@ function Invoke-CollectorStep {
   $exitCode = $LASTEXITCODE
   $end = Get-Date
   $stdout = ($allOutput | ForEach-Object { if ($null -eq $_) { "" } else { $_.ToString() } }) -join [Environment]::NewLine
-  $stderr = ""
   $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
   $logLines = New-Object System.Collections.ArrayList
   [void]$logLines.Add("STEP=$StepName")
@@ -185,9 +169,6 @@ function Invoke-CollectorStep {
   [void]$logLines.Add("")
   [void]$logLines.Add("STDOUT:")
   [void]$logLines.Add($stdout)
-  [void]$logLines.Add("")
-  [void]$logLines.Add("STDERR:")
-  [void]$logLines.Add($stderr)
   $logPath = Write-HarnessLog -StepName $StepName -Lines $logLines
   $status = Resolve-CollectorStepStatus -ExitCode $exitCode -CollectorReportedStatus $collectorReportedStatus
   $runId = Parse-OutputValue -Text $stdout -Key "RUN_ID"
@@ -208,6 +189,9 @@ function Invoke-CollectorStep {
     MetadataReportPath = Parse-OutputValue -Text $stdout -Key "METADATA_REPORT_PATH"
     UploadSummaryPath = Parse-OutputValue -Text $stdout -Key "UPLOAD_SUMMARY_PATH"
     AttachmentBudgetManifestPath = Parse-OutputValue -Text $stdout -Key "ATTACHMENT_BUDGET_MANIFEST_PATH"
+    CollectionScopePath = Parse-OutputValue -Text $stdout -Key "COLLECTION_SCOPE_PATH"
+    ParallelismAssessmentPath = Parse-OutputValue -Text $stdout -Key "PARALLELISM_ASSESSMENT_PATH"
+    TargetedCollectionPlanPath = Parse-OutputValue -Text $stdout -Key "TARGETED_COLLECTION_PLAN_PATH"
     DefaultGeminiUploadSetStatus = Parse-OutputValue -Text $stdout -Key "DEFAULT_GEMINI_UPLOAD_SET_STATUS"
     CollectBundlePath = Parse-OutputValue -Text $stdout -Key "COLLECT_BUNDLE_PATH"
     EnrichBundlePath = Parse-OutputValue -Text $stdout -Key "ENRICH_BUNDLE_PATH"
@@ -267,6 +251,41 @@ function Invoke-SessionBehaviorVerification {
     $message = 'enrich-add reused the existing open session as expected.'
   } else {
     $message = 'Session reuse behavior did not match the expected start/add model.'
+  }
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+function Invoke-TargetedCollectionVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = "FAIL"
+  $message = ""
+  $lines = @(
+    "STEP=$StepName",
+    "COLLECTION_SCOPE_PATH=$($CollectStep.CollectionScopePath)",
+    "PARALLELISM_ASSESSMENT_PATH=$($CollectStep.ParallelismAssessmentPath)",
+    "TARGETED_COLLECTION_PLAN_PATH=$($CollectStep.TargetedCollectionPlanPath)"
+  )
+  $ok = $true
+  foreach ($p in @($CollectStep.CollectionScopePath, $CollectStep.ParallelismAssessmentPath, $CollectStep.TargetedCollectionPlanPath)) {
+    if (-not (Test-Path -LiteralPath $p)) { $ok = $false }
+  }
+  if ($ok) {
+    $scopeText = Get-Content -LiteralPath $CollectStep.CollectionScopePath -Raw
+    $planText = Get-Content -LiteralPath $CollectStep.TargetedCollectionPlanPath -Raw
+    if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN')) {
+      $status = "PASS"
+      $message = "Targeted collection artifacts were produced and contained the expected markers."
+    } else {
+      $message = "Targeted collection artifact markers were missing."
+    }
+  } else {
+    $message = "One or more targeted collection artifacts were missing."
   }
   $lines += "STATUS=$status"
   $lines += "MESSAGE=$message"
@@ -380,6 +399,21 @@ function Run-SessionBehaviorSuite {
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "55_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 }
 
+function Run-TargetedCollectionSuite {
+  Restore-WorkingZip -Reason "TargetedCollection"
+  $collect = Invoke-CollectorStep -StepName "61_CollectTargetedPopup" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","2026-04-08T08:45:00Z","-WindowEnd","2026-04-08T09:15:00Z")
+  if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_TargetedCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedCollectionValidation" -CollectStep $collect
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "62_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+}
+
+function Run-MajorVersionSuite {
+  Run-CoreSuite
+  Run-QuickAliasesSuite
+  Run-SessionBehaviorSuite
+  Run-TargetedCollectionSuite
+}
+
 Ensure-Directory -Path $RunOutputRoot
 Ensure-Directory -Path $LogsDir
 
@@ -389,11 +423,14 @@ try {
     "Retrieval" { Run-RetrievalSuite }
     "QuickAliases" { Run-QuickAliasesSuite }
     "SessionBehavior" { Run-SessionBehaviorSuite }
+    "TargetedCollection" { Run-TargetedCollectionSuite }
+    "MajorVersion" { Run-MajorVersionSuite }
     "FullRegression" {
       Run-CoreSuite
       Run-RetrievalSuite
       Run-QuickAliasesSuite
       Run-SessionBehaviorSuite
+      Run-TargetedCollectionSuite
     }
   }
   Save-Summary

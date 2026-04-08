@@ -1,39 +1,74 @@
 # Knowledge - 02 - Elastic Quick Start
 
-_Endpoint response-console usage versus local workstation usage_
+Purpose
+- This knowledge file provides a deliberately expanded, operationally explicit reference for Elastic and response-action quick start.
+- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
+- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
 
-**Summary:** Use this page when you need quick examples for endpoint-side DCOIR execution in Elastic Defend, while keeping those examples clearly separate from local testing commands.
+What this file is expected to do in the major-version build
+- Spell out logs-* default scope in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out copy-ready command rules in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out response-action wrapping in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out KQL vs ESQL in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out field-agnostic discovery in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out known tool-availability honesty in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 
-| Source class | Authoritative basis |
-| --- | --- |
-| Project sources | project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DCOIR_Collector.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
-| Official external sources | Elastic Docs / endpoint response actions |
-| Scope note | Examples are grounded in the current collector quick-alias model and the project workflow rule that endpoint instructions use response-action syntax. |
+Operational detail
+## 1. Logs-* Default Scope
+This section is intentionally long-form. The goal is to make logs-* default scope explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## Execution context split
+For logs-* default scope, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-- Use Elastic Defend response-action syntax for endpoint instructions.
-- Use PowerShell commands for local workstation and local regression tasks.
-- Do not paste a local-only command directly into the response console without the response-action wrapper.
-- Do not add the Elastic response-console wrapper when running the same command on a local workstation or test repo.
+The current major-version bundle also assumes that logs-* default scope may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-## Endpoint-side example commands
+When writing or reviewing functionality tied to logs-* default scope, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
 
-| Intent | Example |
-| --- | --- |
-| Run TCP enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment" |
-| Run raw Security-log enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment" |
-| Cleanup current DCOIR run | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick cleanup" --comment "Run DCOIR cleanup" |
+## 2. Copy-Ready Command Rules
+This section is intentionally long-form. The goal is to make copy-ready command rules explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-## When to use Elastic quick start
+For copy-ready command rules, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-- The endpoint already has the collector package staged and you want a controlled DCOIR action from the response console.
-- You are following the collector's Elastic-facing next-step hints after a collect or enrich stage.
-- You need one action at a time, not broad free-form shell work.
+The current major-version bundle also assumes that copy-ready command rules may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
-## Guardrails
+When writing or reviewing functionality tied to copy-ready command rules, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
 
-- Keep command syntax explicit and minimal.
-- Preserve the distinction between endpoint collection activity and analyst workstation analysis activity.
-- Treat the response console as the place for endpoint actions; treat the local repo as the place for development and regression.
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+## 3. Response-Action Wrapping
+This section is intentionally long-form. The goal is to make response-action wrapping explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For response-action wrapping, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that response-action wrapping may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to response-action wrapping, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 4. Kql Vs Esql
+This section is intentionally long-form. The goal is to make KQL vs ESQL explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For KQL vs ESQL, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that KQL vs ESQL may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to KQL vs ESQL, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 5. Field-Agnostic Discovery
+This section is intentionally long-form. The goal is to make field-agnostic discovery explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For field-agnostic discovery, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that field-agnostic discovery may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to field-agnostic discovery, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+## 6. Known Tool-Availability Honesty
+This section is intentionally long-form. The goal is to make known tool-availability honesty explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+
+For known tool-availability honesty, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+
+The current major-version bundle also assumes that known tool-availability honesty may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to known tool-availability honesty, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+Major-version bundle rule
+- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
+- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
+- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.

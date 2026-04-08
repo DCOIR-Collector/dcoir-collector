@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.72
+DCOIR Version Manifest 4.0.0
 
-Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
+Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -16,9 +16,11 @@ Current control plane
 - Gemini stored-source compile implementation: project_sources/LOG-57_DCOIR_Gemini_Stored_Source_Compile_Model_Implementation_2026-04-08.txt
 - Pipeline alignment and runtime package compile implementation: project_sources/LOG-58_DCOIR_Pipeline_Alignment_And_Runtime_Package_Compile_Implementation_2026-04-08.txt
 - Approved live-test delta catch-up queue: project_sources/LOG-59_DCOIR_Approved_Live_Test_Delta_Catch_Up_Queue_2026-04-08.txt
+- Major-version collector and Gemini feature-wave implementation: project_sources/LOG-60_DCOIR_Major_Version_Collector_And_Gemini_Feature_Wave_Implementation_2026-04-08.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 
 Current next work item
-- Propagate the approved live-test deltas into the Gemini stored runtime source tree and the collector maintained source line now that the package algorithms are aligned.
-- After that, run the bounded duplicate-readable-surface cleanup.
-- Standalone remains PP-01 through PP-07 assembly and collector remains the maintained-source compile lane with a transport-safe delivery package path.
+- Generate the new major-version Gemini and collector bundles through their associated Actions workflows.
+- Use tomorrow's dedicated chat for functionality testing against the rebuilt bundles.
+- Keep bounded duplicate-readable-surface cleanup queued after the major-version functionality test wave.
+- Keep later-only items such as parity review, optional Drive staging, and bounded restore-refresh workflow decisions queued for later.

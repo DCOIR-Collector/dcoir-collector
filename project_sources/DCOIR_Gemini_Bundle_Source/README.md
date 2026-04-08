@@ -1,30 +1,30 @@
 # DCOIR Gemini Bundle Source
 
 Purpose
-- This folder is the governed editable runtime source tree for the operator-facing Gemini bundle.
+- This folder is the governed editable runtime source tree for the major-version Gemini bundle.
 - Edit these files directly when the accepted runtime wording changes.
-- Compile the bundle from this tree after the knowledge-attachment sync and validation path passes.
+- Compile the bundle from this tree after the maintained knowledge sync, validation, and compile path runs.
 
-Topology rule
+Major-version topology rule
 - `Gemini_Bundle_Source_Manifest.json.txt` is the explicit source of topology truth.
-- The manifest must list the prime-agent file and every active sub-agent file.
-- Validation compares the manifest against the discovered source-tree files and fails on drift.
+- The manifest now governs one prime agent plus ten verbose sub-agents.
+- Validation must compare the manifest topology against the discovered source-tree files and fail on drift.
 
-Knowledge attachment rule
-- The maintained `knowledge/Knowledge - 01` through `knowledge/Knowledge - 11` files are the source of truth for shared prime-agent attachment content.
-- The files in `02_PRIME_AGENT_ATTACHMENTS/` are synchronized runtime copies used for bundle compilation.
-- Run the governed build path to refresh these attachment copies before validation and compilation.
+Current major-version focus
+- The parent and sub-agents are intentionally more verbose than earlier versions.
+- The current build is expected to be explicit about collector interpretation, collector pivoting, mixed-format IOC handling, targeted collection design, false-positive-aware security-product behavior, and output-contract consistency.
+- If a field or instruction can be made clearer, the default bias for this major version is to write it more explicitly rather than compress it.
 
 When adding a new sub-agent
 1. Add the new source file in `01_GEMINI_AGENT_BUILD/`.
 2. Add that file to the manifest topology section.
 3. Add that file to the manifest `required_files` list.
 4. Update `Generated_DCOIR_Gemini_Agent_Index.md.txt`.
-5. Update `00_START_HERE/Gemini_Build_Quick_Start.md.txt` if the operator build order changed.
-6. Re-run the governed build path.
+5. Update `00_START_HERE/Gemini_Build_Quick_Start.md.txt` if the build order or mental model changed.
+6. Re-run validation and build.
 
 What not to do
 - Do not treat file drop alone as a topology change.
 - Do not rely on ad hoc folder discovery as shipment authority.
 - Do not skip manifest updates when adding or removing sub-agents.
-- Do not hand-maintain shared attachment wording only inside `02_PRIME_AGENT_ATTACHMENTS/` and assume the maintained knowledge lane will match it.
+- Do not let the maintained `knowledge/*.md` set and the synced `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` set drift silently.

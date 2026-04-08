@@ -1,7 +1,7 @@
 {
   "bundle_name": "DCOIR_Collector_Delivery_Package",
-  "bundle_version": "1_1_0",
-  "top_level_folder": "DCOIR_Collector_Delivery_Package_v1_1_0",
+  "bundle_version": "2_0_0",
+  "top_level_folder": "DCOIR_Collector_Delivery_Package_v2_0_0",
   "source_strategy": "compile_single_runtime_then_package",
   "collector_wrapper_source": "project_sources/DCOIR_Collector.ps1",
   "collector_part_files": [
@@ -11,6 +11,7 @@
     "project_sources/collector_parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1",
     "project_sources/collector_parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1",
     "project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1",
+    "project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1",
     "project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1"
   ],
   "harness_source": "project_sources/run_DCOIR_Tests.ps1",
@@ -24,6 +25,7 @@
     "project_sources/collector_parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1",
     "project_sources/collector_parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1",
     "project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1",
+    "project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1",
     "project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1"
   ],
   "delivery_zip_entries": [
@@ -46,6 +48,8 @@
   "notes": [
     "This package is a transport-safe delivery package for the current collector and harness line.",
     "The collector delivery package is built from a compiled single-runtime DCOIR_Collector.ps1 plus the harness.",
+    "Targeted collection parameterization is now part of the maintained collector source line and therefore part of the compiled runtime output.",
+    "The collector parallelism feature in this major version remains an explicit assessment surface, not a direct runtime multithreading implementation.",
     "Script entries in this artifact intentionally end in .txt to bypass mail filters.",
     "Do not refresh supporting_assets/DCOIR_Collector.zip directly from this transport-safe artifact without restoring native runtime filenames first."
   ]
