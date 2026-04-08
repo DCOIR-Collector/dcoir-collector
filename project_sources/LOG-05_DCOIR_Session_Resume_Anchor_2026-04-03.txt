@@ -1,15 +1,16 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-08-gemini-stored-source-compile-model-v1
+Current state id: 2026-04-08-gemini-creation-pipeline-implemented-v1
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Collector remains the compiled runtime lane from maintained source parts.
 - Standalone remains the PP-01 through PP-07 assembly lane.
-- Gemini now has a stored runtime source tree and compile model under `project_sources/DCOIR_Gemini_Bundle_Source/`.
+- Gemini now has a stored runtime source tree, validation script, and build wrapper under project_sources/DCOIR_Gemini_Bundle_Source/ and project_sources/generation_validation/.
 
 What is still open right now
-1. Apply the Gemini stored-source compile patch wave.
-2. Use the stored source tree for the next Gemini bundle refresh.
-3. Continue future Gemini requirement updates by editing those source files directly.
-4. Keep standalone and collector on their existing assembly/compile paths.
+1. Run the first end-to-end Gemini pipeline test.
+2. Inspect and deliver the resulting compiled Gemini bundle.
+3. Build the operator-facing test workflow and acceptance checks.
+4. Perform a bounded duplicate-Knowledge audit after the pipeline path is validated.
+5. Keep standalone and collector on their existing assembly or compile paths.

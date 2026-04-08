@@ -1,13 +1,14 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-08-gemini-stored-source-compile-model-v1
+Current state id: 2026-04-08-gemini-creation-pipeline-implemented-v1
 
 Current active priority
-- Land the stored Gemini source tree and compile model so future Gemini bundle downloads stop relying on on-the-fly generation.
+- Run the first end-to-end Gemini creation pipeline test and inspect the resulting compiled bundle.
 
 Queued next priorities
-- propagate any additional approved Gemini behavior updates into `project_sources/DCOIR_Gemini_Bundle_Source/`
-- compile the next Gemini bundle from the stored source tree
+- build the operator-facing Gemini pipeline test workflow and acceptance checks
+- use the stored source tree plus validation-plus-build wrapper as the standard Gemini shipment lane
+- perform a bounded duplicate-Knowledge audit after the pipeline path is validated
 - keep standalone on the prompt-pack assembly path
 - keep collector on the collector-source compile path
 - revisit parity and optional Drive staging after the runtime delivery model is stable
