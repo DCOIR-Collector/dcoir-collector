@@ -9,7 +9,10 @@ Current stable baseline
 - Collector now uses a maintained-source single-runtime compile path plus a transport-safe delivery package workflow.
 
 What is still open right now
-1. Propagate the approved live-test deltas into the Gemini stored runtime source tree.
-2. Propagate the approved live-test deltas into the collector maintained source line.
-3. Run the bounded duplicate-readable-surface cleanup after that.
-4. Decide whether a later bounded workflow should regenerate `supporting_assets/DCOIR_Collector.zip` from the approved collector delivery package path.
+1. Use `project_sources/live_test_notes/2026-04-08_DCOIR_Collector_And_Gemini_Completion_Punch_List.md.txt` as the durable next-wave implementation punch list.
+2. Finish the remaining Gemini runtime-content deltas from the April 7 live-test findings and addenda.
+3. Finish the remaining collector maintained-source deltas and newly requested collector-adjacent feature work.
+4. Rebuild both bundle lines after that.
+5. Use tomorrow's separate chat for functionality testing.
+6. Run the bounded duplicate-readable-surface cleanup after the implementation-and-rebuild wave.
+7. Decide later whether a bounded workflow should regenerate `supporting_assets/DCOIR_Collector.zip` from the approved collector delivery package path.
