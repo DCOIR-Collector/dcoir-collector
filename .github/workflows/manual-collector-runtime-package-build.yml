@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       package_version_override:
-        description: Optional package version override (for example 1_0_1)
+        description: Optional package version override (for example 1_0_2)
         required: false
         default: ''
         type: string
@@ -50,7 +50,11 @@ jobs:
           $psFiles = @(
             'project_sources/DCOIR_Collector.ps1',
             'project_sources/run_DCOIR_Tests.ps1'
-          ) | Where-Object { Test-Path -LiteralPath $_ }
+          )
+          if (Test-Path -LiteralPath 'project_sources/collector_parts') {
+            $psFiles += Get-ChildItem -Path 'project_sources/collector_parts' -File -Filter '*.ps1' | ForEach-Object { $_.FullName }
+          }
+          $psFiles = @($psFiles | Where-Object { Test-Path -LiteralPath $_ })
           if (-not $psFiles) {
             throw 'Required collector and harness PowerShell files were not found.'
           }
@@ -79,6 +83,7 @@ jobs:
             'project_sources/Collector_Runtime_Package_Manifest.json.txt',
             'project_sources/DCOIR_Collector.ps1',
             'project_sources/run_DCOIR_Tests.ps1',
+            'project_sources/collector_parts',
             'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py',
             'project_sources/generation_validation/build_dcoir_collector_runtime_package.py'
           )
@@ -146,7 +151,9 @@ jobs:
               $checks = $validate.checks
               $lines.Add(('- Validation success: {0}' -f $validate.success))
               $lines.Add(('- Runtime entry count: {0}' -f $checks.runtime_entry_count))
-              $lines.Add(('- Expected runtime names present: {0}' -f $checks.expected_runtime_names_present))
+              $lines.Add(('- Collector part count: {0}' -f $checks.actual_collector_part_count))
+              $lines.Add(('- Expected delivery names present: {0}' -f $checks.expected_top_level_delivery_names_present))
+              $lines.Add(('- Script entries use .txt suffix: {0}' -f ($checks.non_txt_script_entries.Count -eq 0)))
               if ($null -ne $validate.errors -and $validate.errors.Count -gt 0) {
                 $lines.Add('- Validation errors:')
                 foreach ($err in $validate.errors) {

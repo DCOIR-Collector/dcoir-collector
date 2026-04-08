@@ -1,30 +1,37 @@
-DCOIR Collector Runtime Packaging Pipeline v1.0.0
+DCOIR Collector Runtime Packaging Pipeline v1.1.0
 
 Purpose
-- Define a validate-and-build workflow for packaging the current collector runtime script and PowerShell harness into a versioned zip.
-- Keep the collector runtime package line consistent with the newer Gemini validate-and-build pattern.
-- Make the retained supporting asset refresh path explicit rather than ad hoc.
+- Define a validate-and-build workflow for packaging the current collector wrapper, collector part set, and PowerShell harness into a versioned delivery zip.
+- Preserve the collector line as a governed, reviewable, and transport-safe package rather than a partial wrapper-only archive.
+- Keep the collector packaging line aligned to the operator’s current mail-filter constraint.
 
 Current source model
-- `project_sources/DCOIR_Collector.ps1` is the current readable collector runtime source.
+- `project_sources/DCOIR_Collector.ps1` is the current readable collector wrapper source.
+- `project_sources/collector_parts/*.ps1` is the required current collector part set that the wrapper imports at runtime.
 - `project_sources/run_DCOIR_Tests.ps1` is the current readable PowerShell harness source.
-- `project_sources/Collector_Runtime_Package_Manifest.json.txt` defines what must be present and how the runtime package zip is built.
-- `supporting_assets/DCOIR_Collector.zip` remains the retained supporting delivery asset after an approved refresh.
+- `project_sources/Collector_Runtime_Package_Manifest.json.txt` defines the delivery package contents and required delivery-safe filenames.
+- `supporting_assets/DCOIR_Collector.zip` remains the retained supporting runtime asset and should not be overwritten directly from the transport-safe package without restoring native runtime filenames first.
+
+Delivery rules
+- The workflow artifact is a transport-safe delivery package.
+- Script files in the package intentionally end with `.txt` to bypass mail filters.
+- The current collector wrapper depends on the `collector_parts/` folder and the package is incomplete if those files are absent.
+- Before local runtime use, strip only the terminal `.txt` from script entries after extraction.
 
 Workflow
 1. Confirm the current control plane.
-2. Edit `project_sources/DCOIR_Collector.ps1` and or `project_sources/run_DCOIR_Tests.ps1` as needed.
-3. Update `project_sources/Collector_Runtime_Package_Manifest.json.txt` if package contents or runtime filenames changed.
+2. Edit `project_sources/DCOIR_Collector.ps1`, `project_sources/collector_parts/*.ps1`, and or `project_sources/run_DCOIR_Tests.ps1` as needed.
+3. Update `project_sources/Collector_Runtime_Package_Manifest.json.txt` if package contents or delivery-safe filenames changed.
 4. Run `validate_dcoir_collector_runtime_package.py`.
 5. Run `build_dcoir_collector_runtime_package.py`.
 6. Review the workflow summary and uploaded artifacts.
-7. If the new build is accepted, refresh `supporting_assets/DCOIR_Collector.zip` from the approved build output.
+7. Treat the output as a delivery package unless a later bounded workflow explicitly restores native runtime names and refreshes `supporting_assets/DCOIR_Collector.zip`.
 
 Hard rules
-- Do not treat the retained supporting zip as the editable source of truth.
-- Do not change runtime filenames in the package without changing the manifest.
-- Do not silently add extra package contents outside the manifest.
-- Keep the package line explicit, inspectable, and reviewable.
+- Do not ship a wrapper-only collector package.
+- Do not omit `collector_parts/` from the delivery package.
+- Do not emit raw `.ps1` names in the delivery package when the current mail-filter rule requires `.txt` suffixes.
+- Do not overwrite the retained runtime zip directly from the delivery package without a rename/restore step.
 
 Recommended next move
-- Use this package manifest and workflow as the collector-and-harness packaging baseline, then refresh the retained collector zip from approved workflow outputs instead of hand-packaging it.
+- Use the manifest-driven transport-safe delivery package as the current collector artifact lane, then add a later bounded restore-and-refresh step if you want the workflow to also regenerate `supporting_assets/DCOIR_Collector.zip`.
