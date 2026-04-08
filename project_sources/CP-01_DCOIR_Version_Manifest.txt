@@ -1,6 +1,6 @@
-DCOIR Version Manifest 4.0.0
+DCOIR Version Manifest 4.0.1
 
-Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
+Current state id: 2026-04-08-major-version-collector-and-gemini-syntax-hotfix-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -17,6 +17,7 @@ Current control plane
 - Pipeline alignment and runtime package compile implementation: project_sources/LOG-58_DCOIR_Pipeline_Alignment_And_Runtime_Package_Compile_Implementation_2026-04-08.txt
 - Approved live-test delta catch-up queue: project_sources/LOG-59_DCOIR_Approved_Live_Test_Delta_Catch_Up_Queue_2026-04-08.txt
 - Major-version collector and Gemini feature-wave implementation: project_sources/LOG-60_DCOIR_Major_Version_Collector_And_Gemini_Feature_Wave_Implementation_2026-04-08.txt
+- Major-version quick-interface syntax hotfix: project_sources/LOG-61_DCOIR_Major_Version_Quick_Interface_Syntax_Hotfix_2026-04-08.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 
 Current next work item

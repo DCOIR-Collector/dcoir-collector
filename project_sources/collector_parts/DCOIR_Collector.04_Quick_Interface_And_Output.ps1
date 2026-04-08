@@ -4,8 +4,8 @@ function Get-QuickUsageText {
     "Quick command examples:",
     "  $cmd -Quick collect-t1",
     "  $cmd -Quick collect-t2",
-    "  $cmd -Quick collect-targeted-popup -Target "User reported popup around 2026-04-08T09:00Z"",
-    "  $cmd -Quick collect-targeted-script -Target "Suspicious script execution follow-up" -Target2 "powershell.exe"",
+    '  $cmd -Quick collect-targeted-popup -Target "User reported popup around 2026-04-08T09:00Z"',
+    '  $cmd -Quick collect-targeted-script -Target "Suspicious script execution follow-up" -Target2 "powershell.exe"',
     "  $cmd -Quick enrich-start-tcp",
     "  $cmd -Quick enrich-add-tcp",
     "  $cmd -Quick enrich-start-logtext -Target Security",
@@ -144,7 +144,7 @@ function Write-QuickNextSteps {
     "Cleanup" {
       Write-Output '1. Local script file remains in place by design unless you run the explicit delete command.'
       Write-Output ('2. execute --command "{0} -Quick collect-t1" --comment "Run DCOIR collect T1"' -f $cmd)
-      Write-Output ('3. execute --command "{0} -Quick collect-targeted-popup -Target "User reported popup follow-up"" --comment "Run DCOIR targeted popup-style collect"' -f $cmd)
+      Write-Output ('3. execute --command "{0} -Quick collect-targeted-popup -Target ""User reported popup follow-up""" --comment "Run DCOIR targeted popup-style collect"' -f $cmd)
     }
   }
 }

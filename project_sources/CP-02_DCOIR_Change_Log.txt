@@ -1,6 +1,25 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 4.0.1
+Current state id: 2026-04-08-major-version-collector-and-gemini-syntax-hotfix-v1
+Change class: bounded post-commit PowerShell syntax hotfix for major-version collector quick-interface output
+
+What changed
+- Fixed the major-version `project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1` quick-usage/help strings that introduced malformed nested quote handling.
+- Fixed the cleanup-phase targeted popup next-step example string in the same file so the PowerShell parser no longer trips on the embedded analyst example text.
+- Kept the hotfix bounded to the quick-interface output surface rather than reopening the broader feature wave.
+
+Why
+- `validate-on-push` failed during PowerShell syntax validation before the broader action set could run.
+- The failure was caused by unescaped embedded quote characters in newly added targeted-collection example strings, not by the collector core logic or the workflows themselves.
+
+Validation notes
+- This hotfix is intended to clear the PowerShell parser failure in the quick-interface source part.
+- After this patch lands, rerun `validate-on-push` first, then proceed to the manual package workflows if it passes.
+
+[PRIOR]
+[CURRENT]
 Version: 4.0.0
 Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
 Change class: major-version collector and Gemini implementation wave with verbose runtime-content refresh, targeted collection scope expansion, and associated workflow updates

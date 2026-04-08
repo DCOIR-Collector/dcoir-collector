@@ -1,0 +1,23 @@
+DCOIR Major Version Quick Interface Syntax Hotfix - 2026-04-08
+
+Current state id
+- 2026-04-08-major-version-collector-and-gemini-syntax-hotfix-v1
+
+Purpose
+- Record the bounded post-commit syntax correction required after validate-on-push failed on the major-version wave.
+
+Observed failure
+- `validate-on-push` failed during PowerShell syntax validation.
+- The failing file was `project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1`.
+- The motivating failure signature was an unexpected-token parser error caused by nested quote handling in newly added targeted-collection example strings.
+
+Fix scope
+- Correct the malformed quick-usage example strings.
+- Correct the malformed cleanup-phase targeted popup next-step example string.
+- Do not widen this fix into unrelated collector, Gemini, or workflow changes.
+
+Required rerun order
+1. Rerun `validate-on-push`.
+2. If it passes, proceed to `manual-gemini-bundle-build`.
+3. Then run `manual-collector-runtime-package-build`.
+4. Use `manual-full-validation` only after the bounded syntax hotfix is proven clean.
