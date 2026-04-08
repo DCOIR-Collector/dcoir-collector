@@ -50,7 +50,11 @@ def main() -> int:
     inline_block = build_inline_block(part_paths)
     if not PATTERN.search(wrapper_text):
         raise SystemExit('collector wrapper does not contain the expected collector_parts import block')
-    compiled_text = PATTERN.sub(inline_block, wrapper_text, count=1)
+
+    # Use a callable replacement so backslashes from PowerShell content are inserted literally
+    # instead of being interpreted by the regex replacement engine.
+    compiled_text = PATTERN.sub(lambda _m: inline_block, wrapper_text, count=1)
+
     if not compiled_text.endswith('\n'):
         compiled_text += '\n'
 
