@@ -1,0 +1,198 @@
+name: manual-collector-runtime-package-build
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_version_override:
+        description: Optional package version override (for example 1_0_1)
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  build_collector_runtime_package:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    env:
+      PACKAGE_VERSION_OVERRIDE: ${{ github.event.inputs.package_version_override }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Validate Python syntax
+        shell: pwsh
+        run: |
+          $pyFiles = git ls-files "*.py"
+          if (-not $pyFiles) {
+            Write-Host "No tracked Python files found."
+            exit 0
+          }
+          $failed = @()
+          foreach ($file in $pyFiles) {
+            python -m py_compile $file
+            if ($LASTEXITCODE -ne 0) {
+              $failed += $file
+            }
+          }
+          if ($failed.Count -gt 0) {
+            throw "Python syntax validation failed: $($failed -join ', ')"
+          }
+
+      - name: Validate PowerShell syntax
+        shell: pwsh
+        run: |
+          $psFiles = @(
+            'project_sources/DCOIR_Collector.ps1',
+            'project_sources/run_DCOIR_Tests.ps1'
+          ) | Where-Object { Test-Path -LiteralPath $_ }
+          if (-not $psFiles) {
+            throw 'Required collector and harness PowerShell files were not found.'
+          }
+          $parseFailures = @()
+          foreach ($file in $psFiles) {
+            $tokens = $null
+            $parseErrors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$tokens, [ref]$parseErrors)
+            if ($parseErrors.Count -gt 0) {
+              $messages = ($parseErrors | ForEach-Object { $_.Message }) -join ' | '
+              $parseFailures += "${file}: $messages"
+            }
+          }
+          if ($parseFailures.Count -gt 0) {
+            $parseFailures | ForEach-Object { Write-Error $_ }
+            throw 'PowerShell syntax validation failed.'
+          }
+
+      - name: Verify collector runtime package surfaces
+        shell: pwsh
+        run: |
+          $required = @(
+            'project_sources/CP-01_DCOIR_Version_Manifest.txt',
+            'project_sources/CP-02_DCOIR_Change_Log.txt',
+            'project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt',
+            'project_sources/Collector_Runtime_Package_Manifest.json.txt',
+            'project_sources/DCOIR_Collector.ps1',
+            'project_sources/run_DCOIR_Tests.ps1',
+            'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py',
+            'project_sources/generation_validation/build_dcoir_collector_runtime_package.py'
+          )
+          $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
+          if ($missing.Count -gt 0) {
+            throw "Missing required collector runtime package surfaces: $($missing -join ', ')"
+          }
+
+      - name: Create output directory
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out | Out-Null
+
+      - name: Run collector runtime package validation
+        shell: pwsh
+        run: |
+          python project_sources/generation_validation/validate_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/generation_validation/out
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector runtime package validation failed.'
+          }
+
+      - name: Build collector runtime package
+        shell: pwsh
+        run: |
+          $versionOverride = $env:PACKAGE_VERSION_OVERRIDE
+          $cmd = @(
+            'python',
+            'project_sources/generation_validation/build_dcoir_collector_runtime_package.py',
+            '--source-dir', '.',
+            '--output-dir', 'project_sources/generation_validation/out'
+          )
+          if (-not [string]::IsNullOrWhiteSpace($versionOverride)) {
+            $cmd += @('--version', $versionOverride)
+          }
+          & $cmd[0] $cmd[1..($cmd.Count - 1)]
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector runtime package build failed.'
+          }
+
+      - name: Render browser-readable summary
+        if: always()
+        shell: pwsh
+        run: |
+          try {
+            if (-not $env:GITHUB_STEP_SUMMARY) {
+              Write-Warning 'GITHUB_STEP_SUMMARY is not set. Skipping summary render.'
+              exit 0
+            }
+
+            $outRoot = 'project_sources/generation_validation/out'
+            $validateReport = Join-Path $outRoot 'validate_dcoir_collector_runtime_package_report.json'
+            $buildReport = Join-Path $outRoot 'build_dcoir_collector_runtime_package_report.json'
+            $zipFile = Get-ChildItem -Path $outRoot -File -Filter '*.zip' -ErrorAction SilentlyContinue |
+              Sort-Object LastWriteTime -Descending |
+              Select-Object -First 1
+
+            $lines = New-Object System.Collections.Generic.List[string]
+            $lines.Add('## manual-collector-runtime-package-build')
+            $lines.Add('')
+            $lines.Add(('- Version override: {0}' -f $env:PACKAGE_VERSION_OVERRIDE))
+            $lines.Add('')
+
+            if (Test-Path -LiteralPath $validateReport) {
+              $validate = Get-Content -LiteralPath $validateReport -Raw | ConvertFrom-Json
+              $checks = $validate.checks
+              $lines.Add(('- Validation success: {0}' -f $validate.success))
+              $lines.Add(('- Runtime entry count: {0}' -f $checks.runtime_entry_count))
+              $lines.Add(('- Expected runtime names present: {0}' -f $checks.expected_runtime_names_present))
+              if ($null -ne $validate.errors -and $validate.errors.Count -gt 0) {
+                $lines.Add('- Validation errors:')
+                foreach ($err in $validate.errors) {
+                  $lines.Add(('  - {0}' -f $err))
+                }
+              }
+            }
+            else {
+              $lines.Add('- Validation report not found.')
+            }
+
+            if (Test-Path -LiteralPath $buildReport) {
+              $build = Get-Content -LiteralPath $buildReport -Raw | ConvertFrom-Json
+              $lines.Add(('- Bundle name: {0}' -f $build.bundle_name))
+              $lines.Add(('- Bundle version: {0}' -f $build.bundle_version))
+              $lines.Add(('- Top-level folder: {0}' -f $build.top_level_folder))
+              $lines.Add(('- File count: {0}' -f $build.file_count))
+              $lines.Add(('- Retained supporting asset path: {0}' -f $build.retained_supporting_asset_path))
+            }
+            else {
+              $lines.Add('- Build report not found.')
+            }
+
+            if ($zipFile) {
+              $lines.Add(('- Built zip: {0}' -f $zipFile.Name))
+            }
+            else {
+              $lines.Add('- No zip artifact was found in the output directory.')
+            }
+
+            $tempSummary = Join-Path $env:RUNNER_TEMP 'manual-collector-runtime-package-build-summary.md'
+            $lines | Set-Content -LiteralPath $tempSummary -Encoding utf8
+            Get-Content -LiteralPath $tempSummary | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Encoding utf8
+          }
+          catch {
+            Write-Warning ("Non-fatal summary render issue: {0}" -f $_.Exception.Message)
+            exit 0
+          }
+
+      - name: Upload collector runtime package artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: manual-collector-runtime-package-build
+          path: |
+            project_sources/generation_validation/out/*.zip
+            project_sources/generation_validation/out/*report.json
+          if-no-files-found: warn
+          retention-days: 21

@@ -1,0 +1,30 @@
+{
+  "bundle_name": "DCOIR_Collector_Runtime_Package",
+  "bundle_version": "1_0_0",
+  "top_level_folder": "DCOIR_Collector_Runtime_Package_v1_0_0",
+  "source_strategy": "stored_source_package",
+  "authoritative_runtime_source_files": [
+    "project_sources/DCOIR_Collector.ps1",
+    "project_sources/run_DCOIR_Tests.ps1"
+  ],
+  "required_files": [
+    "project_sources/DCOIR_Collector.ps1",
+    "project_sources/run_DCOIR_Tests.ps1"
+  ],
+  "runtime_zip_entries": [
+    {
+      "source": "project_sources/DCOIR_Collector.ps1",
+      "zip_path": "DCOIR_Collector.ps1"
+    },
+    {
+      "source": "project_sources/run_DCOIR_Tests.ps1",
+      "zip_path": "run_DCOIR_Tests.ps1"
+    }
+  ],
+  "retained_supporting_asset_path": "supporting_assets/DCOIR_Collector.zip",
+  "notes": [
+    "This manifest defines the validate-and-build contract for the current collector runtime package.",
+    "The build output is versioned for workflow artifact clarity.",
+    "After a validated build is accepted, the retained supporting asset supporting_assets/DCOIR_Collector.zip can be refreshed from the approved build output."
+  ]
+}

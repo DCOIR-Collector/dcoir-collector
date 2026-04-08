@@ -1,0 +1,30 @@
+DCOIR Collector Runtime Packaging Pipeline v1.0.0
+
+Purpose
+- Define a validate-and-build workflow for packaging the current collector runtime script and PowerShell harness into a versioned zip.
+- Keep the collector runtime package line consistent with the newer Gemini validate-and-build pattern.
+- Make the retained supporting asset refresh path explicit rather than ad hoc.
+
+Current source model
+- `project_sources/DCOIR_Collector.ps1` is the current readable collector runtime source.
+- `project_sources/run_DCOIR_Tests.ps1` is the current readable PowerShell harness source.
+- `project_sources/Collector_Runtime_Package_Manifest.json.txt` defines what must be present and how the runtime package zip is built.
+- `supporting_assets/DCOIR_Collector.zip` remains the retained supporting delivery asset after an approved refresh.
+
+Workflow
+1. Confirm the current control plane.
+2. Edit `project_sources/DCOIR_Collector.ps1` and or `project_sources/run_DCOIR_Tests.ps1` as needed.
+3. Update `project_sources/Collector_Runtime_Package_Manifest.json.txt` if package contents or runtime filenames changed.
+4. Run `validate_dcoir_collector_runtime_package.py`.
+5. Run `build_dcoir_collector_runtime_package.py`.
+6. Review the workflow summary and uploaded artifacts.
+7. If the new build is accepted, refresh `supporting_assets/DCOIR_Collector.zip` from the approved build output.
+
+Hard rules
+- Do not treat the retained supporting zip as the editable source of truth.
+- Do not change runtime filenames in the package without changing the manifest.
+- Do not silently add extra package contents outside the manifest.
+- Keep the package line explicit, inspectable, and reviewable.
+
+Recommended next move
+- Use this package manifest and workflow as the collector-and-harness packaging baseline, then refresh the retained collector zip from approved workflow outputs instead of hand-packaging it.
