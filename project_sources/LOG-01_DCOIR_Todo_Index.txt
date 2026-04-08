@@ -1,11 +1,10 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-08-gemini-creation-pipeline-implemented-v1
+Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
 
 Current priority summary
-1. Gemini now has a governed creation pipeline built around stored-source validation and compilation.
-2. The next immediate task is to run the first end-to-end pipeline test and inspect the compiled runtime bundle.
-3. After that, build the operator-facing test workflow and acceptance checks.
-4. Then perform a bounded duplicate-Knowledge audit rather than broad cleanup.
-5. Standalone remains the PP-01 through PP-07 assembly lane.
-6. Collector remains the maintained-source plus compiled-runtime lane.
+1. Gemini now follows a manifest-topology, maintained-knowledge-sync, and compile model instead of ad hoc bundle generation.
+2. Collector now follows a maintained-source single-runtime compile plus transport-safe delivery package model.
+3. The package smoke tests in the validation workflows now use the same governed build scripts as the manual package workflows.
+4. The next required follow-through is propagation of the approved live-test deltas into the runtime source lines.
+5. Bounded duplicate-readable-surface cleanup remains queued after the approved-delta propagation wave.

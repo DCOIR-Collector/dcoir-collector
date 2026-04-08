@@ -1,6 +1,6 @@
 DCOIR Version Manifest 3.9.72
 
-Current state id: 2026-04-08-gemini-creation-pipeline-implemented-v1
+Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -11,12 +11,14 @@ Current control plane
 - Gemini live-test generation and legacy surface rules: project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt
 - Gemini stored-source and compile strategy: project_sources/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt
 - Gemini creation pipeline: project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt
+- Collector runtime packaging pipeline: project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt
 - Collector output shaping and bundle-validation implementation: project_sources/LOG-56_DCOIR_Collector_Output_Shaping_And_Bundle_Validation_Implementation_2026-04-07.txt
 - Gemini stored-source compile implementation: project_sources/LOG-57_DCOIR_Gemini_Stored_Source_Compile_Model_Implementation_2026-04-08.txt
+- Pipeline alignment and runtime package compile implementation: project_sources/LOG-58_DCOIR_Pipeline_Alignment_And_Runtime_Package_Compile_Implementation_2026-04-08.txt
+- Approved live-test delta catch-up queue: project_sources/LOG-59_DCOIR_Approved_Live_Test_Delta_Catch_Up_Queue_2026-04-08.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 
 Current next work item
-- Run the first end-to-end Gemini pipeline test using the stored source tree, validation script, and build wrapper.
-- Produce the next compiled Gemini runtime bundle from project_sources/DCOIR_Gemini_Bundle_Source/.
-- After pipeline validation is satisfactory, build the operator-facing test workflow and then perform a bounded duplicate-Knowledge audit.
-- Standalone remains PP-01 through PP-07 assembly and collector remains the collector-source compile lane.
+- Propagate the approved live-test deltas into the Gemini stored runtime source tree and the collector maintained source line now that the package algorithms are aligned.
+- After that, run the bounded duplicate-readable-surface cleanup.
+- Standalone remains PP-01 through PP-07 assembly and collector remains the maintained-source compile lane with a transport-safe delivery package path.

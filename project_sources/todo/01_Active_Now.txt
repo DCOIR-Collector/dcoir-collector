@@ -1,11 +1,8 @@
 DCOIR Active Now
 
-Current state id: 2026-04-08-gemini-creation-pipeline-implemented-v1
+Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
 
-1. Run the first end-to-end Gemini creation pipeline test.
-2. Use project_sources/DCOIR_Gemini_Bundle_Source/ as the default editable runtime Gemini surface.
-3. Use validation-plus-build wrapper execution as the default operator-facing Gemini shipment path.
-4. Build the operator-facing pipeline test workflow.
-5. Perform a bounded duplicate-Knowledge audit after the pipeline path is validated.
-6. Keep standalone on the prompt-pack assembly path.
-7. Keep collector on the compiled runtime lane from maintained source parts.
+1. Use the aligned Gemini and collector build scripts as the single governed package algorithms.
+2. Propagate the approved live-test deltas into the Gemini stored runtime source tree.
+3. Propagate the approved live-test deltas into the collector maintained source line.
+4. Run the bounded duplicate-readable-surface cleanup after the propagation wave.

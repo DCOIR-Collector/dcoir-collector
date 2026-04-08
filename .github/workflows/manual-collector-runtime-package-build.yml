@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       package_version_override:
-        description: Optional package version override (for example 1_0_2)
+        description: Optional package version override (for example 1_1_1)
         required: false
         default: ''
         type: string
@@ -84,6 +84,7 @@ jobs:
             'project_sources/DCOIR_Collector.ps1',
             'project_sources/run_DCOIR_Tests.ps1',
             'project_sources/collector_parts',
+            'project_sources/generation_validation/compile_dcoir_collector_runtime.py',
             'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py',
             'project_sources/generation_validation/build_dcoir_collector_runtime_package.py'
           )
@@ -97,15 +98,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out | Out-Null
 
-      - name: Run collector runtime package validation
-        shell: pwsh
-        run: |
-          python project_sources/generation_validation/validate_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/generation_validation/out
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector runtime package validation failed.'
-          }
-
-      - name: Build collector runtime package
+      - name: Run collector runtime package build
         shell: pwsh
         run: |
           $versionOverride = $env:PACKAGE_VERSION_OVERRIDE
@@ -135,6 +128,7 @@ jobs:
 
             $outRoot = 'project_sources/generation_validation/out'
             $validateReport = Join-Path $outRoot 'validate_dcoir_collector_runtime_package_report.json'
+            $compileReport = Join-Path $outRoot 'compile_dcoir_collector_runtime_report.json'
             $buildReport = Join-Path $outRoot 'build_dcoir_collector_runtime_package_report.json'
             $zipFile = Get-ChildItem -Path $outRoot -File -Filter '*.zip' -ErrorAction SilentlyContinue |
               Sort-Object LastWriteTime -Descending |
@@ -150,10 +144,8 @@ jobs:
               $validate = Get-Content -LiteralPath $validateReport -Raw | ConvertFrom-Json
               $checks = $validate.checks
               $lines.Add(('- Validation success: {0}' -f $validate.success))
-              $lines.Add(('- Runtime entry count: {0}' -f $checks.runtime_entry_count))
-              $lines.Add(('- Collector part count: {0}' -f $checks.actual_collector_part_count))
-              $lines.Add(('- Expected delivery names present: {0}' -f $checks.expected_top_level_delivery_names_present))
-              $lines.Add(('- Script entries use .txt suffix: {0}' -f ($checks.non_txt_script_entries.Count -eq 0)))
+              $lines.Add(('- Collector part file count: {0}' -f $checks.collector_part_file_count))
+              $lines.Add(('- Expected delivery names present: {0}' -f $checks.expected_delivery_names_present))
               if ($null -ne $validate.errors -and $validate.errors.Count -gt 0) {
                 $lines.Add('- Validation errors:')
                 foreach ($err in $validate.errors) {
@@ -163,6 +155,16 @@ jobs:
             }
             else {
               $lines.Add('- Validation report not found.')
+            }
+
+            if (Test-Path -LiteralPath $compileReport) {
+              $compile = Get-Content -LiteralPath $compileReport -Raw | ConvertFrom-Json
+              $lines.Add(('- Compile success: {0}' -f $compile.success))
+              $lines.Add(('- Compiled runtime name: {0}' -f $compile.compiled_runtime_name))
+              $lines.Add(('- Collector part count in compile step: {0}' -f $compile.collector_part_count))
+            }
+            else {
+              $lines.Add('- Compile report not found.')
             }
 
             if (Test-Path -LiteralPath $buildReport) {

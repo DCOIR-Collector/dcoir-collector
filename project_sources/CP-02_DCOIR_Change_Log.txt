@@ -2,35 +2,31 @@ DCOIR Change Log
 
 [CURRENT]
 Version: 3.9.72
-Current state id: 2026-04-08-gemini-creation-pipeline-implemented-v1
-Change class: Gemini creation pipeline implementation and continuity refresh
+Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
+Change class: package-pipeline alignment, collector single-runtime compile delivery, Gemini knowledge-source sync, and approved-delta catch-up governance
 
 What changed
-- Added DOC-11 to define the governed Gemini creation pipeline around the stored source tree.
-- Added project_sources/DCOIR_Gemini_Bundle_Source/README.md to make the runtime source editing model explicit.
-- Added project_sources/generation_validation/validate_dcoir_gemini_bundle.py to validate the stored source tree before shipment.
-- Added project_sources/generation_validation/build_dcoir_gemini_release.py as the one-command validation-plus-compile wrapper.
-- Refreshed current-state and continuity surfaces so the control plane now points to pipeline testing, compiled bundle generation, workflow build-out, and a later bounded duplicate-Knowledge audit.
+- Added a governed Gemini attachment sync step so the shared prime-agent attachment set is refreshed from the maintained `knowledge/*.md` source set before validation and compile.
+- Added a maintained `knowledge/Knowledge - 11 - IOC Enrichment and Public Sources.md` source file so the Gemini shared attachment set now has a readable maintained source for Knowledge 11 as well.
+- Updated the Gemini build wrapper and manual build workflow so the normal Gemini bundle path is now sync, validate, and compile through the same governed script chain.
+- Reworked the collector delivery package line so it compiles a single runtime `DCOIR_Collector.ps1` from the maintained source parts before packaging.
+- Updated the collector delivery package manifest and workflow so the downloadable artifact contains the compiled collector runtime and the harness as transport-safe `.txt`-suffixed script files.
+- Updated `validate-on-push`, `manual-full-validation`, and `scheduled-health-check` so they smoke-test the same governed Gemini and collector package build scripts used by the manual package workflows.
+- Added a governed catch-up queue for approved live-test deltas that still need propagation into the runtime source lines.
 
 Why
-- The stored-source compile model needed an explicit governed build pipeline rather than relying only on the raw compile script.
-- Future Gemini shipment should be repeatable and operator-friendly: validate, compile, review, and ship.
-- The control plane needed to catch up to the newly landed pipeline files so CP-01, CP-02, and the active continuity surfaces remain aligned.
+- The operator needs the collector download artifact to be a single runtime script that can be uploaded to a target machine, not a wrapper that still depends on separate source-part files.
+- The operator also needs the downloadable collector artifact to remain transport-safe under current mail-filter constraints.
+- The operator wants the internal package algorithms and the GitHub Actions workflows to stay synchronized as much as possible.
+- The shared Gemini knowledge attachment set needed a single maintained source of truth to reduce drift risk.
+- The earlier pipeline creation wave interrupted propagation of some approved live-test deltas, so the project needed a governed catch-up queue instead of losing those items in chat context.
 
 Validation notes
-- This change installs the governed pipeline documentation and wrapper path.
-- The next immediate step is to run the first end-to-end pipeline test from the current stored source tree and inspect the resulting compiled bundle.
-- After that, define the operator-facing test workflow and then perform a bounded duplicate-Knowledge audit rather than broad cleanup.
+- This change aligns the build algorithms and workflow surfaces. It does not claim that all approved live-test deltas have already been propagated into the Gemini stored runtime source tree or the collector maintained source line.
+- The collector delivery package is transport-safe and is not itself a direct replacement for `supporting_assets/DCOIR_Collector.zip` without a later restore-and-refresh step.
+- Bounded duplicate-readable-surface cleanup remains a follow-on item after the approved-delta catch-up wave.
 
 [PRIOR]
 Version: 3.9.71
 Current state id: 2026-04-08-gemini-stored-source-compile-model-v1
 Change class: Gemini bundle stored-source and compile model adoption
-
-What changed
-- Added a new governed runtime Gemini source tree at project_sources/DCOIR_Gemini_Bundle_Source/ seeded from the accepted good v2 Gemini bundle.
-- Added Gemini_Bundle_Source_Manifest.json.txt to define the source-tree bundle identity, version, and required files.
-- Added project_sources/generation_validation/compile_dcoir_gemini_bundle.py so ordinary Gemini downloads can be compiled from the stored source tree.
-- Added DOC-10 to define the stored-source and compile strategy.
-- Updated DOC-04 and PP-09 so the default Gemini shipment path is now stored-source compilation rather than on-the-fly bundle generation.
-- Updated current-state and continuity surfaces to point at the new strategy.

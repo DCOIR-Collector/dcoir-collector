@@ -63,9 +63,11 @@ jobs:
             'project_sources/DCOIR_Gemini_Bundle_Source/README.md',
             'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/README_FIRST.md.txt',
             'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt',
+            'project_sources/generation_validation/sync_dcoir_gemini_knowledge_attachments.py',
             'project_sources/generation_validation/validate_dcoir_gemini_bundle.py',
             'project_sources/generation_validation/compile_dcoir_gemini_bundle.py',
-            'project_sources/generation_validation/build_dcoir_gemini_release.py'
+            'project_sources/generation_validation/build_dcoir_gemini_release.py',
+            'knowledge/Knowledge - 11 - IOC Enrichment and Public Sources.md'
           )
           $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
           if ($missing.Count -gt 0) {
@@ -110,6 +112,7 @@ jobs:
             }
 
             $outRoot = 'project_sources/generation_validation/out'
+            $syncReport = Join-Path $outRoot 'sync_dcoir_gemini_knowledge_attachments_report.json'
             $buildReport = Join-Path $outRoot 'build_dcoir_gemini_release_report.json'
             $validateReport = Join-Path $outRoot 'validate_dcoir_gemini_bundle_report.json'
             $compileReport = Join-Path $outRoot 'compile_dcoir_gemini_bundle_report.json'
@@ -123,6 +126,15 @@ jobs:
             $lines.Add(('- Version override: {0}' -f $env:BUNDLE_VERSION_OVERRIDE))
             $lines.Add(('- Skip validation: {0}' -f $env:SKIP_VALIDATION))
             $lines.Add('')
+
+            if (Test-Path -LiteralPath $syncReport) {
+              $sync = Get-Content -LiteralPath $syncReport -Raw | ConvertFrom-Json
+              $lines.Add(('- Knowledge sync success: {0}' -f $sync.success))
+              $lines.Add(('- Knowledge attachment files refreshed: {0}' -f $sync.changed_files.Count))
+            }
+            else {
+              $lines.Add('- Knowledge sync report not found.')
+            }
 
             if (Test-Path -LiteralPath $buildReport) {
               $build = Get-Content -LiteralPath $buildReport -Raw | ConvertFrom-Json

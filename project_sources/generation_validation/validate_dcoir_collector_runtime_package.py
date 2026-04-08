@@ -8,17 +8,19 @@ from typing import Dict, List
 
 MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json.txt'
 EXPECTED_PARTS = [
-  "DCOIR_Collector.01_Core_State_And_Utilities.ps1",
-  "DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1",
-  "DCOIR_Collector.03A_Enrich_Session_State.ps1",
-  "DCOIR_Collector.03B_Enrich_Actions_Review.ps1",
-  "DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1",
-  "DCOIR_Collector.04_Quick_Interface_And_Output.ps1",
-  "DCOIR_Collector.05_Main_Entry.ps1"
+  'DCOIR_Collector.01_Core_State_And_Utilities.ps1',
+  'DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1',
+  'DCOIR_Collector.03A_Enrich_Session_State.ps1',
+  'DCOIR_Collector.03B_Enrich_Actions_Review.ps1',
+  'DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1',
+  'DCOIR_Collector.04_Quick_Interface_And_Output.ps1',
+  'DCOIR_Collector.05_Main_Entry.ps1',
 ]
+
 
 def load_manifest(source_dir: Path) -> Dict:
     return json.loads((source_dir / 'project_sources' / MANIFEST_NAME).read_text(encoding='utf-8'))
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -36,8 +38,8 @@ def main() -> int:
     checks: Dict[str, object] = {}
 
     checks['source_strategy'] = manifest.get('source_strategy')
-    if manifest.get('source_strategy') != 'stored_source_package':
-        errors.append('source_strategy must be stored_source_package for the collector runtime package')
+    if manifest.get('source_strategy') != 'compile_single_runtime_then_package':
+        errors.append('source_strategy must be compile_single_runtime_then_package for the collector delivery package')
 
     required_files = manifest.get('required_files', [])
     missing_required = [rel for rel in required_files if not (source_dir / rel).exists()]
@@ -46,55 +48,54 @@ def main() -> int:
     if missing_required:
         errors.append('missing required files: ' + ', '.join(missing_required))
 
-    runtime_entries = manifest.get('runtime_zip_entries', [])
-    checks['runtime_entry_count'] = len(runtime_entries)
-    if not runtime_entries:
-        errors.append('runtime_zip_entries is empty')
+    wrapper_source = manifest.get('collector_wrapper_source')
+    harness_source = manifest.get('harness_source')
+    part_files = list(manifest.get('collector_part_files', []))
+    checks['collector_wrapper_source'] = wrapper_source
+    checks['harness_source'] = harness_source
+    checks['collector_part_file_count'] = len(part_files)
+    checks['collector_part_files'] = part_files
 
-    missing_runtime_sources = [row.get('source', '') for row in runtime_entries if row.get('source') and not (source_dir / row['source']).exists()]
-    checks['missing_runtime_sources'] = missing_runtime_sources
-    if missing_runtime_sources:
-        errors.append('runtime_zip_entries references missing sources: ' + ', '.join(missing_runtime_sources))
+    expected_part_files = [f'project_sources/collector_parts/{name}' for name in EXPECTED_PARTS]
+    checks['expected_collector_part_file_count'] = len(expected_part_files)
+    checks['collector_part_set_complete'] = sorted(part_files) == sorted(expected_part_files)
+    if sorted(part_files) != sorted(expected_part_files):
+        errors.append('collector_part_files does not match the full expected maintained source-part set')
 
-    zip_paths = [row.get('zip_path', '') for row in runtime_entries]
+    compiled_runtime_name = manifest.get('compiled_runtime_name')
+    checks['compiled_runtime_name'] = compiled_runtime_name
+    if compiled_runtime_name != 'DCOIR_Collector.ps1':
+        errors.append('compiled_runtime_name must be DCOIR_Collector.ps1')
+
+    delivery_entries = manifest.get('delivery_zip_entries', [])
+    checks['delivery_entry_count'] = len(delivery_entries)
+    if len(delivery_entries) != 2:
+        errors.append('delivery_zip_entries must contain exactly the compiled collector and the harness')
+
+    zip_paths = [row.get('zip_path', '') for row in delivery_entries]
     duplicate_zip_paths = sorted({zp for zp in zip_paths if zp and zip_paths.count(zp) > 1})
     checks['duplicate_zip_paths'] = duplicate_zip_paths
     if duplicate_zip_paths:
-        errors.append('runtime_zip_entries contains duplicate zip_path values: ' + ', '.join(duplicate_zip_paths))
+        errors.append('delivery_zip_entries contains duplicate zip_path values: ' + ', '.join(duplicate_zip_paths))
+
+    expected_delivery_names = {'DCOIR_Collector.ps1.txt', 'run_DCOIR_Tests.ps1.txt'}
+    actual_delivery_names = {Path(zp).name for zp in zip_paths if zp}
+    checks['expected_delivery_names_present'] = expected_delivery_names.issubset(actual_delivery_names)
+    checks['actual_delivery_names'] = sorted(actual_delivery_names)
+    if not expected_delivery_names.issubset(actual_delivery_names):
+        errors.append('delivery package must include DCOIR_Collector.ps1.txt and run_DCOIR_Tests.ps1.txt')
 
     delivery_rules = manifest.get('delivery_rules', {})
-    require_txt = bool(delivery_rules.get('transport_safe_suffix_required_for_scripts'))
-    checks['transport_safe_suffix_required_for_scripts'] = require_txt
+    checks['transport_safe_suffix_required_for_scripts'] = bool(delivery_rules.get('transport_safe_suffix_required_for_scripts'))
+    checks['script_suffix'] = delivery_rules.get('script_suffix')
+    checks['pre_runtime_action'] = delivery_rules.get('pre_runtime_action')
+    if delivery_rules.get('script_suffix') != '.txt':
+        errors.append('delivery_rules.script_suffix must be .txt')
 
-    script_entry_sources = [row['source'] for row in runtime_entries if row.get('source', '').endswith('.ps1')]
-    non_txt_script_entries = [row['zip_path'] for row in runtime_entries if row.get('source', '').endswith('.ps1') and not row.get('zip_path', '').endswith('.ps1.txt')]
-    checks['script_entry_count'] = len(script_entry_sources)
-    checks['non_txt_script_entries'] = non_txt_script_entries
-    if require_txt and non_txt_script_entries:
-        errors.append('all script entries must end with .ps1.txt in the delivery package: ' + ', '.join(non_txt_script_entries))
-
-    expected_top_level = {'DCOIR_Collector.ps1.txt', 'run_DCOIR_Tests.ps1.txt'}
-    actual_top_level = {Path(zp).name for zp in zip_paths if '/' not in zp and '\\' not in zp}
-    checks['expected_top_level_delivery_names_present'] = expected_top_level.issubset(actual_top_level)
-    checks['actual_top_level_delivery_names'] = sorted(actual_top_level)
-    if not expected_top_level.issubset(actual_top_level):
-        errors.append('delivery package must include top-level DCOIR_Collector.ps1.txt and run_DCOIR_Tests.ps1.txt')
-
-    expected_part_sources = [f'project_sources/collector_parts/{name}' for name in EXPECTED_PARTS]
-    expected_part_zip_paths = [f'collector_parts/{name}.txt' for name in EXPECTED_PARTS]
-    actual_part_sources = sorted([row.get('source', '') for row in runtime_entries if row.get('source', '').startswith('project_sources/collector_parts/')])
-    actual_part_zip_paths = sorted([row.get('zip_path', '') for row in runtime_entries if row.get('zip_path', '').startswith('collector_parts/')])
-
-    checks['expected_collector_part_count'] = len(expected_part_sources)
-    checks['actual_collector_part_count'] = len(actual_part_sources)
-    checks['collector_parts_complete'] = (sorted(expected_part_sources) == actual_part_sources and sorted(expected_part_zip_paths) == actual_part_zip_paths)
-    checks['actual_collector_part_sources'] = actual_part_sources
-    checks['actual_collector_part_zip_paths'] = actual_part_zip_paths
-
-    if sorted(expected_part_sources) != actual_part_sources:
-        errors.append('runtime package must include the full collector_parts source set')
-    if sorted(expected_part_zip_paths) != actual_part_zip_paths:
-        errors.append('collector_parts zip paths do not match the required transport-safe .txt layout')
+    non_txt_delivery_entries = [row.get('zip_path', '') for row in delivery_entries if not row.get('zip_path', '').endswith('.ps1.txt')]
+    checks['non_txt_delivery_entries'] = non_txt_delivery_entries
+    if non_txt_delivery_entries:
+        errors.append('delivery entries must use transport-safe .ps1.txt names: ' + ', '.join(non_txt_delivery_entries))
 
     retained_asset = manifest.get('retained_supporting_asset_path')
     checks['retained_supporting_asset_path'] = retained_asset

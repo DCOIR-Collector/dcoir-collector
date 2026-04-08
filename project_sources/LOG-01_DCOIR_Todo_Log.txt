@@ -1,14 +1,13 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-08-gemini-creation-pipeline-implemented-v1
+Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
 
 Current active priority
-- Run the first end-to-end Gemini creation pipeline test and inspect the resulting compiled bundle.
+- Propagate the approved live-test deltas into the Gemini stored runtime source tree and the collector maintained source line now that the package algorithms and workflow smoke tests are aligned.
 
 Queued next priorities
-- build the operator-facing Gemini pipeline test workflow and acceptance checks
-- use the stored source tree plus validation-plus-build wrapper as the standard Gemini shipment lane
-- perform a bounded duplicate-Knowledge audit after the pipeline path is validated
+- run the bounded duplicate-readable-surface cleanup after the approved-delta propagation wave
+- decide whether to add a bounded restore-and-refresh workflow for regenerating `supporting_assets/DCOIR_Collector.zip` from the approved collector delivery package path
 - keep standalone on the prompt-pack assembly path
-- keep collector on the collector-source compile path
+- keep collector on the maintained-source compile lane plus transport-safe delivery package path
 - revisit parity and optional Drive staging after the runtime delivery model is stable

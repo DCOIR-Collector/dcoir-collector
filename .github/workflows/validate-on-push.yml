@@ -69,6 +69,15 @@ jobs:
             'project_sources/CP-02_DCOIR_Change_Log.txt',
             'project_sources/DCOIR_Collector.ps1',
             'project_sources/run_DCOIR_Tests.ps1',
+            'project_sources/Collector_Runtime_Package_Manifest.json.txt',
+            'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
+            'project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt',
+            'project_sources/generation_validation/sync_dcoir_gemini_knowledge_attachments.py',
+            'project_sources/generation_validation/build_dcoir_gemini_release.py',
+            'project_sources/generation_validation/compile_dcoir_collector_runtime.py',
+            'project_sources/generation_validation/build_dcoir_collector_runtime_package.py',
+            '.github/workflows/manual-gemini-bundle-build.yml',
+            '.github/workflows/manual-collector-runtime-package-build.yml',
             'dcoir_skills/project_discovery_contract.json',
             'supporting_assets/DCOIR_Collector.zip'
           )
@@ -82,6 +91,26 @@ jobs:
         working-directory: project_sources
         run: |
           powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite Core -MasterZipPath ..\supporting_assets\DCOIR_Collector.zip
+
+      - name: Smoke-test Gemini bundle build algorithm
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force project_sources/generation_validation/out_validate_gemini -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out_validate_gemini | Out-Null
+          python project_sources/generation_validation/build_dcoir_gemini_release.py --source-root project_sources/DCOIR_Gemini_Bundle_Source --output-dir project_sources/generation_validation/out_validate_gemini
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Gemini bundle smoke test failed.'
+          }
+
+      - name: Smoke-test collector delivery package algorithm
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force project_sources/generation_validation/out_validate_collector -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out_validate_collector | Out-Null
+          python project_sources/generation_validation/build_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/generation_validation/out_validate_collector
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector delivery package smoke test failed.'
+          }
 
       - name: Render browser-readable summary
         if: always()
@@ -105,11 +134,15 @@ jobs:
                 Select-Object -First 1
             }
 
+            $gemBuildReport = 'project_sources/generation_validation/out_validate_gemini/build_dcoir_gemini_release_report.json'
+            $collectorBuildReport = 'project_sources/generation_validation/out_validate_collector/build_dcoir_collector_runtime_package_report.json'
+
             $lines = New-Object System.Collections.Generic.List[string]
             $lines.Add('## validate-on-push')
             $lines.Add('')
             $lines.Add('- Workflow purpose: push-driven baseline validation for the governed DCOIR repo.')
-            $lines.Add('- Harness zip path override: `..\\supporting_assets\\DCOIR_Collector.zip`')
+            $lines.Add('- Harness zip path override: `..\supporting_assets\DCOIR_Collector.zip`')
+            $lines.Add('- Gemini and collector package smoke tests use the same governed build scripts as the manual package workflows.')
             $lines.Add('')
 
             if ($summaryTxt) {
@@ -124,6 +157,16 @@ jobs:
               $lines.Add('_No harness summary.txt was found._')
             }
 
+            if (Test-Path -LiteralPath $gemBuildReport) {
+              $gem = Get-Content -LiteralPath $gemBuildReport -Raw | ConvertFrom-Json
+              $lines.Add('')
+              $lines.Add(('- Gemini build smoke test success: {0}' -f $gem.success))
+            }
+            if (Test-Path -LiteralPath $collectorBuildReport) {
+              $collector = Get-Content -LiteralPath $collectorBuildReport -Raw | ConvertFrom-Json
+              $lines.Add(('- Collector package smoke test success: {0}' -f $collector.success))
+            }
+
             if ($summaryJson) {
               $lines.Add('')
               $lines.Add('- Summary JSON artifact was generated.')
@@ -134,7 +177,7 @@ jobs:
             Get-Content -LiteralPath $tempSummary | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Encoding utf8
           }
           catch {
-            Write-Warning ("Non-fatal summary render issue: {0}" -f $_.Exception.Message)
+            Write-Warning (("Non-fatal summary render issue: {0}" -f $_.Exception.Message))
             exit 0
           }
       - name: Upload validation artifacts
@@ -144,5 +187,7 @@ jobs:
           name: validate-on-push-results
           path: |
             project_sources/TestResults/**
+            project_sources/generation_validation/out_validate_gemini/**
+            project_sources/generation_validation/out_validate_collector/**
           if-no-files-found: warn
           retention-days: 14
