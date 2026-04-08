@@ -271,11 +271,26 @@ function Invoke-TargetedCollectionVerification {
     "PARALLELISM_ASSESSMENT_PATH=$($CollectStep.ParallelismAssessmentPath)",
     "TARGETED_COLLECTION_PLAN_PATH=$($CollectStep.TargetedCollectionPlanPath)"
   )
-  $ok = $true
-  foreach ($p in @($CollectStep.CollectionScopePath, $CollectStep.ParallelismAssessmentPath, $CollectStep.TargetedCollectionPlanPath)) {
-    if (-not (Test-Path -LiteralPath $p)) { $ok = $false }
+
+  $required = @(
+    @{ Label = "COLLECTION_SCOPE_PATH"; Path = $CollectStep.CollectionScopePath },
+    @{ Label = "PARALLELISM_ASSESSMENT_PATH"; Path = $CollectStep.ParallelismAssessmentPath },
+    @{ Label = "TARGETED_COLLECTION_PLAN_PATH"; Path = $CollectStep.TargetedCollectionPlanPath }
+  )
+
+  $missing = New-Object System.Collections.ArrayList
+  foreach ($row in $required) {
+    $candidate = [string]$row.Path
+    if ([string]::IsNullOrWhiteSpace($candidate)) {
+      [void]$missing.Add(("{0} was not emitted by the collector response." -f $row.Label))
+      continue
+    }
+    if (-not (Test-Path -LiteralPath $candidate)) {
+      [void]$missing.Add(("{0} path does not exist: {1}" -f $row.Label, $candidate))
+    }
   }
-  if ($ok) {
+
+  if (@($missing).Count -eq 0) {
     $scopeText = Get-Content -LiteralPath $CollectStep.CollectionScopePath -Raw
     $planText = Get-Content -LiteralPath $CollectStep.TargetedCollectionPlanPath -Raw
     if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN')) {
@@ -285,8 +300,9 @@ function Invoke-TargetedCollectionVerification {
       $message = "Targeted collection artifact markers were missing."
     }
   } else {
-    $message = "One or more targeted collection artifacts were missing."
+    $message = ($missing -join '; ')
   }
+
   $lines += "STATUS=$status"
   $lines += "MESSAGE=$message"
   $end = Get-Date
