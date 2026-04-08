@@ -57,8 +57,10 @@ jobs:
             'project_sources/CP-01_DCOIR_Version_Manifest.txt',
             'project_sources/CP-02_DCOIR_Change_Log.txt',
             'project_sources/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt',
+            'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
             'project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt',
             'project_sources/DCOIR_Gemini_Bundle_Source/Gemini_Bundle_Source_Manifest.json.txt',
+            'project_sources/DCOIR_Gemini_Bundle_Source/README.md',
             'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/README_FIRST.md.txt',
             'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt',
             'project_sources/generation_validation/validate_dcoir_gemini_bundle.py',
@@ -133,7 +135,13 @@ jobs:
 
             if (Test-Path -LiteralPath $validateReport) {
               $validate = Get-Content -LiteralPath $validateReport -Raw | ConvertFrom-Json
+              $checks = $validate.checks
               $lines.Add(('- Validation success: {0}' -f $validate.success))
+              $lines.Add(('- Topology source: {0}' -f $checks.topology_source))
+              $lines.Add(('- Manifest prime agent: {0}' -f $checks.manifest_prime_agent_file))
+              $lines.Add(('- Manifest-listed sub-agents: {0}' -f $checks.manifest_sub_agent_count))
+              $lines.Add(('- Discovered sub-agent files: {0}' -f $checks.discovered_sub_agent_count))
+              $lines.Add(('- Topology exact match: {0}' -f $checks.topology_exact_match))
               if ($null -ne $validate.errors -and $validate.errors.Count -gt 0) {
                 $lines.Add('- Validation errors:')
                 foreach ($err in $validate.errors) {

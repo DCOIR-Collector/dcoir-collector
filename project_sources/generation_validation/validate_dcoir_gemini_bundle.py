@@ -30,10 +30,8 @@ VISIBILITY_CHECKS = {
 AGENT_DIR = '01_GEMINI_AGENT_BUILD'
 KNOWLEDGE_DIR = '02_PRIME_AGENT_ATTACHMENTS'
 
-
 def load_manifest(source_root: Path) -> Dict:
     return json.loads((source_root / MANIFEST_NAME).read_text(encoding='utf-8'))
-
 
 def gather_text(paths: List[Path]) -> str:
     parts: List[str] = []
@@ -45,6 +43,8 @@ def gather_text(paths: List[Path]) -> str:
                 continue
     return '\n'.join(parts)
 
+def rel_posix(path: Path, source_root: Path) -> str:
+    return path.relative_to(source_root).as_posix()
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -86,6 +86,62 @@ def main() -> int:
     if missing_knowledge:
         errors.append('missing required knowledge attachment files: ' + ', '.join(missing_knowledge))
 
+    topology = manifest.get('topology', {})
+    prime_rel = topology.get('prime_agent_file')
+    sub_rel_list = list(topology.get('sub_agent_files', []))
+    checks['topology_source'] = topology.get('topology_source_of_truth', 'missing')
+    checks['manifest_prime_agent_file'] = prime_rel
+    checks['manifest_sub_agent_files'] = sub_rel_list
+    checks['manifest_sub_agent_count'] = len(sub_rel_list)
+
+    if not prime_rel:
+        errors.append('manifest topology is missing prime_agent_file')
+    if not sub_rel_list:
+        errors.append('manifest topology is missing sub_agent_files')
+    if len(set(sub_rel_list)) != len(sub_rel_list):
+        errors.append('manifest topology contains duplicate sub_agent_files entries')
+
+    discovered_prime = sorted(
+        rel_posix(p, source_root)
+        for p in (source_root / AGENT_DIR).glob('Prime_Agent_*.txt')
+        if p.is_file()
+    )
+    discovered_sub = sorted(
+        rel_posix(p, source_root)
+        for p in (source_root / AGENT_DIR).glob('Sub_Agent_*.txt')
+        if p.is_file()
+    )
+    discovered_other_agent_txt = sorted(
+        rel_posix(p, source_root)
+        for p in (source_root / AGENT_DIR).glob('*.txt')
+        if p.is_file() and p.name not in {'Generated_DCOIR_Gemini_Agent_Index.md.txt'}
+           and not p.name.startswith('Prime_Agent_')
+           and not p.name.startswith('Sub_Agent_')
+    )
+
+    checks['discovered_prime_files'] = discovered_prime
+    checks['discovered_sub_agent_files'] = discovered_sub
+    checks['discovered_sub_agent_count'] = len(discovered_sub)
+    checks['discovered_other_agent_txt_files'] = discovered_other_agent_txt
+    checks['discovered_total_agent_definition_count'] = len(discovered_prime) + len(discovered_sub)
+
+    if prime_rel and discovered_prime != [prime_rel]:
+        errors.append('prime agent file discovered in source tree does not match manifest topology')
+    missing_topology_files = [rel for rel in [prime_rel, *sub_rel_list] if rel and not (source_root / rel).exists()]
+    checks['missing_topology_files'] = missing_topology_files
+    if missing_topology_files:
+        errors.append('manifest topology references missing files: ' + ', '.join(missing_topology_files))
+
+    if sorted(sub_rel_list) != discovered_sub:
+        errors.append('discovered sub-agent files do not exactly match manifest topology')
+    checks['topology_exact_match'] = (prime_rel and discovered_prime == [prime_rel] and sorted(sub_rel_list) == discovered_sub)
+
+    missing_from_required = [rel for rel in [prime_rel, *sub_rel_list] if rel and rel not in required_files]
+    checks['topology_files_in_required_list'] = len(missing_from_required) == 0
+    checks['topology_files_missing_from_required_list'] = missing_from_required
+    if missing_from_required:
+        errors.append('manifest topology files are missing from required_files: ' + ', '.join(missing_from_required))
+
     agent_text = gather_text(sorted((source_root / AGENT_DIR).glob('*.txt')))
     for key, needles in VISIBILITY_CHECKS.items():
         present = all(needle in agent_text for needle in needles)
@@ -107,7 +163,6 @@ def main() -> int:
     report_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps(report, indent=2))
     return 0 if success else 1
-
 
 if __name__ == '__main__':
     raise SystemExit(main())

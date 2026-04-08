@@ -2,35 +2,23 @@
 
 Purpose
 - This folder is the governed editable runtime source tree for the operator-facing Gemini bundle.
-- Routine Gemini bundle shipment should compile this source tree into a versioned zip.
+- Edit these files directly when the accepted runtime wording changes.
+- Compile the bundle from this tree after validation.
 
-Authority reminder
-- Behavioral authority still begins with PP-01 through PP-07.
-- The compile model is governed by DOC-10 and PP-09.
-- This folder is runtime source authority for ordinary Gemini bundle shipment.
+Topology rule
+- `Gemini_Bundle_Source_Manifest.json.txt` is the explicit source of topology truth.
+- The manifest must list the prime-agent file and every active sub-agent file.
+- Validation will compare the manifest against the discovered source-tree files and fail on drift.
 
-What to edit here
-- `00_START_HERE/` for operator entry and attachment maps
-- `01_GEMINI_AGENT_BUILD/` for parent and sub-agent runtime fields
-- `02_PRIME_AGENT_ATTACHMENTS/` for approved knowledge attachments
-- `Gemini_Bundle_Source_Manifest.json.txt` when version, required files, or topology change
+When adding a new sub-agent
+1. Add the new source file in `01_GEMINI_AGENT_BUILD/`.
+2. Add that file to the manifest topology section.
+3. Add that file to the manifest `required_files` list.
+4. Update `Generated_DCOIR_Gemini_Agent_Index.md.txt`.
+5. Update `00_START_HERE/Gemini_Build_Quick_Start.md.txt` if the operator build order changed.
+6. Re-run validation and build.
 
-What not to use as substitutes
-- `knowledge/generated_agent_markdowns/`
-- `knowledge/comparative_reference_agent_markdowns/`
-- legacy or extracted bundle folders under project_sources/
-- governance docs as runtime attachment substitutes
-
-Routine workflow
-1. Re-anchor with CP-01 and CP-02.
-2. Edit the affected runtime source files here.
-3. Update the manifest or index when needed.
-4. Run `project_sources/generation_validation/validate_dcoir_gemini_bundle.py`.
-5. Run `project_sources/generation_validation/compile_dcoir_gemini_bundle.py`.
-6. Review the reports and the compiled zip.
-
-Manual build shortcut
-- Use `project_sources/generation_validation/build_dcoir_gemini_release.py` to run validation and compile together.
-
-Rule of thumb
-- If the intended operator-facing Gemini content changed, the edit should normally land here first.
+What not to do
+- Do not treat file drop alone as a topology change.
+- Do not rely on ad hoc folder discovery as shipment authority.
+- Do not skip manifest updates when adding or removing sub-agents.

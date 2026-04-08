@@ -13,10 +13,26 @@
     "project_sources/PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt",
     "project_sources/PP-07_Agent_Guardrails_v1_0_0.txt"
   ],
+  "topology": {
+    "topology_source_of_truth": "manifest",
+    "prime_agent_file": "01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt",
+    "sub_agent_files": [
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_01_Session_Readiness_and_Intake.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_03_Alert_Family_Classifier.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_06_DCOIR_Collection_and_Artifact_Orchestrator.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_07_Decision_and_Report_Composer.md.txt"
+    ],
+    "generated_index_file": "01_GEMINI_AGENT_BUILD/Generated_DCOIR_Gemini_Agent_Index.md.txt",
+    "quick_start_file": "00_START_HERE/Gemini_Build_Quick_Start.md.txt"
+  },
   "notes": [
     "This tree stores the accepted operator-facing Gemini runtime bundle as editable source files.",
     "Normal shipment should compile this tree directly instead of regenerating agent fields on the fly.",
-    "When requirements change, edit the relevant files in this tree, then recompile the bundle."
+    "When requirements change, edit the relevant files in this tree, update the topology and required_files lists when the topology changes, then recompile the bundle.",
+    "The manifest is the explicit source of topology truth for the current parent and sub-agent layout."
   ],
   "required_files": [
     "00_START_HERE/Agent_Attachment_Map.md.txt",
