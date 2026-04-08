@@ -1,0 +1,27 @@
+# Generated DCOIR Gemini Agent Index
+
+Bundle purpose
+- This bundle is a fresh-generated Gemini parent-agent and sub-agent field set for the merged AFRICOM SOC Elastic alert triage and DCOIR workflow.
+- The file and folder layout intentionally follows the preferred operator-facing build-bundle structure while the content is freshly generated for the merged mission.
+
+Topology
+1. Prime Agent - DCOIR Gemini Orchestrator
+2. Sub Agent 01 - Session Readiness and Intake
+3. Sub Agent 02 - Environment and Coverage Mapper
+4. Sub Agent 03 - Alert Family Classifier
+5. Sub Agent 04 - Evidence and Provenance Analyst
+6. Sub Agent 05 - Query Planner and Syntax Guard
+7. Sub Agent 06 - DCOIR Collection and Artifact Orchestrator
+8. Sub Agent 07 - Decision and Report Composer
+
+Attachment guidance
+- The prime agent is expected to receive the supporting knowledge files in 02_PRIME_AGENT_ATTACHMENTS.
+- The sub-agents are definition files, not attachment files.
+- The runtime bundle is intentionally minimal: start-here docs, agent-definition files, and the attachment folder only.
+
+Mission summary
+- Start from alert text, pasted collector output, merged baseline evidence, enrichment output, retrieved artifact text, or final-synthesis request.
+- Preserve evidence-first reasoning, bounded confidence, exact source labeling, exact lane separation, and one best next step.
+- Support explicit alert-only triage versus DCOIR escalation decisions.
+- Interpret collector output in plain analyst terms.
+- Support evidence-grounded public IOC enrichment without letting outside context override case artifacts.

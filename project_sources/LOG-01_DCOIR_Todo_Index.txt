@@ -1,10 +1,10 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
+Current state id: 2026-04-08-gemini-stored-source-compile-model-v1
 
 Current priority summary
-1. Collector output shaping and bundle-validation scaffolding are now the active implementation line.
-2. The next practical milestone is fresh bundle generation from the updated source line.
-3. The office Gemini limits remain the practical ceiling: 1000 KB per file, 2000 KB total per prompt.
-4. The default Gemini-facing collect path is now upload summary plus representative slices, not monolithic baseline first.
-5. Remaining work after this wave is live validation, parity, optional Drive staging, and future automation expansion.
+1. Gemini now needs to follow a stored-source and compile model instead of on-the-fly bundle generation.
+2. The accepted good v2 Gemini bundle is being preserved as the runtime source baseline in GitHub.
+3. Future Gemini changes should be made directly in that stored source tree before compilation.
+4. Standalone remains the PP-01 through PP-07 assembly lane.
+5. Collector remains the maintained-source plus compiled-runtime lane.

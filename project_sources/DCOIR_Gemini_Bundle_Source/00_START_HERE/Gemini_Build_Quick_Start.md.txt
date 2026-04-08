@@ -1,0 +1,19 @@
+# Gemini Build Quick Start
+
+1. Create the prime agent using:
+   - Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt
+
+2. Create these seven sub-agents using the files in numerical order:
+   - Sub_Agent_01_Session_Readiness_and_Intake.md.txt
+   - Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt
+   - Sub_Agent_03_Alert_Family_Classifier.md.txt
+   - Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt
+   - Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt
+   - Sub_Agent_06_DCOIR_Collection_and_Artifact_Orchestrator.md.txt
+   - Sub_Agent_07_Decision_and_Report_Composer.md.txt
+
+3. Attach the files in 02_PRIME_AGENT_ATTACHMENTS to the prime agent.
+
+4. Do not mix the attachment files into the agent-definition folder.
+
+5. Use Generated_DCOIR_Gemini_Agent_Index.md.txt as the topology reference while building.

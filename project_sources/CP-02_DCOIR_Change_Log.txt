@@ -1,30 +1,28 @@
 DCOIR Change Log
 
 [CURRENT]
+Version: 3.9.71
+Current state id: 2026-04-08-gemini-stored-source-compile-model-v1
+Change class: Gemini bundle stored-source and compile model adoption
+
+What changed
+- Added a new governed runtime Gemini source tree at `project_sources/DCOIR_Gemini_Bundle_Source/` seeded from the accepted good v2 Gemini bundle.
+- Added `Gemini_Bundle_Source_Manifest.json.txt` to define the source-tree bundle identity, version, and required files.
+- Added `project_sources/generation_validation/compile_dcoir_gemini_bundle.py` so ordinary Gemini downloads can be compiled from the stored source tree.
+- Added `DOC-10` to define the stored-source and compile strategy.
+- Updated `DOC-04` and `PP-09` so the default Gemini shipment path is now stored-source compilation rather than on-the-fly bundle generation.
+- Updated current-state and continuity surfaces to point at the new strategy.
+
+Why
+- The accepted good Gemini bundle proved that the runtime-grade agent files and knowledge attachments need to be preserved directly, not approximated from thin generated surfaces at packaging time.
+- The project needed a Gemini maintenance path that behaves more like the collector source line and the prompt-pack-to-standalone assembly line.
+- The operator explicitly requested a shift from generate-on-the-fly behavior to a save-and-compile model.
+
+Validation notes
+- This change installs the source tree and compile path; it does not claim that all future requirements have already been propagated into those source files.
+- The next runtime bundle refresh should come from compiling the stored source tree after any desired file edits land there first.
+
+[PRIOR]
 Version: 3.9.70
 Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
 Change class: collector output shaping, harness live-lane hardening, and deterministic bundle-validation scaffolding
-
-What changed
-- Updated the collector line so collect runs now emit an upload summary and attachment-budget manifest alongside the existing baseline and metadata surfaces.
-- Updated the collect workflow so the large merged baseline report is no longer treated as the default Gemini-facing upload surface.
-- Updated the enrichment session path so session-resolution behavior is explicit and easier to validate across enrich-start, enrich-add, and enrich-finalize.
-- Updated the harness so it can run a live-response-aligned lane, verify collector attachment-budget outputs, and validate enrich session reuse behavior.
-- Updated PP-07, PP-09, and DOC-07 so the generated-bundle line now preserves upload-budget awareness, operator-state awareness, explicit collector behavior, no-filler behavior, and the singular-command contract.
-- Added generation_validation assets for deterministic bundle verification, QC, fixture-driven pre-live testing, and a firm Gemini/standalone test plan.
-- Updated the current-state, handoff, resume, and todo surfaces to point to this implementation wave.
-
-Why
-- The testing transcript showed that collector output shaping is upstream of Gemini upload success.
-- The transcript also exposed concrete harness and live-lane issues that needed durable source changes rather than todo-only notes.
-- The project needed deterministic repo-side verification and QC before tomorrow’s new standalone and Gemini bundle generation round.
-
-Validation notes
-- The attachment-budget checks are implemented as repo-side verification and harness checks, not yet claimed as live-operator-proven in the office environment after this patch.
-- The new generation-validation assets are scaffolding for deterministic verification and bounded automation where feasible; they do not claim full Gemini Enterprise UI automation.
-- Tomorrow’s bundle generation should use this implementation wave as the new source basis.
-
-[PRIOR]
-Version: 3.9.69
-Current state id: 2026-04-07-gemini-upload-budget-and-validation-automation-queue-v1
-Change class: Gemini upload-budget hardening and validation-automation queue expansion

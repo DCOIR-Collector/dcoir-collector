@@ -1,14 +1,15 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
+Current state id: 2026-04-08-gemini-stored-source-compile-model-v1
 
 Stable baseline
 - GitHub-primary readable-source model remains in force.
-- The collector and harness line now includes upload-budget-aware output shaping and verification scaffolding.
-- The active generation line now includes deterministic bundle verification and QC assets under project_sources/generation_validation.
+- Collector remains the split-maintenance-source plus compiled-runtime lane.
+- Standalone remains the prompt-pack assembly lane.
+- Gemini now has a governed stored runtime source tree plus compile path at `project_sources/DCOIR_Gemini_Bundle_Source/`.
 
 Open follow-through
-- apply and validate this implementation wave
-- generate the next collector bundle, standalone bundle, and Gemini bundle from the updated source line
-- run bounded live tests tomorrow against the office Gemini environment
-- then revisit parity and optional Drive staging
+- apply the Gemini stored-source compile patch wave
+- after that, make future Gemini content changes directly in the stored source tree
+- compile the next Gemini bundle from that tree instead of regenerating it on the fly
+- keep standalone and collector in their existing compile/assembly lanes

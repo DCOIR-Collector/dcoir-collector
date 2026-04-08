@@ -1,10 +1,9 @@
 DCOIR Active Now
 
-Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
+Current state id: 2026-04-08-gemini-stored-source-compile-model-v1
 
-1. Apply and validate the collector output-shaping and harness-validation patch wave.
-2. Generate a fresh collector bundle from the updated source line.
-3. Generate a fresh standalone prompt bundle from the updated source line.
-4. Generate a fresh Gemini agent bundle from the updated source line.
-5. Run tomorrow's bounded live validation against the office Gemini environment.
-6. After that, return to parity and optional Drive staging.
+1. Apply the stored Gemini source tree and compile strategy patch.
+2. Use `project_sources/DCOIR_Gemini_Bundle_Source/` as the default editable runtime Gemini surface.
+3. Compile future Gemini bundles from that tree.
+4. Keep standalone on the prompt-pack assembly path.
+5. Keep collector on the compiled runtime lane from maintained source parts.

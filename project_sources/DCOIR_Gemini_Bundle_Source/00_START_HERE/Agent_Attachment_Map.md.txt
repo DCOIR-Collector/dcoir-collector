@@ -1,0 +1,14 @@
+# Agent Attachment Map
+
+Prime agent attachments
+- Attach every file in 02_PRIME_AGENT_ATTACHMENTS to the prime agent.
+- The prime agent is the runtime entry point and should have the knowledge/support set.
+
+Sub-agent attachments
+- No extra attachment pack is required for the sub-agent definition files in this bundle.
+- The sub-agents rely on the prime-agent knowledge set plus their own explicit Description and Instructions.
+
+Attachment-set intent
+- The attachments are support and runtime knowledge files.
+- They are not substitutes for weak agent fields.
+- The prime and sub-agent definition files are expected to be self-contained enough to work even if an attachment is missing, although the attachments should still be supplied for best performance.

@@ -1,0 +1,33 @@
+# Knowledge - 05 - Tier 2 Collect Runbook
+
+_Deeper collection workflow for additional persistence and configuration checks_
+
+**Summary:** Tier 2 collection goes deeper than Tier 1 and is meant for cases that need extra persistence, registry, firewall, WMI, or share/session context.
+
+| Source class | Authoritative basis |
+| --- | --- |
+| Project sources | project_sources/DCOIR_Collector.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
+| Official external sources | Not required for this page |
+| Scope note | The quick alias collect-t2 sets Mode=Collect and Tier=T2, and uses a longer default time window than Tier 1. |
+
+## Collector entry points
+
+| Approach | Command |
+| --- | --- |
+| Local collector quick alias | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t2 |
+| Explicit parameter form | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T2 -Hours 72 |
+| Elastic endpoint form | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t2" --comment "Run DCOIR Tier 2 collect" |
+
+## What Tier 2 adds
+
+- Additional registry checks such as Image File Execution Options, Winlogon, and LSA paths.
+- WMI subscription and persistence inspection.
+- Network-share, network-session, and firewall-profile checks.
+- A longer default time window than the standard Tier 1 baseline run.
+
+## When to choose Tier 2
+
+- Baseline review showed suspicious persistence, service, task, or identity activity that needs deeper context.
+- You need more host configuration detail before deciding the best enrichment step.
+- The case warrants additional persistence hunting without immediately retrieving files.
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

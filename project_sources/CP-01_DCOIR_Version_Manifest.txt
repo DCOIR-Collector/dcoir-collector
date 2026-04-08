@@ -1,6 +1,6 @@
-DCOIR Version Manifest 3.9.70
+DCOIR Version Manifest 3.9.71
 
-Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
+Current state id: 2026-04-08-gemini-stored-source-compile-model-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -9,13 +9,12 @@ Current control plane
 - Layout spec: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
 - Viable deliverable generation contract: project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt
 - Gemini live-test generation and legacy surface rules: project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt
-- Gemini legacy surface inventory and hygiene plan: project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt
-- Gemini upload-budget and validation-automation queue: project_sources/LOG-55_DCOIR_Gemini_Upload_Budget_And_Validation_Automation_Queue_2026-04-07.txt
+- Gemini stored-source and compile strategy: project_sources/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt
 - Collector output shaping and bundle-validation implementation: project_sources/LOG-56_DCOIR_Collector_Output_Shaping_And_Bundle_Validation_Implementation_2026-04-07.txt
+- Gemini stored-source compile implementation: project_sources/LOG-57_DCOIR_Gemini_Stored_Source_Compile_Model_Implementation_2026-04-08.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 
 Current next work item
-- Use the updated collector, harness, PP-07, PP-09, DOC-07, and generation_validation assets as the active implementation line for tomorrow’s standalone and Gemini bundle generation.
-- Treat the office Gemini limits as the practical ceiling: 1000 KB maximum per file, 2000 KB maximum total attachments per prompt.
-- Use the collector upload summary and attachment-budget manifest as the default Gemini-facing collect-bundle intake path instead of assuming the full baseline report is uploadable.
-- Keep the remaining open queue focused on live validation, parity, optional Drive staging, and final generated-bundle production after this implementation wave lands.
+- Land the stored Gemini source tree and compile script.
+- After that, future Gemini content changes should be made directly in `project_sources/DCOIR_Gemini_Bundle_Source/` and shipped through compilation instead of on-the-fly generation.
+- Standalone remains PP-01 through PP-07 assembly and collector remains the collector-source compile lane.

@@ -1,14 +1,13 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-07-collector-output-shaping-and-bundle-validation-v1
+Current state id: 2026-04-08-gemini-stored-source-compile-model-v1
 
 Current active priority
-- Finish the implementation wave by shipping the repo update bundle, then generate fresh collector, standalone, and Gemini bundles from the updated source line.
+- Land the stored Gemini source tree and compile model so future Gemini bundle downloads stop relying on on-the-fly generation.
 
 Queued next priorities
-- live-validate collector upload summary and attachment-budget manifest behavior
-- live-validate harness attachment-budget checks and session-behavior suite
-- live-validate start/add/finalize semantics in the office environment
-- generate tomorrow's collector, standalone, and Gemini test bundles
-- verify installed-skill parity vs governed GitHub source
-- decide whether a Drive staging lane is worth formalizing
+- propagate any additional approved Gemini behavior updates into `project_sources/DCOIR_Gemini_Bundle_Source/`
+- compile the next Gemini bundle from the stored source tree
+- keep standalone on the prompt-pack assembly path
+- keep collector on the collector-source compile path
+- revisit parity and optional Drive staging after the runtime delivery model is stable
