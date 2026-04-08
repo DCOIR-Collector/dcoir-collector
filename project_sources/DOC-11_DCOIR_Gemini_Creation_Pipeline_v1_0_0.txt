@@ -1,0 +1,106 @@
+DCOIR Gemini Creation Pipeline v1.0.0
+
+Purpose
+- Define the governed end-to-end pipeline for editing, validating, compiling, and shipping the operator-facing Gemini bundle.
+- Extend the current stored-source and compile strategy into a repeatable manual operator workflow that can be executed cleanly through GitHub Desktop.
+- Keep routine Gemini bundle delivery in the compile lane rather than ad hoc generation.
+
+Authority order
+1. Project Instructions
+2. project_sources/CP-01_DCOIR_Version_Manifest.txt
+3. project_sources/CP-02_DCOIR_Change_Log.txt
+4. PP-01 through PP-07 for behavioral authority
+5. project_sources/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt
+6. project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt
+7. This document for pipeline execution details
+
+Pipeline scope
+- This pipeline governs routine operator-facing Gemini bundle refreshes.
+- It does not replace PP-01 through PP-07 as behavioral authority.
+- It does not authorize on-the-fly regeneration as the normal shipment path.
+- It does not decide whether a major redesign is needed. Major redesign remains the PP-09 / PP-10 lane.
+
+Current runtime source root
+- project_sources/DCOIR_Gemini_Bundle_Source/
+
+Current compile entrypoint
+- project_sources/generation_validation/compile_dcoir_gemini_bundle.py
+
+Recommended validation entrypoint
+- project_sources/generation_validation/validate_dcoir_gemini_bundle.py
+
+Recommended one-command build entrypoint
+- project_sources/generation_validation/build_dcoir_gemini_release.py
+
+Core pipeline stages
+
+Stage 1: Re-anchor
+- Read CP-01 and CP-02 first.
+- Confirm that the current state still points at the stored-source compile model for Gemini.
+- Confirm whether the requested work is a routine bundle refresh or a design-time redesign.
+
+Stage 2: Edit the governed runtime source tree
+- Make content edits directly in project_sources/DCOIR_Gemini_Bundle_Source/.
+- Expected edit surfaces include:
+  - 00_START_HERE/
+  - 01_GEMINI_AGENT_BUILD/
+  - 02_PRIME_AGENT_ATTACHMENTS/
+  - Gemini_Bundle_Source_Manifest.json.txt
+- Do not edit generated_agent_markdowns or comparative_reference surfaces as a substitute for runtime-source edits.
+
+Stage 3: Version and topology check
+- Update Gemini_Bundle_Source_Manifest.json.txt when the bundle version, required file set, or intended topology changes.
+- Update the generated index or attachment map when files are intentionally added, removed, or renamed.
+
+Stage 4: Validation
+- Run validate_dcoir_gemini_bundle.py before compile.
+- Required validation should check at least:
+  - required files present
+  - expected operator-facing .txt suffixes present where intended
+  - required knowledge attachment set present
+  - collector-artifact interpretation visibility
+  - collector pivot visibility
+  - IOC ownership visibility
+  - false-positive-aware security-product handling visibility
+  - operator-state awareness visibility
+  - source-strategy conformance to stored_source_compile
+- Treat validation failures as stop conditions for routine shipment.
+
+Stage 5: Compile
+- Run compile_dcoir_gemini_bundle.py after validation passes.
+- Compile should package the governed stored source tree into a versioned zip using the source manifest.
+- Compile is packaging and verification, not free-form content generation.
+
+Stage 6: Output review
+- Confirm the compiled zip path, top-level folder name, version, and file count.
+- Confirm the compile report and validation report are preserved alongside the output.
+- For manual release work, keep the reports with the compiled output so the operator can inspect exactly what shipped.
+
+Stage 7: Shipment and retained surfaces
+- Ship the compiled zip as the operator-facing Gemini bundle.
+- If the readable generated surface or retained portable ZIPs need refreshing after a meaningful runtime-source change, refresh them as a follow-on step rather than treating them as source authority.
+
+Manual GitHub Desktop workflow
+1. Pull latest main.
+2. Re-anchor against CP-01 and CP-02.
+3. Edit files in project_sources/DCOIR_Gemini_Bundle_Source/ and the generation_validation scripts as needed.
+4. Run validation.
+5. Run compile.
+6. Inspect reports and bundle output.
+7. Commit only the changed governed repo-readable sources.
+8. Build or retrieve the compiled zip locally for operator use.
+
+Hard rules
+- Do not ship knowledge/generated_agent_markdowns/ directly as the default operator bundle.
+- Do not treat retained ZIP assets in supporting_assets/ as the editable source of truth.
+- Do not bypass the stored runtime source tree during ordinary bundle refreshes.
+- Do not thin or summarize agent content at packaging time. Edit the source file itself if the content must change.
+- Do not silently ignore validation failures.
+
+Recommended follow-on enhancements
+- Add stronger section-level validation for agent-file structure.
+- Add optional artifact-size and attachment-budget checks for Knowledge attachments when that requirement becomes part of the bundle contract.
+- Add parity checks between the stored runtime source tree and any refreshed readable generated surfaces.
+
+Best next move
+- Use this pipeline as the default governed workflow for routine Gemini bundle refreshes.
