@@ -19,6 +19,9 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: read
+    env:
+      BUNDLE_VERSION_OVERRIDE: ${{ github.event.inputs.bundle_version_override }}
+      SKIP_VALIDATION: ${{ github.event.inputs.skip_validation }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -75,8 +78,8 @@ jobs:
       - name: Run Gemini validation and build
         shell: pwsh
         run: |
-          $skipValidation = '${{ github.event.inputs.skip_validation }}'
-          $versionOverride = '${{ github.event.inputs.bundle_version_override }}'
+          $skipValidation = $env:SKIP_VALIDATION
+          $versionOverride = $env:BUNDLE_VERSION_OVERRIDE
           $cmd = @(
             'python',
             'project_sources/generation_validation/build_dcoir_gemini_release.py',
@@ -115,14 +118,14 @@ jobs:
             $lines = New-Object System.Collections.Generic.List[string]
             $lines.Add('## manual-gemini-bundle-build')
             $lines.Add('')
-            $lines.Add("- Version override: `${{ github.event.inputs.bundle_version_override }}`")
-            $lines.Add("- Skip validation: `${{ github.event.inputs.skip_validation }}`")
+            $lines.Add(('- Version override: {0}' -f $env:BUNDLE_VERSION_OVERRIDE))
+            $lines.Add(('- Skip validation: {0}' -f $env:SKIP_VALIDATION))
             $lines.Add('')
 
             if (Test-Path -LiteralPath $buildReport) {
               $build = Get-Content -LiteralPath $buildReport -Raw | ConvertFrom-Json
-              $lines.Add("- Build success: $($build.success)")
-              $lines.Add("- Final stage: $($build.stage)")
+              $lines.Add(('- Build success: {0}' -f $build.success))
+              $lines.Add(('- Final stage: {0}' -f $build.stage))
             }
             else {
               $lines.Add('- Build report not found.')
@@ -130,11 +133,11 @@ jobs:
 
             if (Test-Path -LiteralPath $validateReport) {
               $validate = Get-Content -LiteralPath $validateReport -Raw | ConvertFrom-Json
-              $lines.Add("- Validation success: $($validate.success)")
-              if ($validate.errors.Count -gt 0) {
+              $lines.Add(('- Validation success: {0}' -f $validate.success))
+              if ($null -ne $validate.errors -and $validate.errors.Count -gt 0) {
                 $lines.Add('- Validation errors:')
                 foreach ($err in $validate.errors) {
-                  $lines.Add("  - $err")
+                  $lines.Add(('  - {0}' -f $err))
                 }
               }
             }
@@ -144,17 +147,17 @@ jobs:
 
             if (Test-Path -LiteralPath $compileReport) {
               $compile = Get-Content -LiteralPath $compileReport -Raw | ConvertFrom-Json
-              $lines.Add("- Bundle name: $($compile.bundle_name)")
-              $lines.Add("- Bundle version: $($compile.bundle_version)")
-              $lines.Add("- Top-level folder: $($compile.top_level_folder)")
-              $lines.Add("- File count: $($compile.file_count)")
+              $lines.Add(('- Bundle name: {0}' -f $compile.bundle_name))
+              $lines.Add(('- Bundle version: {0}' -f $compile.bundle_version))
+              $lines.Add(('- Top-level folder: {0}' -f $compile.top_level_folder))
+              $lines.Add(('- File count: {0}' -f $compile.file_count))
             }
             else {
               $lines.Add('- Compile report not found.')
             }
 
             if ($zipFile) {
-              $lines.Add("- Built zip: $($zipFile.Name)")
+              $lines.Add(('- Built zip: {0}' -f $zipFile.Name))
             }
             else {
               $lines.Add('- No zip artifact was found in the output directory.')
