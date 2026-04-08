@@ -47,10 +47,8 @@ def main() -> int:
             continue
         target_path.parent.mkdir(parents=True, exist_ok=True)
         source_text = source_path.read_text(encoding='utf-8')
-        if not source_text.endswith('
-'):
-            source_text += '
-'
+        if not source_text.endswith('\n'):
+            source_text += '\n'
         current_text = target_path.read_text(encoding='utf-8') if target_path.exists() else None
         if current_text != source_text:
             if not args.check_only:

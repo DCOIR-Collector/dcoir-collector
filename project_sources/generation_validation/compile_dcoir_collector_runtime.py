@@ -20,19 +20,14 @@ def build_inline_block(part_paths: List[Path]) -> str:
     blocks.append('# BEGIN COMPILED COLLECTOR PARTS')
     for part_path in part_paths:
         text = part_path.read_text(encoding='utf-8')
-        if not text.endswith('
-'):
-            text += '
-'
+        if not text.endswith('\n'):
+            text += '\n'
         blocks.append(f"# BEGIN {part_path.name}")
-        blocks.append(text.rstrip('
-'))
+        blocks.append(text.rstrip('\n'))
         blocks.append(f"# END {part_path.name}")
         blocks.append('')
     blocks.append('# END COMPILED COLLECTOR PARTS')
-    return '
-'.join(blocks) + '
-'
+    return '\n'.join(blocks) + '\n'
 
 
 def main() -> int:
@@ -56,10 +51,8 @@ def main() -> int:
     if not PATTERN.search(wrapper_text):
         raise SystemExit('collector wrapper does not contain the expected collector_parts import block')
     compiled_text = PATTERN.sub(inline_block, wrapper_text, count=1)
-    if not compiled_text.endswith('
-'):
-        compiled_text += '
-'
+    if not compiled_text.endswith('\n'):
+        compiled_text += '\n'
 
     compiled_root = output_dir / 'compiled_runtime'
     compiled_root.mkdir(parents=True, exist_ok=True)
