@@ -1,54 +1,26 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 4.0.1
-Current state id: 2026-04-08-major-version-collector-and-gemini-syntax-hotfix-v1
-Change class: bounded post-commit PowerShell syntax hotfix for major-version collector quick-interface output
+Version: 4.0.2
+Current state id: 2026-04-09-validation-wave-expansion-and-chunking-regression-v1
+Change class: bounded validation-wave expansion for collector chunking regression and Gemini behavior-scenario checks
 
 What changed
-- Fixed the major-version `project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1` quick-usage/help strings that introduced malformed nested quote handling.
-- Fixed the cleanup-phase targeted popup next-step example string in the same file so the PowerShell parser no longer trips on the embedded analyst example text.
-- Kept the hotfix bounded to the quick-interface output surface rather than reopening the broader feature wave.
+- Added two new collector validation suites to `project_sources/run_DCOIR_Tests.ps1`: `ChunkingOversizeArtifact` and `ChunkingReconstructionMetadata`.
+- Added collector-side synthetic oversized artifact generation and chunk-manifest emission to the maintained feature-wave file so the harness can validate chunking against collector-returned artifacts rather than against a stand-alone external fixture.
+- Expanded the collector stdout contract to emit `SYNTHETIC_OVERSIZE_SOURCE_PATH` and `CHUNK_MANIFEST_PATH` when the synthetic oversized validation fixture is enabled.
+- Expanded the collector harness so `MajorVersion` and `FullRegression` now cover the new chunking suites in addition to the earlier core, retrieval, quick-alias, session-behavior, and targeted-collection suites.
+- Added a dedicated Gemini behavior-scenario validator script and wired it into `build_dcoir_gemini_release.py` so Gemini smoke-test runs now validate more than topology and packaging structure.
+- Updated `validate-on-push`, `manual-full-validation`, and `scheduled-health-check` so the broader validation wave is exercised automatically from the governed repo workflows.
+- Added `project_sources/LOG-62_DCOIR_Bounded_Validation_Wave_Expansion_2026-04-09.txt` to record the scope of the new validation wave.
 
 Why
-- `validate-on-push` failed during PowerShell syntax validation before the broader action set could run.
-- The failure was caused by unescaped embedded quote characters in newly added targeted-collection example strings, not by the collector core logic or the workflows themselves.
+- The operator asked to add the missing suites in one bounded wave rather than as a series of one-off repo changes.
+- The operator explicitly requested a deliberately oversized artifact chunking test tied to artifacts returned by the collector script.
+- The operator also asked to widen coverage so more collector and Gemini features are tested automatically rather than remaining implied by structural validation alone.
 
 Validation notes
-- This hotfix is intended to clear the PowerShell parser failure in the quick-interface source part.
-- After this patch lands, rerun `validate-on-push` first, then proceed to the manual package workflows if it passes.
-
-[PRIOR]
-[CURRENT]
-Version: 4.0.0
-Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
-Change class: major-version collector and Gemini implementation wave with verbose runtime-content refresh, targeted collection scope expansion, and associated workflow updates
-
-What changed
-- Expanded the governed Gemini stored runtime source tree from one parent plus seven sub-agents to one parent plus ten verbose sub-agents.
-- Rewrote the parent and sub-agent runtime files to be substantially more explicit, more verbose, and more operationally specific.
-- Kept manifest-topology governance in place so the new larger agent set remains explicit and reviewable.
-- Updated Gemini validation and build surfaces for the larger topology and the stronger runtime-content contract.
-- Reworked the maintained knowledge set so the shared Gemini attachment sources are intentionally more verbose and more informational than the earlier versions.
-- Preserved the maintained-knowledge-sync build path so the Gemini bundle still stages shared knowledge from `knowledge/*.md` before validation and compile.
-- Added major-version-ready collector targeted collection parameterization to the maintained collector source line.
-- Added a collector feature-wave assessment surface for multithreading or parallelism feasibility without claiming unsafe runtime parallelism was implemented.
-- Updated collector quick shortcuts, collector output guidance, and harness suites so the new targeted-collection path is explicit and testable.
-- Updated the associated GitHub Actions workflows for Gemini and collector deliverables plus the broader repo validation workflows so the major-version source line and test surfaces remain synchronized.
-
-Why
-- The operator wants the next major version of the collector and Gemini bundle to carry forward all collector- and Gemini-relevant todo work that belongs in those deliverables.
-- The operator also wants the Gemini runtime files and shared knowledge files to be much more verbose, more explicit, and less likely to leave edge cases or interpretation gaps.
-- The operator wants the associated workflows to stay aligned to the same governed build and validation paths as the manual bundle workflows.
-- The operator wants mixed-format IOC handling, targeted collection design, and collector-parallelism assessment to become durable major-version features or feature-wave surfaces rather than remaining only in chat continuity.
-
-Validation notes
-- This change claims the source wave and workflow alignment are implemented.
-- It does not claim tomorrow's end-to-end functionality testing has already happened.
-- Bounded duplicate-readable-surface cleanup remains queued after the functionality test wave.
-- Later-only items that do not directly belong in the collector or Gemini deliverables remain queued for later.
-
-[PRIOR]
-Version: 3.9.72
-Current state id: 2026-04-08-pipeline-alignment-and-runtime-package-compile-v1
-Change class: package-pipeline alignment, collector single-runtime compile delivery, Gemini knowledge-source sync, and approved-delta catch-up governance
+- This change claims the new suites and behavior-scenario validation surfaces were added to the governed source line.
+- It does not claim the new wave has already passed until the refreshed GitHub Actions runs complete.
+- The new Gemini scenario validator is still a governed source-side behavior-scenario check, not a full live Gemini Enterprise UI automation layer.
+- The new collector chunking suites prove synthetic oversized artifact chunk emission and reconstruction metadata; they do not yet claim that every large real-world collector artifact automatically becomes a default upload-summary recommendation.

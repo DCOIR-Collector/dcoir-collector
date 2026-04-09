@@ -48,6 +48,8 @@ try {
         CollectionScopePath = $null
         ParallelismAssessmentPath = $null
         TargetedCollectionPlanPath = $null
+        SyntheticOversizeSourcePath = $null
+        ChunkManifestPath = $null
         EnrichSessions = @()
         EnrichSessionCounter = 0
         OpenEnrichSessionId = $null
@@ -85,6 +87,8 @@ try {
         targeted_collection_plan = $state.TargetedCollectionPlanPath
         targeted_mode = [bool]$Targeted
         target_profile = $TargetProfile
+        synthetic_oversize_source = $state.SyntheticOversizeSourcePath
+        chunk_manifest = $state.ChunkManifestPath
       }
 
       $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId) -Paths @(
@@ -119,6 +123,8 @@ try {
         targeted_collection_plan = $state.TargetedCollectionPlanPath
         targeted_mode = [bool]$Targeted
         target_profile = $TargetProfile
+        synthetic_oversize_source = $state.SyntheticOversizeSourcePath
+        chunk_manifest = $state.ChunkManifestPath
       })
 
       $status = "SUCCESS"
@@ -136,6 +142,8 @@ try {
       Write-Output ("COLLECTION_SCOPE_PATH={0}" -f $state.CollectionScopePath)
       Write-Output ("PARALLELISM_ASSESSMENT_PATH={0}" -f $state.ParallelismAssessmentPath)
       if ($state.TargetedCollectionPlanPath) { Write-Output ("TARGETED_COLLECTION_PLAN_PATH={0}" -f $state.TargetedCollectionPlanPath) }
+      if ($state.SyntheticOversizeSourcePath) { Write-Output ("SYNTHETIC_OVERSIZE_SOURCE_PATH={0}" -f $state.SyntheticOversizeSourcePath) }
+      if ($state.ChunkManifestPath) { Write-Output ("CHUNK_MANIFEST_PATH={0}" -f $state.ChunkManifestPath) }
       Write-Output ("DEFAULT_GEMINI_UPLOAD_SET_STATUS={0}" -f $state.DefaultGeminiUploadSetStatus)
       Write-Output ("COLLECT_BUNDLE_PATH={0}" -f $bundlePath)
       Write-Output ('NEXT_GET_FILE=get-file --path "{0}" --comment "Retrieve DCOIR collect bundle"' -f $bundlePath)

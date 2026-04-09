@@ -34,6 +34,7 @@ def main() -> int:
 
     sync_script = script_root / 'sync_dcoir_gemini_knowledge_attachments.py'
     validate_script = script_root / 'validate_dcoir_gemini_bundle.py'
+    scenario_script = script_root / 'validate_dcoir_gemini_behavior_scenarios.py'
     compile_script = script_root / 'compile_dcoir_gemini_bundle.py'
 
     steps = []
@@ -63,6 +64,19 @@ def main() -> int:
         })
         if validate_proc.returncode != 0:
             write_report(output_dir, {'success': False, 'stage': 'validate', 'steps': steps})
+            return 1
+
+        scenario_cmd = [sys.executable, str(scenario_script), '--source-root', str(source_root), '--output-dir', str(output_dir)]
+        scenario_proc = run_step(scenario_cmd)
+        steps.append({
+            'name': 'validate_behavior_scenarios',
+            'cmd': scenario_cmd,
+            'returncode': scenario_proc.returncode,
+            'stdout': scenario_proc.stdout,
+            'stderr': scenario_proc.stderr,
+        })
+        if scenario_proc.returncode != 0:
+            write_report(output_dir, {'success': False, 'stage': 'validate_behavior_scenarios', 'steps': steps})
             return 1
 
     compile_cmd = [sys.executable, str(compile_script), '--source-root', str(source_root), '--output-dir', str(output_dir)]

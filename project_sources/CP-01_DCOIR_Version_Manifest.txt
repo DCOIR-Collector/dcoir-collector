@@ -1,6 +1,6 @@
-DCOIR Version Manifest 4.0.1
+DCOIR Version Manifest 4.0.2
 
-Current state id: 2026-04-08-major-version-collector-and-gemini-syntax-hotfix-v1
+Current state id: 2026-04-09-validation-wave-expansion-and-chunking-regression-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -18,10 +18,11 @@ Current control plane
 - Approved live-test delta catch-up queue: project_sources/LOG-59_DCOIR_Approved_Live_Test_Delta_Catch_Up_Queue_2026-04-08.txt
 - Major-version collector and Gemini feature-wave implementation: project_sources/LOG-60_DCOIR_Major_Version_Collector_And_Gemini_Feature_Wave_Implementation_2026-04-08.txt
 - Major-version quick-interface syntax hotfix: project_sources/LOG-61_DCOIR_Major_Version_Quick_Interface_Syntax_Hotfix_2026-04-08.txt
+- Validation-wave expansion and chunking regression implementation: project_sources/LOG-62_DCOIR_Bounded_Validation_Wave_Expansion_2026-04-09.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 
 Current next work item
-- Generate the new major-version Gemini and collector bundles through their associated Actions workflows.
-- Use tomorrow's dedicated chat for functionality testing against the rebuilt bundles.
-- Keep bounded duplicate-readable-surface cleanup queued after the major-version functionality test wave.
-- Keep later-only items such as parity review, optional Drive staging, and bounded restore-refresh workflow decisions queued for later.
+- Rerun validate-on-push against the new validation-wave expansion.
+- Rerun manual-full-validation FullRegression plus the two manual bundle workflows so the new suites are validated end to end.
+- Use the next dedicated functionality-test chat to validate the rebuilt collector and Gemini bundles in the office environment.
+- Keep bounded duplicate-readable-surface cleanup queued after the expanded functionality test wave.

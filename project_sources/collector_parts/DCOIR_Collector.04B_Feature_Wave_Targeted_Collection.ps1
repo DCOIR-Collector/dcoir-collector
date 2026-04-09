@@ -144,6 +144,124 @@ function Get-CollectorParallelismAssessmentText {
   return ($lines -join [Environment]::NewLine)
 }
 
+function Get-ValidationSyntheticOversizeArtifactKB {
+  $raw = [Environment]::GetEnvironmentVariable('DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB', 'Process')
+  if ([string]::IsNullOrWhiteSpace($raw)) { return 0 }
+  $parsed = 0
+  if ([int]::TryParse($raw, [ref]$parsed) -and $parsed -gt 0) { return $parsed }
+  return 0
+}
+
+function New-SyntheticOversizeArtifactText {
+  param([int]$RequestedKB)
+
+  $line = 'DCOIR_SYNTHETIC_OVERSIZE_CHUNK_VALIDATION_PAYLOAD|ABCDEFGHIJKLMNOPQRSTUVWXYZ|0123456789|line='
+  $targetBytes = $RequestedKB * 1024
+  $currentBytes = 0
+  $index = 1
+  $sb = New-Object System.Text.StringBuilder
+  while ($currentBytes -lt $targetBytes) {
+    $lineText = ('{0}{1}' -f $line, $index) + [Environment]::NewLine
+    [void]$sb.Append($lineText)
+    $currentBytes += [System.Text.Encoding]::UTF8.GetByteCount($lineText)
+    $index += 1
+  }
+  return $sb.ToString()
+}
+
+function Split-ValidationTextArtifactIntoChunks {
+  param(
+    [string]$SourcePath,
+    [string]$ArtifactsDir,
+    [int]$RequestedKB,
+    [int]$TargetChunkKB
+  )
+
+  $chunkPaths = New-Object System.Collections.ArrayList
+  $targetBytes = $TargetChunkKB * 1024
+  $lines = Get-Content -LiteralPath $SourcePath
+  $chunkIndex = 1
+  $currentBytes = 0
+  $sb = New-Object System.Text.StringBuilder
+
+  foreach ($line in $lines) {
+    $lineText = $line + [Environment]::NewLine
+    $lineBytes = [System.Text.Encoding]::UTF8.GetByteCount($lineText)
+    if (($currentBytes + $lineBytes) -gt $targetBytes -and $currentBytes -gt 0) {
+      $chunkPath = Write-ArtifactText -ArtifactsDir $ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_{1:000}.txt' -f $RequestedKB, $chunkIndex) -Text $sb.ToString()
+      [void]$chunkPaths.Add($chunkPath)
+      $chunkIndex += 1
+      $sb = New-Object System.Text.StringBuilder
+      $currentBytes = 0
+    }
+    [void]$sb.Append($lineText)
+    $currentBytes += $lineBytes
+  }
+
+  if ($currentBytes -gt 0) {
+    $chunkPath = Write-ArtifactText -ArtifactsDir $ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_{1:000}.txt' -f $RequestedKB, $chunkIndex) -Text $sb.ToString()
+    [void]$chunkPaths.Add($chunkPath)
+  }
+
+  $chunkSizes = @()
+  foreach ($chunkPath in @($chunkPaths)) {
+    $chunkSizes += (Get-FileSizeKB -Path $chunkPath)
+  }
+
+  return @{
+    ChunkPaths = @($chunkPaths)
+    ChunkSizesKB = $chunkSizes
+    ChunkCount = @($chunkPaths).Count
+    TargetChunkKB = $TargetChunkKB
+    ReconstructionOrder = 'Concatenate the chunk_paths entries in listed order to reconstruct the original synthetic oversize artifact.'
+  }
+}
+
+function New-SyntheticOversizeChunkValidationArtifacts {
+  param([hashtable]$State,[hashtable]$Baseline,[int]$RequestedKB)
+
+  $sourceText = New-SyntheticOversizeArtifactText -RequestedKB $RequestedKB
+  $sourcePath = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_source.txt' -f $RequestedKB) -Text $sourceText
+  $chunkResult = Split-ValidationTextArtifactIntoChunks -SourcePath $sourcePath -ArtifactsDir $State.ArtifactsDir -RequestedKB $RequestedKB -TargetChunkKB 700
+  $pathListPath = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_paths.json.txt' -f $RequestedKB) -Text (Convert-ToSafeJsonText -InputObject $chunkResult.ChunkPaths)
+
+  $manifestObj = [ordered]@{
+    fixture_origin = 'collector_synthetic_validation'
+    source_path = $sourcePath
+    source_size_kb = Get-FileSizeKB -Path $sourcePath
+    target_chunk_kb = $chunkResult.TargetChunkKB
+    chunk_count = $chunkResult.ChunkCount
+    chunk_paths = $chunkResult.ChunkPaths
+    chunk_file_sizes_kb = $chunkResult.ChunkSizesKB
+    reconstruction_order = $chunkResult.ReconstructionOrder
+  }
+  $manifestPath = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_manifest.json.txt' -f $RequestedKB) -Text (Convert-ToSafeJsonText -InputObject $manifestObj)
+
+  $State.SyntheticOversizeSourcePath = $sourcePath
+  $State.ChunkManifestPath = $manifestPath
+  $Baseline.ArtifactMap['synthetic_oversize_source'] = $sourcePath
+  $Baseline.ArtifactMap['synthetic_oversize_chunk_manifest'] = $manifestPath
+  $Baseline.ArtifactMap['synthetic_oversize_chunk_paths_json'] = $pathListPath
+  [void]$Baseline.ArtifactPaths.Add($sourcePath)
+  [void]$Baseline.ArtifactPaths.Add($pathListPath)
+  [void]$Baseline.ArtifactPaths.Add($manifestPath)
+  foreach ($chunkPath in $chunkResult.ChunkPaths) {
+    [void]$Baseline.ArtifactPaths.Add($chunkPath)
+  }
+
+  $summaryText = @(
+    'VALIDATION_SYNTHETIC_CHUNKING',
+    ('REQUESTED_SYNTHETIC_SOURCE_KB={0}' -f $RequestedKB),
+    ('SOURCE_PATH={0}' -f $sourcePath),
+    ('SOURCE_SIZE_KB={0}' -f (Get-FileSizeKB -Path $sourcePath)),
+    ('CHUNK_MANIFEST_PATH={0}' -f $manifestPath),
+    ('CHUNK_COUNT={0}' -f $chunkResult.ChunkCount),
+    ('TARGET_CHUNK_KB={0}' -f $chunkResult.TargetChunkKB)
+  ) -join [Environment]::NewLine
+  Add-Section -Builder $Baseline.ReportBuilder -Name 'VALIDATION_SYNTHETIC_CHUNKING' -Text $summaryText
+  Add-CollectorNote ('Synthetic oversized validation artifact and chunk set were emitted for collector chunking regression at {0} KB.' -f $RequestedKB)
+}
+
 function Apply-FeatureWaveCollectEnhancements {
   param([hashtable]$State,[hashtable]$Baseline)
 
@@ -172,6 +290,11 @@ function Apply-FeatureWaveCollectEnhancements {
 
     Add-Recommendation "A targeted collection plan was generated for this run."
     Add-Recommendation "For Gemini uploads, include COLLECTION_SCOPE_PATH and TARGETED_COLLECTION_PLAN_PATH before the full baseline report when the case is narrow or user-reported."
+  }
+
+  $syntheticKB = Get-ValidationSyntheticOversizeArtifactKB
+  if ($syntheticKB -gt 0) {
+    New-SyntheticOversizeChunkValidationArtifacts -State $State -Baseline $Baseline -RequestedKB $syntheticKB
   }
 
   if ($Targeted) {

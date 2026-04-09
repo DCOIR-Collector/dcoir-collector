@@ -1,5 +1,5 @@
 param(
-  [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","MajorVersion","FullRegression")]
+  [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","ChunkingOversizeArtifact","ChunkingReconstructionMetadata","MajorVersion","FullRegression")]
   [string]$Suite = "Core",
 
   [string]$CollectorPath = ".\DCOIR_Collector.ps1",
@@ -192,11 +192,34 @@ function Invoke-CollectorStep {
     CollectionScopePath = Parse-OutputValue -Text $stdout -Key "COLLECTION_SCOPE_PATH"
     ParallelismAssessmentPath = Parse-OutputValue -Text $stdout -Key "PARALLELISM_ASSESSMENT_PATH"
     TargetedCollectionPlanPath = Parse-OutputValue -Text $stdout -Key "TARGETED_COLLECTION_PLAN_PATH"
+    SyntheticOversizeSourcePath = Parse-OutputValue -Text $stdout -Key "SYNTHETIC_OVERSIZE_SOURCE_PATH"
+    ChunkManifestPath = Parse-OutputValue -Text $stdout -Key "CHUNK_MANIFEST_PATH"
     DefaultGeminiUploadSetStatus = Parse-OutputValue -Text $stdout -Key "DEFAULT_GEMINI_UPLOAD_SET_STATUS"
     CollectBundlePath = Parse-OutputValue -Text $stdout -Key "COLLECT_BUNDLE_PATH"
     EnrichBundlePath = Parse-OutputValue -Text $stdout -Key "ENRICH_BUNDLE_PATH"
     SessionResolutionMode = Parse-OutputValue -Text $stdout -Key "SESSION_RESOLUTION_MODE"
     SessionStatus = Parse-OutputValue -Text $stdout -Key "SESSION_STATUS"
+  }
+}
+
+function Invoke-CollectorStepWithEnvOverride {
+  param(
+    [Parameter(Mandatory=$true)][string]$StepName,
+    [Parameter(Mandatory=$true)][string[]]$CollectorArgs,
+    [Parameter(Mandatory=$true)][hashtable]$EnvOverrides
+  )
+
+  $previous = @{}
+  try {
+    foreach ($name in $EnvOverrides.Keys) {
+      $previous[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
+      [Environment]::SetEnvironmentVariable($name, [string]$EnvOverrides[$name], 'Process')
+    }
+    return Invoke-CollectorStep -StepName $StepName -CollectorArgs $CollectorArgs
+  } finally {
+    foreach ($name in $EnvOverrides.Keys) {
+      [Environment]::SetEnvironmentVariable($name, $previous[$name], 'Process')
+    }
   }
 }
 
@@ -333,6 +356,111 @@ function Invoke-TargetedCollectionVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+function Invoke-ChunkingOversizeVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "SYNTHETIC_OVERSIZE_SOURCE_PATH=$($CollectStep.SyntheticOversizeSourcePath)",
+    "CHUNK_MANIFEST_PATH=$($CollectStep.ChunkManifestPath)"
+  )
+
+  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.SyntheticOversizeSourcePath) -or -not (Test-Path -LiteralPath $CollectStep.SyntheticOversizeSourcePath)) {
+    $message = 'Synthetic oversize source artifact was not emitted by the collector.'
+  } elseif ([string]::IsNullOrWhiteSpace([string]$CollectStep.ChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.ChunkManifestPath)) {
+    $message = 'Chunk manifest path was not emitted by the collector.'
+  } else {
+    $manifest = Get-Content -LiteralPath $CollectStep.ChunkManifestPath -Raw | ConvertFrom-Json
+    $chunkPaths = @($manifest.chunk_paths)
+    $sourceSizeKB = [int]$manifest.source_size_kb
+    $chunkCount = [int]$manifest.chunk_count
+    $violations = New-Object System.Collections.ArrayList
+    if ($sourceSizeKB -le $HardPerFileKB) { [void]$violations.Add('Synthetic source artifact did not exceed the hard per-file budget.') }
+    if ($chunkCount -lt 2) { [void]$violations.Add('Chunk count was less than 2 for the oversized artifact.') }
+    foreach ($chunkPath in $chunkPaths) {
+      if (-not (Test-Path -LiteralPath $chunkPath)) {
+        [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
+        continue
+      }
+      $chunkSizeKB = [int][Math]::Ceiling(((Get-Item -LiteralPath $chunkPath).Length) / 1KB)
+      $lines += ('CHUNK={0} SIZE_KB={1}' -f $chunkPath, $chunkSizeKB)
+      if ($chunkSizeKB -gt $SafePerFileKB) {
+        [void]$violations.Add(('Chunk exceeded safe per-file budget: {0}' -f $chunkPath))
+      }
+    }
+    if (@($violations).Count -eq 0) {
+      $status = 'PASS'
+      $message = 'Synthetic oversized artifact was chunked into multiple smaller files within the safe per-file budget.'
+    } else {
+      $message = ($violations -join '; ')
+    }
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+function Invoke-ChunkingReconstructionVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "SYNTHETIC_OVERSIZE_SOURCE_PATH=$($CollectStep.SyntheticOversizeSourcePath)",
+    "CHUNK_MANIFEST_PATH=$($CollectStep.ChunkManifestPath)"
+  )
+
+  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.SyntheticOversizeSourcePath) -or -not (Test-Path -LiteralPath $CollectStep.SyntheticOversizeSourcePath)) {
+    $message = 'Synthetic oversize source artifact was not emitted by the collector.'
+  } elseif ([string]::IsNullOrWhiteSpace([string]$CollectStep.ChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.ChunkManifestPath)) {
+    $message = 'Chunk manifest path was not emitted by the collector.'
+  } else {
+    $manifest = Get-Content -LiteralPath $CollectStep.ChunkManifestPath -Raw | ConvertFrom-Json
+    $chunkPaths = @($manifest.chunk_paths)
+    $violations = New-Object System.Collections.ArrayList
+    if (-not $manifest.reconstruction_order) {
+      [void]$violations.Add('Chunk manifest does not describe reconstruction order.')
+    }
+    if ([int]$manifest.chunk_count -ne @($chunkPaths).Count) {
+      [void]$violations.Add('Chunk count in manifest does not match listed chunk paths.')
+    }
+    $rebuilt = New-Object System.Text.StringBuilder
+    foreach ($chunkPath in $chunkPaths) {
+      if (-not (Test-Path -LiteralPath $chunkPath)) {
+        [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
+        continue
+      }
+      $lines += ('RECONSTRUCT_CHUNK={0}' -f $chunkPath)
+      [void]$rebuilt.Append((Get-Content -LiteralPath $chunkPath -Raw))
+    }
+    if (@($violations).Count -eq 0) {
+      $sourceText = Get-Content -LiteralPath $CollectStep.SyntheticOversizeSourcePath -Raw
+      if ($rebuilt.ToString() -eq $sourceText) {
+        $status = 'PASS'
+        $message = 'Chunk reconstruction metadata and chunk ordering were sufficient to rebuild the synthetic oversize artifact exactly.'
+      } else {
+        $message = 'Chunk reconstruction did not match the original synthetic source artifact.'
+      }
+    } else {
+      $message = ($violations -join '; ')
+    }
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
 function Save-Summary {
   Ensure-Directory -Path $RunOutputRoot
   $summaryTxtPath = Join-Path $RunOutputRoot "summary.txt"
@@ -450,11 +578,29 @@ function Run-TargetedCollectionSuite {
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "62_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 }
 
+function Run-ChunkingOversizeArtifactSuite {
+  Restore-WorkingZip -Reason "ChunkingOversizeArtifact"
+  $collect = Invoke-CollectorStepWithEnvOverride -StepName "71_CollectT1_SyntheticOversize" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB' = '2600' }
+  Assert-CollectorStepSucceeded -StepName "71_CollectT1_SyntheticOversize" -CollectorStep $collect
+  Invoke-ChunkingOversizeVerification -StepName "ZZ_ChunkingOversizeValidation" -CollectStep $collect
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "72_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+}
+
+function Run-ChunkingReconstructionMetadataSuite {
+  Restore-WorkingZip -Reason "ChunkingReconstructionMetadata"
+  $collect = Invoke-CollectorStepWithEnvOverride -StepName "81_CollectT1_SyntheticOversizeReconstruction" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB' = '2600' }
+  Assert-CollectorStepSucceeded -StepName "81_CollectT1_SyntheticOversizeReconstruction" -CollectorStep $collect
+  Invoke-ChunkingReconstructionVerification -StepName "ZZ_ChunkingReconstructionValidation" -CollectStep $collect
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "82_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+}
+
 function Run-MajorVersionSuite {
   Run-CoreSuite
   Run-QuickAliasesSuite
   Run-SessionBehaviorSuite
   Run-TargetedCollectionSuite
+  Run-ChunkingOversizeArtifactSuite
+  Run-ChunkingReconstructionMetadataSuite
 }
 
 Ensure-Directory -Path $RunOutputRoot
@@ -467,6 +613,8 @@ try {
     "QuickAliases" { Run-QuickAliasesSuite }
     "SessionBehavior" { Run-SessionBehaviorSuite }
     "TargetedCollection" { Run-TargetedCollectionSuite }
+    "ChunkingOversizeArtifact" { Run-ChunkingOversizeArtifactSuite }
+    "ChunkingReconstructionMetadata" { Run-ChunkingReconstructionMetadataSuite }
     "MajorVersion" { Run-MajorVersionSuite }
     "FullRegression" {
       Run-CoreSuite
@@ -474,6 +622,8 @@ try {
       Run-QuickAliasesSuite
       Run-SessionBehaviorSuite
       Run-TargetedCollectionSuite
+      Run-ChunkingOversizeArtifactSuite
+      Run-ChunkingReconstructionMetadataSuite
     }
   }
   Save-Summary

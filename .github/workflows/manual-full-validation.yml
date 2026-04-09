@@ -14,6 +14,8 @@ on:
           - QuickAliases
           - SessionBehavior
           - TargetedCollection
+          - ChunkingOversizeArtifact
+          - ChunkingReconstructionMetadata
           - MajorVersion
           - FullRegression
 
@@ -80,17 +82,17 @@ jobs:
             'README.md',
             'project_sources/CP-01_DCOIR_Version_Manifest.txt',
             'project_sources/CP-02_DCOIR_Change_Log.txt',
-            'project_sources/LOG-60_DCOIR_Major_Version_Collector_And_Gemini_Feature_Wave_Implementation_2026-04-08.txt',
-            'project_sources/live_test_notes/2026-04-08_DCOIR_Major_Version_Functionality_Test_Plan.md.txt',
             'project_sources/DCOIR_Collector.ps1',
             'project_sources/run_DCOIR_Tests.ps1',
             'project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1',
+            'project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1',
             'project_sources/Collector_Runtime_Package_Manifest.json.txt',
             'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
             'project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt',
             'project_sources/generation_validation/sync_dcoir_gemini_knowledge_attachments.py',
             'project_sources/generation_validation/build_dcoir_gemini_release.py',
             'project_sources/generation_validation/validate_dcoir_gemini_bundle.py',
+            'project_sources/generation_validation/validate_dcoir_gemini_behavior_scenarios.py',
             'project_sources/generation_validation/compile_dcoir_collector_runtime.py',
             'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py',
             'project_sources/generation_validation/build_dcoir_collector_runtime_package.py',
