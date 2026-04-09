@@ -109,19 +109,24 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw 'Collector runtime zip restore bridge failed.'
           }
+          $extractDir = 'project_sources/generation_validation/out_validate_collector/runtime_harness'
+          Remove-Item -Recurse -Force $extractDir -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
+          Expand-Archive -LiteralPath project_sources/generation_validation/out_validate_collector/DCOIR_Collector_runtime_for_harness.zip -DestinationPath $extractDir -Force
           "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/generation_validation/out_validate_collector/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
+          "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/generation_validation/out_validate_collector/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
 
       - name: Run core harness suite
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
 
       - name: Run targeted collection harness suite
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite TargetedCollection -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite TargetedCollection -MasterZipPath $env:HARNESS_RUNTIME_ZIP
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh

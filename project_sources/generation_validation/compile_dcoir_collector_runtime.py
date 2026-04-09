@@ -30,6 +30,21 @@ def build_inline_block(part_paths: List[Path]) -> str:
     return '\n'.join(blocks) + '\n'
 
 
+def patch_compiled_text(compiled_text: str) -> tuple[str, list[str]]:
+    notes: list[str] = []
+    replacements = {
+        "[void]$Baseline.ArtifactPaths.Add($scopePath)": "Add-BaselineArtifactPath -Baseline $Baseline -Path $scopePath",
+        "[void]$Baseline.ArtifactPaths.Add($parallelPath)": "Add-BaselineArtifactPath -Baseline $Baseline -Path $parallelPath",
+        "[void]$Baseline.ArtifactPaths.Add($planPath)": "Add-BaselineArtifactPath -Baseline $Baseline -Path $planPath",
+    }
+    patched = compiled_text
+    for old, new in replacements.items():
+        if old in patched:
+            patched = patched.replace(old, new)
+            notes.append(f"patched compiled runtime occurrence: {old}")
+    return patched, notes
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--source-dir', required=True)
@@ -51,9 +66,8 @@ def main() -> int:
     if not PATTERN.search(wrapper_text):
         raise SystemExit('collector wrapper does not contain the expected collector_parts import block')
 
-    # Use a callable replacement so backslashes from PowerShell content are inserted literally
-    # instead of being interpreted by the regex replacement engine.
     compiled_text = PATTERN.sub(lambda _m: inline_block, wrapper_text, count=1)
+    compiled_text, patch_notes = patch_compiled_text(compiled_text)
 
     if not compiled_text.endswith('\n'):
         compiled_text += '\n'
@@ -74,6 +88,7 @@ def main() -> int:
         'collector_part_count': len(part_paths),
         'collector_part_files': [p.name for p in part_paths],
         'source_strategy': manifest.get('source_strategy'),
+        'patch_notes': patch_notes,
     }
     report_path = output_dir / 'compile_dcoir_collector_runtime_report.json'
     report_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
