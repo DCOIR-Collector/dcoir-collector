@@ -94,6 +94,7 @@ jobs:
             'project_sources/generation_validation/compile_dcoir_collector_runtime.py',
             'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py',
             'project_sources/generation_validation/build_dcoir_collector_runtime_package.py',
+            'project_sources/generation_validation/restore_dcoir_collector_runtime_zip.py',
             '.github/workflows/manual-gemini-bundle-build.yml',
             '.github/workflows/manual-collector-runtime-package-build.yml',
             'dcoir_skills/project_discovery_contract.json',
@@ -104,12 +105,31 @@ jobs:
             throw "Missing required governed surfaces: $($missing -join ', ')"
           }
 
+      - name: Build fresh collector runtime zip for harness
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force project_sources/generation_validation/out_manual_full_collector -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out_manual_full_collector | Out-Null
+          python project_sources/generation_validation/build_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/generation_validation/out_manual_full_collector
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector delivery package smoke test failed.'
+          }
+          $deliveryZip = Get-ChildItem -Path project_sources/generation_validation/out_manual_full_collector -File -Filter 'DCOIR_Collector_Delivery_Package_*.zip' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $deliveryZip) {
+            throw 'Collector delivery package zip was not produced.'
+          }
+          python project_sources/generation_validation/restore_dcoir_collector_runtime_zip.py --delivery-package-zip $deliveryZip.FullName --base-runtime-zip supporting_assets/DCOIR_Collector.zip --output-dir project_sources/generation_validation/out_manual_full_collector --output-name DCOIR_Collector_runtime_for_harness.zip
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector runtime zip restore bridge failed.'
+          }
+          "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/generation_validation/out_manual_full_collector/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
+
       - name: Run selected harness suite
         shell: pwsh
         working-directory: project_sources
         run: |
           $suite = '${{ github.event.inputs.suite }}'
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite $suite -MasterZipPath ..\supporting_assets\DCOIR_Collector.zip
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite $suite -MasterZipPath $env:HARNESS_RUNTIME_ZIP
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh
@@ -119,16 +139,6 @@ jobs:
           python project_sources/generation_validation/build_dcoir_gemini_release.py --source-root project_sources/DCOIR_Gemini_Bundle_Source --output-dir project_sources/generation_validation/out_manual_full_gemini
           if ($LASTEXITCODE -ne 0) {
             throw 'Gemini bundle smoke test failed.'
-          }
-
-      - name: Smoke-test collector delivery package algorithm
-        shell: pwsh
-        run: |
-          Remove-Item -Recurse -Force project_sources/generation_validation/out_manual_full_collector -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out_manual_full_collector | Out-Null
-          python project_sources/generation_validation/build_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/generation_validation/out_manual_full_collector
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector delivery package smoke test failed.'
           }
 
       - name: Upload validation artifacts
