@@ -7,12 +7,14 @@ Purpose
 
 What this file is expected to do in the major-version build
 - Spell out upload summary in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out attachment-budget manifest in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Spell out attachment budget manifest in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 - Spell out metadata report in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 - Spell out analyst follow-up queue in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 - Spell out high-signal summary in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 - Spell out retrieved enrich artifacts in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
 - Spell out baseline report limits in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+- Preserve the narrower artifact-first upload behavior that starts with upload summary, attachment budget manifest, metadata report, and representative final_artifacts slices before a monolithic baseline-first upload path is considered.
+- Preserve the targeted artifact-interpretation markers that future validators expect to see explicitly, including collection scope, targeted collection plan, attachment budget manifest, and representative final_artifacts.
 
 Operational detail
 ## 1. Upload Summary
@@ -24,14 +26,18 @@ The current major-version bundle also assumes that upload summary may need to be
 
 When writing or reviewing functionality tied to upload summary, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
 
-## 2. Attachment-Budget Manifest
-This section is intentionally long-form. The goal is to make attachment-budget manifest explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+The current operator-facing rule is that upload summary is not only a report name. It is the first artifact-intake branch. When the collector returns a bundle, the analyst or Gemini workflow should usually start with upload summary, then use the attachment budget manifest to understand what can be uploaded safely, then consult metadata report, and then request representative final_artifacts slices when they narrow the investigation faster than a large baseline report. This explicit artifact-first upload behavior is part of collector artifact interpretation, not an optional afterthought.
 
-For attachment-budget manifest, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## 2. Attachment Budget Manifest
+This section is intentionally long-form. The goal is to make attachment budget manifest explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
 
-The current major-version bundle also assumes that attachment-budget manifest may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+For attachment budget manifest, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
 
-When writing or reviewing functionality tied to attachment-budget manifest, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+The current major-version bundle also assumes that attachment budget manifest may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+
+When writing or reviewing functionality tied to attachment budget manifest, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+For collector artifact interpretation, attachment budget manifest is one of the primary narrowing guides. The analyst or Gemini workflow should use it to decide whether the next upload should be upload summary plus metadata, upload summary plus a collection scope artifact, upload summary plus a targeted collection plan artifact, or upload summary plus representative final_artifacts slices. The point is not merely to say that file sizes matter. The point is to choose the next evidence set in a way that preserves uploadability and investigative clarity.
 
 ## 3. Metadata Report
 This section is intentionally long-form. The goal is to make metadata report explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
@@ -77,6 +83,14 @@ For baseline report limits, the operator should expect the workflow to state wha
 The current major-version bundle also assumes that baseline report limits may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
 
 When writing or reviewing functionality tied to baseline report limits, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+
+Collector-artifact interpretation rule for artifact-first upload behavior
+- Treat collector artifact interpretation as an explicit workflow branch, not as a vague reading exercise.
+- Prefer upload summary first, then attachment budget manifest, then metadata report, then the narrowest collector-returned artifact that reduces ambiguity.
+- When the collector emits collection scope, treat collection scope as a decision aid for what was deliberately bounded or targeted in the run.
+- When the collector emits targeted collection plan, treat targeted collection plan as an analyst-facing explanation of why the narrowed collection exists, what it tries to answer, and what gaps remain.
+- When the collector emits representative final_artifacts candidates, treat representative final_artifacts as the preferred next upload set when they provide faster evidentiary value than a monolithic baseline-heavy surface.
+- Do not force a baseline-first upload path when upload summary, attachment budget manifest, collection scope, targeted collection plan, and representative final_artifacts already give a clearer and safer intake path.
 
 Major-version bundle rule
 - If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.

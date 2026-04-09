@@ -1,22 +1,21 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 4.0.3
-Current state id: 2026-04-09-chunking-reconstruction-hotfix-v1
-Change class: bounded chunking reconstruction hotfix for the collector synthetic validation fixture
+Version: 4.0.4
+Current state id: 2026-04-09-gemini-collector-artifact-interpretation-marker-hotfix-v1
+Change class: bounded Gemini collector-artifact interpretation marker hotfix for behavior-scenario validation
 
 What changed
-- Added an exact-write helper to `project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1` for the synthetic oversized source artifact and its emitted chunk files.
-- Switched the synthetic source artifact and synthetic chunk artifacts away from the general text helper so the validation fixture no longer relies on PowerShell text-write behavior that can normalize chunk boundaries differently from the original source artifact.
-- Kept the chunk manifest, chunk-path JSON, and broader collector output shaping path unchanged so the hotfix stays narrowly scoped to the failing reconstruction path.
-- Added `project_sources/LOG-63_DCOIR_Chunking_Reconstruction_Hotfix_2026-04-09.txt` to record the root cause, fix posture, and required rerun wave.
+- Updated `knowledge/Knowledge - 07 - Artifact Review Guide.md` so the maintained Gemini knowledge source now explicitly spells out the artifact-first collector upload path using the exact behavior-scenario markers `attachment budget manifest`, `collection scope`, `targeted collection plan`, and `representative final_artifacts`.
+- Kept the hotfix narrow by changing the maintained knowledge source that the Gemini bundle sync step already uses, instead of widening the validator or weakening the scenario expectations.
+- Added `project_sources/LOG-64_DCOIR_Gemini_Collector_Artifact_Interpretation_Marker_Hotfix_2026-04-09.txt` to record the root cause, repair posture, and required rerun wave.
 
 Why
-- `validate-on-push` failed in the new `FullRegression` path even though package build, runtime restore, and the chunking oversize suite itself were already passing.
-- The failing assertion was specific to exact reconstruction of the synthetic oversized source artifact from the emitted chunk files.
-- The safest bounded repair is to make the synthetic fixture write exact UTF-8 text for the source and chunk files rather than weakening the harness comparison.
+- `validate-on-push` reached the Gemini behavior-scenario validator and failed only the `GeminiCollectorArtifactInterpretation` scenario.
+- Structural validation already passed, which means the failure was not topology drift or a missing file. The failure was that the stored Gemini source set did not contain any of the exact narrower artifact-first marker phrases the scenario now requires.
+- The safest bounded repair is to strengthen the maintained artifact-review knowledge source so the synced Gemini attachment set explicitly carries those governed phrases.
 
 Validation notes
-- This change claims the collector-side reconstruction hotfix was added to the governed source line.
+- This change claims the Gemini collector-artifact interpretation marker hotfix was added to the governed source line.
 - It does not claim the repaired wave has already passed until `validate-on-push`, `manual-full-validation`, and the manual bundle workflows are rerun after this hotfix is committed.
-- The hotfix is intentionally narrow and does not broaden or relax the harness acceptance criteria.
+- No collector execution logic, harness assertion, or Gemini topology rule was broadened or weakened by this hotfix.

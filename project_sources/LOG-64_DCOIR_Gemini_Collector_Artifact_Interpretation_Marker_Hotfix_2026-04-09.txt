@@ -1,0 +1,42 @@
+DCOIR Gemini Collector-Artifact Interpretation Marker Hotfix
+
+Date
+- 2026-04-09
+
+Current state id
+- 2026-04-09-gemini-collector-artifact-interpretation-marker-hotfix-v1
+
+Scope
+- Bounded hotfix for the Gemini behavior-scenario validation path.
+- No collector runtime logic change.
+- No harness acceptance weakening.
+- No Gemini topology change.
+
+Observed failure
+- `validate-on-push` progressed past collector package build, collector runtime restore, and the full collector regression wave.
+- The failure occurred in the Gemini behavior-scenario validator at `GeminiCollectorArtifactInterpretation`.
+- The scenario already found `collector artifact` and `upload summary`, but it did not find any one of the narrower artifact-first marker phrases required by the scenario group: `attachment budget manifest`, `collection scope`, `targeted collection plan`, or `representative final_artifacts`.
+
+Root cause
+- The stored Gemini source set was structurally correct, but the maintained artifact-review knowledge source still used wording that did not satisfy the newer exact marker group in the behavior-scenario validator.
+- In particular, earlier wording used a hyphenated form such as `attachment-budget manifest`, which is operationally similar but not an exact match for the current scenario token set.
+
+Implemented repair
+- Strengthened `knowledge/Knowledge - 07 - Artifact Review Guide.md` as the maintained source-of-truth file for collector-artifact interpretation and upload guidance.
+- Added explicit artifact-first guidance that names `attachment budget manifest`, `collection scope`, `targeted collection plan`, and `representative final_artifacts` directly.
+- Kept the repair on the maintained knowledge source so the governed sync step propagates it into the Gemini attachment set without creating a second editable wording authority.
+
+Why this repair posture was chosen
+- The validator expectation is intentional and aligned to the operator-requested artifact-first upload behavior.
+- Weakening the validator would hide a real gap in the stored source wording.
+- Editing the maintained knowledge source preserves the governed one-source-of-truth posture for the synced Gemini attachment set.
+
+Required rerun wave
+1. `validate-on-push`
+2. `manual-full-validation` with `FullRegression`
+3. `manual-collector-runtime-package-build`
+4. `manual-gemini-bundle-build`
+
+Expected outcome if the repair is sufficient
+- The Gemini behavior-scenario validator should pass `GeminiCollectorArtifactInterpretation` without requiring any change to the scenario definition.
+- The broader collector and Gemini validation wave should remain otherwise unchanged.
