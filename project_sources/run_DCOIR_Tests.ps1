@@ -200,6 +200,28 @@ function Invoke-CollectorStep {
   }
 }
 
+function Assert-CollectorStepSucceeded {
+  param(
+    [string]$StepName,
+    [object]$CollectorStep
+  )
+
+  if ($CollectorStep.ExitCode -eq 0 -and ($CollectorStep.Status -eq 'PASS' -or $CollectorStep.Status -eq 'PARTIAL_SUCCESS')) {
+    return
+  }
+
+  $message = @(
+    ("Collector step failed before downstream verification: {0}" -f $StepName),
+    ("Collector harness status: {0}" -f $CollectorStep.Status),
+    ("Collector reported status: {0}" -f $CollectorStep.CollectorReportedStatus),
+    ("Collector step log: {0}" -f $CollectorStep.LogPath),
+    "Collector stdout follows:",
+    $CollectorStep.StdOut
+  ) -join [Environment]::NewLine
+
+  throw $message
+}
+
 function Invoke-AttachmentBudgetVerification {
   param([string]$StepName,[string]$ManifestPath)
   $start = Get-Date
@@ -352,6 +374,7 @@ function Save-Summary {
 function Run-CoreSuite {
   Restore-WorkingZip -Reason "Core"
   $collect = Invoke-CollectorStep -StepName "01_CollectT1" -CollectorArgs @("-Quick","collect-t1")
+  Assert-CollectorStepSucceeded -StepName "01_CollectT1" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_Collect" -ManifestPath $collect.AttachmentBudgetManifestPath }
   [void](Invoke-CollectorStep -StepName "02_EnrichStartTcp" -CollectorArgs @("-Quick","enrich-start-tcp"))
   [void](Invoke-CollectorStep -StepName "03_EnrichAddLogTextSecurity" -CollectorArgs @("-Quick","enrich-add-logtext","-Target","Security"))
@@ -362,8 +385,9 @@ function Run-CoreSuite {
 function Run-RetrievalSuite {
   Restore-WorkingZip -Reason "Retrieval"
   $collect = Invoke-CollectorStep -StepName "11_CollectT1" -CollectorArgs @("-Quick","collect-t1")
+  Assert-CollectorStepSucceeded -StepName "11_CollectT1" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_RetrievalCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
-  [void](Invoke-CollectorStep -StepName "12_EnrichStartLogRawSecurity" -CollectorArgs @("-Quick","enrich-start-lograw","-Target","Security"))
+  [void](Invoke-CollectorStep -StepName "12_EnrichStartLogRawSecurity" -CollectorArgs @("-Quick","enrich-start-lograw"))
   [void](Invoke-CollectorStep -StepName "13_EnrichFinalize" -CollectorArgs @("-Quick","enrich-finalize"))
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "14_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 }
@@ -376,6 +400,7 @@ function Run-QuickAliasesSuite {
   $sampleTask = "\Microsoft\Windows\Defrag\ScheduledDefrag"
   Restore-WorkingZip -Reason "QuickAliases"
   $collect = Invoke-CollectorStep -StepName "21_CollectT1" -CollectorArgs @("-Quick","collect-t1")
+  Assert-CollectorStepSucceeded -StepName "21_CollectT1" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_QuickAliasesCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
   [void](Invoke-CollectorStep -StepName "22_EnrichStartSigcheck" -CollectorArgs @("-Quick","enrich-start-sigcheck","-Target",$sampleBinaryPath))
   [void](Invoke-CollectorStep -StepName "23_EnrichFinalize_Sigcheck" -CollectorArgs @("-Quick","enrich-finalize"))
@@ -407,6 +432,7 @@ function Run-QuickAliasesSuite {
 function Run-SessionBehaviorSuite {
   Restore-WorkingZip -Reason "SessionBehavior"
   $collect = Invoke-CollectorStep -StepName "51_CollectT1" -CollectorArgs @("-Quick","collect-t1")
+  Assert-CollectorStepSucceeded -StepName "51_CollectT1" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_SessionBehaviorCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
   $startStep = Invoke-CollectorStep -StepName "52_EnrichStartTcp" -CollectorArgs @("-Quick","enrich-start-tcp")
   $addStep = Invoke-CollectorStep -StepName "53_EnrichAddLogTextSecurity" -CollectorArgs @("-Quick","enrich-add-logtext","-Target","Security")
@@ -418,6 +444,7 @@ function Run-SessionBehaviorSuite {
 function Run-TargetedCollectionSuite {
   Restore-WorkingZip -Reason "TargetedCollection"
   $collect = Invoke-CollectorStep -StepName "61_CollectTargetedPopup" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","2026-04-08T08:45:00Z","-WindowEnd","2026-04-08T09:15:00Z")
+  Assert-CollectorStepSucceeded -StepName "61_CollectTargetedPopup" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_TargetedCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
   Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedCollectionValidation" -CollectStep $collect
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "62_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
