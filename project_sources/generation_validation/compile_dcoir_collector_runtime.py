@@ -36,12 +36,20 @@ def patch_compiled_text(compiled_text: str) -> tuple[str, list[str]]:
         "[void]$Baseline.ArtifactPaths.Add($scopePath)": "Add-BaselineArtifactPath -Baseline $Baseline -Path $scopePath",
         "[void]$Baseline.ArtifactPaths.Add($parallelPath)": "Add-BaselineArtifactPath -Baseline $Baseline -Path $parallelPath",
         "[void]$Baseline.ArtifactPaths.Add($planPath)": "Add-BaselineArtifactPath -Baseline $Baseline -Path $planPath",
+        """        $state.UploadSummaryPath,
+        $state.UploadBudgetManifestPath,
+        $state.CollectionScopePath,
+        $state.ParallelismAssessmentPath,
+        $state.TargetedCollectionPlanPath,
+        $state.ArtifactsDir,""": """        $state.UploadSummaryPath,
+        $state.UploadBudgetManifestPath,
+        $state.ArtifactsDir,""",
     }
     patched = compiled_text
     for old, new in replacements.items():
         if old in patched:
             patched = patched.replace(old, new)
-            notes.append(f"patched compiled runtime occurrence: {old}")
+            notes.append(f"patched compiled runtime occurrence: {old.splitlines()[0]}")
     return patched, notes
 
 
