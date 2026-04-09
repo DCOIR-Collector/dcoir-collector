@@ -33,9 +33,6 @@ def build_inline_block(part_paths: List[Path]) -> str:
 def patch_compiled_text(compiled_text: str) -> tuple[str, list[str]]:
     notes: list[str] = []
     replacements = {
-        "[void]$Baseline.ArtifactPaths.Add($scopePath)": "Add-BaselineArtifactPath -Baseline $Baseline -Path $scopePath",
-        "[void]$Baseline.ArtifactPaths.Add($parallelPath)": "Add-BaselineArtifactPath -Baseline $Baseline -Path $parallelPath",
-        "[void]$Baseline.ArtifactPaths.Add($planPath)": "Add-BaselineArtifactPath -Baseline $Baseline -Path $planPath",
         """        $state.UploadSummaryPath,
         $state.UploadBudgetManifestPath,
         $state.CollectionScopePath,
