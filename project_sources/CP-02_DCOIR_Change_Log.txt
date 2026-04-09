@@ -1,26 +1,22 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 4.0.2
-Current state id: 2026-04-09-validation-wave-expansion-and-chunking-regression-v1
-Change class: bounded validation-wave expansion for collector chunking regression and Gemini behavior-scenario checks
+Version: 4.0.3
+Current state id: 2026-04-09-chunking-reconstruction-hotfix-v1
+Change class: bounded chunking reconstruction hotfix for the collector synthetic validation fixture
 
 What changed
-- Added two new collector validation suites to `project_sources/run_DCOIR_Tests.ps1`: `ChunkingOversizeArtifact` and `ChunkingReconstructionMetadata`.
-- Added collector-side synthetic oversized artifact generation and chunk-manifest emission to the maintained feature-wave file so the harness can validate chunking against collector-returned artifacts rather than against a stand-alone external fixture.
-- Expanded the collector stdout contract to emit `SYNTHETIC_OVERSIZE_SOURCE_PATH` and `CHUNK_MANIFEST_PATH` when the synthetic oversized validation fixture is enabled.
-- Expanded the collector harness so `MajorVersion` and `FullRegression` now cover the new chunking suites in addition to the earlier core, retrieval, quick-alias, session-behavior, and targeted-collection suites.
-- Added a dedicated Gemini behavior-scenario validator script and wired it into `build_dcoir_gemini_release.py` so Gemini smoke-test runs now validate more than topology and packaging structure.
-- Updated `validate-on-push`, `manual-full-validation`, and `scheduled-health-check` so the broader validation wave is exercised automatically from the governed repo workflows.
-- Added `project_sources/LOG-62_DCOIR_Bounded_Validation_Wave_Expansion_2026-04-09.txt` to record the scope of the new validation wave.
+- Added an exact-write helper to `project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1` for the synthetic oversized source artifact and its emitted chunk files.
+- Switched the synthetic source artifact and synthetic chunk artifacts away from the general text helper so the validation fixture no longer relies on PowerShell text-write behavior that can normalize chunk boundaries differently from the original source artifact.
+- Kept the chunk manifest, chunk-path JSON, and broader collector output shaping path unchanged so the hotfix stays narrowly scoped to the failing reconstruction path.
+- Added `project_sources/LOG-63_DCOIR_Chunking_Reconstruction_Hotfix_2026-04-09.txt` to record the root cause, fix posture, and required rerun wave.
 
 Why
-- The operator asked to add the missing suites in one bounded wave rather than as a series of one-off repo changes.
-- The operator explicitly requested a deliberately oversized artifact chunking test tied to artifacts returned by the collector script.
-- The operator also asked to widen coverage so more collector and Gemini features are tested automatically rather than remaining implied by structural validation alone.
+- `validate-on-push` failed in the new `FullRegression` path even though package build, runtime restore, and the chunking oversize suite itself were already passing.
+- The failing assertion was specific to exact reconstruction of the synthetic oversized source artifact from the emitted chunk files.
+- The safest bounded repair is to make the synthetic fixture write exact UTF-8 text for the source and chunk files rather than weakening the harness comparison.
 
 Validation notes
-- This change claims the new suites and behavior-scenario validation surfaces were added to the governed source line.
-- It does not claim the new wave has already passed until the refreshed GitHub Actions runs complete.
-- The new Gemini scenario validator is still a governed source-side behavior-scenario check, not a full live Gemini Enterprise UI automation layer.
-- The new collector chunking suites prove synthetic oversized artifact chunk emission and reconstruction metadata; they do not yet claim that every large real-world collector artifact automatically becomes a default upload-summary recommendation.
+- This change claims the collector-side reconstruction hotfix was added to the governed source line.
+- It does not claim the repaired wave has already passed until `validate-on-push`, `manual-full-validation`, and the manual bundle workflows are rerun after this hotfix is committed.
+- The hotfix is intentionally narrow and does not broaden or relax the harness acceptance criteria.

@@ -1,0 +1,42 @@
+DCOIR Chunking Reconstruction Hotfix 2026-04-09
+
+Summary
+- This bounded hotfix repairs the collector-side synthetic chunking validation fixture after `validate-on-push` failed in `FullRegression` with the message `Chunk reconstruction did not match the original synthetic source artifact.`
+
+Observed failure signature
+- Package validation passed.
+- Collector delivery package build passed.
+- Runtime restore bridge passed.
+- The new chunking oversize suite passed far enough to prove that the collector emitted a synthetic oversized source artifact, chunk manifest, and multiple chunk files.
+- The failing assertion occurred in the harness reconstruction step that concatenates the emitted chunk files and compares the rebuilt text to the original synthetic source artifact.
+
+Root-cause assessment
+- The failure was isolated to the synthetic validation fixture rather than to generic collector packaging or bundle plumbing.
+- The prior fixture wrote the synthetic oversized source artifact and chunk files through the collector's general text helper.
+- That general helper is appropriate for ordinary analyst-facing artifacts but is not ideal for a byte-stable reconstruction fixture because PowerShell text emission can normalize file boundaries differently than the exact in-memory source string used by the harness comparison.
+- The most credible bounded cause is text-write normalization at chunk boundaries rather than a failure of the chunking design itself.
+
+Implemented repair
+- Added a narrow exact-write helper in `project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1`.
+- Switched the synthetic oversized source artifact write path to the exact-write helper.
+- Switched the synthetic chunk artifact write path to the exact-write helper.
+- Left the chunk manifest, chunk-path JSON, and ordinary artifact-writing path unchanged so the hotfix does not widen beyond the failing reconstruction fixture.
+- Preserved the harness requirement for exact reconstruction rather than weakening the test.
+
+Why this repair was chosen
+- The operator asked for the clean bounded fix rather than a broad workaround.
+- Relaxing the harness comparison would hide fixture drift instead of making the chunking test deterministic.
+- Narrow exact-write handling for the synthetic source and chunk files is the safest way to preserve the intended regression signal.
+
+Required rerun wave after commit
+- `validate-on-push`
+- `manual-full-validation` with `FullRegression`
+- `manual-collector-runtime-package-build`
+- `manual-gemini-bundle-build`
+- `scheduled-health-check` if the repo owner wants the recurring lane reconfirmed immediately
+
+Boundaries
+- This hotfix does not claim that every large real-world collector artifact is chunked by default.
+- This hotfix does not change upload-summary recommendation policy.
+- This hotfix does not relax the reconstruction assertion.
+- This hotfix is specifically a collector-fixture determinism repair for the new chunking regression lane.

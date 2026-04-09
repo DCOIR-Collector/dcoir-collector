@@ -169,6 +169,24 @@ function New-SyntheticOversizeArtifactText {
   return $sb.ToString()
 }
 
+function Write-ArtifactTextExact {
+  param(
+    [string]$ArtifactsDir,
+    [string]$Section,
+    [string]$Name,
+    [string]$Text
+  )
+
+  Ensure-Directory -Path $ArtifactsDir
+  $prefix = Get-BaselineArtifactPrefix -Name $Name
+  $safeSection = ($Section -replace '[\/:*?"<>| ]','_')
+  $safeName = ($Name -replace '[\/:*?"<>| ]','_')
+  $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
+  $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+  [System.IO.File]::WriteAllText($path, $Text, $utf8NoBom)
+  return $path
+}
+
 function Split-ValidationTextArtifactIntoChunks {
   param(
     [string]$SourcePath,
@@ -188,7 +206,7 @@ function Split-ValidationTextArtifactIntoChunks {
     $lineText = $line + [Environment]::NewLine
     $lineBytes = [System.Text.Encoding]::UTF8.GetByteCount($lineText)
     if (($currentBytes + $lineBytes) -gt $targetBytes -and $currentBytes -gt 0) {
-      $chunkPath = Write-ArtifactText -ArtifactsDir $ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_{1:000}.txt' -f $RequestedKB, $chunkIndex) -Text $sb.ToString()
+      $chunkPath = Write-ArtifactTextExact -ArtifactsDir $ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_{1:000}.txt' -f $RequestedKB, $chunkIndex) -Text $sb.ToString()
       [void]$chunkPaths.Add($chunkPath)
       $chunkIndex += 1
       $sb = New-Object System.Text.StringBuilder
@@ -199,7 +217,7 @@ function Split-ValidationTextArtifactIntoChunks {
   }
 
   if ($currentBytes -gt 0) {
-    $chunkPath = Write-ArtifactText -ArtifactsDir $ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_{1:000}.txt' -f $RequestedKB, $chunkIndex) -Text $sb.ToString()
+    $chunkPath = Write-ArtifactTextExact -ArtifactsDir $ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_{1:000}.txt' -f $RequestedKB, $chunkIndex) -Text $sb.ToString()
     [void]$chunkPaths.Add($chunkPath)
   }
 
@@ -221,7 +239,7 @@ function New-SyntheticOversizeChunkValidationArtifacts {
   param([hashtable]$State,[hashtable]$Baseline,[int]$RequestedKB)
 
   $sourceText = New-SyntheticOversizeArtifactText -RequestedKB $RequestedKB
-  $sourcePath = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_source.txt' -f $RequestedKB) -Text $sourceText
+  $sourcePath = Write-ArtifactTextExact -ArtifactsDir $State.ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_source.txt' -f $RequestedKB) -Text $sourceText
   $chunkResult = Split-ValidationTextArtifactIntoChunks -SourcePath $sourcePath -ArtifactsDir $State.ArtifactsDir -RequestedKB $RequestedKB -TargetChunkKB 700
   $pathListPath = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_paths.json.txt' -f $RequestedKB) -Text (Convert-ToSafeJsonText -InputObject $chunkResult.ChunkPaths)
 
