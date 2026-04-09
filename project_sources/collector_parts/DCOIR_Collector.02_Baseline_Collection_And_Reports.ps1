@@ -352,8 +352,9 @@ function New-BaselineReport {
   Add-Section -Builder $sb -Name "ANALYST_FOLLOW_UP_QUEUE" -Text $followUpText
 
   return @{
+    ReportBuilder = $sb
     ReportText = $sb.ToString()
-    ArtifactPaths = @($artifactPaths)
+    ArtifactPaths = $artifactPaths
     ArtifactMap = $artifactMap
   }
 }
