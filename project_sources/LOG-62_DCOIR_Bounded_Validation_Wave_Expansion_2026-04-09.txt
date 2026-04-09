@@ -1,0 +1,25 @@
+DCOIR Bounded Validation Wave Expansion - 2026-04-09
+
+Current state id: 2026-04-09-validation-wave-expansion-and-chunking-regression-v1
+
+Implemented now
+- collector harness now includes dedicated chunking validation suites for deliberately oversized synthetic artifacts emitted by the collector itself
+- added one suite that verifies oversized-artifact chunk emission and one suite that verifies reconstruction metadata and exact chunk recomposition
+- major-version and full-regression collector harness coverage now include the new chunking suites
+- validate-on-push and scheduled-health-check now run collector full regression instead of only a narrower subset of suites
+- Gemini bundle generation now includes a dedicated behavior-scenario validator in addition to the topology and bundle-structure validator
+- Gemini behavior-scenario validation now checks collector-artifact interpretation visibility, IOC-enrichment trigger visibility, output-contract consistency markers, security-product negative-control markers, and repeated-session consistency markers
+
+Why this wave exists
+- the operator asked for the missing suites to be added as one bounded validation wave rather than a trickle of one-off additions
+- the operator specifically asked for a deliberately oversized artifact chunking test tied to collector-returned artifacts
+- the operator also asked to broaden validation so more features are exercised automatically instead of relying on assumption-based confidence
+
+Not claimed yet
+- this log does not claim the newly added suites have already passed in Actions after the source change lands
+- this log does not claim full Gemini Enterprise UI behavior automation; the new Gemini suites are governed source-side behavior-scenario checks
+- this log does not claim the collector upload summary now preferentially enumerates chunked synthetic validation artifacts as default analyst upload choices; the new suites currently prove collector-side chunk emission and reconstruction metadata for oversized synthetic artifacts
+
+Recommended next move
+- rerun validate-on-push first
+- then rerun manual-full-validation FullRegression and the two manual bundle workflows to confirm the expanded validation wave is green end to end
