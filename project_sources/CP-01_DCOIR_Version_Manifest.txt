@@ -1,6 +1,6 @@
-DCOIR Version Manifest 4.0.5
+DCOIR Version Manifest 4.0.6
 
-Current state id: 2026-04-09-validation-passing-baseline-realignment-v1
+Current state id: 2026-04-09-queue-closeout-after-duplicate-surface-cleanup-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -9,6 +9,7 @@ Current control plane
 - Layout spec: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
 - Viable deliverable generation contract: project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt
 - Gemini live-test generation and legacy surface rules: project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt
+- Gemini legacy surface inventory and hygiene plan: project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt
 - Gemini stored-source and compile strategy: project_sources/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt
 - Gemini creation pipeline: project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt
 - Collector runtime packaging pipeline: project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt
@@ -22,10 +23,10 @@ Current control plane
 - Chunking reconstruction hotfix implementation: project_sources/LOG-63_DCOIR_Chunking_Reconstruction_Hotfix_2026-04-09.txt
 - Gemini collector-artifact interpretation marker hotfix: project_sources/LOG-64_DCOIR_Gemini_Collector_Artifact_Interpretation_Marker_Hotfix_2026-04-09.txt
 - Passing-baseline realignment and close-out decision: project_sources/LOG-65_DCOIR_Passing_Baseline_Realignment_2026-04-09.txt
+- Remaining-queue close-out and duplicate-surface cleanup: project_sources/LOG-66_DCOIR_Remaining_Queue_Closeout_And_Duplicate_Surface_Cleanup_2026-04-09.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 
 Current next work item
-- Hold at the current passing validation baseline with no additional validation rerun wave required from this state.
-- Treat the active continuity surfaces as aligned to this same passing baseline after this governance realignment lands.
-- Do not pursue the previously discussed GitHub Actions workflow-visibility polish unless the operator explicitly reopens it later.
-- Keep bounded duplicate-readable-surface cleanup queued for a later bounded wave only when the operator resumes substantive repo work.
+- No active queued repo work remains in the governed DCOIR line after the bounded duplicate-readable-surface cleanup and the explicit parity and optional Drive-staging reviews.
+- Hold at the current passing validation baseline and use this state as the next resume anchor until a new substantive repo change is opened.
+- Keep standalone on the PP-01 through PP-07 assembly lane as standing posture.

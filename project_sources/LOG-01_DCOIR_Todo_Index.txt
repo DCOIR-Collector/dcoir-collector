@@ -1,11 +1,11 @@
 DCOIR Todo Index
 
-Current state id: 2026-04-09-validation-passing-baseline-realignment-v1
+Current state id: 2026-04-09-queue-closeout-after-duplicate-surface-cleanup-v1
 
 Current priority summary
-1. Gemini now follows the larger, more verbose major-version runtime topology under the governed stored-source compile model, and the current governed baseline treats the main Gemini validation and bundle workflows as passing.
-2. Collector now includes targeted collection parameterization in the maintained source line while preserving the compiled single-runtime delivery path, and the current governed baseline treats the main collector validation and packaging workflows as passing.
-3. The aligned build and validation workflows are currently treated as a passing inherited baseline, not as an open rerun item.
-4. The immediate next step is to stop at the passing baseline rather than add optional ergonomic follow-on work.
-5. Bounded duplicate-readable-surface cleanup remains queued only for a later bounded wave when substantive repo work resumes.
-6. Later-only items such as parity follow-through and optional Drive staging remain deferred for later review.
+1. Gemini and collector remain on the currently inherited passing governed baseline.
+2. The bounded duplicate-readable-surface cleanup is complete.
+3. The queued parity revisit is complete with no governed skill-parity action required from this close-out wave.
+4. The optional Drive-staging review is complete with no staging action required from this state.
+5. No active queued repo work remains in the governed line.
+6. Standalone remains on the prompt-pack assembly path as standing posture.

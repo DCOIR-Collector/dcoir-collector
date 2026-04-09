@@ -1,11 +1,12 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-09-validation-passing-baseline-realignment-v1
+Current state id: 2026-04-09-queue-closeout-after-duplicate-surface-cleanup-v1
 
 Current active priority
-- Hold at the passing validation baseline and keep the governed surfaces aligned to this same close-out state.
+- No active queued repo work remains. Hold at the current passing validation baseline and use this state as the next resume anchor.
 
 Queued next priorities
-- keep bounded duplicate-readable-surface cleanup queued for a later bounded wave when the operator resumes substantive repo work
-- revisit parity and optional Drive staging only if those later become independently necessary
+- none currently queued in the governed repo work line
+
+Standing posture
 - keep standalone on the prompt-pack assembly path

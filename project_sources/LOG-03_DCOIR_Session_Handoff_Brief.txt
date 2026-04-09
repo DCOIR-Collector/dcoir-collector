@@ -1,16 +1,16 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-09-validation-passing-baseline-realignment-v1
+Current state id: 2026-04-09-queue-closeout-after-duplicate-surface-cleanup-v1
 
 Stable baseline
 - GitHub-primary readable-source model remains in force.
 - Standalone remains the PP-01 through PP-07 assembly lane.
 - Gemini now has a larger, more verbose major-version stored runtime source tree plus a maintained-knowledge-sync, validation, and compile path, and the current governed baseline treats the main Gemini validation and bundle workflows as passing.
 - Collector now has a maintained-source single-runtime compile path, a transport-safe delivery package path, bounded targeted-collection support, and passing chunking and full-regression coverage in the main governed workflow set.
-- The current inherited passing baseline is the operator-reported pass set for `validate-on-push`, `manual-full-validation` variants, `manual-collector-runtime-package-build`, `manual-gemini-bundle-build`, and `scheduled-health-check`.
-- The feature-by-feature validation matrix was rebuilt after the new suites landed and passed.
+- The inherited passing baseline remains the operator-reported pass set for `validate-on-push`, `manual-full-validation` variants, `manual-collector-runtime-package-build`, `manual-gemini-bundle-build`, and `scheduled-health-check`.
+- The duplicate-readable-surface cleanup is complete, the parity revisit is complete, and the optional Drive-staging review is complete.
 
 Open follow-through
-- Hold at the current passing baseline; no immediate validation rerun or workflow-polish follow-on is required.
-- Keep bounded duplicate-readable-surface cleanup queued for a later bounded wave only if the operator resumes substantive repo work.
-- Do not carry forward the optional workflow-visibility-polish item unless the operator explicitly reopens it in a later session.
+- No active queued repo work remains in the governed DCOIR line from this close-out wave.
+- Hold at the current passing baseline until a new substantive repo task is opened.
+- Keep standalone on the PP-01 through PP-07 assembly lane as standing posture.

@@ -1,8 +1,7 @@
 DCOIR Active Now
 
-Current state id: 2026-04-09-validation-passing-baseline-realignment-v1
+Current state id: 2026-04-09-queue-closeout-after-duplicate-surface-cleanup-v1
 
-1. Hold at the current passing validation baseline.
-2. Treat `validate-on-push`, `manual-full-validation` variants, `manual-collector-runtime-package-build`, `manual-gemini-bundle-build`, and `scheduled-health-check` as the current inherited passing baseline unless a later re-anchor shows newer drift.
-3. Do not pursue the optional GitHub Actions workflow-visibility polish.
-4. Keep bounded duplicate-readable-surface cleanup queued for a later bounded wave only if substantive repo work resumes.
+1. No active queued repo work remains from the current governed close-out line.
+2. Hold at the current passing validation baseline until a new substantive repo task is opened.
+3. Keep standalone on the PP-01 through PP-07 assembly lane as standing posture.
