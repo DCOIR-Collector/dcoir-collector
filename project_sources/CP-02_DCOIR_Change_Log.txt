@@ -1,21 +1,22 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 4.0.4
-Current state id: 2026-04-09-gemini-collector-artifact-interpretation-marker-hotfix-v1
-Change class: bounded Gemini collector-artifact interpretation marker hotfix for behavior-scenario validation
+Version: 4.0.5
+Current state id: 2026-04-09-validation-passing-baseline-realignment-v1
+Change class: bounded passing-baseline governance realignment after validation-wave completion
 
 What changed
-- Updated `knowledge/Knowledge - 07 - Artifact Review Guide.md` so the maintained Gemini knowledge source now explicitly spells out the artifact-first collector upload path using the exact behavior-scenario markers `attachment budget manifest`, `collection scope`, `targeted collection plan`, and `representative final_artifacts`.
-- Kept the hotfix narrow by changing the maintained knowledge source that the Gemini bundle sync step already uses, instead of widening the validator or weakening the scenario expectations.
-- Added `project_sources/LOG-64_DCOIR_Gemini_Collector_Artifact_Interpretation_Marker_Hotfix_2026-04-09.txt` to record the root cause, repair posture, and required rerun wave.
+- Updated `project_sources/CP-01_DCOIR_Version_Manifest.txt` so the governed control plane now reflects the operator-reported passing baseline for `validate-on-push`, `manual-full-validation` variants, `manual-collector-runtime-package-build`, `manual-gemini-bundle-build`, and `scheduled-health-check`.
+- Added `project_sources/LOG-65_DCOIR_Passing_Baseline_Realignment_2026-04-09.txt` to record the passing baseline, the active-surface drift that remained after the hotfix entry, and the decision to stop at the passing baseline.
+- Realigned `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt`, `project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt`, `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/01_Active_Now.txt` to the same current_state_id and stop-at-baseline posture.
+- Dropped the previously buffered workflow-visibility polish idea instead of carrying it forward as a governed queued task.
 
 Why
-- `validate-on-push` reached the Gemini behavior-scenario validator and failed only the `GeminiCollectorArtifactInterpretation` scenario.
-- Structural validation already passed, which means the failure was not topology drift or a missing file. The failure was that the stored Gemini source set did not contain any of the exact narrower artifact-first marker phrases the scenario now requires.
-- The safest bounded repair is to strengthen the maintained artifact-review knowledge source so the synced Gemini attachment set explicitly carries those governed phrases.
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` had advanced to the 2026-04-09 hotfix state while the active supporting continuity surfaces still reflected the older 2026-04-08 bundle-generation and functionality-test posture.
+- The next-session baseline should inherit the operator-reported passing validation wave rather than the earlier rerun language from the hotfix-only entry.
+- The operator explicitly chose to stop at the current passing baseline and to drop the optional GitHub Actions visibility follow-on.
 
 Validation notes
-- This change claims the Gemini collector-artifact interpretation marker hotfix was added to the governed source line.
-- It does not claim the repaired wave has already passed until `validate-on-push`, `manual-full-validation`, and the manual bundle workflows are rerun after this hotfix is committed.
-- No collector execution logic, harness assertion, or Gemini topology rule was broadened or weakened by this hotfix.
+- This change records an operator-reported passing baseline and aligns the governed readable surfaces to that close-out state.
+- It does not add new validation logic, workflow branches, or runtime behavior.
+- No additional ergonomic GitHub Actions follow-on is planned from this state unless the operator explicitly reopens it later.

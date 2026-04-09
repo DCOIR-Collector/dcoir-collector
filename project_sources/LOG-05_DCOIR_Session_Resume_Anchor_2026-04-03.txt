@@ -1,16 +1,15 @@
 DCOIR Session Resume Anchor - 2026-04-03
 
-Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
+Current state id: 2026-04-09-validation-passing-baseline-realignment-v1
 
 Current stable baseline
 - Working GitHub repository: malwaredevil/dcoir-collector
 - Standalone remains the PP-01 through PP-07 assembly lane.
-- Gemini now uses a manifest-topology, maintained-knowledge-sync, validation, and compile path with a larger major-version agent set.
-- Collector now uses a maintained-source single-runtime compile path plus a transport-safe delivery package workflow with bounded targeted-collection support.
+- Gemini now uses a manifest-topology, maintained-knowledge-sync, validation, and compile path with a larger major-version agent set, and the current governed baseline treats the main Gemini validation and bundle workflows as passing.
+- Collector now uses a maintained-source single-runtime compile path plus a transport-safe delivery package workflow with bounded targeted-collection support, and the current governed baseline treats the main collector validation and packaging workflows as passing.
+- The inherited passing baseline is the operator-reported pass set for `validate-on-push`, `manual-full-validation` variants, `manual-collector-runtime-package-build`, `manual-gemini-bundle-build`, and `scheduled-health-check`.
 
 What is still open right now
-1. Generate the new major-version Gemini bundle through the associated Action.
-2. Generate the new major-version collector delivery package through the associated Action.
-3. Use tomorrow's separate chat for functionality testing with the rebuilt bundles.
-4. Run bounded duplicate-readable-surface cleanup after the functionality test wave.
-5. Decide later whether a bounded workflow should regenerate `supporting_assets/DCOIR_Collector.zip` from the approved collector delivery package path.
+1. Hold at the current passing baseline instead of reopening the completed validation wave.
+2. Keep bounded duplicate-readable-surface cleanup queued for a later bounded wave if the operator resumes substantive repo work.
+3. Treat the optional GitHub Actions workflow-visibility polish as dropped unless the operator explicitly reopens it later.

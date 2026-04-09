@@ -1,6 +1,6 @@
-DCOIR Version Manifest 4.0.4
+DCOIR Version Manifest 4.0.5
 
-Current state id: 2026-04-09-gemini-collector-artifact-interpretation-marker-hotfix-v1
+Current state id: 2026-04-09-validation-passing-baseline-realignment-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -21,10 +21,11 @@ Current control plane
 - Validation-wave expansion and chunking regression implementation: project_sources/LOG-62_DCOIR_Bounded_Validation_Wave_Expansion_2026-04-09.txt
 - Chunking reconstruction hotfix implementation: project_sources/LOG-63_DCOIR_Chunking_Reconstruction_Hotfix_2026-04-09.txt
 - Gemini collector-artifact interpretation marker hotfix: project_sources/LOG-64_DCOIR_Gemini_Collector_Artifact_Interpretation_Marker_Hotfix_2026-04-09.txt
+- Passing-baseline realignment and close-out decision: project_sources/LOG-65_DCOIR_Passing_Baseline_Realignment_2026-04-09.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 
 Current next work item
-- Rerun validate-on-push after the Gemini collector-artifact interpretation marker hotfix lands.
-- Rerun manual-full-validation FullRegression plus the two manual bundle workflows so the repaired Gemini behavior-scenario path is validated end to end.
-- Resume the planned functionality-test wave only after the repaired validation runs pass.
-- Keep bounded duplicate-readable-surface cleanup queued after the repaired validation and functionality-test wave.
+- Hold at the current passing validation baseline with no additional validation rerun wave required from this state.
+- Treat the active continuity surfaces as aligned to this same passing baseline after this governance realignment lands.
+- Do not pursue the previously discussed GitHub Actions workflow-visibility polish unless the operator explicitly reopens it later.
+- Keep bounded duplicate-readable-surface cleanup queued for a later bounded wave only when the operator resumes substantive repo work.

@@ -1,13 +1,11 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-08-major-version-collector-and-gemini-completion-wave-v1
+Current state id: 2026-04-09-validation-passing-baseline-realignment-v1
 
 Current active priority
-- Generate the new major-version Gemini and collector bundles through the aligned governed Actions workflows and carry them into tomorrow's dedicated functionality test chat.
+- Hold at the passing validation baseline and keep the governed surfaces aligned to this same close-out state.
 
 Queued next priorities
-- use `project_sources/live_test_notes/2026-04-08_DCOIR_Major_Version_Functionality_Test_Plan.md.txt` as the functionality-test source of truth for tomorrow
-- keep bounded duplicate-readable-surface cleanup queued until after the major-version functionality test wave
-- decide whether to add a bounded restore-and-refresh workflow for regenerating `supporting_assets/DCOIR_Collector.zip` from the approved collector delivery package path after the maintained-source line is stable
-- revisit parity and optional Drive staging after the major-version feature wave is proven stable
+- keep bounded duplicate-readable-surface cleanup queued for a later bounded wave when the operator resumes substantive repo work
+- revisit parity and optional Drive staging only if those later become independently necessary
 - keep standalone on the prompt-pack assembly path
