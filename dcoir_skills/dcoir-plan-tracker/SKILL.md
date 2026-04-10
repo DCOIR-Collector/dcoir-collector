@@ -1,6 +1,6 @@
 ---
 name: dcoir-plan-tracker
-description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state, hierarchical task decomposition, blocker capture, closed-loop blocker recovery, decision-aware execution, and operator-visible milestone signaling. use when chatgpt needs to break a dcoir task into tasks, subtasks, and subsubtasks; preserve active plan continuity beyond fragile local container state; automatically create or update governed tracker files in github; resume paused work; record blockers and mitigations; classify reusable lessons after blocker recovery; stage promotion-ready candidates; consult decision defaults before pausing for operator input; or export a clean handoff for follow-on execution.
+description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state, hierarchical task decomposition, blocker capture, closed-loop blocker recovery, decision-aware execution, operator-visible milestone signaling, and conditional startup active-plan recovery. use when chatgpt needs to break a dcoir task into tasks, subtasks, and subsubtasks; preserve active plan continuity beyond fragile local container state; automatically create or update governed tracker files in github; resume paused work; recover open airtable-backed plan state after session-start leftover scans; record blockers and mitigations; classify reusable lessons after blocker recovery; stage promotion-ready candidates; consult decision defaults before pausing for operator input; or export a clean handoff for follow-on execution.
 ---
 
 # DCOIR Plan Tracker
@@ -96,6 +96,19 @@ Create and maintain these files for every plan:
 Read `references/file_layout.md` when creating or validating plan surfaces.
 Read `references/local_plan_state_workflow.md` when a local plan cache or `plan_state.json` proof check is in scope.
 Read `references/airtable_plan_sync_workflow.md` when Airtable-first plan persistence or recovery is in scope.
+
+
+## Conditional session-start active-plan recovery
+After `dcoir-session-resume`, `dcoir-memory-preflight`, and `dcoir-session-tracker` startup leftover recovery, use this skill when Airtable shows open or active plan state or when the leftover scan indicates unfinished plan work.
+
+Startup recovery workflow:
+1. Read `Plans` rows whose `plan_state` is still open enough to matter: `draft`, `approved_to_execute`, `active`, `blocked`, or `paused`.
+2. If multiple open plans exist, prefer the most recently updated plan unless the control plane or session-tracker leftover scan points to a different plan explicitly.
+3. Read matching `Plan Tasks` rows and the newest relevant `Plan Checkpoints` rows for the candidate plan.
+4. Surface the active task, blockers, buffered promotion candidates, and best next move from Airtable-backed plan state before trusting a missing or stale local `plan_state.json` cache.
+5. If no open Airtable-backed plan state exists, say so plainly and do not force plan recovery unnecessarily.
+
+Read `references/startup_active_plan_recovery_workflow.md` when startup plan recovery details are needed.
 
 ## Locked id and naming rules
 
@@ -406,6 +419,7 @@ Read when needed:
 - `references/blocker_promotion_workflow.md`
 - `references/session_buffer_workflow.md`
 - `references/airtable_plan_sync_workflow.md`
+- `references/startup_active_plan_recovery_workflow.md`
 
 
 ## Local plan-state proof rules

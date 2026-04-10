@@ -1,6 +1,6 @@
 ---
 name: dcoir-session-tracker
-description: maintain a session-local dcoir tracker with airtable-first durable working state, idea capture, checkpointing, verbose continuity capture, derived pre-push review bundles, staged governed updates, todo-sync proposals, and handoff exports. use when chatgpt needs to catch important project thoughts before they are lost, preserve session continuity beyond fragile local container state, answer what remains, checkpoint durable working memory into airtable, prepare follow-up promotion into governed project files, derive what should land in the next grouped github push, or close out a session safely for later resume inside africom_soc_ir / dcoir work.
+description: maintain a session-local dcoir tracker with airtable-first durable working state, idea capture, checkpointing, verbose continuity capture, derived pre-push review bundles, staged governed updates, todo-sync proposals, handoff exports, and startup airtable leftover recovery. use when chatgpt needs to catch important project thoughts before they are lost, preserve session continuity beyond fragile local container state, answer what remains, checkpoint durable working memory into airtable, recover leftovers at session start after dcoir-session-resume and dcoir-memory-preflight, prepare follow-up promotion into governed project files, derive what should land in the next grouped github push, or close out a session safely for later resume inside africom_soc_ir / dcoir work.
 ---
 
 # DCOIR Session Tracker
@@ -34,6 +34,23 @@ This skill does not claim hidden persistence across chats.
 13. When an item is marked governed-written after a grouped push, automatically clear staged governed-update entries, staged todo actions, and post-push cleanup notes that still reference that same item.
 14. Give an immediate operator-visible confirmation when a materially important item is captured, including whether it is preserved session-locally only or already staged for the next governed push.
 15. Surface an explicit cache-absence or re-init warning when a tracker write path had to initialize a new local session-state cache because no pre-existing file was present.
+
+
+## Mandatory session-start Airtable leftover scan
+After `dcoir-session-resume` and `dcoir-memory-preflight` complete on the first substantive DCOIR turn of a new session, use this skill to recover Airtable-backed leftovers before fresh execution begins.
+
+Startup recovery workflow:
+1. Read the newest relevant `Session Checkpoints` rows first, preferring rows whose `checkpoint_status` still implies active carry-forward value and whose `github_promotion_status` is not already fully promoted or superseded.
+2. Read `Idea Inbox` rows where the idea is still open, under review, parked, or otherwise not fully done, dropped, or promoted.
+3. If the operational board exists in the same Airtable base, consult open active `Work Items` rows when they appear related to session carry-forward or pending GitHub promotion.
+4. Deduplicate Airtable leftovers against the current governed GitHub todo or control-plane surfaces before presenting them as unresolved leftovers.
+5. Surface leftover items in these categories:
+   - already durable in governed GitHub and only worth verifying
+   - Airtable-only carry-forward items that still need promotion or closure
+   - stale or superseded leftovers that should be marked resolved
+6. End the startup recovery with one best next move and explicit mention of anything that still exists only in Airtable.
+
+Read `references/startup_airtable_recovery_workflow.md` when startup leftover recovery details are needed.
 
 ## Local session-state cache
 When code execution and file writing are available, use a real local JSON file only as a transient cache, export surface, or render buffer for the Airtable-first durable working state.
@@ -293,6 +310,7 @@ Known Airtable targets for this project:
 - `Session Checkpoints` table id: `tblTe75HKZOJaPDGn`
 - `Idea Inbox` table id: `tblWwBxwrjZF6JR3r`
 - `Tracking Registry` table id: `tblohiMxxVbDUnN77`
+- optional operational board `Work Items` table id: `tblgsQAVWvh8K7gIR`
 
 Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
 
@@ -306,7 +324,7 @@ Relevant checkpoint triggers:
 - before handoff or close-out
 - when local state had to be reinitialized because no pre-existing file was present
 
-Use `scripts/render_airtable_session_bundle.py` to render Airtable-ready payloads from the current local JSON cache when that cache exists and is current.
+Use `scripts/render_airtable_session_bundle.py` to render Airtable-ready payloads from the current local JSON cache when that cache exists and is current. For startup leftover scans, read Airtable first and only use the cache as a helper summary surface when it is already present.
 Typical modes:
 - `checkpoint` for `Session Checkpoints`
 - `idea` for `Idea Inbox`
@@ -321,6 +339,7 @@ Read `references/airtable_checkpoint_workflow.md` when Airtable checkpoint detai
 Read these when needed:
 - `references/local_session_state_workflow.md`
 - `references/airtable_checkpoint_workflow.md`
+- `references/startup_airtable_recovery_workflow.md`
 - `references/classification_rules.md`
 - `references/session_state_schema.md`
 - `references/import_merge_rules.md`

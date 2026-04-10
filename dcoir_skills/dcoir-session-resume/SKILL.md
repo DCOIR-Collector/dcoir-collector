@@ -1,6 +1,6 @@
 ---
 name: dcoir-session-resume
-description: resume the africom_soc_ir / dcoir workspace from the current authoritative control plane. use at the first substantive turn of every new africom_soc_ir or dcoir session to re-anchor to the current state, and use when the operator asks where are we, resume, what is current, what changed, or get me back on track. prefer the governed github readable-text fast path for simple current-state checks and use grouped, state-aware follow-up prompts when the current workflow favors batched manual updates or skill-install waves.
+description: resume the africom_soc_ir / dcoir workspace from the current authoritative control plane. use at the first substantive turn of every new africom_soc_ir or dcoir session to re-anchor to the current state, then continue the required startup chain through dcoir-memory-preflight, dcoir-session-tracker airtable leftover recovery, and conditional dcoir-plan-tracker active-plan recovery. also use when the operator asks where are we, resume, what is current, what changed, or get me back on track. prefer the governed github readable-text fast path for simple current-state checks and use grouped, state-aware follow-up prompts when the current workflow favors batched manual updates or skill-install waves.
 ---
 
 # DCOIR Session Resume
@@ -17,6 +17,12 @@ Use this first-turn bootstrap path to:
 - re-anchor to the current control plane
 - consume the explicit drift gate before trusting supporting continuity surfaces
 - establish the current governed state that later skills and workflow choices should inherit
+- hand off immediately into the required startup chain instead of leaving Airtable carry-forward state unread
+
+Required startup chain after this skill clears the control plane:
+1. `dcoir-memory-preflight`
+2. `dcoir-session-tracker` Airtable leftover scan
+3. conditional `dcoir-plan-tracker` Airtable active-plan scan when open plan state exists
 
 ## Resume-status fast path
 When the current request is a simple current-state, resume-status, or "where are we" check, use the governed GitHub readable-text fast path first.
@@ -60,10 +66,15 @@ Use the first available bootstrap anchor in this order:
 10. Use the current todo structure and current session handoff brief only as supporting context after the drift gate clears or bounds the path.
 11. If the manifest, change log, or workspace state conflict, stop and report the conflict plainly.
 12. For `session_start_bootstrap` and explicit resume-status requests, use the resume-status fast path by default unless the current task already shows that the primary GitHub readable-text lane cannot resolve the state.
-13. When the current workflow favors grouped manual updates or grouped skill-install waves, prefer grouped ready follow-up prompts over one-skill-at-a-time prompts.
+13. For `session_start_bootstrap`, invoke `dcoir-memory-preflight` immediately after the control plane is re-anchored.
+14. After `dcoir-memory-preflight`, invoke `dcoir-session-tracker` to scan Airtable durable leftovers, open idea-capture items, and buffered promotion candidates that are not yet durably represented in governed GitHub sources.
+15. After the session-tracker leftover scan, invoke `dcoir-plan-tracker` only when open or active Airtable-backed plan state exists, or when the session-tracker leftover scan indicates unfinished plan work.
+16. Surface startup leftovers as carry-forward context, but distinguish clearly between governed GitHub authority and Airtable durable working-state leftovers.
+17. When the current workflow favors grouped manual updates or grouped skill-install waves, prefer grouped ready follow-up prompts over one-skill-at-a-time prompts.
 
 ## Required rules
 - Treat the first substantive session turn as a mandatory resume bootstrap point for this workspace unless the request is clearly outside DCOIR scope.
+- Treat `dcoir-memory-preflight`, `dcoir-session-tracker`, and conditional `dcoir-plan-tracker` recovery as part of the same startup chain instead of optional later conveniences.
 - Treat the current AFRICOM_SOC_IR / DCOIR workspace as the operational workspace, not the historical archive.
 - Treat the first available bootstrap anchor plus the current manifest plus the current change log as the default control plane.
 - Treat the repository named in `dcoir_skills/project_discovery_contract.json` as the sole working source for readable governed text when that contract is present.
@@ -78,6 +89,7 @@ Use the first available bootstrap anchor in this order:
 - Do not let a superficially familiar work line override an explicit `hard_stop_conflict` result from the drift gate.
 - Do not evaluate alternate acquisition lanes before trying the governed GitHub connector path for resume-only status work.
 - Do not broaden a simple resume-status request into clone, container, archive-download, raw-web, or local-script work unless the primary governed readable-text lane actually fails or cannot resolve the drift gate.
+- Do not skip the Airtable leftover recovery steps just because the governed resume summary already looks stable; carry-forward state must still be checked.
 
 ## Output contract
 Return sections in this exact order:
@@ -93,6 +105,7 @@ Return sections in this exact order:
 
 ## Output behavior
 - Keep the response concise and state-first.
+- When startup leftovers exist, summarize them briefly in the current next planned work item, refresh watchlist, or recommended next move rather than silently dropping them.
 - Give one recommended next move only.
 - Then give 2 to 4 short ready follow-up prompts.
 - Use plain-language prompts, not internal tool syntax.
