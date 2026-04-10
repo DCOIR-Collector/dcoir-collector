@@ -1,128 +1,33 @@
-# Local session-state workflow
+# DCOIR Session Tracker Local Cache Workflow
 
 ## Purpose
-Use a real local JSON file as the primary session-tracker working-state surface when code execution and file writing are available.
+Use a real local `session_state.json` file only as a transient cache, export surface, or render buffer for Airtable-first durable working state.
 
-## Default path
+## Default local cache file
 - `/mnt/data/dcoir_session_tracker/session_state.json`
 
-## Primary script
+## Primary scripts
 - `scripts/session_state_store.py`
+- `scripts/render_session_state.py`
 
-## Core commands
-Ensure the local state surface exists and report whether it was already present or had to be initialized:
-```bash
-python scripts/session_state_store.py ensure-state
-```
-
-Initialize the file:
-```bash
-python scripts/session_state_store.py init
-```
-
-Inspect the file:
-```bash
-python scripts/session_state_store.py inspect
-```
-
-Upsert or update one verbose item:
-```bash
-python scripts/session_state_store.py upsert --item-json '{"id":"S-001","bucket":"session_only","title":"example title","detail":"full context line that makes the item understandable in isolation","why":"why this matters","next_action":"next action to take","carry_forward_note":"what the next session should remember if this is still open","promotion_target":"project_sources/LOG-01_DCOIR_Todo_Log.txt"}'
-```
-
-Stage one governed update entry:
-```bash
-python scripts/session_state_store.py stage-governed-update --entry-json '{"title":"promote tracker items into LOG-01 and todo/01","target_paths":["project_sources/LOG-01_DCOIR_Todo_Log.txt","project_sources/todo/01_Active_Now.txt"],"action":"update","why":"same grouped push is already happening","source_item_ids":["S-101","S-102"]}'
-```
-
-Derive a pre-push review and todo-sync proposal from the current local state:
-```bash
-python scripts/session_state_store.py derive-pre-push-review --output-md /mnt/data/dcoir_session_tracker/pre_push_review.md --output-json /mnt/data/dcoir_session_tracker/pre_push_review.json --update-state
-```
-
-Mark one item complete and move it to completed:
-```bash
-python scripts/session_state_store.py complete --id S-001
-```
-
-Mark one item as governed-written after the push lands and automatically clear staged entries and cleanup notes that still reference it:
-```bash
-python scripts/session_state_store.py mark-governed-written --id S-001 --note 'promoted in same grouped push as LOG-01 update'
-```
-
-Clear any remaining staged governed updates in bulk when needed:
-```bash
-python scripts/session_state_store.py clear-staged-governed-updates
-```
-
-Clear any remaining staged todo actions in bulk when needed:
-```bash
-python scripts/session_state_store.py clear-staged-todo-actions
-```
-
-Clear any remaining post-push cleanup notes in bulk when needed:
-```bash
-python scripts/session_state_store.py clear-post-push-cleanup
-```
-
-Update summary fields:
-```bash
-python scripts/session_state_store.py set-summary --current-phase "example phase" --best-next-move "example next move"
-```
-
-## Verbosity requirement
-The local JSON file is allowed to preserve concise helper metadata, but materially important operator-facing items should carry enough context to be understood in isolation.
-
-Minimum recommended item fields:
-- `title`
-- `detail`
-- `why`
-- `next_action`
-- `carry_forward_note` when later resume clarity would benefit
-- `promotion_target` when the likely governed destination is already known
-
-Preferred additional fields when useful:
-- `operator_language`
-- `impact_if_missed`
-- `desired_outcome`
-- `flush_trigger`
-- `related`
-
-## Presence and absence rules
-- `ensure-state` is the required first substantive local-state command at the beginning of each new session that uses this tracker.
-- `ensure-state` may initialize a new file when none exists, but it must say that plainly so the operator knows a pre-existing file was not present.
-- `inspect` remains the strict proof command and should fail when the file is absent instead of silently recreating it.
-- If an upsert, summary update, staging action, or derived pre-push review path had to initialize a new file because no pre-existing file was present, that write path must emit an explicit operator-visible notice.
+## Core rules
+- Airtable is the primary durable working-state surface for this skill.
+- The local JSON file is optional and should be treated as a cache or deterministic render helper, not as the durable continuity source.
+- At the beginning of each new session that uses this skill, prefer Airtable-backed resume state first.
+- If code execution and file writing are available, run `scripts/session_state_store.py ensure-state` to prove whether a local cache is already present.
+- A missing local cache does not, by itself, prove durable state was lost.
+- If a local cache is initialized because no pre-existing file was present, surface that plainly.
 
 ## Inspection output requirements
-A valid inspection should surface:
+A valid local-cache presence report should surface:
 - absolute path
 - filename
 - file size in bytes
 - modified time
 - sha256 checksum
-- counts by open bucket
-- completed item count
-- staged governed update count
-- staged todo-action count
-- optional state excerpt when requested
+- item counts when known
 
 ## Truth rules
-- Do not claim a real local session-state file exists until `inspect` proves it.
-- Do not treat a merely described buffer as equivalent to a file-backed local state.
-- Do not treat a newly re-initialized file as evidence that the missing interval was still file-backed.
-- The local JSON file is the primary working state when it exists.
-- GitHub-backed tracker-memory snapshots are not used for this skill.
-- Cross-session continuity for this skill should come from an exported handoff artifact or promotion into governed Project files.
-
-## Governed-write requirement
-Before any governed Project update that depends on session-tracker state:
-1. inspect the local file
-2. derive a pre-push review from the current state
-3. surface pending promotion candidates
-4. surface what should remain local
-5. surface staged governed updates that should land in the same grouped transaction
-6. surface staged todo additions, updates, or removals for the same grouped transaction
-7. use verbose item detail by default for materially important buffered items
-8. only then propose or execute the Project-file update path
-9. after the governed push lands, mark the promoted items governed-written so related staged-update entries, staged-todo entries, and matching cleanup notes are cleared automatically; use the explicit clear commands only for leftover bulk cleanup
+- Do not claim a real local `session_state.json` cache exists until inspection proves it.
+- Do not treat a newly initialized local cache file as evidence that an earlier interval remained file-backed.
+- Do not block Airtable-first capture only because the local cache is missing.

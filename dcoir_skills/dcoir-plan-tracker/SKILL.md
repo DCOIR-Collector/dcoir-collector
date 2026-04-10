@@ -1,6 +1,6 @@
 ---
 name: dcoir-plan-tracker
-description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with durable github-backed state, hierarchical task decomposition, blocker capture, closed-loop blocker recovery, session-local write buffering, decision-aware execution, and operator-visible milestone signaling. use when chatgpt needs to break a dcoir task into tasks, subtasks, and subsubtasks; automatically create or update governed tracker files in github; resume paused work; record blockers and mitigations; classify reusable lessons after blocker recovery; stage promotion-ready candidates; consult decision defaults before pausing for operator input; or export a clean handoff for follow-on execution.
+description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state, hierarchical task decomposition, blocker capture, closed-loop blocker recovery, decision-aware execution, and operator-visible milestone signaling. use when chatgpt needs to break a dcoir task into tasks, subtasks, and subsubtasks; preserve active plan continuity beyond fragile local container state; automatically create or update governed tracker files in github; resume paused work; record blockers and mitigations; classify reusable lessons after blocker recovery; stage promotion-ready candidates; consult decision defaults before pausing for operator input; or export a clean handoff for follow-on execution.
 ---
 
 # DCOIR Plan Tracker
@@ -29,7 +29,7 @@ This skill owns:
 - plan-level and task-level status updates
 - session-local buffer-state review
 - github-backed tracker file creation and updates
-- local `plan_state.json` presence checks and explicit missing-state warnings for local plan folders
+- airtable-first durable plan state plus local `plan_state.json` cache checks and explicit missing-state warnings for local plan folders
 - concise user-visible milestone signaling through `dcoir-attention-signaler`
 
 This skill does not replace:
@@ -63,10 +63,13 @@ Use `dcoir-attention-signaler` for user-visible progress only at:
 
 Do not emit banners for every small state change.
 
-## Durable storage model
+## Storage model
 
-### Root path
-Use this github-backed durable memory root:
+### Airtable-first durable working state
+Use Airtable as the primary durable execution-state surface for live plan continuity.
+
+### Governed repo surfaces
+Use this github-backed promoted memory root:
 `dcoir_skill_memory/dcoir-plan-tracker/`
 
 ### Root files
@@ -91,7 +94,8 @@ Create and maintain these files for every plan:
 - `plan_state.json`
 
 Read `references/file_layout.md` when creating or validating plan surfaces.
-Read `references/local_plan_state_workflow.md` when a local plan folder or `plan_state.json` proof check is in scope.
+Read `references/local_plan_state_workflow.md` when a local plan cache or `plan_state.json` proof check is in scope.
+Read `references/airtable_plan_sync_workflow.md` when Airtable-first plan persistence or recovery is in scope.
 
 ## Locked id and naming rules
 
@@ -203,23 +207,23 @@ Supported commands include:
 3. Consult `dcoir-memory-preflight` when the task family requires canonical memory preflight.
 4. Create or open the plan folder.
 5. Update `plan_tracker_registry.json` and `plan_tracker_memory.md`.
-6. At the beginning of each new session that uses a local plan folder, run `scripts/ensure_plan_state.py` before other substantive local plan actions so the operator can see whether `plan_state.json` was already present or had to be initialized for the current branch.
-7. Read `00_index.md`, `05_resume_state.md`, and `plan_state.json` first when resuming.
-8. Update markdown and json together whenever the plan changes.
-9. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces buffered state, promotion candidates, what should remain local, the next flush trigger, one best next move, and any staged governed updates that should land in the same grouped push.
-10. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger.
+6. At the beginning of each new session that uses a plan, prefer Airtable-backed plan state first and then run `scripts/ensure_plan_state.py` only when a local plan cache is useful for deterministic rendering or local proof.
+7. Read `00_index.md`, `05_resume_state.md`, Airtable-backed plan state, and `plan_state.json` when available before resuming.
+8. Update Airtable durable state first and refresh markdown or local JSON mirrors as needed whenever the plan changes.
+9. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces Airtable-backed durable state, promotion candidates, what should remain local, the next flush trigger, one best next move, and any staged governed updates that should land in the same grouped push.
+10. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger, but do not rely on local JSON alone when continuity really matters.
 11. Use the github connector directly for safe governed readable-text writes when available.
 12. Verify repo state after writes instead of trusting success messages alone.
 13. Emit user-visible attention signals only at milestone, blocked, and completion moments.
 14. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
 
 
-## Airtable durable checkpoint layer
-This skill now supports a durable Airtable checkpoint layer in addition to the local `plan_state.json` working mirror.
+## Airtable-first durable execution state
+This skill now uses Airtable as the primary durable execution-state layer and keeps local `plan_state.json` only as an optional cache or render mirror.
 
 Truth model:
-- local `plan_state.json` remains the hot working state
-- Airtable is the durable checkpointed execution-state layer
+- Airtable is the primary durable execution-state layer
+- local `plan_state.json` is an optional transient cache or render mirror
 - GitHub remains the authoritative promoted state
 
 Known Airtable targets for this project:
@@ -232,12 +236,13 @@ Known Airtable targets for this project:
 Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
 
 Airtable write posture:
-- upsert `Plans` only on material plan-state changes
+- upsert `Plans` first on material plan-state changes
 - batch `Plan Tasks` writes when task structure or statuses materially change
 - create sparse `Plan Checkpoints` rows for blockers, flush reviews, milestones, before-GitHub-write checkpoints, and handoff moments
 - use `Tracking Registry` only as metadata after the durable domain record already exists
 
-Use `scripts/render_airtable_plan_bundle.py` to render Airtable-ready payloads from a local plan folder.
+Use `scripts/render_airtable_plan_bundle.py` to render Airtable-ready payloads from a local plan cache when one exists.
+If the local cache is missing, reconstruct the needed Airtable payload from the current plan reasoning and write Airtable first rather than blocking on local file recovery.
 Typical modes:
 - `plan`
 - `tasks`
@@ -275,7 +280,7 @@ Preferred flush-check trigger points:
 
 When buffering is active, `05_resume_state.md` should make the pending flush state obvious.
 
-At the beginning of each new session that uses a local plan folder, run the local `plan_state.json` preflight first instead of assuming the local file is already present.
+At the beginning of each new session that uses a local plan cache, prefer Airtable-backed plan state first and run the local `plan_state.json` preflight only when a cache proof step is useful.
 
 A valid flush/manicure check for this skill must:
 - inspect the current plan state and active task
@@ -406,6 +411,6 @@ Read when needed:
 ## Local plan-state proof rules
 When a local plan folder is being used before a GitHub write:
 - run `scripts/ensure_plan_state.py` at the beginning of each new session that uses that local plan folder
-- do not claim a real local `plan_state.json` file exists until the preflight proves it
-- if the expected local plan folder is missing `plan_state.json`, say that plainly and do not silently treat the missing interval as uninterrupted file-backed continuity
-- only initialize a new local plan-state file automatically when the branch is actually creating a brand-new local plan folder
+- do not claim a real local `plan_state.json` cache exists until the preflight proves it
+- if the expected local plan cache is missing `plan_state.json`, say that plainly and do not silently treat the missing interval as uninterrupted local-cache continuity
+- only initialize a new local plan-state cache automatically when the branch is actually creating a brand-new local plan cache folder

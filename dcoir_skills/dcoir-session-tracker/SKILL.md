@@ -1,6 +1,6 @@
 ---
 name: dcoir-session-tracker
-description: maintain a session-local dcoir tracker with a real local json state file, presence checks, explicit absence or re-init signaling, verbose continuity capture, derived pre-push review bundles, staged governed updates, todo-sync proposals, and handoff exports. use when chatgpt needs to catch important project thoughts before they are lost, answer what remains, prove local tracker state exists, detect or recover from silent local-state absence, prepare follow-up promotion into governed project files, derive what should land in the next grouped github push, or close out a session safely for later resume inside africom_soc_ir / dcoir work.
+description: maintain a session-local dcoir tracker with airtable-first durable working state, idea capture, checkpointing, verbose continuity capture, derived pre-push review bundles, staged governed updates, todo-sync proposals, and handoff exports. use when chatgpt needs to catch important project thoughts before they are lost, preserve session continuity beyond fragile local container state, answer what remains, checkpoint durable working memory into airtable, prepare follow-up promotion into governed project files, derive what should land in the next grouped github push, or close out a session safely for later resume inside africom_soc_ir / dcoir work.
 ---
 
 # DCOIR Session Tracker
@@ -11,18 +11,18 @@ Before proceeding, verify that the current task is actually inside the AFRICOM_S
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 ## Overview
-Use this skill to maintain a session-local tracker that catches spontaneous operator thoughts before they get lost, keeps an explicit and operator-readable inventory of what remains, maintains a real inspectable local session-state file when code execution and file writing are available, prepares promotion-ready follow-up when the operator wants items moved into governed Project files, and honestly tracks what is still only buffered in the current session.
+Use this skill to maintain a session-local tracker that catches spontaneous operator thoughts before they get lost, keeps an explicit and operator-readable inventory of what remains, writes durable working state to Airtable first, optionally maintains a local JSON cache or render buffer when code execution and file writing are available, prepares promotion-ready follow-up when the operator wants items moved into governed Project files, and honestly tracks what is still only buffered in the current session.
 
 This skill does not claim hidden persistence across chats.
-- within the current conversation, it may maintain a live local session-state file and session-local buffer state when code execution and file writing are available
-- across future conversations, it only has what is re-imported from an exported markdown artifact or what was promoted into governed Project sources
-- do not claim a real local session-state file exists until the inspected local file proves it
+- within the current conversation, it should prefer Airtable as the durable working-state surface and may also maintain a live local session-state cache when code execution and file writing are available
+- across future conversations, it only has what is in Airtable, what is re-imported from an exported markdown artifact, or what was promoted into governed Project sources
+- do not claim a real local session-state cache exists until the inspected local file proves it
 
 ## Core capabilities
 1. Capture casual "don't forget" statements without waiting for a formal task list.
 2. Classify items into the right buckets.
-3. At the beginning of each new session that uses this skill, run a startup local-state preflight and maintain a real local session-state file as the primary working state when code execution and file writing are available.
-4. Inspect the local session-state file and report its path, filename, size, modified time, checksum, and current item counts.
+3. At the beginning of each new session that uses this skill, prefer Airtable resume and checkpoint state first, then run a startup local-cache preflight when code execution and file writing are available.
+4. Inspect the local session-state cache when it exists and report its path, filename, size, modified time, checksum, and current item counts.
 5. Answer "what do we still have left" with a deduplicated, priority-ordered inventory grounded in the current local state when that state exists.
 6. Preserve and render tracker items verbosely enough that the operator can understand the carried state without reconstructing prior chat context.
 7. Merge an uploaded markdown tracker artifact with the current chat state.
@@ -33,44 +33,44 @@ This skill does not claim hidden persistence across chats.
 12. Derive a pre-push review bundle from the current local state, including staged todo additions, updates, removals, and post-push cleanup.
 13. When an item is marked governed-written after a grouped push, automatically clear staged governed-update entries, staged todo actions, and post-push cleanup notes that still reference that same item.
 14. Give an immediate operator-visible confirmation when a materially important item is captured, including whether it is preserved session-locally only or already staged for the next governed push.
-15. Surface an explicit absence or re-init warning when a tracker write path had to initialize a new local session-state file because no pre-existing file was present.
+15. Surface an explicit cache-absence or re-init warning when a tracker write path had to initialize a new local session-state cache because no pre-existing file was present.
 
-## Local session-state file
-When code execution and file writing are available, use a real local JSON file as the primary working-state surface.
+## Local session-state cache
+When code execution and file writing are available, use a real local JSON file only as a transient cache, export surface, or render buffer for the Airtable-first durable working state.
 
-Default local state path:
+Default local cache path:
 - `/mnt/data/dcoir_session_tracker/session_state.json`
 
 Primary implementation:
-- use `scripts/session_state_store.py` to ensure-state, initialize, upsert, complete, remove, inspect, derive the pre-push review, stage explicit governed updates or todo actions, and update summary fields
-- use `scripts/render_session_state.py` only to render a markdown export from the local JSON state file
+- use `scripts/session_state_store.py` to ensure-state, initialize, upsert, complete, remove, inspect, derive the pre-push review, stage explicit governed updates or todo actions, and update summary fields when a local cache is helpful
+- use `scripts/render_session_state.py` only to render a markdown export from the local JSON cache
+- use Airtable as the durable resume source whenever reliable continuity matters more than local container persistence
 
-Required local-state workflow:
-1. At the beginning of each new session that uses this skill, run `scripts/session_state_store.py ensure-state` before other substantive tracker actions so the operator can see whether a real local session-state file was already present or had to be initialized for the current branch.
-2. Initialize the local file before claiming that a maintained session-state file exists.
-3. Use the local file as the primary working state during the chat when code execution and file writing are available.
-4. If the startup preflight or a later write path had to initialize a new local file because no pre-existing file was present, say that plainly and do not imply that the missing interval was still protected by the local file.
-5. After material tracker changes, inspect the file when the operator asks whether the local session state is real or when governed Project flush time is approaching.
-6. Before any GitHub write that depends on tracker state, inspect the file and derive the pre-push review from current state.
-7. When a governed push, grouped repo batch, or GitHub Desktop push is about to happen, run the derived pre-push review instead of leaving the tracker silent.
-8. Before session close-out, inspect the file again and classify durable, exported-only, buffered-only, and any unresolved local-state absence risk explicitly.
+Required local-cache workflow:
+1. At the beginning of each new session that uses this skill, check Airtable-first durable state before trusting a local cache.
+2. If code execution and file writing are available, run `scripts/session_state_store.py ensure-state` so the operator can see whether a local cache was already present or had to be initialized for the current branch.
+3. Treat a missing local cache as a cache absence, not as proof that durable state was lost, unless Airtable is also unavailable or stale.
+4. If the local cache was initialized because no pre-existing file was present, say that plainly and do not imply uninterrupted file-backed continuity.
+5. After material tracker changes, prefer writing Airtable first, then refresh or inspect the local cache when export, deterministic rendering, or proof of cache presence is useful.
+6. Before any GitHub write that depends on tracker state, derive the pre-push review from the best available durable state and use the local cache only as a helper surface when present.
+7. Before session close-out, classify Airtable durability, exported-only state, buffered-only state, and any unresolved cache or connector risk explicitly.
 
 Inspection requirement:
-- do not claim a real local session-state file exists unless `scripts/session_state_store.py inspect` confirms its path, filename, size, modified time, checksum, and counts
-- use `scripts/session_state_store.py ensure-state` as the first-use preflight so the operator can see whether the local file was already present or had to be initialized in the current branch
-- when the operator questions whether the local session state is real, show the inspection result instead of paraphrasing intent
+- do not claim a real local session-state cache exists unless `scripts/session_state_store.py inspect` confirms its path, filename, size, modified time, checksum, and counts
+- use `scripts/session_state_store.py ensure-state` only as a cache proof step, not as the source of durable truth
+- when the operator questions whether the local cache is real, show the inspection result instead of paraphrasing intent
 
 If code execution or file writing is unavailable:
-- say plainly that a real local session-state file cannot be proven in the current branch
-- keep reasoning bounded and do not imply that a real maintained local file exists
+- say plainly that a real local session-state cache cannot be proven in the current branch
+- continue using Airtable as the primary durable working-state surface when available
 
-Read `references/local_session_state_workflow.md` when local-state implementation or inspection details are needed.
+Read `references/local_session_state_workflow.md` when local-cache implementation or inspection details are needed.
 
 ## Visible capture behavior
 When a materially important item is captured:
-- say that it was captured and preserved in the local session-state file when that file is real and current
-- say whether it remains session-local for now or is already staged for the next governed push
-- if the capture path had to initialize a new local file because no pre-existing file was present, say that plainly in the same response instead of silently treating the capture as uninterrupted continuity
+- say that it was captured in Airtable durable working state first and whether a local cache was also refreshed when available
+- say whether it remains Airtable-only for now or is already staged for the next governed push
+- if the local cache path had to initialize a new file because no pre-existing file was present, say that plainly in the same response instead of silently treating the capture as uninterrupted continuity
 - prefer one short but explicit reassurance line over silent capture when the operator would otherwise be unsure whether the tracker actually preserved the item
 
 ## Verbosity standard
@@ -119,8 +119,8 @@ Run the full close-out routine below and distinguish:
 Required close-out checks:
 1. Re-anchor to Project Instructions, then CP-01, then CP-02.
 2. Run a flush check against all known buffered session-tracker state.
-3. Inspect the local session-state file when it exists and surface the inspection result.
-4. If no local session-state file exists at close-out time, say so plainly and warn that any interval since the last proven local-state inspection cannot be treated as file-backed continuity.
+3. Inspect Airtable checkpoint state first and inspect the local session-state cache when it exists.
+4. If no local session-state cache exists at close-out time, say so plainly, but distinguish cache absence from durable-state loss when Airtable remains current.
 5. Verify whether materially learned workflow rules, preferences, blocker recoveries, and reusable lessons were already written to governed GitHub sources, intentionally kept as session-local buffered state, exported into a handoff artifact, or still missing durable capture.
 5. Verify that all tasks and requests mentioned in the session are either closed as done, preserved in the correct governed destination, or explicitly carried as open items in the handoff state.
 6. Verify that session-related continuity surfaces are updated when the current workflow is already performing a safe GitHub write for governed Project updates.
@@ -188,8 +188,8 @@ Preferred flush-check trigger points:
 - when a governed push, GitHub Desktop push, or grouped repo batch is about to happen
 
 When a flush-check occurs:
-- inspect the local session-state file when it exists
-- derive the pre-push review from current state
+- inspect Airtable-backed durable state first and inspect the local session-state cache when it exists
+- derive the pre-push review from the best available durable state
 - surface what is still buffered
 - surface what is safe to flush now
 - surface what should remain session-local for now
@@ -205,7 +205,7 @@ Read `references/session_buffer_workflow.md` when flush-check details are needed
 ## Session close-out workflow
 When the operator is moving to another session, read `references/session_closeout_workflow.md` and perform this close-out sequence in order:
 1. Inventory all active tracked items, including session-only notes, durable preference candidates, new skill ideas, follow-on validation items, blocked items, and promotion-ready LOG-01 / LOG-02 / LOG-03 candidates.
-2. Run a flush check and inspect the local session-state file when it exists.
+2. Run a flush check and inspect Airtable-backed durable state first, then inspect the local session-state cache when it exists.
 3. Classify each item as safe to flush now, should remain session-local for now, must be exported in handoff, or already durable and only needs verification.
 4. Verify whether known continuity surfaces are current enough for safe resume.
 5. If the surrounding workflow is already doing a safe governed Project write, batch the already-known follow-on continuity updates into that grouped transaction.
@@ -216,9 +216,9 @@ When the operator is moving to another session, read `references/session_closeou
 ## Export workflow
 When the operator asks to export, hand off, or save the session state:
 1. Read `references/session_state_schema.md`.
-2. Ensure the local JSON state file exists when code execution and file writing are available.
-3. Use `scripts/render_session_state.py` to create a markdown artifact from the local JSON state file.
-4. If code execution or file writing is not available, emit the same artifact as one markdown block and say the local file was not available for proof.
+2. Prefer Airtable-backed durable state as the export source and ensure the local JSON cache exists only when code execution and file writing make deterministic rendering helpful.
+3. Use `scripts/render_session_state.py` to create a markdown artifact from the local JSON cache when available.
+4. If code execution or file writing is not available, emit the same artifact from the best available Airtable-backed state and say the local cache was not available for proof.
 5. Use the default export filename pattern `YYYYMMDDTHHMMSSZ_dcoir_session_state.md` unless the operator explicitly asks for another name.
 
 The exported markdown artifact must contain:
@@ -251,8 +251,9 @@ When the operator wants one or more session items promoted into governed Project
 This skill no longer uses `dcoir_skill_memory/dcoir-session-tracker/session_tracker_state.md` as a working-state or snapshot branch.
 
 Rules:
-- treat the local JSON file as the only tracker working-state surface for this skill when code execution and file writing are available
-- use exported handoff artifacts or governed Project-file promotion for cross-session continuity
+- treat Airtable as the primary durable working-state surface for this skill
+- use the local JSON file only as a transient cache, export surface, or render buffer when code execution and file writing are available
+- use exported handoff artifacts or governed Project-file promotion for cross-session continuity beyond Airtable
 - do not create or refresh GitHub-backed helper-state snapshots for `dcoir-session-tracker`
 
 ## Truth rules
@@ -262,8 +263,9 @@ Rules:
 - do not silently convert a user preference into a durable rule without surfacing its persistence status
 - do not lose operator-stated rationale when it materially explains why the item matters
 - do not claim buffered state is durable before governed promotion or handoff export actually happened
-- do not claim a real local session-state file exists until the inspection command proves it
-- do not silently reinitialize a missing local state file during a write path without telling the operator that no pre-existing file was present at that step
+- do not claim a real local session-state cache exists until the inspection command proves it
+- do not silently reinitialize a missing local cache file during a write path without telling the operator that no pre-existing file was present at that step
+- do not treat local-cache absence as durable-state loss when Airtable is current
 
 ## Output contract
 When acting under this skill:
@@ -275,16 +277,16 @@ When acting under this skill:
 - when exporting, produce a markdown artifact that can be re-uploaded and merged later
 
 
-## Airtable checkpointed working state
-This skill now supports a durable Airtable checkpoint layer in addition to the local JSON working-state file.
+## Airtable-first durable working state
+This skill now uses Airtable as the primary durable working-state layer and keeps the local JSON file only as an optional cache or render buffer.
 
 Truth model:
-- local JSON remains the hot working state
-- Airtable is the durable checkpointed working-state layer
+- Airtable is the primary durable working-state layer
+- local JSON is an optional transient cache or render buffer
 - GitHub remains the authoritative promoted state
 
-Use Airtable only for sparse checkpoint writes and explicit idea capture.
-Do not write every small local-state mutation into Airtable.
+Prefer Airtable for checkpoint writes, idea capture, and resume continuity.
+Do not rely on local JSON alone when continuity really matters.
 
 Known Airtable targets for this project:
 - base id: `appM4KSwnVf3G3OTK`
@@ -304,10 +306,11 @@ Relevant checkpoint triggers:
 - before handoff or close-out
 - when local state had to be reinitialized because no pre-existing file was present
 
-Use `scripts/render_airtable_session_bundle.py` to render Airtable-ready payloads from the current local JSON state.
+Use `scripts/render_airtable_session_bundle.py` to render Airtable-ready payloads from the current local JSON cache when that cache exists and is current.
 Typical modes:
 - `checkpoint` for `Session Checkpoints`
 - `idea` for `Idea Inbox`
+If the cache is missing, reconstruct the needed payload from the current session reasoning and write Airtable first rather than blocking on local file recovery.
 
 Use `Tracking Registry` only as a metadata index after the durable domain record already exists.
 Do not make registry writes the only persistence action.

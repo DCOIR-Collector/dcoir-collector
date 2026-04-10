@@ -11,7 +11,7 @@ Use this reference when the operator indicates that work is moving to another se
 5. Review known open items from the current conversation.
 6. Run a flush check across buffered state.
 7. Inspect the real local JSON state file if it exists and record the path, size, modified time, checksum, and item counts.
-8. If no local JSON state file exists at close-out time, say that plainly and warn that any interval since the last proven inspection cannot be treated as file-backed continuity.
+8. If no local JSON cache file exists at close-out time, say that plainly, but distinguish cache absence from durable-state loss when Airtable remains current.
 9. Classify every material item as one of:
    - already durable in governed GitHub
    - exported in handoff only
@@ -36,7 +36,7 @@ At close-out, verify:
 - Exported handoff is not the same as governed GitHub promotion.
 - Buffered session-local state is not cross-session durable.
 - A claimed local file is not proven until inspection output exists.
-- A newly initialized local file is not evidence that the missing interval stayed protected by file-backed continuity.
+- A newly initialized local cache file is not evidence that the missing interval stayed protected by file-backed continuity.
 - If continuity drift exists, say so plainly.
 
 ## Starter prompt requirements

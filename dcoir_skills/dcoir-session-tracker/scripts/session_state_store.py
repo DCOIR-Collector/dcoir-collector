@@ -136,7 +136,7 @@ def emit_write_result(path: Path, state: dict[str, Any], primary_message: str, p
             path,
             state,
             'initialized_new_local_state',
-            'no pre-existing local session-state file was present at this step, so a new session-local state file was initialized first',
+            'no pre-existing local session-state cache was present at this step, so a new session-local cache file was initialized first',
         )
 
 
@@ -411,7 +411,7 @@ def cmd_ensure_state(args: argparse.Namespace) -> int:
             args.path,
             state,
             'initialized_new_local_state',
-            'no pre-existing local session-state file was present, so a new session-local state file was initialized for this session',
+            'no pre-existing local session-state cache was present, so a new session-local cache file was initialized for this session',
             show_state=args.show_state,
         )
         return 0
@@ -419,7 +419,7 @@ def cmd_ensure_state(args: argparse.Namespace) -> int:
         args.path,
         state,
         'existing_local_state_present',
-        'existing local session-state file is present and inspectable',
+        'existing local session-state cache is present and inspectable',
         show_state=args.show_state,
     )
     return 0
@@ -441,7 +441,7 @@ def cmd_upsert(args: argparse.Namespace) -> int:
     state['open_items'][bucket].append(item)
     save_state(args.path, state)
     state = load_state(args.path)
-    emit_write_result(args.path, state, f'Captured {item["id"]} into {bucket} and preserved it in the local session-state file', path_existed_before)
+    emit_write_result(args.path, state, f'Captured {item["id"]} into {bucket} and preserved it in the local session-state cache', path_existed_before)
     return 0
 
 
@@ -592,7 +592,7 @@ def cmd_derive_pre_push_review(args: argparse.Namespace) -> int:
             args.path,
             state,
             'initialized_new_local_state',
-            'no pre-existing local session-state file was present when deriving the pre-push review, so a new session-local state file was initialized first',
+            'no pre-existing local session-state cache was present when deriving the pre-push review, so a new session-local cache file was initialized first',
         )
     return 0
 

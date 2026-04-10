@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Update a local plan_state.json and refresh markdown mirrors.
+"""Update a local plan-state cache and refresh markdown mirrors.
 
 This script is intended for deterministic local rendering before GitHub updates. It supports
 simple status transitions and active-task updates.
@@ -68,7 +68,7 @@ def main() -> None:
     plan_dir = Path(args.plan_dir)
     plan_path = plan_dir / "plan_state.json"
     if not plan_path.exists():
-        raise SystemExit('no pre-existing local plan_state.json was present for this plan folder; run scripts/ensure_plan_state.py first and do not treat the missing interval as file-backed continuity')
+        raise SystemExit('no pre-existing local plan-state cache was present for this plan folder; run scripts/ensure_plan_state.py first and do not treat the missing interval as local-cache continuity')
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
 
     now = utc_now()

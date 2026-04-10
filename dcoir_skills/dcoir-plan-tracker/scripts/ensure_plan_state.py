@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ensure or inspect the local plan_state.json file for a plan-tracker plan folder."""
+"""Ensure or inspect the local plan-state cache file for a plan-tracker plan folder."""
 from __future__ import annotations
 
 import argparse
@@ -51,19 +51,19 @@ def main() -> int:
 
     if plan_path.exists():
         state = json.loads(plan_path.read_text(encoding='utf-8'))
-        print_status(plan_path, state, 'existing_local_plan_state_present', 'existing local plan_state.json is present and inspectable')
+        print_status(plan_path, state, 'existing_local_plan_state_present', 'existing local plan-state cache is present and inspectable')
         return 0
 
     non_state_files = [p for p in plan_dir.glob('*') if p.name != 'plan_state.json'] if plan_dir.exists() else []
     if non_state_files and (args.title is None or args.objective is None):
         print('local_plan_state_status: missing_expected_local_plan_state')
-        print('local_plan_state_notice: no pre-existing local plan_state.json was present for this plan folder, so continuity cannot be treated as file-backed until the local plan state is deliberately repaired or reinitialized')
+        print('local_plan_state_notice: no pre-existing local plan-state cache was present for this plan folder, so local cache continuity cannot be assumed until the local plan cache is deliberately repaired or reinitialized; use Airtable as the durable state source meanwhile')
         print(f'expected_path: {plan_path.resolve()}')
         return 2
 
     if args.title is None or args.objective is None:
         print('local_plan_state_status: cannot_initialize_without_minimum_plan_metadata')
-        print('local_plan_state_notice: no local plan_state.json was present and no title/objective were supplied for initializing a new local plan folder')
+        print('local_plan_state_notice: no local plan-state cache was present and no title/objective were supplied for initializing a new local plan cache folder')
         print(f'expected_path: {plan_path.resolve()}')
         return 2
 
@@ -71,7 +71,7 @@ def main() -> int:
     state = make_empty_plan_state(plan_id, args.title, args.objective, owner=args.owner)
     write_plan_folder(plan_dir, state)
     state = json.loads(plan_path.read_text(encoding='utf-8'))
-    print_status(plan_path, state, 'initialized_new_local_plan_state', 'no pre-existing local plan_state.json was present, so a new local plan-state file was initialized for this session')
+    print_status(plan_path, state, 'initialized_new_local_plan_state', 'no pre-existing local plan-state cache was present, so a new local plan cache file was initialized for this session')
     return 0
 
 

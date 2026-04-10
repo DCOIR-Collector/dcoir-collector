@@ -29,7 +29,7 @@ def main() -> None:
     write_plan_folder(plan_dir, plan)
     print(plan_id)
     print(plan_dir)
-    print_status(plan_dir / 'plan_state.json', plan, 'initialized_new_local_plan_state', 'no pre-existing local plan_state.json was present, so a new local plan-state file was initialized for this session')
+    print_status(plan_dir / 'plan_state.json', plan, 'initialized_new_local_plan_state', 'no pre-existing local plan-state cache was present, so a new local plan cache file was initialized for this session')
 
 
 if __name__ == "__main__":
