@@ -1,23 +1,19 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 4.0.6
-Current state id: 2026-04-09-queue-closeout-after-duplicate-surface-cleanup-v1
-Change class: bounded remaining-queue close-out and legacy duplicate-readable-surface cleanup
+Version: 4.0.7
+Current state id: 2026-04-09-reopen-parity-and-drive-evaluation-v1
+Change class: premature closure correction and reopened parity-and-Drive evaluation
 
 What changed
-- Added `project_sources/LOG-66_DCOIR_Remaining_Queue_Closeout_And_Duplicate_Surface_Cleanup_2026-04-09.txt` to record completion of the remaining queued repo work and the evidence basis for closing parity and optional Drive-staging review.
-- Updated `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt`, `project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt`, `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/01_Active_Now.txt` so the active continuity surfaces now say plainly that no active queued repo work remains from this close-out line.
-- Removed stale authority-looking duplicate-readable files from `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/90_OPTIONAL_TECHNICAL_REFERENCE/` and replaced them with one bounded legacy-reference note that directs readers back to the current governed control plane.
-- Completed the queued parity revisit by confirming that `dcoir_skills/skill_parity_manifest.json` and `dcoir_skills/skill_parity_summary.md` already record a verified repo-source baseline and that no governed skill-source changes landed in this close-out wave.
-- Completed the optional Google Drive staging review by determining that no independent staging need exists at the current passing baseline while the GitHub-primary readable-source rule and the existing GitHub Desktop delivery lane remain sufficient.
+- Added `project_sources/LOG-67_DCOIR_Premature_Closure_Correction_And_Reopened_Parity_And_Drive_Evaluation_2026-04-09.txt` to record that two items were closed too early in the prior close-out wave.
+- Updated the active continuity surfaces so they reopen the parity and Drive items instead of claiming that no repo work remains.
+- Kept the duplicate-readable-surface cleanup closed and intact.
 
 Why
-- The only substantive queued repo task left after the passing-baseline realignment was the bounded duplicate-readable-surface cleanup.
-- The remaining parity and optional Drive-staging items were later-only review items, so the correct way to finish them was to review them explicitly and either act or close them with a bounded reason rather than silently dropping them.
-- The retained legacy Gemini email bundle still contained old control-plane and design-authority-looking files that could be mistaken for current authority even though the bundle is only a structure-and-naming legacy reference.
-
+- The earlier close-out relied on the governed parity surfaces already stored in the repo, but it did not actually perform a fresh installed-skills-versus-governed-source verification before closing the parity item.
+- The fresh installed-skill parity check showed substantial installed drift against the governed repo baseline.
+- The earlier optional Google Drive staging closure was only a repo-side review and not an explicit connector-backed evaluation.
 Validation notes
-- This change does not add or modify collector logic, harness behavior, Gemini runtime behavior, packaging algorithms, or workflow branches.
-- The parity revisit relies on the already verified governed parity surfaces and the fact that this close-out wave changed only governed readable project sources and one retained legacy reference folder.
-- The Drive-staging review closes with no staging action required from this state.
+- This correction changes queue state and continuity reporting only.
+- It does not undo the duplicate-readable-surface cleanup.

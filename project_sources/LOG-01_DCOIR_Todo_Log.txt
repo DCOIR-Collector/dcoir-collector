@@ -1,12 +1,14 @@
 DCOIR Todo Log
 
-Current state id: 2026-04-09-queue-closeout-after-duplicate-surface-cleanup-v1
+Current state id: 2026-04-09-reopen-parity-and-drive-evaluation-v1
 
 Current active priority
-- No active queued repo work remains. Hold at the current passing validation baseline and use this state as the next resume anchor.
+- resolve installed-skill parity drift against the governed repo source
+- perform the optional Google Drive staging evaluation explicitly and record the actual decision
 
 Queued next priorities
-- none currently queued in the governed repo work line
+- none beyond the active parity and Drive items
 
 Standing posture
 - keep standalone on the prompt-pack assembly path
+- keep the duplicate-readable-surface cleanup finished

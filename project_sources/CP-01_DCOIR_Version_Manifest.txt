@@ -1,6 +1,6 @@
-DCOIR Version Manifest 4.0.6
+DCOIR Version Manifest 4.0.7
 
-Current state id: 2026-04-09-queue-closeout-after-duplicate-surface-cleanup-v1
+Current state id: 2026-04-09-reopen-parity-and-drive-evaluation-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -24,9 +24,11 @@ Current control plane
 - Gemini collector-artifact interpretation marker hotfix: project_sources/LOG-64_DCOIR_Gemini_Collector_Artifact_Interpretation_Marker_Hotfix_2026-04-09.txt
 - Passing-baseline realignment and close-out decision: project_sources/LOG-65_DCOIR_Passing_Baseline_Realignment_2026-04-09.txt
 - Remaining-queue close-out and duplicate-surface cleanup: project_sources/LOG-66_DCOIR_Remaining_Queue_Closeout_And_Duplicate_Surface_Cleanup_2026-04-09.txt
+- Premature closure correction and reopened parity-and-Drive evaluation: project_sources/LOG-67_DCOIR_Premature_Closure_Correction_And_Reopened_Parity_And_Drive_Evaluation_2026-04-09.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 
 Current next work item
-- No active queued repo work remains in the governed DCOIR line after the bounded duplicate-readable-surface cleanup and the explicit parity and optional Drive-staging reviews.
-- Hold at the current passing validation baseline and use this state as the next resume anchor until a new substantive repo change is opened.
-- Keep standalone on the PP-01 through PP-07 assembly lane as standing posture.
+- Reopen installed-skill parity verification and remediation against the governed repo source.
+- Reopen the optional Google Drive staging evaluation because the earlier closure was only a repo-side review and not an explicit connector-backed evaluation.
+- Keep the duplicate-readable-surface cleanup finished.
+- Hold at the current passing validation baseline otherwise.

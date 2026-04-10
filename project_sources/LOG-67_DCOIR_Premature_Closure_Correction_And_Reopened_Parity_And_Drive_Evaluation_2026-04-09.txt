@@ -1,0 +1,21 @@
+DCOIR Change Log
+
+[CURRENT]
+Version: 4.0.7
+Current state id: 2026-04-09-reopen-parity-and-drive-evaluation-v1
+Change class: premature closure correction and reopened parity-and-Drive evaluation
+
+What changed
+- Added `project_sources/LOG-67_DCOIR_Premature_Closure_Correction_And_Reopened_Parity_And_Drive_Evaluation_2026-04-09.txt` to record that two items were closed too aggressively in the prior close-out wave.
+- Updated `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt`, `project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt`, `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/01_Active_Now.txt` so the active continuity surfaces now reopen the parity and Drive items instead of claiming that no repo work remains.
+- Kept the duplicate-readable-surface cleanup closed and intact. This correction does not undo that cleanup.
+
+Why
+- The earlier close-out relied on the governed parity surfaces already stored in the repo, but it did not actually perform a fresh installed-skills-versus-governed-source verification before closing the parity item.
+- Once the fresh installed-skill parity check was actually run, it showed substantial installed drift against the governed repo baseline and missing expected files in `dcoir-live-test-remediation-planner` and `dcoir-repo-packager`.
+- The earlier optional Google Drive staging closure was also only a repo-side review decision. It was not backed by an explicit connector-based evaluation or an operator-confirmed decision to leave staging unused.
+
+Validation notes
+- This correction changes queue state and continuity reporting only.
+- It does not add or modify collector logic, harness behavior, Gemini runtime behavior, packaging algorithms, or workflow branches.
+- The duplicate-readable-surface cleanup from `LOG-66` remains finished.

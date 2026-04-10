@@ -1,7 +1,8 @@
 DCOIR Active Now
 
-Current state id: 2026-04-09-queue-closeout-after-duplicate-surface-cleanup-v1
+Current state id: 2026-04-09-reopen-parity-and-drive-evaluation-v1
 
-1. No active queued repo work remains from the current governed close-out line.
-2. Hold at the current passing validation baseline until a new substantive repo task is opened.
-3. Keep standalone on the PP-01 through PP-07 assembly lane as standing posture.
+1. Resolve installed-skill parity drift against the governed repo source.
+2. Perform the optional Google Drive staging evaluation explicitly and record the actual decision.
+3. Keep the duplicate-readable-surface cleanup finished.
+4. Hold at the current passing baseline otherwise.

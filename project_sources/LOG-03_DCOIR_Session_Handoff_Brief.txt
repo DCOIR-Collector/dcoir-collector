@@ -1,16 +1,14 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-09-queue-closeout-after-duplicate-surface-cleanup-v1
+Current state id: 2026-04-09-reopen-parity-and-drive-evaluation-v1
 
 Stable baseline
 - GitHub-primary readable-source model remains in force.
 - Standalone remains the PP-01 through PP-07 assembly lane.
-- Gemini now has a larger, more verbose major-version stored runtime source tree plus a maintained-knowledge-sync, validation, and compile path, and the current governed baseline treats the main Gemini validation and bundle workflows as passing.
-- Collector now has a maintained-source single-runtime compile path, a transport-safe delivery package path, bounded targeted-collection support, and passing chunking and full-regression coverage in the main governed workflow set.
-- The inherited passing baseline remains the operator-reported pass set for `validate-on-push`, `manual-full-validation` variants, `manual-collector-runtime-package-build`, `manual-gemini-bundle-build`, and `scheduled-health-check`.
-- The duplicate-readable-surface cleanup is complete, the parity revisit is complete, and the optional Drive-staging review is complete.
+- Gemini and collector remain on the current passing baseline.
+- The duplicate-readable-surface cleanup remains complete.
 
 Open follow-through
-- No active queued repo work remains in the governed DCOIR line from this close-out wave.
-- Hold at the current passing baseline until a new substantive repo task is opened.
-- Keep standalone on the PP-01 through PP-07 assembly lane as standing posture.
+- Resolve installed-skill parity drift against the governed repo baseline.
+- Perform an explicit Google Drive staging evaluation and record the actual outcome.
+- Hold at the current passing baseline otherwise.
