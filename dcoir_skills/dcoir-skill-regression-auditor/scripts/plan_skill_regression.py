@@ -47,6 +47,8 @@ def main() -> int:
     for skill in skills:
         print(f'### {skill}')
         for item in [
+            'preventive bytecode-suppression step where practical',
+            'package hygiene cleanup step',
             'package validation',
             'package cleanliness check',
             'success path',
@@ -62,6 +64,7 @@ def main() -> int:
         'current-workspace success fixture',
         'current-control-plane narrative-manifest fixture',
         'missing-control-plane fixture',
+        'package hygiene cleanup fixture',
         'package cleanliness fixture',
     ]
     if any('regression-auditor' in s for s in skills):

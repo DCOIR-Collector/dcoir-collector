@@ -11,6 +11,7 @@
 - helper-memory read-write fixture
 - package replacement smoke fixture
 - package cleanliness fixture
+- package hygiene cleanup fixture
 
 ## Usage principle
 Choose the smallest fixture set that still proves:
@@ -21,3 +22,6 @@ Choose the smallest fixture set that still proves:
 
 ## Campaign rule
 When a broad `dcoir-*` helper-skill scan or patch cycle is underway, start by validating `dcoir-skill-regression-auditor` itself before using it to assess other skills.
+
+## Hygiene rule
+When a materially changed skill contains runnable Python scripts, include one fixture that proves the cleanup script removes simulated `__pycache__/`, `*.pyc`, or `.DS_Store` residue and one fixture that proves the post-clean check fails if residue still remains.

@@ -26,12 +26,14 @@ In a broad helper-skill patch campaign, regression-test `dcoir-skill-regression-
 2. Decide whether self-test-first is required because the current cycle is a broad helper-skill patch campaign.
 3. Read `references/regression_fixture_catalog.md`.
 4. Read `references/skill_test_harness_definitions.md`.
-5. Run `scripts/plan_skill_regression.py`.
-6. Produce the regression suites, failure gates, artifact checks, package-cleanliness checks, readiness criteria, campaign ordering, and grouped regression-bundle expectations.
-7. If regression revealed a blocker that is later overcome, invoke `dcoir-memory-preflight` again when the recovered lesson could improve a reusable procedure, limitation note, failure signature, or helper-skill/process guidance.
-8. Keep regression-state changes session-local until the next suitable flush-check trigger when grouped GitHub writes are preferred.
-9. When the regression-state changed materially and the write lane is safe, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`.
-10. Return the regression suites, failure gates, artifact checks, readiness criteria, campaign scope, buffer state, and any GitHub-memory change that matters.
+5. Read `references/package_hygiene_workflow.md`.
+6. Run `scripts/plan_skill_regression.py`.
+7. Produce the regression suites, failure gates, artifact checks, package-cleanliness checks, preventive bytecode-suppression steps, cleanup steps, readiness criteria, campaign ordering, and grouped regression-bundle expectations.
+8. Before packaging or handing back any updated skill zip, run `scripts/clean_skill_runtime_residue.py --clean` against every materially changed skill folder and rerun `scripts/clean_skill_runtime_residue.py --check` so residue prevention is explicit instead of ad hoc.
+9. If regression revealed a blocker that is later overcome, invoke `dcoir-memory-preflight` again when the recovered lesson could improve a reusable procedure, limitation note, failure signature, or helper-skill/process guidance.
+10. Keep regression-state changes session-local until the next suitable flush-check trigger when grouped GitHub writes are preferred.
+11. When the regression-state changed materially and the write lane is safe, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`.
+12. Return the regression suites, failure gates, artifact checks, readiness criteria, campaign scope, buffer state, and any GitHub-memory change that matters.
 
 ## Session-local buffer behavior
 This skill may stage regression memory, fixture deltas, follow-through notes, or campaign-scope notes session-locally before GitHub flush time.
@@ -82,6 +84,8 @@ When rendering memory content locally, use `scripts/render_skill_regression_memo
 - do not treat packaging success as sufficient proof of runtime correctness
 - include both success-path and failure-gate testing where possible
 - verify emitted artifacts and content, not only exit status
+- prevent runtime residue where possible by running python commands with bytecode suppression such as `PYTHONDONTWRITEBYTECODE=1` or `python -B` when practical
+- run the shared residue-cleanup script before packaging every materially changed skill and rerun the check after cleanup
 - verify that delivered skill packages are free of runtime residue such as `__pycache__/`, `*.pyc`, `.DS_Store`, or equivalent contamination
 - in a broad helper-skill patch campaign, patch and regression-test this skill first before using it to judge other skills
 - after a patch, rerun the same failing case that motivated the fix, then expand outward
@@ -95,3 +99,4 @@ When rendering memory content locally, use `scripts/render_skill_regression_memo
 - `references/skill_test_harness_definitions.md`
 - `references/github_memory_workflow.md`
 - `references/session_buffer_workflow.md`
+- `references/package_hygiene_workflow.md`
