@@ -66,6 +66,26 @@ Use this file as the highest-precedence approved overlay inside the skill, below
 - Why it persists: reflects the operator's explicit direction to avoid premature pauses and keep the campaign moving until there is something concrete for them to do.
 - Source of learning: explicit operator preference stated in chat during the coordinated all-skills deep-dive campaign.
 
+
+
+### Rule 11: use Airtable Operator Preferences as the durable working-state preference surface
+- Trigger condition: a current decision branch may be affected by a previously stated operator preference, or a new explicit preference has just been stated clearly enough to be reusable.
+- Default action: consult Airtable `Operator Preferences` before falling back to generic defaults, capture new reusable preferences there promptly, and promote matured DCOIR-facing rules into the GitHub-readable decision-policy surfaces at the next safe grouped flush point.
+- Why it persists: reflects the operator's explicit direction that preference continuity should not depend only on chat recollection or direct skill-file edits and should work like the newer Airtable-backed DCOIR helper skills.
+- Source of learning: explicit operator preference stated in chat during the parity-closure and decision-policy continuity update.
+
+### Rule 12: default to concise operator-facing responses unless extra detail materially improves continuity, validation, or maintenance quality
+- Trigger condition: the work could be reported either in a compact operator-facing summary or in a much longer narration without materially changing correctness.
+- Default action: prefer the shorter operator-facing summary by default, but preserve richer detail when it materially improves continuity, validation fidelity, evidence handling, or future maintenance.
+- Why it persists: reflects the operator's standing preference for concise answers unless broader detail is actually needed.
+- Source of learning: standing operator preference reinforced again during the preference-registry clarification.
+
+### Rule 13: when a requested or candidate path is not ideal, include one or more near-equivalent alternatives
+- Trigger condition: the current path is workable but there are other ways to reach the same or a very similar result with meaningfully different tradeoffs.
+- Default action: surface the best bounded path and also include one or more near-equivalent alternatives when doing so materially helps the operator choose without expanding into a broad unfocused menu.
+- Why it persists: reflects the operator's explicit preference to hear alternative courses of action rather than only a single-path recommendation.
+- Source of learning: standing operator preference reinforced during the durable preference-surface update.
+
 ## Usage rule
 
 When a rule in this file applies, prefer it over generic defaults in `decision_matrix.md` unless doing so would conflict with the control plane or safety.
