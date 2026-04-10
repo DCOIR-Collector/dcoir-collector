@@ -6,7 +6,7 @@ Use this file when the operator states a preference, opinion, correction, or pro
 
 Capture useful operator intent from ordinary statements so the skill can become more like a virtual operator proxy over time.
 
-This mechanism is approval-gated. It may interpret a candidate rule immediately within the current conversation, but it must not persist the rule silently.
+GitHub promotion is approval-gated. The skill may interpret a candidate rule immediately within the current conversation and may capture a clear operator-stated reusable rule into Airtable durable working state, but it must not silently rewrite approved GitHub durable policy surfaces.
 
 ## Trigger patterns
 
@@ -81,8 +81,9 @@ Do not persist when any of these dominate:
 3. Run the safe generalization test.
 4. Classify it as durable, situational, or non-persistent.
 5. Apply it immediately in the current chat if relevant.
-6. If it affects downloadable outputs, bundle shape, update cadence, campaign scope, or operator update steps, surface the approval block in the same response turn where practical.
-7. Surface a short approval block before persistence.
+6. If the rule is explicit and reusable, write it into Airtable `Operator Preferences` with the narrowest stable key, scope, and status that fit the evidence.
+7. If it affects downloadable outputs, bundle shape, update cadence, campaign scope, or operator update steps, surface the GitHub-promotion block in the same response turn where practical.
+8. Surface a short approval block before GitHub promotion.
 
 ## Safe generalization test
 
@@ -94,20 +95,21 @@ Persist only when all are true:
 
 If any test fails, keep it current-chat only.
 
-## Approval block format
+## GitHub promotion block format
 
-When a candidate should be persisted, present it in this shape:
+When a candidate should be promoted beyond Airtable working state, present it in this shape:
 - Observed statement: <one sentence>
 - Interpreted rule: <one sentence>
 - Class: <durable | situational>
-- Persistence target: <operator_intent_matrix.md | decision_learning_log.json>
+- Airtable action: <implemented row | candidate row>
+- GitHub promotion target: <operator_intent_matrix.md | decision_learning_log.json | decision_policy_memory.md | none>
 - Current-task effect: <one sentence>
 
 ## Persistence target rules
 
-- durable preference candidate -> `references/operator_intent_matrix.md`
-- situational preference candidate -> `references/decision_learning_log.json`
-- one-off comment -> no persistence target
+- durable preference candidate -> write Airtable `Operator Preferences` now, then promote broad DCOIR-facing defaults into `references/operator_intent_matrix.md` at the next safe grouped flush point
+- situational preference candidate -> write Airtable `Operator Preferences` as `candidate`; optionally mirror into `references/decision_learning_log.json` when repo-readable review context is needed
+- one-off comment -> no persistence target beyond the current chat
 
 ## Conflict handling
 

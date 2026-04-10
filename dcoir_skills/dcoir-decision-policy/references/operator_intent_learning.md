@@ -61,12 +61,13 @@ Within the current conversation:
 
 ## Cross-chat persistence
 
-A learned rule does not persist automatically across future conversations unless the skill or a current project-readable policy file is actually updated.
+A learned rule does not become promoted repo-readable policy automatically across future conversations. Use Airtable `Operator Preferences` as the durable working-state surface first, then promote the matured rule into GitHub-readable policy when the next safe grouped flush point arrives.
 
 When persistence is needed:
-1. emit a policy update candidate
-2. update the skill or project file
-3. repackage or refresh the artifact carrying the rule
+1. write or update the Airtable `Operator Preferences` row
+2. emit a GitHub promotion candidate when the rule is broad enough to matter beyond Airtable working state
+3. update the skill or project file
+4. repackage or refresh the artifact carrying the rule
 
 ## Output pattern after learning
 
