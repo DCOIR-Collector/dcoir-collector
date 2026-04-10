@@ -1,13 +1,9 @@
 interface:
-  display_name: DCOIR Repo Packager
-  short_description: Build strict repo-layout and full-refresh bundles from the current
-    class-prefixed DCOIR control plane.
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  display_name: "dcoir repo packager"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+    - "chatgpt"
+    - "codex"
+    - "api"
+    - "atlas"
   allow_implicit_invocation: true
