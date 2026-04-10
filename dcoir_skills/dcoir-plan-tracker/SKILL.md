@@ -213,6 +213,38 @@ Supported commands include:
 13. Emit user-visible attention signals only at milestone, blocked, and completion moments.
 14. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
 
+
+## Airtable durable checkpoint layer
+This skill now supports a durable Airtable checkpoint layer in addition to the local `plan_state.json` working mirror.
+
+Truth model:
+- local `plan_state.json` remains the hot working state
+- Airtable is the durable checkpointed execution-state layer
+- GitHub remains the authoritative promoted state
+
+Known Airtable targets for this project:
+- base id: `appM4KSwnVf3G3OTK`
+- `Plans` table id: `tblBcp5FyMIfOm7Xe`
+- `Plan Tasks` table id: `tblsATLIDeh6gtcoM`
+- `Plan Checkpoints` table id: `tbl6z4Lyai2RABMyw`
+- `Tracking Registry` table id: `tblohiMxxVbDUnN77`
+
+Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
+
+Airtable write posture:
+- upsert `Plans` only on material plan-state changes
+- batch `Plan Tasks` writes when task structure or statuses materially change
+- create sparse `Plan Checkpoints` rows for blockers, flush reviews, milestones, before-GitHub-write checkpoints, and handoff moments
+- use `Tracking Registry` only as metadata after the durable domain record already exists
+
+Use `scripts/render_airtable_plan_bundle.py` to render Airtable-ready payloads from a local plan folder.
+Typical modes:
+- `plan`
+- `tasks`
+- `checkpoint`
+
+Read `references/airtable_plan_sync_workflow.md` when Airtable sync details are needed.
+
 ## GitHub write workflow
 Read `references/github_write_workflow.md` when tracker files must be created or updated in GitHub.
 
@@ -368,6 +400,7 @@ Read when needed:
 - `references/github_write_workflow.md`
 - `references/blocker_promotion_workflow.md`
 - `references/session_buffer_workflow.md`
+- `references/airtable_plan_sync_workflow.md`
 
 
 ## Local plan-state proof rules

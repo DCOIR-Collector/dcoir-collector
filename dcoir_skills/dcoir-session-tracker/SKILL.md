@@ -274,9 +274,50 @@ When acting under this skill:
 - prefer one best next move over a broad menu
 - when exporting, produce a markdown artifact that can be re-uploaded and merged later
 
+
+## Airtable checkpointed working state
+This skill now supports a durable Airtable checkpoint layer in addition to the local JSON working-state file.
+
+Truth model:
+- local JSON remains the hot working state
+- Airtable is the durable checkpointed working-state layer
+- GitHub remains the authoritative promoted state
+
+Use Airtable only for sparse checkpoint writes and explicit idea capture.
+Do not write every small local-state mutation into Airtable.
+
+Known Airtable targets for this project:
+- base id: `appM4KSwnVf3G3OTK`
+- `Session Checkpoints` table id: `tblTe75HKZOJaPDGn`
+- `Idea Inbox` table id: `tblWwBxwrjZF6JR3r`
+- `Tracking Registry` table id: `tblohiMxxVbDUnN77`
+
+Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
+
+Relevant checkpoint triggers:
+- after session bootstrap completes
+- at major milestones
+- when a blocker appears or is resolved
+- before any GitHub write that depends on tracker state
+- when switching major tasks
+- when the operator explicitly says to remember, capture, or park an idea
+- before handoff or close-out
+- when local state had to be reinitialized because no pre-existing file was present
+
+Use `scripts/render_airtable_session_bundle.py` to render Airtable-ready payloads from the current local JSON state.
+Typical modes:
+- `checkpoint` for `Session Checkpoints`
+- `idea` for `Idea Inbox`
+
+Use `Tracking Registry` only as a metadata index after the durable domain record already exists.
+Do not make registry writes the only persistence action.
+
+Read `references/airtable_checkpoint_workflow.md` when Airtable checkpoint details are needed.
+
 ## References
 Read these when needed:
 - `references/local_session_state_workflow.md`
+- `references/airtable_checkpoint_workflow.md`
 - `references/classification_rules.md`
 - `references/session_state_schema.md`
 - `references/import_merge_rules.md`
