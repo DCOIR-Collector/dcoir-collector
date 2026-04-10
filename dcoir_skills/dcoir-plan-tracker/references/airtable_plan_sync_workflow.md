@@ -14,6 +14,7 @@ Use this reference when `dcoir-plan-tracker` needs durable execution state that 
 - `Plan Checkpoints` table id: `tbl6z4Lyai2RABMyw`
 - `Tracking Registry` table id: `tblohiMxxVbDUnN77`
 - `Schema Registry` table id: `tblwsD43VhzmjWNbc`
+- `Work Items` table id: `tblgsQAVWvh8K7gIR`
 
 Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
 
@@ -54,3 +55,31 @@ Write Airtable state when:
 ## Promotion rule
 Airtable holds primary durable execution state for live plan continuity.
 GitHub plan surfaces remain the authoritative promoted record when the workflow decides the current plan state or learned lesson should become governed text.
+
+## Work-item lifecycle ownership
+When `dcoir-plan-tracker` opens or stages a `Work Items` row for plan-owned implementation work, it owns the full row lifecycle.
+
+Default completion behavior after success is verified:
+- update the same row to `Status = Done`
+- set `Active = false`
+- leave the row in place for history
+- avoid deleting rows unless they were clearly scratch-only or duplicate
+
+Do not require a second operator reminder just to close a row that this skill created.
+
+## Default interactive Work Items field set
+When rendering `Work Items` in chat for this workflow, prefer these fields by default unless the operator asked for a narrower view:
+- `Work Item`
+- `Item ID`
+- `Area`
+- `Work Type`
+- `Status`
+- `Priority`
+- `Owner`
+- `Repo Path or Skill`
+- `Next Action`
+- `Evidence / Notes`
+- `Blocker`
+- `Active`
+
+When the operator asked to see one specific row only, filter to that one row instead of rendering the whole table.

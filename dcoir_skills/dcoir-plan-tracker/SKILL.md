@@ -30,6 +30,7 @@ This skill owns:
 - session-local buffer-state review
 - github-backed tracker file creation and updates
 - airtable-first durable plan state plus local `plan_state.json` cache checks and explicit missing-state warnings for local plan folders
+- Airtable `Work Items` lifecycle ownership for plan-tracker-created implementation rows so verified completions auto-close the same rows
 - concise user-visible milestone signaling through `dcoir-attention-signaler`
 
 This skill does not replace:

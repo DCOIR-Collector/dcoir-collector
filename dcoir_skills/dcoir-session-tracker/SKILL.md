@@ -34,6 +34,8 @@ This skill does not claim hidden persistence across chats.
 13. When an item is marked governed-written after a grouped push, automatically clear staged governed-update entries, staged todo actions, and post-push cleanup notes that still reference that same item.
 14. Give an immediate operator-visible confirmation when a materially important item is captured, including whether it is preserved session-locally only or already staged for the next governed push.
 15. Surface an explicit cache-absence or re-init warning when a tracker write path had to initialize a new local session-state cache because no pre-existing file was present.
+16. When this skill creates or stages Airtable `Work Items` rows for tracker-owned work, close those same rows automatically when completion is later verified instead of leaving the operator to remember a separate close step.
+17. When this skill renders `Work Items` interactively in chat, use the richer default field set unless a narrower display is explicitly requested.
 
 
 ## Mandatory session-start Airtable leftover scan
@@ -51,6 +53,34 @@ Startup recovery workflow:
 6. End the startup recovery with one best next move and explicit mention of anything that still exists only in Airtable.
 
 Read `references/startup_airtable_recovery_workflow.md` when startup leftover recovery details are needed.
+
+## Airtable work-item lifecycle ownership
+When this skill creates, stages, or materially updates an Airtable `Work Items` row for tracker-owned work, it also owns the close-out path for that same row.
+
+Default close behavior when completion is verified:
+- set `Status` to `Done`
+- set `Active` to `false`
+- update `Next Action` to a short completion note when useful
+- keep the row for history instead of deleting it by default
+
+Delete a `Work Items` row only when the row was clearly scratch-only, duplicate, or explicitly disposable.
+Do not require the operator to remember a second instruction just to close a row that this skill opened.
+
+When this skill renders `Work Items` interactively in chat, prefer this richer default field set unless the operator explicitly asks for a narrower view:
+- `Work Item`
+- `Item ID`
+- `Area`
+- `Work Type`
+- `Status`
+- `Priority`
+- `Owner`
+- `Repo Path or Skill`
+- `Next Action`
+- `Evidence / Notes`
+- `Blocker`
+- `Active`
+
+Read `references/airtable_checkpoint_workflow.md` when the work-item ownership or display defaults need the exact base or table details.
 
 ## Local session-state cache
 When code execution and file writing are available, use a real local JSON file only as a transient cache, export surface, or render buffer for the Airtable-first durable working state.

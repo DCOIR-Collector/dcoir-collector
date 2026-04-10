@@ -13,6 +13,7 @@ Use this reference when `dcoir-session-tracker` needs durable working state that
 - `Idea Inbox` table id: `tblWwBxwrjZF6JR3r`
 - `Tracking Registry` table id: `tblohiMxxVbDUnN77`
 - `Schema Registry` table id: `tblwsD43VhzmjWNbc`
+- `Work Items` table id: `tblgsQAVWvh8K7gIR`
 
 Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
 
@@ -50,3 +51,31 @@ Write Airtable state when:
 ## Promotion rule
 Airtable holds primary durable working state for live session continuity.
 GitHub remains the authoritative promoted state when the workflow decides a learned lesson, decision, or queued item should become governed text.
+
+## Work-item lifecycle ownership
+When `dcoir-session-tracker` opens or stages a `Work Items` row for tracker-owned implementation work, it owns the full row lifecycle.
+
+Default completion behavior after success is verified:
+- update the same row to `Status = Done`
+- set `Active = false`
+- leave the row in place for history
+- avoid deleting rows unless they were clearly scratch-only or duplicate
+
+Do not require a second operator reminder just to close a row that this skill created.
+
+## Default interactive Work Items field set
+When rendering `Work Items` in chat for this workflow, prefer these fields by default unless the operator asked for a narrower view:
+- `Work Item`
+- `Item ID`
+- `Area`
+- `Work Type`
+- `Status`
+- `Priority`
+- `Owner`
+- `Repo Path or Skill`
+- `Next Action`
+- `Evidence / Notes`
+- `Blocker`
+- `Active`
+
+When the operator asked to see one specific row only, filter to that one row instead of rendering the whole table.
