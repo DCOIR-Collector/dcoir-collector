@@ -1,6 +1,6 @@
 DCOIR Deferred Or Conditional
 
-1. If future extracted or newly received readable bundles arrive, place them into appropriate governed GitHub locations and refresh repo structure and awareness files so the readable sources become first-class project material where appropriate.
+1. After text-bearing zip contents are extracted and uploaded, update the repo structure and awareness files so the extracted readable sources become first-class project knowledge where appropriate.
    Why it matters:
    - Extracted readable text should be integrated deliberately, not left as loose side material.
 
@@ -23,3 +23,7 @@ DCOIR Deferred Or Conditional
 6. If the current-state and version-checking problem is later solved by a durable verification or enforcement mechanism, refresh the control-plane and continuity model to reflect that new authority posture explicitly.
    Why it matters:
    - The project should not keep carrying temporary drift-handling rules after a stronger solution is validated.
+
+7. Keep the GitHub-native mirror pilot and its additive sync note explicitly tracked until the mirror issue or project review, Airtable follow-on, and any broader governed refresh decision are completed.
+   Why it matters:
+   - The additive sync note at project_sources/WD-20260413_GitHub_Mirror_Phase1_Parallel_Run_Sync_Note.txt is durable, but it can still be overlooked if it is not carried in the authoritative todo structure during the parallel-run pilot.
