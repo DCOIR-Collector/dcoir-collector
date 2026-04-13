@@ -1,0 +1,49 @@
+DCOIR Verified Sync Note
+Date: 2026-04-13
+Scope: GitHub-native mirror phase-1 parallel-run status sync
+Status: additive governed note only
+
+Purpose
+- Record the verified phase-1 parallel-run posture without overwriting the current governed control-plane agenda.
+- Preserve the approved GitHub-native mirror and Agent Delivery decisions as durable governed context.
+- Keep this note additive and bounded until the operator decides whether to perform a broader governed refresh.
+
+Verified session decisions
+1. GitHub-native mirror approved as a parallel-run pilot.
+2. Agent Delivery approved as the third GitHub update lane.
+3. Agent Delivery has two approved subpaths:
+   - artifact-assisted
+   - prompt-only
+4. PR verification is now treated as the preferred verification posture for agent-mediated GitHub changes.
+5. Airtable remains part of accountability during the mirror pilot.
+6. The GitHub-native mirror does not replace the governed repo-readable and Airtable workflow surfaces yet.
+
+Verified mirror status from this session
+- The mirror initiative issue set was created in GitHub Issues for the DCOIR mirror work line.
+- The current visible mirror issue set includes the mirror-initiative items, governed-queue items, and the Airtable-derived queue/structure/doc items that were seeded during the mirror effort.
+- The operator reported that Comet completed the remaining GitHub-native tasks.
+- A later live repo/project inspection should still confirm final issue metadata and any last ambiguous mirror items before any cutover claim is made.
+
+Operational lessons captured in this session
+1. Safe GitHub add/delete testing through agent flow succeeded.
+2. Normal branch and pull-request flow worked for the safe write test.
+3. PR verification should remain the standard confidence check for agent-mediated GitHub changes.
+4. Long browser-agent runs were unstable during this session and froze multiple times.
+5. Chunked execution or fallback browser-agent lanes should be preferred for large GitHub object-creation runs.
+6. A Perplexity Comet execution prompt was created as an alternate browser-agent path.
+
+Bounded governance rule
+- Do not rewrite the current governed control-plane agenda around the mirror pilot.
+- Treat the mirror as a parallel tracking surface until the operator explicitly approves a broader governed refresh or cutover decision.
+- Keep the current governed repo-readable agenda authoritative for governed workflow state until that broader decision is made.
+
+Recommended next governed follow-on
+1. Inspect the live GitHub mirror project and issues after the agent/browser runs.
+2. Confirm that every seeded mirror item exists with the intended labels, milestones, and project-field metadata.
+3. Update Airtable to reflect the mirror pilot, execution observations, and next-step accountability.
+4. After verification, decide whether to perform a broader governed workflow refresh that formally incorporates the mirror and Agent Delivery lane.
+
+Non-goals of this note
+- This note does not claim full cutover to GitHub-native backlog management.
+- This note does not replace the current control-plane files.
+- This note does not close the governed agenda items that remain active in the current control plane.
