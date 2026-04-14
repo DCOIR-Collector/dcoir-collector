@@ -94,3 +94,7 @@ python scripts/build_knowledge_docs.py --spec-json /mnt/data/knowledge_docs_spec
 - `references/initial_doc_set.md`
 - `references/operator_workflow.md`
 - `references/reinventory_prompt_template.md`
+
+## Airtable testing workflow alignment
+
+When knowledge docs describe collector or Gemini testing, include the current operating note that Airtable table `Validation Test Cases` is the standard dynamic manual-testing surface and that GitHub remains the engineering/source/packaging authority.

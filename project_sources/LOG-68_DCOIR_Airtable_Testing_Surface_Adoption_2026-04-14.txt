@@ -1,0 +1,19 @@
+DCOIR Airtable Testing Surface Adoption - 2026-04-14
+
+Purpose
+- Record the decision to use Airtable table `Validation Test Cases` as the standard dynamic manual-testing surface for collector and Gemini sessions.
+
+What changed
+- Created Airtable table `Validation Test Cases` with durable fields for test identity, command or method, pass criteria, fail criteria, observed status, evidence, and source basis.
+- Seeded the table with collector and Gemini test coverage based on the harness, quick aliases, knowledge surfaces, and live findings.
+- Added Airtable preference and session-resume pointers so future sessions can find and use the testing catalog.
+- Planned helper-skill updates so the testing workflow becomes enforced by resume, preflight, validation, QA, and remediation skills.
+
+Why
+- Live testing showed that reconstructing the test plan from chat memory alone is fragile.
+- Airtable provides a faster durable workflow surface for repeated testing iterations, while GitHub remains the source, packaging, workflow, and issue surface.
+
+Current boundary
+- This adoption does not move executable source, packaging files, or CI workflows into Airtable.
+- Current GitHub Actions and harness validation remain source-tree based.
+- Airtable is the standard dynamic manual-testing surface, not a replacement for GitHub authority.

@@ -38,6 +38,7 @@ Current governed helper-skill source set
 
 Current operating notes
 - On the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session, use `dcoir-session-resume` first and `dcoir-memory-preflight` second before other substantive project work.
+- Collector and Gemini testing sessions should open Airtable table `Validation Test Cases` first and use it as the durable starting manual-testing catalog.
 - The confirmed current DCOIR skills with real local JSON working-state files are `dcoir-session-tracker` and `dcoir-plan-tracker`.
 - When one of those local-JSON skills is used in a new session, run its local JSON startup preflight first instead of assuming the file-backed local state is already present.
 - Use only the affected skill zips or affected repo-relative files for manual deliveries unless the operator explicitly asks for a broader bundle.

@@ -160,3 +160,12 @@ Read when needed:
 - `references/github_memory_query_map.md`
 - `references/post_blocker_classification.md`
 - `references/session_buffer_flush_triggers.md`
+
+## Airtable collector and Gemini testing lane
+
+When the immediate work family is collector testing, Gemini testing, live evaluation, or validation follow-through, classify the lane as `airtable-test-catalog-first`.
+
+For that lane:
+- consult Airtable table `Validation Test Cases` before proposing the test sequence
+- use the table to identify existing test IDs, commands or methods, pass criteria, fail criteria, and known partial/failing areas
+- avoid rebuilding the test plan from chat memory when the Airtable catalog already covers the branch

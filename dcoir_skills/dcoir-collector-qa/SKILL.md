@@ -102,3 +102,13 @@ Default deliverables per run:
 - `references/repair_mode.md`
 - `references/sample_manual_results.json`
 - `references/github_memory_workflow.md`
+
+## Airtable test-catalog enforcement
+
+When performing collector QA, repair planning, or live-test interpretation, read and update the relevant Airtable `Validation Test Cases` rows when that table is available.
+
+Use it to:
+- confirm whether the branch already has a defined test ID
+- mark pass, partial, fail, or blocked status honestly
+- record live operator evidence and implementation-boundary notes
+- add new collector test rows when a new alias, packaging behavior, or regression class appears

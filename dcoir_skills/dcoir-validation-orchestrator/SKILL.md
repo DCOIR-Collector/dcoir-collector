@@ -70,3 +70,15 @@ When rendering memory content locally, use `scripts/render_validation_memory.py`
 - `references/validation_scenario_library.md`
 - `references/github_memory_workflow.md`
 - `../project_discovery_contract.json` when current repository or helper-memory naming assumptions matter
+
+## Airtable validation catalog default
+
+For collector and Gemini manual validation branches, use Airtable table `Validation Test Cases` as the default dynamic test catalog.
+
+When this table is available:
+- start by mapping the current validation branch to existing test IDs
+- update observed status and evidence as tests are executed
+- add new rows when the branch introduces new feature coverage, new regressions, or new mandatory comparison methods
+- retire or narrow stale rows when the implementation surface changes materially
+
+Keep GitHub as the authority for executable source, packaging files, workflows, and governed readable docs. Airtable owns the dynamic manual-testing workflow state.

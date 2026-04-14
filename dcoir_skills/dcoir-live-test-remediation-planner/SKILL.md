@@ -71,3 +71,12 @@ python scripts/plan_live_test_remediation.py \
 - `references/remediation_rules.json`
 - `references/remediation_model.md`
 - `references/github_memory_workflow.md`
+
+## Airtable remediation traceability
+
+When live-test findings map to existing collector or Gemini test rows, update or reference the Airtable `Validation Test Cases` catalog alongside the remediation queue.
+
+Prefer this pattern:
+- failed or blocked live finding -> update matching test row evidence/status
+- new failure shape or missing coverage -> add a new test row
+- remediation plan -> link the finding to an Airtable Work Item and the affected test IDs

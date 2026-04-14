@@ -132,3 +132,7 @@ Read when needed:
 
 Use when helpful:
 - `scripts/scan_readme_coverage.py`
+
+## Airtable testing workflow alignment
+
+When README surfaces are refreshed after workflow changes, keep them aligned with the current testing posture that uses Airtable table `Validation Test Cases` as the standard dynamic manual-testing surface for collector and Gemini sessions.

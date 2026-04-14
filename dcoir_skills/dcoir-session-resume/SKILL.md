@@ -116,3 +116,13 @@ Return sections in this exact order:
 - When the path hard-stops, do not continue into the normal nine-section resume summary.
 
 See `references/resume_output_contract.md` for the exact section intent and prompt rules.
+
+## Airtable testing surface default
+
+When the resumed work is collector testing, Gemini testing, live evaluation, or validation-status follow-through, treat Airtable table `Validation Test Cases` as the default durable manual-testing surface after the normal resume/bootstrap chain completes.
+
+For those testing branches:
+- open the Airtable testing catalog early instead of reconstructing the test plan from chat continuity alone
+- prefer the active rows relevant to the current build or artifact
+- surface that table as the starting testing plan before proposing new ad hoc test steps
+- preserve repo and control-plane authority for executable source, packaging, workflows, and governed readable docs

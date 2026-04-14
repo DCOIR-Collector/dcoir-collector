@@ -377,3 +377,13 @@ Read these when needed:
 - `references/sample_cases.md`
 - `references/session_buffer_workflow.md`
 - `references/session_closeout_workflow.md`
+
+## Airtable test-catalog continuity
+
+When the session includes collector or Gemini testing, checkpoint the relationship to Airtable table `Validation Test Cases` explicitly.
+
+Prefer to record:
+- which test IDs were run
+- which rows changed state
+- which new rows were added
+- which findings still require GitHub issues, code changes, or home/local follow-up
