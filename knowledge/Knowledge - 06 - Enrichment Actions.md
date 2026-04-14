@@ -1,64 +1,226 @@
 # Knowledge - 06 - Enrichment Actions
 
-Purpose
-- This knowledge file provides a deliberately expanded, operationally explicit reference for enrichment session action guide.
-- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
-- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
+_Quick-alias enrichment map and tool-backed actions_
 
-What this file is expected to do in the major-version build
-- Spell out enrich start/add/finalize semantics in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out session reuse in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out artifact retrieval in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out Sigcheck/ListDlls/Strings/Streams/LogText/LogRaw in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out how to chain actions without losing scope in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+**Summary:** One-action-at-a-time enrichment behavior, quick-action groups, retrieval-oriented actions, and finalize or cleanup discipline.
 
-Operational detail
-## 1. Enrich Start/Add/Finalize Semantics
-This section is intentionally long-form. The goal is to make enrich start/add/finalize semantics explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+| Source class | Authoritative basis |
+| --- | --- |
+| Project sources | project_sources/DCOIR_Collector.ps1; project_sources/run_DCOIR_Tests.ps1 |
+| Official external sources | Microsoft Learn / Sysinternals tool pages |
+| Scope note | Current quick aliases cover TCP, log text, raw log export, tool-backed checks, and several retrieval actions. |
 
-For enrich start/add/finalize semantics, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## One-action-at-a-time model
 
-The current major-version bundle also assumes that enrich start/add/finalize semantics may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+- Use enrich-start-* to begin a new enrichment session.
+- Use enrich-add-* to add another action to an existing enrichment session.
+- Use enrich-finalize to close and bundle the current enrichment session.
+- Use cleanup only after the current run output is no longer needed.
 
-When writing or reviewing functionality tied to enrich start/add/finalize semantics, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Current quick-action groups
 
-## 2. Session Reuse
-This section is intentionally long-form. The goal is to make session reuse explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+| Group | Examples | Backing capability |
+| --- | --- | --- |
+| Network | enrich-start-tcp, enrich-add-tcp | Tcpvcon refresh |
+| Log review | enrich-start-logtext, enrich-start-lograw | Filtered event text or raw EVTX export |
+| Tool-backed checks | sigcheck, listdlls, access-file, access-service, access-reg, strings, streams | Sysinternals console tools |
+| Retrieval actions | pull-file, pull-script, pull-task, pull-service, pull-wmi-file | Targeted file or config staging for analyst review |
 
-For session reuse, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Current Sysinternals bundle detected in DCOIR_Collector.zip
 
-The current major-version bundle also assumes that session reuse may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+- AccessChk
+- Autoruns/Autorunsc
+- Handle
+- ListDLLs
+- PipeList
+- PsList
+- Sigcheck
+- Streams
+- Strings
+- TCPView/Tcpvcon
 
-When writing or reviewing functionality tied to session reuse, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Operator reminders
 
-## 3. Artifact Retrieval
-This section is intentionally long-form. The goal is to make artifact retrieval explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+- Do not invent flags that the collector source does not expose.
+- Use official Sysinternals documentation when interpreting a bundled tool's exact switch behavior.
+- Keep local workstation commands separate from Elastic response-console commands.
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
 
-For artifact retrieval, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## One-action-at-a-time enrichment posture
 
-The current major-version bundle also assumes that artifact retrieval may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+The current enrichment model is intentionally serialized. That is one of the most important operating rules on the collector line. Enrichment is not meant to become a pile of loosely related actions that happen because the operator is anxious to gather more. Each enrichment action should answer one real follow-up question generated by the baseline or prior artifact review.
 
-When writing or reviewing functionality tied to artifact retrieval, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+That posture protects the analyst from two failure modes: producing too much output without reducing uncertainty, and losing the causal thread that explains why a given action was run. The operator should always be able to say, in one sentence, what question the current enrich-start or enrich-add action is trying to answer.
 
-## 4. Sigcheck/Listdlls/Strings/Streams/Logtext/Lograw
-This section is intentionally long-form. The goal is to make Sigcheck/ListDlls/Strings/Streams/LogText/LogRaw explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+## Session lifecycle
 
-For Sigcheck/ListDlls/Strings/Streams/LogText/LogRaw, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+The enrich lifecycle has three main phases:
+- start a new enrichment session when a fresh bounded follow-up lane is justified
+- add another action only when the existing session still needs one closely related bounded step
+- finalize when the useful bounded actions for that session are complete and the outputs should be closed and packaged coherently
 
-The current major-version bundle also assumes that Sigcheck/ListDlls/Strings/Streams/LogText/LogRaw may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+This model matters because lifecycle mistakes are common. Starting over when a session should be extended, extending when a session should be finalized, or cleaning up before the evidence has been reviewed all create avoidable confusion.
 
-When writing or reviewing functionality tied to Sigcheck/ListDlls/Strings/Streams/LogText/LogRaw, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Action families and why they exist
 
-## 5. How To Chain Actions Without Losing Scope
-This section is intentionally long-form. The goal is to make how to chain actions without losing scope explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+### Network enrichment
+TCP-focused enrichment exists for cases where connection context, socket activity, or network-associated clues are the most useful next host-side evidence.
 
-For how to chain actions without losing scope, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+### Log review enrichment
+Log text and raw log export actions exist for different needs. Text-oriented output is easier for fast review when the operator needs readable clues. Raw export is better when fidelity, later parsing, or evidence preservation matters more than convenience.
 
-The current major-version bundle also assumes that how to chain actions without losing scope may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+### Tool-backed checks
+Tool-backed checks exist because some host questions are best answered by proven console utilities rather than by generic collection alone. These checks should still remain bounded and should be chosen because their output is likely to reduce uncertainty materially.
 
-When writing or reviewing functionality tied to how to chain actions without losing scope, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+### Retrieval actions
+Retrieval actions stage known files or configuration artifacts for analyst review. They are a focused way to move an already-identified artifact into the review lane.
 
-Major-version bundle rule
-- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
-- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
-- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.
+## Current quick-action groups and how to choose among them
+
+A useful mental selection model is:
+- choose network-focused actions when the open question is about current or recent connection behavior
+- choose log-focused actions when the missing evidence is event-log based
+- choose tool-backed checks when a specific host-state question maps best to a known bundled utility
+- choose retrieval when the most valuable next step is reading a particular file or configuration artifact rather than gathering a fresh wide data set
+
+The correct action is the one that most directly answers the blocked question with the least extra noise.
+
+## Sysinternals-backed action thinking
+
+The bundled tool families matter because they answer different categories of host questions:
+- signature and signer-oriented questions
+- access and permission questions
+- DLL or module visibility questions
+- alternate data stream questions
+- strings-oriented content hints
+- TCP and process-list oriented activity review
+
+The operator should not invent flags or behavior that the collector source does not expose. The right workflow is to use the supported action surface and consult official tool documentation only when the exact behavior of a bundled utility materially affects interpretation.
+
+## Retrieval-oriented enrichment
+
+Retrieval actions are often the highest-value enrichments because they move the operator directly toward evidence-bearing material. A retrieval should be preferred when:
+- the collector or prior review already identified a specific file or config as high signal
+- a summary artifact is merely pointing toward the real evidence carrier
+- the next question cannot be answered from the summary or metadata alone
+
+Examples in the current action family include pulls of files, scripts, tasks, services, and WMI-related material. Each one is best understood as a direct handoff into artifact review.
+
+## Finalize and cleanup discipline
+
+Finalize and cleanup are not interchangeable. Finalize belongs to the enrich-session lifecycle. Cleanup belongs after the output is no longer needed. An operator who cleans up too early creates unnecessary rework and may lose the most convenient path back to the exact artifact or session output that mattered.
+
+## Interpreting enrichment output
+
+Every enrichment result should be read through the same lens:
+- what exact question did the action try to answer
+- what did the result actually establish
+- what did it not establish
+- does the result support a single next step
+- is that next step review, retrieval, another closely related enrich action, or no further collection
+
+The operator should resist the urge to treat enrichment output as self-explanatory. Even a useful action often produces workflow-state clues, prioritization hints, or candidate evidence rather than a final answer.
+
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+

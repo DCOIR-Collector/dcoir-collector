@@ -10,6 +10,7 @@ This major-version build expands the bundle from a narrower alert-triage-plus-co
 - the operator may start from retrieved artifacts
 - the operator may start from an IOC package in mixed format
 - the operator may need a targeted collection design instead of a broad baseline
+- the operator may need a much richer shared attachment set that explains both the collector line and the Gemini runtime line in stand-alone detail
 
 The active agent topology now includes ten sub-agents:
 1. Session readiness and intake
@@ -22,6 +23,10 @@ The active agent topology now includes ten sub-agents:
 8. IOC parsing and evidence-grounded public enrichment planning
 9. Targeted collection design and evidence-gap reduction
 10. Output-contract consistency guard and report composition
+
+The active shared attachment set now includes fifteen knowledge pages:
+- 01 through 11 preserve the collector, workflow, troubleshooting, FAQ, and prior Gemini posture material
+- 12 through 15 preserve Gemini runtime source-tree, topology, output-contract, validation, and attachment-maintenance guidance
 
 ## Starter prompts
 
@@ -38,13 +43,14 @@ Starter Prompt 3:
 
 1. Edit the maintained `knowledge/*.md` files first when the shared knowledge layer changes.
 2. Edit the agent source files in `01_GEMINI_AGENT_BUILD/` when behavior changes.
-3. Update the manifest topology whenever the prime-agent or sub-agent set changes.
-4. Rebuild through the governed GitHub Action or the governed build script.
-5. Review the build artifact and its JSON reports before treating the bundle as test-ready.
+3. Update the manifest required-files inventory whenever the attachment set changes.
+4. Update `00_START_HERE/Agent_Attachment_Map.md.txt` whenever the attachment inventory or the purpose of an attachment changes.
+5. Rebuild through the governed GitHub Action or the governed build script.
+6. Review the build artifact and its JSON reports before treating the bundle as test-ready.
 
-## Major-version review focus for tomorrow
+## Validation focus
 
-Tomorrow's functionality test should explicitly cover:
+Every serious review of the current bundle should explicitly cover:
 - starter prompt behavior
 - collector artifact interpretation
 - mixed-format IOC parsing
@@ -52,3 +58,5 @@ Tomorrow's functionality test should explicitly cover:
 - false-positive-aware handling of known enterprise products
 - SINGULAR TRIAGE COMMAND consistency
 - leadership-writeup behavior
+- attachment-map, manifest, and maintained-knowledge synchronization
+- ordinary sync/build behavior when the shared knowledge set changes

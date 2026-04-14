@@ -4,21 +4,23 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
 
-MAPPINGS = [
-    ('knowledge/Knowledge - 01 - Overview and About.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 01 - Overview and About.md.txt'),
-    ('knowledge/Knowledge - 02 - Elastic Quick Start.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 02 - Elastic Quick Start.md.txt'),
-    ('knowledge/Knowledge - 03 - Local Test and Regression.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 03 - Local Test and Regression.md.txt'),
-    ('knowledge/Knowledge - 04 - Tier 1 Collect Runbook.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 04 - Tier 1 Collect Runbook.md.txt'),
-    ('knowledge/Knowledge - 05 - Tier 2 Collect Runbook.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 05 - Tier 2 Collect Runbook.md.txt'),
-    ('knowledge/Knowledge - 06 - Enrichment Actions.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 06 - Enrichment Actions.md.txt'),
-    ('knowledge/Knowledge - 07 - Artifact Review Guide.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 07 - Artifact Review Guide.md.txt'),
-    ('knowledge/Knowledge - 08 - Troubleshooting.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 08 - Troubleshooting.md.txt'),
-    ('knowledge/Knowledge - 09 - FAQ.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 09 - FAQ.md.txt'),
-    ('knowledge/Knowledge - 10 - AI Prompt and Agent Design.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 10 - AI Prompt and Agent Design.md.txt'),
-    ('knowledge/Knowledge - 11 - IOC Enrichment and Public Sources.md', '02_PRIME_AGENT_ATTACHMENTS/Knowledge - 11 - IOC Enrichment and Public Sources.md.txt'),
-]
+MANIFEST_NAME = 'Gemini_Bundle_Source_Manifest.json.txt'
+KNOWLEDGE_DIR = '02_PRIME_AGENT_ATTACHMENTS'
+
+
+def load_manifest(source_root: Path) -> Dict:
+    return json.loads((source_root / MANIFEST_NAME).read_text(encoding='utf-8'))
+
+
+def derive_expected_knowledge_targets(source_root: Path) -> List[str]:
+    manifest = load_manifest(source_root)
+    required = manifest.get('required_files', [])
+    return sorted(
+        rel for rel in required
+        if rel.startswith(f'{KNOWLEDGE_DIR}/') and Path(rel).name.startswith('Knowledge - ') and rel.endswith('.md.txt')
+    )
 
 
 def main() -> int:
@@ -34,12 +36,18 @@ def main() -> int:
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    expected_targets = derive_expected_knowledge_targets(source_root)
     errors: List[str] = []
     changed: List[str] = []
     unchanged: List[str] = []
     missing_sources: List[str] = []
+    source_to_target: Dict[str, str] = {}
 
-    for source_rel, target_rel in MAPPINGS:
+    for target_rel in expected_targets:
+        target_name = Path(target_rel).name
+        source_name = target_name[:-4]
+        source_rel = f'knowledge/{source_name}'
+        source_to_target[source_rel] = target_rel
         source_path = repo_root / source_rel
         target_path = source_root / target_rel
         if not source_path.exists():
@@ -57,23 +65,35 @@ def main() -> int:
         else:
             unchanged.append(target_rel)
 
+    maintained_sources = sorted(
+        p.relative_to(repo_root).as_posix()
+        for p in (repo_root / 'knowledge').glob('Knowledge - *.md')
+        if p.is_file()
+    )
+    unmapped_sources = [rel for rel in maintained_sources if rel not in source_to_target]
+
     if missing_sources:
-        errors.append('missing maintained knowledge source files: ' + ', '.join(missing_sources))
+        errors.append('missing maintained knowledge source files for manifest-required attachments: ' + ', '.join(missing_sources))
+    if unmapped_sources:
+        errors.append('maintained knowledge source files are not represented in the manifest attachment inventory: ' + ', '.join(unmapped_sources))
 
     report = {
         'success': len(errors) == 0,
         'repo_root': str(repo_root),
         'source_root': str(source_root),
         'check_only': args.check_only,
+        'expected_target_files': expected_targets,
         'changed_files': changed,
         'unchanged_files': unchanged,
         'missing_source_files': missing_sources,
+        'unmapped_source_files': unmapped_sources,
         'errors': errors,
     }
     report_path = output_dir / 'sync_dcoir_gemini_knowledge_attachments_report.json'
     report_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps(report, indent=2))
     return 0 if len(errors) == 0 else 1
+
 
 if __name__ == '__main__':
     raise SystemExit(main())

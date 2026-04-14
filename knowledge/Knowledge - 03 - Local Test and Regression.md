@@ -1,74 +1,221 @@
 # Knowledge - 03 - Local Test and Regression
 
-Purpose
-- This knowledge file provides a deliberately expanded, operationally explicit reference for local test and regression strategy.
-- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
-- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
+_How the local harness works and when to use each suite_
 
-What this file is expected to do in the major-version build
-- Spell out local vs response-action execution in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out bundle smoke tests in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out manual workflows in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out regression buckets in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out what a failed run means in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out why repeated-session checks matter in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+**Summary:** Local harness behavior, suite selection, restaging logic, and practical regression use from a repo-style layout.
 
-Operational detail
-## 1. Local Vs Response-Action Execution
-This section is intentionally long-form. The goal is to make local vs response-action execution explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+| Source class | Authoritative basis |
+| --- | --- |
+| Project sources | project_sources/run_DCOIR_Tests.ps1; project_sources/DCOIR_Collector.ps1; project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt |
+| Official external sources | Not required for this page |
+| Scope note | This page explains the current GitHub-readable harness source and the runtime filenames the operator will actually use in a local repo-style layout. |
 
-For local vs response-action execution, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Why these files exist
 
-The current major-version bundle also assumes that local vs response-action execution may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+- The current GitHub-readable harness source is `project_sources/run_DCOIR_Tests.ps1`.
+- The current runtime collector filename remains `DCOIR_Collector.ps1`.
+- The harness is designed to restage and exercise the stable collector line from a local repo-style layout without inventing a separate test-only engine.
+- The current governed line does not carry a separate default CMD wrapper for the harness.
 
-When writing or reviewing functionality tied to local vs response-action execution, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Harness parameters
 
-## 2. Bundle Smoke Tests
-This section is intentionally long-form. The goal is to make bundle smoke tests explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+| Parameter | Purpose | Current default |
+| --- | --- | --- |
+| -Suite | Select Core, Retrieval, QuickAliases, or FullRegression | Core |
+| -CollectorPath | Path to the local runtime collector | .\DCOIR_Collector.ps1 |
+| -OutputRoot | Directory for test outputs | .\TestResults |
+| -MasterZipPath | Path to the master collector ZIP used for restaging | .\assets\DCOIR_Collector.zip |
+| -ContinueOnError | Keep running even if a step fails | off |
+| -SkipCleanup | Leave DCOIR run output in place for inspection | off |
 
-For bundle smoke tests, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Common local commands
 
-The current major-version bundle also assumes that bundle smoke tests may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+| Use case | Command |
+| --- | --- |
+| Run the Core suite directly | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite Core |
+| Run the Retrieval suite directly | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite Retrieval |
+| Run the QuickAliases suite directly | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite QuickAliases |
+| Run the full regression directly | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -Suite FullRegression |
 
-When writing or reviewing functionality tied to bundle smoke tests, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## What the harness actually does
 
-## 3. Manual Workflows
-This section is intentionally long-form. The goal is to make manual workflows explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+- Restages the working `DCOIR_Collector.zip` from the master ZIP before each suite.
+- Invokes the stable collector runtime with quick aliases rather than inventing separate test-only code paths.
+- Writes logs and summary outputs under the run output root.
+- Lets the operator leave artifacts in place with `-SkipCleanup` when needed for debugging.
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
 
-For manual workflows, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Local regression philosophy
 
-The current major-version bundle also assumes that manual workflows may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+The local regression harness exists so the collector can be exercised from a clean repo-style layout without turning the runtime itself into a tangle of one-off debug switches. The working idea is stability first. The collector remains the thing being tested, and the harness provides repeatable orchestration around that stable line.
 
-When writing or reviewing functionality tied to manual workflows, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+That design is useful because it preserves one runtime filename and one collector model while still letting the operator restage, rerun, inspect artifacts, and compare behavior across changes. A good harness protects the collector from ad hoc edits that only exist to make one isolated test easier.
 
-## 4. Regression Buckets
-This section is intentionally long-form. The goal is to make regression buckets explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+## Repo-style layout expectations
 
-For regression buckets, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+The local harness assumes a repo-style working layout. The important paths are not arbitrary:
+- the collector runtime should be reachable at the runtime filename the operator actually uses
+- the harness should be reachable directly in PowerShell
+- the master collector ZIP should exist in the expected asset location so restaging works predictably
+- the output root should be writable and easy to inspect after a run
 
-The current major-version bundle also assumes that regression buckets may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+When those assumptions break, the first debugging question is not always whether the collector logic is wrong. Often the failure is a layout mismatch, a missing asset, or an invocation from the wrong current working directory.
 
-When writing or reviewing functionality tied to regression buckets, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Suite selection and what each suite is trying to prove
 
-## 5. What A Failed Run Means
-This section is intentionally long-form. The goal is to make what a failed run means explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+### Core
+The Core suite is the fastest baseline confidence check. It is the right first choice when the question is whether the stable collector line still behaves like the operator expects at a broad level.
 
-For what a failed run means, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+### Retrieval
+The Retrieval suite exists for branches where staged files, output movement, or retrieval-related expectations are the focus.
 
-The current major-version bundle also assumes that what a failed run means may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+### QuickAliases
+The QuickAliases suite validates that the high-friction operator shortcuts still map to the expected underlying behavior.
 
-When writing or reviewing functionality tied to what a failed run means, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+### FullRegression
+FullRegression is the wide confidence pass. It is the choice when multiple related behaviors changed, when packaging or runtime behavior changed materially, or when a release-minded operator wants the deeper confidence pass before calling a change ready.
 
-## 6. Why Repeated-Session Checks Matter
-This section is intentionally long-form. The goal is to make why repeated-session checks matter explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+## Restaging and repeatability
 
-For why repeated-session checks matter, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+Restaging is one of the most important harness behaviors. The harness is not just launching commands; it is resetting the test surface so one run does not silently contaminate the next. That keeps results comparable and makes it easier to distinguish a real regression from leftover output or an already-modified working folder.
 
-The current major-version bundle also assumes that why repeated-session checks matter may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+## Parameters that matter operationally
 
-When writing or reviewing functionality tied to why repeated-session checks matter, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+The current parameter set is small, but each one changes the meaning of the run:
+- `-Suite` chooses the testing surface and therefore the expected breadth of validation
+- `-CollectorPath` decides which runtime file is actually under test
+- `-OutputRoot` determines where evidence about the run will accumulate
+- `-MasterZipPath` controls the restaging source for runtime packaging
+- `-ContinueOnError` changes whether the run behaves like a strict gate or an exploratory sweep
+- `-SkipCleanup` changes whether the run leaves artifacts available for post-run inspection
 
-Major-version bundle rule
-- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
-- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
-- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.
+## How to read harness output
+
+A harness run produces more than a pass/fail feeling. Useful interpretation asks:
+- which suite ran
+- whether restaging succeeded before execution started
+- which collector paths or quick aliases were exercised
+- where logs and staged results landed
+- whether failures happened before runtime execution, during invocation, or during output evaluation
+- whether leftover artifacts were intentionally preserved or accidentally left behind
+
+## Practical local testing patterns
+
+### Fast sanity pass after a small edit
+Run the smallest suite that exercises the changed behavior first. Do not start with FullRegression when the only question is whether one alias still points to the correct path.
+
+### Debugging a packaging or staging issue
+Favor leaving artifacts in place, keeping the output root obvious, and checking whether restaging actually produced the expected runtime surface before blaming the collector logic.
+
+### Regression after grouped collector changes
+Use a wider suite once the narrow behavior passes.
+
+## Common local mistakes
+
+- running from a directory that does not contain the expected runtime file and asset paths
+- assuming the current governed line still carries a default CMD wrapper when the direct PowerShell harness is the current source
+- interpreting every failure as collector logic breakage instead of checking layout, staging, or path assumptions
+- leaving artifacts around accidentally and then misreading later runs as fresh evidence
+- using local syntax examples when the real next operator move is endpoint-side, or vice versa
+
+## Manual testing note
+
+For current manual validation work, Airtable Validation Test Cases is the dynamic manual-testing surface. GitHub remains the engineering authority for the collector runtime, the harness, and the packaging source line. The most useful habit is to let Airtable track what was tested and observed while GitHub remains the place where durable source changes land.
+
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+

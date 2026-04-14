@@ -64,9 +64,11 @@ jobs:
             'project_sources/DCOIR_Gemini_Bundle_Source/Gemini_Bundle_Source_Manifest.json.txt',
             'project_sources/DCOIR_Gemini_Bundle_Source/README.md',
             'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/README_FIRST.md.txt',
+            'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/Agent_Attachment_Map.md.txt',
+            'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/Gemini_Build_Quick_Start.md.txt',
             'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt',
             'knowledge/README.md',
-            'knowledge/Knowledge - 11 - IOC Enrichment and Public Sources.md',
+            'knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md',
             'project_sources/generation_validation/sync_dcoir_gemini_knowledge_attachments.py',
             'project_sources/generation_validation/validate_dcoir_gemini_bundle.py',
             'project_sources/generation_validation/compile_dcoir_gemini_bundle.py',
@@ -75,6 +77,10 @@ jobs:
           $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
           if ($missing.Count -gt 0) {
             throw "Missing required Gemini bundle surfaces: $($missing -join ', ')"
+          }
+          $knowledgeFiles = Get-ChildItem -LiteralPath knowledge -File -Filter 'Knowledge - *.md'
+          if ($knowledgeFiles.Count -lt 15) {
+            throw "Maintained knowledge set is smaller than expected. Found $($knowledgeFiles.Count) files; expected at least 15."
           }
 
       - name: Create output directory

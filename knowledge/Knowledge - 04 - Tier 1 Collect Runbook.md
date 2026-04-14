@@ -1,74 +1,214 @@
 # Knowledge - 04 - Tier 1 Collect Runbook
 
-Purpose
-- This knowledge file provides a deliberately expanded, operationally explicit reference for tier 1 and targeted collect runbook.
-- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
-- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
+_Baseline collection workflow for standard first-pass collection_
 
-What this file is expected to do in the major-version build
-- Spell out standard baseline collect in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out targeted collection profiles in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out time-windowed collection in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out user-reported popup cases in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out script execution follow-up in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out what to upload first in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+**Summary:** Standard first-pass baseline collection posture, entry points, review order, and the branch conditions that justify the next move.
 
-Operational detail
-## 1. Standard Baseline Collect
-This section is intentionally long-form. The goal is to make standard baseline collect explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+| Source class | Authoritative basis |
+| --- | --- |
+| Project sources | project_sources/DCOIR_Collector.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
+| Official external sources | Not required for this page |
+| Scope note | Commands shown here follow the current collector parameter model and quick aliases. |
 
-For standard baseline collect, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Collector entry points
 
-The current major-version bundle also assumes that standard baseline collect may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+| Approach | Command |
+| --- | --- |
+| Local collector quick alias | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t1 |
+| Explicit parameter form | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T1 -Hours 24 |
+| Elastic endpoint form | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t1" --comment "Run DCOIR Tier 1 collect" |
 
-When writing or reviewing functionality tied to standard baseline collect, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## What Tier 1 is for
 
-## 2. Targeted Collection Profiles
-This section is intentionally long-form. The goal is to make targeted collection profiles explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+- Build the first baseline package for host, identity, process, network, service, task, registry, event-log, and defender review.
+- Produce a broad enough artifact set to support baseline triage before targeted enrichment begins.
+- Give the analyst a consistent foundation for the DCOIR workflow: baseline review, enrichment, retrieved artifact review, and final synthesis.
 
-For targeted collection profiles, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Outputs and follow-on actions
 
-The current major-version bundle also assumes that targeted collection profiles may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+- The collector writes run-specific output rooted at the selected OutRoot, with reports, final artifacts, logs, and bundles under the current run folder.
+- After a Tier 1 collect, the collector's next-step hints normally point to one enrichment action at a time rather than broad additional collection.
+- The preferred next review target is the merged baseline report when available, followed by metadata and flat final_artifacts output.
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
 
-When writing or reviewing functionality tied to targeted collection profiles, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Tier 1 collection posture
 
-## 3. Time-Windowed Collection
-This section is intentionally long-form. The goal is to make time-windowed collection explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+Tier 1 is the standard first-pass host collection because it is broad enough to support meaningful baseline review without immediately jumping into deeper persistence or highly specific follow-up branches. It should be treated as the normal entry point when the host needs a starting evidence package and the operator does not yet know which narrow artifact family will matter most.
 
-For time-windowed collection, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+The point of Tier 1 is not to prove compromise by itself. The point is to stage the first broad evidence package that lets the analyst ask better questions afterward. A well-run Tier 1 collection narrows uncertainty, exposes likely next review targets, and makes later enrich or retrieval choices less speculative.
 
-The current major-version bundle also assumes that time-windowed collection may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+## Before the first baseline run
 
-When writing or reviewing functionality tied to time-windowed collection, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+A disciplined Tier 1 run starts with a short reasoning step:
+- what question is driving host collection
+- why telemetry or current alert evidence is not enough
+- whether the host is already in a state where a narrower enrich action would be better than a baseline
+- whether the endpoint or local lane is being used
+- whether the operator will need to preserve the outputs for immediate artifact review or later retrieval
 
-## 4. User-Reported Popup Cases
-This section is intentionally long-form. The goal is to make user-reported popup cases explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+Tier 1 is the default broad lane, but it is still a deliberate choice. Running it merely because collection exists leads to oversized output and weak review discipline.
 
-For user-reported popup cases, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## What Tier 1 is trying to capture
 
-The current major-version bundle also assumes that user-reported popup cases may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+The current Tier 1 baseline is shaped to establish a first evidence surface across common categories relevant to host triage:
+- host context
+- identity context
+- process context
+- network context
+- service and task context
+- registry and persistence context sufficient for baseline review
+- event-log and defender context
+- report and artifact surfaces that feed later review
 
-When writing or reviewing functionality tied to user-reported popup cases, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+That breadth is valuable because it supports both suspicious and benign outcomes. A good baseline is just as useful for ruling out false positives or expected administrative activity as it is for confirming suspicious behavior.
 
-## 5. Script Execution Follow-Up
-This section is intentionally long-form. The goal is to make script execution follow-up explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+## What to read first after Tier 1 completes
 
-For script execution follow-up, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+The order of review matters because not every emitted artifact has the same value at the same stage:
+1. merged baseline report when available
+2. metadata report
+3. flat final_artifacts baseline outputs
+4. specific artifacts that the baseline report or metadata clearly highlight as high signal
 
-The current major-version bundle also assumes that script execution follow-up may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+That order helps the analyst avoid drowning in raw outputs before understanding what the collector already summarized or prioritized. The baseline package should focus the review, not scatter it.
 
-When writing or reviewing functionality tied to script execution follow-up, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## What Tier 1 proves and what it does not prove
 
-## 6. What To Upload First
-This section is intentionally long-form. The goal is to make what to upload first explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+Tier 1 proves that a broad first-pass evidence package was collected. It can reveal suspicious process patterns, service/task anomalies, identity clues, network context, and persistence hints. It does not by itself prove that any detected signal is malicious. It also does not eliminate the need for evidence discipline. A baseline report can point to the next best question, but it still has to be interpreted as evidence, inference, or workflow guidance.
 
-For what to upload first, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## When Tier 1 is enough for the next step
 
-The current major-version bundle also assumes that what to upload first may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+Tier 1 is often enough when the next decision is one of these:
+- pick one targeted enrichment action
+- choose one retrieval step
+- identify one or two highest-signal artifacts for review
+- support a benign explanation with additional host context
+- decide that Tier 2 deeper context is justified because the baseline exposed a real persistence or configuration question
 
-When writing or reviewing functionality tied to what to upload first, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Common Tier 1 mistakes
 
-Major-version bundle rule
-- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
-- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
-- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.
+- running Tier 1 when a retrieval-ready artifact already exists and would answer the next question faster
+- confusing baseline breadth with maliciousness
+- skipping the merged report and diving into raw files too early
+- running cleanup before the review or retrieval need is satisfied
+- broadening immediately to Tier 2 without naming the specific unresolved question that requires it
+
+## Tier 1 review checklist
+
+- Was the correct lane used: endpoint or local?
+- Did the collector run as Tier 1 and produce the expected output structure?
+- Was the merged baseline report read before raw artifact drift began?
+- What did the baseline clearly support?
+- What remained uncertain?
+- Is the best next move enrich, retrieval, deeper collection, or ordinary artifact review?
+- Does the next step materially reduce uncertainty, or is it just more data gathering?
+
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+

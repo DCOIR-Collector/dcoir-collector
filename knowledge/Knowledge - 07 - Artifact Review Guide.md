@@ -1,98 +1,213 @@
 # Knowledge - 07 - Artifact Review Guide
 
-Purpose
-- This knowledge file provides a deliberately expanded, operationally explicit reference for collector artifact interpretation and upload guidance.
-- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
-- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
+_How the current prompt-pack and combined-master-prompt line expects analysts to review DCOIR artifacts_
 
-What this file is expected to do in the major-version build
-- Spell out upload summary in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out attachment budget manifest in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out metadata report in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out analyst follow-up queue in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out high-signal summary in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out retrieved enrich artifacts in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out baseline report limits in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Preserve the narrower artifact-first upload behavior that starts with upload summary, attachment budget manifest, metadata report, and representative final_artifacts slices before a monolithic baseline-first upload path is considered.
-- Preserve the targeted artifact-interpretation markers that future validators expect to see explicitly, including collection scope, targeted collection plan, attachment budget manifest, and representative final_artifacts.
+**Summary:** Evidence-first review order for baseline, enrichment, and retrieved artifacts, including wrapper-versus-evidence-carrier distinctions.
 
-Operational detail
-## 1. Upload Summary
-This section is intentionally long-form. The goal is to make upload summary explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+| Source class | Authoritative basis |
+| --- | --- |
+| Project sources | PP-01_System_Prompt_v1_0_1.txt; PP-02_Output_Schema_v1_0_0.txt; PP-03_Baseline_Triage_Prompt_v1_0_0.txt; PP-04_Enrichment_Review_Prompt_v0_1_1.txt; PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt; PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt; PP-07_Agent_Guardrails_v1_0_0.txt; PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt |
+| Official external sources | Not required for this page |
+| Scope note | This page is project-grounded; it does not redefine the schema or the prompts. |
 
-For upload summary, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Current review sequence
 
-The current major-version bundle also assumes that upload summary may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+- Review baseline collection output first.
+- Review the merged baseline report and the flat final_artifacts output.
+- Identify suspicious findings, notable absences, and the next best enrichment step.
+- Review enrichment output as it is produced.
+- Review retrieved files or raw exports in retrieved artifact review mode when they are staged.
+- Treat scripts, configs, scheduled-task XML, registry exports, and event-log-derived excerpts as evidence-first artifact-review inputs rather than enrichment-only narrative.
+- End with final case synthesis after enough reviewed evidence exists to support a case-level conclusion.
 
-When writing or reviewing functionality tied to upload summary, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Review posture
 
-The current operator-facing rule is that upload summary is not only a report name. It is the first artifact-intake branch. When the collector returns a bundle, the analyst or Gemini workflow should usually start with upload summary, then use the attachment budget manifest to understand what can be uploaded safely, then consult metadata report, and then request representative final_artifacts slices when they narrow the investigation faster than a large baseline report. This explicit artifact-first upload behavior is part of collector artifact interpretation, not an optional afterthought.
+- Treat user-provided case artifacts as the primary source of truth.
+- Separate observed evidence, inference, uncertainty, and recommendations.
+- Do not overstate confidence, maliciousness, benignity, or batch completeness.
+- Recommend one best next step when possible rather than shotgun lists.
 
-## 2. Attachment Budget Manifest
-This section is intentionally long-form. The goal is to make attachment budget manifest explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+## Common input priority
 
-For attachment budget manifest, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+| Priority | Preferred artifact |
+| --- | --- |
+| 1 | Merged baseline report |
+| 2 | Metadata report |
+| 3 | Flat final_artifacts baseline outputs |
+| 4 | Enrichment report content and staged retrieval handoff |
+| 5 | Retrieved script, config, task XML, registry export, or event-log-derived excerpt |
+| 6 | Final case synthesis only after the reviewed evidence chain is broad enough to justify case-level closure or decision support |
 
-The current major-version bundle also assumes that attachment budget manifest may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
 
-When writing or reviewing functionality tied to attachment budget manifest, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Artifact review posture
 
-For collector artifact interpretation, attachment budget manifest is one of the primary narrowing guides. The analyst or Gemini workflow should use it to decide whether the next upload should be upload summary plus metadata, upload summary plus a collection scope artifact, upload summary plus a targeted collection plan artifact, or upload summary plus representative final_artifacts slices. The point is not merely to say that file sizes matter. The point is to choose the next evidence set in a way that preserves uploadability and investigative clarity.
+Artifact review is where DCOIR output becomes analytically useful. The central discipline is evidence-first reading. The operator should separate observed facts, inference, uncertainty, and recommendations instead of letting generated summaries or convenient filenames do the thinking. That posture matters because DCOIR produces both workflow-state artifacts and evidence-bearing artifacts, and they do not have the same meaning.
 
-## 3. Metadata Report
-This section is intentionally long-form. The goal is to make metadata report explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+## Review sequence and why the order matters
 
-For metadata report, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+The current sequence starts with baseline output, then enrichment output, then retrieved artifacts, and only later supports final case synthesis. That order is deliberate. Baseline review gives the operator the broadest initial evidence picture and usually reveals the narrowest useful follow-up lane. Enrichment review should be grounded in the baseline questions that prompted it. Retrieved artifacts often contain the highest-signal material, but they are easier to interpret correctly once the baseline and enrichment context already exist.
 
-The current major-version bundle also assumes that metadata report may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+## Wrapper artifacts versus evidence carriers
 
-When writing or reviewing functionality tied to metadata report, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+One of the most important skills in DCOIR review is knowing when a file is a wrapper and when it is the thing that matters. Summary files, metadata files, upload-priority files, and follow-up queues are often extremely useful, but they frequently exist to point at the real evidence carrier rather than to replace it.
 
-## 4. Analyst Follow-Up Queue
-This section is intentionally long-form. The goal is to make analyst follow-up queue explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+## Common artifact classes and how to read them
 
-For analyst follow-up queue, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+### Merged baseline report
+Usually the best starting point because it organizes the first-pass evidence into a readable frame.
 
-The current major-version bundle also assumes that analyst follow-up queue may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+### Metadata report
+Valuable for workflow-state awareness, run context, and understanding what the collector actually staged.
 
-When writing or reviewing functionality tied to analyst follow-up queue, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+### Flat final_artifacts outputs
+Often where the concrete details live once the summary has told the operator which evidence matters most.
 
-## 5. High-Signal Summary
-This section is intentionally long-form. The goal is to make high-signal summary explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+### Enrichment reports
+Should be read against the precise question that justified the enrich action.
 
-For high-signal summary, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+### Retrieved scripts, configs, scheduled-task XML, registry exports, and event-derived excerpts
+Often the evidence-rich materials that directly support or weaken a hypothesis.
 
-The current major-version bundle also assumes that high-signal summary may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+## Evidence discipline during review
 
-When writing or reviewing functionality tied to high-signal summary, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+Review should preserve four distinct categories:
+- observed evidence directly visible in the artifact
+- inference drawn from that evidence
+- uncertainty or missing context
+- recommendations for the next evidence-producing move
 
-## 6. Retrieved Enrich Artifacts
-This section is intentionally long-form. The goal is to make retrieved enrich artifacts explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+Confusing those categories is the fastest way to create false confidence.
 
-For retrieved enrich artifacts, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Upload priority and attachment budgets
 
-The current major-version bundle also assumes that retrieved enrich artifacts may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+When upload limits matter, the operator should not treat every file equally. The right question is which artifact is most likely to answer the current question or materially change the investigation. That is why the current review posture prioritizes merged reports and high-signal evidence carriers rather than encouraging indiscriminate upload of every produced file.
 
-When writing or reviewing functionality tied to retrieved enrich artifacts, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Retrieved artifact review techniques
 
-## 7. Baseline Report Limits
-This section is intentionally long-form. The goal is to make baseline report limits explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+### Scripts and command artifacts
+Focus on what they do, what they reference, whether they align with the suspected behavior, and whether they appear administrative, installer-driven, scheduled, or suspicious in context.
 
-For baseline report limits, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+### Config and XML artifacts
+Focus on persistence, triggers, execution context, references to binaries or scripts, timing, and whether the configuration matches expected software behavior.
 
-The current major-version bundle also assumes that baseline report limits may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+### Registry exports
+Focus on path, scope, startup relevance, security relevance, and whether the values support persistence, policy, or expected system behavior.
 
-When writing or reviewing functionality tied to baseline report limits, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Common review mistakes
 
-Collector-artifact interpretation rule for artifact-first upload behavior
-- Treat collector artifact interpretation as an explicit workflow branch, not as a vague reading exercise.
-- Prefer upload summary first, then attachment budget manifest, then metadata report, then the narrowest collector-returned artifact that reduces ambiguity.
-- When the collector emits collection scope, treat collection scope as a decision aid for what was deliberately bounded or targeted in the run.
-- When the collector emits targeted collection plan, treat targeted collection plan as an analyst-facing explanation of why the narrowed collection exists, what it tries to answer, and what gaps remain.
-- When the collector emits representative final_artifacts candidates, treat representative final_artifacts as the preferred next upload set when they provide faster evidentiary value than a monolithic baseline-heavy surface.
-- Do not force a baseline-first upload path when upload summary, attachment budget manifest, collection scope, targeted collection plan, and representative final_artifacts already give a clearer and safer intake path.
+- reading a summary wrapper as if it were direct host evidence
+- jumping to final synthesis before the actual evidence carrier has been reviewed
+- ignoring what an artifact does not prove
+- uploading or reading too many low-value files before the highest-signal file
+- treating the existence of many artifacts as equivalent to severity
 
-Major-version bundle rule
-- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
-- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
-- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+

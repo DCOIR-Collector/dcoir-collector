@@ -1,81 +1,81 @@
-# Knowledge - 10 - AI Prompt and Agent Design
+# Knowledge - 13 - Gemini Agent Topology and Routing
 
-_The current prompt-pack, Gemini workflow, and supporting design-artifact posture_
+_Current runtime topology, sub-agent ownership, and routing logic preserved by the stored-source bundle_
 
-**Summary:** Current DCOIR prompt-pack and Gemini design posture, with emphasis on stored-source runtime maintenance, routing-rich descriptions, and explicit instructions.
+**Summary:** Current one-prime-plus-ten-sub-agent topology, specialist ownership boundaries, and the routing logic that keeps the runtime explicit.
 
 | Source class | Authoritative basis |
 | --- | --- |
-| Project sources | project_sources/PP-01_System_Prompt_v1_0_1.txt; project_sources/PP-02_Output_Schema_v1_0_0.txt; project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt; project_sources/PP-04_Enrichment_Review_Prompt_v0_1_1.txt; project_sources/PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt; project_sources/PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt; project_sources/PP-07_Agent_Guardrails_v1_0_0.txt; project_sources/PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt; project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt; project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt |
+| Project sources | project_sources/DCOIR_Gemini_Bundle_Source/Gemini_Bundle_Source_Manifest.json.txt; project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt; project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt |
 | Official external sources | Not required for this page |
-| Scope note | This page is project-grounded; it does not redefine the schema or the prompt sources. |
+| Scope note | The topology described here follows the current stored-source runtime build and not earlier reduced design snapshots. |
 
-## What changed in the current design posture
+## Prime-agent ownership
 
-- The current Gemini workflow treats **Description** as a routing-critical field used for delegation and automatic routing.
-- The current Gemini workflow treats **Instructions** as a field that should be explicit, operationally detailed, and as full as needed to preserve agent behavior.
-- The AFRICOM SOC Elastic Defend Triage parent and sub-agent markdowns remain approved comparative style references for DCOIR Gemini design work.
-- Duplicate or near-duplicate data from purpose, role, and description fields should be merged into the runtime Description field when that improves routing quality.
-- The current bounded design artifact assumes a merged parent-agent topology where alert triage can explicitly escalate into DCOIR collection, enrichment, artifact review, and final synthesis.
-- Generated companion markdowns for the parent agent and all sub-agents remain required deliverables alongside the bounded design artifact.
+The prime agent owns orchestration. Its job is to determine the current branch, preserve startup behavior, identify the next best specialist lane, and keep the overall runtime aligned with the evidence-first DCOIR posture.
 
-## Practical guidance for future Gemini design work
+## The ten sub-agents and what each owns
 
-### Description field
-- Put the strongest routing, scope, orchestration, and task-selection language here.
-- Treat the field as if ADK will use it to decide where work should go.
-- Include what the agent does, what inputs it expects, what outputs it controls, what domains it operates in, and when it should be selected.
+### 01 Session Readiness and Intake
+Startup discipline, intake boundaries, and readiness.
 
-### Instructions field
-- Use detailed instructions that preserve startup behavior, workflow order, evidence discipline, tool behavior, error handling, stop conditions, and output format.
-- Do not rely on short instructions when the agent behavior is complex.
-- Preserve environment and command-lane separation explicitly.
+### 02 Environment and Coverage Mapper
+Evidence surfaces, visibility assumptions, and coverage reasoning.
 
-### Comparative references
-- Use comparative reference agent markdowns for style, density, and role-shaping.
-- Do not let comparative references override DCOIR behavior or control-plane authority.
-- Prefer to absorb the best structural lessons from those references while keeping DCOIR evidence discipline intact.
+### 03 Alert Family Classifier and Known Benign Technology Differentiator
+First serious branching decision between suspicious alert-family reasoning and known-benign technology overlap.
 
-### Packaging and delivery posture
-- Package generated agent markdowns as a supporting asset such as `generated_agent_markdowns.zip` when the workflow still wants a retained delivery bundle.
-- Keep the editable working sources in GitHub-readable project files; do not treat retained ZIPs as the source of truth.
-- Refresh `supporting_knowledge_docs.zip` only when the maintained human-readable Knowledge-doc set is intentionally being regenerated or re-delivered.
-- Prefer grouped GitHub Desktop repo-update bundles and batched manual-install waves when compatible supporting-document and helper-skill fixes are already known.
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+### 04 Evidence and Provenance Analyst
+Source-label discipline and proof versus non-proof statements.
 
-## Current design posture
+### 05 Query Planner and Syntax Guard
+Next single best command or query, syntax correctness, and one-command pacing.
 
-The current DCOIR Gemini design posture is explicit, verbose, stored-source based, and operationally durable. The important runtime behavior should live in the maintained source tree rather than in a one-off generation wave that never gets promoted back into the editable runtime. Predictability, routing quality, command-lane discipline, evidence-first reasoning, and explicit next-step guidance are the higher values.
+### 06 DCOIR Collector Execution and Bundle Workflow Orchestrator
+Whether collector use is justified and which collector phase is correct.
 
-## Description-field writing
+### 07 DCOIR Collector Artifact Interpreter and Report Extractor
+Meaning of collector-generated outputs and upload or review prioritization.
 
-The Description field is routing-critical. A good Description should do more than name a role. It should help the runtime decide what class of work belongs to the agent, what inputs matter most, what outputs the agent owns, what branches it should not take, and when it should be selected instead of a sibling agent.
+### 08 IOC Parsing and Evidence-Grounded Public Enrichment Planner
+Mixed-format indicator parsing, normalization, typing, and bounded public enrichment.
 
-## Instructions-field writing
+### 09 Targeted Collection Designer and Evidence Gap Reducer
+Bounded targeted-collection design rather than reflexive broad collection.
 
-Instructions should preserve runtime behavior in enough detail that the final agent does not have to guess. High-quality instructions on this line should preserve startup behavior, branch order, evidence discipline, command-lane separation, error handling, guardrails against overstatement, stop conditions, output expectations, tool-use boundaries, and memory or context behavior when relevant.
+### 10 Output Contract Consistency Guard and Report Composer
+Final response structure, decision state, and output-contract enforcement.
 
-## Comparative references and what they are for
+## Expanded design appendix
 
-Comparative-reference agent markdowns preserve the approved field-writing style for density, specificity, and instruction explicitness. They are not there to replace DCOIR behavior. They remind the maintainer what good runtime text looks like when the goal is predictable delegation and explicit operator-safe behavior.
+The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
 
-## Stored-source compile model
+Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
 
-The default operator-facing Gemini bundle should be compiled from the stored runtime source tree. Once a redesign or rewrite is accepted, the accepted text belongs back in the stored-source tree so future packaging can be compile-based, repeatable, and reviewable.
+## Expanded design appendix
 
-## Anti-patterns to reject
+The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
 
-- treating generated markdown artifacts as the default runtime shipment surface when a stored-source compile tree exists
-- using PP-09 or PP-10 as substitutes for actual runtime field text
-- thinning agent runtime files during packaging
-- letting Description become a short slogan instead of a routing-rich field
-- letting Instructions collapse into brief reminders for complex behavior
+Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
 
-## Relationship to manual validation
+## Expanded design appendix
 
-Manual validation should live in the dynamic testing lane while source truth remains in GitHub. Airtable Validation Test Cases is the right place to track what manual tests were run, what failed, and what needs follow-up. The maintained runtime files and attachment files should still be edited in the repo.
+The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
 
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
+
+## Expanded design appendix
+
+The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
+
+Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
+
+## Expanded design appendix
+
+The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
+
+Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
+
 ## Expanded design appendix
 
 The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.

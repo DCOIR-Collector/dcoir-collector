@@ -74,6 +74,10 @@ jobs:
             'project_sources/Collector_Runtime_Package_Manifest.json.txt',
             'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
             'project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt',
+            'project_sources/DCOIR_Gemini_Bundle_Source/README.md',
+            'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/README_FIRST.md.txt',
+            'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/Agent_Attachment_Map.md.txt',
+            'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/Gemini_Build_Quick_Start.md.txt',
             'project_sources/generation_validation/sync_dcoir_gemini_knowledge_attachments.py',
             'project_sources/generation_validation/build_dcoir_gemini_release.py',
             'project_sources/generation_validation/validate_dcoir_gemini_bundle.py',
@@ -90,6 +94,10 @@ jobs:
           $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
           if ($missing.Count -gt 0) {
             throw "Missing required governed surfaces: $($missing -join ', ')"
+          }
+          $knowledgeFiles = Get-ChildItem -LiteralPath knowledge -File -Filter 'Knowledge - *.md'
+          if ($knowledgeFiles.Count -lt 15) {
+            throw "Maintained knowledge set is smaller than expected. Found $($knowledgeFiles.Count) files; expected at least 15."
           }
 
       - name: Build fresh collector runtime zip for harness
@@ -120,7 +128,7 @@ jobs:
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite FullRegression -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .un_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite FullRegression -MasterZipPath $env:HARNESS_RUNTIME_ZIP
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh

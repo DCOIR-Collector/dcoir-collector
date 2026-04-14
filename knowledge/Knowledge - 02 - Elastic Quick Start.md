@@ -1,74 +1,225 @@
 # Knowledge - 02 - Elastic Quick Start
 
-Purpose
-- This knowledge file provides a deliberately expanded, operationally explicit reference for Elastic and response-action quick start.
-- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
-- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
+_Endpoint response-console usage versus local workstation usage_
 
-What this file is expected to do in the major-version build
-- Spell out logs-* default scope in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out copy-ready command rules in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out response-action wrapping in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out KQL vs ESQL in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out field-agnostic discovery in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out known tool-availability honesty in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+**Summary:** Endpoint-side DCOIR execution in Elastic Defend, with explicit separation from local workstation and local-regression command lanes.
 
-Operational detail
-## 1. Logs-* Default Scope
-This section is intentionally long-form. The goal is to make logs-* default scope explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+| Source class | Authoritative basis |
+| --- | --- |
+| Project sources | project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DCOIR_Collector.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
+| Official external sources | Elastic Docs / endpoint response actions |
+| Scope note | Examples are grounded in the current collector quick-alias model and the project workflow rule that endpoint instructions use response-action syntax. |
 
-For logs-* default scope, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Execution context split
 
-The current major-version bundle also assumes that logs-* default scope may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+- Use Elastic Defend response-action syntax for endpoint instructions.
+- Use PowerShell commands for local workstation and local regression tasks.
+- Do not paste a local-only command directly into the response console without the response-action wrapper.
+- Do not add the Elastic response-console wrapper when running the same command on a local workstation or test repo.
 
-When writing or reviewing functionality tied to logs-* default scope, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Endpoint-side example commands
 
-## 2. Copy-Ready Command Rules
-This section is intentionally long-form. The goal is to make copy-ready command rules explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+| Intent | Example |
+| --- | --- |
+| Run TCP enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment" |
+| Run raw Security-log enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment" |
+| Cleanup current DCOIR run | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick cleanup" --comment "Run DCOIR cleanup" |
 
-For copy-ready command rules, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## When to use Elastic quick start
 
-The current major-version bundle also assumes that copy-ready command rules may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+- The endpoint already has the collector package staged and you want a controlled DCOIR action from the response console.
+- You are following the collector's Elastic-facing next-step hints after a collect or enrich stage.
+- You need one action at a time, not broad free-form shell work.
 
-When writing or reviewing functionality tied to copy-ready command rules, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+## Guardrails
 
-## 3. Response-Action Wrapping
-This section is intentionally long-form. The goal is to make response-action wrapping explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+- Keep command syntax explicit and minimal.
+- Preserve the distinction between endpoint collection activity and analyst workstation analysis activity.
+- Treat the response console as the place for endpoint actions; treat the local repo as the place for development and regression.
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
 
-For response-action wrapping, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Endpoint versus local execution
 
-The current major-version bundle also assumes that response-action wrapping may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+DCOIR commands live in two clearly different operating lanes. The endpoint lane uses Elastic response actions. The local lane uses normal Windows PowerShell invocation against a local repo-style layout. The collector command itself may look similar in both lanes, but the operational meaning is different.
 
-When writing or reviewing functionality tied to response-action wrapping, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+### Endpoint lane
+The endpoint lane is for actions performed against a host through Elastic Defend. The operator should think in terms of one bounded response action at a time. Response-console syntax wraps the PowerShell command and preserves an explicit comment so the action is auditable and clearly tied to the case objective.
 
-## 4. Kql Vs Esql
-This section is intentionally long-form. The goal is to make KQL vs ESQL explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+### Local lane
+The local lane is for development, regression, packaging verification, and safe workstation-side experimentation. No response-action wrapper belongs here. The operator is running a local file in a local folder structure and should keep the command in normal PowerShell form.
 
-For KQL vs ESQL, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Before running anything from Elastic
 
-The current major-version bundle also assumes that KQL vs ESQL may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+A fast operator benefits from a short pre-flight checklist:
+- confirm that the endpoint already has the collector package and runtime filename staged where the command expects them
+- confirm that the next investigative question truly needs a collector or enrichment action rather than a telemetry query or existing artifact review
+- confirm that the chosen action is the narrowest one that answers the question
+- confirm that the action comment says what is being done and why
+- confirm whether a retrieval-ready artifact already exists so a get-file or review move is better than another collector invocation
 
-When writing or reviewing functionality tied to KQL vs ESQL, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+Skipping that checklist usually creates the same problems repeatedly: unnecessary reruns, duplicate output, cleanup at the wrong time, or confusion about whether the collector failed when the real issue was that the wrong lane was chosen.
 
-## 5. Field-Agnostic Discovery
-This section is intentionally long-form. The goal is to make field-agnostic discovery explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+## Common endpoint-side action patterns
 
-For field-agnostic discovery, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+### First baseline action
+The normal first collector move is a bounded baseline rather than a speculative series of enrichment actions. That produces the broad evidence package the later review flow expects.
 
-The current major-version bundle also assumes that field-agnostic discovery may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+### One-action enrichment
+Enrichment is deliberately serialized. A single enrich-start or enrich-add action should have a specific investigative purpose. The output of that one action should then guide the next step instead of immediately stacking multiple unrelated enrichments.
 
-When writing or reviewing functionality tied to field-agnostic discovery, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+### Retrieval-oriented action
+When output already exists and the next question is really about reading or retrieving that artifact, the correct move is retrieval, not another baseline or enrichment rerun.
 
-## 6. Known Tool-Availability Honesty
-This section is intentionally long-form. The goal is to make known tool-availability honesty explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+### Cleanup
+Cleanup belongs after the operator has what is needed, not when uncertainty still exists about whether the current output will be needed for review or retrieval.
 
-For known tool-availability honesty, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Command examples and what they mean
 
-The current major-version bundle also assumes that known tool-availability honesty may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+The examples in the current quick-start surface are intentionally narrow:
+- TCP enrichment asks for network-connection context rather than broad host state
+- raw Security-log enrichment asks for host-event evidence in a bounded log lane
+- cleanup asks to remove or conclude the current output lifecycle when the artifacts are no longer needed
 
-When writing or reviewing functionality tied to known tool-availability honesty, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+The important operational lesson is that each quick alias encodes a workflow branch. The operator should read the alias as a decision, not just a shortcut. Choosing the alias is choosing the next type of evidence to develop.
 
-Major-version bundle rule
-- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
-- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
-- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.
+## Reading the results of an Elastic action
+
+A successful endpoint action does not automatically mean the case is better understood. The operator still needs to ask:
+- what output path or hint was produced
+- whether the output is a workflow-state artifact or a real evidence-bearing artifact
+- whether the next move is review, retrieval, another bounded enrich action, or no further collection at all
+- whether the result reduced the main uncertainty or merely produced more material to sort
+
+## Command-lane guardrails
+
+- Do not paste a local workstation example into the response console unchanged.
+- Do not add an `execute --command` wrapper to a local regression command.
+- Do not assume a broad host collection is the default answer to every question.
+- Do not use cleanup as a convenience shortcut while artifacts still need review.
+- Do not confuse a quick alias with hidden magic; each alias still represents a concrete workflow branch whose outputs must be interpreted.
+
+## Quick operator decision matrix
+
+**Use endpoint-side DCOIR execution when:**
+- the question is truly endpoint-facing
+- the collector package is already staged on the host
+- the action is bounded and specific
+- the next evidence path is best answered on-host rather than by repo-local testing
+
+**Use local workstation execution when:**
+- testing the collector runtime or harness
+- validating packaging or quick alias behavior outside the incident host
+- reproducing a regression issue
+- reading or editing the repo itself
+
+**Use neither yet when:**
+- the question is still better answered by telemetry
+- the next best move is artifact review
+- the current uncertainty is about syntax, packaging, or workflow-state interpretation rather than host evidence
+
+## Follow-on reading sequence after a quick start action
+
+After running a collector action from Elastic, the operator should normally move through this order:
+1. confirm the action completed and note any emitted next-step hints
+2. identify whether the result is a baseline, enrichment, retrieval, or cleanup state
+3. read the highest-signal summary or metadata file first
+4. decide whether the evidence gap is now narrower enough for artifact review or a single next enrich action
+5. resist broadening the workflow unless the current result truly left the main question unanswered
+
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+
+## Expanded operational appendix
+
+The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
+
+A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
+

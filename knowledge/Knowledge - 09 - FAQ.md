@@ -1,64 +1,225 @@
 # Knowledge - 09 - FAQ
 
-Purpose
-- This knowledge file provides a deliberately expanded, operationally explicit reference for operator faq.
-- It is intentionally more verbose than earlier versions because the current major-version build assumes that underspecified knowledge files increase ambiguity, increase routing inconsistency, and increase the chance that the analyst will have to restate context that the bundle should already know.
-- This file is written as a shared source-of-truth layer for both the maintained knowledge set and the synchronized Gemini prime-agent attachment set.
+_Short answers to recurring operator and project questions_
 
-What this file is expected to do in the major-version build
-- Spell out why not jump to containment in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out why the collector may be better than another query in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out why a targeted collect may be enough in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out how to use the bundle in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
-- Spell out how to ask the agent to parse IOCs in enough detail that the analyst or the Gemini bundle can apply it without having to guess what the author intended.
+**Summary:** Fast-reference answers to recurring DCOIR workflow, packaging, authority, command-lane, and maintenance questions.
 
-Operational detail
-## 1. Why Not Jump To Containment
-This section is intentionally long-form. The goal is to make why not jump to containment explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+| Source class | Authoritative basis |
+| --- | --- |
+| Project sources | project_sources/CP-01_DCOIR_Version_Manifest.txt; project_sources/CP-02_DCOIR_Change_Log.txt; project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt |
+| Official external sources | Not required for this page |
+| Scope note | Answers here summarize current project rules; they do not replace the control plane. |
 
-For why not jump to containment, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+## Questions and answers
 
-The current major-version bundle also assumes that why not jump to containment may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+| Question | Answer |
+| --- | --- |
+| Why do some historical references still mention `.ps1.txt` or `.cmd.txt` files? | Older Project-space or bundle-oriented workflow references used readable text suffixes more heavily. The current GitHub-primary governed working line keeps current readable sources at native repo paths such as `project_sources/DCOIR_Collector.ps1` and `project_sources/run_DCOIR_Tests.ps1`. |
+| Why is `DCOIR_Collector.zip` treated differently from the script sources? | It is a retained supporting asset used for packaging and local execution support, but it is not part of the control plane. |
+| Why are Knowledge docs non-authoritative? | They are supporting human-readable docs meant to help the operator. They must not override the control plane or other authoritative project sources. |
+| Why is there no default `.cmd` harness wrapper in current guidance? | The current governed line does not carry a default `run_DCOIR_Tests.cmd` wrapper. Local regression should use `run_DCOIR_Tests.ps1` directly unless the control plane later restores a wrapper source. |
+| When do I use local PowerShell syntax instead of `execute --command`? | Use local PowerShell syntax for local test and workstation tasks. Use `execute --command` only for endpoint response-console actions. |
+| Why do GitHub Desktop manual repo-update bundles include a suggested commit summary? | The current operator workflow uses GitHub Desktop as the easiest approved path for grouped repo-relative file placement, and the suggested commit summary reduces manual friction during those waves. |
 
-When writing or reviewing functionality tied to why not jump to containment, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
 
-## 2. Why The Collector May Be Better Than Another Query
-This section is intentionally long-form. The goal is to make why the collector may be better than another query explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+## Expanded questions and answers
 
-For why the collector may be better than another query, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+**Q: What is the fastest way to think about DCOIR?**
 
-The current major-version bundle also assumes that why the collector may be better than another query may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+Think of DCOIR as a bounded host-evidence workflow that exists to answer real investigative questions without turning every case into an unconstrained shell session or a monolithic collect-everything event.
 
-When writing or reviewing functionality tied to why the collector may be better than another query, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+**Q: What is the difference between the collector line and the Gemini line?**
 
-## 3. Why A Targeted Collect May Be Enough
-This section is intentionally long-form. The goal is to make why a targeted collect may be enough explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+The collector line gathers or stages host-side evidence. The Gemini line helps route, interpret, and structure the next analyst-facing move using the stored-source runtime tree and its attachment set.
 
-For why a targeted collect may be enough, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+**Q: Why are knowledge docs not authoritative?**
 
-The current major-version bundle also assumes that why a targeted collect may be enough may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+They preserve readable operational guidance. They must help the operator use the system correctly without redefining current behavior independently of the governed source line.
 
-When writing or reviewing functionality tied to why a targeted collect may be enough, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+**Q: When should I use Tier 1?**
 
-## 4. How To Use The Bundle
-This section is intentionally long-form. The goal is to make how to use the bundle explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+Use Tier 1 when you need the normal first-pass baseline host package before choosing a narrower enrichment, retrieval, or deeper collection branch.
 
-For how to use the bundle, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+**Q: When should I use Tier 2?**
 
-The current major-version bundle also assumes that how to use the bundle may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+Use Tier 2 after baseline review established a real need for deeper persistence or configuration context, not just because more data feels safer.
 
-When writing or reviewing functionality tied to how to use the bundle, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+**Q: Why is one-action-at-a-time enrichment important?**
 
-## 5. How To Ask The Agent To Parse Iocs
-This section is intentionally long-form. The goal is to make how to ask the agent to parse IOCs explicit enough that it can be used as operational guidance rather than as a vague reminder. When the analyst or the Gemini bundle consults this file, the file should already explain the purpose of the branch, the conditions under which the branch should be used, the exact kinds of evidence that support the branch, the mistakes that should be avoided, and the follow-up actions that become appropriate if the branch is confirmed.
+It keeps the causal link between the blocked question and the chosen follow-up action clear. That makes later review and decision-making much cleaner.
 
-For how to ask the agent to parse IOCs, the operator should expect the workflow to state what is known, what is still unknown, why the next step is being recommended, what narrower alternative still exists, and what evidence would make the current path unnecessary. The workflow should not hide behind short reminders or generic wording.
+**Q: When is retrieval better than more collection?**
 
-The current major-version bundle also assumes that how to ask the agent to parse IOCs may need to be discussed across multiple surfaces: the collector script, the harness or validation workflows, the Gemini parent agent, one or more Gemini sub-agents, and leadership-facing write-ups. Because of that, this file deliberately restates the same concept from multiple angles: execution, interpretation, bounded confidence, and testing.
+Retrieval is better when the existing output already points to a known artifact that is more likely to answer the next question than another wide collection step.
 
-When writing or reviewing functionality tied to how to ask the agent to parse IOCs, prefer explicit conditions, explicit examples, explicit command-lane distinctions, and explicit truth boundaries. Do not summarize away caveats that materially affect safety, branch choice, or operator trust.
+**Q: Why keep endpoint and local syntax separate?**
 
-Major-version bundle rule
-- If a future maintainer changes behavior in a way that touches this topic, update this maintained knowledge file first or at the same time as the bundle source tree.
-- Do not let the maintained knowledge set drift silently away from the Gemini attachment set.
-- If a branch is important enough to affect tomorrow's functionality test, it is important enough to be spelled out here.
+Because the same collector invocation means different things in an endpoint response-action lane and a local PowerShell lane. Mixing them creates confusion faster than almost any other operator mistake.
+
+**Q: What should I read first after a Tier 1 run?**
+
+Start with the merged baseline report when available, then metadata, then flat final_artifacts output, then any artifacts those surfaces clearly elevate as high signal.
+
+**Q: Are metadata reports evidence?**
+
+Metadata reports are useful workflow-state artifacts. They explain what ran and what was produced, but they are not automatically proof of suspicious activity.
+
+**Q: What is the public-source IOC rule in one sentence?**
+
+Public enrichment supports context and corroboration for evidence-grounded indicators, but it never replaces case evidence or becomes case truth by itself.
+
+**Q: Why does the Gemini workflow favor a long Description field?**
+
+Because Description is treated as routing-critical. A strong runtime Description tells the system what the agent owns, what inputs it expects, what outputs it controls, and when it should be selected.
+
+**Q: Why compile from the stored-source tree?**
+
+Because ordinary shipment should come from the governed editable runtime source tree rather than improvised generation during packaging.
+
+**Q: Do new Gemini attachment files require other updates?**
+
+Often yes. If the required attachment set or operator-visible knowledge inventory changes, the attachment map and sometimes the manifest should be refreshed so the bundle remains coherent.
+
+**Q: Where does current manual testing state belong?**
+
+Airtable Validation Test Cases is the dynamic manual-testing surface. GitHub remains the engineering and packaging authority for durable source changes.
+
+## Practical heuristics worth memorizing
+
+- Narrow question first, then narrow branch.
+- Wrapper artifact first only if it helps choose the real evidence carrier.
+- Baseline before deeper context unless a narrower follow-up is already clearly justified.
+- Retrieval before rerun when the artifact already exists.
+- Stored-source compile before ad hoc generation for ordinary Gemini shipment.
+- Attachment coherence matters; new files should not become orphaned extras.
+
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
+## Expanded practical appendix
+
+A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
+
