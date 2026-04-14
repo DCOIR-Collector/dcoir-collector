@@ -1,0 +1,52 @@
+﻿Gemini baseline direct-copy report
+Timestamp: 20260414_174345
+Repo root: C:\Users\batch_lrjfue\OneDrive\Documents\GitHub\dcoir-collector
+Git available: True
+Backup root: skipped
+
+Applied mappings:
+- Prime agent baseline copy
+  Source: knowledge\comparative_reference_agent_markdowns\AFRICOM SOC Elastic Defend Triage Agent.md.txt
+  Target: project_sources\DCOIR_Gemini_Bundle_Source\01_GEMINI_AGENT_BUILD\Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt
+- Sub-agent 01 baseline copy
+  Source: knowledge\comparative_reference_agent_markdowns\Session Readiness and Intake.md.txt
+  Target: project_sources\DCOIR_Gemini_Bundle_Source\01_GEMINI_AGENT_BUILD\Sub_Agent_01_Session_Readiness_and_Intake.md.txt
+- Sub-agent 02 baseline copy
+  Source: knowledge\comparative_reference_agent_markdowns\Environment and Coverage Mapper.md.txt
+  Target: project_sources\DCOIR_Gemini_Bundle_Source\01_GEMINI_AGENT_BUILD\Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt
+- Sub-agent 03 baseline copy into current role slot
+  Source: knowledge\comparative_reference_agent_markdowns\Alert Family Classifier.md.txt
+  Target: project_sources\DCOIR_Gemini_Bundle_Source\01_GEMINI_AGENT_BUILD\Sub_Agent_03_Alert_Family_Classifier_and_Known_Benign_Technology_Differentiator.md.txt
+- Sub-agent 04 baseline copy
+  Source: knowledge\comparative_reference_agent_markdowns\Evidence and Provenance Analyst.md.txt
+  Target: project_sources\DCOIR_Gemini_Bundle_Source\01_GEMINI_AGENT_BUILD\Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt
+- Sub-agent 05 baseline copy
+  Source: knowledge\comparative_reference_agent_markdowns\Query Planner and Syntax Guard.md.txt
+  Target: project_sources\DCOIR_Gemini_Bundle_Source\01_GEMINI_AGENT_BUILD\Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt
+- Sub-agent 10 baseline copy into current role slot
+  Source: knowledge\comparative_reference_agent_markdowns\Decision and Report Composer.md.txt
+  Target: project_sources\DCOIR_Gemini_Bundle_Source\01_GEMINI_AGENT_BUILD\Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt
+
+Untouched in this baseline-copy phase:
+- Sub_Agent_06_DCOIR_Collector_Execution_and_Bundle_Workflow_Orchestrator.md.txt
+- Sub_Agent_07_DCOIR_Collector_Artifact_Interpreter_and_Report_Extractor.md.txt
+- Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt
+- Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt
+
+Delete guidance for this phase:
+- No deletes required.
+- Keep the current 10-agent topology and manifest as-is for now.
+- Filename normalization should be handled later, after the baseline-copy and modification pass.
+
+Git status before:
+
+
+Git status after:
+ M project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt
+ M project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_01_Session_Readiness_and_Intake.md.txt
+ M project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt
+ M project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_03_Alert_Family_Classifier_and_Known_Benign_Technology_Differentiator.md.txt
+ M project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt
+ M project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt
+ M project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt
+
