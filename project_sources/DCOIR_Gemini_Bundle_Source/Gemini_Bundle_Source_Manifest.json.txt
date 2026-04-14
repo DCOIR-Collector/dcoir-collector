@@ -31,15 +31,6 @@
     "generated_index_file": "01_GEMINI_AGENT_BUILD/Generated_DCOIR_Gemini_Agent_Index.md.txt",
     "quick_start_file": "00_START_HERE/Gemini_Build_Quick_Start.md.txt"
   },
-  "notes": [
-    "This major-version tree stores the accepted operator-facing Gemini runtime bundle as editable source files.",
-    "Normal shipment should compile this tree directly after syncing the maintained knowledge set.",
-    "The manifest is the explicit source of topology truth for the current parent and sub-agent layout.",
-    "This major-version build intentionally increases verbosity and branch specificity to improve behavioral predictability.",
-    "The active topology was expanded to separate collector artifact interpretation, IOC parsing, targeted collection design, and output-contract enforcement into dedicated sub-agents.",
-    "This major-version bundle intentionally expands the runtime topology and the verbosity of both the agent files and the maintained shared knowledge set.",
-    "If the operator asks for predictability over brevity, the runtime files should bias toward explicit instructions and explicit branch handling rather than compression."
-  ],
   "required_files": [
     "00_START_HERE/Agent_Attachment_Map.md.txt",
     "00_START_HERE/Gemini_Build_Quick_Start.md.txt",
@@ -66,6 +57,10 @@
     "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 08 - Troubleshooting.md.txt",
     "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 09 - FAQ.md.txt",
     "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 10 - AI Prompt and Agent Design.md.txt",
-    "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 11 - IOC Enrichment and Public Sources.md.txt"
+    "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 11 - IOC Enrichment and Public Sources.md.txt",
+    "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 12 - Gemini Runtime Bundle and Source Tree.md.txt",
+    "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 13 - Gemini Agent Topology and Routing.md.txt",
+    "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline.md.txt",
+    "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md.txt"
   ]
 }
