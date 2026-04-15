@@ -41,3 +41,7 @@ Next immediate move
 - Re-run `manual-full-validation` with the Core suite first.
 - If that passes, inspect the rendered summary and then let `validate-on-push` prove out on the next push-driven run.
 - After the workflows pass cleanly, apply the light ruleset safety and then review the Dependabot GitHub Actions update PRs.
+
+Follow-on validation note - 2026-04-15
+- `validate-on-push` was restored to the intended Core harness lane after it had drifted to `FullRegression`.
+- The corrected workflow was confirmed live after the repo update.
