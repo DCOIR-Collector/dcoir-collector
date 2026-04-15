@@ -10,6 +10,20 @@ Resume the AFRICOM_SOC_IR / DCOIR workspace from the current authoritative contr
 ## Workspace gate
 Proceed only when the current chat, project, or custom GPT is operating as the AFRICOM_SOC_IR / DCOIR workspace.
 
+<!-- skill-marker: updated-skill|20260415T135556Z|dcoir-session-resume|SKILL.md|R01 -->
+
+
+## Operator preference readback
+
+During session-start bootstrap, read Airtable table `Operator Preferences` after the control plane is re-anchored and before handing off to the rest of the startup chain.
+
+For that readback:
+- prefer active implemented preferences scoped to `DCOIR workspace` or `both`
+- surface only the few operator preferences that materially affect response style, workflow branching, or execution posture for the current session
+- treat those surfaced preferences as current session defaults unless the operator overrides them in the live branch
+- when no relevant active operator preference is found, say that plainly and continue with the normal startup chain
+
+
 ## Default first-turn bootstrap use
 On the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session, invoke this skill before other substantive project work even if the user did not explicitly ask to resume.
 

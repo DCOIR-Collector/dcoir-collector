@@ -5,6 +5,8 @@ description: apply the operator's default decision matrix for africom_soc_ir / d
 
 # DCOIR Decision Policy
 
+<!-- skill-marker: updated-skill|20260415T135556Z|dcoir-decision-policy|SKILL.md|R01 -->
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
 Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
@@ -42,8 +44,11 @@ It does not silently persist reusable lessons into canonical task memory.
 15. When the operator has approved a coordinated campaign and does not want routine intermediate status-only pauses, continue executing until there is a real operator action, blocker, materially changed evidence state, or a decision that genuinely requires operator input.
 16. Validate what was changed or generated.
 17. If a helper skill was created or updated, route the result through `dcoir-skill-regression-auditor` before treating it as ready.
-18. When a material reusable decision rule, delivery preference, or pending learning changed, use the GitHub connector directly to update the GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when connector limitations prevent safe completion.
-19. Report only the load-bearing assumptions, conflicts, learned rule candidates, buffer state, deferred review countdowns, GitHub-memory changes, or next actions.
+18. For manual skill-install update flows, require marker-based installed-skill verification in the edited file set before treating the installed copy as safe for GitHub source sync, GitHub Desktop repo-update bundle generation, parity closure, or readiness claims.
+19. Use the skill editor as primary truth for that installed-skill verification when it is available. Treat assistant-side readback as secondary and potentially delayed.
+20. When editor confirmation and assistant-side readback disagree, keep the state bounded and wait for expected marker confirmation in the edited installed file set or explicit operator editor confirmation before continuing into GitHub sync or parity closure.
+21. When a material reusable decision rule, delivery preference, or pending learning changed, use the GitHub connector directly to update the GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when connector limitations prevent safe completion.
+22. Report only the load-bearing assumptions, conflicts, learned rule candidates, buffer state, deferred review countdowns, GitHub-memory changes, or next actions.
 
 ## Control-plane precedence
 Always use this precedence order unless the operator explicitly overrides it:

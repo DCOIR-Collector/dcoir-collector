@@ -1,7 +1,7 @@
 DCOIR Helper Skill Workflow And GitHub Source Rules
 
 Purpose
-- This document records the current evergreen workflow rules for DCOIR helper-skill development, post-change regression, GitHub source rollout, closed-loop memory-preflight usage, and session-local write-buffer behavior.
+- This document records the current evergreen workflow rules for DCOIR helper-skill development, post-change regression, GitHub source rollout, closed-loop memory-preflight usage, session-local write-buffer behavior, and marker-based installed-skill verification.
 
 Scope
 - These rules apply to project-side DCOIR helper skills and the workflows used to create, update, validate, install, persist, and improve them.
@@ -58,7 +58,15 @@ Core standing rules
 - When both an in-chat GitHub update lane and an operator-managed lane are possible, ask the operator which lane they want before shifting the work.
 - GitHub Desktop with a repo-ready bundle may be offered for large multi-file updates, but it must not be assumed by default.
 
-7. GitHub existing-file recovery rule
+7. Marker-based installed-skill verification rule
+- For DCOIR helper-skill updates that are manually installed through the Skills editor or upload path, remove older `skill-marker:` lines or comments from the edited files and add one fresh `skill-marker:` entry to each edited file before packaging.
+- Use the file-appropriate comment syntax for the marker, such as HTML comments in markdown-compatible files and `#` comments in YAML.
+- After the operator saves the installed skill update, verify the expected current markers in the edited installed file set before treating the installed skill as safe for GitHub source sync, GitHub Desktop repo-update bundle preparation, parity closure, or broader readiness claims.
+- Treat the skill editor as primary truth for that confirmation when it is available.
+- Treat assistant-side readback as secondary and potentially delayed.
+- If assistant-side readback and the editor disagree, keep the install or update state bounded and wait for marker confirmation or explicit operator editor confirmation instead of assuming source drift.
+
+8. GitHub existing-file recovery rule
 - For GitHub-family existing-file or grouped existing-file recovery, treat `GH-PROC-007` plus `GH-PROC-001` or `GH-PROC-006`, then `GH-PROC-005`, as the first recovery set.
 - Re-apply the validated low-level git-object lane before writing any durable limitation claim.
 - Keep readback verification mandatory before the work is treated as complete.

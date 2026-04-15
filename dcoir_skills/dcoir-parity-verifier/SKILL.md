@@ -5,6 +5,8 @@ description: verify governed dcoir skill source, installed skill packages, and p
 
 # DCOIR Parity Verifier
 
+<!-- skill-marker: updated-skill|20260415T135556Z|dcoir-parity-verifier|SKILL.md|R01 -->
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
 Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
@@ -38,8 +40,10 @@ Use when the operator wants to know whether the installed skill package still ma
 3. Compare per-file hashes first.
 4. Compare normalized tree hash second.
 5. Report zip hash only as a secondary package check.
-6. Run a package-cleanliness check on the zip contents and call out runtime residue such as `__pycache__/`, `*.pyc`, or equivalent packaging contamination explicitly.
-7. Call out missing files, extra files, hash mismatches, and contamination separately.
+6. When the update workflow used marker-based installed-skill verification, check the expected current `skill-marker:` entries in the edited installed file set and report marker-confirmation status separately from source drift.
+7. Treat missing expected markers as pending install or readback confirmation until the edited installed files are confirmed, not as automatic governed-source drift.
+8. Run a package-cleanliness check on the zip contents and call out runtime residue such as `__pycache__/`, `*.pyc`, or equivalent packaging contamination explicitly.
+9. Call out missing files, extra files, hash mismatches, marker-confirmation gaps, and contamination separately.
 
 ### 3. Bootstrap or rebaseline parity inventory
 Use when the parity surface does not exist yet or when the project needs a controlled rebaseline.

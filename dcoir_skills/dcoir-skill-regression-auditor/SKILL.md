@@ -5,6 +5,8 @@ description: plan and audit deeper regression for dcoir skills before live use a
 
 # DCOIR Skill Regression Auditor
 
+<!-- skill-marker: updated-skill|20260415T135556Z|dcoir-skill-regression-auditor|SKILL.md|R01 -->
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
 Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
@@ -30,10 +32,13 @@ In a broad helper-skill patch campaign, regression-test `dcoir-skill-regression-
 6. Run `scripts/plan_skill_regression.py`.
 7. Produce the regression suites, failure gates, artifact checks, package-cleanliness checks, preventive bytecode-suppression steps, cleanup steps, readiness criteria, campaign ordering, and grouped regression-bundle expectations.
 8. Before packaging or handing back any updated skill zip, run `scripts/clean_skill_runtime_residue.py --clean` against every materially changed skill folder and rerun `scripts/clean_skill_runtime_residue.py --check` so residue prevention is explicit instead of ad hoc.
-9. If regression revealed a blocker that is later overcome, invoke `dcoir-memory-preflight` again when the recovered lesson could improve a reusable procedure, limitation note, failure signature, or helper-skill/process guidance.
-10. Keep regression-state changes session-local until the next suitable flush-check trigger when grouped GitHub writes are preferred.
-11. When the regression-state changed materially and the write lane is safe, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`.
-12. Return the regression suites, failure gates, artifact checks, readiness criteria, campaign scope, buffer state, and any GitHub-memory change that matters.
+9. For helper-skill update flows that use manual install, remove older `skill-marker:` lines or comments from the edited files, add one fresh `skill-marker:` entry to each edited file before packaging, and record the expected marker list as part of regression readiness.
+10. After the operator saves the installed skill update, verify the expected current `skill-marker:` entries in the edited installed file set before treating the result as ready for GitHub sync, GitHub Desktop repo-update bundle generation, parity closure, or broader readiness claims.
+11. Use the skill editor as primary truth for that marker confirmation when it is available. Treat assistant-side readback as secondary and potentially delayed.
+12. If regression revealed a blocker that is later overcome, invoke `dcoir-memory-preflight` again when the recovered lesson could improve a reusable procedure, limitation note, failure signature, or helper-skill/process guidance.
+13. Keep regression-state changes session-local until the next suitable flush-check trigger when grouped GitHub writes are preferred.
+14. When the regression-state changed materially and the write lane is safe, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`.
+15. Return the regression suites, failure gates, artifact checks, readiness criteria, campaign scope, buffer state, and any GitHub-memory change that matters.
 
 ## Session-local buffer behavior
 This skill may stage regression memory, fixture deltas, follow-through notes, or campaign-scope notes session-locally before GitHub flush time.
@@ -90,6 +95,7 @@ When rendering memory content locally, use `scripts/render_skill_regression_memo
 - in a broad helper-skill patch campaign, patch and regression-test this skill first before using it to judge other skills
 - after a patch, rerun the same failing case that motivated the fix, then expand outward
 - after every helper-skill create or update, require regression coverage before claiming readiness
+- do not treat a manually installed updated skill as ready for GitHub sync, repo-bundle generation, parity closure, or broader rollout until the expected current `skill-marker:` entries are confirmed in the edited installed file set
 - keep the canonical GitHub memory file human-readable and continuously updated after material regression-state changes when repo persistence is available
 - do not claim buffered regression state is durable before GitHub flush or export actually happened
 - do not call a coordinated campaign complete unless every materially changed skill has an explicit regression result or a plainly bounded untested reason
