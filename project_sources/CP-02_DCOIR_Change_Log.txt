@@ -17,6 +17,7 @@ Why
 - GitHub remains valuable as the control plane, governed readable source, and promoted history, but it is no longer the right place for ordinary queue churn.
 
 Validation notes
-- Airtable queue-control cutover was initialized before the governed-source refresh bundles were produced.
-- Collector hardening remains queued immediately behind the migration.
+- Airtable queue-control cutover is implemented and the migration branch is complete.
+- Collector hardening is now the active branch.
+- Validate-on-push troubleshooting, reduced Airtable UI rendering during re-anchor, and GitHub-issues alignment are queued follow-ons.
 - Retired GitHub todo files are preserved only as migration notes, not as live authority.

@@ -21,6 +21,7 @@ Authority model
 - GitHub todo files are retained only as retired migration surfaces and promoted history, not as live queue authority.
 
 Current next work item
-- Complete the Airtable-only todo authority migration and apply the generated skill, project, and GitHub Desktop bundles.
-- Keep collector hardening queued immediately behind the migration.
+- Airtable-only todo authority migration is implemented.
+- Collector hardening is now the active engineering branch.
+- Keep validate-on-push troubleshooting, reduced Airtable UI rendering during re-anchor, and GitHub-issues alignment queued behind collector hardening.
 - Treat older GitHub todo-file priority as retired.

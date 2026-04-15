@@ -5,14 +5,16 @@ Current state id: 2026-04-15-airtable-todo-authority-migration-v1
 Stable baseline
 - GitHub-primary readable-source model remains in force for governed text.
 - Airtable-only todo authority is now the intended operating model.
-- Collector hardening remains queued, not active.
+- Collector hardening is the active engineering branch.
 
 Active branch
-- Airtable-only todo authority migration is the current active branch.
-- Apply the generated Airtable, skill, project-space, and GitHub Desktop updates needed to complete cutover.
+- Collector hardening wave is now the current active branch.
+- Resume at T1: reconstruct the exact approved defect ledger and then continue through the bounded hardening sequence.
 
 Queued next branch
-- Collector hardening wave begins after migration closeout.
+- Fix validate-on-push workflow failures.
+- Reduce Airtable UI rendering during re-anchor while keeping silent Airtable reads available.
+- Align GitHub issues to Airtable todo authority.
 
 Retired live queue surfaces
 - GitHub todo files remain only as migration notes or history, not as active queue authority.
