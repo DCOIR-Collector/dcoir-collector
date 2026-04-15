@@ -5,6 +5,8 @@ description: audit whether a requested dcoir task is grounded in the current aut
 
 # DCOIR Source Authority Auditor
 
+<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-source-authority-auditor|SKILL.md|R01 -->
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
 Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
@@ -20,19 +22,19 @@ This skill verifies the control plane, checks current-versus-historical file han
 
 1. Resolve the current manifest and change log from the current GitHub-primary control plane.
 2. Parse the manifest current governed GitHub readable source set, current knowledge working set, current settings mirrors, and current supporting assets.
-3. Treat the current repo guide `README.md`, the split todo structure (`LOG-01_DCOIR_Todo_Log.txt`, `LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/*.txt`), and the task-memory bank as part of current state when the control plane names them explicitly.
-4. Resolve the initial active enforcement surface set when those files are present in the workspace:
+3. Treat the current repo guide `README.md`, the task-memory bank, and the Airtable queue-authority surfaces as part of current state when the active workflow depends on ordinary queue priority.
+4. Resolve the initial active enforcement surface set when those files or records are present in the workspace:
    - `CP-01`
    - `CP-02`
    - `LOG-03`
    - `LOG-05`
-   - `LOG-01_DCOIR_Todo_Log.txt`
-   - `LOG-01_DCOIR_Todo_Index.txt`
-   - `todo/01_Active_Now.txt`
-5. Compare the shared `current_state_id` across that set and compare the `CP-01` / `CP-02` version pair.
+   - active Airtable `Queue Control`
+   - active Airtable `Work Items` rows that define the live branch
+   - active Airtable `Plans` rows when a plan owns the live branch
+5. Compare the `CP-01` / `CP-02` version pair and verify that Airtable queue authority is not being contradicted by a stale GitHub todo claim.
 6. Compare the manifest-defined current source set with the workspace state.
-7. Check whether the task is trying to rely on non-current files or Project-space mirror assumptions.
-8. Treat missing authoritative readable sources as a hard-stop conflict, but treat missing supporting assets as a bounded-state note unless the current task explicitly depends on those assets as authority.
+7. Check whether the task is trying to rely on retired GitHub todo files as though they were still authoritative for live queue priority.
+8. Treat missing authoritative readable sources as a hard-stop conflict, but treat missing supporting assets as a bounded-state note unless the current task explicitly depends on those assets as authority. Treat missing Airtable queue-authority records as a bounded-state note when the control plane is still otherwise intact.
 9. Run `scripts/audit_source_authority.py` when a deterministic audit will help.
 10. Emit one of these outcomes:
    - `clear_to_proceed`
@@ -56,7 +58,8 @@ Return:
 - Treat rollback or historical files as non-authoritative unless explicitly requested.
 - Stop if the manifest or change log is missing.
 - Stop if the task depends on a non-current file as though it were authoritative.
-- Stop if the shared `current_state_id` mismatches across the in-scope active enforcement set.
+- Stop if the task depends on retired GitHub todo files as though they were still the live queue authority after Airtable queue-control cutover.
+- Stop if the shared `current_state_id` mismatches across the in-scope GitHub control-plane enforcement set.
 - Stop if the `CP-01` / `CP-02` version pair mismatches.
 - Do not let a superficially familiar work line override an explicit current-state conflict.
 - Prefer control-plane role and manifest section over brittle filename assumptions.

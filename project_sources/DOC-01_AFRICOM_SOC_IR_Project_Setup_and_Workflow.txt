@@ -1,1 +1,35 @@
-placeholder control-plane setup role for impact analysis routing
+AFRICOM SOC / DCOIR Project Setup And Workflow
+
+Purpose
+- Define the current startup, authority, and queue workflow for the DCOIR workspace after the Airtable-only todo authority migration.
+
+Startup order
+1. Read Project Instructions first.
+2. Read Project-space `CP-00_DCOIR_GitHub_Primary_Bootstrap.txt` second when present.
+3. Invoke `dcoir-session-resume` first on the first substantive DCOIR turn.
+4. Let `dcoir-session-resume` read GitHub `CP-01` first and GitHub `CP-02` second.
+5. Invoke `dcoir-memory-preflight` immediately after resume.
+6. Recover Airtable leftovers and active plans.
+7. Read Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` before deciding the ordinary next work item.
+
+Authority layers
+- GitHub is the control plane and the sole governed readable text source.
+- Airtable is the sole live todo authority.
+- GitHub promoted history captures important decisions, migrations, and closeouts, not ordinary queue churn.
+
+Live queue model
+- Airtable `Queue Control` is the first resume-priority surface.
+- Airtable `Work Items` holds ranked and superseded queue rows.
+- Airtable `Plans` owns structured execution when a plan is active.
+- Collector, Gemini, workflow, and skill branches should move by Airtable queue state first.
+
+Promotion model
+- Promote to GitHub when a decision changes the durable workflow, authority model, validation posture, or closeout record.
+- Do not promote ordinary rank changes, active-versus-parked flips, or small queue churn into GitHub todo files.
+
+Retired surfaces
+- `project_sources/LOG-01_DCOIR_Todo_Log.txt`
+- `project_sources/LOG-01_DCOIR_Todo_Index.txt`
+- `project_sources/todo/01_Active_Now.txt`
+
+These remain only as retired migration notes or historical references.

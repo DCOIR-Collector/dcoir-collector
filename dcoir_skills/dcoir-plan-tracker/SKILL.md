@@ -5,6 +5,8 @@ description: plan, track, resume, and document multi-step africom_soc_ir / dcoir
 
 # DCOIR Plan Tracker
 
+<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-plan-tracker|SKILL.md|R01 -->
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
 
@@ -31,6 +33,7 @@ This skill owns:
 - github-backed tracker file creation and updates
 - airtable-first durable plan state plus local `plan_state.json` cache checks and explicit missing-state warnings for local plan folders
 - Airtable `Work Items` lifecycle ownership for plan-tracker-created implementation rows so verified completions auto-close the same rows
+- Airtable `Queue Control` ownership when an active plan becomes the live queue branch
 - concise user-visible milestone signaling through `dcoir-attention-signaler`
 
 This skill does not replace:
@@ -226,10 +229,11 @@ Supported commands include:
 8. Update Airtable durable state first and refresh markdown or local JSON mirrors as needed whenever the plan changes.
 9. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces Airtable-backed durable state, promotion candidates, what should remain local, the next flush trigger, one best next move, and any staged governed updates that should land in the same grouped push.
 10. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger, but do not rely on local JSON alone when continuity really matters.
-11. Use the github connector directly for safe governed readable-text writes when available.
-12. Verify repo state after writes instead of trusting success messages alone.
-13. Emit user-visible attention signals only at milestone, blocked, and completion moments.
-14. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
+11. When the active plan becomes the live execution branch, update Airtable `Work Items` and the active Airtable `Queue Control` record in the same bounded Airtable pass.
+12. Use the github connector directly for safe governed readable-text writes when available.
+13. Verify repo state after writes instead of trusting success messages alone.
+14. Emit user-visible attention signals only at milestone, blocked, and completion moments.
+15. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
 
 
 ## Airtable-first durable execution state
@@ -246,10 +250,12 @@ Known Airtable targets for this project:
 - `Plan Tasks` table id: `tblsATLIDeh6gtcoM`
 - `Plan Checkpoints` table id: `tbl6z4Lyai2RABMyw`
 - `Tracking Registry` table id: `tblohiMxxVbDUnN77`
+- `Queue Control` table id: `tblf13aCslg6rJBah`
 
 Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
 
 Airtable write posture:
+- when a plan is the live execution branch, keep `Queue Control` and queue-ranked `Work Items` aligned to that fact
 - upsert `Plans` first on material plan-state changes
 - batch `Plan Tasks` writes when task structure or statuses materially change
 - create sparse `Plan Checkpoints` rows for blockers, flush reviews, milestones, before-GitHub-write checkpoints, and handoff moments

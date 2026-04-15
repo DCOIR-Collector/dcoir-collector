@@ -5,6 +5,8 @@ description: analyze proposed or completed changes in the africom_soc_ir / dcoir
 
 # DCOIR Change Impact Analyzer
 
+<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-change-impact-analyzer|SKILL.md|R01 -->
+
 Use this skill to turn a proposed or completed DCOIR change into an explicit downstream work list.
 
 ## Core workflow
@@ -35,13 +37,15 @@ Preferred current control-plane files:
 - `project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt`
 - `project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt`
 - `README.md` when the current repo-guide posture is part of the changed set
-- `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/*.txt` when the active work-line structure changed
+- Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` when the active work-line structure changed
+- retired GitHub todo files only when the migration or retirement path itself is part of the changed set
 
 Stop if the manifest or change log cannot be resolved.
 
 ## Hard rules
 - Do not decide authority or promotion status.
 - Do not silently ignore changed current files.
+- Do not silently treat retired GitHub todo files as active authority after Airtable queue-control cutover.
 - Do not assume PP-08 is the source of truth over PP-01 through PP-07.
 - Do not treat supporting assets as control-plane authority.
 - Hard-stop unknown targets that fall outside the current rule set; do not emit a provisional packaging recommendation for them.

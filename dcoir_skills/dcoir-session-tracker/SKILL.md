@@ -5,6 +5,8 @@ description: maintain a session-local dcoir tracker with airtable-first durable 
 
 # DCOIR Session Tracker
 
+<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-session-tracker|SKILL.md|R01 -->
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
 Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
@@ -45,7 +47,7 @@ Startup recovery workflow:
 1. Read the newest relevant `Session Checkpoints` rows first, preferring rows whose `checkpoint_status` still implies active carry-forward value and whose `github_promotion_status` is not already fully promoted or superseded.
 2. Read `Idea Inbox` rows where the idea is still open, under review, parked, or otherwise not fully done, dropped, or promoted.
 3. If the operational board exists in the same Airtable base, consult open active `Work Items` rows when they appear related to session carry-forward or pending GitHub promotion.
-4. Deduplicate Airtable leftovers against the current governed GitHub todo or control-plane surfaces before presenting them as unresolved leftovers.
+4. Deduplicate Airtable leftovers against Airtable `Queue Control`, active `Work Items`, active `Plans`, and the GitHub control plane before presenting them as unresolved leftovers.
 5. Surface leftover items in these categories:
    - already durable in governed GitHub and only worth verifying
    - Airtable-only carry-forward items that still need promotion or closure
@@ -73,6 +75,10 @@ When this skill renders `Work Items` interactively in chat, prefer this richer d
 - `Work Type`
 - `Status`
 - `Priority`
+- `Queue Rank`
+- `Branch State`
+- `Resume First`
+- `Authority Scope`
 - `Owner`
 - `Repo Path or Skill`
 - `Next Action`
@@ -325,6 +331,11 @@ When acting under this skill:
 
 
 ## Airtable-first durable working state
+## Airtable todo authority integration
+Use Airtable `Queue Control` plus Airtable `Work Items` plus active Airtable `Plans` as the sole live todo authority.
+
+When tracker-owned work changes the real queue branch, update `Work Items` and `Queue Control` in the same Airtable pass instead of waiting for GitHub todo sync.
+
 This skill now uses Airtable as the primary durable working-state layer and keeps the local JSON file only as an optional cache or render buffer.
 
 Truth model:

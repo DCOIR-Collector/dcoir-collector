@@ -1,34 +1,26 @@
-DCOIR Version Manifest 4.0.7
+DCOIR Version Manifest 4.0.8
 
-Current state id: 2026-04-09-reopen-parity-and-drive-evaluation-v1
+Current state id: 2026-04-15-airtable-todo-authority-migration-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
 - Change log: project_sources/CP-02_DCOIR_Change_Log.txt
 - Setup guide: project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt
 - Layout spec: project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt
-- Viable deliverable generation contract: project_sources/DOC-04_DCOIR_Viable_Deliverable_Generation_Contract_v1_0_0.txt
-- Gemini live-test generation and legacy surface rules: project_sources/DOC-07_DCOIR_Gemini_Live_Test_Generation_And_Legacy_Surface_Rules_v1_0_0.txt
-- Gemini legacy surface inventory and hygiene plan: project_sources/DOC-08_DCOIR_Gemini_Legacy_Surface_Inventory_And_Hygiene_Plan_v1_0_0.txt
-- Gemini stored-source and compile strategy: project_sources/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt
-- Gemini creation pipeline: project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt
-- Collector runtime packaging pipeline: project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt
-- Collector output shaping and bundle-validation implementation: project_sources/LOG-56_DCOIR_Collector_Output_Shaping_And_Bundle_Validation_Implementation_2026-04-07.txt
-- Gemini stored-source compile implementation: project_sources/LOG-57_DCOIR_Gemini_Stored_Source_Compile_Model_Implementation_2026-04-08.txt
-- Pipeline alignment and runtime package compile implementation: project_sources/LOG-58_DCOIR_Pipeline_Alignment_And_Runtime_Package_Compile_Implementation_2026-04-08.txt
-- Approved live-test delta catch-up queue: project_sources/LOG-59_DCOIR_Approved_Live_Test_Delta_Catch_Up_Queue_2026-04-08.txt
-- Major-version collector and Gemini feature-wave implementation: project_sources/LOG-60_DCOIR_Major_Version_Collector_And_Gemini_Feature_Wave_Implementation_2026-04-08.txt
-- Major-version quick-interface syntax hotfix: project_sources/LOG-61_DCOIR_Major_Version_Quick_Interface_Syntax_Hotfix_2026-04-08.txt
-- Validation-wave expansion and chunking regression implementation: project_sources/LOG-62_DCOIR_Bounded_Validation_Wave_Expansion_2026-04-09.txt
-- Chunking reconstruction hotfix implementation: project_sources/LOG-63_DCOIR_Chunking_Reconstruction_Hotfix_2026-04-09.txt
-- Gemini collector-artifact interpretation marker hotfix: project_sources/LOG-64_DCOIR_Gemini_Collector_Artifact_Interpretation_Marker_Hotfix_2026-04-09.txt
-- Passing-baseline realignment and close-out decision: project_sources/LOG-65_DCOIR_Passing_Baseline_Realignment_2026-04-09.txt
-- Remaining-queue close-out and duplicate-surface cleanup: project_sources/LOG-66_DCOIR_Remaining_Queue_Closeout_And_Duplicate_Surface_Cleanup_2026-04-09.txt
-- Premature closure correction and reopened parity-and-Drive evaluation: project_sources/LOG-67_DCOIR_Premature_Closure_Correction_And_Reopened_Parity_And_Drive_Evaluation_2026-04-09.txt
+- Helper-skill workflow rules: project_sources/DOC-05_DCOIR_Helper_Skill_Workflow_And_GitHub_Source_Rules.txt
+- Helper-skill source layout and rollout: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
+- Airtable-only todo authority migration decision: project_sources/LOG-69_DCOIR_Airtable_Only_Todo_Authority_Migration_2026-04-15.txt
+- Retired GitHub todo note: project_sources/LOG-01_DCOIR_Todo_Log.txt
+- Retired GitHub todo index note: project_sources/LOG-01_DCOIR_Todo_Index.txt
+- Retired GitHub active-now note: project_sources/todo/01_Active_Now.txt
+
+Authority model
+- GitHub repository `malwaredevil/dcoir-collector` remains the sole working source for governed readable text files.
+- Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` are the sole live todo authority for ordinary queue priority and resume order.
+- GitHub todo files are retained only as retired migration surfaces and promoted history, not as live queue authority.
 
 Current next work item
-- Reopen installed-skill parity verification and remediation against the governed repo source.
-- Reopen the optional Google Drive staging evaluation because the earlier closure was only a repo-side review and not an explicit connector-backed evaluation.
-- Keep the duplicate-readable-surface cleanup finished.
-- Hold at the current passing validation baseline otherwise.
+- Complete the Airtable-only todo authority migration and apply the generated skill, project, and GitHub Desktop bundles.
+- Keep collector hardening queued immediately behind the migration.
+- Treat older GitHub todo-file priority as retired.

@@ -1,14 +1,10 @@
-DCOIR Todo Log
+Retired live queue surface
 
-Current state id: 2026-04-09-reopen-parity-and-drive-evaluation-v1
+This file is no longer authoritative for the DCOIR live todo queue.
 
-Current active priority
-- resolve installed-skill parity drift against the governed repo source
-- perform the optional Google Drive staging evaluation explicitly and record the actual decision
+Use Airtable instead:
+- `Queue Control`
+- `Work Items`
+- active `Plans`
 
-Queued next priorities
-- none beyond the active parity and Drive items
-
-Standing posture
-- keep standalone on the prompt-pack assembly path
-- keep the duplicate-readable-surface cleanup finished
+This file remains only as a migration note or historical reference.

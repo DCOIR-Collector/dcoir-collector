@@ -5,6 +5,8 @@ description: consult the canonical dcoir github task-memory bank before high-fri
 
 # DCOIR Memory Preflight
 
+<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-memory-preflight|SKILL.md|R01 -->
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
 Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
@@ -28,6 +30,7 @@ Use it to:
 - consult canonical memory before the branch drifts into execution
 - surface the best bounded lane, anti-patterns, and likely flush triggers before high-friction work starts
 - keep simple resume-status work on the bounded governed GitHub readable-text lane instead of drifting into unnecessary execution paths
+- resolve the active queue branch from Airtable `Queue Control`, active `Work Items`, and active `Plans` before old GitHub todo surfaces bias the lane
 
 ### 1. pre-execution mode
 Run this mode before choosing an execution lane when the task family is likely to have reusable canonical guidance.
@@ -42,6 +45,11 @@ Run this mode again after a blocker or failed attempt is successfully overcome w
 - governed process documentation
 
 ## Canonical memory sources
+## Airtable queue-authority readback
+When current branch priority or next-work-item order matters, read Airtable `Queue Control` first, then active Airtable `Work Items`, then active Airtable `Plans`.
+
+Use GitHub todo files only as retired or historical context unless the migration explicitly needs them.
+
 Read these in order when relevant:
 1. `knowledge/task_memory/00_registry/task_memory_manifest.yaml`
 2. `knowledge/task_memory/30_compiled/fast_lookup.json`
@@ -85,7 +93,8 @@ Run this skill again after blocker recovery when the recovered lesson could matt
 11. When stateful helper skills are active, tell `dcoir-plan-tracker` and `dcoir-session-tracker` what blocker signature, failed attempt summary, successful mitigation, lesson classification, reusability notes, and flush trigger should stay buffered until flush time.
 12. Surface the next flush-check trigger when buffered state exists.
 13. Return one best next move and the consulted records that justify it.
-14. For `session_start_bootstrap` when the immediate task is simple resume-status or current-state reporting, keep the lane bounded to governed GitHub readable-text fetches unless that primary lane fails or the drift gate cannot be resolved from fetched text alone.
+14. For `session_start_bootstrap`, resolve the live queue branch from Airtable before suggesting the next execution lane.
+15. For `session_start_bootstrap` when the immediate task is simple resume-status or current-state reporting, keep the lane bounded to governed GitHub readable-text fetches for source authority, but let Airtable queue state decide ordinary next-work-item priority.
 
 ## GitHub-family defaults
 For GitHub governed-readable-text work:

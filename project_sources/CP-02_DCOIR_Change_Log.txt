@@ -1,19 +1,22 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 4.0.7
-Current state id: 2026-04-09-reopen-parity-and-drive-evaluation-v1
-Change class: premature closure correction and reopened parity-and-Drive evaluation
+Version: 4.0.8
+Current state id: 2026-04-15-airtable-todo-authority-migration-v1
+Change class: Airtable-only todo authority migration
 
 What changed
-- Added `project_sources/LOG-67_DCOIR_Premature_Closure_Correction_And_Reopened_Parity_And_Drive_Evaluation_2026-04-09.txt` to record that two items were closed too early in the prior close-out wave.
-- Updated the active continuity surfaces so they reopen the parity and Drive items instead of claiming that no repo work remains.
-- Kept the duplicate-readable-surface cleanup closed and intact.
+- Promoted Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` to the sole live todo authority for ordinary queue priority and resume order.
+- Retired GitHub todo files as live queue surfaces without removing GitHub as the control plane or governed readable source.
+- Updated the affected resume, authority, decision, memory-preflight, session-tracker, plan-tracker, and change-impact helper skills to stop relying on GitHub todo files for active queue priority.
+- Updated workflow docs and handoff text so future sessions re-anchor correctly.
 
 Why
-- The earlier close-out relied on the governed parity surfaces already stored in the repo, but it did not actually perform a fresh installed-skills-versus-governed-source verification before closing the parity item.
-- The fresh installed-skill parity check showed substantial installed drift against the governed repo baseline.
-- The earlier optional Google Drive staging closure was only a repo-side review and not an explicit connector-backed evaluation.
+- The prior split model kept pulling resume behavior back toward stale GitHub queue lines even when Airtable held the more current and intentionally prioritized branch order.
+- Airtable was already the primary durable execution-state surface for plan and session continuity, so promoting it to the sole live todo authority removes the repeated priority conflict.
+- GitHub remains valuable as the control plane, governed readable source, and promoted history, but it is no longer the right place for ordinary queue churn.
+
 Validation notes
-- This correction changes queue state and continuity reporting only.
-- It does not undo the duplicate-readable-surface cleanup.
+- Airtable queue-control cutover was initialized before the governed-source refresh bundles were produced.
+- Collector hardening remains queued immediately behind the migration.
+- Retired GitHub todo files are preserved only as migration notes, not as live authority.

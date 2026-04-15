@@ -5,6 +5,8 @@ description: apply the operator's default decision matrix for africom_soc_ir / d
 
 # DCOIR Decision Policy
 
+<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-decision-policy|SKILL.md|R02 -->
+
 <!-- skill-marker: updated-skill|20260415T135556Z|dcoir-decision-policy|SKILL.md|R01 -->
 
 ## Required project gate
@@ -164,12 +166,15 @@ When a newly stated preference conflicts with an existing approved durable rule,
 ## Default task-family behavior
 
 ### 1. Project-state recovery and source selection
+- use Airtable `Queue Control`, active `Work Items`, and active `Plans` as the sole live todo authority when branch priority is the real question
+- treat GitHub todo files as retired live-queue surfaces unless the task is explicitly migrating, auditing, or documenting them
 - use only files marked current in the manifest as authoritative current governed GitHub readable sources
 - treat supporting assets, settings-only references, and local-only operator files separately
 - if the manifest and change log conflict, stop and report the exact conflict
 - if the manifest is clear, do not pause just because older files also exist
 
 ### 2. Packaging preferences and delivery friction
+- when queue-authority and source-authority disagree, let Airtable decide ordinary next work and let GitHub decide governed source authority
 - for governed readable-text updates in the current governed repository resolved from the governed discovery contract, prefer the GitHub connector directly as the primary execution surface over helper-skill-mediated repo writes whenever the connector can perform the operation more simply and reliably
 - before GitHub-family execution work, grouped repo edits, or packaging actions likely to have validated procedures, invoke `dcoir-memory-preflight` to consult canonical task memory first
 - when multiple related existing-file changes, deletions, or structural repo edits belong together, prefer one bounded multi-file git-object transaction over one-file-at-a-time updates

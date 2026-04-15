@@ -1,0 +1,29 @@
+DCOIR Airtable-Only Todo Authority Migration 2026-04-15
+
+Decision
+- Move the DCOIR live todo system fully to Airtable.
+- Keep GitHub as the control plane, governed readable source, and promoted history.
+- Retire GitHub todo files as active queue authority.
+
+Why
+- Airtable already held the better durable execution state for plans and session continuity.
+- GitHub todo lines kept pulling resume behavior toward stale priority when Airtable had the intentionally current branch order.
+- Splitting ordinary queue authority across Airtable and GitHub created avoidable drift.
+
+New live queue model
+- Airtable `Queue Control` is the first queue-authority surface.
+- Airtable `Work Items` is the ranked and supersession-aware queue.
+- Airtable `Plans` owns structured execution when a plan is active.
+- Resume logic should use GitHub for source authority and Airtable for ordinary next work.
+
+GitHub role after migration
+- Keep `CP-01`, `CP-02`, workflow docs, skill source, and major logs in GitHub.
+- Promote important queue decisions and closeout records only.
+- Do not mirror ordinary queue churn back into GitHub todo files.
+
+Retired files
+- `project_sources/LOG-01_DCOIR_Todo_Log.txt`
+- `project_sources/LOG-01_DCOIR_Todo_Index.txt`
+- `project_sources/todo/01_Active_Now.txt`
+
+These are retained only as migration notes or history unless later removed in a separate cleanup wave.
