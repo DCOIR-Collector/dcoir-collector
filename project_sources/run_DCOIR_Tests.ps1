@@ -1,4 +1,4 @@
-param(
+﻿param(
   [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","ChunkingOversizeArtifact","ChunkingReconstructionMetadata","MajorVersion","FullRegression","FailureGates")]
   [string]$Suite = "Core",
 
@@ -153,28 +153,10 @@ function Invoke-CollectorStep {
   $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
   $displayArgs = Build-ArgumentString -Args $invokeArgs
   $start = Get-Date
-
-  $psi = New-Object System.Diagnostics.ProcessStartInfo
-  $psi.FileName = "powershell.exe"
-  $psi.Arguments = $displayArgs
-  $psi.UseShellExecute = $false
-  $psi.RedirectStandardOutput = $true
-  $psi.RedirectStandardError = $true
-  $psi.CreateNoWindow = $true
-
-  $proc = New-Object System.Diagnostics.Process
-  $proc.StartInfo = $psi
-  [void]$proc.Start()
-  $nativeStdOut = $proc.StandardOutput.ReadToEnd()
-  $nativeStdErr = $proc.StandardError.ReadToEnd()
-  $proc.WaitForExit()
-  $exitCode = [int]$proc.ExitCode
+  $allOutput = & powershell.exe @invokeArgs 2>&1
+  $exitCode = $LASTEXITCODE
   $end = Get-Date
-
-  $outputParts = New-Object System.Collections.ArrayList
-  if (-not [string]::IsNullOrWhiteSpace($nativeStdOut)) { [void]$outputParts.Add($nativeStdOut) }
-  if (-not [string]::IsNullOrWhiteSpace($nativeStdErr)) { [void]$outputParts.Add($nativeStdErr) }
-  $stdout = ($outputParts -join [Environment]::NewLine)
+  $stdout = ($allOutput | ForEach-Object { if ($null -eq $_) { "" } else { $_.ToString() } }) -join [Environment]::NewLine
   $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
   $logLines = New-Object System.Collections.ArrayList
   [void]$logLines.Add("STEP=$StepName")
@@ -186,10 +168,7 @@ function Invoke-CollectorStep {
   [void]$logLines.Add(("COMMAND=powershell.exe {0}" -f $displayArgs))
   [void]$logLines.Add("")
   [void]$logLines.Add("STDOUT:")
-  [void]$logLines.Add($nativeStdOut)
-  [void]$logLines.Add("")
-  [void]$logLines.Add("STDERR:")
-  [void]$logLines.Add($nativeStdErr)
+  [void]$logLines.Add($stdout)
   $logPath = Write-HarnessLog -StepName $StepName -Lines $logLines
   $status = Resolve-CollectorStepStatus -ExitCode $exitCode -CollectorReportedStatus $collectorReportedStatus
   $runId = Parse-OutputValue -Text $stdout -Key "RUN_ID"
@@ -263,10 +242,31 @@ function Invoke-ExpectedFailureStep {
   $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
   $displayArgs = Build-ArgumentString -Args $invokeArgs
   $start = Get-Date
-  $allOutput = & powershell.exe @invokeArgs 2>&1
-  $exitCode = $LASTEXITCODE
+
+  $psi = New-Object System.Diagnostics.ProcessStartInfo
+  $psi.FileName = 'powershell.exe'
+  $psi.Arguments = $displayArgs
+  $psi.UseShellExecute = $false
+  $psi.RedirectStandardOutput = $true
+  $psi.RedirectStandardError = $true
+  $psi.CreateNoWindow = $true
+
+  $proc = New-Object System.Diagnostics.Process
+  $proc.StartInfo = $psi
+  [void]$proc.Start()
+  $stdoutText = $proc.StandardOutput.ReadToEnd()
+  $stderrText = $proc.StandardError.ReadToEnd()
+  $proc.WaitForExit()
+  $exitCode = $proc.ExitCode
   $end = Get-Date
-  $stdout = ($allOutput | ForEach-Object { if ($null -eq $_) { "" } else { $_.ToString() } }) -join [Environment]::NewLine
+
+  $stdout = if ([string]::IsNullOrEmpty($stderrText)) {
+    $stdoutText
+  } elseif ([string]::IsNullOrEmpty($stdoutText)) {
+    $stderrText
+  } else {
+    $stdoutText + [Environment]::NewLine + $stderrText
+  }
   $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
 
   $missingPatterns = New-Object System.Collections.ArrayList
@@ -309,12 +309,17 @@ function Invoke-ExpectedFailureStep {
   [void]$logLines.Add("EXPECTED_OUTCOME=$ExpectedOutcome")
   [void]$logLines.Add("EXIT_CODE=$exitCode")
   if ($collectorReportedStatus) { [void]$logLines.Add("COLLECTOR_STATUS=$collectorReportedStatus") }
+  $stderrState = if ([string]::IsNullOrWhiteSpace($stderrText)) { 'EMPTY' } else { 'PRESENT' }
+  [void]$logLines.Add("STDERR_STATE=$stderrState")
   [void]$logLines.Add("STATUS=$status")
   if ($message) { [void]$logLines.Add("MESSAGE=$message") }
   [void]$logLines.Add(("COMMAND=powershell.exe {0}" -f $displayArgs))
   [void]$logLines.Add("")
   [void]$logLines.Add("STDOUT:")
-  [void]$logLines.Add($stdout)
+  [void]$logLines.Add($stdoutText)
+  [void]$logLines.Add("")
+  [void]$logLines.Add("STDERR:")
+  [void]$logLines.Add($stderrText)
   $logPath = Write-HarnessLog -StepName $StepName -Lines $logLines
   Add-Result -StepName $StepName -Status $status -ExitCode $exitCode -RunId $null -EnrichSessionId $null -CollectorReportedStatus $collectorReportedStatus -LogPath $logPath -Start $start -End $end
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
