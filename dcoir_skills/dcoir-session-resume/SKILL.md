@@ -1,53 +1,19 @@
 ---
 name: dcoir-session-resume
-description: resume the africom_soc_ir / dcoir workspace from the current authoritative control plane. use at the first substantive turn of every new africom_soc_ir or dcoir session to re-anchor to the current state, then continue the required startup chain through dcoir-memory-preflight, dcoir-session-tracker airtable leftover recovery, and conditional dcoir-plan-tracker active-plan recovery. also use when the operator asks where are we, resume, what is current, what changed, or get me back on track. prefer the governed github readable-text fast path for simple current-state checks and use grouped, state-aware follow-up prompts when the current workflow favors batched manual updates or skill-install waves.
+description: resume the africom_soc_ir / dcoir workspace from the current authoritative control plane. use at the first substantive turn of every new africom_soc_ir or dcoir session to re-anchor to the current state, then continue the required startup chain through dcoir-memory-preflight, dcoir-session-tracker airtable leftover recovery, and conditional dcoir-plan-tracker active-plan recovery. also use when the operator asks where are we, resume, what is current, what changed, or get me back on track. prefer the governed github readable-text fast path for simple current-state checks, silent airtable reads during startup, and plain-english state summaries unless the operator explicitly wants a deeper technical report.
 ---
 
 # DCOIR Session Resume
 
-<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-session-resume|SKILL.md|R02 -->
+<!-- skill-marker: updated-skill|20260416T112500Z|dcoir-session-resume|SKILL.md|R03 -->
 
 Resume the AFRICOM_SOC_IR / DCOIR workspace from the current authoritative control plane.
 
 ## Workspace gate
 Proceed only when the current chat, project, or custom GPT is operating as the AFRICOM_SOC_IR / DCOIR workspace.
 
-
-## Operator preference readback
-During session-start bootstrap, read Airtable table `Operator Preferences` after the control plane is re-anchored and before handing off to the rest of the startup chain.
-
-For that readback:
-- prefer active implemented preferences scoped to `DCOIR workspace` or `both`
-- surface only the few operator preferences that materially affect response style, workflow branching, or execution posture for the current session
-- treat those surfaced preferences as current session defaults unless the operator overrides them in the live branch
-- when no relevant active operator preference is found, say that plainly and continue with the normal startup chain
-
-## Airtable todo authority
-Treat Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` as the sole live todo authority for ordinary queue priority, resume order, branch supersession, and active-versus-parked decisions.
-
-Use GitHub for:
-- the control plane
-- governed readable source
-- promoted history and important decisions
-
-Do not use GitHub todo files as the live queue authority once Airtable queue-control state exists.
-
-<!-- skill-marker: updated-skill|20260415T135556Z|dcoir-session-resume|SKILL.md|R01 -->
-
-
-## Operator preference readback
-
-During session-start bootstrap, read Airtable table `Operator Preferences` after the control plane is re-anchored and before handing off to the rest of the startup chain.
-
-For that readback:
-- prefer active implemented preferences scoped to `DCOIR workspace` or `both`
-- surface only the few operator preferences that materially affect response style, workflow branching, or execution posture for the current session
-- treat those surfaced preferences as current session defaults unless the operator overrides them in the live branch
-- when no relevant active operator preference is found, say that plainly and continue with the normal startup chain
-
-
 ## Default first-turn bootstrap use
-On the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session, invoke this skill before other substantive project work even if the user did not explicitly ask to resume.
+On the first substantive AFRICOM_SOC_IR / DCOIR turn of every new session, invoke this skill before other substantive project work even if the operator did not explicitly ask to resume.
 
 Use this first-turn bootstrap path to:
 - re-anchor to the current control plane
@@ -60,6 +26,26 @@ Required startup chain after this skill clears the control plane:
 2. `dcoir-session-tracker` Airtable leftover scan
 3. conditional `dcoir-plan-tracker` Airtable active-plan scan when open plan state exists
 
+## Operator preference readback
+During session-start bootstrap, read Airtable table `Operator Preferences` after the control plane is re-anchored and before handing off to the rest of the startup chain.
+
+For that readback:
+- prefer active implemented preferences scoped to `DCOIR workspace` or `both`
+- surface only the few operator preferences that materially affect response style, workflow branching, or execution posture for the current session
+- treat those surfaced preferences as current session defaults unless the operator overrides them in the live branch
+- do not render Airtable UI just to prove the preference read happened
+- when no relevant active operator preference is found, say that plainly and continue with the normal startup chain
+
+## Airtable todo authority
+Treat Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` as the sole live todo authority for ordinary queue priority, resume order, branch supersession, and active-versus-parked decisions.
+
+Use GitHub for:
+- the control plane
+- governed readable source
+- promoted history and important decisions
+
+Do not use GitHub todo files as the live queue authority once Airtable queue-control state exists.
+
 ## Resume-status fast path
 When the current request is a simple current-state, resume-status, or "where are we" check, use the governed GitHub readable-text fast path first.
 
@@ -71,6 +57,7 @@ Default fast path order:
 
 For this resume-status fast path:
 - prefer governed GitHub readable-text fetches only
+- keep Airtable reads silent unless a visible Airtable surface materially improves understanding or the operator asks for it
 - do not consider repo clone, archive download, raw web fetch, container execution, or local script execution before trying the governed GitHub connector path
 - escalate to alternate acquisition or execution lanes only when the GitHub connector cannot retrieve the required governed readable files or the drift gate cannot be resolved from fetched text alone
 
@@ -125,12 +112,13 @@ Use the first available bootstrap anchor in this order:
 - Do not promote files.
 - Do not rewrite content.
 - Do not infer missing files.
-- Do not treat non-current versions as authoritative unless the user explicitly asks for rollback reference or history.
+- Do not treat non-current versions as authoritative unless the operator explicitly asks for rollback reference or history.
 - Do not reimplement a weaker duplicate of the current-state drift logic inside this skill.
 - Do not let a superficially familiar work line override an explicit `hard_stop_conflict` result from the drift gate.
 - Do not evaluate alternate acquisition lanes before trying the governed GitHub connector path for resume-only status work.
 - Do not broaden a simple resume-status request into clone, container, archive-download, raw-web, or local-script work unless the primary governed readable-text lane actually fails or cannot resolve the drift gate.
 - Do not skip the Airtable leftover recovery steps just because the governed resume summary already looks stable; carry-forward state must still be checked.
+- Do not render Airtable UI during startup unless the operator asked for it or the display materially adds understanding.
 
 ## Output contract
 Return sections in this exact order:
@@ -144,23 +132,23 @@ Return sections in this exact order:
 8. Recommended next move
 9. Ready follow-up prompts
 
+See `references/resume_output_contract.md` for the exact section intent and compact-output rules.
+
 ## Output behavior
-- Keep the response concise and state-first.
+- Default to plain English, short sentences, and state-first wording.
+- Keep startup replies concise unless there is a real conflict, blocker, or materially important drift.
 - When Airtable queue-control state exists, let it set the current next planned work item before older GitHub handoff text.
 - When startup leftovers exist, summarize them briefly in the current next planned work item, refresh watchlist, or recommended next move rather than silently dropping them.
 - Give one recommended next move only.
-- Then give 2 to 4 short ready follow-up prompts.
+- Prefer 2 short ready follow-up prompts by default, not a broad menu.
 - Use plain-language prompts, not internal tool syntax.
-- Include packaging prompts only when relevant to the current state.
+- Include packaging prompts only when relevant.
 - Prefer grouped prompts when the current workflow favors batched manual updates or grouped skill-install waves.
 - Prefer the next most useful artifact or action, not a broad menu.
 - When the path is bounded, say which active surfaces were unavailable.
 - When the path hard-stops, do not continue into the normal nine-section resume summary.
 
-See `references/resume_output_contract.md` for the exact section intent and prompt rules.
-
 ## Airtable testing surface default
-
 When the resumed work is collector testing, Gemini testing, live evaluation, or validation-status follow-through, treat Airtable table `Validation Test Cases` as the default durable manual-testing surface after the normal resume/bootstrap chain completes.
 
 For those testing branches:
