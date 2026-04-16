@@ -150,6 +150,11 @@ try {
       Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
       Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
       Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices before the full baseline report. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
+      foreach ($collectorError in @($Global:CollectorErrors)) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$collectorError)) {
+          Write-Output ("COLLECTOR_ERROR={0}" -f $collectorError)
+        }
+      }
       Write-QuickNextSteps -Phase "Collect"
     }
 
