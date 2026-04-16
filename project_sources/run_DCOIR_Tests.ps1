@@ -250,9 +250,7 @@ function Invoke-ExpectedFailureStep {
   $process.StartInfo.RedirectStandardOutput = $true
   $process.StartInfo.RedirectStandardError = $true
   $process.StartInfo.CreateNoWindow = $true
-  foreach ($invokeArg in $invokeArgs) {
-    [void]$process.StartInfo.ArgumentList.Add($invokeArg)
-  }
+  $process.StartInfo.Arguments = Build-ArgumentString -Args $invokeArgs
   [void]$process.Start()
   $stdoutTask = $process.StandardOutput.ReadToEndAsync()
   $stderrTask = $process.StandardError.ReadToEndAsync()
