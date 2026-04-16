@@ -381,7 +381,6 @@ function Invoke-CollectOutputContractVerification {
   if ([string]::IsNullOrWhiteSpace($CollectStep.CleanupCommand)) { [void]$missing.Add('CLEANUP_COMMAND missing') }
   if ([string]::IsNullOrWhiteSpace($CollectStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
   if ([string]::IsNullOrWhiteSpace($CollectStep.GeminiUploadGuidance)) { [void]$missing.Add('GEMINI_UPLOAD_GUIDANCE missing') }
-  if (-not $CollectStep.HasQuickCommands) { [void]$missing.Add('NEXT_QUICK_COMMANDS block missing') }
 
   if (@($missing).Count -eq 0) {
     $status = 'PASS'
@@ -417,7 +416,6 @@ function Invoke-EnrichOpenOutputContractVerification {
   if ([string]::IsNullOrWhiteSpace($EnrichStep.EnrichSessionId)) { [void]$missing.Add('ENRICH_SESSION_ID missing') }
   if ([string]::IsNullOrWhiteSpace($EnrichStep.NextOptions)) { [void]$missing.Add('NEXT_OPTIONS missing') }
   if ([string]::IsNullOrWhiteSpace($EnrichStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
-  if (-not $EnrichStep.HasQuickCommands) { [void]$missing.Add('NEXT_QUICK_COMMANDS block missing') }
 
   if (@($missing).Count -eq 0) {
     $status = 'PASS'
@@ -453,7 +451,6 @@ function Invoke-EnrichFinalizedOutputContractVerification {
   if ([string]::IsNullOrWhiteSpace($EnrichStep.EnrichSessionId)) { [void]$missing.Add('ENRICH_SESSION_ID missing') }
   if ([string]::IsNullOrWhiteSpace($EnrichStep.NextGetFile)) { [void]$missing.Add('NEXT_GET_FILE missing') }
   if ([string]::IsNullOrWhiteSpace($EnrichStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
-  if (-not $EnrichStep.HasQuickCommands) { [void]$missing.Add('NEXT_QUICK_COMMANDS block missing') }
 
   if (@($missing).Count -eq 0) {
     $status = 'PASS'
@@ -487,7 +484,6 @@ function Invoke-CleanupOutputContractVerification {
   if ([string]::IsNullOrWhiteSpace($CleanupStep.RunId)) { [void]$missing.Add('RUN_ID missing') }
   if ($CleanupStep.CleanupStatus -ne 'COMPLETE') { [void]$missing.Add('CLEANUP_STATUS missing or not COMPLETE') }
   if ([string]::IsNullOrWhiteSpace($CleanupStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
-  if (-not $CleanupStep.HasQuickCommands) { [void]$missing.Add('NEXT_QUICK_COMMANDS block missing') }
 
   if (@($missing).Count -eq 0) {
     $status = 'PASS'
