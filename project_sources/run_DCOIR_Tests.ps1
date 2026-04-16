@@ -242,10 +242,23 @@ function Invoke-ExpectedFailureStep {
   $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
   $displayArgs = Build-ArgumentString -Args $invokeArgs
   $start = Get-Date
-  $allOutput = & powershell.exe @invokeArgs 2>&1
-  $exitCode = $LASTEXITCODE
+
+  $process = New-Object System.Diagnostics.Process
+  $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $process.StartInfo.FileName = 'powershell.exe'
+  $process.StartInfo.Arguments = $displayArgs
+  $process.StartInfo.UseShellExecute = $false
+  $process.StartInfo.RedirectStandardOutput = $true
+  $process.StartInfo.RedirectStandardError = $true
+  $process.StartInfo.CreateNoWindow = $true
+  [void]$process.Start()
+  $stdoutText = $process.StandardOutput.ReadToEnd()
+  $stderrText = $process.StandardError.ReadToEnd()
+  $process.WaitForExit()
+  $exitCode = $process.ExitCode
   $end = Get-Date
-  $stdout = ($allOutput | ForEach-Object { if ($null -eq $_) { "" } else { $_.ToString() } }) -join [Environment]::NewLine
+
+  $stdout = @($stdoutText, $stderrText | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
   $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
 
   $missingPatterns = New-Object System.Collections.ArrayList
@@ -293,7 +306,10 @@ function Invoke-ExpectedFailureStep {
   [void]$logLines.Add(("COMMAND=powershell.exe {0}" -f $displayArgs))
   [void]$logLines.Add("")
   [void]$logLines.Add("STDOUT:")
-  [void]$logLines.Add($stdout)
+  [void]$logLines.Add($stdoutText)
+  [void]$logLines.Add("")
+  [void]$logLines.Add("STDERR:")
+  [void]$logLines.Add($stderrText)
   $logPath = Write-HarnessLog -StepName $StepName -Lines $logLines
   Add-Result -StepName $StepName -Status $status -ExitCode $exitCode -RunId $null -EnrichSessionId $null -CollectorReportedStatus $collectorReportedStatus -LogPath $logPath -Start $start -End $end
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
