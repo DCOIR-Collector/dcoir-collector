@@ -112,9 +112,9 @@ function Quote-Arg {
 }
 
 function Build-ArgumentString {
-  param([string[]]$Args)
+  param([string[]]$ArgumentValues)
   $parts = New-Object System.Collections.ArrayList
-  foreach ($a in $Args) {
+  foreach ($a in $ArgumentValues) {
     [void]$parts.Add((Quote-Arg -Value $a))
   }
   return ($parts -join ' ')
@@ -151,7 +151,7 @@ function Invoke-CollectorStep {
   )
   Ensure-Directory -Path $LogsDir
   $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
-  $displayArgs = Build-ArgumentString -Args $invokeArgs
+  $displayArgs = Build-ArgumentString -ArgumentValues $invokeArgs
   $start = Get-Date
   $allOutput = & powershell.exe @invokeArgs 2>&1
   $exitCode = $LASTEXITCODE
@@ -240,7 +240,7 @@ function Invoke-ExpectedFailureStep {
 
   Ensure-Directory -Path $LogsDir
   $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
-  $displayArgs = Build-ArgumentString -Args $invokeArgs
+  $displayArgs = Build-ArgumentString -ArgumentValues $invokeArgs
   $start = Get-Date
 
   $process = New-Object System.Diagnostics.Process
@@ -250,9 +250,7 @@ function Invoke-ExpectedFailureStep {
   $process.StartInfo.RedirectStandardOutput = $true
   $process.StartInfo.RedirectStandardError = $true
   $process.StartInfo.CreateNoWindow = $true
-  foreach ($invokeArg in $invokeArgs) {
-    [void]$process.StartInfo.ArgumentList.Add($invokeArg)
-  }
+  $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues $invokeArgs
   [void]$process.Start()
   $stdoutTask = $process.StandardOutput.ReadToEndAsync()
   $stderrTask = $process.StandardError.ReadToEndAsync()
