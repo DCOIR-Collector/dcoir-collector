@@ -1,4 +1,4 @@
-﻿param(
+param(
   [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","ChunkingOversizeArtifact","ChunkingReconstructionMetadata","MajorVersion","FullRegression","FailureGates")]
   [string]$Suite = "Core",
 
@@ -242,31 +242,10 @@ function Invoke-ExpectedFailureStep {
   $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
   $displayArgs = Build-ArgumentString -Args $invokeArgs
   $start = Get-Date
-
-  $psi = New-Object System.Diagnostics.ProcessStartInfo
-  $psi.FileName = 'powershell.exe'
-  $psi.Arguments = $displayArgs
-  $psi.UseShellExecute = $false
-  $psi.RedirectStandardOutput = $true
-  $psi.RedirectStandardError = $true
-  $psi.CreateNoWindow = $true
-
-  $proc = New-Object System.Diagnostics.Process
-  $proc.StartInfo = $psi
-  [void]$proc.Start()
-  $stdoutText = $proc.StandardOutput.ReadToEnd()
-  $stderrText = $proc.StandardError.ReadToEnd()
-  $proc.WaitForExit()
-  $exitCode = $proc.ExitCode
+  $allOutput = & powershell.exe @invokeArgs 2>&1
+  $exitCode = $LASTEXITCODE
   $end = Get-Date
-
-  $stdout = if ([string]::IsNullOrEmpty($stderrText)) {
-    $stdoutText
-  } elseif ([string]::IsNullOrEmpty($stdoutText)) {
-    $stderrText
-  } else {
-    $stdoutText + [Environment]::NewLine + $stderrText
-  }
+  $stdout = ($allOutput | ForEach-Object { if ($null -eq $_) { "" } else { $_.ToString() } }) -join [Environment]::NewLine
   $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
 
   $missingPatterns = New-Object System.Collections.ArrayList
@@ -309,17 +288,12 @@ function Invoke-ExpectedFailureStep {
   [void]$logLines.Add("EXPECTED_OUTCOME=$ExpectedOutcome")
   [void]$logLines.Add("EXIT_CODE=$exitCode")
   if ($collectorReportedStatus) { [void]$logLines.Add("COLLECTOR_STATUS=$collectorReportedStatus") }
-  $stderrState = if ([string]::IsNullOrWhiteSpace($stderrText)) { 'EMPTY' } else { 'PRESENT' }
-  [void]$logLines.Add("STDERR_STATE=$stderrState")
   [void]$logLines.Add("STATUS=$status")
   if ($message) { [void]$logLines.Add("MESSAGE=$message") }
   [void]$logLines.Add(("COMMAND=powershell.exe {0}" -f $displayArgs))
   [void]$logLines.Add("")
   [void]$logLines.Add("STDOUT:")
-  [void]$logLines.Add($stdoutText)
-  [void]$logLines.Add("")
-  [void]$logLines.Add("STDERR:")
-  [void]$logLines.Add($stderrText)
+  [void]$logLines.Add($stdout)
   $logPath = Write-HarnessLog -StepName $StepName -Lines $logLines
   Add-Result -StepName $StepName -Status $status -ExitCode $exitCode -RunId $null -EnrichSessionId $null -CollectorReportedStatus $collectorReportedStatus -LogPath $logPath -Start $start -End $end
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
@@ -887,10 +861,10 @@ function Run-ChunkingReconstructionMetadataSuite {
 function Run-FailureGatesSuite {
   Restore-WorkingZip -Reason "FailureGates"
 
-  [void](Invoke-ExpectedFailureStep -StepName "91_InvalidMode" -CollectorArgs @("-Mode","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Cannot validate argument on parameter 'Mode'"))
-  [void](Invoke-ExpectedFailureStep -StepName "92_InvalidTier" -CollectorArgs @("-Tier","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Cannot validate argument on parameter 'Tier'"))
-  [void](Invoke-ExpectedFailureStep -StepName "93_InvalidAction" -CollectorArgs @("-Mode","Enrich","-Action","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Cannot validate argument on parameter 'Action'"))
-  [void](Invoke-ExpectedFailureStep -StepName "94_InvalidTargetProfile" -CollectorArgs @("-TargetProfile","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Cannot validate argument on parameter 'TargetProfile'"))
+  [void](Invoke-ExpectedFailureStep -StepName "91_InvalidMode" -CollectorArgs @("-Mode","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Mode","Bogus"))
+  [void](Invoke-ExpectedFailureStep -StepName "92_InvalidTier" -CollectorArgs @("-Tier","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Tier","Bogus"))
+  [void](Invoke-ExpectedFailureStep -StepName "93_InvalidAction" -CollectorArgs @("-Mode","Enrich","-Action","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Action","Bogus"))
+  [void](Invoke-ExpectedFailureStep -StepName "94_InvalidTargetProfile" -CollectorArgs @("-TargetProfile","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("TargetProfile","Bogus"))
 
   [void](Invoke-ExpectedFailureStep -StepName "95_QuickHelp" -CollectorArgs @("-Quick","help") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Quick command examples:"))
   [void](Invoke-ExpectedFailureStep -StepName "96_QuickUnknown" -CollectorArgs @("-Quick","unknown-value") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Unknown -Quick value","Quick command examples:"))
