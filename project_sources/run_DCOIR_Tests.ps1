@@ -153,10 +153,28 @@ function Invoke-CollectorStep {
   $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
   $displayArgs = Build-ArgumentString -Args $invokeArgs
   $start = Get-Date
-  $allOutput = & powershell.exe @invokeArgs 2>&1
-  $exitCode = $LASTEXITCODE
+
+  $psi = New-Object System.Diagnostics.ProcessStartInfo
+  $psi.FileName = "powershell.exe"
+  $psi.Arguments = $displayArgs
+  $psi.UseShellExecute = $false
+  $psi.RedirectStandardOutput = $true
+  $psi.RedirectStandardError = $true
+  $psi.CreateNoWindow = $true
+
+  $proc = New-Object System.Diagnostics.Process
+  $proc.StartInfo = $psi
+  [void]$proc.Start()
+  $nativeStdOut = $proc.StandardOutput.ReadToEnd()
+  $nativeStdErr = $proc.StandardError.ReadToEnd()
+  $proc.WaitForExit()
+  $exitCode = [int]$proc.ExitCode
   $end = Get-Date
-  $stdout = ($allOutput | ForEach-Object { if ($null -eq $_) { "" } else { $_.ToString() } }) -join [Environment]::NewLine
+
+  $outputParts = New-Object System.Collections.ArrayList
+  if (-not [string]::IsNullOrWhiteSpace($nativeStdOut)) { [void]$outputParts.Add($nativeStdOut) }
+  if (-not [string]::IsNullOrWhiteSpace($nativeStdErr)) { [void]$outputParts.Add($nativeStdErr) }
+  $stdout = ($outputParts -join [Environment]::NewLine)
   $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
   $logLines = New-Object System.Collections.ArrayList
   [void]$logLines.Add("STEP=$StepName")
@@ -168,7 +186,10 @@ function Invoke-CollectorStep {
   [void]$logLines.Add(("COMMAND=powershell.exe {0}" -f $displayArgs))
   [void]$logLines.Add("")
   [void]$logLines.Add("STDOUT:")
-  [void]$logLines.Add($stdout)
+  [void]$logLines.Add($nativeStdOut)
+  [void]$logLines.Add("")
+  [void]$logLines.Add("STDERR:")
+  [void]$logLines.Add($nativeStdErr)
   $logPath = Write-HarnessLog -StepName $StepName -Lines $logLines
   $status = Resolve-CollectorStepStatus -ExitCode $exitCode -CollectorReportedStatus $collectorReportedStatus
   $runId = Parse-OutputValue -Text $stdout -Key "RUN_ID"
