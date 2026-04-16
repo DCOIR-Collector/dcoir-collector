@@ -1,4 +1,0 @@
-GitHub connector file lifecycle test
-Created: 2026-04-16
-Step: create_file
-Status: awaiting manual verification before update_file
