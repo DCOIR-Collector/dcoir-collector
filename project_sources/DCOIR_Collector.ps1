@@ -62,7 +62,7 @@ param(
 Set-StrictMode -Version 2
 $ErrorActionPreference = "Continue"
 $ScriptFilePath = $MyInvocation.MyCommand.Path
-$ScriptVersion = "4.0.0"
+$ScriptVersion = "4.0.1"
 
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList
@@ -81,6 +81,7 @@ $collectorPartFiles = @(
   "DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1",
   "DCOIR_Collector.04_Quick_Interface_And_Output.ps1",
   "DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1",
+  "DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1",
   "DCOIR_Collector.05_Main_Entry.ps1"
 )
 
