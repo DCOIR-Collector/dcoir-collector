@@ -1,0 +1,26 @@
+DCOIR Collector Workflow Repair Wave 2026-04-16
+
+What happened
+- The collector workflow and FailureGates harness lane was repaired through a bounded sequence of GitHub-side fixes validated on main.
+- The original failing lane centered on `project_sources/run_DCOIR_Tests.ps1` expected-failure capture reliability under Windows PowerShell 5.1.
+
+Repair sequence
+- Replaced the Windows-incompatible `ProcessStartInfo.ArgumentList` usage with a PowerShell 5.1-compatible argument-string path in `Invoke-ExpectedFailureStep`.
+- Renamed the `Build-ArgumentString` helper parameter from `$Args` to `$ArgumentValues` and updated call sites so expected-failure process launches no longer collapsed to an empty argument string.
+- Updated `project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1` to emit collected error-ledger messages to stdout as `COLLECTOR_ERROR=<message>` lines so degraded-partial FailureGates assertions can match the expected warning text.
+- Repaired `Run-FailureGatesSuite` sequencing so the working collector zip is restored again before the later targeted invalid-window cases that run after cleanup.
+
+Validated result on main
+- `validate-on-push`: pass
+- `manual-collector-runtime-package-build`: pass
+- `manual-gemini-bundle-build`: pass
+- `manual-full-validation` with `FullRegression`: pass
+- `scheduled-health-check`: manual pass only
+
+Important caution
+- The manual `scheduled-health-check` pass is positive evidence that the workflow body is green when run directly, but it is not by itself proof that automatic schedule triggering is fixed. Keep the scheduler issue open until an actual automatic scheduled run is observed or the trigger diagnosis is closed with evidence.
+
+Durable next branch
+- The next intended active branch is Gemini Task 0 deep research before the Gemini agent update plan proceeds.
+- Research should focus on Gemini Enterprise Agent development for the operator's current platform posture: Gemini 3.1 Pro with Enterprise Web Search enabled.
+- Use those findings to shape the Gemini remediation plan before any new Gemini Instruction editing begins.
