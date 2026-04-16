@@ -1,0 +1,22 @@
+session_promotion_id: SP-2026-04-16-GH
+captured_from: 2026-04-16 project session
+scope: github connector capability validation and parity closeout lessons
+new_or_updated_records:
+  - GH-PROC-007
+  - GH-PROC-008
+validated_observations:
+  - Surfaced GitHub action inventory was broader than the actually reliable execution set in this chat lane.
+  - Issue-thread mutation was durably workable with fetch_issue plus add_comment_to_issue.
+  - Issue state mutation remained unproven and should not be treated as reliable based on surfaced wrapper availability alone.
+  - Existing-file updates remained workable through the low-level git-object lane with create_blob -> create_tree -> create_commit -> update_ref plus direct readback verification.
+  - Root-level create_file was proven, while nested-folder create_file remained unproven in this chat lane.
+  - Root-level update_file failed repeatedly and delete_file was platform-blocked before connector execution.
+false_hypotheses_to_avoid:
+  - Do not treat surfaced tool inventory as proof that the corresponding mutation lane is reliable in the current chat.
+  - Do not collapse issue-thread mutation and issue-state mutation into one assumed-good issue workflow.
+  - Do not prefer update_file over the low-level git-object lane when the wrapper surface is inconsistent.
+  - Do not mark nested-folder create_file as validated when only root-level create_file has live proof.
+operator_impact:
+  - Reduces repeat connector trial-and-error during future GitHub-heavy re-anchor and closeout work.
+  - Preserves a reusable distinction between comment-based issue updates, issue-state mutation, and governed file-write recovery.
+  - Supports safer lane choice when ChatGPT GitHub mutation surfaces are partially exposed or inconsistent.
