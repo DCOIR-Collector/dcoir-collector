@@ -246,15 +246,19 @@ function Invoke-ExpectedFailureStep {
   $process = New-Object System.Diagnostics.Process
   $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
   $process.StartInfo.FileName = 'powershell.exe'
-  $process.StartInfo.Arguments = $displayArgs
   $process.StartInfo.UseShellExecute = $false
   $process.StartInfo.RedirectStandardOutput = $true
   $process.StartInfo.RedirectStandardError = $true
   $process.StartInfo.CreateNoWindow = $true
+  foreach ($invokeArg in $invokeArgs) {
+    [void]$process.StartInfo.ArgumentList.Add($invokeArg)
+  }
   [void]$process.Start()
-  $stdoutText = $process.StandardOutput.ReadToEnd()
-  $stderrText = $process.StandardError.ReadToEnd()
+  $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+  $stderrTask = $process.StandardError.ReadToEndAsync()
   $process.WaitForExit()
+  $stdoutText = $stdoutTask.GetAwaiter().GetResult()
+  $stderrText = $stderrTask.GetAwaiter().GetResult()
   $exitCode = $process.ExitCode
   $end = Get-Date
 
