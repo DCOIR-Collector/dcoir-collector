@@ -1,5 +1,5 @@
 param(
-  [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","ChunkingOversizeArtifact","ChunkingReconstructionMetadata","MajorVersion","FullRegression")]
+  [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","ChunkingOversizeArtifact","ChunkingReconstructionMetadata","MajorVersion","FullRegression","FailureGates")]
   [string]$Suite = "Core",
 
   [string]$CollectorPath = ".\DCOIR_Collector.ps1",
@@ -199,6 +199,13 @@ function Invoke-CollectorStep {
     EnrichBundlePath = Parse-OutputValue -Text $stdout -Key "ENRICH_BUNDLE_PATH"
     SessionResolutionMode = Parse-OutputValue -Text $stdout -Key "SESSION_RESOLUTION_MODE"
     SessionStatus = Parse-OutputValue -Text $stdout -Key "SESSION_STATUS"
+    NextGetFile = Parse-OutputValue -Text $stdout -Key "NEXT_GET_FILE"
+    NextOptions = Parse-OutputValue -Text $stdout -Key "NEXT_OPTIONS"
+    CleanupCommand = Parse-OutputValue -Text $stdout -Key "CLEANUP_COMMAND"
+    DeleteScriptCommand = Parse-OutputValue -Text $stdout -Key "DELETE_SCRIPT_COMMAND"
+    GeminiUploadGuidance = Parse-OutputValue -Text $stdout -Key "GEMINI_UPLOAD_GUIDANCE"
+    CleanupStatus = Parse-OutputValue -Text $stdout -Key "CLEANUP_STATUS"
+    HasQuickCommands = [regex]::IsMatch($stdout, '(?m)^NEXT_QUICK_COMMANDS$')
   }
 }
 
@@ -223,6 +230,83 @@ function Invoke-CollectorStepWithEnvOverride {
   }
 }
 
+function Invoke-ExpectedFailureStep {
+  param(
+    [Parameter(Mandatory=$true)][string]$StepName,
+    [Parameter(Mandatory=$true)][string[]]$CollectorArgs,
+    [Parameter(Mandatory=$true)][ValidateSet('BIND_REJECT','RUNTIME_ERROR')][string]$ExpectedOutcome,
+    [string[]]$ExpectedPatterns
+  )
+
+  Ensure-Directory -Path $LogsDir
+  $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
+  $displayArgs = Build-ArgumentString -Args $invokeArgs
+  $start = Get-Date
+  $allOutput = & powershell.exe @invokeArgs 2>&1
+  $exitCode = $LASTEXITCODE
+  $end = Get-Date
+  $stdout = ($allOutput | ForEach-Object { if ($null -eq $_) { "" } else { $_.ToString() } }) -join [Environment]::NewLine
+  $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
+
+  $missingPatterns = New-Object System.Collections.ArrayList
+  foreach ($pattern in @($ExpectedPatterns)) {
+    if (-not [string]::IsNullOrWhiteSpace($pattern) -and -not [regex]::IsMatch($stdout, [regex]::Escape($pattern))) {
+      [void]$missingPatterns.Add($pattern)
+    }
+  }
+
+  $status = 'FAIL'
+  $message = ''
+  switch ($ExpectedOutcome) {
+    'BIND_REJECT' {
+      if ($exitCode -ne 0 -and [string]::IsNullOrWhiteSpace($collectorReportedStatus) -and @($missingPatterns).Count -eq 0) {
+        $status = 'PASS'
+        $message = 'Observed expected bind-reject behavior.'
+      } else {
+        $message = 'Expected bind-reject behavior was not observed.'
+      }
+    }
+    'RUNTIME_ERROR' {
+      if ($exitCode -ne 0 -and $collectorReportedStatus -eq 'ERROR' -and @($missingPatterns).Count -eq 0) {
+        $status = 'PASS'
+        $message = 'Observed expected runtime-error behavior.'
+      } else {
+        $message = 'Expected runtime-error behavior was not observed.'
+      }
+    }
+  }
+
+  if (@($missingPatterns).Count -gt 0) {
+    $message = ($message + ' Missing patterns: ' + (@($missingPatterns) -join '; ')).Trim()
+  }
+
+  $logLines = New-Object System.Collections.ArrayList
+  [void]$logLines.Add("STEP=$StepName")
+  [void]$logLines.Add("START=$($start.ToString('o'))")
+  [void]$logLines.Add("END=$($end.ToString('o'))")
+  [void]$logLines.Add(("DURATION_MS={0}" -f [int][Math]::Round(($end - $start).TotalMilliseconds)))
+  [void]$logLines.Add("EXPECTED_OUTCOME=$ExpectedOutcome")
+  [void]$logLines.Add("EXIT_CODE=$exitCode")
+  if ($collectorReportedStatus) { [void]$logLines.Add("COLLECTOR_STATUS=$collectorReportedStatus") }
+  [void]$logLines.Add("STATUS=$status")
+  if ($message) { [void]$logLines.Add("MESSAGE=$message") }
+  [void]$logLines.Add(("COMMAND=powershell.exe {0}" -f $displayArgs))
+  [void]$logLines.Add("")
+  [void]$logLines.Add("STDOUT:")
+  [void]$logLines.Add($stdout)
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $logLines
+  Add-Result -StepName $StepName -Status $status -ExitCode $exitCode -RunId $null -EnrichSessionId $null -CollectorReportedStatus $collectorReportedStatus -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+  return [pscustomobject]@{
+    StepName = $StepName
+    Status = $status
+    ExitCode = $exitCode
+    CollectorReportedStatus = $collectorReportedStatus
+    StdOut = $stdout
+    LogPath = $logPath
+  }
+}
+
 function Assert-CollectorStepSucceeded {
   param(
     [string]$StepName,
@@ -243,6 +327,181 @@ function Assert-CollectorStepSucceeded {
   ) -join [Environment]::NewLine
 
   throw $message
+}
+
+function Assert-CollectorStepDegradedPartial {
+  param(
+    [string]$StepName,
+    [object]$CollectorStep,
+    [string[]]$ExpectedPatterns
+  )
+
+  $missingPatterns = New-Object System.Collections.ArrayList
+  foreach ($pattern in @($ExpectedPatterns)) {
+    if (-not [string]::IsNullOrWhiteSpace($pattern) -and -not [regex]::IsMatch($CollectorStep.StdOut, [regex]::Escape($pattern))) {
+      [void]$missingPatterns.Add($pattern)
+    }
+  }
+
+  if ($CollectorStep.ExitCode -eq 0 -and $CollectorStep.CollectorReportedStatus -eq 'PARTIAL_SUCCESS' -and @($missingPatterns).Count -eq 0) {
+    return
+  }
+
+  $message = @(
+    ("Collector step did not show the expected degraded partial behavior: {0}" -f $StepName),
+    ("Collector harness status: {0}" -f $CollectorStep.Status),
+    ("Collector reported status: {0}" -f $CollectorStep.CollectorReportedStatus),
+    ("Collector step log: {0}" -f $CollectorStep.LogPath),
+    ("Missing patterns: {0}" -f (@($missingPatterns) -join '; ')),
+    "Collector stdout follows:",
+    $CollectorStep.StdOut
+  ) -join [Environment]::NewLine
+
+  throw $message
+}
+
+function Invoke-CollectOutputContractVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "RUN_ID=$($CollectStep.RunId)",
+    "NEXT_GET_FILE=$($CollectStep.NextGetFile)",
+    "CLEANUP_COMMAND=$($CollectStep.CleanupCommand)",
+    "DELETE_SCRIPT_COMMAND=$($CollectStep.DeleteScriptCommand)",
+    "GEMINI_UPLOAD_GUIDANCE=$($CollectStep.GeminiUploadGuidance)",
+    "HAS_QUICK_COMMANDS=$($CollectStep.HasQuickCommands)"
+  )
+
+  $missing = New-Object System.Collections.ArrayList
+  if ([string]::IsNullOrWhiteSpace($CollectStep.RunId)) { [void]$missing.Add('RUN_ID missing') }
+  if ([string]::IsNullOrWhiteSpace($CollectStep.NextGetFile)) { [void]$missing.Add('NEXT_GET_FILE missing') }
+  if ([string]::IsNullOrWhiteSpace($CollectStep.CleanupCommand)) { [void]$missing.Add('CLEANUP_COMMAND missing') }
+  if ([string]::IsNullOrWhiteSpace($CollectStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
+  if ([string]::IsNullOrWhiteSpace($CollectStep.GeminiUploadGuidance)) { [void]$missing.Add('GEMINI_UPLOAD_GUIDANCE missing') }
+  if (-not $CollectStep.HasQuickCommands) { [void]$missing.Add('NEXT_QUICK_COMMANDS block missing') }
+
+  if (@($missing).Count -eq 0) {
+    $status = 'PASS'
+    $message = 'Collect output contract fields were emitted.'
+  } else {
+    $message = (@($missing) -join '; ')
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $CollectStep.RunId -EnrichSessionId $CollectStep.EnrichSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+function Invoke-EnrichOpenOutputContractVerification {
+  param([string]$StepName,[object]$EnrichStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "RUN_ID=$($EnrichStep.RunId)",
+    "ENRICH_SESSION_ID=$($EnrichStep.EnrichSessionId)",
+    "NEXT_OPTIONS=$($EnrichStep.NextOptions)",
+    "DELETE_SCRIPT_COMMAND=$($EnrichStep.DeleteScriptCommand)",
+    "HAS_QUICK_COMMANDS=$($EnrichStep.HasQuickCommands)"
+  )
+
+  $missing = New-Object System.Collections.ArrayList
+  if ([string]::IsNullOrWhiteSpace($EnrichStep.RunId)) { [void]$missing.Add('RUN_ID missing') }
+  if ([string]::IsNullOrWhiteSpace($EnrichStep.EnrichSessionId)) { [void]$missing.Add('ENRICH_SESSION_ID missing') }
+  if ([string]::IsNullOrWhiteSpace($EnrichStep.NextOptions)) { [void]$missing.Add('NEXT_OPTIONS missing') }
+  if ([string]::IsNullOrWhiteSpace($EnrichStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
+  if (-not $EnrichStep.HasQuickCommands) { [void]$missing.Add('NEXT_QUICK_COMMANDS block missing') }
+
+  if (@($missing).Count -eq 0) {
+    $status = 'PASS'
+    $message = 'Open enrich-session output contract fields were emitted.'
+  } else {
+    $message = (@($missing) -join '; ')
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $EnrichStep.RunId -EnrichSessionId $EnrichStep.EnrichSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+function Invoke-EnrichFinalizedOutputContractVerification {
+  param([string]$StepName,[object]$EnrichStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "RUN_ID=$($EnrichStep.RunId)",
+    "ENRICH_SESSION_ID=$($EnrichStep.EnrichSessionId)",
+    "NEXT_GET_FILE=$($EnrichStep.NextGetFile)",
+    "DELETE_SCRIPT_COMMAND=$($EnrichStep.DeleteScriptCommand)",
+    "HAS_QUICK_COMMANDS=$($EnrichStep.HasQuickCommands)"
+  )
+
+  $missing = New-Object System.Collections.ArrayList
+  if ([string]::IsNullOrWhiteSpace($EnrichStep.RunId)) { [void]$missing.Add('RUN_ID missing') }
+  if ([string]::IsNullOrWhiteSpace($EnrichStep.EnrichSessionId)) { [void]$missing.Add('ENRICH_SESSION_ID missing') }
+  if ([string]::IsNullOrWhiteSpace($EnrichStep.NextGetFile)) { [void]$missing.Add('NEXT_GET_FILE missing') }
+  if ([string]::IsNullOrWhiteSpace($EnrichStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
+  if (-not $EnrichStep.HasQuickCommands) { [void]$missing.Add('NEXT_QUICK_COMMANDS block missing') }
+
+  if (@($missing).Count -eq 0) {
+    $status = 'PASS'
+    $message = 'Finalized enrich-session output contract fields were emitted.'
+  } else {
+    $message = (@($missing) -join '; ')
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $EnrichStep.RunId -EnrichSessionId $EnrichStep.EnrichSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+function Invoke-CleanupOutputContractVerification {
+  param([string]$StepName,[object]$CleanupStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "RUN_ID=$($CleanupStep.RunId)",
+    "CLEANUP_STATUS=$($CleanupStep.CleanupStatus)",
+    "DELETE_SCRIPT_COMMAND=$($CleanupStep.DeleteScriptCommand)",
+    "HAS_QUICK_COMMANDS=$($CleanupStep.HasQuickCommands)"
+  )
+
+  $missing = New-Object System.Collections.ArrayList
+  if ([string]::IsNullOrWhiteSpace($CleanupStep.RunId)) { [void]$missing.Add('RUN_ID missing') }
+  if ($CleanupStep.CleanupStatus -ne 'COMPLETE') { [void]$missing.Add('CLEANUP_STATUS missing or not COMPLETE') }
+  if ([string]::IsNullOrWhiteSpace($CleanupStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
+  if (-not $CleanupStep.HasQuickCommands) { [void]$missing.Add('NEXT_QUICK_COMMANDS block missing') }
+
+  if (@($missing).Count -eq 0) {
+    $status = 'PASS'
+    $message = 'Cleanup output contract fields were emitted.'
+  } else {
+    $message = (@($missing) -join '; ')
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $CleanupStep.RunId -EnrichSessionId $CleanupStep.EnrichSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
 function Invoke-AttachmentBudgetVerification {
@@ -503,11 +762,18 @@ function Run-CoreSuite {
   Restore-WorkingZip -Reason "Core"
   $collect = Invoke-CollectorStep -StepName "01_CollectT1" -CollectorArgs @("-Quick","collect-t1")
   Assert-CollectorStepSucceeded -StepName "01_CollectT1" -CollectorStep $collect
+  Invoke-CollectOutputContractVerification -StepName "ZZ_CollectOutputContract" -CollectStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_Collect" -ManifestPath $collect.AttachmentBudgetManifestPath }
   [void](Invoke-CollectorStep -StepName "02_EnrichStartTcp" -CollectorArgs @("-Quick","enrich-start-tcp"))
   [void](Invoke-CollectorStep -StepName "03_EnrichAddLogTextSecurity" -CollectorArgs @("-Quick","enrich-add-logtext","-Target","Security"))
-  [void](Invoke-CollectorStep -StepName "04_EnrichFinalize" -CollectorArgs @("-Quick","enrich-finalize"))
-  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "05_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+  $finalize = Invoke-CollectorStep -StepName "04_EnrichFinalize" -CollectorArgs @("-Quick","enrich-finalize")
+  Assert-CollectorStepSucceeded -StepName "04_EnrichFinalize" -CollectorStep $finalize
+  Invoke-EnrichFinalizedOutputContractVerification -StepName "ZZ_EnrichFinalizedOutputContract" -EnrichStep $finalize
+  if (-not $SkipCleanup) {
+    $cleanup = Invoke-CollectorStep -StepName "05_Cleanup" -CollectorArgs @("-Quick","cleanup")
+    Assert-CollectorStepSucceeded -StepName "05_Cleanup" -CollectorStep $cleanup
+    Invoke-CleanupOutputContractVerification -StepName "ZZ_CleanupOutputContract" -CleanupStep $cleanup
+  }
 }
 
 function Run-RetrievalSuite {
@@ -563,6 +829,8 @@ function Run-SessionBehaviorSuite {
   Assert-CollectorStepSucceeded -StepName "51_CollectT1" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_SessionBehaviorCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
   $startStep = Invoke-CollectorStep -StepName "52_EnrichStartTcp" -CollectorArgs @("-Quick","enrich-start-tcp")
+  Assert-CollectorStepSucceeded -StepName "52_EnrichStartTcp" -CollectorStep $startStep
+  Invoke-EnrichOpenOutputContractVerification -StepName "ZZ_EnrichOpenOutputContract" -EnrichStep $startStep
   $addStep = Invoke-CollectorStep -StepName "53_EnrichAddLogTextSecurity" -CollectorArgs @("-Quick","enrich-add-logtext","-Target","Security")
   Invoke-SessionBehaviorVerification -StepName "ZZ_SessionReuseValidation" -StartSessionId $startStep.EnrichSessionId -AddSessionId $addStep.EnrichSessionId -StartMode $startStep.SessionResolutionMode -AddMode $addStep.SessionResolutionMode
   [void](Invoke-CollectorStep -StepName "54_EnrichFinalize" -CollectorArgs @("-Quick","enrich-finalize"))
@@ -594,6 +862,35 @@ function Run-ChunkingReconstructionMetadataSuite {
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "82_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 }
 
+function Run-FailureGatesSuite {
+  Restore-WorkingZip -Reason "FailureGates"
+
+  [void](Invoke-ExpectedFailureStep -StepName "91_InvalidMode" -CollectorArgs @("-Mode","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Cannot validate argument on parameter 'Mode'"))
+  [void](Invoke-ExpectedFailureStep -StepName "92_InvalidTier" -CollectorArgs @("-Tier","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Cannot validate argument on parameter 'Tier'"))
+  [void](Invoke-ExpectedFailureStep -StepName "93_InvalidAction" -CollectorArgs @("-Mode","Enrich","-Action","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Cannot validate argument on parameter 'Action'"))
+  [void](Invoke-ExpectedFailureStep -StepName "94_InvalidTargetProfile" -CollectorArgs @("-TargetProfile","Bogus") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Cannot validate argument on parameter 'TargetProfile'"))
+
+  [void](Invoke-ExpectedFailureStep -StepName "95_QuickHelp" -CollectorArgs @("-Quick","help") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Quick command examples:"))
+  [void](Invoke-ExpectedFailureStep -StepName "96_QuickUnknown" -CollectorArgs @("-Quick","unknown-value") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Unknown -Quick value","Quick command examples:"))
+  [void](Invoke-ExpectedFailureStep -StepName "97_QuickSigcheckMissingTarget" -CollectorArgs @("-Quick","enrich-start-sigcheck") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("requires -Target <path>"))
+  [void](Invoke-ExpectedFailureStep -StepName "98_QuickListDllsBadPid" -CollectorArgs @("-Quick","enrich-start-listdlls","-Target","abc") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("requires a numeric -Target <pid>"))
+
+  $invalidStart = Invoke-CollectorStep -StepName "99_TargetedInvalidWindowStart" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","not-a-date","-WindowEnd","2026-04-08T09:15:00Z")
+  Assert-CollectorStepDegradedPartial -StepName "99_TargetedInvalidWindowStart" -CollectorStep $invalidStart -ExpectedPatterns @("Invalid WindowStart value [not-a-date]; falling back to hour-window behavior.")
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedInvalidWindowStartValidation" -CollectStep $invalidStart
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "99_CleanupAfterInvalidWindowStart" -CollectorArgs @("-Quick","cleanup")) }
+
+  $invalidEnd = Invoke-CollectorStep -StepName "100_TargetedInvalidWindowEnd" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","2026-04-08T08:45:00Z","-WindowEnd","not-a-date")
+  Assert-CollectorStepDegradedPartial -StepName "100_TargetedInvalidWindowEnd" -CollectorStep $invalidEnd -ExpectedPatterns @("Invalid WindowEnd value [not-a-date]; falling back to hour-window behavior.")
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedInvalidWindowEndValidation" -CollectStep $invalidEnd
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "100_CleanupAfterInvalidWindowEnd" -CollectorArgs @("-Quick","cleanup")) }
+
+  $invertedWindow = Invoke-CollectorStep -StepName "101_TargetedInvertedWindow" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","2026-04-08T09:15:00Z","-WindowEnd","2026-04-08T08:45:00Z")
+  Assert-CollectorStepDegradedPartial -StepName "101_TargetedInvertedWindow" -CollectorStep $invertedWindow -ExpectedPatterns @("is earlier than WindowStart")
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedInvertedWindowValidation" -CollectStep $invertedWindow
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "101_CleanupAfterInvertedWindow" -CollectorArgs @("-Quick","cleanup")) }
+}
+
 function Run-MajorVersionSuite {
   Run-CoreSuite
   Run-QuickAliasesSuite
@@ -616,6 +913,7 @@ try {
     "ChunkingOversizeArtifact" { Run-ChunkingOversizeArtifactSuite }
     "ChunkingReconstructionMetadata" { Run-ChunkingReconstructionMetadataSuite }
     "MajorVersion" { Run-MajorVersionSuite }
+    "FailureGates" { Run-FailureGatesSuite }
     "FullRegression" {
       Run-CoreSuite
       Run-RetrievalSuite
@@ -624,6 +922,7 @@ try {
       Run-TargetedCollectionSuite
       Run-ChunkingOversizeArtifactSuite
       Run-ChunkingReconstructionMetadataSuite
+      Run-FailureGatesSuite
     }
   }
   Save-Summary
