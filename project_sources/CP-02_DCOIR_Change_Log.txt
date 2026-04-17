@@ -1,23 +1,23 @@
 DCOIR Change Log
 
 [CURRENT]
-Version: 4.0.8
-Current state id: 2026-04-15-airtable-todo-authority-migration-v1
-Change class: Airtable-only todo authority migration
+Version: 4.0.9
+Current state id: 2026-04-17-infrastructure-first-reprioritization-closeout-v1
+Change class: Infrastructure-first reprioritization closeout
 
 What changed
-- Promoted Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` to the sole live todo authority for ordinary queue priority and resume order.
-- Retired GitHub todo files as live queue surfaces without removing GitHub as the control plane or governed readable source.
-- Updated the affected resume, authority, decision, memory-preflight, session-tracker, plan-tracker, and change-impact helper skills to stop relying on GitHub todo files for active queue priority.
-- Updated workflow docs and handoff text so future sessions re-anchor correctly.
+- Promoted the infrastructure-first reprioritization closeout into governed GitHub history.
+- Kept Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` as the sole live todo authority for ordinary queue priority and resume order.
+- Refreshed the affected current-state narrative surfaces so `CP-01`, `CP-02`, and `LOG-03` now reflect the live Airtable queue order.
+- Preserved retired GitHub todo files as migration notes and history rather than reactivating them as queue authority.
 
 Why
-- The prior split model kept pulling resume behavior back toward stale GitHub queue lines even when Airtable held the more current and intentionally prioritized branch order.
-- Airtable was already the primary durable execution-state surface for plan and session continuity, so promoting it to the sole live todo authority removes the repeated priority conflict.
-- GitHub remains valuable as the control plane, governed readable source, and promoted history, but it is no longer the right place for ordinary queue churn.
+- The live Airtable queue had already reprioritized work to the overlap-cleanup line.
+- The governed repo narrative still named collector hardening as the active branch in multiple current-state surfaces.
+- Promoting a bounded closeout record preserves the durable queue decision and cleanup outcome without turning GitHub back into the operational queue.
 
 Validation notes
-- Airtable queue-control cutover is implemented and the migration branch is complete.
 - Live queue authority now places `PLAN-20260417-github-airtable-overlap-cleanup` first, followed by `PLAN-20260415-airtable-operations-and-workflow-hardening`, `PLAN-20260416-collector-master-wave`, and `PLAN-20260415-workflow-collector-gemini-remediation-wave`.
-- Retired GitHub todo files are preserved only as migration notes, not as live authority.
-- Any future GitHub queue narrative refresh should stay bounded to live Airtable queue authority unless a newer governed reprioritization record supersedes it.
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/CP-02_DCOIR_Change_Log.txt`, and `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt` were refreshed in a bounded pass to match that live queue order.
+- No GitHub delete action was required in this closeout pass.
+- The manual-delete fallback remains available for any later cleanup candidate whose delete path proves unreliable.
