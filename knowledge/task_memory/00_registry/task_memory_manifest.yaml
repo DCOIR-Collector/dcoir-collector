@@ -51,6 +51,7 @@ current_priority_records:
   - GH-FSIG-002
   - GEN-PROC-001
   - GEN-PROC-002
+  - GEN-PROC-003
   - SP-2026-04-01-GH
   - SP-2026-04-16-GH
 notes:
@@ -58,3 +59,4 @@ notes:
   - Compiled indexes are acceleration layers, not sources of truth.
   - When in doubt, prefer canonical procedure records over chat memory.
   - Governed GitHub connector reference material lives under knowledge/github_connector_reference and should be mined into canonical task memory when durable patterns are validated.
+  - Connector-backed startup and status reads that do not require operator inspection should prefer non-display retrieval paths and ask before any visible table rendering.

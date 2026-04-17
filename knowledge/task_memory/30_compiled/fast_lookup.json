@@ -117,6 +117,17 @@
       "operation": "queue_next_critical_task",
       "path": "knowledge/task_memory/10_domains/generic/procedures/GEN-PROC-002-queue-next-critical-task.yaml"
     },
+    "GEN-PROC-003": {
+      "domain": "generic",
+      "type": "procedure",
+      "operation": "nondisplay_connector_state_read",
+      "object_type": "interactive_connector_table_surface",
+      "path": "knowledge/task_memory/10_domains/generic/procedures/GEN-PROC-003-nondisplay-connector-state-read.yaml",
+      "fallbacks": [
+        "GH-PROC-007",
+        "GH-PROC-008"
+      ]
+    },
     "SP-2026-04-01-GH": {
       "domain": "generic",
       "type": "session_promotion",
