@@ -1,15 +1,15 @@
 DCOIR Session Handoff Brief
 
-Current state id: 2026-04-15-airtable-todo-authority-migration-v1
+Current state id: 2026-04-17-infrastructure-first-reprioritization-closeout-v1
 
 Stable baseline
 - GitHub-primary readable-source model remains in force for governed text.
 - Airtable-only todo authority is now the intended operating model.
-- Overlap cleanup is the current active engineering branch.
+- Infrastructure-first reprioritization closeout is now the promoted current state.
 
 Active branch
 - `PLAN-20260417-github-airtable-overlap-cleanup` is now the current active branch.
-- Resume at T1: continue overlap cleanup with Airtable-first candidate tracking, bounded governed narrative refreshes, and manual-delete fallback preserved for any later delete path.
+- Resume at T1: continue overlap cleanup with Airtable-first candidate tracking, bounded governed narrative refreshes, promoted closeout history in GitHub, and manual-delete fallback preserved for any later delete path.
 
 Queued next branch
 - `PLAN-20260415-airtable-operations-and-workflow-hardening`
