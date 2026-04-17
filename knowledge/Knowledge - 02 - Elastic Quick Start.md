@@ -2,20 +2,21 @@
 
 _Endpoint response-console usage versus local workstation usage_
 
-**Summary:** Endpoint-side DCOIR execution in Elastic Defend, with explicit separation from local workstation and local-regression command lanes.
+**Summary:** Endpoint-side DCOIR execution in Elastic Defend, with explicit separation from local workstation and local-regression command lanes, plus bounded guidance for repeated collect-style runs and targeted-mode expectations.
 
 | Source class | Authoritative basis |
 | --- | --- |
-| Project sources | project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DCOIR_Collector.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
+| Project sources | project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DCOIR_Collector.ps1; project_sources/LOG-70_DCOIR_Infrastructure_First_Reprioritization_Closeout_2026-04-17.txt |
 | Official external sources | Elastic Docs / endpoint response actions |
-| Scope note | Examples are grounded in the current collector quick-alias model and the project workflow rule that endpoint instructions use response-action syntax. |
+| Scope note | Examples are grounded in the current runtime filename `DCOIR_Collector.ps1`, the current response-action lane, and the live collector guidance issues now tracked in GitHub. |
 
 ## Execution context split
 
 - Use Elastic Defend response-action syntax for endpoint instructions.
-- Use PowerShell commands for local workstation and local regression tasks.
+- Use PowerShell 5.1 commands for local workstation and local regression tasks.
 - Do not paste a local-only command directly into the response console without the response-action wrapper.
 - Do not add the Elastic response-console wrapper when running the same command on a local workstation or test repo.
+- Keep endpoint and local lanes sequential when both are needed; never blend them into one malformed command.
 
 ## Endpoint-side example commands
 
@@ -25,78 +26,49 @@ _Endpoint response-console usage versus local workstation usage_
 | Run raw Security-log enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment" |
 | Cleanup current DCOIR run | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick cleanup" --comment "Run DCOIR cleanup" |
 
+## Response-action quoting and path lessons
+
+- Keep the entire PowerShell invocation inside the `execute --command` quoted string.
+- Use the runtime filename the operator actually stages and runs: `DCOIR_Collector.ps1`.
+- Keep the collector path explicit as `.\DCOIR_Collector.ps1` unless the response-action lane later proves a different staged path.
+- Put the operator intent in the `--comment` field instead of cramming prose into the command body.
+- If a command works locally but fails in the response console, first check lane separation and quoting before assuming a collector defect.
+
 ## When to use Elastic quick start
 
 - The endpoint already has the collector package staged and you want a controlled DCOIR action from the response console.
 - You are following the collector's Elastic-facing next-step hints after a collect or enrich stage.
-- You need one action at a time, not broad free-form shell work.
+- You need one bounded action at a time, not broad free-form shell work.
+- The next investigative question is truly endpoint-facing rather than a repo-local or analyst-workstation question.
+
+## Repeated collect-style runs and staging checks
+
+Repeated collect-style runs should not assume the previously staged package state is still the right runtime baseline.
+
+Before rerunning a collect-style action:
+- confirm that the endpoint still has the expected collector runtime staged
+- confirm that the runtime filename and current package state still match the action you are about to run
+- if the prior run changed or removed the expected staging state, re-stage the collector package before retrying
+- prefer retrieval or review first when the needed artifact already exists rather than rerunning collection reflexively
+
+The important discipline here is not to invent hidden restaging mechanics. The current safe guidance is simpler: verify staged state before rerun, and re-stage when that state is no longer trustworthy.
+
+## Targeted-mode boundary
+
+Treat targeted mode honestly.
+
+Current live findings indicate that targeted mode should be treated as a narrower guidance, scope, and prioritization lane unless and until a specific path is proven to perform true exact filtering for the requested subset. That means:
+- targeted mode is still useful for narrowing operator intent and follow-through
+- targeted mode should not be oversold as proof that every baseline helper has been rewritten into exact filtering semantics
+- when the investigative question requires proven exact start/end filtering or exact artifact-family reduction, confirm that the specific lane supports it before claiming that it does
 
 ## Guardrails
 
 - Keep command syntax explicit and minimal.
 - Preserve the distinction between endpoint collection activity and analyst workstation analysis activity.
 - Treat the response console as the place for endpoint actions; treat the local repo as the place for development and regression.
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
-
-## Endpoint versus local execution
-
-DCOIR commands live in two clearly different operating lanes. The endpoint lane uses Elastic response actions. The local lane uses normal Windows PowerShell invocation against a local repo-style layout. The collector command itself may look similar in both lanes, but the operational meaning is different.
-
-### Endpoint lane
-The endpoint lane is for actions performed against a host through Elastic Defend. The operator should think in terms of one bounded response action at a time. Response-console syntax wraps the PowerShell command and preserves an explicit comment so the action is auditable and clearly tied to the case objective.
-
-### Local lane
-The local lane is for development, regression, packaging verification, and safe workstation-side experimentation. No response-action wrapper belongs here. The operator is running a local file in a local folder structure and should keep the command in normal PowerShell form.
-
-## Before running anything from Elastic
-
-A fast operator benefits from a short pre-flight checklist:
-- confirm that the endpoint already has the collector package and runtime filename staged where the command expects them
-- confirm that the next investigative question truly needs a collector or enrichment action rather than a telemetry query or existing artifact review
-- confirm that the chosen action is the narrowest one that answers the question
-- confirm that the action comment says what is being done and why
-- confirm whether a retrieval-ready artifact already exists so a get-file or review move is better than another collector invocation
-
-Skipping that checklist usually creates the same problems repeatedly: unnecessary reruns, duplicate output, cleanup at the wrong time, or confusion about whether the collector failed when the real issue was that the wrong lane was chosen.
-
-## Common endpoint-side action patterns
-
-### First baseline action
-The normal first collector move is a bounded baseline rather than a speculative series of enrichment actions. That produces the broad evidence package the later review flow expects.
-
-### One-action enrichment
-Enrichment is deliberately serialized. A single enrich-start or enrich-add action should have a specific investigative purpose. The output of that one action should then guide the next step instead of immediately stacking multiple unrelated enrichments.
-
-### Retrieval-oriented action
-When output already exists and the next question is really about reading or retrieving that artifact, the correct move is retrieval, not another baseline or enrichment rerun.
-
-### Cleanup
-Cleanup belongs after the operator has what is needed, not when uncertainty still exists about whether the current output will be needed for review or retrieval.
-
-## Command examples and what they mean
-
-The examples in the current quick-start surface are intentionally narrow:
-- TCP enrichment asks for network-connection context rather than broad host state
-- raw Security-log enrichment asks for host-event evidence in a bounded log lane
-- cleanup asks to remove or conclude the current output lifecycle when the artifacts are no longer needed
-
-The important operational lesson is that each quick alias encodes a workflow branch. The operator should read the alias as a decision, not just a shortcut. Choosing the alias is choosing the next type of evidence to develop.
-
-## Reading the results of an Elastic action
-
-A successful endpoint action does not automatically mean the case is better understood. The operator still needs to ask:
-- what output path or hint was produced
-- whether the output is a workflow-state artifact or a real evidence-bearing artifact
-- whether the next move is review, retrieval, another bounded enrich action, or no further collection at all
-- whether the result reduced the main uncertainty or merely produced more material to sort
-
-## Command-lane guardrails
-
-- Do not paste a local workstation example into the response console unchanged.
-- Do not add an `execute --command` wrapper to a local regression command.
-- Do not assume a broad host collection is the default answer to every question.
-- Do not use cleanup as a convenience shortcut while artifacts still need review.
-- Do not confuse a quick alias with hidden magic; each alias still represents a concrete workflow branch whose outputs must be interpreted.
+- Prefer retrieval or review when the current output already answers the next question.
+- Do not use cleanup as a convenience shortcut while artifacts still need review or retrieval.
 
 ## Quick operator decision matrix
 
@@ -115,111 +87,14 @@ A successful endpoint action does not automatically mean the case is better unde
 **Use neither yet when:**
 - the question is still better answered by telemetry
 - the next best move is artifact review
-- the current uncertainty is about syntax, packaging, or workflow-state interpretation rather than host evidence
+- the current uncertainty is about syntax, staging state, or workflow-state interpretation rather than host evidence
 
-## Follow-on reading sequence after a quick start action
+## After a quick-start action completes
 
-After running a collector action from Elastic, the operator should normally move through this order:
-1. confirm the action completed and note any emitted next-step hints
-2. identify whether the result is a baseline, enrichment, retrieval, or cleanup state
-3. read the highest-signal summary or metadata file first
-4. decide whether the evidence gap is now narrower enough for artifact review or a single next enrich action
-5. resist broadening the workflow unless the current result truly left the main question unanswered
+1. Confirm the action completed and note any emitted next-step hints.
+2. Decide whether the result is primarily a collection, enrichment, retrieval, or cleanup state.
+3. Read the highest-signal summary or metadata file first.
+4. Decide whether the next move is review, retrieval, one bounded enrich action, or no further collection.
+5. Resist broadening the workflow unless the current result truly left the main question unanswered.
 
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
