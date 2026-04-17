@@ -1,3 +1,8 @@
+if ($ShowHelp) {
+  Write-Output (Get-CollectorHelpText)
+  return
+}
+
 Apply-QuickShortcut
 
 try {
