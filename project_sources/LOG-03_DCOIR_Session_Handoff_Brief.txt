@@ -5,16 +5,16 @@ Current state id: 2026-04-15-airtable-todo-authority-migration-v1
 Stable baseline
 - GitHub-primary readable-source model remains in force for governed text.
 - Airtable-only todo authority is now the intended operating model.
-- Collector hardening is the active engineering branch.
+- Overlap cleanup is the current active engineering branch.
 
 Active branch
-- Collector hardening wave is now the current active branch.
-- Resume at T1: reconstruct the exact approved defect ledger and then continue through the bounded hardening sequence.
+- `PLAN-20260417-github-airtable-overlap-cleanup` is now the current active branch.
+- Resume at T1: continue overlap cleanup with Airtable-first candidate tracking, bounded governed narrative refreshes, and manual-delete fallback preserved for any later delete path.
 
 Queued next branch
-- Fix validate-on-push workflow failures.
-- Reduce Airtable UI rendering during re-anchor while keeping silent Airtable reads available.
-- Align GitHub issues to Airtable todo authority.
+- `PLAN-20260415-airtable-operations-and-workflow-hardening`
+- `PLAN-20260416-collector-master-wave`
+- `PLAN-20260415-workflow-collector-gemini-remediation-wave`
 
 Retired live queue surfaces
 - GitHub todo files remain only as migration notes or history, not as active queue authority.
