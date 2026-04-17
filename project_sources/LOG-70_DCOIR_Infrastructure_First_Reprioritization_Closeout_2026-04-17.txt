@@ -1,0 +1,35 @@
+DCOIR Infrastructure-First Reprioritization Closeout - 2026-04-17
+
+Current state id: 2026-04-17-infrastructure-first-reprioritization-closeout-v1
+
+Decision
+- Treat the infrastructure-first reprioritization closeout as promoted governed history.
+- Keep Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` as the sole live todo authority.
+- Use GitHub to record the resulting durable closeout and the bounded current-state refresh, not ordinary queue churn.
+
+Why
+- The live Airtable queue had already moved to the infrastructure-first overlap-cleanup line.
+- The governed current-state narrative still pointed to collector hardening as the active branch.
+- A bounded promoted closeout record is the right GitHub layer for this change because it preserves the queue decision and the cleanup outcome without turning GitHub back into the live queue.
+
+Live queue order after reprioritization
+- `PLAN-20260417-github-airtable-overlap-cleanup`
+- `PLAN-20260415-airtable-operations-and-workflow-hardening`
+- `PLAN-20260416-collector-master-wave`
+- `PLAN-20260415-workflow-collector-gemini-remediation-wave`
+
+Bounded governed refresh completed
+- Refreshed `project_sources/CP-01_DCOIR_Version_Manifest.txt` so the current-next-work-item section reflects the live Airtable queue order.
+- Refreshed `project_sources/CP-02_DCOIR_Change_Log.txt` so the current validation notes reflect the same queue order.
+- Refreshed `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt` so session resume language points to overlap cleanup as the active branch and preserves the correct queued next branches.
+
+Boundaries preserved
+- No GitHub delete action was required in this closeout pass.
+- The retired GitHub todo surfaces remain retained migration notes and history, not live authority.
+- The manual-delete fallback remains available for any later cleanup item whose delete path proves unreliable.
+- Ordinary queue movement remains Airtable-only unless another durable workflow decision or closeout must be promoted.
+
+Resulting posture
+- The repo current-state narrative is now aligned to the live Airtable queue order.
+- Airtable remains the operational queue authority.
+- Promoted GitHub history now records both the Airtable-only todo authority migration and the infrastructure-first reprioritization closeout.
