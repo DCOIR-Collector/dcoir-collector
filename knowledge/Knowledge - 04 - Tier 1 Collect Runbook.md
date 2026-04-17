@@ -2,11 +2,11 @@
 
 _Baseline collection workflow for standard first-pass collection_
 
-**Summary:** Standard first-pass baseline collection posture, entry points, review order, and the branch conditions that justify the next move, with bounded guidance for repeated collect-style runs and honest targeted follow-through expectations.
+**Summary:** Standard first-pass baseline collection posture, entry points, review order, and the branch conditions that justify the next move, with bounded guidance for repeated collect-style runs, honest targeted follow-through expectations, and the current large-output chunking boundary.
 
 | Source class | Authoritative basis |
 | --- | --- |
-| Project sources | project_sources/DCOIR_Collector.ps1; project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/LOG-70_DCOIR_Infrastructure_First_Reprioritization_Closeout_2026-04-17.txt |
+| Project sources | project_sources/DCOIR_Collector.ps1; project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/LOG-70_DCOIR_Infrastructure_First_Reprioritization_Closeout_2026-04-17.txt; project_sources/LOG-63_DCOIR_Chunking_Reconstruction_Hotfix_2026-04-09.txt |
 | Official external sources | Not required for this page |
 | Scope note | Commands shown here follow the current collector parameter model, current runtime filename, and current lane-separation rules. |
 
@@ -63,6 +63,22 @@ The order of review matters because not every emitted artifact has the same valu
 
 That order helps the analyst avoid drowning in raw outputs before understanding what the collector already summarized or prioritized. The baseline package should focus the review, not scatter it.
 
+## Large-output chunking boundary
+
+Current governed source and hotfix history do **not** support the claim that every large real-world Tier 1 output is chunked by default.
+
+What is currently proven:
+- the synthetic chunking regression lane was repaired so reconstruction of the synthetic oversized validation fixture is deterministic
+- chunk manifests and reconstruction metadata are therefore proven for that synthetic validation path
+
+What is **not** currently proven:
+- that every oversized real baseline report or large real final artifact will be chunked automatically in live runs
+- that a monolithic real output necessarily means the collector failed rather than exposing a current implementation boundary
+
+Operational takeaway:
+- treat a very large monolithic real output as a current limitation that may require retrieval/review planning rather than assuming the chunking feature silently failed
+- if exact real-output chunking becomes required, treat that as a new collector implementation task rather than as already-delivered behavior
+
 ## What Tier 1 proves and what it does not prove
 
 Tier 1 proves that a broad first-pass evidence package was collected. It can reveal suspicious process patterns, service/task anomalies, identity clues, network context, and persistence hints. It does not by itself prove that any detected signal is malicious. It also does not eliminate the need for evidence discipline. A baseline report can point to the next best question, but it still has to be interpreted as evidence, inference, or workflow guidance.
@@ -84,6 +100,7 @@ Current live findings indicate that targeted follow-through should be treated as
 - running cleanup before the review or retrieval need is satisfied
 - broadening immediately to Tier 2 without naming the specific unresolved question that requires it
 - rerunning collection without re-checking staged runtime state or clarifying why the earlier run was insufficient
+- assuming real oversized outputs must already chunk because the synthetic validation lane chunks
 
 ## Tier 1 review checklist
 
