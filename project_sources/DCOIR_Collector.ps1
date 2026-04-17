@@ -56,7 +56,10 @@ param(
   [string]$FocusPath,
   [string]$FocusIndicator,
   [string]$FocusIndicatorType,
-  [string]$UserReport
+  [string]$UserReport,
+
+  [Alias("help","h","?")]
+  [switch]$ShowHelp
 )
 
 Set-StrictMode -Version 2
