@@ -2,11 +2,11 @@
 
 _Common operational, packaging, and lane-separation issues on the current DCOIR line_
 
-**Summary:** Current collector, harness, packaging, and lane-separation failure patterns, with bounded troubleshooting habits grounded in the active line and current live response-action lessons.
+**Summary:** Current collector, harness, packaging, and lane-separation failure patterns, with bounded troubleshooting habits grounded in the active line, current live response-action lessons, and the current proven boundary for large-output chunking.
 
 | Source class | Authoritative basis |
 | --- | --- |
-| Project sources | project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DCOIR_Collector.ps1; project_sources/run_DCOIR_Tests.ps1; project_sources/LOG-70_DCOIR_Infrastructure_First_Reprioritization_Closeout_2026-04-17.txt |
+| Project sources | project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DCOIR_Collector.ps1; project_sources/run_DCOIR_Tests.ps1; project_sources/LOG-63_DCOIR_Chunking_Reconstruction_Hotfix_2026-04-09.txt; project_sources/LOG-70_DCOIR_Infrastructure_First_Reprioritization_Closeout_2026-04-17.txt |
 | Official external sources | Microsoft Learn / Sysinternals tool pages; Microsoft Learn / PowerShell help references; Elastic Docs / endpoint response actions |
 | Scope note | This page focuses on current durable lessons rather than speculative fixes. |
 
@@ -21,7 +21,7 @@ _Common operational, packaging, and lane-separation issues on the current DCOIR 
 
 ## Troubleshooting posture
 
-Troubleshooting on the current DCOIR line should stay bounded, lane-aware, and source-grounded. The goal is not to improvise around every ambiguous symptom with speculative fixes. The goal is to identify whether the issue is a layout problem, a lane mistake, a packaging mismatch, a harness invocation problem, a staging-state problem, or a genuine runtime defect.
+Troubleshooting on the current DCOIR line should stay bounded, lane-aware, and source-grounded. The goal is not to improvise around every ambiguous symptom with speculative fixes. The goal is to identify whether the issue is a layout problem, a lane mistake, a packaging mismatch, a harness invocation problem, a staging-state problem, a documentation/expectation gap, or a genuine runtime defect.
 
 ## Symptom: command looked right but produced the wrong lane behavior
 
@@ -52,6 +52,18 @@ Check whether:
 - the operator silently assumed an earlier staged ZIP was still the right baseline for the new run
 
 If the current staging state is uncertain, re-stage before drawing conclusions from the rerun.
+
+## Symptom: large real outputs stayed monolithic instead of chunking
+
+Current governed evidence matters here.
+
+The 2026-04-09 chunking hotfix proves deterministic reconstruction for the **synthetic chunking validation fixture**. It does **not** prove that every oversized real baseline report or large real final artifact is chunked automatically by default.
+
+That means a monolithic large real output should currently be interpreted like this:
+- first ask whether the output is exposing a known implementation boundary rather than a fresh source defect
+- do not claim that chunking is broken everywhere if the only proven chunking lane is synthetic validation
+- if the workflow needs guaranteed real-output chunking, treat that as a new implementation requirement with a bounded repro and validation plan
+- if the current workflow can proceed with retrieval/review planning, do that honestly instead of inventing chunk-manifest expectations the runtime has not yet proven
 
 ## Symptom: targeted mode did not narrow as much as expected
 
