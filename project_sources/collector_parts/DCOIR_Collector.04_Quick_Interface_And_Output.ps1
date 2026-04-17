@@ -17,24 +17,48 @@ function Get-QuickUsageText {
     "  $cmd -Quick enrich-start-listdlls -Target 1234",
     "  $cmd -Quick enrich-add-listdlls -Target 1234",
     "  $cmd -Quick enrich-finalize",
-    "  $cmd -Quick cleanup",
-    "",
-    "Session semantics:",
-    "  - enrich-start-* creates a new enrichment session.",
-    "  - enrich-add-* reuses the current open session unless -EnrichSessionId or -NewEnrichSession changes the behavior.",
-    "  - enrich-finalize finalizes the current open session.",
-    "",
-    "Targeted collection semantics:",
-    "  - collect-targeted-popup enables Targeted mode and prioritizes popup-window style review artifacts.",
-    "  - collect-targeted-script enables Targeted mode and prioritizes script execution review artifacts.",
-    "  - Use -WindowStart and -WindowEnd for explicit time-window annotations when needed.",
-    "  - Use -Target, -Target2, -FocusPath, -FocusIndicator, or -UserReport for narrow analyst context.",
-    "",
-    "Live-response guidance:",
-    "  - For first live-fire endpoint tests, prefer the direct collector lane before the harness.",
-    "  - Use absolute paths and simple command strings in the Elastic response-action lane.",
-    "  - Prefer cmd.exe-native move/delete examples in that lane when file relocation is the task."
+    "  $cmd -Quick cleanup"
   ) -join [Environment]::NewLine
+}
+
+function Get-CollectorHelpText {
+  $cmd = Get-CollectorPowerShellCommandBase
+  $lines = @()
+  $lines += "DCOIR Collector Help"
+  $lines += ""
+  $lines += "Top-level usage:"
+  $lines += "  $cmd -Help"
+  $lines += "  $cmd -Mode Collect -Tier T1"
+  $lines += "  $cmd -Mode Collect -Tier T2"
+  $lines += "  $cmd -Mode Enrich -Action TcpvconRefresh -NewEnrichSession"
+  $lines += "  $cmd -Mode Cleanup"
+  $lines += ""
+  $lines += "Quick usage:"
+  $lines += (Get-QuickUsageText)
+  $lines += ""
+  $lines += "Accepted top-level modes: Collect, Enrich, Cleanup"
+  $lines += "Accepted tiers: T1, T2"
+  $lines += "Accepted target profiles: Generic, PopupWindow, ScriptExecution, PersistenceFollowUp, NetworkOnly, ProcessAndPowerShell"
+  $lines += ""
+  $lines += "Targeted usage examples:"
+  $lines += '  $cmd -Targeted -TargetProfile PopupWindow -WindowStart "2026-04-08T09:00:00Z" -WindowEnd "2026-04-08T10:00:00Z" -UserReport "User reported popup"'
+  $lines += '  $cmd -Targeted -TargetProfile ScriptExecution -WindowStart "2026-04-08T09:00:00Z" -WindowEnd "2026-04-08T10:00:00Z" -UserReport "Suspicious script execution" -FocusProcess "powershell.exe"'
+  $lines += '  $cmd -Targeted -TargetProfile NetworkOnly -Hours 6 -FocusIndicator "198.51.100.25" -FocusIndicatorType "ip"'
+  $lines += ""
+  $lines += "Targeted guidance:"
+  $lines += "  - Targeted mode currently narrows guidance, scope intent, artifact prioritization, and next actions."
+  $lines += "  - It does not yet rewrite every baseline helper into exact start/end filtering across all artifact families."
+  $lines += "  - Use -WindowStart and -WindowEnd to annotate explicit time windows for analyst guidance and follow-up."
+  $lines += "  - Use -IncludeArtifactCategory, -FocusProcess, -FocusPath, -FocusIndicator, and -UserReport to make the request narrower and more explainable."
+  $lines += ""
+  $lines += "Accepted enrich actions:"
+  $lines += "  SigcheckPath, ListDllsPid, AccessChkFile, AccessChkService, AccessChkReg, StringsPath, StreamsPath, TcpvconRefresh, LogText, LogRaw, PullSuspiciousFile, PullScriptOrConfig, PullTaskXml, PullServiceBinary, PullWmiReferencedFile"
+  $lines += ""
+  $lines += "Lane guidance:"
+  $lines += "  - Endpoint response-console usage should wrap the PowerShell command in an Elastic response action."
+  $lines += "  - Local workstation and regression usage should run the PowerShell command directly without the response-action wrapper."
+  $lines += "  - Prefer PowerShell 5.1 syntax and the runtime filename DCOIR_Collector.ps1."
+  return ($lines -join [Environment]::NewLine)
 }
 
 function Apply-QuickShortcut {
@@ -115,8 +139,8 @@ function Apply-QuickShortcut {
     "enrich-add-pull-wmi-file" { $script:Mode = "Enrich"; $script:Action = "PullWmiReferencedFile"; $script:Path = Require-QuickTargetPath; return }
     "enrich-finalize" { $script:Mode = "Enrich"; $script:FinalizeEnrichSession = $true; return }
     "cleanup" { $script:Mode = "Cleanup"; return }
-    "help" { throw (Get-QuickUsageText) }
-    default { throw ("Unknown -Quick value: {0}`r`n{1}" -f $Quick, (Get-QuickUsageText)) }
+    "help" { throw (Get-CollectorHelpText) }
+    default { throw ("Unknown -Quick value: {0}`r`n{1}" -f $Quick, (Get-CollectorHelpText)) }
   }
 }
 
