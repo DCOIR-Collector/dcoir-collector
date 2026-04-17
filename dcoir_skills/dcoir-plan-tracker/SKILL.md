@@ -5,7 +5,7 @@ description: plan, track, resume, and document multi-step africom_soc_ir / dcoir
 
 # DCOIR Plan Tracker
 
-<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-plan-tracker|SKILL.md|R01 -->
+<!-- skill-marker: updated-skill|20260417T064500Z|dcoir-plan-tracker|SKILL.md|R02 -->
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
@@ -106,11 +106,13 @@ Read `references/airtable_plan_sync_workflow.md` when Airtable-first plan persis
 After `dcoir-session-resume`, `dcoir-memory-preflight`, and `dcoir-session-tracker` startup leftover recovery, use this skill when Airtable shows open or active plan state or when the leftover scan indicates unfinished plan work.
 
 Startup recovery workflow:
-1. Read `Plans` rows whose `plan_state` is still open enough to matter: `draft`, `approved_to_execute`, `active`, `blocked`, or `paused`.
+1. Read `Plans` rows whose `plan_state` is still open enough to matter: `draft`, `approved_to_execute`, `active`, `blocked`, or `paused`. Use silent Airtable reads only.
 2. If multiple open plans exist, prefer the most recently updated plan unless the control plane or session-tracker leftover scan points to a different plan explicitly.
 3. Read matching `Plan Tasks` rows and the newest relevant `Plan Checkpoints` rows for the candidate plan.
 4. Surface the active task, blockers, buffered promotion candidates, and best next move from Airtable-backed plan state before trusting a missing or stale local `plan_state.json` cache.
-5. If no open Airtable-backed plan state exists, say so plainly and do not force plan recovery unnecessarily.
+5. During automatic startup plan recovery, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
+6. If a visible Airtable view might help, ask the operator first instead of displaying it automatically.
+7. If no open Airtable-backed plan state exists, say so plainly and do not force plan recovery unnecessarily.
 
 Read `references/startup_active_plan_recovery_workflow.md` when startup plan recovery details are needed.
 
@@ -227,13 +229,15 @@ Supported commands include:
 6. At the beginning of each new session that uses a plan, prefer Airtable-backed plan state first and then run `scripts/ensure_plan_state.py` only when a local plan cache is useful for deterministic rendering or local proof.
 7. Read `00_index.md`, `05_resume_state.md`, Airtable-backed plan state, and `plan_state.json` when available before resuming.
 8. Update Airtable durable state first and refresh markdown or local JSON mirrors as needed whenever the plan changes.
-9. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces Airtable-backed durable state, promotion candidates, what should remain local, the next flush trigger, one best next move, and any staged governed updates that should land in the same grouped push.
-10. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger, but do not rely on local JSON alone when continuity really matters.
-11. When the active plan becomes the live execution branch, update Airtable `Work Items` and the active Airtable `Queue Control` record in the same bounded Airtable pass.
-12. Use the github connector directly for safe governed readable-text writes when available.
-13. Verify repo state after writes instead of trusting success messages alone.
-14. Emit user-visible attention signals only at milestone, blocked, and completion moments.
-15. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
+9. During startup recovery or re-anchor-related plan reads, keep Airtable retrieval silent and do not render Airtable UI unless the operator explicitly asked for it or explicitly approved it after being asked.
+10. During startup recovery or re-anchor-related plan reads, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
+11. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces Airtable-backed durable state, promotion candidates, what should remain local, the next flush trigger, one best next move, and any staged governed updates that should land in the same grouped push.
+12. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger, but do not rely on local JSON alone when continuity really matters.
+13. When the active plan becomes the live execution branch, update Airtable `Work Items` and the active Airtable `Queue Control` record in the same bounded Airtable pass.
+14. Use the github connector directly for safe governed readable-text writes when available.
+15. Verify repo state after writes instead of trusting success messages alone.
+16. Emit user-visible attention signals only at milestone, blocked, and completion moments.
+17. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
 
 
 ## Airtable-first durable execution state
@@ -408,6 +412,9 @@ When using this skill:
 - prefer one best next move over broad option lists
 
 ## Hard rules
+- during automatic startup plan recovery, do not render Airtable UI unless the operator explicitly asked for it or explicitly approved it after being asked
+- during automatic startup plan recovery, do not use `display_records_for_table`
+- prefer `search_records` or other non-display Airtable reads during automatic startup plan recovery
 - do not treat plan state as control-plane authority
 - do not skip decision-policy when branch choice is unresolved
 - do not skip memory-preflight for high-friction github-family work

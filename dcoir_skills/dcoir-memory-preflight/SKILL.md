@@ -5,7 +5,7 @@ description: consult the canonical dcoir github task-memory bank before high-fri
 
 # DCOIR Memory Preflight
 
-<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-memory-preflight|SKILL.md|R01 -->
+<!-- skill-marker: updated-skill|20260417T064500Z|dcoir-memory-preflight|SKILL.md|R02 -->
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
@@ -47,6 +47,12 @@ Run this mode again after a blocker or failed attempt is successfully overcome w
 ## Canonical memory sources
 ## Airtable queue-authority readback
 When current branch priority or next-work-item order matters, read Airtable `Queue Control` first, then active Airtable `Work Items`, then active Airtable `Plans`.
+
+During session-start bootstrap or re-anchor classification:
+- use silent Airtable reads only
+- do not use `display_records_for_table`
+- prefer `search_records` or other non-display Airtable reads
+- if a visible Airtable view might help, ask the operator first instead of displaying it automatically
 
 Use GitHub todo files only as retired or historical context unless the migration explicitly needs them.
 
@@ -93,8 +99,10 @@ Run this skill again after blocker recovery when the recovered lesson could matt
 11. When stateful helper skills are active, tell `dcoir-plan-tracker` and `dcoir-session-tracker` what blocker signature, failed attempt summary, successful mitigation, lesson classification, reusability notes, and flush trigger should stay buffered until flush time.
 12. Surface the next flush-check trigger when buffered state exists.
 13. Return one best next move and the consulted records that justify it.
-14. For `session_start_bootstrap`, resolve the live queue branch from Airtable before suggesting the next execution lane.
-15. For `session_start_bootstrap` when the immediate task is simple resume-status or current-state reporting, keep the lane bounded to governed GitHub readable-text fetches for source authority, but let Airtable queue state decide ordinary next-work-item priority.
+14. For `session_start_bootstrap`, resolve the live queue branch from Airtable before suggesting the next execution lane, using silent Airtable reads only.
+15. During `session_start_bootstrap`, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
+16. If a visible Airtable view might help during startup classification, ask the operator first instead of displaying it automatically.
+17. For `session_start_bootstrap` when the immediate task is simple resume-status or current-state reporting, keep the lane bounded to governed GitHub readable-text fetches for source authority, but let Airtable queue state decide ordinary next-work-item priority.
 
 ## GitHub-family defaults
 For GitHub governed-readable-text work:

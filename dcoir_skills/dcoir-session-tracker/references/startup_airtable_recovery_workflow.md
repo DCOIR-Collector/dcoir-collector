@@ -24,3 +24,10 @@ Recover Airtable-backed leftovers before fresh execution starts so session conti
 - Do not surface an Airtable item as unresolved if the same item is already durably represented in governed GitHub state.
 - Do not treat local cache absence as durable-state loss when Airtable is current.
 - Do not silently skip Airtable-only leftovers just because the governed resume summary looked stable.
+
+
+## Airtable display posture
+- Automatic startup recovery must stay silent by default.
+- Do not use `display_records_for_table` during automatic startup recovery.
+- Prefer `search_records` or other non-display Airtable reads during automatic startup recovery.
+- If a visible Airtable view might help, ask the operator first and show Airtable only after explicit approval.

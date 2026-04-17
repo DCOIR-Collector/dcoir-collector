@@ -2,6 +2,8 @@ interface:
   display_name: DCOIR Memory Preflight
   short_description: check canonical task memory before high-friction dcoir execution
     work
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

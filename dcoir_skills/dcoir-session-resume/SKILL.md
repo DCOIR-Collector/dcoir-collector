@@ -5,7 +5,7 @@ description: resume the africom_soc_ir / dcoir workspace from the current author
 
 # DCOIR Session Resume
 
-<!-- skill-marker: updated-skill|20260416T112500Z|dcoir-session-resume|SKILL.md|R03 -->
+<!-- skill-marker: updated-skill|20260417T064500Z|dcoir-session-resume|SKILL.md|R04 -->
 
 Resume the AFRICOM_SOC_IR / DCOIR workspace from the current authoritative control plane.
 
@@ -34,6 +34,8 @@ For that readback:
 - surface only the few operator preferences that materially affect response style, workflow branching, or execution posture for the current session
 - treat those surfaced preferences as current session defaults unless the operator overrides them in the live branch
 - do not render Airtable UI just to prove the preference read happened
+- do not use `display_records_for_table` during startup or re-anchor preference reads; prefer silent Airtable reads such as `search_records` or equivalent non-display retrieval
+- if a visible Airtable view would help, ask the operator first instead of showing it automatically
 - when no relevant active operator preference is found, say that plainly and continue with the normal startup chain
 
 ## Airtable todo authority
@@ -57,7 +59,9 @@ Default fast path order:
 
 For this resume-status fast path:
 - prefer governed GitHub readable-text fetches only
-- keep Airtable reads silent unless a visible Airtable surface materially improves understanding or the operator asks for it
+- keep Airtable reads silent by default and do not render Airtable UI during resume-status or startup work
+- do not use `display_records_for_table` during resume-status or startup work; prefer `search_records` or other non-display Airtable reads
+- if a visible Airtable view might materially help, ask the operator first instead of displaying it automatically
 - do not consider repo clone, archive download, raw web fetch, container execution, or local script execution before trying the governed GitHub connector path
 - escalate to alternate acquisition or execution lanes only when the GitHub connector cannot retrieve the required governed readable files or the drift gate cannot be resolved from fetched text alone
 
@@ -92,11 +96,13 @@ Use the first available bootstrap anchor in this order:
 13. For `session_start_bootstrap`, invoke `dcoir-memory-preflight` immediately after the control plane is re-anchored.
 14. After `dcoir-memory-preflight`, invoke `dcoir-session-tracker` to scan Airtable durable leftovers, open idea-capture items, and buffered promotion candidates that are not yet durably represented in governed GitHub sources.
 15. After the session-tracker leftover scan, invoke `dcoir-plan-tracker` only when open or active Airtable-backed plan state exists, or when the leftover scan indicates unfinished plan work.
-16. Read the active Airtable `Queue Control` row when it exists.
-17. Read active Airtable `Work Items` rows and active Airtable `Plans` rows needed to resolve the current live queue branch.
-18. Treat Airtable queue state as the live source for ordinary next-work-item priority and treat older GitHub todo files only as retired history or migration surfaces.
-19. Surface startup leftovers as carry-forward context, but distinguish clearly between governed GitHub authority and Airtable durable working-state leftovers.
-20. When the current workflow favors grouped manual updates or grouped skill-install waves, prefer grouped ready follow-up prompts over one-skill-at-a-time prompts.
+16. Read the active Airtable `Queue Control` row when it exists using silent Airtable retrieval only.
+17. Read active Airtable `Work Items` rows and active Airtable `Plans` rows needed to resolve the current live queue branch using silent Airtable retrieval only.
+18. During startup or re-anchor, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
+19. If a visible Airtable view would help, ask the operator first instead of displaying it automatically.
+20. Treat Airtable queue state as the live source for ordinary next-work-item priority and treat older GitHub todo files only as retired history or migration surfaces.
+21. Surface startup leftovers as carry-forward context, but distinguish clearly between governed GitHub authority and Airtable durable working-state leftovers.
+22. When the current workflow favors grouped manual updates or grouped skill-install waves, prefer grouped ready follow-up prompts over one-skill-at-a-time prompts.
 
 ## Required rules
 - Treat the first substantive session turn as a mandatory resume bootstrap point for this workspace unless the request is clearly outside DCOIR scope.
@@ -118,7 +124,9 @@ Use the first available bootstrap anchor in this order:
 - Do not evaluate alternate acquisition lanes before trying the governed GitHub connector path for resume-only status work.
 - Do not broaden a simple resume-status request into clone, container, archive-download, raw-web, or local-script work unless the primary governed readable-text lane actually fails or cannot resolve the drift gate.
 - Do not skip the Airtable leftover recovery steps just because the governed resume summary already looks stable; carry-forward state must still be checked.
-- Do not render Airtable UI during startup unless the operator asked for it or the display materially adds understanding.
+- Do not render Airtable UI during startup or re-anchor unless the operator explicitly asked for it or explicitly approved it after being asked.
+- Do not use `display_records_for_table` during startup or re-anchor.
+- Treat “ask before showing Airtable” as the only override path for visible Airtable displays during startup or re-anchor.
 
 ## Output contract
 Return sections in this exact order:

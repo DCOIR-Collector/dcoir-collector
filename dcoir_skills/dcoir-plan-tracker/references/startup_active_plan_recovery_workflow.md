@@ -12,7 +12,7 @@ Recover Airtable-backed active plan state when unfinished plan work exists, with
 - `Plan Checkpoints`: `tbl6z4Lyai2RABMyw`
 
 ## Recovery sequence
-1. Read `Plans` rows where `plan_state` is one of `draft`, `approved_to_execute`, `active`, `blocked`, or `paused`.
+1. Read `Plans` rows where `plan_state` is one of `draft`, `approved_to_execute`, `active`, `blocked`, or `paused`. Use silent Airtable reads only.
 2. If multiple open plans exist, prefer the most recently updated row unless the control plane or session-tracker leftover scan points to a different plan.
 3. Read the matching `Plan Tasks` rows for that plan.
 4. Read the newest relevant `Plan Checkpoints` rows for that plan.
@@ -23,3 +23,10 @@ Recover Airtable-backed active plan state when unfinished plan work exists, with
 - Do not trust missing local cache as proof that plan continuity was lost when Airtable remains current.
 - Do not force plan recovery when no open or active Airtable-backed plan state exists.
 - Distinguish governed GitHub tracker files from Airtable live execution state and from transient local cache.
+
+
+## Airtable display posture
+- Automatic startup plan recovery must stay silent by default.
+- Do not use `display_records_for_table` during automatic startup plan recovery.
+- Prefer `search_records` or other non-display Airtable reads during automatic startup plan recovery.
+- If a visible Airtable view might help, ask the operator first and show Airtable only after explicit approval.
