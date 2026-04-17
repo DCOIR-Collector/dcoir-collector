@@ -1,6 +1,6 @@
-DCOIR Version Manifest 4.0.8
+DCOIR Version Manifest 4.0.9
 
-Current state id: 2026-04-15-airtable-todo-authority-migration-v1
+Current state id: 2026-04-17-infrastructure-first-reprioritization-closeout-v1
 
 Current control plane
 - Manifest: project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -11,6 +11,7 @@ Current control plane
 - Helper-skill source layout and rollout: project_sources/DOC-06_DCOIR_GitHub_Helper_Skill_Source_Layout_And_Rollout.txt
 - Session handoff: project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 - Airtable-only todo authority migration decision: project_sources/LOG-69_DCOIR_Airtable_Only_Todo_Authority_Migration_2026-04-15.txt
+- Infrastructure-first reprioritization closeout: project_sources/LOG-70_DCOIR_Infrastructure_First_Reprioritization_Closeout_2026-04-17.txt
 - Retired GitHub todo note: project_sources/LOG-01_DCOIR_Todo_Log.txt
 - Retired GitHub todo index note: project_sources/LOG-01_DCOIR_Todo_Index.txt
 - Retired GitHub active-now note: project_sources/todo/01_Active_Now.txt
@@ -22,6 +23,7 @@ Authority model
 
 Current next work item
 - Airtable-only todo authority migration is implemented.
+- Infrastructure-first reprioritization closeout is now the promoted current state.
 - Live queue order is now:
   1. `PLAN-20260417-github-airtable-overlap-cleanup`
   2. `PLAN-20260415-airtable-operations-and-workflow-hardening`
