@@ -22,6 +22,10 @@ Authority model
 
 Current next work item
 - Airtable-only todo authority migration is implemented.
-- Collector hardening is now the active engineering branch.
-- Keep validate-on-push troubleshooting, reduced Airtable UI rendering during re-anchor, and GitHub-issues alignment queued behind collector hardening.
+- Live queue order is now:
+  1. `PLAN-20260417-github-airtable-overlap-cleanup`
+  2. `PLAN-20260415-airtable-operations-and-workflow-hardening`
+  3. `PLAN-20260416-collector-master-wave`
+  4. `PLAN-20260415-workflow-collector-gemini-remediation-wave`
 - Treat older GitHub todo-file priority as retired.
+- Keep future GitHub queue narrative aligned to Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans`.
