@@ -49,6 +49,7 @@ try {
         UploadSummaryPath = $null
         UploadBudgetManifestPath = $null
         AnalystOverviewPath = $null
+        ParallelExecutionProofPath = $null
         DefaultGeminiUploadSetStatus = $null
         CollectBundlePath = $null
         CollectionScopePath = $null
@@ -64,6 +65,8 @@ try {
         CreatedUTC = (Get-Date).ToUniversalTime().ToString("o")
         CollectorVersion = $ScriptVersion
       }
+
+      Initialize-ParallelBaselineCache -State $state
 
       $baseline = New-BaselineReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $baselineReportPath -Text $baseline.ReportText
@@ -83,10 +86,11 @@ try {
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
 
       $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $null
         analyst_overview = $state.AnalystOverviewPath
+        parallel_execution_proof = $state.ParallelExecutionProofPath
         upload_summary = $state.UploadSummaryPath
         attachment_budget_manifest = $state.UploadBudgetManifestPath
         default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
@@ -103,6 +107,7 @@ try {
         $baselineReportPath,
         $metadataReportPath,
         $state.AnalystOverviewPath,
+        $state.ParallelExecutionProofPath,
         $state.UploadSummaryPath,
         $state.UploadBudgetManifestPath,
         $state.CollectionScopePath,
@@ -121,10 +126,11 @@ try {
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
       [void](New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $bundlePath
         analyst_overview = $state.AnalystOverviewPath
+        parallel_execution_proof = $state.ParallelExecutionProofPath
         upload_summary = $state.UploadSummaryPath
         attachment_budget_manifest = $state.UploadBudgetManifestPath
         default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
@@ -148,6 +154,7 @@ try {
       Write-Output ("BASELINE_REPORT_PATH={0}" -f $baselineReportPath)
       Write-Output ("METADATA_REPORT_PATH={0}" -f $metadataReportPath)
       Write-Output ("ANALYST_OVERVIEW_PATH={0}" -f $state.AnalystOverviewPath)
+      if ($state.ParallelExecutionProofPath) { Write-Output ("PARALLEL_EXECUTION_PROOF_PATH={0}" -f $state.ParallelExecutionProofPath) }
       Write-Output ("UPLOAD_SUMMARY_PATH={0}" -f $state.UploadSummaryPath)
       Write-Output ("ATTACHMENT_BUDGET_MANIFEST_PATH={0}" -f $state.UploadBudgetManifestPath)
       Write-Output ("COLLECTION_SCOPE_PATH={0}" -f $state.CollectionScopePath)
