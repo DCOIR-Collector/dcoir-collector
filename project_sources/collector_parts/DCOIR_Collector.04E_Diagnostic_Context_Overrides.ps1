@@ -15,16 +15,26 @@ function Get-NonElevatedSecurityVisibilityMessage {
 function Get-SecurityAuditPolicyText {
   $subcategories = @('Logon','Logoff','Special Logon','Process Creation')
   $blocks = New-Object System.Collections.ArrayList
+  $exitCodes = New-Object System.Collections.ArrayList
   $hadFailure = $false
+  $allPrivilegeRequired = $true
 
   foreach ($subcategory in $subcategories) {
     $stepName = ('SECURITY_AUDIT_POLICY_{0}' -f ($subcategory -replace '[^A-Za-z0-9]', '_').ToUpperInvariant())
     $result = Invoke-ProcessCapture -FilePath 'auditpol.exe' -Arguments @('/get', ('/subcategory:{0}' -f $subcategory)) -StepName $stepName -AllowedExitCodes @(0)
     [void]$blocks.Add((Get-CombinedProcessOutput -Result $result))
+    [void]$exitCodes.Add([int]$result.ExitCode)
     if ($result.ExitCode -ne 0) { $hadFailure = $true }
+    if ($result.ExitCode -ne 1314) { $allPrivilegeRequired = $false }
   }
 
-  if ($hadFailure) {
+  if (-not $hadFailure) {
+    $script:CollectorAuditPolicyAccessStatus = 'OK'
+  } elseif ((-not (Test-DiagnosticCollectorIsElevated)) -and $allPrivilegeRequired -and (@($exitCodes).Count -gt 0)) {
+    $script:CollectorAuditPolicyAccessStatus = 'PRIVILEGE_REQUIRED_NON_ELEVATED'
+    Add-CollectorNote 'Security audit policy access requires privilege in the current non-elevated execution context. Verify audit policy from an elevated shell when that detail matters.'
+  } else {
+    $script:CollectorAuditPolicyAccessStatus = 'FAILED_OTHER'
     Add-CollectorError 'Security audit policy capture is incomplete. Review the per-subcategory auditpol command outputs in the artifact.'
   }
 
