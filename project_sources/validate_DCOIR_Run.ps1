@@ -106,6 +106,7 @@ $extra = $manifest.extra
 $requiredKeys = @(
   'execution_context',
   'security_audit_policy',
+  'audit_policy_access_status',
   'security_filtered',
   'security_high_signal_summary',
   'netstat_owner_aware_status',
@@ -147,6 +148,13 @@ if ($executionContextPath -and (Test-Path -LiteralPath $executionContextPath)) {
   }
 }
 
+$auditPolicyAccessStatus = [string]$extra.audit_policy_access_status
+if ($auditPolicyAccessStatus -in @('OK','PRIVILEGE_REQUIRED_NON_ELEVATED','FAILED_OTHER','UNKNOWN')) {
+  Add-CheckResult -Results $results -Name 'audit_policy_access_status_value' -Status 'PASS' -Message ("Recognized audit policy access status: {0}" -f $auditPolicyAccessStatus) -Path ''
+} else {
+  Add-CheckResult -Results $results -Name 'audit_policy_access_status_value' -Status 'FAIL' -Message ("Unexpected audit policy access status: {0}" -f $auditPolicyAccessStatus) -Path ''
+}
+
 $auditPolicyPath = [string]$extra.security_audit_policy
 if ($auditPolicyPath -and (Test-Path -LiteralPath $auditPolicyPath)) {
   if (Test-TextContains -Path $auditPolicyPath -Patterns @('Logon','Special Logon','Process Creation')) {
@@ -158,6 +166,8 @@ if ($auditPolicyPath -and (Test-Path -LiteralPath $auditPolicyPath)) {
   $auditExitCodes = @(Get-ExitCodesFromArtifact -Path $auditPolicyPath)
   if (@($auditExitCodes).Count -eq 0) {
     Add-CheckResult -Results $results -Name 'security_audit_policy_exit_codes' -Status 'FAIL' -Message 'Audit policy artifact does not expose command exit codes.' -Path $auditPolicyPath
+  } elseif (($auditPolicyAccessStatus -eq 'PRIVILEGE_REQUIRED_NON_ELEVATED') -and ([string]$extra.is_elevated -eq 'False') -and (@($auditExitCodes | Where-Object { $_ -ne 1314 }).Count -eq 0)) {
+    Add-CheckResult -Results $results -Name 'security_audit_policy_exit_codes' -Status 'PASS' -Message 'Audit policy artifact recorded expected 1314 privilege-required exit codes for a non-elevated run.' -Path $auditPolicyPath
   } elseif (@($auditExitCodes | Where-Object { $_ -ne 0 }).Count -gt 0) {
     Add-CheckResult -Results $results -Name 'security_audit_policy_exit_codes' -Status 'FAIL' -Message ('Audit policy artifact recorded nonzero exit codes: {0}' -f (($auditExitCodes -join ', '))) -Path $auditPolicyPath
   } else {
