@@ -86,6 +86,8 @@ jobs:
             'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py',
             'project_sources/generation_validation/build_dcoir_collector_runtime_package.py',
             'project_sources/generation_validation/restore_dcoir_collector_runtime_zip.py',
+            'project_sources/generation_validation/run_validate_dcoir_run_fixture_tests.ps1',
+            'project_sources/generation_validation/verify_collector_documentation_quality.py',
             '.github/workflows/manual-gemini-bundle-build.yml',
             '.github/workflows/manual-collector-runtime-package-build.yml',
             'dcoir_skills/project_discovery_contract.json',
@@ -99,6 +101,12 @@ jobs:
           if ($knowledgeFiles.Count -lt 15) {
             throw "Maintained knowledge set is smaller than expected. Found $($knowledgeFiles.Count) files; expected at least 15."
           }
+
+      - name: Run validate_DCOIR_Run fixture tests
+        shell: pwsh
+        working-directory: project_sources
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\generation_validation\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\validate_DCOIR_Run.ps1 -OutputRoot .\generation_validation\out_validate_dcoir_run_fixtures
 
       - name: Build fresh collector runtime zip for harness
         shell: pwsh
@@ -124,11 +132,27 @@ jobs:
           "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/generation_validation/out_validate_collector/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
           "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/generation_validation/out_validate_collector/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
 
-      - name: Run collector core harness suite
+      - name: Run intensive collector harness coverage
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          $suites = @('MajorVersion','Retrieval','FailureGates')
+          foreach ($suite in $suites) {
+            powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite $suite -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+            if ($LASTEXITCODE -ne 0) {
+              throw "Collector harness suite failed: $suite"
+            }
+          }
+
+      - name: Generate collector documentation audit report
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force project_sources/generation_validation/out_documentation_quality -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out_documentation_quality | Out-Null
+          python project_sources/generation_validation/verify_collector_documentation_quality.py --repo-root . --output-json project_sources/generation_validation/out_documentation_quality/collector_documentation_quality.json
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector documentation audit script failed unexpectedly.'
+          }
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh
@@ -149,5 +173,7 @@ jobs:
             project_sources/TestResults/**
             project_sources/generation_validation/out_validate_gemini/**
             project_sources/generation_validation/out_validate_collector/**
+            project_sources/generation_validation/out_validate_dcoir_run_fixtures/**
+            project_sources/generation_validation/out_documentation_quality/**
           if-no-files-found: warn
           retention-days: 14
