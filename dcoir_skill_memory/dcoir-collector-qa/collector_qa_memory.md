@@ -2,7 +2,7 @@
 artifact_type: dcoir-collector-qa-memory
 schema_version: 1
 project: AFRICOM_SOC_IR / DCOIR
-exported_at_utc: 2026-04-18T15:12:00Z
+exported_at_utc: 2026-04-18T15:35:00Z
 authority_basis:
   - Project Instructions v18
   - project_sources/CP-01_DCOIR_Version_Manifest.txt
@@ -12,7 +12,7 @@ authority_basis:
 # DCOIR Collector QA Memory
 
 ## Current focus
-Issue #42 is complete and closed after live local Collect-run validation. The active collector QA focus is now issue #41 actual parallel runtime execution, with a newly created Airtable acceptance row `COL-PAR-001` defining the runtime proof surface. Issue #37 remains explicitly evidence-blocked until same-host/build narrowed-subset proof exists.
+Issue #42 is complete and closed after live local Collect-run validation. The active collector QA focus is now issue #41 actual parallel runtime execution. A bounded source slice is now promoted to `main`, and Airtable validation row `COL-PAR-001` is the explicit runtime-proof surface. Issue #37 remains explicitly evidence-blocked until same-host/build narrowed-subset proof exists.
 
 ## Known failure lanes
 - **Gemini collector transcript error** (status: open)
@@ -26,9 +26,9 @@ Issue #42 is complete and closed after live local Collect-run validation. The ac
   - next_action: Keep assets\DCOIR_Collector.zip as the master restage source and only escalate this lane if a narrower code-backed failure is reproduced.
 
 ## Active repair candidates
-- **Collector actual parallel runtime execution (#41)** (status: scoped-next-slice)
-  - details: Current source still states serial-by-default and assessment-only parallelism. Airtable validation row `COL-PAR-001` now defines the acceptance surface for real overlapping runtime execution with deterministic worker outputs.
-  - next_action: Implement the next smallest truthful issue #41 slice with explicit worker-proof artifacts, parent wait behavior, and bounded validation surfaces before any runtime proof claim.
+- **Collector actual parallel runtime execution (#41)** (status: source-patched-pending-runtime-validation)
+  - details: Added bounded PowerShell 5.1-safe parallel runtime support through new collector part `DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1`, wired it into the wrapper and runtime manifest, updated the parallelism posture text, and wired `PARALLEL_EXECUTION_PROOF_PATH` into the collect entrypoint manifest, bundle, and stdout surfaces.
+  - next_action: Run one real Collect flow from the promoted source line and verify `PARALLEL_EXECUTION_PROOF_PATH`, worker proof files, observed timing overlap, parent wait behavior, and deterministic final outputs before claiming issue #41 complete.
 - **Collector targeted collection narrowed-subset proof (#37)** (status: evidence-blocked)
   - details: Current source narrows guidance, scope intent, artifact prioritization, and next actions, but same-host/build evidence is still required before claiming a truly narrowed subset implementation.
   - next_action: Do not close or overstate until same-host/build comparison evidence exists.
@@ -47,9 +47,10 @@ Issue #42 is complete and closed after live local Collect-run validation. The ac
 - Retrieval of harness summary files is validated when full absolute response-actions paths are used.
 - The rollback reference remains available for bounded regression comparison.
 - Issue #42 is now runtime-proven on a real local Collect run: ANALYST_OVERVIEW_PATH emitted on stdout, overview file existed, manifest contained analyst_overview and overview path, collect bundle contained the overview file, and Gemini guidance preferred the smaller analyst-first surface before the full baseline report.
+- Issue #41 bounded source slice is now present in `main` and reads back correctly for the new collector part, wrapper wiring, runtime manifest wiring, updated parallelism posture text, and collect entrypoint proof-path markers.
 
 ## Next actions
-- Implement the next smallest truthful issue #41 source slice.
+- Run one real local/manual Collect flow for the bounded issue #41 slice and evaluate `COL-PAR-001`.
 - Preserve issue #37 as evidence-blocked until same-host/build narrowed-subset evidence exists.
 - Hold the bounded endpoint rerun for the harness reporting patch until the operator has sent himself the needed files.
 - Keep the exact rerun target unchanged for later: QuickAliases Strings and Streams plus one Core control lane.
@@ -58,4 +59,4 @@ Issue #42 is complete and closed after live local Collect-run validation. The ac
 ## Provenance notes
 - Updated after issue #42 was validated on a live local Collect run and closed as completed.
 - Airtable Validation Test Cases row `COL-OVERVIEW-001` is now Passed.
-- Airtable Validation Test Cases row `COL-PAR-001` was created as the explicit acceptance surface for the next bounded issue #41 slice.
+- Airtable Validation Test Cases row `COL-PAR-001` is now Partial after the bounded issue #41 source slice landed in `main` but before runtime proof was supplied.
