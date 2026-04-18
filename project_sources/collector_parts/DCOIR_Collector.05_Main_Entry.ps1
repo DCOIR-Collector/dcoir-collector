@@ -58,6 +58,7 @@ try {
         ParallelExecutionProofPath = $null
         ExecutionContextPath = $null
         SecurityAuditPolicyPath = $null
+        AuditPolicyAccessStatus = $null
         SecurityFilteredPath = $null
         SecurityHighSignalSummaryPath = $null
         NetstatPidOnlyPath = $null
@@ -106,6 +107,7 @@ try {
         parallel_execution_proof = $state.ParallelExecutionProofPath
         execution_context = $state.ExecutionContextPath
         security_audit_policy = $state.SecurityAuditPolicyPath
+        audit_policy_access_status = $state.AuditPolicyAccessStatus
         security_filtered = $state.SecurityFilteredPath
         security_high_signal_summary = $state.SecurityHighSignalSummaryPath
         netstat_owner_aware_status = $state.NetstatOwnerAwareStatus
@@ -158,6 +160,7 @@ try {
         parallel_execution_proof = $state.ParallelExecutionProofPath
         execution_context = $state.ExecutionContextPath
         security_audit_policy = $state.SecurityAuditPolicyPath
+        audit_policy_access_status = $state.AuditPolicyAccessStatus
         security_filtered = $state.SecurityFilteredPath
         security_high_signal_summary = $state.SecurityHighSignalSummaryPath
         netstat_owner_aware_status = $state.NetstatOwnerAwareStatus
@@ -187,6 +190,7 @@ try {
       Write-Output ("METADATA_REPORT_PATH={0}" -f $metadataReportPath)
       Write-Output ("EXECUTION_CONTEXT_PATH={0}" -f $state.ExecutionContextPath)
       Write-Output ("SECURITY_AUDIT_POLICY_PATH={0}" -f $state.SecurityAuditPolicyPath)
+      Write-Output ("AUDIT_POLICY_ACCESS_STATUS={0}" -f $state.AuditPolicyAccessStatus)
       Write-Output ("SECURITY_FILTERED_PATH={0}" -f $state.SecurityFilteredPath)
       Write-Output ("SECURITY_HIGH_SIGNAL_SUMMARY_PATH={0}" -f $state.SecurityHighSignalSummaryPath)
       Write-Output ("IS_ELEVATED={0}" -f $state.IsElevated)
