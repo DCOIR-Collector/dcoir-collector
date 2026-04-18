@@ -17,6 +17,30 @@ function Get-LatestRunRoot {
   return $dirs[0].FullName
 }
 
+function Resolve-RunRootInput {
+  param([string]$InputPath)
+
+  if ([string]::IsNullOrWhiteSpace($InputPath)) {
+    return (Get-LatestRunRoot -BasePath (Join-Path (Get-Location).Path '..'))
+  }
+
+  if ($InputPath.IndexOfAny(@('*','?')) -ge 0) {
+    $matches = @(Get-ChildItem -Path $InputPath -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)
+    if (@($matches).Count -gt 0) { return $matches[0].FullName }
+    throw "No run directories matched wildcard path: $InputPath"
+  }
+
+  if (Test-Path -LiteralPath $InputPath) {
+    $item = Get-Item -LiteralPath $InputPath
+    if ($item.PSIsContainer) {
+      if ($item.Name -like 'DCOIR_*') { return $item.FullName }
+      return (Get-LatestRunRoot -BasePath $item.FullName)
+    }
+  }
+
+  throw "Run root path not found or not usable: $InputPath"
+}
+
 function Add-CheckResult {
   param(
     [System.Collections.ArrayList]$Results,
@@ -43,15 +67,32 @@ function Test-TextContains {
   return $true
 }
 
+function Get-ArtifactText {
+  param([string]$Path)
+  if (-not (Test-Path -LiteralPath $Path)) { return '' }
+  return (Get-Content -LiteralPath $Path -Raw)
+}
+
+function Get-ExitCodesFromArtifact {
+  param([string]$Path)
+  $text = Get-ArtifactText -Path $Path
+  $matches = [regex]::Matches($text, 'EXIT_CODE=(-?\d+)')
+  $codes = @()
+  foreach ($match in $matches) {
+    $codes += [int]$match.Groups[1].Value
+  }
+  return $codes
+}
+
 $results = New-Object System.Collections.ArrayList
 
 if (-not $ManifestPath) {
-  if (-not $RunRoot) {
-    $RunRoot = Get-LatestRunRoot -BasePath (Join-Path (Get-Location).Path '..')
-  }
+  $RunRoot = Resolve-RunRootInput -InputPath $RunRoot
   $ManifestPath = Join-Path $RunRoot 'manifest_collect.json'
 } elseif (-not $RunRoot) {
   $RunRoot = Split-Path -Parent $ManifestPath
+} else {
+  $RunRoot = Resolve-RunRootInput -InputPath $RunRoot
 }
 
 if (-not (Test-Path -LiteralPath $ManifestPath)) {
@@ -112,6 +153,15 @@ if ($auditPolicyPath -and (Test-Path -LiteralPath $auditPolicyPath)) {
     Add-CheckResult -Results $results -Name 'security_audit_policy_content' -Status 'PASS' -Message 'Audit policy artifact contains expected subcategories.' -Path $auditPolicyPath
   } else {
     Add-CheckResult -Results $results -Name 'security_audit_policy_content' -Status 'FAIL' -Message 'Audit policy artifact is missing expected subcategories.' -Path $auditPolicyPath
+  }
+
+  $auditExitCodes = @(Get-ExitCodesFromArtifact -Path $auditPolicyPath)
+  if (@($auditExitCodes).Count -eq 0) {
+    Add-CheckResult -Results $results -Name 'security_audit_policy_exit_codes' -Status 'FAIL' -Message 'Audit policy artifact does not expose command exit codes.' -Path $auditPolicyPath
+  } elseif (@($auditExitCodes | Where-Object { $_ -ne 0 }).Count -gt 0) {
+    Add-CheckResult -Results $results -Name 'security_audit_policy_exit_codes' -Status 'FAIL' -Message ('Audit policy artifact recorded nonzero exit codes: {0}' -f (($auditExitCodes -join ', '))) -Path $auditPolicyPath
+  } else {
+    Add-CheckResult -Results $results -Name 'security_audit_policy_exit_codes' -Status 'PASS' -Message 'Audit policy artifact recorded only zero exit codes.' -Path $auditPolicyPath
   }
 }
 
