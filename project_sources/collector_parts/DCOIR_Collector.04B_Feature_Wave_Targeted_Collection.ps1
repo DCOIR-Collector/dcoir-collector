@@ -144,6 +144,56 @@ function Get-CollectorParallelismAssessmentText {
   return ($lines -join [Environment]::NewLine)
 }
 
+function New-AnalystOverviewArtifact {
+  param([hashtable]$State,[hashtable]$Baseline)
+
+  $artifactMap = $Baseline.ArtifactMap
+  $overviewPath = Join-Path $State.ReportsDir ("DCOIR_ANALYST_OVERVIEW_{0}_{1}.txt" -f $env:COMPUTERNAME, $State.RunId)
+  $lines = New-Object System.Collections.ArrayList
+
+  [void]$lines.Add("DCOIR_ANALYST_OVERVIEW")
+  [void]$lines.Add(("CollectorVersion={0}" -f $ScriptVersion))
+  [void]$lines.Add(("RunId={0}" -f $State.RunId))
+  [void]$lines.Add("WorkflowPhase=CollectBaseline")
+  [void]$lines.Add("PrimaryReviewPosture=SmallerSurfaceFirst")
+  [void]$lines.Add("DoNotAssumeMonolithicBaselineUpload=true")
+  [void]$lines.Add(("DefaultGeminiUploadSetStatus={0}" -f $State.DefaultGeminiUploadSetStatus))
+  [void]$lines.Add("")
+  [void]$lines.Add("WHAT_TO_REVIEW_FIRST")
+  [void]$lines.Add("1. Start with this overview, the upload summary, and the metadata report.")
+  [void]$lines.Add("2. Use the analyst follow-up queue and security high-signal summary as the first decisive triage surface.")
+  [void]$lines.Add("3. Use representative process, network, and defender artifacts before opening the full merged baseline report.")
+  if ($State.TargetedCollectionPlanPath) {
+    [void]$lines.Add("4. A targeted collection plan was emitted for this run; review it before the monolithic baseline when the incident is narrow.")
+  }
+  [void]$lines.Add("")
+  [void]$lines.Add("REVIEW_FIRST_PATHS")
+  foreach ($pair in @(
+    @{ Label = 'ANALYST_OVERVIEW_PATH'; Path = $overviewPath },
+    @{ Label = 'UPLOAD_SUMMARY_PATH'; Path = $State.UploadSummaryPath },
+    @{ Label = 'METADATA_REPORT_PATH'; Path = $State.MetadataReportPath },
+    @{ Label = 'ATTACHMENT_BUDGET_MANIFEST_PATH'; Path = $State.UploadBudgetManifestPath },
+    @{ Label = 'COLLECTION_SCOPE_PATH'; Path = $State.CollectionScopePath },
+    @{ Label = 'TARGETED_COLLECTION_PLAN_PATH'; Path = $State.TargetedCollectionPlanPath },
+    @{ Label = 'ANALYST_FOLLOW_UP_QUEUE_PATH'; Path = $artifactMap['analyst_follow_up_queue'] },
+    @{ Label = 'SECURITY_HIGH_SIGNAL_SUMMARY_PATH'; Path = $artifactMap['security_high_signal_summary'] },
+    @{ Label = 'PROCESS_INVENTORY_PATH'; Path = $artifactMap['process_inventory'] },
+    @{ Label = 'STRUCTURED_NET_PATH'; Path = $artifactMap['structured_net'] },
+    @{ Label = 'DEFENDER_STATUS_PATH'; Path = $artifactMap['defender_status'] }
+  )) {
+    if ($pair.Path -and (Test-Path -LiteralPath $pair.Path)) {
+      [void]$lines.Add(("{0}={1}" -f $pair.Label, $pair.Path))
+    }
+  }
+  [void]$lines.Add("")
+  [void]$lines.Add("LOCAL_DEEP_REVIEW_ONLY")
+  [void]$lines.Add(("BASELINE_REPORT_PATH={0}" -f $State.BaselineReportPath))
+  [void]$lines.Add("Use the full merged baseline report only when the smaller analyst-first surface is insufficient or when a broader local review is explicitly needed.")
+
+  Set-Content -Path $overviewPath -Value $lines -Encoding UTF8
+  return $overviewPath
+}
+
 function Get-ValidationSyntheticOversizeArtifactKB {
   $raw = [Environment]::GetEnvironmentVariable('DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB', 'Process')
   if ([string]::IsNullOrWhiteSpace($raw)) { return 0 }
@@ -179,8 +229,8 @@ function Write-ArtifactTextExact {
 
   Ensure-Directory -Path $ArtifactsDir
   $prefix = Get-BaselineArtifactPrefix -Name $Name
-  $safeSection = ($Section -replace '[\/:*?"<>| ]','_')
-  $safeName = ($Name -replace '[\/:*?"<>| ]','_')
+  $safeSection = ($Section -replace '[\\/:*?"<>| ]','_')
+  $safeName = ($Name -replace '[\\/:*?"<>| ]','_')
   $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
   $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
   [System.IO.File]::WriteAllText($path, $Text, $utf8NoBom)
