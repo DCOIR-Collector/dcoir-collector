@@ -259,10 +259,12 @@ function New-BaselineReport {
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "COLLECTION_METADATA" -Name "execution_context.txt" -Text $executionContextText
   [void]$artifactPaths.Add($p); $artifactMap['execution_context'] = $p; $State.ExecutionContextPath = $p; $State.IsElevated = $isElevated
 
+  $script:CollectorAuditPolicyAccessStatus = 'UNKNOWN'
   $auditPolicyText = Get-SecurityAuditPolicyText
+  $State.AuditPolicyAccessStatus = if ($script:CollectorAuditPolicyAccessStatus) { [string]$script:CollectorAuditPolicyAccessStatus } else { 'UNKNOWN' }
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "COLLECTION_METADATA" -Name "security_audit_policy.txt" -Text $auditPolicyText
   [void]$artifactPaths.Add($p); $artifactMap['security_audit_policy'] = $p; $State.SecurityAuditPolicyPath = $p
-  Add-Section -Builder $sb -Name "EXECUTION_CONTEXT_AND_AUDIT_POLICY" -Text (@($executionContextText, "", $auditPolicyText) -join [Environment]::NewLine)
+  Add-Section -Builder $sb -Name "EXECUTION_CONTEXT_AND_AUDIT_POLICY" -Text (@($executionContextText, '', ('AUDIT_POLICY_ACCESS_STATUS={0}' -f $State.AuditPolicyAccessStatus), '', $auditPolicyText) -join [Environment]::NewLine)
 
   $limitationLines = @(
     "Offline profile hives were not loaded by design.",
@@ -466,6 +468,7 @@ function New-MetadataReport {
       "MetadataReport=$($State.MetadataReportPath)"
       "ExecutionContext=$($State.ExecutionContextPath)"
       "SecurityAuditPolicy=$($State.SecurityAuditPolicyPath)"
+      "AuditPolicyAccessStatus=$($State.AuditPolicyAccessStatus)"
       "SecurityFiltered=$($State.SecurityFilteredPath)"
       "SecurityHighSignalSummary=$($State.SecurityHighSignalSummaryPath)"
       "NetstatOwnerAwareStatus=$($State.NetstatOwnerAwareStatus)"
