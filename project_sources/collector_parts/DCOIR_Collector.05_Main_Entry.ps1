@@ -14,8 +14,14 @@ try {
         $RunId = Get-NewRunId
       }
 
-      Purge-PreviousRuns -Root $OutRoot -CurrentPackageName $PackageName
-      $dirs = Initialize-RunStructure -Root $OutRoot -CurrentRunId $RunId
+      $resolvedOutRoot = if ([System.IO.Path]::IsPathRooted($OutRoot)) {
+        [System.IO.Path]::GetFullPath($OutRoot)
+      } else {
+        [System.IO.Path]::GetFullPath((Join-Path (Get-Location).Path $OutRoot))
+      }
+
+      Purge-PreviousRuns -Root $resolvedOutRoot -CurrentPackageName $PackageName
+      $dirs = Initialize-RunStructure -Root $resolvedOutRoot -CurrentRunId $RunId
       $Global:CurrentRunId = $RunId
       $Global:ExecutionTxtPath = Join-Path $dirs.LogsDir "collect_execution_log.txt"
       $Global:ExecutionJsonlPath = Join-Path $dirs.LogsDir "collect_execution_log.jsonl"
@@ -24,7 +30,7 @@ try {
       Set-Content -Path $Global:ExecutionJsonlPath -Value "" -Encoding UTF8
       Set-Content -Path $Global:ErrorsLogPath -Value "" -Encoding UTF8
 
-      $packagePath = Move-PackageToOutRoot -Root $OutRoot -CurrentPackageName $PackageName
+      $packagePath = Move-PackageToOutRoot -Root $resolvedOutRoot -CurrentPackageName $PackageName
       Expand-PackageToTools -PackagePath $packagePath -ToolsDir $dirs.ToolsDir
 
       $toolMap = Get-ToolMap -ToolsDir $dirs.ToolsDir
@@ -34,7 +40,7 @@ try {
       $state = @{
         RunId = $RunId
         Host = $env:COMPUTERNAME
-        OutRoot = $OutRoot
+        OutRoot = $resolvedOutRoot
         RunRoot = $dirs.RunRoot
         ToolsDir = $dirs.ToolsDir
         ReportsDir = $dirs.ReportsDir
