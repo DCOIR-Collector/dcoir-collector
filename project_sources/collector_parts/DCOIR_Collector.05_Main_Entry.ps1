@@ -56,6 +56,13 @@ try {
         UploadBudgetManifestPath = $null
         AnalystOverviewPath = $null
         ParallelExecutionProofPath = $null
+        ExecutionContextPath = $null
+        SecurityAuditPolicyPath = $null
+        SecurityFilteredPath = $null
+        SecurityHighSignalSummaryPath = $null
+        NetstatPidOnlyPath = $null
+        NetstatOwnerAwareStatus = $null
+        IsElevated = $null
         DefaultGeminiUploadSetStatus = $null
         CollectBundlePath = $null
         CollectionScopePath = $null
@@ -92,11 +99,18 @@ try {
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
 
       $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $null
         analyst_overview = $state.AnalystOverviewPath
         parallel_execution_proof = $state.ParallelExecutionProofPath
+        execution_context = $state.ExecutionContextPath
+        security_audit_policy = $state.SecurityAuditPolicyPath
+        security_filtered = $state.SecurityFilteredPath
+        security_high_signal_summary = $state.SecurityHighSignalSummaryPath
+        netstat_owner_aware_status = $state.NetstatOwnerAwareStatus
+        netstat_pid_only = $state.NetstatPidOnlyPath
+        is_elevated = $state.IsElevated
         upload_summary = $state.UploadSummaryPath
         attachment_budget_manifest = $state.UploadBudgetManifestPath
         default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
@@ -114,6 +128,11 @@ try {
         $metadataReportPath,
         $state.AnalystOverviewPath,
         $state.ParallelExecutionProofPath,
+        $state.ExecutionContextPath,
+        $state.SecurityAuditPolicyPath,
+        $state.SecurityFilteredPath,
+        $state.SecurityHighSignalSummaryPath,
+        $state.NetstatPidOnlyPath,
         $state.UploadSummaryPath,
         $state.UploadBudgetManifestPath,
         $state.CollectionScopePath,
@@ -132,11 +151,18 @@ try {
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
       [void](New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $bundlePath
         analyst_overview = $state.AnalystOverviewPath
         parallel_execution_proof = $state.ParallelExecutionProofPath
+        execution_context = $state.ExecutionContextPath
+        security_audit_policy = $state.SecurityAuditPolicyPath
+        security_filtered = $state.SecurityFilteredPath
+        security_high_signal_summary = $state.SecurityHighSignalSummaryPath
+        netstat_owner_aware_status = $state.NetstatOwnerAwareStatus
+        netstat_pid_only = $state.NetstatPidOnlyPath
+        is_elevated = $state.IsElevated
         upload_summary = $state.UploadSummaryPath
         attachment_budget_manifest = $state.UploadBudgetManifestPath
         default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
@@ -159,6 +185,13 @@ try {
       Write-Output ("RUN_ID={0}" -f $RunId)
       Write-Output ("BASELINE_REPORT_PATH={0}" -f $baselineReportPath)
       Write-Output ("METADATA_REPORT_PATH={0}" -f $metadataReportPath)
+      Write-Output ("EXECUTION_CONTEXT_PATH={0}" -f $state.ExecutionContextPath)
+      Write-Output ("SECURITY_AUDIT_POLICY_PATH={0}" -f $state.SecurityAuditPolicyPath)
+      Write-Output ("SECURITY_FILTERED_PATH={0}" -f $state.SecurityFilteredPath)
+      Write-Output ("SECURITY_HIGH_SIGNAL_SUMMARY_PATH={0}" -f $state.SecurityHighSignalSummaryPath)
+      Write-Output ("IS_ELEVATED={0}" -f $state.IsElevated)
+      Write-Output ("NETSTAT_OWNER_AWARE_STATUS={0}" -f $state.NetstatOwnerAwareStatus)
+      if ($state.NetstatPidOnlyPath) { Write-Output ("NETSTAT_PID_ONLY_PATH={0}" -f $state.NetstatPidOnlyPath) }
       Write-Output ("ANALYST_OVERVIEW_PATH={0}" -f $state.AnalystOverviewPath)
       if ($state.ParallelExecutionProofPath) { Write-Output ("PARALLEL_EXECUTION_PROOF_PATH={0}" -f $state.ParallelExecutionProofPath) }
       Write-Output ("UPLOAD_SUMMARY_PATH={0}" -f $state.UploadSummaryPath)
