@@ -12,6 +12,25 @@ function Get-NonElevatedSecurityVisibilityMessage {
   return 'Security event query returned no matching events in the current non-elevated collection context. Verify the same query in an elevated shell before concluding the window is empty.'
 }
 
+function Get-SecurityAuditPolicyText {
+  $subcategories = @('Logon','Logoff','Special Logon','Process Creation')
+  $blocks = New-Object System.Collections.ArrayList
+  $hadFailure = $false
+
+  foreach ($subcategory in $subcategories) {
+    $stepName = ('SECURITY_AUDIT_POLICY_{0}' -f ($subcategory -replace '[^A-Za-z0-9]', '_').ToUpperInvariant())
+    $result = Invoke-ProcessCapture -FilePath 'auditpol.exe' -Arguments @('/get', ('/subcategory:{0}' -f $subcategory)) -StepName $stepName -AllowedExitCodes @(0)
+    [void]$blocks.Add((Get-CombinedProcessOutput -Result $result))
+    if ($result.ExitCode -ne 0) { $hadFailure = $true }
+  }
+
+  if ($hadFailure) {
+    Add-CollectorError 'Security audit policy capture is incomplete. Review the per-subcategory auditpol command outputs in the artifact.'
+  }
+
+  return ($blocks -join ([Environment]::NewLine + [Environment]::NewLine))
+}
+
 function Get-SecurityHighSignalSummaryText {
   param(
     [int]$WindowHours = 24,
