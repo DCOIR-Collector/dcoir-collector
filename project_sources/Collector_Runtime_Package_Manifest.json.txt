@@ -14,6 +14,7 @@
     "project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1",
     "project_sources/collector_parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1",
     "project_sources/collector_parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1",
+    "project_sources/collector_parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1",
     "project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1"
   ],
   "harness_source": "project_sources/run_DCOIR_Tests.ps1",
@@ -30,6 +31,7 @@
     "project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1",
     "project_sources/collector_parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1",
     "project_sources/collector_parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1",
+    "project_sources/collector_parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1",
     "project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1"
   ],
   "delivery_zip_entries": [
@@ -54,6 +56,7 @@
     "The collector delivery package is built from a compiled single-runtime DCOIR_Collector.ps1 plus the harness.",
     "Targeted collection parameterization is now part of the maintained collector source line and therefore part of the compiled runtime output.",
     "Bounded parallel runtime execution is now part of the maintained collector source line and therefore part of the compiled runtime output.",
+    "Diagnostic context and Security visibility overrides are now part of the maintained collector source line and therefore part of the compiled runtime output.",
     "Script entries in this artifact intentionally end in .txt to bypass mail filters.",
     "Do not refresh supporting_assets/DCOIR_Collector.zip directly from this transport-safe artifact without restoring native runtime filenames first."
   ]
