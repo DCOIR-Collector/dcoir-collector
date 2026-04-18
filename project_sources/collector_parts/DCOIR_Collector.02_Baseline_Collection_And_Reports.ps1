@@ -18,6 +18,71 @@ function Convert-ToSafeJsonText {
   return (($InputObject | ConvertTo-Json -Depth 12) + [Environment]::NewLine)
 }
 
+function Test-CollectorIsElevated {
+  try {
+    $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object System.Security.Principal.WindowsPrincipal($identity)
+    return $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
+  } catch {
+    return $false
+  }
+}
+
+function Get-CollectorExecutionContextText {
+  $isElevated = Test-CollectorIsElevated
+  $identityName = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+  $lines = @(
+    'EXECUTION_CONTEXT',
+    ("UserContext={0}" -f $identityName),
+    ("IsElevated={0}" -f $isElevated),
+    ("Host={0}" -f $env:COMPUTERNAME),
+    ("ProcessId={0}" -f $PID),
+    ("PowerShellVersion={0}" -f $PSVersionTable.PSVersion),
+    ("CurrentDirectory={0}" -f (Get-Location).Path)
+  )
+  if ($isElevated) {
+    $lines += 'DiagnosticContext=Elevated execution should allow owner-aware netstat capture and broader Security log visibility when audit policy supports it.'
+  } else {
+    $lines += 'DiagnosticContext=Non-elevated execution can restrict owner-aware netstat capture and Security log visibility on some hosts.'
+  }
+  return ($lines -join [Environment]::NewLine)
+}
+
+function Get-SecurityAuditPolicyText {
+  $result = Invoke-CmdCapture -Command 'auditpol /get /subcategory:"Logon","Logoff","Special Logon","Process Creation"' -StepName 'SECURITY_AUDIT_POLICY' -AllowedExitCodes @(0)
+  return (Get-CombinedProcessOutput -Result $result)
+}
+
+function Get-NetstatCaptureBundle {
+  param([bool]$IsElevated)
+
+  $ownerAwareResult = Invoke-CmdCapture -Command 'netstat -abno' -StepName 'NETWORK_NETSTAT_OWNER_AWARE' -AllowedExitCodes @(0,1)
+  $ownerAwareText = Get-CombinedProcessOutput -Result $ownerAwareResult
+  $combinedOutput = (([string]$ownerAwareResult.StdOut) + ' ' + ([string]$ownerAwareResult.StdErr)).Trim()
+  $requiresElevation = ($ownerAwareResult.ExitCode -ne 0) -and ($combinedOutput -match '(?i)requires elevation')
+
+  $pidOnlyResult = $null
+  $pidOnlyText = $null
+  $status = 'OWNER_AWARE_OK'
+
+  if ($requiresElevation) {
+    $status = 'OWNER_AWARE_REQUIRES_ELEVATION'
+    Add-CollectorError 'Owner-aware netstat capture (netstat -abno) requires elevation in the current execution context. A supplemental PID-only netstat capture was collected separately, but executable ownership attribution remains unavailable until an elevated run.'
+    $pidOnlyResult = Invoke-CmdCapture -Command 'netstat -ano' -StepName 'NETWORK_NETSTAT_PID_ONLY' -AllowedExitCodes @(0)
+    $pidOnlyText = Get-CombinedProcessOutput -Result $pidOnlyResult
+  } elseif ($ownerAwareResult.ExitCode -ne 0) {
+    $status = 'OWNER_AWARE_FAILED'
+    Add-CollectorError ('Owner-aware netstat capture (netstat -abno) failed for a reason other than missing elevation. Review the artifact for the exact command output. ExitCode={0}' -f $ownerAwareResult.ExitCode)
+  }
+
+  return @{
+    OwnerAwareText = $ownerAwareText
+    OwnerAwareStatus = $status
+    OwnerAwareExitCode = [int]$ownerAwareResult.ExitCode
+    PidOnlyText = $pidOnlyText
+  }
+}
+
 function New-CollectUploadArtifacts {
   param([hashtable]$State,[hashtable]$Baseline)
 
@@ -164,6 +229,11 @@ function New-BaselineReport {
   $artifactPaths = New-Object System.Collections.ArrayList
   $artifactMap = @{}
   $sb = New-Object System.Text.StringBuilder
+  $isElevated = Test-CollectorIsElevated
+
+  if (-not $isElevated) {
+    Add-CollectorNote 'Collector is running in a non-elevated context. Owner-aware netstat capture and Security log visibility may be restricted on this host.'
+  }
 
   $metaText = @(
     "CollectorVersion=$ScriptVersion"
@@ -173,6 +243,7 @@ function New-BaselineReport {
     "Host=$env:COMPUTERNAME"
     "RunId=$($State.RunId)"
     "UserContext=$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+    "IsElevated=$isElevated"
     "TimeLocal=$(Get-Date -Format o)"
     "TimeUTC=$((Get-Date).ToUniversalTime().ToString('o'))"
     "RunRoot=$($State.RunRoot)"
@@ -183,6 +254,15 @@ function New-BaselineReport {
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "COLLECTION_METADATA" -Name "collection_metadata.txt" -Text $metaText
   [void]$artifactPaths.Add($p); $artifactMap['collection_metadata'] = $p
   Add-Section -Builder $sb -Name "COLLECTION_METADATA" -Text $metaText
+
+  $executionContextText = Get-CollectorExecutionContextText
+  $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "COLLECTION_METADATA" -Name "execution_context.txt" -Text $executionContextText
+  [void]$artifactPaths.Add($p); $artifactMap['execution_context'] = $p; $State.ExecutionContextPath = $p; $State.IsElevated = $isElevated
+
+  $auditPolicyText = Get-SecurityAuditPolicyText
+  $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "COLLECTION_METADATA" -Name "security_audit_policy.txt" -Text $auditPolicyText
+  [void]$artifactPaths.Add($p); $artifactMap['security_audit_policy'] = $p; $State.SecurityAuditPolicyPath = $p
+  Add-Section -Builder $sb -Name "EXECUTION_CONTEXT_AND_AUDIT_POLICY" -Text (@($executionContextText, "", $auditPolicyText) -join [Environment]::NewLine)
 
   $limitationLines = @(
     "Offline profile hives were not loaded by design.",
@@ -248,7 +328,9 @@ function New-BaselineReport {
   $ipconfigText = Get-CmdText -Command 'ipconfig /all' -StepName "NETWORK_IPCONFIG"
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "NETWORK_STATE" -Name "ipconfig_all.txt" -Text $ipconfigText
   [void]$artifactPaths.Add($p); $artifactMap['ipconfig_all'] = $p
-  $netstatText = Get-CmdText -Command 'netstat -abno' -StepName "NETWORK_NETSTAT"
+  $netstatBundle = Get-NetstatCaptureBundle -IsElevated $isElevated
+  $netstatText = $netstatBundle.OwnerAwareText
+  $State.NetstatOwnerAwareStatus = $netstatBundle.OwnerAwareStatus
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "NETWORK_STATE" -Name "netstat_abno.txt" -Text $netstatText
   [void]$artifactPaths.Add($p); $artifactMap['netstat_abno'] = $p
   $structuredNetText = Get-BaselineNetText
@@ -264,6 +346,12 @@ function New-BaselineReport {
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "NETWORK_STATE" -Name "arp_a.txt" -Text $arpText
   [void]$artifactPaths.Add($p); $artifactMap['arp_a'] = $p
   $networkParts = @($ipconfigText, "", $netstatText, "", $structuredNetText, "", $dnsText, "", $routeText, "", $arpText)
+  if ($netstatBundle.PidOnlyText) {
+    $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "NETWORK_STATE" -Name "netstat_ano_supplemental.txt" -Text $netstatBundle.PidOnlyText
+    [void]$artifactPaths.Add($p); $artifactMap['netstat_ano_supplemental'] = $p; $State.NetstatPidOnlyPath = $p
+    $networkParts += ""
+    $networkParts += $netstatBundle.PidOnlyText
+  }
   if ($ToolMap['tcpvcon']) {
     $tcpvconText = Invoke-ToolToText -ToolPath $ToolMap['tcpvcon'] -Arguments @('-accepteula','-nobanner') -StepName "SYSINTERNALS_TCPVCON"
     $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "NETWORK_STATE" -Name "tcpvcon.txt" -Text $tcpvconText
@@ -313,10 +401,10 @@ function New-BaselineReport {
   $securityIds = @(4624,4625,4634,4647,4648,4672,4688,4697,4698)
   $securityText = Get-EventText -Channel "Security" -WindowHours $Hours -Ids $securityIds -Take $MaxEvents
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "EVENT_TIMELINE_TEXT" -Name "security_filtered.txt" -Text $securityText
-  [void]$artifactPaths.Add($p); $artifactMap['security_filtered'] = $p
+  [void]$artifactPaths.Add($p); $artifactMap['security_filtered'] = $p; $State.SecurityFilteredPath = $p
   $securityHighSignalText = Get-SecurityHighSignalSummaryText -WindowHours $Hours -Take ([Math]::Min($MaxEvents, 200))
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "EVENT_TIMELINE_TEXT" -Name "security_high_signal_summary.txt" -Text $securityHighSignalText
-  [void]$artifactPaths.Add($p); $artifactMap['security_high_signal_summary'] = $p
+  [void]$artifactPaths.Add($p); $artifactMap['security_high_signal_summary'] = $p; $State.SecurityHighSignalSummaryPath = $p
   $psOpText = Get-EventText -Channel "Microsoft-Windows-PowerShell/Operational" -WindowHours $Hours -Take $MaxEvents
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "EVENT_TIMELINE_TEXT" -Name "powershell_operational_filtered.txt" -Text $psOpText
   [void]$artifactPaths.Add($p); $artifactMap['powershell_operational_filtered'] = $p
@@ -376,6 +464,12 @@ function New-MetadataReport {
       "RunRoot=$($State.RunRoot)"
       "BaselineReport=$($State.BaselineReportPath)"
       "MetadataReport=$($State.MetadataReportPath)"
+      "ExecutionContext=$($State.ExecutionContextPath)"
+      "SecurityAuditPolicy=$($State.SecurityAuditPolicyPath)"
+      "SecurityFiltered=$($State.SecurityFilteredPath)"
+      "SecurityHighSignalSummary=$($State.SecurityHighSignalSummaryPath)"
+      "NetstatOwnerAwareStatus=$($State.NetstatOwnerAwareStatus)"
+      "NetstatPidOnlyPath=$($State.NetstatPidOnlyPath)"
       "CollectBundle=$($State.CollectBundlePath)"
       "UploadSummary=$($State.UploadSummaryPath)"
       "AttachmentBudgetManifest=$($State.UploadBudgetManifestPath)"
