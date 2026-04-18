@@ -48,6 +48,7 @@ try {
         MetadataReportPath = $metadataReportPath
         UploadSummaryPath = $null
         UploadBudgetManifestPath = $null
+        AnalystOverviewPath = $null
         DefaultGeminiUploadSetStatus = $null
         CollectBundlePath = $null
         CollectionScopePath = $null
@@ -76,14 +77,16 @@ try {
       $state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath
       $state.UploadBudgetManifestPath = $uploadArtifacts.UploadManifestPath
       $state.DefaultGeminiUploadSetStatus = $uploadArtifacts.DefaultSetStatus
+      $state.AnalystOverviewPath = New-AnalystOverviewArtifact -State $state -Baseline $baseline
 
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
 
       $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $null
+        analyst_overview = $state.AnalystOverviewPath
         upload_summary = $state.UploadSummaryPath
         attachment_budget_manifest = $state.UploadBudgetManifestPath
         default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
@@ -99,6 +102,7 @@ try {
       $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId) -Paths @(
         $baselineReportPath,
         $metadataReportPath,
+        $state.AnalystOverviewPath,
         $state.UploadSummaryPath,
         $state.UploadBudgetManifestPath,
         $state.CollectionScopePath,
@@ -117,9 +121,10 @@ try {
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
       [void](New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $bundlePath
+        analyst_overview = $state.AnalystOverviewPath
         upload_summary = $state.UploadSummaryPath
         attachment_budget_manifest = $state.UploadBudgetManifestPath
         default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
@@ -142,6 +147,7 @@ try {
       Write-Output ("RUN_ID={0}" -f $RunId)
       Write-Output ("BASELINE_REPORT_PATH={0}" -f $baselineReportPath)
       Write-Output ("METADATA_REPORT_PATH={0}" -f $metadataReportPath)
+      Write-Output ("ANALYST_OVERVIEW_PATH={0}" -f $state.AnalystOverviewPath)
       Write-Output ("UPLOAD_SUMMARY_PATH={0}" -f $state.UploadSummaryPath)
       Write-Output ("ATTACHMENT_BUDGET_MANIFEST_PATH={0}" -f $state.UploadBudgetManifestPath)
       Write-Output ("COLLECTION_SCOPE_PATH={0}" -f $state.CollectionScopePath)
@@ -154,7 +160,7 @@ try {
       Write-Output ('NEXT_GET_FILE=get-file --path "{0}" --comment "Retrieve DCOIR collect bundle"' -f $bundlePath)
       Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
       Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
-      Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices before the full baseline report. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
+      Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer ANALYST_OVERVIEW_PATH, UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices before the full baseline report. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
       foreach ($collectorError in @($Global:CollectorErrors)) {
         if (-not [string]::IsNullOrWhiteSpace([string]$collectorError)) {
           Write-Output ("COLLECTOR_ERROR={0}" -f $collectorError)
