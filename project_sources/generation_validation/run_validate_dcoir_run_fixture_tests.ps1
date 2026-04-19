@@ -21,20 +21,14 @@ function Write-Text {
 
 function New-BundleZip {
   param([string]$ZipPath,[string[]]$Paths)
-  Add-Type -AssemblyName System.IO.Compression.FileSystem
   if (Test-Path -LiteralPath $ZipPath) {
     Remove-Item -LiteralPath $ZipPath -Force
   }
-  $zip = [System.IO.Compression.ZipFile]::Open($ZipPath, [System.IO.Compression.ZipArchiveMode]::Create)
-  try {
-    foreach ($path in $Paths) {
-      if ($path -and (Test-Path -LiteralPath $path)) {
-        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $path, (Split-Path -Leaf $path)) | Out-Null
-      }
-    }
-  } finally {
-    $zip.Dispose()
+  $existingPaths = @($Paths | Where-Object { $_ -and (Test-Path -LiteralPath $_) })
+  if (@($existingPaths).Count -eq 0) {
+    throw "No input paths were available to create fixture zip: $ZipPath"
   }
+  Compress-Archive -LiteralPath $existingPaths -DestinationPath $ZipPath -Force
 }
 
 function New-FixtureRun {
