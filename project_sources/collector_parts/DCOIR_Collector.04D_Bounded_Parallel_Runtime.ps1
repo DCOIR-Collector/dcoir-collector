@@ -1,13 +1,68 @@
+<#
+.SYNOPSIS
+DCOIR collector bounded parallel runtime helpers.
+
+.DESCRIPTION
+Implements the bounded Windows PowerShell 5.1-safe parallel baseline runtime, including
+worker definitions, cache initialization, overlap proof generation, and serial fallback
+behavior for steps that are not safely satisfied by worker output.
+
+.FILE NAME
+DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1
+
+.INPUTS
+Collector state hashtable, baseline worker definitions, command strings, step names,
+and allowed exit-code lists.
+
+.OUTPUTS
+Worker proof artifacts, cached command output text, collector notes/errors, and serial
+or cached command text returned to the caller.
+#>
+
 $Global:ParallelBaselineCommandCache = @{}
 $Global:ParallelBaselineWorkerArtifacts = New-Object System.Collections.ArrayList
 $Global:ParallelExecutionProofPath = $null
 
+<#
+.SYNOPSIS
+Resets all bounded parallel runtime caches and proof paths.
+
+.DESCRIPTION
+Clears the worker command cache, worker artifact list, and proof path so a collect run
+starts with a clean bounded-parallel-runtime state.
+
+.FUNCTION NAME
+Reset-ParallelBaselineCache
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Resets global parallel-runtime state.
+#>
 function Reset-ParallelBaselineCache {
   $Global:ParallelBaselineCommandCache = @{}
   $Global:ParallelBaselineWorkerArtifacts = New-Object System.Collections.ArrayList
   $Global:ParallelExecutionProofPath = $null
 }
 
+<#
+.SYNOPSIS
+Runs one command serially and returns its combined text output.
+
+.DESCRIPTION
+Calls the standard cmd capture helper for a single step and returns the combined stdout,
+stderr, command, and exit-code text surface.
+
+.FUNCTION NAME
+Get-SerialCmdText
+
+.INPUTS
+Command string, StepName string, and optional allowed exit-code list.
+
+.OUTPUTS
+String containing the combined captured process output.
+#>
 function Get-SerialCmdText {
   param(
     [string]$Command,
@@ -18,6 +73,23 @@ function Get-SerialCmdText {
   return (Get-CombinedProcessOutput -Result $result)
 }
 
+<#
+.SYNOPSIS
+Returns the bounded parallel baseline worker definitions.
+
+.DESCRIPTION
+Defines the small, read-only worker groups that can run in parallel during collect mode,
+including their step names, command strings, and allowed exit codes.
+
+.FUNCTION NAME
+Get-ParallelBaselineWorkerDefinitions
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+Array of ordered worker-definition hashtables.
+#>
 function Get-ParallelBaselineWorkerDefinitions {
   return @(
     [ordered]@{
@@ -52,6 +124,26 @@ function Get-ParallelBaselineWorkerDefinitions {
   )
 }
 
+<#
+.SYNOPSIS
+Initializes the bounded parallel baseline runtime for a collect run.
+
+.DESCRIPTION
+Resets the global cache, starts the bounded worker jobs during collect mode, harvests
+successful worker output into the cache, writes the overlap-proof artifact, records
+fallback notes for unsuccessful worker steps, and cleans up the background jobs.
+
+.FUNCTION NAME
+Initialize-ParallelBaselineCache
+
+.INPUTS
+Collector state hashtable used to locate the artifacts directory and store the proof
+artifact path.
+
+.OUTPUTS
+No direct return value. Updates global cache state, proof artifacts, and collector
+notes/errors.
+#>
 function Initialize-ParallelBaselineCache {
   param([hashtable]$State)
 
@@ -229,6 +321,24 @@ function Initialize-ParallelBaselineCache {
   }
 }
 
+<#
+.SYNOPSIS
+Returns cached worker output when available or runs the command serially.
+
+.DESCRIPTION
+Looks for the requested step name in the bounded parallel baseline command cache and
+returns that cached text when present. If no cached result exists, it falls back to the
+standard serial command capture path.
+
+.FUNCTION NAME
+Get-CmdText
+
+.INPUTS
+Command string, StepName string, and optional allowed exit-code list.
+
+.OUTPUTS
+String containing cached worker text or combined serial command output.
+#>
 function Get-CmdText {
   param(
     [string]$Command,
