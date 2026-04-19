@@ -1,3 +1,45 @@
+<#
+.SYNOPSIS
+DCOIR collector targeted-collection and feature-wave helper functions.
+
+.DESCRIPTION
+Builds the targeted-collection scope and analyst plan artifacts, emits the bounded
+parallelism assessment, and creates synthetic chunk-validation artifacts used by the
+feature-wave collection and upload-surface regression paths.
+
+.FILE NAME
+DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1
+
+.INPUTS
+Collector state and baseline hashtables, targeted-collection globals such as
+WindowStart, WindowEnd, FocusProcess, FocusPath, FocusIndicator, UserReport,
+IncludeArtifactCategory, Hours, and validation-specific synthetic chunking settings.
+
+.OUTPUTS
+Ordered scope objects, analyst-facing text artifacts, chunk-manifest data, and updates
+to the baseline artifact map and report builder.
+#>
+
+<#
+.SYNOPSIS
+Builds the targeted-collection scope object for the current run.
+
+.DESCRIPTION
+Normalizes the current targeted-collection inputs into one ordered object that records
+whether targeted mode is enabled, whether an explicit time window or focus context was
+supplied, which artifact categories were requested, and the current implementation
+boundary for the feature.
+
+.FUNCTION NAME
+Get-TargetedCollectionScopeObject
+
+.INPUTS
+Collector state hashtable plus targeted-collection globals already bound in the current
+collector runtime.
+
+.OUTPUTS
+Ordered hashtable describing the targeted-collection scope for the current run.
+#>
 function Get-TargetedCollectionScopeObject {
   param([hashtable]$State)
 
@@ -24,6 +66,24 @@ function Get-TargetedCollectionScopeObject {
   }
 }
 
+<#
+.SYNOPSIS
+Renders the targeted-collection scope object into analyst-facing text.
+
+.DESCRIPTION
+Transforms the normalized scope object into a durable text artifact that records the
+requested time window, focus indicators, included artifact categories, and current
+implementation boundary for targeted collection.
+
+.FUNCTION NAME
+Get-TargetedCollectionScopeText
+
+.INPUTS
+Scope hashtable previously returned by Get-TargetedCollectionScopeObject.
+
+.OUTPUTS
+String containing the targeted-collection scope text artifact.
+#>
 function Get-TargetedCollectionScopeText {
   param([hashtable]$Scope)
 
@@ -47,6 +107,24 @@ function Get-TargetedCollectionScopeText {
   return ($lines -join [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Builds the analyst-facing targeted-collection plan text.
+
+.DESCRIPTION
+Turns the current target profile, time-window context, and focus inputs into explicit
+prioritized-evidence guidance and analyst notes so a narrow incident can be reviewed
+without defaulting immediately to the full monolithic baseline report.
+
+.FUNCTION NAME
+Get-TargetedCollectionPlanText
+
+.INPUTS
+Scope hashtable previously returned by Get-TargetedCollectionScopeObject.
+
+.OUTPUTS
+String containing the targeted-collection plan text artifact.
+#>
 function Get-TargetedCollectionPlanText {
   param([hashtable]$Scope)
 
@@ -118,6 +196,24 @@ function Get-TargetedCollectionPlanText {
   return ($lines -join [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Returns the current bounded-parallel-runtime assessment text.
+
+.DESCRIPTION
+Builds a durable analyst-facing summary of the current parallel runtime implementation,
+including implemented worker groups, safety guardrails, still-serial areas, and the
+expected validation posture for proving overlap and deterministic output.
+
+.FUNCTION NAME
+Get-CollectorParallelismAssessmentText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing the current collector parallelism assessment text.
+#>
 function Get-CollectorParallelismAssessmentText {
   $lines = @()
   $lines += "COLLECTOR_PARALLELISM_ASSESSMENT"
@@ -147,6 +243,25 @@ function Get-CollectorParallelismAssessmentText {
   return ($lines -join [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Builds the analyst-overview artifact for a collect run.
+
+.DESCRIPTION
+Creates a compact analyst-first overview that points reviewers to the upload summary,
+metadata, follow-up queue, high-signal summaries, and other review-first artifacts so
+local or Gemini-facing triage can start with the smaller surface before the full merged
+baseline report.
+
+.FUNCTION NAME
+New-AnalystOverviewArtifact
+
+.INPUTS
+Collector state hashtable and the baseline result hashtable that contains ArtifactMap.
+
+.OUTPUTS
+String path to the written analyst-overview artifact.
+#>
 function New-AnalystOverviewArtifact {
   param([hashtable]$State,[hashtable]$Baseline)
 
@@ -197,6 +312,24 @@ function New-AnalystOverviewArtifact {
   return $overviewPath
 }
 
+<#
+.SYNOPSIS
+Reads the synthetic oversize-artifact size requested for validation.
+
+.DESCRIPTION
+Looks for the process-scoped validation environment variable and returns a positive
+integer size in KB when present. Returns zero when no valid request exists.
+
+.FUNCTION NAME
+Get-ValidationSyntheticOversizeArtifactKB
+
+.INPUTS
+No direct parameters. Uses the process environment variable
+DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB.
+
+.OUTPUTS
+Integer number of KB requested for the synthetic oversize validation artifact.
+#>
 function Get-ValidationSyntheticOversizeArtifactKB {
   $raw = [Environment]::GetEnvironmentVariable('DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB', 'Process')
   if ([string]::IsNullOrWhiteSpace($raw)) { return 0 }
@@ -205,6 +338,23 @@ function Get-ValidationSyntheticOversizeArtifactKB {
   return 0
 }
 
+<#
+.SYNOPSIS
+Builds the synthetic oversize validation payload text.
+
+.DESCRIPTION
+Creates a deterministic multiline payload that grows until it reaches or exceeds the
+requested size so chunking and reconstruction metadata can be validated repeatably.
+
+.FUNCTION NAME
+New-SyntheticOversizeArtifactText
+
+.INPUTS
+RequestedKB integer describing the desired source artifact size.
+
+.OUTPUTS
+String containing the synthetic oversize payload text.
+#>
 function New-SyntheticOversizeArtifactText {
   param([int]$RequestedKB)
 
@@ -222,6 +372,23 @@ function New-SyntheticOversizeArtifactText {
   return $sb.ToString()
 }
 
+<#
+.SYNOPSIS
+Writes an artifact without altering the provided text bytes through section rendering.
+
+.DESCRIPTION
+Creates the target artifact filename using the baseline prefix and safe section/name
+rules, then writes the exact UTF-8-no-BOM text payload to disk.
+
+.FUNCTION NAME
+Write-ArtifactTextExact
+
+.INPUTS
+ArtifactsDir, Section, Name, and the exact text payload to write.
+
+.OUTPUTS
+String path to the written artifact.
+#>
 function Write-ArtifactTextExact {
   param(
     [string]$ArtifactsDir,
@@ -240,6 +407,25 @@ function Write-ArtifactTextExact {
   return $path
 }
 
+<#
+.SYNOPSIS
+Splits a synthetic validation text artifact into deterministic chunks.
+
+.DESCRIPTION
+Reads the source text artifact, writes sequential chunk files that stay near the target
+chunk size, and returns the chunk paths, sizes, count, and reconstruction guidance.
+
+.FUNCTION NAME
+Split-ValidationTextArtifactIntoChunks
+
+.INPUTS
+SourcePath for the source artifact, ArtifactsDir for output, RequestedKB for naming,
+and TargetChunkKB for the desired chunk size.
+
+.OUTPUTS
+Hashtable containing chunk paths, sizes, count, target chunk size, and reconstruction
+order text.
+#>
 function Split-ValidationTextArtifactIntoChunks {
   param(
     [string]$SourcePath,
@@ -288,6 +474,24 @@ function Split-ValidationTextArtifactIntoChunks {
   }
 }
 
+<#
+.SYNOPSIS
+Creates the synthetic oversize validation artifacts and manifest set.
+
+.DESCRIPTION
+Writes the synthetic source artifact, splits it into chunk files, writes the chunk-path
+and chunk-manifest JSON artifacts, updates the collector state and baseline artifact
+maps, and appends a validation summary to the baseline report.
+
+.FUNCTION NAME
+New-SyntheticOversizeChunkValidationArtifacts
+
+.INPUTS
+Collector state hashtable, baseline result hashtable, and RequestedKB integer.
+
+.OUTPUTS
+No direct return value. Updates state, baseline artifact maps, and report content.
+#>
 function New-SyntheticOversizeChunkValidationArtifacts {
   param([hashtable]$State,[hashtable]$Baseline,[int]$RequestedKB)
 
@@ -333,6 +537,25 @@ function New-SyntheticOversizeChunkValidationArtifacts {
   Add-CollectorNote ('Synthetic oversized validation artifact and chunk set were emitted for collector chunking regression at {0} KB.' -f $RequestedKB)
 }
 
+<#
+.SYNOPSIS
+Applies feature-wave collection enhancements to the current baseline run.
+
+.DESCRIPTION
+Creates the targeted-collection scope and plan artifacts, emits the bounded parallelism
+assessment, optionally generates synthetic chunk-validation artifacts, and appends the
+resulting artifacts and notes to the baseline report and artifact map.
+
+.FUNCTION NAME
+Apply-FeatureWaveCollectEnhancements
+
+.INPUTS
+Collector state hashtable and baseline result hashtable.
+
+.OUTPUTS
+No direct return value. Updates state, baseline artifact maps, report content, and
+collector notes/recommendations.
+#>
 function Apply-FeatureWaveCollectEnhancements {
   param([hashtable]$State,[hashtable]$Baseline)
 
