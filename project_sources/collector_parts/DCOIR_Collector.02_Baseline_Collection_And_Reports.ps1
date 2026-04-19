@@ -1,3 +1,42 @@
+<#
+.SYNOPSIS
+DCOIR collector baseline collection and reporting helpers.
+
+.DESCRIPTION
+Builds the baseline collection surface, including execution-context and audit-policy
+artifacts, host, identity, process, network, persistence, security, and event-log
+artifacts, plus the analyst-facing baseline report, metadata report, upload summary, and
+attachment-budget manifest.
+
+.FILE NAME
+DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1
+
+.INPUTS
+Collector state and tool-map hashtables, current tier and hour settings, artifact paths,
+and collector-global notes, errors, recommendations, and targeted runtime settings.
+
+.OUTPUTS
+Baseline and metadata report text, upload-summary artifacts, attachment-budget manifest
+artifacts, and helper return values used by the collector runtime.
+#>
+
+<#
+.SYNOPSIS
+Returns the Gemini upload budget thresholds used by the collector.
+
+.DESCRIPTION
+Defines the hard and safe per-file and total-size thresholds used to decide whether the
+recommended Gemini upload set fits comfortably within the environment budget.
+
+.FUNCTION NAME
+Get-CollectorUploadBudget
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+Hashtable containing hard and safe per-file and total-size budget values in KB.
+#>
 function Get-CollectorUploadBudget {
   return @{
     HardPerFileKB = 1000
@@ -7,17 +46,68 @@ function Get-CollectorUploadBudget {
   }
 }
 
+<#
+.SYNOPSIS
+Returns the size of one file in KB.
+
+.DESCRIPTION
+Checks whether the file exists and returns a rounded-up KB size for the file. Returns
+zero when the path does not exist.
+
+.FUNCTION NAME
+Get-FileSizeKB
+
+.INPUTS
+Path string for the file to inspect.
+
+.OUTPUTS
+Integer file size in KB.
+#>
 function Get-FileSizeKB {
   param([string]$Path)
   if (-not (Test-Path -LiteralPath $Path)) { return 0 }
   return [int][Math]::Ceiling(((Get-Item -LiteralPath $Path).Length) / 1KB)
 }
 
+<#
+.SYNOPSIS
+Converts one object into safe JSON text for artifact writing.
+
+.DESCRIPTION
+Serializes the supplied object with a high JSON depth and appends a trailing newline so
+artifact JSON text files remain stable and readable.
+
+.FUNCTION NAME
+Convert-ToSafeJsonText
+
+.INPUTS
+InputObject to serialize.
+
+.OUTPUTS
+String containing newline-terminated JSON text.
+#>
 function Convert-ToSafeJsonText {
   param([object]$InputObject)
   return (($InputObject | ConvertTo-Json -Depth 12) + [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Determines whether the current collector context is elevated.
+
+.DESCRIPTION
+Queries the current Windows identity and returns true when the current principal is in
+the local Administrators role. Returns false on any lookup error.
+
+.FUNCTION NAME
+Test-CollectorIsElevated
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+Boolean indicating whether the current collector context is elevated.
+#>
 function Test-CollectorIsElevated {
   try {
     $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
@@ -28,6 +118,24 @@ function Test-CollectorIsElevated {
   }
 }
 
+<#
+.SYNOPSIS
+Builds the execution-context text artifact.
+
+.DESCRIPTION
+Collects the current user, elevation state, host, process, PowerShell version, and
+working-directory context, then adds a short diagnostic note describing the expected
+visibility posture for elevated versus non-elevated collection.
+
+.FUNCTION NAME
+Get-CollectorExecutionContextText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing the execution-context text artifact.
+#>
 function Get-CollectorExecutionContextText {
   $isElevated = Test-CollectorIsElevated
   $identityName = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
@@ -48,11 +156,47 @@ function Get-CollectorExecutionContextText {
   return ($lines -join [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Collects the audit-policy text artifact.
+
+.DESCRIPTION
+Runs auditpol for the key Security auditing subcategories and returns the combined
+captured output text.
+
+.FUNCTION NAME
+Get-SecurityAuditPolicyText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing the combined audit-policy command output.
+#>
 function Get-SecurityAuditPolicyText {
   $result = Invoke-CmdCapture -Command 'auditpol /get /subcategory:"Logon","Logoff","Special Logon","Process Creation"' -StepName 'SECURITY_AUDIT_POLICY' -AllowedExitCodes @(0)
   return (Get-CombinedProcessOutput -Result $result)
 }
 
+<#
+.SYNOPSIS
+Builds the netstat capture bundle for the current run.
+
+.DESCRIPTION
+Attempts owner-aware netstat capture first, classifies elevation-required or other
+failure modes, optionally captures a PID-only supplemental netstat surface, and returns
+both text surfaces plus the owner-aware capture status.
+
+.FUNCTION NAME
+Get-NetstatCaptureBundle
+
+.INPUTS
+IsElevated boolean describing the current collector context.
+
+.OUTPUTS
+Hashtable containing owner-aware text, owner-aware status, owner-aware exit code, and
+optional PID-only text.
+#>
 function Get-NetstatCaptureBundle {
   param([bool]$IsElevated)
 
@@ -83,6 +227,25 @@ function Get-NetstatCaptureBundle {
   }
 }
 
+<#
+.SYNOPSIS
+Creates the collect upload summary and attachment-budget manifest.
+
+.DESCRIPTION
+Selects the default analyst-first Gemini upload set, evaluates it against the safe and
+hard environment budgets, writes the upload summary text and JSON manifest, and returns
+the key status values to the caller.
+
+.FUNCTION NAME
+New-CollectUploadArtifacts
+
+.INPUTS
+Collector state hashtable and baseline result hashtable containing the artifact map.
+
+.OUTPUTS
+Hashtable containing upload-summary path, manifest path, default-set status, total KB,
+and recommended file count.
+#>
 function New-CollectUploadArtifacts {
   param([hashtable]$State,[hashtable]$Baseline)
 
@@ -182,6 +345,24 @@ function New-CollectUploadArtifacts {
   }
 }
 
+<#
+.SYNOPSIS
+Builds the Tier 2 persistence deep-check text surface.
+
+.DESCRIPTION
+Collects Tier 2-only registry, WMI persistence, share, session, and firewall text
+artifacts, writes each one to disk, and returns the combined text surface for report
+inclusion.
+
+.FUNCTION NAME
+Get-Tier2PersistenceText
+
+.INPUTS
+Collector state hashtable and ToolMap hashtable.
+
+.OUTPUTS
+String containing the combined Tier 2 persistence and deep-check text surface.
+#>
 function Get-Tier2PersistenceText {
   param([hashtable]$State,[hashtable]$ToolMap)
 
@@ -223,6 +404,24 @@ function Get-Tier2PersistenceText {
   return $sb.ToString()
 }
 
+<#
+.SYNOPSIS
+Builds the baseline report and baseline artifact set.
+
+.DESCRIPTION
+Collects the baseline artifact families, writes them to disk, appends them into the
+main baseline report, emits analyst follow-up recommendations, and returns the report
+builder plus artifact path and map structures.
+
+.FUNCTION NAME
+New-BaselineReport
+
+.INPUTS
+Collector state hashtable and ToolMap hashtable.
+
+.OUTPUTS
+Hashtable containing ReportBuilder, ReportText, ArtifactPaths, and ArtifactMap.
+#>
 function New-BaselineReport {
   param([hashtable]$State,[hashtable]$ToolMap)
 
@@ -449,6 +648,23 @@ function New-BaselineReport {
   }
 }
 
+<#
+.SYNOPSIS
+Builds the metadata report for a collect run.
+
+.DESCRIPTION
+Creates the post-collect metadata report with run-summary paths, tool availability,
+notes, errors, recommendations, and analyst workflow guidance.
+
+.FUNCTION NAME
+New-MetadataReport
+
+.INPUTS
+Collector state hashtable and ToolMap hashtable.
+
+.OUTPUTS
+String containing the metadata report text.
+#>
 function New-MetadataReport {
   param([hashtable]$State,[hashtable]$ToolMap)
 
@@ -515,6 +731,22 @@ function New-MetadataReport {
   return $sb.ToString()
 }
 
+<#
+.SYNOPSIS
+Writes one report file to disk.
+
+.DESCRIPTION
+Writes the supplied text to the target report path using UTF-8 encoding.
+
+.FUNCTION NAME
+Write-ReportFile
+
+.INPUTS
+Path string for the output file and Text string to write.
+
+.OUTPUTS
+No direct output. Writes the report file as a side effect.
+#>
 function Write-ReportFile {
   param([string]$Path,[string]$Text)
   Set-Content -Path $Path -Value $Text -Encoding UTF8
