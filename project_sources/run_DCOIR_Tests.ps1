@@ -1,3 +1,24 @@
+<#
+.SYNOPSIS
+DCOIR collector harness and regression runner.
+
+.DESCRIPTION
+Executes the collector through bounded validation suites, captures per-step logs and
+summaries, verifies output contracts and failure gates, and writes machine-readable and
+human-readable summary artifacts for regression review.
+
+.FILE NAME
+run_DCOIR_Tests.ps1
+
+.INPUTS
+Suite selection, collector path, output root, master ZIP path, live-response mode flag,
+attachment-budget thresholds, and cleanup/continue-on-error switches.
+
+.OUTPUTS
+Per-step harness logs, suite summary text and JSON, and the collector executions that
+those validation suites drive.
+#>
+
 param(
   [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","ChunkingOversizeArtifact","ChunkingReconstructionMetadata","MajorVersion","FullRegression","FailureGates")]
   [string]$Suite = "Core",
@@ -53,6 +74,22 @@ $script:CollectorRunId = $null
 $script:CollectorSessionId = $null
 $script:Results = New-Object System.Collections.ArrayList
 
+<#
+.SYNOPSIS
+Ensures that one directory exists.
+
+.DESCRIPTION
+Creates the requested directory path when it does not already exist.
+
+.FUNCTION NAME
+Ensure-Directory
+
+.INPUTS
+Path string.
+
+.OUTPUTS
+No direct output. Creates the directory as a side effect.
+#>
 function Ensure-Directory {
   param([string]$Path)
   if (-not (Test-Path -LiteralPath $Path)) {
@@ -60,6 +97,23 @@ function Ensure-Directory {
   }
 }
 
+<#
+.SYNOPSIS
+Parses one KEY=value line from collector or harness output text.
+
+.DESCRIPTION
+Finds the first line matching the supplied key and returns the trimmed value portion.
+Returns null when the key is absent.
+
+.FUNCTION NAME
+Parse-OutputValue
+
+.INPUTS
+Text string and Key string.
+
+.OUTPUTS
+String value or null.
+#>
 function Parse-OutputValue {
   param([string]$Text,[string]$Key)
   $pattern = '(?m)^{0}=(.+)$' -f [regex]::Escape($Key)
@@ -68,6 +122,23 @@ function Parse-OutputValue {
   return $null
 }
 
+<#
+.SYNOPSIS
+Writes one harness log file.
+
+.DESCRIPTION
+Ensures the logs directory exists, writes the supplied lines to a named step log, and
+returns the log path.
+
+.FUNCTION NAME
+Write-HarnessLog
+
+.INPUTS
+StepName string and Lines string array.
+
+.OUTPUTS
+String log-file path.
+#>
 function Write-HarnessLog {
   param([string]$StepName,[string[]]$Lines)
   Ensure-Directory -Path $LogsDir
@@ -76,6 +147,24 @@ function Write-HarnessLog {
   return $logPath
 }
 
+<#
+.SYNOPSIS
+Adds one result row to the harness results collection.
+
+.DESCRIPTION
+Normalizes the supplied execution metadata into one PSCustomObject and appends it to the
+in-memory results list used by the suite summary outputs.
+
+.FUNCTION NAME
+Add-Result
+
+.INPUTS
+StepName, Status, ExitCode, RunId, EnrichSessionId, CollectorReportedStatus, LogPath,
+Start, and End values.
+
+.OUTPUTS
+No direct output. Appends one result object to the in-memory results list.
+#>
 function Add-Result {
   param(
     [string]$StepName,
@@ -102,6 +191,23 @@ function Add-Result {
   })
 }
 
+<#
+.SYNOPSIS
+Quotes one argument value for process invocation display.
+
+.DESCRIPTION
+Returns an empty quoted string for null input and quotes values containing whitespace or
+quotes.
+
+.FUNCTION NAME
+Quote-Arg
+
+.INPUTS
+Value string.
+
+.OUTPUTS
+String safe-for-display argument token.
+#>
 function Quote-Arg {
   param([string]$Value)
   if ($null -eq $Value) { return '""' }
@@ -111,6 +217,22 @@ function Quote-Arg {
   return $Value
 }
 
+<#
+.SYNOPSIS
+Builds one display argument string from an argument array.
+
+.DESCRIPTION
+Quotes each argument with Quote-Arg and joins the resulting tokens with spaces.
+
+.FUNCTION NAME
+Build-ArgumentString
+
+.INPUTS
+ArgumentValues string array.
+
+.OUTPUTS
+String joined argument list.
+#>
 function Build-ArgumentString {
   param([string[]]$ArgumentValues)
   $parts = New-Object System.Collections.ArrayList
@@ -120,6 +242,23 @@ function Build-ArgumentString {
   return ($parts -join ' ')
 }
 
+<#
+.SYNOPSIS
+Restores the working collector ZIP from the master ZIP.
+
+.DESCRIPTION
+Copies the master ZIP into the working ZIP path, logs the operation as a harness result,
+and throws if the master ZIP is missing.
+
+.FUNCTION NAME
+Restore-WorkingZip
+
+.INPUTS
+Reason string used in the harness step name.
+
+.OUTPUTS
+No direct output. Copies the ZIP and logs the result.
+#>
 function Restore-WorkingZip {
   param([string]$Reason)
   $stepName = "ZZ_RestoreWorkingZip_{0}" -f ($Reason -replace '[^A-Za-z0-9_-]','_')
@@ -137,6 +276,23 @@ function Restore-WorkingZip {
   Add-Result -StepName $stepName -Status $status -ExitCode 0 -RunId $null -EnrichSessionId $null -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
 }
 
+<#
+.SYNOPSIS
+Maps collector process status into harness step status.
+
+.DESCRIPTION
+Returns FAIL on nonzero exit code, PARTIAL_SUCCESS when the collector reported that
+status, and PASS otherwise.
+
+.FUNCTION NAME
+Resolve-CollectorStepStatus
+
+.INPUTS
+ExitCode integer and CollectorReportedStatus string.
+
+.OUTPUTS
+String harness status value.
+#>
 function Resolve-CollectorStepStatus {
   param([int]$ExitCode,[string]$CollectorReportedStatus)
   if ($ExitCode -ne 0) { return "FAIL" }
@@ -144,6 +300,25 @@ function Resolve-CollectorStepStatus {
   return "PASS"
 }
 
+<#
+.SYNOPSIS
+Runs one collector step through powershell.exe and captures its contract surface.
+
+.DESCRIPTION
+Builds the collector invocation, runs it, writes a per-step harness log, updates the
+tracked run/session identifiers, records the harness result, and returns the parsed
+collector contract values used by downstream verifiers.
+
+.FUNCTION NAME
+Invoke-CollectorStep
+
+.INPUTS
+Mandatory StepName string and CollectorArgs string array.
+
+.OUTPUTS
+PSCustomObject containing harness status, parsed collector contract fields, stdout text,
+and the step log path.
+#>
 function Invoke-CollectorStep {
   param(
     [Parameter(Mandatory=$true)][string]$StepName,
@@ -209,6 +384,23 @@ function Invoke-CollectorStep {
   }
 }
 
+<#
+.SYNOPSIS
+Runs one collector step with temporary environment overrides.
+
+.DESCRIPTION
+Applies the supplied process-scope environment overrides, invokes one collector step,
+and restores the previous environment values afterward.
+
+.FUNCTION NAME
+Invoke-CollectorStepWithEnvOverride
+
+.INPUTS
+Mandatory StepName string, CollectorArgs string array, and EnvOverrides hashtable.
+
+.OUTPUTS
+Collector step result object returned by Invoke-CollectorStep.
+#>
 function Invoke-CollectorStepWithEnvOverride {
   param(
     [Parameter(Mandatory=$true)][string]$StepName,
@@ -230,6 +422,24 @@ function Invoke-CollectorStepWithEnvOverride {
   }
 }
 
+<#
+.SYNOPSIS
+Runs one harness step that is expected to fail in a specific way.
+
+.DESCRIPTION
+Runs the collector directly, captures stdout and stderr, compares the result to the
+expected bind-reject or runtime-error outcome, checks for required text patterns, logs
+the result, and returns the harness result object.
+
+.FUNCTION NAME
+Invoke-ExpectedFailureStep
+
+.INPUTS
+Mandatory StepName, CollectorArgs, and ExpectedOutcome, plus optional ExpectedPatterns.
+
+.OUTPUTS
+PSCustomObject containing the observed failure behavior and harness log path.
+#>
 function Invoke-ExpectedFailureStep {
   param(
     [Parameter(Mandatory=$true)][string]$StepName,
@@ -325,6 +535,23 @@ function Invoke-ExpectedFailureStep {
   }
 }
 
+<#
+.SYNOPSIS
+Asserts that one collector step succeeded well enough for downstream verification.
+
+.DESCRIPTION
+Accepts PASS or PARTIAL_SUCCESS with exit code 0 and throws a detailed harness message
+otherwise.
+
+.FUNCTION NAME
+Assert-CollectorStepSucceeded
+
+.INPUTS
+StepName string and CollectorStep result object.
+
+.OUTPUTS
+No direct output. Throws when the collector step is not acceptable for downstream use.
+#>
 function Assert-CollectorStepSucceeded {
   param(
     [string]$StepName,
@@ -347,6 +574,23 @@ function Assert-CollectorStepSucceeded {
   throw $message
 }
 
+<#
+.SYNOPSIS
+Asserts that one collector step degraded in the expected partial-success way.
+
+.DESCRIPTION
+Requires exit code 0, collector-reported PARTIAL_SUCCESS, and the expected diagnostic
+patterns in stdout. Throws a detailed message when the degraded behavior is absent.
+
+.FUNCTION NAME
+Assert-CollectorStepDegradedPartial
+
+.INPUTS
+StepName string, CollectorStep result object, and ExpectedPatterns string array.
+
+.OUTPUTS
+No direct output. Throws when the expected degraded behavior is absent.
+#>
 function Assert-CollectorStepDegradedPartial {
   param(
     [string]$StepName,
@@ -378,6 +622,24 @@ function Assert-CollectorStepDegradedPartial {
   throw $message
 }
 
+<#
+.SYNOPSIS
+Verifies the collect output contract fields.
+
+.DESCRIPTION
+Checks that the collect step emitted the required post-run contract fields such as
+RUN_ID, NEXT_GET_FILE, cleanup command, delete-script command, and Gemini upload
+guidance.
+
+.FUNCTION NAME
+Invoke-CollectOutputContractVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the contract is incomplete.
+#>
 function Invoke-CollectOutputContractVerification {
   param([string]$StepName,[object]$CollectStep)
   $start = Get-Date
@@ -415,6 +677,23 @@ function Invoke-CollectOutputContractVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+<#
+.SYNOPSIS
+Verifies the open enrich-session output contract fields.
+
+.DESCRIPTION
+Checks that an enrich-start style step emitted the expected open-session contract values
+such as RUN_ID, ENRICH_SESSION_ID, NEXT_OPTIONS, and the delete-script command.
+
+.FUNCTION NAME
+Invoke-EnrichOpenOutputContractVerification
+
+.INPUTS
+StepName string and EnrichStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the contract is incomplete.
+#>
 function Invoke-EnrichOpenOutputContractVerification {
   param([string]$StepName,[object]$EnrichStep)
   $start = Get-Date
@@ -450,6 +729,23 @@ function Invoke-EnrichOpenOutputContractVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+<#
+.SYNOPSIS
+Verifies the finalized enrich-session output contract fields.
+
+.DESCRIPTION
+Checks that an enrich-finalize step emitted the expected finalized-session contract
+values such as RUN_ID, ENRICH_SESSION_ID, NEXT_GET_FILE, and the delete-script command.
+
+.FUNCTION NAME
+Invoke-EnrichFinalizedOutputContractVerification
+
+.INPUTS
+StepName string and EnrichStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the contract is incomplete.
+#>
 function Invoke-EnrichFinalizedOutputContractVerification {
   param([string]$StepName,[object]$EnrichStep)
   $start = Get-Date
@@ -485,6 +781,23 @@ function Invoke-EnrichFinalizedOutputContractVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+<#
+.SYNOPSIS
+Verifies the cleanup output contract fields.
+
+.DESCRIPTION
+Checks that the cleanup step emitted RUN_ID, a COMPLETE cleanup status, and the
+delete-script command.
+
+.FUNCTION NAME
+Invoke-CleanupOutputContractVerification
+
+.INPUTS
+StepName string and CleanupStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the contract is incomplete.
+#>
 function Invoke-CleanupOutputContractVerification {
   param([string]$StepName,[object]$CleanupStep)
   $start = Get-Date
@@ -518,6 +831,24 @@ function Invoke-CleanupOutputContractVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+<#
+.SYNOPSIS
+Verifies the attachment-budget manifest against the harness thresholds.
+
+.DESCRIPTION
+Reads the attachment-budget manifest, checks per-file and total-size values against the
+configured safe and hard thresholds, logs the result, and throws when the manifest is
+out of bounds.
+
+.FUNCTION NAME
+Invoke-AttachmentBudgetVerification
+
+.INPUTS
+StepName string and ManifestPath string.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the budget check fails.
+#>
 function Invoke-AttachmentBudgetVerification {
   param([string]$StepName,[string]$ManifestPath)
   $start = Get-Date
@@ -558,6 +889,24 @@ function Invoke-AttachmentBudgetVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+<#
+.SYNOPSIS
+Verifies enrich-session reuse behavior.
+
+.DESCRIPTION
+Checks that enrich-start created a new session, enrich-add reused the same session, and
+the recorded session-resolution modes match the expected model.
+
+.FUNCTION NAME
+Invoke-SessionBehaviorVerification
+
+.INPUTS
+StepName string, start/add session IDs, and start/add session-resolution modes.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the session behavior is
+incorrect.
+#>
 function Invoke-SessionBehaviorVerification {
   param([string]$StepName,[string]$StartSessionId,[string]$AddSessionId,[string]$StartMode,[string]$AddMode)
   $start = Get-Date
@@ -578,6 +927,25 @@ function Invoke-SessionBehaviorVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+<#
+.SYNOPSIS
+Verifies the targeted-collection artifact contract.
+
+.DESCRIPTION
+Checks that the targeted collect step emitted the collection scope, parallelism
+assessment, and targeted collection plan paths and that the artifacts contain the
+expected markers.
+
+.FUNCTION NAME
+Invoke-TargetedCollectionVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the targeted artifacts are
+missing or malformed.
+#>
 function Invoke-TargetedCollectionVerification {
   param([string]$StepName,[object]$CollectStep)
   $start = Get-Date
@@ -629,6 +997,24 @@ function Invoke-TargetedCollectionVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+<#
+.SYNOPSIS
+Verifies oversized-artifact chunking behavior.
+
+.DESCRIPTION
+Checks that the synthetic oversized artifact exceeded the hard per-file threshold, was
+split into multiple chunk files, and that each chunk stayed within the safe per-file
+budget.
+
+.FUNCTION NAME
+Invoke-ChunkingOversizeVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when chunking expectations fail.
+#>
 function Invoke-ChunkingOversizeVerification {
   param([string]$StepName,[object]$CollectStep)
   $start = Get-Date
@@ -679,6 +1065,25 @@ function Invoke-ChunkingOversizeVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+<#
+.SYNOPSIS
+Verifies chunk reconstruction metadata and exact rebuild behavior.
+
+.DESCRIPTION
+Checks that the chunk manifest describes reconstruction order, that the chunk list is
+consistent, and that concatenating the chunk files reproduces the original synthetic
+source artifact exactly.
+
+.FUNCTION NAME
+Invoke-ChunkingReconstructionVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when reconstruction expectations
+fail.
+#>
 function Invoke-ChunkingReconstructionVerification {
   param([string]$StepName,[object]$CollectStep)
   $start = Get-Date
@@ -734,6 +1139,23 @@ function Invoke-ChunkingReconstructionVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+<#
+.SYNOPSIS
+Writes the suite summary text and JSON files.
+
+.DESCRIPTION
+Builds the final summary text and JSON objects from the accumulated harness results and
+writes them into the current test-run output directory.
+
+.FUNCTION NAME
+Save-Summary
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Writes summary.txt and summary.json.
+#>
 function Save-Summary {
   Ensure-Directory -Path $RunOutputRoot
   $summaryTxtPath = Join-Path $RunOutputRoot "summary.txt"
@@ -772,6 +1194,23 @@ function Save-Summary {
   $summaryObj | ConvertTo-Json -Depth 6 | Set-Content -Path $summaryJsonPath -Encoding UTF8
 }
 
+<#
+.SYNOPSIS
+Runs the core validation suite.
+
+.DESCRIPTION
+Exercises the standard collect, enrich, finalize, and optional cleanup path plus the
+collect and finalized enrich output-contract verifiers.
+
+.FUNCTION NAME
+Run-CoreSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
 function Run-CoreSuite {
   Restore-WorkingZip -Reason "Core"
   $collect = Invoke-CollectorStep -StepName "01_CollectT1" -CollectorArgs @("-Quick","collect-t1")
@@ -790,6 +1229,22 @@ function Run-CoreSuite {
   }
 }
 
+<#
+.SYNOPSIS
+Runs the retrieval validation suite.
+
+.DESCRIPTION
+Exercises collect, raw-log enrich retrieval, finalize, and optional cleanup behavior.
+
+.FUNCTION NAME
+Run-RetrievalSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
 function Run-RetrievalSuite {
   Restore-WorkingZip -Reason "Retrieval"
   $collect = Invoke-CollectorStep -StepName "11_CollectT1" -CollectorArgs @("-Quick","collect-t1")
@@ -800,6 +1255,23 @@ function Run-RetrievalSuite {
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "14_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 }
 
+<#
+.SYNOPSIS
+Runs the quick-alias validation suite.
+
+.DESCRIPTION
+Exercises the supported quick enrich aliases against representative file, PID, service,
+registry, task, and pull-action inputs plus optional cleanup.
+
+.FUNCTION NAME
+Run-QuickAliasesSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
 function Run-QuickAliasesSuite {
   $sampleScriptPath = $CollectorFullPath
   $sampleBinaryPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
@@ -837,6 +1309,23 @@ function Run-QuickAliasesSuite {
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "46_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 }
 
+<#
+.SYNOPSIS
+Runs the session-behavior validation suite.
+
+.DESCRIPTION
+Exercises collect, enrich-start, enrich-add reuse behavior, finalize, and optional
+cleanup plus the enrich-open and session-reuse verifiers.
+
+.FUNCTION NAME
+Run-SessionBehaviorSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
 function Run-SessionBehaviorSuite {
   Restore-WorkingZip -Reason "SessionBehavior"
   $collect = Invoke-CollectorStep -StepName "51_CollectT1" -CollectorArgs @("-Quick","collect-t1")
@@ -851,6 +1340,23 @@ function Run-SessionBehaviorSuite {
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "55_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 }
 
+<#
+.SYNOPSIS
+Runs the targeted-collection validation suite.
+
+.DESCRIPTION
+Exercises the targeted popup quick path and verifies the targeted-collection artifact
+contract plus optional cleanup.
+
+.FUNCTION NAME
+Run-TargetedCollectionSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
 function Run-TargetedCollectionSuite {
   Restore-WorkingZip -Reason "TargetedCollection"
   $collect = Invoke-CollectorStep -StepName "61_CollectTargetedPopup" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","2026-04-08T08:45:00Z","-WindowEnd","2026-04-08T09:15:00Z")
@@ -860,6 +1366,23 @@ function Run-TargetedCollectionSuite {
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "62_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 }
 
+<#
+.SYNOPSIS
+Runs the oversized-artifact chunking validation suite.
+
+.DESCRIPTION
+Exercises collect with the synthetic oversized artifact environment override and verifies
+that the emitted chunk set satisfies the per-file budget expectations.
+
+.FUNCTION NAME
+Run-ChunkingOversizeArtifactSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
 function Run-ChunkingOversizeArtifactSuite {
   Restore-WorkingZip -Reason "ChunkingOversizeArtifact"
   $collect = Invoke-CollectorStepWithEnvOverride -StepName "71_CollectT1_SyntheticOversize" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB' = '2600' }
@@ -868,6 +1391,23 @@ function Run-ChunkingOversizeArtifactSuite {
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "72_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 }
 
+<#
+.SYNOPSIS
+Runs the chunk-reconstruction metadata validation suite.
+
+.DESCRIPTION
+Exercises collect with the synthetic oversized artifact environment override and verifies
+that the emitted reconstruction metadata can rebuild the original artifact exactly.
+
+.FUNCTION NAME
+Run-ChunkingReconstructionMetadataSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
 function Run-ChunkingReconstructionMetadataSuite {
   Restore-WorkingZip -Reason "ChunkingReconstructionMetadata"
   $collect = Invoke-CollectorStepWithEnvOverride -StepName "81_CollectT1_SyntheticOversizeReconstruction" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB' = '2600' }
@@ -876,6 +1416,23 @@ function Run-ChunkingReconstructionMetadataSuite {
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "82_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 }
 
+<#
+.SYNOPSIS
+Runs the failure-gates validation suite.
+
+.DESCRIPTION
+Exercises bind-reject, malformed quick input, and targeted explicit-window degradation
+cases plus the targeted-collection verifier and optional cleanup.
+
+.FUNCTION NAME
+Run-FailureGatesSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
 function Run-FailureGatesSuite {
   Restore-WorkingZip -Reason "FailureGates"
 
@@ -907,6 +1464,23 @@ function Run-FailureGatesSuite {
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "101_CleanupAfterInvertedWindow" -CollectorArgs @("-Quick","cleanup")) }
 }
 
+<#
+.SYNOPSIS
+Runs the major-version validation suite.
+
+.DESCRIPTION
+Executes the bounded group of suites that make up the current major-version validation
+surface.
+
+.FUNCTION NAME
+Run-MajorVersionSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite group.
+#>
 function Run-MajorVersionSuite {
   Run-CoreSuite
   Run-QuickAliasesSuite
