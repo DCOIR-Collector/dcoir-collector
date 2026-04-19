@@ -7,6 +7,7 @@ on:
       - 'project_sources/run_DCOIR_Tests.ps1'
       - 'project_sources/collector_parts/**'
       - 'project_sources/generation_validation/verify_collector_documentation_quality.py'
+      - 'project_sources/generation_validation/test_verify_collector_documentation_quality.py'
       - '.github/workflows/collector-documentation-quality.yml'
   workflow_dispatch:
 
@@ -30,6 +31,18 @@ jobs:
           python -m py_compile project_sources/generation_validation/verify_collector_documentation_quality.py
           if ($LASTEXITCODE -ne 0) {
             throw 'Documentation audit script syntax validation failed.'
+          }
+          python -m py_compile project_sources/generation_validation/test_verify_collector_documentation_quality.py
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Documentation audit self-test script syntax validation failed.'
+          }
+
+      - name: Run validator self-tests
+        shell: pwsh
+        run: |
+          python project_sources/generation_validation/test_verify_collector_documentation_quality.py
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Documentation audit validator self-tests failed.'
           }
 
       - name: Validate PowerShell syntax for collector sources
