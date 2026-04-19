@@ -1,3 +1,51 @@
+<#
+.SYNOPSIS
+DCOIR collector enrich-mode review action handlers.
+
+.DESCRIPTION
+Implements the analyst-review style enrichment actions that operate on already-collected
+targets, such as signature review, loaded-module inspection, access review, strings,
+alternate data stream inspection, refreshed TCP connection review, and event-log text
+export. The file packages the action output into session artifacts and appends the
+results to the active enrich-session summary.
+
+.FILE NAME
+DCOIR_Collector.03B_Enrich_Actions_Review.ps1
+
+.INPUTS
+Collector state, active enrichment session, resolved tool map, and action-specific
+parameters such as Path, ServiceName, RegistryPath, LogName, TargetPid, Hours, EventId,
+and MaxEvents.
+
+.OUTPUTS
+Hashtable containing the enrich summary path, action artifact path, and any staged path
+produced by the selected action.
+#>
+
+<#
+.SYNOPSIS
+Runs one enrich-mode review action and writes the result into the active session.
+
+.DESCRIPTION
+Selects the requested enrich action, validates required parameters and tool presence,
+collects the action output, wraps it in analyst-facing interpretation text, writes the
+per-action artifact, appends the result to the session summary, and increments the
+session action count. Retrieval-oriented actions are delegated to the retrieval helper
+file when the action does not match one of the local review cases.
+
+.FUNCTION NAME
+Invoke-EnrichmentAction
+
+.INPUTS
+Collector state hashtable, active enrichment-session hashtable, and ToolMap hashtable.
+The function also relies on current enrich action parameters already bound in the wider
+collector runtime, including Action, Path, ServiceName, RegistryPath, LogName,
+TargetPid, Hours, EventId, and MaxEvents.
+
+.OUTPUTS
+Hashtable containing ReportPath, ActionArtifactPath, and StagedPath values for the
+executed enrich action.
+#>
 function Invoke-EnrichmentAction {
   param(
     [hashtable]$State,
