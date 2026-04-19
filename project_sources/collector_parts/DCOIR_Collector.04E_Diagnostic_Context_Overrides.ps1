@@ -1,3 +1,41 @@
+<#
+.SYNOPSIS
+DCOIR collector diagnostic-context override helpers.
+
+.DESCRIPTION
+Provides the elevated-context checks and diagnostic-friendly Security/event-log readers
+used to classify audit-policy access, explain non-elevated Security visibility limits,
+and emit Security text surfaces that preserve explicit-window behavior.
+
+.FILE NAME
+DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1
+
+.INPUTS
+Current process security context, WindowHours values, explicit event-window globals,
+channel names, optional event IDs, and Security high-signal summary settings.
+
+.OUTPUTS
+Boolean elevation state, diagnostic message text, audit-policy text, Security summary
+text, and general event-log text.
+#>
+
+<#
+.SYNOPSIS
+Determines whether the current collector context is elevated.
+
+.DESCRIPTION
+Queries the current Windows identity and returns true when the current principal is in
+the local Administrators role. Returns false on any lookup error.
+
+.FUNCTION NAME
+Test-DiagnosticCollectorIsElevated
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+Boolean indicating whether the current collector context is elevated.
+#>
 function Test-DiagnosticCollectorIsElevated {
   try {
     $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
@@ -8,10 +46,46 @@ function Test-DiagnosticCollectorIsElevated {
   }
 }
 
+<#
+.SYNOPSIS
+Returns the standard non-elevated Security visibility explanation.
+
+.DESCRIPTION
+Provides one durable message used when Security-event queries return no visible results
+in a non-elevated context and the operator should verify the same query from an elevated
+shell before concluding the window is truly empty.
+
+.FUNCTION NAME
+Get-NonElevatedSecurityVisibilityMessage
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing the standard non-elevated Security visibility message.
+#>
 function Get-NonElevatedSecurityVisibilityMessage {
   return 'Security event query returned no matching events in the current non-elevated collection context. Verify the same query in an elevated shell before concluding the window is empty.'
 }
 
+<#
+.SYNOPSIS
+Collects audit-policy text and classifies audit-policy access status.
+
+.DESCRIPTION
+Queries the key Security audit subcategories, captures their output, and classifies the
+current audit-policy access state as OK, privilege-required in a non-elevated context,
+or failed-other for incomplete capture paths.
+
+.FUNCTION NAME
+Get-SecurityAuditPolicyText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing the combined per-subcategory auditpol command output.
+#>
 function Get-SecurityAuditPolicyText {
   $subcategories = @('Logon','Logoff','Special Logon','Process Creation')
   $blocks = New-Object System.Collections.ArrayList
@@ -41,6 +115,25 @@ function Get-SecurityAuditPolicyText {
   return ($blocks -join ([Environment]::NewLine + [Environment]::NewLine))
 }
 
+<#
+.SYNOPSIS
+Builds a diagnostic-friendly Security high-signal summary.
+
+.DESCRIPTION
+Uses the effective event window to query key Security events, suppresses routine
+service/machine noise, and returns analyst-facing summary text while preserving the
+special non-elevated visibility message when appropriate.
+
+.FUNCTION NAME
+Get-SecurityHighSignalSummaryText
+
+.INPUTS
+WindowHours integer and Take integer limiting the returned summary volume.
+
+.OUTPUTS
+String containing the Security high-signal summary or an explicit visibility/error
+message.
+#>
 function Get-SecurityHighSignalSummaryText {
   param(
     [int]$WindowHours = 24,
@@ -204,6 +297,24 @@ function Get-SecurityHighSignalSummaryText {
   }
 }
 
+<#
+.SYNOPSIS
+Exports diagnostic-friendly event-log text for the requested channel.
+
+.DESCRIPTION
+Uses the effective event window to query the requested channel with optional event IDs,
+returns analyst-facing text for the matching events, and preserves the special
+non-elevated Security visibility explanation when appropriate.
+
+.FUNCTION NAME
+Get-EventText
+
+.INPUTS
+Channel string, WindowHours integer, optional integer event IDs, and Take integer.
+
+.OUTPUTS
+String containing event-log text or an explicit visibility/error message.
+#>
 function Get-EventText {
   param(
     [Parameter(Mandatory=$true)][string]$Channel,
