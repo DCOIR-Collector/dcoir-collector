@@ -1,3 +1,42 @@
+<#
+.SYNOPSIS
+DCOIR collector explicit event-window override helpers.
+
+.DESCRIPTION
+Implements explicit event-window parsing, event-filter hashtable construction, event-log
+text export, Security high-signal summarization, and raw EVTX export for targeted and
+enrichment-driven collection lanes.
+
+.FILE NAME
+DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1
+
+.INPUTS
+Window-hours values, explicit WindowStart and WindowEnd globals, event-log channel
+names, optional event IDs, output paths, and scratch directories.
+
+.OUTPUTS
+Window hashtables, event-filter hashtables, analyst-facing text summaries, and staged
+EVTX exports.
+#>
+
+<#
+.SYNOPSIS
+Resolves the effective event window for the current collector call.
+
+.DESCRIPTION
+Combines the current WindowHours value with explicit WindowStart and WindowEnd inputs,
+normalizes invalid or partial windows into safe fallback behavior, and returns one
+window object that downstream event readers can consume consistently.
+
+.FUNCTION NAME
+Get-CollectorEffectiveEventWindow
+
+.INPUTS
+WindowHours integer plus the current WindowStart and WindowEnd globals.
+
+.OUTPUTS
+Hashtable containing HasExplicitWindow, StartTime, EndTime, and EffectiveHours.
+#>
 function Get-CollectorEffectiveEventWindow {
   param([int]$WindowHours = 24)
 
@@ -50,6 +89,24 @@ function Get-CollectorEffectiveEventWindow {
   }
 }
 
+<#
+.SYNOPSIS
+Builds a Get-WinEvent filter hashtable from a normalized window object.
+
+.DESCRIPTION
+Creates the filter hashtable used by event readers, always including LogName and
+StartTime and conditionally adding EndTime and Id constraints when present.
+
+.FUNCTION NAME
+Get-CollectorEventFilterHashtable
+
+.INPUTS
+LogName string, Window hashtable from Get-CollectorEffectiveEventWindow, and optional
+integer event IDs.
+
+.OUTPUTS
+Hashtable suitable for Get-WinEvent -FilterHashtable.
+#>
 function Get-CollectorEventFilterHashtable {
   param(
     [Parameter(Mandatory=$true)][string]$LogName,
@@ -73,6 +130,25 @@ function Get-CollectorEventFilterHashtable {
   return $fh
 }
 
+<#
+.SYNOPSIS
+Builds a condensed Security high-signal summary for the selected window.
+
+.DESCRIPTION
+Queries key Security event IDs, suppresses routine machine/service noise, summarizes the
+remaining interesting events, and returns analyst-facing text with explicit window
+markers and per-event summaries.
+
+.FUNCTION NAME
+Get-SecurityHighSignalSummaryText
+
+.INPUTS
+WindowHours integer and Take integer limiting the returned summary volume.
+
+.OUTPUTS
+String containing the Security high-signal summary or an explicit error/nothing-found
+message.
+#>
 function Get-SecurityHighSignalSummaryText {
   param(
     [int]$WindowHours = 24,
@@ -217,6 +293,23 @@ function Get-SecurityHighSignalSummaryText {
   }
 }
 
+<#
+.SYNOPSIS
+Exports event-log text for the requested channel and window.
+
+.DESCRIPTION
+Resolves the effective event window, queries the requested channel with optional event
+IDs, and renders the result into analyst-facing text with explicit window metadata.
+
+.FUNCTION NAME
+Get-EventText
+
+.INPUTS
+Channel string, WindowHours integer, optional integer event IDs, and Take integer.
+
+.OUTPUTS
+String containing event-log text or an explicit nothing-found/error message.
+#>
 function Get-EventText {
   param(
     [Parameter(Mandatory=$true)][string]$Channel,
@@ -273,6 +366,25 @@ function Get-EventText {
   }
 }
 
+<#
+.SYNOPSIS
+Exports a filtered EVTX file for the requested channel and window.
+
+.DESCRIPTION
+Builds the effective time filter and optional Event ID filter, renders the matching
+XPath query, calls wevtutil.exe to export the EVTX file, and verifies that the output
+file was created.
+
+.FUNCTION NAME
+Export-FilteredEvtx
+
+.INPUTS
+LogChannel string, WindowHours integer, optional event IDs, output path, and scratch
+directory path.
+
+.OUTPUTS
+No direct output. Writes the EVTX file to OutPath or throws on failure.
+#>
 function Export-FilteredEvtx {
   param(
     [string]$LogChannel,
