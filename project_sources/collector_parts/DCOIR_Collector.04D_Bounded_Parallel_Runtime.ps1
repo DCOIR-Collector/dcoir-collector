@@ -163,6 +163,25 @@ function Initialize-ParallelBaselineCache {
   $workerScript = {
     param([hashtable]$WorkerDefinition,[string]$ParallelWorkerDir)
 
+    <#
+    .SYNOPSIS
+    Captures one bounded-parallel worker step inside the background job.
+
+    .DESCRIPTION
+    Starts cmd.exe for the provided worker step definition, captures stdout and stderr,
+    evaluates the exit code against the step's allowed list, and returns the normalized
+    step-result object that is later written into the worker proof artifact.
+
+    .FUNCTION NAME
+    Invoke-WorkerCommandCapture
+
+    .INPUTS
+    StepDefinition hashtable containing StepName, Command, and AllowedExitCodes.
+
+    .OUTPUTS
+    Ordered hashtable describing the captured step output, exit code, allowed-exit-code
+    evaluation, and combined text surface.
+    #>
     function Invoke-WorkerCommandCapture {
       param([hashtable]$StepDefinition)
 
