@@ -49,11 +49,14 @@ function Get-SecurityHighSignalSummaryText {
 
   try {
     $ids = @(4624,4625,4648,4672,4688,4697,4698)
-    $startTime = (Get-Date).AddHours(-1 * [math]::Abs($WindowHours))
+    $window = Get-CollectorEffectiveEventWindow -WindowHours $WindowHours
     $fh = @{
       LogName = 'Security'
-      StartTime = $startTime
+      StartTime = $window.StartTime
       Id = $ids
+    }
+    if ($window.HasExplicitWindow -and $window.EndTime) {
+      $fh.EndTime = $window.EndTime
     }
 
     $events = @(Get-WinEvent -FilterHashtable $fh -ErrorAction Stop |
@@ -210,10 +213,13 @@ function Get-EventText {
   )
 
   try {
-    $startTime = (Get-Date).AddHours(-1 * [math]::Abs($WindowHours))
+    $window = Get-CollectorEffectiveEventWindow -WindowHours $WindowHours
     $fh = @{
       LogName = $Channel
-      StartTime = $startTime
+      StartTime = $window.StartTime
+    }
+    if ($window.HasExplicitWindow -and $window.EndTime) {
+      $fh.EndTime = $window.EndTime
     }
     if ($Ids -and @($Ids).Count -gt 0) { $fh.Id = $Ids }
 
