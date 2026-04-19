@@ -1,0 +1,38 @@
+{
+  "framework_name": "DCOIR Manual Test Framework",
+  "repo_url": "https://github.com/malwaredevil/dcoir-collector.git",
+  "latest_report_name": "LATEST_DCOIR_Collector_Full_Signoff_Report.txt",
+  "latest_state_name": "LATEST_runner_state.json",
+  "session_prefix": "DCOIR-MANUAL",
+  "cleanup": {
+    "remove_previous_transient_dirs_on_new_run": true,
+    "remove_current_transient_dirs_on_finish": true,
+    "remove_top_level_staged_runtime_on_finish": true,
+    "preserve_archived_reports": true,
+    "preserve_archived_state": true
+  },
+  "steps": [
+    {"id": "git_check", "label": "Git prerequisite"},
+    {"id": "python_check", "label": "Python prerequisite"},
+    {"id": "repo_fetch", "label": "Fetch or update repo"},
+    {"id": "package_validate", "label": "Validate package rules"},
+    {"id": "package_build", "label": "Build delivery package"},
+    {"id": "runtime_restore", "label": "Restore and stage live runtime"},
+    {"id": "help_top", "label": "Top-level help"},
+    {"id": "help_quick", "label": "Quick help"},
+    {"id": "bad_quick", "label": "Bad command help fallback"},
+    {"id": "nonadmin_collect", "label": "Non-admin collect"},
+    {"id": "nonadmin_validate", "label": "Non-admin validator check"},
+    {"id": "nonadmin_targeted", "label": "Non-admin targeted collect"},
+    {"id": "nonadmin_enrich", "label": "Non-admin enrich lifecycle"},
+    {"id": "nonadmin_negative", "label": "Non-admin bad input cases"},
+    {"id": "admin_launch", "label": "Launch admin phase"},
+    {"id": "admin_collect", "label": "Admin collect"},
+    {"id": "admin_validate", "label": "Admin validator check"},
+    {"id": "admin_compare", "label": "Admin vs non-admin compare"},
+    {"id": "full_regression", "label": "FullRegression harness"},
+    {"id": "package_recheck", "label": "Package build parity recheck"},
+    {"id": "cleanup", "label": "Cleanup and evidence closeout"},
+    {"id": "final_signoff", "label": "Final signoff summary"}
+  ]
+}
