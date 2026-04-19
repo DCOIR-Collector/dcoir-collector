@@ -2,7 +2,31 @@ name: validate-on-push
 
 on:
   push:
+    paths:
+      - 'README.md'
+      - 'project_sources/CP-01_DCOIR_Version_Manifest.txt'
+      - 'project_sources/CP-02_DCOIR_Change_Log.txt'
+      - 'project_sources/DCOIR_Collector.ps1'
+      - 'project_sources/run_DCOIR_Tests.ps1'
+      - 'project_sources/collector_parts/**'
+      - 'project_sources/Collector_Runtime_Package_Manifest.json.txt'
+      - 'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt'
+      - 'project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt'
+      - 'project_sources/DCOIR_Gemini_Bundle_Source/**'
+      - 'project_sources/generation_validation/**'
+      - 'supporting_assets/DCOIR_Collector.zip'
+      - '.github/workflows/validate-on-push.yml'
+      - '.github/workflows/manual-full-validation.yml'
+      - '.github/workflows/collector-documentation-quality.yml'
+      - '.github/workflows/scheduled-health-check.yml'
+      - '.github/workflows/manual-gemini-bundle-build.yml'
+      - '.github/workflows/manual-collector-runtime-package-build.yml'
+      - 'dcoir_skills/project_discovery_contract.json'
   workflow_dispatch:
+
+concurrency:
+  group: validate-on-push-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:
@@ -141,16 +165,13 @@ jobs:
           "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/generation_validation/out_validate_collector/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
           "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/generation_validation/out_validate_collector/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
 
-      - name: Run intensive collector harness coverage
+      - name: Run routine collector harness coverage
         shell: pwsh
         working-directory: project_sources
         run: |
-          $suites = @('MajorVersion','Retrieval','FailureGates')
-          foreach ($suite in $suites) {
-            powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite $suite -MasterZipPath $env:HARNESS_RUNTIME_ZIP
-            if ($LASTEXITCODE -ne 0) {
-              throw "Collector harness suite failed: $suite"
-            }
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector harness suite failed: Core'
           }
 
       - name: Generate collector documentation audit report
