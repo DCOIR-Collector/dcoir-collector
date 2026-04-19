@@ -1,3 +1,47 @@
+<#
+.SYNOPSIS
+DCOIR collector enrich-mode retrieval action handlers.
+
+.DESCRIPTION
+Implements the retrieval-oriented enrichment actions that stage files or raw event-log
+exports for analyst pickup after baseline collection. These helpers stage the selected
+targets, write analyst guidance into the active enrich-session summary, and return the
+paths needed for follow-on retrieval.
+
+.FILE NAME
+DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1
+
+.INPUTS
+Collector state, active enrichment session, resolved tool map, and action-specific
+parameters such as Path, ServiceName, LogName, Hours, EventId, and TargetPid.
+
+.OUTPUTS
+Hashtable containing the enrich summary path, action artifact path, and any staged path
+produced by the selected retrieval action.
+#>
+
+<#
+.SYNOPSIS
+Runs one retrieval-style enrichment action and stages the requested artifact.
+
+.DESCRIPTION
+Selects the requested retrieval action, validates required parameters, stages the target
+artifact or EVTX export, builds analyst-facing interpretation guidance, writes the
+session artifact, appends the result to the session summary, and increments the session
+action count.
+
+.FUNCTION NAME
+Invoke-EnrichmentAction-Retrieval
+
+.INPUTS
+Collector state hashtable, active enrichment-session hashtable, and ToolMap hashtable.
+The function also relies on current enrich action parameters already bound in the wider
+collector runtime, including Action, Path, ServiceName, LogName, Hours, and EventId.
+
+.OUTPUTS
+Hashtable containing ReportPath, ActionArtifactPath, and StagedPath values for the
+executed retrieval action.
+#>
 function Invoke-EnrichmentAction-Retrieval {
   param(
     [hashtable]$State,
