@@ -36,6 +36,7 @@ jobs:
             'project_sources/LOG-43_DCOIR_GitHub_Automation_And_AI_Enablement_Strategy_2026-04-05.txt',
             'project_sources/generation_validation/run_validate_dcoir_run_fixture_tests.ps1',
             'project_sources/generation_validation/verify_collector_documentation_quality.py',
+            'project_sources/generation_validation/test_verify_collector_documentation_quality.py',
             'project_sources/generation_validation/restore_dcoir_collector_runtime_zip.py',
             'project_sources/generation_validation/validate_dcoir_gemini_behavior_scenarios.py',
             'supporting_assets/DCOIR_Collector.zip',
@@ -82,6 +83,14 @@ jobs:
           }
           if ($failed.Count -gt 0) {
             throw "Python syntax validation failed: $($failed -join ', ')"
+          }
+
+      - name: Run documentation validator self-tests
+        shell: pwsh
+        run: |
+          python project_sources/generation_validation/test_verify_collector_documentation_quality.py
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Documentation validator self-tests failed.'
           }
 
       - name: Validate PowerShell syntax
