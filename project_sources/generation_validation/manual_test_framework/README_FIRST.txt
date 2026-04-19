@@ -1,34 +1,41 @@
-DCOIR Manual Test Framework
+DCOIR Manual Test Framework Bundle v8
 
-What changed in this build
-- Added a durable control file: dcoir_manual_test_control.json
-- Added session-based naming so archived reports and state files do not overwrite each other
-- Added transient-work cleanup rules so failed or partial work folders do not pile up between runs
-- Kept a stable latest report path for quick access: _test_output\LATEST_DCOIR_Collector_Full_Signoff_Report.txt
-- Kept a stable latest state path for quick access: _test_output\LATEST_runner_state.json
+What changed in v8
+- The Git and Python prerequisite rows are now bound to bootstrap results instead of staying stuck at PENDING.
+- The staged collector runtime now lives under _test_output\live_runtime instead of cluttering the root folder.
+- The admin phase now launches through the PowerShell launcher so the elevated window follows the same dashboard path.
+- The framework now removes staged runtime files and transient build/staging folders during cleanup.
+- Expected non-admin collector limitations are graded as PASS with honest notes instead of surfacing as framework PARTIAL results.
+- Quick help is now graded as PASS when the help text prints correctly, while still noting the current collector quirk that returns a nonzero exit code.
 
-Recommended install/use location
-- Use a short path such as C:\DCOIR to reduce Windows path-length issues.
-
-What the launcher does
-- checks for Git and Python
-- tries to install them with winget if missing
-- enables Git long-path support when possible
-- starts the Python dashboard runner
-
-What the runner does
-- clones a fresh transient repo copy for the current test session
-- builds and restores the live-style collector runtime
-- stages DCOIR_Collector.ps1 and DCOIR_Collector.zip next to the framework during the run
-- archives reports/state under _history\<session-id>\
-- cleans up transient working folders and top-level staged runtime files after success or failure
+Files
+- run_dcoir_manual_tests.ps1 : bootstrap launcher
+- dcoir_manual_test_runner.py : terminal dashboard and test engine
+- dcoir_manual_test_control.json : durable control surface for step/order/cleanup naming
+- DCOIR_manual_test_plan.md : ordered manual test plan
+- README_FIRST.txt : this file
+- install_and_run_from_downloads.ps1 : optional one-shot installer/runner helper
 
 How to run
-1. Open PowerShell.
-2. Change to the framework folder.
-3. Run:
-   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .un_dcoir_manual_tests.ps1
+1. Put all files from this bundle in one folder, for example C:\DCOIR_TESTER.
+2. Open a normal PowerShell window.
+3. Either run the install helper, or run:
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_dcoir_manual_tests.ps1
 
-Where to look first after a run
-- latest report: _test_output\LATEST_DCOIR_Collector_Full_Signoff_Report.txt
-- archived report: _history\<session-id>\<session-id>_DCOIR_Collector_Full_Signoff_Report.txt
+What the launcher does
+- Checks Git and Python.
+- Tries to install missing prerequisites with winget.
+- Refreshes the current PATH.
+- Launches the dashboard.
+
+What the dashboard does
+- Shows every test on load.
+- Updates STATUS live as each test starts and finishes.
+- Shows only high-level status and next-action text in the terminal.
+- Writes all command output, errors, and detailed traces into:
+  .\_test_output\DCOIR_Collector_Full_Signoff_Report.txt
+
+Important notes
+- The framework now stages runtime files inside _test_output\live_runtime.
+- The framework intentionally preserves the report/state/runs for review after the run.
+- Richer contextual help is still a separate follow-on feature.

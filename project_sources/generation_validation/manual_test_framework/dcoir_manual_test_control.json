@@ -1,15 +1,18 @@
 {
   "framework_name": "DCOIR Manual Test Framework",
   "repo_url": "https://github.com/malwaredevil/dcoir-collector.git",
-  "latest_report_name": "LATEST_DCOIR_Collector_Full_Signoff_Report.txt",
-  "latest_state_name": "LATEST_runner_state.json",
-  "session_prefix": "DCOIR-MANUAL",
+  "base_folder_note": "The framework runs from whatever folder contains the launcher and runner, for example C:\\DCOIR_TESTER.",
+  "report_name": "DCOIR_Collector_Full_Signoff_Report.txt",
+  "state_name": "_runner_state.json",
+  "session_info_name": "_session_info.json",
+  "bootstrap_name": "bootstrap_status.json",
+  "runtime_subfolder": "_test_output\\live_runtime",
   "cleanup": {
     "remove_previous_transient_dirs_on_new_run": true,
-    "remove_current_transient_dirs_on_finish": true,
-    "remove_top_level_staged_runtime_on_finish": true,
-    "preserve_archived_reports": true,
-    "preserve_archived_state": true
+    "remove_current_transient_build_and_stage_on_finish": true,
+    "remove_staged_runtime_on_finish": true,
+    "preserve_report_and_state": true,
+    "preserve_runs_and_history_until_operator_review": true
   },
   "steps": [
     {"id": "git_check", "label": "Git prerequisite"},
