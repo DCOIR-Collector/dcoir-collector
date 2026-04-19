@@ -1,3 +1,41 @@
+<#
+.SYNOPSIS
+DCOIR collector core state and utility helpers.
+
+.DESCRIPTION
+Provides the core logging, filesystem, state-management, command-capture, artifact,
+process, event, staging, manifest, and packaging helpers used across collect, enrich,
+cleanup, validation, and bundle-generation paths.
+
+.FILE NAME
+DCOIR_Collector.01_Core_State_And_Utilities.ps1
+
+.INPUTS
+Collector runtime globals, filesystem paths, command/process details, state objects,
+tool names, event objects, and artifact/report content.
+
+.OUTPUTS
+Collector notes/errors/recommendations, command-capture objects and text, state and
+artifact paths, manifest/bundle outputs, and supporting helper return values.
+#>
+
+<#
+.SYNOPSIS
+Adds one collector error to the in-memory error list and optional error log.
+
+.DESCRIPTION
+Validates the supplied message, appends it to the global collector error list, and
+writes a timestamped entry to the durable errors log when that log path is configured.
+
+.FUNCTION NAME
+Add-CollectorError
+
+.INPUTS
+Message string.
+
+.OUTPUTS
+No direct output. Updates global error state and optional log file.
+#>
 function Add-CollectorError {
   param([string]$Message)
   if ([string]::IsNullOrWhiteSpace($Message)) { return }
@@ -7,18 +45,67 @@ function Add-CollectorError {
   }
 }
 
+<#
+.SYNOPSIS
+Adds one collector note to the in-memory notes list.
+
+.DESCRIPTION
+Ignores blank input and appends a note to the global collector notes collection.
+
+.FUNCTION NAME
+Add-CollectorNote
+
+.INPUTS
+Message string.
+
+.OUTPUTS
+No direct output. Updates global note state.
+#>
 function Add-CollectorNote {
   param([string]$Message)
   if ([string]::IsNullOrWhiteSpace($Message)) { return }
   [void]$Global:CollectorNotes.Add($Message)
 }
 
+<#
+.SYNOPSIS
+Adds one analyst recommendation to the in-memory recommendation list.
+
+.DESCRIPTION
+Ignores blank input and appends the supplied recommendation to the global follow-up
+queue used by metadata and analyst review artifacts.
+
+.FUNCTION NAME
+Add-Recommendation
+
+.INPUTS
+Message string.
+
+.OUTPUTS
+No direct output. Updates global recommendation state.
+#>
 function Add-Recommendation {
   param([string]$Message)
   if ([string]::IsNullOrWhiteSpace($Message)) { return }
   [void]$Global:RecommendedActions.Add($Message)
 }
 
+<#
+.SYNOPSIS
+Ensures that one directory exists.
+
+.DESCRIPTION
+Creates the requested directory path when it does not already exist.
+
+.FUNCTION NAME
+Ensure-Directory
+
+.INPUTS
+Mandatory Path string.
+
+.OUTPUTS
+No direct output. Creates the directory as a side effect when needed.
+#>
 function Ensure-Directory {
   param([Parameter(Mandatory=$true)][string]$Path)
   if (-not (Test-Path -LiteralPath $Path)) {
@@ -26,6 +113,22 @@ function Ensure-Directory {
   }
 }
 
+<#
+.SYNOPSIS
+Deletes one path when it exists.
+
+.DESCRIPTION
+Silently removes the supplied file or directory path when it is nonblank and present.
+
+.FUNCTION NAME
+Remove-IfExists
+
+.INPUTS
+LiteralPath string.
+
+.OUTPUTS
+No direct output. Removes the target as a side effect when present.
+#>
 function Remove-IfExists {
   param([string]$LiteralPath)
   if (-not [string]::IsNullOrWhiteSpace($LiteralPath) -and (Test-Path -LiteralPath $LiteralPath)) {
@@ -33,6 +136,23 @@ function Remove-IfExists {
   }
 }
 
+<#
+.SYNOPSIS
+Joins argument tokens into one safe process-argument string.
+
+.DESCRIPTION
+Skips null values and quotes arguments that contain whitespace or quotes so downstream
+process-start calls receive a stable command-line string.
+
+.FUNCTION NAME
+Join-ArgString
+
+.INPUTS
+String array of arguments.
+
+.OUTPUTS
+String containing the joined argument list.
+#>
 function Join-ArgString {
   param([string[]]$Arguments)
   if (-not $Arguments) { return "" }
@@ -47,6 +167,23 @@ function Join-ArgString {
   return ($parts -join ' ')
 }
 
+<#
+.SYNOPSIS
+Returns the absolute path to the active collector script.
+
+.DESCRIPTION
+Resolves the collector script path from ScriptFilePath when present, then MyInvocation,
+and finally falls back to a DCOIR_Collector.ps1 path in the current directory.
+
+.FUNCTION NAME
+Get-CollectorAbsolutePath
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String absolute path to the collector script.
+#>
 function Get-CollectorAbsolutePath {
   if (-not [string]::IsNullOrWhiteSpace($ScriptFilePath)) {
     return [System.IO.Path]::GetFullPath($ScriptFilePath)
@@ -57,16 +194,68 @@ function Get-CollectorAbsolutePath {
   return [System.IO.Path]::GetFullPath((Join-Path (Get-Location).Path "DCOIR_Collector.ps1"))
 }
 
+<#
+.SYNOPSIS
+Builds the reusable PowerShell command base for the collector.
+
+.DESCRIPTION
+Returns the standard powershell.exe invocation string used in workflow guidance and
+operator-facing next-step output.
+
+.FUNCTION NAME
+Get-CollectorPowerShellCommandBase
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String command base for running the collector script.
+#>
 function Get-CollectorPowerShellCommandBase {
   $collectorPath = Get-CollectorAbsolutePath
   return ("powershell.exe -NoProfile -ExecutionPolicy Bypass -File '{0}'" -f $collectorPath)
 }
 
+<#
+.SYNOPSIS
+Builds the response-action delete-script command text.
+
+.DESCRIPTION
+Returns the operator-facing Elastic response-action string used to delete the uploaded
+collector script explicitly when cleanup should remove the script too.
+
+.FUNCTION NAME
+Get-CollectorDeleteScriptCommandText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String response-action command text.
+#>
 function Get-CollectorDeleteScriptCommandText {
   $collectorPath = Get-CollectorAbsolutePath
   return ('execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Remove-Item -LiteralPath ''{0}'' -Force" --comment "Remove uploaded DCOIR_Collector script"' -f $collectorPath)
 }
 
+<#
+.SYNOPSIS
+Writes one execution-step log record.
+
+.DESCRIPTION
+Builds the text and JSONL execution-log entries for a step, including timing, exit code,
+command text, artifact path, and message, then appends them to the configured execution
+logs when those paths are present.
+
+.FUNCTION NAME
+Write-StepLog
+
+.INPUTS
+StepName, Status, StartTime, EndTime, ExitCode, Command, ArtifactPath, and Message.
+
+.OUTPUTS
+No direct output. Appends to execution text and JSONL logs as a side effect.
+#>
 function Write-StepLog {
   param(
     [string]$StepName,
@@ -107,6 +296,25 @@ function Write-StepLog {
   }
 }
 
+<#
+.SYNOPSIS
+Runs one external process and captures its output.
+
+.DESCRIPTION
+Builds the process start info, captures stdout and stderr, validates the exit code
+against the allowed list, writes the execution-step log entry, and returns one capture
+object describing the result.
+
+.FUNCTION NAME
+Invoke-ProcessCapture
+
+.INPUTS
+Mandatory FilePath and StepName, optional argument array, and optional allowed exit-code
+list.
+
+.OUTPUTS
+PSCustomObject containing StdOut, StdErr, ExitCode, Command, and Status.
+#>
 function Invoke-ProcessCapture {
   param(
     [Parameter(Mandatory=$true)][string]$FilePath,
@@ -170,6 +378,22 @@ function Invoke-ProcessCapture {
   }
 }
 
+<#
+.SYNOPSIS
+Runs one cmd.exe command and captures its output.
+
+.DESCRIPTION
+Wraps Invoke-ProcessCapture for cmd.exe /c execution of the supplied command string.
+
+.FUNCTION NAME
+Invoke-CmdCapture
+
+.INPUTS
+Mandatory Command and StepName, optional allowed exit-code list.
+
+.OUTPUTS
+PSCustomObject containing the captured cmd.exe result.
+#>
 function Invoke-CmdCapture {
   param(
     [Parameter(Mandatory=$true)][string]$Command,
@@ -179,6 +403,23 @@ function Invoke-CmdCapture {
   return (Invoke-ProcessCapture -FilePath "cmd.exe" -Arguments @("/c", $Command) -StepName $StepName -AllowedExitCodes $AllowedExitCodes)
 }
 
+<#
+.SYNOPSIS
+Formats one process-capture object into durable text.
+
+.DESCRIPTION
+Builds the combined command, exit-code, stdout, and stderr text block used in many
+collector artifacts.
+
+.FUNCTION NAME
+Get-CombinedProcessOutput
+
+.INPUTS
+Result object returned by Invoke-ProcessCapture or Invoke-CmdCapture.
+
+.OUTPUTS
+String containing the combined process output text.
+#>
 function Get-CombinedProcessOutput {
   param($Result)
   $lines = New-Object System.Collections.ArrayList
@@ -193,26 +434,109 @@ function Get-CombinedProcessOutput {
   return ($lines -join [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Creates a new collector run identifier.
+
+.DESCRIPTION
+Returns the current local timestamp in the standard DCOIR run-id format.
+
+.FUNCTION NAME
+Get-NewRunId
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String run identifier.
+#>
 function Get-NewRunId {
   return (Get-Date -Format "yyyyMMdd_HHmmss")
 }
 
+<#
+.SYNOPSIS
+Builds the run-root path for one run identifier.
+
+.DESCRIPTION
+Combines the root path, hostname, and run identifier into the standard DCOIR run-root
+folder name.
+
+.FUNCTION NAME
+Get-RunRoot
+
+.INPUTS
+Root string and CurrentRunId string.
+
+.OUTPUTS
+String run-root path.
+#>
 function Get-RunRoot {
   param([string]$Root,[string]$CurrentRunId)
   return (Join-Path $Root ("DCOIR_{0}_{1}" -f $env:COMPUTERNAME, $CurrentRunId))
 }
 
+<#
+.SYNOPSIS
+Builds the state-file path for one run.
+
+.DESCRIPTION
+Returns the state.json path inside the resolved run-root directory.
+
+.FUNCTION NAME
+Get-StatePath
+
+.INPUTS
+Root string and CurrentRunId string.
+
+.OUTPUTS
+String state-file path.
+#>
 function Get-StatePath {
   param([string]$Root,[string]$CurrentRunId)
   return (Join-Path (Get-RunRoot -Root $Root -CurrentRunId $CurrentRunId) "state.json")
 }
 
+<#
+.SYNOPSIS
+Saves the collector state to disk.
+
+.DESCRIPTION
+Serializes the supplied state hashtable to JSON and writes it to the state path stored
+inside the state object.
+
+.FUNCTION NAME
+Save-State
+
+.INPUTS
+Mandatory State hashtable.
+
+.OUTPUTS
+No direct output. Writes state.json as a side effect.
+#>
 function Save-State {
   param([Parameter(Mandatory=$true)][hashtable]$State)
   $json = $State | ConvertTo-Json -Depth 12
   Set-Content -Path $State.StatePath -Value $json -Encoding UTF8
 }
 
+<#
+.SYNOPSIS
+Loads a saved collector state object from disk.
+
+.DESCRIPTION
+Loads the latest run state when no run ID is supplied, or the specific run state when a
+run ID is given, and returns the deserialized state object.
+
+.FUNCTION NAME
+Load-State
+
+.INPUTS
+Root string and optional CurrentRunId string.
+
+.OUTPUTS
+Deserialized state object.
+#>
 function Load-State {
   param([string]$Root,[string]$CurrentRunId)
 
@@ -239,6 +563,23 @@ function Load-State {
   return (Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json)
 }
 
+<#
+.SYNOPSIS
+Recursively converts a deserialized state object into plain hashtables and arrays.
+
+.DESCRIPTION
+Normalizes dictionaries, enumerable collections, and PSObject properties into plain
+PowerShell hashtables and arrays so saved state can be reused consistently.
+
+.FUNCTION NAME
+Convert-StateObjectToHashtable
+
+.INPUTS
+InputObject to normalize.
+
+.OUTPUTS
+Hashtable, array, scalar, or null matching the normalized input structure.
+#>
 function Convert-StateObjectToHashtable {
   param([object]$InputObject)
 
@@ -273,6 +614,23 @@ function Convert-StateObjectToHashtable {
   return $InputObject
 }
 
+<#
+.SYNOPSIS
+Normalizes one input into an ArrayList.
+
+.DESCRIPTION
+Returns an empty ArrayList for null, expands enumerable non-string/non-dictionary input
+into an ArrayList, or wraps a single scalar object into an ArrayList.
+
+.FUNCTION NAME
+Convert-ToArrayList
+
+.INPUTS
+InputObject to normalize.
+
+.OUTPUTS
+System.Collections.ArrayList.
+#>
 function Convert-ToArrayList {
   param([object]$InputObject)
 
@@ -293,6 +651,23 @@ function Convert-ToArrayList {
   return $list
 }
 
+<#
+.SYNOPSIS
+Returns the active script directory.
+
+.DESCRIPTION
+Resolves the script directory from ScriptFilePath first, then PSScriptRoot, and finally
+falls back to the current working directory.
+
+.FUNCTION NAME
+Get-ScriptDirectory
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String script-directory path.
+#>
 function Get-ScriptDirectory {
   if (-not [string]::IsNullOrWhiteSpace($ScriptFilePath)) {
     return (Split-Path -Parent $ScriptFilePath)
@@ -303,6 +678,23 @@ function Get-ScriptDirectory {
   return (Get-Location).Path
 }
 
+<#
+.SYNOPSIS
+Resolves one staged tool path from the tools directory.
+
+.DESCRIPTION
+Checks the 64-bit and standard executable names for the requested Sysinternals-style
+base tool name and returns the first existing path.
+
+.FUNCTION NAME
+Resolve-Tool
+
+.INPUTS
+ToolsDir string and BaseName string.
+
+.OUTPUTS
+String tool path or null when the tool is absent.
+#>
 function Resolve-Tool {
   param([string]$ToolsDir,[string]$BaseName)
 
@@ -317,6 +709,22 @@ function Resolve-Tool {
   return $null
 }
 
+<#
+.SYNOPSIS
+Builds the standard report-section header lines.
+
+.DESCRIPTION
+Returns the blank line and divider pattern used before each named report section.
+
+.FUNCTION NAME
+New-SectionHeader
+
+.INPUTS
+Name string for the section title.
+
+.OUTPUTS
+String array containing the section header lines.
+#>
 function New-SectionHeader {
   param([string]$Name)
   return @(
@@ -328,6 +736,22 @@ function New-SectionHeader {
   )
 }
 
+<#
+.SYNOPSIS
+Appends one named section to a StringBuilder report.
+
+.DESCRIPTION
+Writes the standard section header and the supplied text to the StringBuilder.
+
+.FUNCTION NAME
+Add-Section
+
+.INPUTS
+Builder StringBuilder, section Name string, and Text string.
+
+.OUTPUTS
+No direct output. Appends to the StringBuilder as a side effect.
+#>
 function Add-Section {
   param(
     [System.Text.StringBuilder]$Builder,
@@ -340,12 +764,45 @@ function Add-Section {
   [void]$Builder.AppendLine(($Text | Out-String))
 }
 
+<#
+.SYNOPSIS
+Formats one object into a wide text block.
+
+.DESCRIPTION
+Returns an empty string for null input and otherwise uses Out-String with width 500.
+
+.FUNCTION NAME
+Convert-ToTextBlock
+
+.INPUTS
+InputObject to format.
+
+.OUTPUTS
+String text block.
+#>
 function Convert-ToTextBlock {
   param([object]$InputObject)
   if ($null -eq $InputObject) { return "" }
   return ($InputObject | Out-String -Width 500)
 }
 
+<#
+.SYNOPSIS
+Creates the run directory structure for one collector run.
+
+.DESCRIPTION
+Builds the standard run-root, tools, reports, artifacts, enrich-sessions, logs, and
+bundles directories and returns their paths plus the state-file path.
+
+.FUNCTION NAME
+Initialize-RunStructure
+
+.INPUTS
+Root string and CurrentRunId string.
+
+.OUTPUTS
+Hashtable containing the run-structure paths.
+#>
 function Initialize-RunStructure {
   param([string]$Root,[string]$CurrentRunId)
 
@@ -378,6 +835,23 @@ function Initialize-RunStructure {
   }
 }
 
+<#
+.SYNOPSIS
+Purges prior DCOIR run folders and the previous package file.
+
+.DESCRIPTION
+Deletes prior run directories under the out-root and removes the prior package ZIP when
+present so a fresh collect run starts from a clean workspace.
+
+.FUNCTION NAME
+Purge-PreviousRuns
+
+.INPUTS
+Root string and CurrentPackageName string.
+
+.OUTPUTS
+No direct output. Deletes prior run directories and package file as a side effect.
+#>
 function Purge-PreviousRuns {
   param([string]$Root,[string]$CurrentPackageName)
 
@@ -401,6 +875,23 @@ function Purge-PreviousRuns {
   }
 }
 
+<#
+.SYNOPSIS
+Moves the package ZIP into the out-root when needed.
+
+.DESCRIPTION
+Looks for the current package in the script directory first, moves it into the out-root
+when necessary, or returns the already-present out-root package path.
+
+.FUNCTION NAME
+Move-PackageToOutRoot
+
+.INPUTS
+Root string and CurrentPackageName string.
+
+.OUTPUTS
+String package path in the out-root.
+#>
 function Move-PackageToOutRoot {
   param([string]$Root,[string]$CurrentPackageName)
 
@@ -422,6 +913,23 @@ function Move-PackageToOutRoot {
   throw "Package not found in script directory or OutRoot: $CurrentPackageName"
 }
 
+<#
+.SYNOPSIS
+Expands the package ZIP into the tools directory.
+
+.DESCRIPTION
+Recreates the tools directory and extracts the package ZIP into it, throwing on
+extraction failure.
+
+.FUNCTION NAME
+Expand-PackageToTools
+
+.INPUTS
+PackagePath string and ToolsDir string.
+
+.OUTPUTS
+No direct output. Recreates and populates the tools directory.
+#>
 function Expand-PackageToTools {
   param([string]$PackagePath,[string]$ToolsDir)
 
@@ -434,6 +942,23 @@ function Expand-PackageToTools {
   }
 }
 
+<#
+.SYNOPSIS
+Returns the numeric prefix used for one baseline artifact name.
+
+.DESCRIPTION
+Maps well-known baseline artifact names to stable ordering prefixes used in final
+artifact filenames.
+
+.FUNCTION NAME
+Get-BaselineArtifactPrefix
+
+.INPUTS
+Name string for the artifact file.
+
+.OUTPUTS
+String prefix value.
+#>
 function Get-BaselineArtifactPrefix {
   param([string]$Name)
   switch ($Name.ToLowerInvariant()) {
@@ -477,6 +1002,23 @@ function Get-BaselineArtifactPrefix {
   }
 }
 
+<#
+.SYNOPSIS
+Writes one named artifact text file.
+
+.DESCRIPTION
+Builds the prefixed artifact filename from the section and name, writes the supplied
+text into the artifacts directory, and returns the artifact path.
+
+.FUNCTION NAME
+Write-ArtifactText
+
+.INPUTS
+ArtifactsDir string, Section string, Name string, and Text string.
+
+.OUTPUTS
+String artifact path.
+#>
 function Write-ArtifactText {
   param(
     [string]$ArtifactsDir,
@@ -493,12 +1035,46 @@ function Write-ArtifactText {
   return $path
 }
 
+<#
+.SYNOPSIS
+Returns the next enrichment-session action sequence number.
+
+.DESCRIPTION
+Counts the existing text artifacts in the session artifacts directory and returns the
+next sequential number.
+
+.FUNCTION NAME
+Get-SessionActionSequence
+
+.INPUTS
+SessionArtifactsDir string.
+
+.OUTPUTS
+Integer sequence number.
+#>
 function Get-SessionActionSequence {
   param([string]$SessionArtifactsDir)
   $count = @(Get-ChildItem -LiteralPath $SessionArtifactsDir -File -Filter "*.txt" -ErrorAction SilentlyContinue).Count
   return ($count + 1)
 }
 
+<#
+.SYNOPSIS
+Writes one enrichment-session artifact text file.
+
+.DESCRIPTION
+Builds the sequential enrich artifact filename, writes the supplied text, and returns
+the created session artifact path.
+
+.FUNCTION NAME
+Write-SessionArtifactText
+
+.INPUTS
+SessionArtifactsDir string, ActionName string, TargetLabel string, and Text string.
+
+.OUTPUTS
+String session artifact path.
+#>
 function Write-SessionArtifactText {
   param(
     [string]$SessionArtifactsDir,
@@ -517,6 +1093,23 @@ function Write-SessionArtifactText {
   return $path
 }
 
+<#
+.SYNOPSIS
+Collects loaded-user HKU Run-key text.
+
+.DESCRIPTION
+Enumerates loaded HKU SID hives, collects each loaded Run key, and returns the combined
+text surface. Returns a bounded explanatory message when no loaded user Run keys exist.
+
+.FUNCTION NAME
+Get-LoadedUserRunKeysText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing loaded-user HKU Run-key text or an explanatory/error message.
+#>
 function Get-LoadedUserRunKeysText {
   try {
     $lines = New-Object System.Collections.ArrayList
@@ -540,6 +1133,22 @@ function Get-LoadedUserRunKeysText {
   }
 }
 
+<#
+.SYNOPSIS
+Returns the human-readable name for one Windows logon type.
+
+.DESCRIPTION
+Maps known numeric logon-type values to analyst-friendly names.
+
+.FUNCTION NAME
+Get-LogonTypeName
+
+.INPUTS
+LogonType integer.
+
+.OUTPUTS
+String logon-type name.
+#>
 function Get-LogonTypeName {
   param([int]$LogonType)
   switch ($LogonType) {
@@ -557,6 +1166,23 @@ function Get-LogonTypeName {
   }
 }
 
+<#
+.SYNOPSIS
+Builds the WMI logon-session text surface.
+
+.DESCRIPTION
+Collects Win32_LogonSession and Win32_LoggedOnUser association data, correlates account
+rows to logon sessions, and returns an analyst-friendly text surface.
+
+.FUNCTION NAME
+Get-LogonSessionsWmiText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing the WMI logon-session text surface or an error message.
+#>
 function Get-LogonSessionsWmiText {
   try {
     $sb = New-Object System.Text.StringBuilder
@@ -653,6 +1279,23 @@ function Get-LogonSessionsWmiText {
   }
 }
 
+<#
+.SYNOPSIS
+Converts one Win32_Process object into the normalized process-inventory row.
+
+.DESCRIPTION
+Resolves owner and creation time details for one process and returns the normalized
+PSCustomObject used by the process inventory.
+
+.FUNCTION NAME
+Convert-ProcessObjectToText
+
+.INPUTS
+Proc object and StartTimeMap hashtable.
+
+.OUTPUTS
+PSCustomObject containing normalized process-inventory fields.
+#>
 function Convert-ProcessObjectToText {
   param(
     [object]$Proc,
@@ -688,6 +1331,23 @@ function Convert-ProcessObjectToText {
   }
 }
 
+<#
+.SYNOPSIS
+Builds the normalized Win32_Process inventory.
+
+.DESCRIPTION
+Collects current process start times, queries Win32_Process, converts each row into the
+normalized process-inventory form, and returns the sorted process list.
+
+.FUNCTION NAME
+Get-ProcessInventory
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+Array of normalized process-inventory rows.
+#>
 function Get-ProcessInventory {
   try {
     $startTimeMap = @{}
@@ -710,6 +1370,23 @@ function Get-ProcessInventory {
   }
 }
 
+<#
+.SYNOPSIS
+Builds a key-value map from one event record’s EventData section.
+
+.DESCRIPTION
+Parses the event record XML and returns a hashtable containing EventData values keyed
+by name or synthetic DataN names when the event field is unnamed.
+
+.FUNCTION NAME
+Get-EventDataMap
+
+.INPUTS
+EventRecord object.
+
+.OUTPUTS
+Hashtable of event-data values.
+#>
 function Get-EventDataMap {
   param([object]$EventRecord)
 
@@ -732,6 +1409,23 @@ function Get-EventDataMap {
   return $map
 }
 
+<#
+.SYNOPSIS
+Returns one value from an event-data map.
+
+.DESCRIPTION
+Safely returns the named value from the supplied event-data map or an empty string when
+no such key exists.
+
+.FUNCTION NAME
+Get-EventMapValue
+
+.INPUTS
+Map hashtable and Key string.
+
+.OUTPUTS
+String event-data value or empty string.
+#>
 function Get-EventMapValue {
   param(
     [hashtable]$Map,
@@ -745,6 +1439,23 @@ function Get-EventMapValue {
   return ""
 }
 
+<#
+.SYNOPSIS
+Builds the baseline Security high-signal summary.
+
+.DESCRIPTION
+Queries the key Security event IDs for the last WindowHours, suppresses routine machine
+and service noise, and returns the analyst-facing high-signal summary text.
+
+.FUNCTION NAME
+Get-SecurityHighSignalSummaryText
+
+.INPUTS
+WindowHours integer and Take integer limiting the returned summary volume.
+
+.OUTPUTS
+String containing the Security high-signal summary or an explanatory/error message.
+#>
 function Get-SecurityHighSignalSummaryText {
   param(
     [int]$WindowHours = 24,
@@ -890,6 +1601,23 @@ function Get-SecurityHighSignalSummaryText {
   }
 }
 
+<#
+.SYNOPSIS
+Returns suspicious-process heuristic findings from the process inventory.
+
+.DESCRIPTION
+Applies command-line, path, and LOLBin heuristics to the process inventory while
+excluding specified PIDs, then returns the suspicious findings list.
+
+.FUNCTION NAME
+Get-SuspiciousProcessFindings
+
+.INPUTS
+Processes array and ExcludedPids integer array.
+
+.OUTPUTS
+ArrayList of suspicious process finding objects.
+#>
 function Get-SuspiciousProcessFindings {
   param([object[]]$Processes,[int[]]$ExcludedPids)
 
@@ -928,6 +1656,23 @@ function Get-SuspiciousProcessFindings {
   return $findings
 }
 
+<#
+.SYNOPSIS
+Builds the structured TCP and UDP baseline text surface.
+
+.DESCRIPTION
+Queries Get-NetTCPConnection and Get-NetUDPEndpoint, formats both views, and returns the
+combined text block.
+
+.FUNCTION NAME
+Get-BaselineNetText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing structured TCP and UDP text or an error message.
+#>
 function Get-BaselineNetText {
   try {
     $tcp = Get-NetTCPConnection -ErrorAction Stop |
@@ -949,6 +1694,23 @@ function Get-BaselineNetText {
   }
 }
 
+<#
+.SYNOPSIS
+Exports baseline event-log text for the requested channel.
+
+.DESCRIPTION
+Queries the requested event channel for the last WindowHours with optional event IDs and
+renders the results into analyst-facing text.
+
+.FUNCTION NAME
+Get-EventText
+
+.INPUTS
+Channel string, WindowHours integer, optional event IDs, and Take integer.
+
+.OUTPUTS
+String containing event-log text or an explanatory/error message.
+#>
 function Get-EventText {
   param(
     [Parameter(Mandatory=$true)][string]$Channel,
@@ -1006,6 +1768,23 @@ function Get-EventText {
   }
 }
 
+<#
+.SYNOPSIS
+Collects Microsoft Defender status text.
+
+.DESCRIPTION
+Uses Get-MpComputerStatus when available and returns a formatted Defender status block,
+or a bounded explanatory/error message when unavailable.
+
+.FUNCTION NAME
+Get-DefenderStatusText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing Defender status text or an explanatory/error message.
+#>
 function Get-DefenderStatusText {
   try {
     if (Get-Command Get-MpComputerStatus -ErrorAction SilentlyContinue) {
@@ -1018,6 +1797,23 @@ function Get-DefenderStatusText {
   }
 }
 
+<#
+.SYNOPSIS
+Runs one cmd.exe step and returns its combined output text.
+
+.DESCRIPTION
+Wraps Invoke-CmdCapture and formats the result into the durable combined process-output
+text block.
+
+.FUNCTION NAME
+Get-CmdText
+
+.INPUTS
+Command string, StepName string, and optional allowed exit-code list.
+
+.OUTPUTS
+String containing the combined command output text.
+#>
 function Get-CmdText {
   param(
     [string]$Command,
@@ -1028,6 +1824,23 @@ function Get-CmdText {
   return (Get-CombinedProcessOutput -Result $result)
 }
 
+<#
+.SYNOPSIS
+Collects registry-query text with bounded absent-key handling.
+
+.DESCRIPTION
+Runs reg query for the requested registry path, returns a bounded absent-key text block
+for exit code 1, and otherwise returns the combined command output text.
+
+.FUNCTION NAME
+Get-RegistryQueryText
+
+.INPUTS
+RegistryPath string and StepName string.
+
+.OUTPUTS
+String containing registry-query output or a bounded absent-key explanation.
+#>
 function Get-RegistryQueryText {
   param([string]$RegistryPath,[string]$StepName)
 
@@ -1050,6 +1863,23 @@ function Get-RegistryQueryText {
   return (Get-CombinedProcessOutput -Result $result)
 }
 
+<#
+.SYNOPSIS
+Runs one staged external tool and returns its combined text output.
+
+.DESCRIPTION
+Wraps Invoke-ProcessCapture for a staged tool executable and formats the result into the
+standard combined output text block.
+
+.FUNCTION NAME
+Invoke-ToolToText
+
+.INPUTS
+ToolPath string, argument array, StepName string, and optional allowed exit-code list.
+
+.OUTPUTS
+String containing the combined tool output text.
+#>
 function Invoke-ToolToText {
   param(
     [string]$ToolPath,
@@ -1061,6 +1891,23 @@ function Invoke-ToolToText {
   return (Get-CombinedProcessOutput -Result $result)
 }
 
+<#
+.SYNOPSIS
+Builds a unique staged filename.
+
+.DESCRIPTION
+Combines the supplied prefix, hostname, timestamp, GUID fragment, and extension into a
+unique staged artifact filename.
+
+.FUNCTION NAME
+New-StageName
+
+.INPUTS
+Prefix string and Extension string.
+
+.OUTPUTS
+String staged filename.
+#>
 function New-StageName {
   param([string]$Prefix,[string]$Extension)
   $ts = Get-Date -Format "yyyyMMdd_HHmmss"
@@ -1068,6 +1915,23 @@ function New-StageName {
   return ("{0}_{1}_{2}_{3}{4}" -f $Prefix, $env:COMPUTERNAME, $ts, $guid, $Extension)
 }
 
+<#
+.SYNOPSIS
+Resolves the binary path for one Windows service.
+
+.DESCRIPTION
+Queries Win32_Service for the requested service name and extracts the executable path
+from the service PathName field.
+
+.FUNCTION NAME
+Get-ServiceBinaryPath
+
+.INPUTS
+Name string for the service.
+
+.OUTPUTS
+String service-binary path or null when unresolved.
+#>
 function Get-ServiceBinaryPath {
   param([string]$Name)
   try {
@@ -1085,6 +1949,23 @@ function Get-ServiceBinaryPath {
   }
 }
 
+<#
+.SYNOPSIS
+Stages a copy of one filesystem path into the staged directory.
+
+.DESCRIPTION
+Validates that the source path exists, ensures the staged directory exists, copies the
+source into a unique staged filename, and returns the staged path.
+
+.FUNCTION NAME
+Stage-PathCopy
+
+.INPUTS
+SourcePath string and StagedDir string.
+
+.OUTPUTS
+String staged copy path.
+#>
 function Stage-PathCopy {
   param([string]$SourcePath,[string]$StagedDir)
   if (-not (Test-Path -LiteralPath $SourcePath)) {
@@ -1097,6 +1978,23 @@ function Stage-PathCopy {
   return $dest
 }
 
+<#
+.SYNOPSIS
+Exports one scheduled task XML surface.
+
+.DESCRIPTION
+Runs schtasks.exe /query /xml for the requested task name and returns the combined
+command output text.
+
+.FUNCTION NAME
+Get-TaskXml
+
+.INPUTS
+TaskName string.
+
+.OUTPUTS
+String containing task XML command output or an error message.
+#>
 function Get-TaskXml {
   param([string]$TaskName)
   try {
@@ -1108,6 +2006,24 @@ function Get-TaskXml {
   }
 }
 
+<#
+.SYNOPSIS
+Exports a filtered EVTX file for the requested channel.
+
+.DESCRIPTION
+Builds the timediff-based XPath query for the requested window and optional event IDs,
+invokes wevtutil.exe, and verifies that the EVTX file was created.
+
+.FUNCTION NAME
+Export-FilteredEvtx
+
+.INPUTS
+LogChannel string, WindowHours integer, optional event IDs, OutPath string, and
+ScratchDir string.
+
+.OUTPUTS
+No direct output. Writes the EVTX file to OutPath or throws on failure.
+#>
 function Export-FilteredEvtx {
   param(
     [string]$LogChannel,
@@ -1148,6 +2064,23 @@ function Export-FilteredEvtx {
   }
 }
 
+<#
+.SYNOPSIS
+Builds the tool map for the staged tools directory.
+
+.DESCRIPTION
+Resolves the expected collector helper tools from the staged tools directory and returns
+the resulting tool-path map.
+
+.FUNCTION NAME
+Get-ToolMap
+
+.INPUTS
+ToolsDir string.
+
+.OUTPUTS
+Hashtable mapping tool names to resolved paths.
+#>
 function Get-ToolMap {
   param([string]$ToolsDir)
   return @{
@@ -1163,6 +2096,23 @@ function Get-ToolMap {
   }
 }
 
+<#
+.SYNOPSIS
+Builds the tool-availability table text.
+
+.DESCRIPTION
+Formats the tool map into an analyst-friendly table showing tool presence and resolved
+path.
+
+.FUNCTION NAME
+Get-CommandAvailabilityTable
+
+.INPUTS
+ToolMap hashtable.
+
+.OUTPUTS
+String containing the tool-availability table.
+#>
 function Get-CommandAvailabilityTable {
   param([hashtable]$ToolMap)
   $rows = foreach ($key in ($ToolMap.Keys | Sort-Object)) {
@@ -1175,6 +2125,24 @@ function Get-CommandAvailabilityTable {
   return ($rows | Format-Table -AutoSize | Out-String -Width 500)
 }
 
+<#
+.SYNOPSIS
+Creates the run manifest JSON file.
+
+.DESCRIPTION
+Builds the standard manifest object for the current run, including files, notes, errors,
+recommendations, tool map, and extra metadata, writes it to disk, and returns the path.
+
+.FUNCTION NAME
+New-Manifest
+
+.INPUTS
+ManifestPath, State, ModeName, TierName, Files array, ToolMap hashtable, and Extra
+hashtable.
+
+.OUTPUTS
+String manifest path.
+#>
 function New-Manifest {
   param(
     [string]$ManifestPath,
@@ -1205,6 +2173,24 @@ function New-Manifest {
   return $ManifestPath
 }
 
+<#
+.SYNOPSIS
+Creates one ZIP bundle from the supplied paths.
+
+.DESCRIPTION
+Ensures the bundles directory exists, removes any prior bundle with the same name,
+filters the input list to existing paths, creates the ZIP archive, and returns the final
+bundle path.
+
+.FUNCTION NAME
+New-BundleZip
+
+.INPUTS
+BundlesDir string, BundleName string, and Paths string array.
+
+.OUTPUTS
+String bundle ZIP path.
+#>
 function New-BundleZip {
   param(
     [string]$BundlesDir,
