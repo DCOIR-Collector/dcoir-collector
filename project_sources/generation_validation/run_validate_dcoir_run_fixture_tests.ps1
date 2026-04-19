@@ -40,7 +40,7 @@ function New-FixtureRun {
     [int[]]$AuditExitCodes
   )
 
-  $runRoot = Join-Path $Root $Name
+  $runRoot = Join-Path $Root ("DCOIR_{0}" -f $Name)
   $reportsDir = Join-Path $runRoot 'reports'
   $artifactsDir = Join-Path $runRoot 'final_artifacts'
   $bundleDir = Join-Path $runRoot 'bundles'
