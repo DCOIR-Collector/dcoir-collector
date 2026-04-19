@@ -74,12 +74,31 @@ def function_name(raw: str) -> str:
     return m.group(1) if m else raw.strip()
 
 
+def extract_adjacent_help_block(lines: list[str], lineno: int) -> str:
+    idx = lineno - 2
+    while idx >= 0 and not lines[idx].strip():
+        idx -= 1
+
+    if idx < 0 or "#>" not in lines[idx]:
+        return ""
+
+    end_idx = idx
+    idx -= 1
+    while idx >= 0:
+        if "<#" in lines[idx]:
+            start_idx = idx
+            return "\n".join(lines[start_idx:end_idx + 1])
+        if re.match(r"^\s*function\s+[A-Za-z0-9_-]+", lines[idx]):
+            return ""
+        idx -= 1
+    return ""
+
+
 def has_help_near_function(lines: list[str], lineno: int) -> bool:
-    window_start = max(0, lineno - 14)
-    window = "\n".join(lines[window_start:lineno])
-    if "<#" not in window or "#>" not in window:
+    block = extract_adjacent_help_block(lines, lineno)
+    if not block:
         return False
-    return any(token in window for token in FUNCTION_HELP_TOKENS)
+    return any(token in block for token in FUNCTION_HELP_TOKENS)
 
 
 def analyze_file(path: Path, repo_root: Path) -> dict:
