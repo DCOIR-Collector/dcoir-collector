@@ -211,7 +211,7 @@ function Get-NetstatCaptureBundle {
 
   if ($requiresElevation) {
     $status = 'OWNER_AWARE_REQUIRES_ELEVATION'
-    Add-CollectorError 'Owner-aware netstat capture (netstat -abno) requires elevation in the current execution context. A supplemental PID-only netstat capture was collected separately, but executable ownership attribution remains unavailable until an elevated run.'
+    Add-CollectorNote 'Owner-aware netstat capture (netstat -abno) requires elevation in the current execution context. A supplemental PID-only netstat capture was collected separately, but executable ownership attribution remains unavailable until an elevated run.'
     $pidOnlyResult = Invoke-CmdCapture -Command 'netstat -ano' -StepName 'NETWORK_NETSTAT_PID_ONLY' -AllowedExitCodes @(0)
     $pidOnlyText = Get-CombinedProcessOutput -Result $pidOnlyResult
   } elseif ($ownerAwareResult.ExitCode -ne 0) {
