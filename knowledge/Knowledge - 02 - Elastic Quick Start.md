@@ -22,16 +22,19 @@ _Endpoint response-console usage versus local workstation usage_
 
 | Intent | Example |
 | --- | --- |
-| Run TCP enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment" |
-| Run raw Security-log enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment" |
-| Cleanup current DCOIR run | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick cleanup" --comment "Run DCOIR cleanup" |
+| Run version/build preflight | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\DCOIR_Collector.ps1' -Version" --comment "Get DCOIR collector version" |
+| Run TCP enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\DCOIR_Collector.ps1' -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment" |
+| Run raw Security-log enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\DCOIR_Collector.ps1' -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment" |
+| Cleanup current DCOIR run | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\DCOIR_Collector.ps1' -Quick cleanup" --comment "Run DCOIR cleanup" |
 
 ## Response-action quoting and path lessons
 
 - Keep the entire PowerShell invocation inside the `execute --command` quoted string.
 - Use the runtime filename the operator actually stages and runs: `DCOIR_Collector.ps1`.
-- Keep the collector path explicit as `.\DCOIR_Collector.ps1` unless the response-action lane later proves a different staged path.
+- Keep the collector path explicit as `'.\DCOIR_Collector.ps1'` unless the response-action lane later proves a different staged path.
+- Prefer one proven quoted-relative runtime pattern consistently rather than mixing absolute-path and relative-path styles in endpoint guidance.
 - Put the operator intent in the `--comment` field instead of cramming prose into the command body.
+- For script removal in the response-action lane, prefer the collector-emitted `DELETE_SCRIPT_COMMAND` literal-path form.
 - If a command works locally but fails in the response console, first check lane separation and quoting before assuming a collector defect.
 
 ## When to use Elastic quick start
