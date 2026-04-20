@@ -8,13 +8,20 @@ Stable baseline
 - Infrastructure-first reprioritization closeout is now the promoted current state.
 
 Active branch
-- `PLAN-20260417-github-airtable-overlap-cleanup` is now the current active branch.
-- Resume at T1: continue overlap cleanup with Airtable-first candidate tracking, bounded governed narrative refreshes, promoted closeout history in GitHub, and manual-delete fallback preserved for any later delete path.
+- Airtable live authority has advanced beyond the earlier overlap-cleanup branch.
+- `PLAN-20260416-collector-master-wave` is the last confirmed live execution branch from Airtable as of 2026-04-20.
+- Treat collector as the current active branch unless the operator reprioritizes again or a newer Airtable queue confirmation supersedes this note.
+
+Blocked next branch
+- `PLAN-20260415-airtable-operations-and-workflow-hardening`
+- This branch remains blocked pending automatic scheduled-health-check proof.
 
 Queued next branch
-- `PLAN-20260415-airtable-operations-and-workflow-hardening`
-- `PLAN-20260416-collector-master-wave`
 - `PLAN-20260415-workflow-collector-gemini-remediation-wave`
+
+Completed prior branch
+- `PLAN-20260417-github-airtable-overlap-cleanup` is complete promoted history, not the current active branch.
 
 Retired live queue surfaces
 - GitHub todo files remain only as migration notes or history, not as active queue authority.
+- When GitHub narrative and Airtable queue order differ, use Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` as the live authority.
