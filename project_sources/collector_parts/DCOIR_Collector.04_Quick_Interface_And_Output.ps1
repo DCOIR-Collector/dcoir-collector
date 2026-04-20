@@ -61,6 +61,57 @@ function Get-QuickUsageText {
 
 <#
 .SYNOPSIS
+Returns the stable collector build identity string.
+
+.DESCRIPTION
+Builds a concise human-readable build identity from the runtime filename and version.
+An explicit version may be supplied for state-derived readback paths such as cleanup.
+
+.FUNCTION NAME
+Get-CollectorBuildIdentity
+
+.INPUTS
+Optional Version string.
+
+.OUTPUTS
+String build identity.
+#>
+function Get-CollectorBuildIdentity {
+  param([string]$Version = $ScriptVersion)
+  return ("DCOIR_Collector.ps1/{0}" -f $Version)
+}
+
+<#
+.SYNOPSIS
+Returns the non-destructive collector version/build text.
+
+.DESCRIPTION
+Builds the bounded version/build surface intended for preflight checks before collect,
+enrich, cleanup, or other stateful operator actions.
+
+.FUNCTION NAME
+Get-CollectorVersionText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing version/build preflight lines.
+#>
+function Get-CollectorVersionText {
+  $scriptPath = Get-CollectorAbsolutePath
+  $resolvedPackageName = if ([string]::IsNullOrWhiteSpace($PackageName)) { "DCOIR_Collector.zip" } else { $PackageName }
+  return @(
+    ("COLLECTOR_VERSION={0}" -f $ScriptVersion),
+    ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity)),
+    "COLLECTOR_RUNTIME_FILENAME=DCOIR_Collector.ps1",
+    ("EXPECTED_PACKAGE_NAME={0}" -f $resolvedPackageName),
+    ("COLLECTOR_SCRIPT_PATH={0}" -f $scriptPath)
+  ) -join [Environment]::NewLine
+}
+
+<#
+.SYNOPSIS
 Returns the full collector help text.
 
 .DESCRIPTION
@@ -84,6 +135,7 @@ function Get-CollectorHelpText {
   $lines += ""
   $lines += "Top-level usage:"
   $lines += "  $cmd -Help"
+  $lines += "  $cmd -Version"
   $lines += "  $cmd -Mode Collect -Tier T1"
   $lines += "  $cmd -Mode Collect -Tier T2"
   $lines += "  $cmd -Mode Enrich -Action TcpvconRefresh -NewEnrichSession"
@@ -95,6 +147,10 @@ function Get-CollectorHelpText {
   $lines += "Accepted top-level modes: Collect, Enrich, Cleanup"
   $lines += "Accepted tiers: T1, T2"
   $lines += "Accepted target profiles: Generic, PopupWindow, ScriptExecution, PersistenceFollowUp, NetworkOnly, ProcessAndPowerShell"
+  $lines += ""
+  $lines += "Version/build preflight:"
+  $lines += "  - Run -Version before collect, enrich, cleanup, package movement, or other stateful test steps."
+  $lines += "  - Compare COLLECTOR_VERSION and COLLECTOR_BUILD_IDENTITY to the PS1/ZIP you intended to validate before continuing."
   $lines += ""
   $lines += "Targeted usage examples:"
   $lines += '  $cmd -Targeted -TargetProfile PopupWindow -WindowStart "2026-04-08T09:00:00Z" -WindowEnd "2026-04-08T10:00:00Z" -UserReport "User reported popup"'
