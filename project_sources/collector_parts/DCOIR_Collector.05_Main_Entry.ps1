@@ -181,7 +181,7 @@ try {
       $status = "SUCCESS"
       if (@($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
 
-      $collectorCommandBase = Get-CollectorPowerShellCommandBase
+      $collectorCommandBase = Get-CollectorResponseActionCommandBase
       $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
 
       Write-Output ("STATUS={0}" -f $status)
