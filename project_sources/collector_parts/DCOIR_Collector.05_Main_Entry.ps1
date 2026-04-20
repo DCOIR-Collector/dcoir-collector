@@ -1,3 +1,8 @@
+if ($ShowVersion) {
+  Write-Output (Get-CollectorVersionText)
+  return
+}
+
 if ($ShowHelp) {
   Write-Output (Get-CollectorHelpText)
   return
@@ -186,6 +191,8 @@ try {
 
       Write-Output ("STATUS={0}" -f $status)
       Write-Output ("RUN_ID={0}" -f $RunId)
+      Write-Output ("COLLECTOR_VERSION={0}" -f $state.CollectorVersion)
+      Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $state.CollectorVersion))
       Write-Output ("BASELINE_REPORT_PATH={0}" -f $baselineReportPath)
       Write-Output ("METADATA_REPORT_PATH={0}" -f $metadataReportPath)
       Write-Output ("EXECUTION_CONTEXT_PATH={0}" -f $state.ExecutionContextPath)
@@ -262,6 +269,8 @@ try {
 
       Write-Output ("STATUS={0}" -f $status)
       Write-Output ("RUN_ID={0}" -f $state.RunId)
+      Write-Output ("COLLECTOR_VERSION={0}" -f [string]$state.CollectorVersion)
+      Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version ([string]$state.CollectorVersion)))
       Write-Output ("ENRICH_SESSION_ID={0}" -f $session.SessionId)
       Write-Output ("SESSION_RESOLUTION_MODE={0}" -f $session.SessionResolutionMode)
       if ($result) {
@@ -288,9 +297,16 @@ try {
 
     "Cleanup" {
       $loaded = Load-State -Root $OutRoot -CurrentRunId $RunId
+      $cleanupCollectorVersion = if (($loaded.PSObject.Properties.Name -contains 'CollectorVersion') -and -not [string]::IsNullOrWhiteSpace([string]$loaded.CollectorVersion)) {
+        [string]$loaded.CollectorVersion
+      } else {
+        $ScriptVersion
+      }
       Invoke-Cleanup -StateObject $loaded
       Write-Output ("CLEANUP_STATUS=COMPLETE")
       Write-Output ("RUN_ID={0}" -f $loaded.RunId)
+      Write-Output ("COLLECTOR_VERSION={0}" -f $cleanupCollectorVersion)
+      Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $cleanupCollectorVersion))
       Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f (Get-CollectorDeleteScriptCommandText))
       Write-QuickNextSteps -Phase "Cleanup"
     }
