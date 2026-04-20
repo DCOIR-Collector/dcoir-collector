@@ -22,10 +22,13 @@ Live queue model
 - Airtable `Work Items` holds ranked and superseded queue rows.
 - Airtable `Plans` owns structured execution when a plan is active.
 - Collector, Gemini, workflow, and skill branches should move by Airtable queue state first.
+- Anything tracked as live Airtable control should not also be tracked as a duplicate live-control surface in GitHub.
 
 Promotion model
 - Promote to GitHub when a decision changes the durable workflow, authority model, validation posture, or closeout record.
 - Do not promote ordinary rank changes, active-versus-parked flips, or small queue churn into GitHub todo files.
+- If a GitHub surface is later confirmed to duplicate Airtable live control, record the decision in Airtable first and treat any cleanup as a separate follow-on action rather than an implicit control-plane write.
+- When duplicate-control cleanup is needed, prefer manual operator execution with a retained local backup before deletion.
 
 Retired surfaces
 - `project_sources/LOG-01_DCOIR_Todo_Log.txt`
