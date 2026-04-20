@@ -59,8 +59,18 @@ function Get-CollectorVersionText {
   ) -join [Environment]::NewLine
 }
 
+function Get-CollectorResponseActionCommandBase {
+  return "powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\DCOIR_Collector.ps1'"
+}
+
+function Get-CollectorDeleteScriptCommandText {
+  $collectorPath = Get-CollectorAbsolutePath
+  return ('execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Remove-Item -LiteralPath ''{0}'' -Force" --comment "Remove uploaded DCOIR_Collector script"' -f $collectorPath)
+}
+
 function Get-CollectorHelpText {
   $cmd = Get-CollectorPowerShellCommandBase
+  $responseCmd = Get-CollectorResponseActionCommandBase
   $lines = @()
   $lines += "DCOIR Collector Help"
   $lines += ""
@@ -82,6 +92,7 @@ function Get-CollectorHelpText {
   $lines += "Version/build preflight:"
   $lines += "  - Run -Version before collect, enrich, cleanup, package movement, or other stateful test steps."
   $lines += "  - Compare COLLECTOR_VERSION and COLLECTOR_BUILD_IDENTITY to the PS1/ZIP you intended to validate before continuing."
+  $lines += "  - Response-action-safe example: execute --command \"$responseCmd -Version\" --comment \"Get DCOIR collector version\""
   $lines += ""
   $lines += "Targeted usage examples:"
   $lines += '  $cmd -Targeted -TargetProfile PopupWindow -WindowStart "2026-04-08T09:00:00Z" -WindowEnd "2026-04-08T10:00:00Z" -UserReport "User reported popup"'
@@ -99,6 +110,8 @@ function Get-CollectorHelpText {
   $lines += ""
   $lines += "Lane guidance:"
   $lines += "  - Endpoint response-console usage should wrap the PowerShell command in an Elastic response action."
+  $lines += "  - Use the response-action-safe runtime pattern with '.\DCOIR_Collector.ps1' inside the execute --command string."
+  $lines += "  - Use the collector-emitted DELETE_SCRIPT_COMMAND literal-path form for script removal in the response-action lane."
   $lines += "  - Local workstation and regression usage should run the PowerShell command directly without the response-action wrapper."
   $lines += "  - Prefer PowerShell 5.1 syntax and the runtime filename DCOIR_Collector.ps1."
   return ($lines -join [Environment]::NewLine)
@@ -190,28 +203,28 @@ function Apply-QuickShortcut {
 function Write-QuickNextSteps {
   param([string]$Phase)
 
-  $cmd = Get-CollectorPowerShellCommandBase
+  $responseCmd = Get-CollectorResponseActionCommandBase
   Write-Output "NEXT_QUICK_COMMANDS"
   switch ($Phase) {
     "Collect" {
-      Write-Output ('1. execute --command "{0} -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment"' -f $cmd)
-      Write-Output ('2. execute --command "{0} -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment"' -f $cmd)
+      Write-Output ('1. execute --command "{0} -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment"' -f $responseCmd)
+      Write-Output ('2. execute --command "{0} -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment"' -f $responseCmd)
       Write-Output ('3. If Gemini upload is the next step, prefer UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, and representative final_artifacts slices. No merged baseline report is emitted in this build.' )
-      Write-Output ('4. execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $cmd)
+      Write-Output ('4. execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $responseCmd)
     }
     "EnrichOpen" {
-      Write-Output ('1. execute --command "{0} -Quick enrich-add-logtext -Target Security" --comment "Add Security log text enrichment to current DCOIR session"' -f $cmd)
-      Write-Output ('2. execute --command "{0} -Quick enrich-finalize" --comment "Finalize current DCOIR enrichment session"' -f $cmd)
+      Write-Output ('1. execute --command "{0} -Quick enrich-add-logtext -Target Security" --comment "Add Security log text enrichment to current DCOIR session"' -f $responseCmd)
+      Write-Output ('2. execute --command "{0} -Quick enrich-finalize" --comment "Finalize current DCOIR enrichment session"' -f $responseCmd)
       Write-Output '3. enrich-add-* should reuse the current open session unless you explicitly request a new one.'
     }
     "EnrichFinalized" {
       Write-Output '1. Review the finalized bundle you already retrieved before recommending another endpoint retrieval of the same path.'
-      Write-Output ('2. execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $cmd)
+      Write-Output ('2. execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $responseCmd)
     }
     "Cleanup" {
       Write-Output '1. Local script file remains in place by design unless you run the explicit delete command.'
-      Write-Output ('2. execute --command "{0} -Quick collect-t1" --comment "Run DCOIR collect T1"' -f $cmd)
-      Write-Output ('3. execute --command "{0} -Quick collect-targeted-popup -Target ""User reported popup follow-up""" --comment "Run DCOIR targeted popup-style collect"' -f $cmd)
+      Write-Output ('2. execute --command "{0} -Quick collect-t1" --comment "Run DCOIR collect T1"' -f $responseCmd)
+      Write-Output ('3. execute --command "{0} -Quick collect-targeted-popup -Target ""User reported popup follow-up""" --comment "Run DCOIR targeted popup-style collect"' -f $responseCmd)
     }
   }
 }
