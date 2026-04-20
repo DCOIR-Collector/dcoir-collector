@@ -19,23 +19,6 @@ Strings for help/usage and next-step guidance, updated collector runtime paramet
 quick shortcuts, and cleanup side effects on package/run paths.
 #>
 
-<#
-.SYNOPSIS
-Returns short operator-facing examples for the supported quick shortcuts.
-
-.DESCRIPTION
-Builds a text block that shows the current collector command base followed by common
-collect, targeted collect, enrich, finalize, and cleanup quick-command examples.
-
-.FUNCTION NAME
-Get-QuickUsageText
-
-.INPUTS
-No direct parameters. Uses the resolved collector command base from the current runtime.
-
-.OUTPUTS
-String containing newline-delimited quick usage examples.
-#>
 function Get-QuickUsageText {
   $cmd = Get-CollectorPowerShellCommandBase
   return @(
@@ -59,45 +42,11 @@ function Get-QuickUsageText {
   ) -join [Environment]::NewLine
 }
 
-<#
-.SYNOPSIS
-Returns the stable collector build identity string.
-
-.DESCRIPTION
-Builds a concise human-readable build identity from the runtime filename and version.
-An explicit version may be supplied for state-derived readback paths such as cleanup.
-
-.FUNCTION NAME
-Get-CollectorBuildIdentity
-
-.INPUTS
-Optional Version string.
-
-.OUTPUTS
-String build identity.
-#>
 function Get-CollectorBuildIdentity {
   param([string]$Version = $ScriptVersion)
   return ("DCOIR_Collector.ps1/{0}" -f $Version)
 }
 
-<#
-.SYNOPSIS
-Returns the non-destructive collector version/build text.
-
-.DESCRIPTION
-Builds the bounded version/build surface intended for preflight checks before collect,
-enrich, cleanup, or other stateful operator actions.
-
-.FUNCTION NAME
-Get-CollectorVersionText
-
-.INPUTS
-No direct parameters.
-
-.OUTPUTS
-String containing version/build preflight lines.
-#>
 function Get-CollectorVersionText {
   $scriptPath = Get-CollectorAbsolutePath
   $resolvedPackageName = if ([string]::IsNullOrWhiteSpace($PackageName)) { "DCOIR_Collector.zip" } else { $PackageName }
@@ -110,24 +59,6 @@ function Get-CollectorVersionText {
   ) -join [Environment]::NewLine
 }
 
-<#
-.SYNOPSIS
-Returns the full collector help text.
-
-.DESCRIPTION
-Builds the main help output for the collector, including top-level usage, quick usage,
-accepted modes and tiers, targeted-collection guidance, accepted enrich actions, and
-lane guidance for endpoint versus local execution.
-
-.FUNCTION NAME
-Get-CollectorHelpText
-
-.INPUTS
-No direct parameters. Uses the current collector command base and runtime defaults.
-
-.OUTPUTS
-String containing the full collector help text.
-#>
 function Get-CollectorHelpText {
   $cmd = Get-CollectorPowerShellCommandBase
   $lines = @()
@@ -173,96 +104,23 @@ function Get-CollectorHelpText {
   return ($lines -join [Environment]::NewLine)
 }
 
-<#
-.SYNOPSIS
-Translates a supported quick shortcut into full collector runtime settings.
-
-.DESCRIPTION
-Normalizes the requested quick shortcut, validates any required target inputs, and sets
-the corresponding Mode, Tier, targeted-collection, enrich-action, or cleanup state in
-script scope so the main collector entry path can continue with a fully expanded set of
-parameters.
-
-.FUNCTION NAME
-Apply-QuickShortcut
-
-.INPUTS
-No direct parameters. Uses the current Quick, Target, Target2, Hours, and related
-runtime globals already bound in the collector session.
-
-.OUTPUTS
-No direct output. Mutates script-scoped runtime variables to reflect the selected quick
-shortcut or throws when the shortcut or required target input is invalid.
-#>
 function Apply-QuickShortcut {
   param()
 
   if ([string]::IsNullOrWhiteSpace($Quick)) { return }
   $q = $Quick.ToLowerInvariant().Replace('_','-')
 
-  <#
-  .SYNOPSIS
-  Validates that a quick shortcut supplied a path target.
-
-  .DESCRIPTION
-  Throws a targeted quick-command error when -Target is empty and otherwise returns the
-  supplied path unchanged.
-
-  .FUNCTION NAME
-  Require-QuickTargetPath
-
-  .INPUTS
-  Uses the current quick-command context and the script-scoped Target value.
-
-  .OUTPUTS
-  String path from -Target.
-  #>
   function Require-QuickTargetPath {
     if ([string]::IsNullOrWhiteSpace($Target)) { throw ("Quick {0} requires -Target <path>." -f $q) }
     return $Target
   }
 
-  <#
-  .SYNOPSIS
-  Validates that a quick shortcut supplied a named target value.
-
-  .DESCRIPTION
-  Throws a targeted quick-command error when -Target is empty and otherwise returns the
-  supplied target string. The label parameter is used only to make the error text more
-  specific.
-
-  .FUNCTION NAME
-  Require-QuickTargetName
-
-  .INPUTS
-  Label string describing the required target type and the script-scoped Target value.
-
-  .OUTPUTS
-  String from -Target.
-  #>
   function Require-QuickTargetName {
     param([string]$Label)
     if ([string]::IsNullOrWhiteSpace($Target)) { throw ("Quick {0} requires -Target <{1}>." -f $q, $Label) }
     return $Target
   }
 
-  <#
-  .SYNOPSIS
-  Validates that a quick shortcut supplied a numeric PID target.
-
-  .DESCRIPTION
-  Throws when -Target is missing or not numeric and returns the parsed integer PID when
-  validation succeeds.
-
-  .FUNCTION NAME
-  Require-QuickTargetPid
-
-  .INPUTS
-  Uses the script-scoped Target value for the current quick command.
-
-  .OUTPUTS
-  Integer PID parsed from -Target.
-  #>
   function Require-QuickTargetPid {
     if ([string]::IsNullOrWhiteSpace($Target)) { throw ("Quick {0} requires -Target <pid>." -f $q) }
     $tmp = 0
@@ -329,23 +187,6 @@ function Apply-QuickShortcut {
   }
 }
 
-<#
-.SYNOPSIS
-Prints concise next-step guidance after a major collector phase.
-
-.DESCRIPTION
-Emits operator-facing follow-up commands and reminders tailored to the current phase,
-such as collect completion, open enrich session, finalized enrich session, or cleanup.
-
-.FUNCTION NAME
-Write-QuickNextSteps
-
-.INPUTS
-Phase string naming the collector state transition that just completed.
-
-.OUTPUTS
-Writes newline-delimited guidance strings to stdout.
-#>
 function Write-QuickNextSteps {
   param([string]$Phase)
 
@@ -355,7 +196,7 @@ function Write-QuickNextSteps {
     "Collect" {
       Write-Output ('1. execute --command "{0} -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment"' -f $cmd)
       Write-Output ('2. execute --command "{0} -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment"' -f $cmd)
-      Write-Output ('3. If Gemini upload is the next step, prefer UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, and representative final_artifacts slices before the full baseline report.' )
+      Write-Output ('3. If Gemini upload is the next step, prefer UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, and representative final_artifacts slices. No merged baseline report is emitted in this build.' )
       Write-Output ('4. execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $cmd)
     }
     "EnrichOpen" {
@@ -375,23 +216,6 @@ function Write-QuickNextSteps {
   }
 }
 
-<#
-.SYNOPSIS
-Deletes the current package and run-root artifacts for cleanup mode.
-
-.DESCRIPTION
-Builds the set of cleanup targets from the current state object and removes any package
-path or run-root path that still exists on disk.
-
-.FUNCTION NAME
-Invoke-Cleanup
-
-.INPUTS
-State object containing PackagePath and RunRoot values.
-
-.OUTPUTS
-No direct output. Removes matching filesystem targets as a side effect.
-#>
 function Invoke-Cleanup {
   param($StateObject)
   $targets = @([string]$StateObject.PackagePath,[string]$StateObject.RunRoot) | Where-Object { $_ -and (Test-Path -LiteralPath $_) }
