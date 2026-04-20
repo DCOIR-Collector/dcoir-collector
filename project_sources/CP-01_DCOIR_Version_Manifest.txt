@@ -26,6 +26,6 @@ Current live queue note
 - Promoted current state remains the 2026-04-17 infrastructure-first reprioritization closeout.
 - Airtable live queue has since advanced beyond the earlier overlap-cleanup branch recorded in the 2026-04-17 closeout.
 - Last confirmed Airtable live execution branch as of 2026-04-20 is `PLAN-20260416-collector-master-wave`.
-- `PLAN-20260415-airtable-operations-and-workflow-hardening` remains blocked pending automatic scheduled-health-check proof.
-- `PLAN-20260415-workflow-collector-gemini-remediation-wave` remains queued behind collector and blocked hardening follow-through.
+- `PLAN-20260415-workflow-collector-gemini-remediation-wave` is the next queued branch after collector by operator reprioritization on 2026-04-20.
+- `PLAN-20260415-airtable-operations-and-workflow-hardening` remains blocked and is now queued behind Gemini pending automatic scheduled-health-check proof.
 - Treat Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` as fresher than this manifest for live queue order until a later promoted current-state refresh supersedes this note.
