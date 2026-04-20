@@ -10,8 +10,8 @@ Current stable baseline
 
 What is still open right now
 1. Continue the live Airtable execution branch `PLAN-20260416-collector-master-wave`.
-2. Keep `PLAN-20260415-airtable-operations-and-workflow-hardening` visible as the blocked next branch pending automatic scheduled-health-check proof.
-3. Then continue into `PLAN-20260415-workflow-collector-gemini-remediation-wave` unless the operator reprioritizes again.
+2. Then continue into `PLAN-20260415-workflow-collector-gemini-remediation-wave`.
+3. Keep `PLAN-20260415-airtable-operations-and-workflow-hardening` visible as a blocked later branch pending automatic scheduled-health-check proof unless the operator reprioritizes again.
 
 What is no longer current
 - `PLAN-20260417-github-airtable-overlap-cleanup` is complete promoted history, not the live active branch.
