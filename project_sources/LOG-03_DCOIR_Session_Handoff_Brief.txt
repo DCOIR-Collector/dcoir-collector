@@ -12,12 +12,13 @@ Active branch
 - `PLAN-20260416-collector-master-wave` is the last confirmed live execution branch from Airtable as of 2026-04-20.
 - Treat collector as the current active branch unless the operator reprioritizes again or a newer Airtable queue confirmation supersedes this note.
 
-Blocked next branch
-- `PLAN-20260415-airtable-operations-and-workflow-hardening`
-- This branch remains blocked pending automatic scheduled-health-check proof.
-
 Queued next branch
 - `PLAN-20260415-workflow-collector-gemini-remediation-wave`
+- Operator reprioritized Gemini ahead of Airtable hardening on 2026-04-20.
+
+Blocked later branch
+- `PLAN-20260415-airtable-operations-and-workflow-hardening`
+- This branch remains blocked pending automatic scheduled-health-check proof and is now behind Gemini in queue order.
 
 Completed prior branch
 - `PLAN-20260417-github-airtable-overlap-cleanup` is complete promoted history, not the current active branch.
