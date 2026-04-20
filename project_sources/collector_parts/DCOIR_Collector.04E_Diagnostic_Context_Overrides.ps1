@@ -121,8 +121,9 @@ Builds a diagnostic-friendly Security high-signal summary.
 
 .DESCRIPTION
 Uses the effective event window to query key Security events, suppresses routine
-service/machine noise, and returns analyst-facing summary text while preserving the
-special non-elevated visibility message when appropriate.
+service/machine noise and routine Microsoft-managed task/service churn, and returns
+analyst-facing summary text while preserving the special non-elevated visibility
+message when appropriate.
 
 .FUNCTION NAME
 Get-SecurityHighSignalSummaryText
@@ -177,12 +178,19 @@ function Get-SecurityHighSignalSummaryText {
       $targetUser = Get-EventMapValue -Map $m -Key 'TargetUserName'
       $targetDomain = Get-EventMapValue -Map $m -Key 'TargetDomainName'
       $logonType = Get-EventMapValue -Map $m -Key 'LogonType'
+      $taskName = Get-EventMapValue -Map $m -Key 'TaskName'
+      $serviceName = Get-EventMapValue -Map $m -Key 'ServiceName'
+      $serviceFileName = Get-EventMapValue -Map $m -Key 'ServiceFileName'
 
       $subjectIsMachine = ($subjectUser -like '*$')
       $targetIsMachine = ($targetUser -like '*$')
       $subjectIsBuiltinService = $subjectUser -in @('SYSTEM','LOCAL SERVICE','NETWORK SERVICE','ANONYMOUS LOGON')
       $targetIsBuiltinService = $targetUser -in @('SYSTEM','LOCAL SERVICE','NETWORK SERVICE','ANONYMOUS LOGON')
       $isServiceStyleLogon = $logonType -in @('0','5')
+      $taskIsMicrosoftManaged = $taskName -like '\Microsoft\Windows\*'
+      $serviceFileIsWindowsManaged = $serviceFileName -match '^(?i)(%systemroot%|[A-Z]:\\Windows\\)'
+      $serviceHostStyle = ($serviceFileName -match '(?i)\\svchost\.exe(\s|$)') -or ($serviceFileName -match '(?i)\\services\.exe(\s|$)')
+      $serviceNameLooksPerUser = $serviceName -match '(?i)^(CDPUserSvc|OneSyncSvc|UnistoreSvc|UserDataSvc|WpnUserService|BcastDVRUserService|PimIndexMaintenanceSvc|PrintWorkflowUserSvc|UdkUserSvc|CaptureService|ConsentUxUserSvc|CredentialEnrollmentManagerUserSvc|DevicePickerUserSvc|DevicesFlowUserSvc)(_[0-9a-f]+)?$'
 
       $suppress = $false
       $suppressReason = $null
@@ -198,6 +206,18 @@ function Get-SecurityHighSignalSummaryText {
           if ($subjectIsMachine -or $subjectIsBuiltinService) {
             $suppress = $true
             $suppressReason = 'routine special privileges assignment for service or machine account'
+          }
+        }
+        4697 {
+          if (($subjectIsMachine -or $subjectIsBuiltinService) -and $serviceFileIsWindowsManaged -and ($serviceHostStyle -or $serviceNameLooksPerUser)) {
+            $suppress = $true
+            $suppressReason = 'routine Windows-managed service registration or update'
+          }
+        }
+        4698 {
+          if (($subjectIsMachine -or $subjectIsBuiltinService) -and $taskIsMicrosoftManaged) {
+            $suppress = $true
+            $suppressReason = 'routine Microsoft-managed scheduled task registration or update'
           }
         }
       }
@@ -230,8 +250,12 @@ function Get-SecurityHighSignalSummaryText {
 
     $counts = $interesting | Group-Object { $_.EventRecord.Id } | Sort-Object Name
     [void]$lines.Add('INTERESTING_EVENT_COUNTS')
-    foreach ($g in $counts) {
-      [void]$lines.Add(("Id={0} Count={1}" -f $g.Name, $g.Count))
+    if (@($counts).Count -eq 0) {
+      [void]$lines.Add('Id=NONE Count=0')
+    } else {
+      foreach ($g in $counts) {
+        [void]$lines.Add(("Id={0} Count={1}" -f $g.Name, $g.Count))
+      }
     }
 
     if (@($suppressed).Count -gt 0) {
@@ -241,6 +265,13 @@ function Get-SecurityHighSignalSummaryText {
       foreach ($g in $suppressedCounts) {
         [void]$lines.Add(("{0} Count={1}" -f $g.Name, $g.Count))
       }
+    }
+
+    if (@($interesting).Count -eq 0) {
+      [void]$lines.Add('')
+      [void]$lines.Add('EVENT_SUMMARY')
+      [void]$lines.Add('No analyst-facing high-signal Security events remained after routine Microsoft-managed task/service suppression in the selected window.')
+      return ($lines -join [Environment]::NewLine)
     }
 
     [void]$lines.Add('')
