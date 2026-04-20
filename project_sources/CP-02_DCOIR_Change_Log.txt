@@ -21,3 +21,9 @@ Validation notes
 - `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/CP-02_DCOIR_Change_Log.txt`, and `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt` were refreshed in a bounded pass to match that live queue order.
 - No GitHub delete action was required in this closeout pass.
 - The manual-delete fallback remains available for any later cleanup candidate whose delete path proves unreliable.
+
+Current live queue note
+- After the 2026-04-17 promoted closeout, Airtable queue authority advanced again.
+- Bounded Airtable reconciliation on 2026-04-20 confirmed that `PLAN-20260416-collector-master-wave` is now the live execution branch because `PLAN-20260415-airtable-operations-and-workflow-hardening` is blocked pending automatic scheduled-health-check proof.
+- `PLAN-20260415-workflow-collector-gemini-remediation-wave` remains queued behind collector and blocked hardening follow-through.
+- Treat Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` as the live queue source when they are newer than the promoted 2026-04-17 closeout narrative.
