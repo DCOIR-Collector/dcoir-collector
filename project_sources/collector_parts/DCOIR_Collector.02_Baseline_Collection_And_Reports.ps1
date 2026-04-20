@@ -622,17 +622,18 @@ function New-BaselineReport {
   $findings = Get-SuspiciousProcessFindings -Processes $procInventory -ExcludedPids $excludedPids
   $collectorCommandBase = Get-CollectorPowerShellCommandBase
   if (@($findings).Count -gt 0) {
+    Add-Recommendation 'The following process review candidates were selected by baseline heuristics. Treat them as triage prompts for analyst validation, not proof of malicious activity.'
     foreach ($finding in ($findings | Select-Object -First 10)) {
-      Add-Recommendation ("Suspicious process PID {0} ({1}) :: {2}" -f $finding.ProcessId, $finding.Name, $finding.Reasons)
+      Add-Recommendation ("Process review candidate PID {0} ({1}) :: heuristic flags: {2}" -f $finding.ProcessId, $finding.Name, $finding.Reasons)
       if ($finding.ExecutablePath) {
         $safePath = $finding.ExecutablePath
-        Add-Recommendation ('Suggested next action: {0} -Mode Enrich -RunId {1} -Action SigcheckPath -Path "{2}" -OutRoot "{3}"' -f $collectorCommandBase, $State.RunId, $safePath, $OutRoot)
-        Add-Recommendation ('Suggested next action: {0} -Mode Enrich -RunId {1} -Action StringsPath -Path "{2}" -OutRoot "{3}"' -f $collectorCommandBase, $State.RunId, $safePath, $OutRoot)
-        Add-Recommendation ('Suggested next action: {0} -Mode Enrich -RunId {1} -Action PullSuspiciousFile -Path "{2}" -OutRoot "{3}"' -f $collectorCommandBase, $State.RunId, $safePath, $OutRoot)
+        Add-Recommendation ('Suggested next action if analyst review warrants deeper validation: {0} -Mode Enrich -RunId {1} -Action SigcheckPath -Path "{2}" -OutRoot "{3}"' -f $collectorCommandBase, $State.RunId, $safePath, $OutRoot)
+        Add-Recommendation ('Suggested next action if analyst review warrants deeper validation: {0} -Mode Enrich -RunId {1} -Action StringsPath -Path "{2}" -OutRoot "{3}"' -f $collectorCommandBase, $State.RunId, $safePath, $OutRoot)
+        Add-Recommendation ('Suggested next action if analyst review warrants file retrieval: {0} -Mode Enrich -RunId {1} -Action PullSuspiciousFile -Path "{2}" -OutRoot "{3}"' -f $collectorCommandBase, $State.RunId, $safePath, $OutRoot)
       }
     }
   } else {
-    Add-Recommendation "No obvious suspicious process heuristics were triggered in baseline collection."
+    Add-Recommendation 'No heuristic-driven process review candidates were generated from baseline collection.'
   }
 
   $followUpText = ($Global:RecommendedActions -join [Environment]::NewLine)
