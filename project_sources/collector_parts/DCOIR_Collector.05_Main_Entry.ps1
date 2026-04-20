@@ -39,7 +39,6 @@ try {
       Expand-PackageToTools -PackagePath $packagePath -ToolsDir $dirs.ToolsDir
 
       $toolMap = Get-ToolMap -ToolsDir $dirs.ToolsDir
-      $baselineReportPath = Join-Path $dirs.ReportsDir ("DCOIR_BASELINE_{0}_{1}.txt" -f $env:COMPUTERNAME, $RunId)
       $metadataReportPath = Join-Path $dirs.ReportsDir ("DCOIR_METADATA_{0}_{1}.txt" -f $env:COMPUTERNAME, $RunId)
 
       $state = @{
@@ -55,7 +54,6 @@ try {
         BundlesDir = $dirs.BundlesDir
         StatePath = $dirs.StatePath
         PackagePath = $packagePath
-        BaselineReportPath = $baselineReportPath
         MetadataReportPath = $metadataReportPath
         UploadSummaryPath = $null
         UploadBudgetManifestPath = $null
@@ -88,9 +86,7 @@ try {
       Initialize-ParallelBaselineCache -State $state
 
       $baseline = New-BaselineReport -State $state -ToolMap $toolMap
-      Write-ReportFile -Path $baselineReportPath -Text $baseline.ReportText
       Apply-FeatureWaveCollectEnhancements -State $state -Baseline $baseline
-      Write-ReportFile -Path $baselineReportPath -Text $baseline.ReportBuilder.ToString()
 
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
@@ -105,7 +101,7 @@ try {
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
 
       $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $null
         analyst_overview = $state.AnalystOverviewPath
@@ -131,7 +127,6 @@ try {
       }
 
       $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId) -Paths @(
-        $baselineReportPath,
         $metadataReportPath,
         $state.AnalystOverviewPath,
         $state.ParallelExecutionProofPath,
@@ -158,7 +153,7 @@ try {
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
       [void](New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($baselineReportPath, $metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $bundlePath
         analyst_overview = $state.AnalystOverviewPath
@@ -193,7 +188,6 @@ try {
       Write-Output ("RUN_ID={0}" -f $RunId)
       Write-Output ("COLLECTOR_VERSION={0}" -f $state.CollectorVersion)
       Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $state.CollectorVersion))
-      Write-Output ("BASELINE_REPORT_PATH={0}" -f $baselineReportPath)
       Write-Output ("METADATA_REPORT_PATH={0}" -f $metadataReportPath)
       Write-Output ("EXECUTION_CONTEXT_PATH={0}" -f $state.ExecutionContextPath)
       Write-Output ("SECURITY_AUDIT_POLICY_PATH={0}" -f $state.SecurityAuditPolicyPath)
@@ -217,7 +211,7 @@ try {
       Write-Output ('NEXT_GET_FILE=get-file --path "{0}" --comment "Retrieve DCOIR collect bundle"' -f $bundlePath)
       Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
       Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
-      Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer ANALYST_OVERVIEW_PATH, UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices before the full baseline report. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
+      Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer ANALYST_OVERVIEW_PATH, UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
       foreach ($collectorError in @($Global:CollectorErrors)) {
         if (-not [string]::IsNullOrWhiteSpace([string]$collectorError)) {
           Write-Output ("COLLECTOR_ERROR={0}" -f $collectorError)
