@@ -59,13 +59,16 @@ param(
   [string]$UserReport,
 
   [Alias("help","h","?")]
-  [switch]$ShowHelp
+  [switch]$ShowHelp,
+
+  [Alias("version","ver","buildinfo")]
+  [switch]$ShowVersion
 )
 
 Set-StrictMode -Version 2
 $ErrorActionPreference = "Continue"
 $ScriptFilePath = $MyInvocation.MyCommand.Path
-$ScriptVersion = "4.0.1"
+$ScriptVersion = "4.0.2"
 
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList
