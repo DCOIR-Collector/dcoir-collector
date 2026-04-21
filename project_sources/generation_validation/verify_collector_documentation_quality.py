@@ -194,6 +194,16 @@ def main() -> int:
 
     print(f"DOCUMENTATION_AUDIT_STATUS={result['status']}")
     print(f"OUTPUT_JSON={output_path}")
+    if missing_file_help:
+        print("MISSING_FILE_HELP_FILES=")
+        for path in missing_file_help:
+            print(f"  - {path}")
+    if undocumented_function_rows:
+        print("UNDOCUMENTED_FUNCTION_ROWS=")
+        for row in undocumented_function_rows:
+            print(f"  - {row['path']} ({row['undocumented_function_count']})")
+            for fn in row['undocumented_functions_sample']:
+                print(f"      * {fn['name']} line {fn['line']}")
 
     return 1 if should_fail else 0
 
