@@ -55,6 +55,7 @@ try {
         StatePath = $dirs.StatePath
         PackagePath = $packagePath
         MetadataReportPath = $metadataReportPath
+        BaselineReportPath = $null
         UploadSummaryPath = $null
         UploadBudgetManifestPath = $null
         AnalystOverviewPath = $null
