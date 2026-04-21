@@ -1,14 +1,6 @@
 name: collector-documentation-quality
 
 on:
-  push:
-    paths:
-      - 'project_sources/DCOIR_Collector.ps1'
-      - 'project_sources/run_DCOIR_Tests.ps1'
-      - 'project_sources/collector_parts/**'
-      - 'project_sources/generation_validation/verify_collector_documentation_quality.py'
-      - 'project_sources/generation_validation/test_verify_collector_documentation_quality.py'
-      - '.github/workflows/collector-documentation-quality.yml'
   workflow_dispatch:
 
 jobs:
