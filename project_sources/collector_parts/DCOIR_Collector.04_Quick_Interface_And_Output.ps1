@@ -92,7 +92,7 @@ function Get-CollectorHelpText {
   $lines += "Version/build preflight:"
   $lines += "  - Run -Version before collect, enrich, cleanup, package movement, or other stateful test steps."
   $lines += "  - Compare COLLECTOR_VERSION and COLLECTOR_BUILD_IDENTITY to the PS1/ZIP you intended to validate before continuing."
-  $lines += "  - Response-action-safe example: execute --command \"$responseCmd -Version\" --comment \"Get DCOIR collector version\""
+  $lines += ('  - Response-action-safe example: execute --command "{0} -Version" --comment "Get DCOIR collector version"' -f $responseCmd)
   $lines += ""
   $lines += "Targeted usage examples:"
   $lines += '  $cmd -Targeted -TargetProfile PopupWindow -WindowStart "2026-04-08T09:00:00Z" -WindowEnd "2026-04-08T10:00:00Z" -UserReport "User reported popup"'
