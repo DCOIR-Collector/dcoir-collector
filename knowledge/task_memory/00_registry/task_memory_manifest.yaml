@@ -55,6 +55,7 @@ current_priority_records:
   - SP-2026-04-01-GH
   - SP-2026-04-16-GH
   - SP-2026-04-21-GEM-RESEARCH
+  - SP-2026-04-21-GEM-BEHAVIOR
 notes:
   - GitHub is the canonical storage substrate for this memory bank.
   - Compiled indexes are acceleration layers, not sources of truth.
