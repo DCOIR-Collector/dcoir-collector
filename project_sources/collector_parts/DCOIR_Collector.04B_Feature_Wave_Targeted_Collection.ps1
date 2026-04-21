@@ -20,6 +20,23 @@ Ordered scope objects, analyst-facing text artifacts, chunk-manifest data, and u
 to the baseline artifact map and report builder.
 #>
 
+<#
+.SYNOPSIS
+Builds the targeted collection scope object.
+
+.DESCRIPTION
+Normalizes the current targeted-collection globals into one ordered scope object for
+artifact generation and analyst-facing planning.
+
+.FUNCTION NAME
+Get-TargetedCollectionScopeObject
+
+.INPUTS
+State hashtable.
+
+.OUTPUTS
+Ordered hashtable describing the targeted collection scope.
+#>
 function Get-TargetedCollectionScopeObject {
   param([hashtable]$State)
 
@@ -46,6 +63,22 @@ function Get-TargetedCollectionScopeObject {
   }
 }
 
+<#
+.SYNOPSIS
+Builds the targeted collection scope text artifact.
+
+.DESCRIPTION
+Converts the normalized targeted scope object into an analyst-facing text artifact.
+
+.FUNCTION NAME
+Get-TargetedCollectionScopeText
+
+.INPUTS
+Scope hashtable.
+
+.OUTPUTS
+String targeted collection scope text.
+#>
 function Get-TargetedCollectionScopeText {
   param([hashtable]$Scope)
 
@@ -69,6 +102,23 @@ function Get-TargetedCollectionScopeText {
   return ($lines -join [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Builds the targeted collection plan text artifact.
+
+.DESCRIPTION
+Returns the analyst-facing plan that prioritizes evidence and review order for the
+current targeted profile and focus context.
+
+.FUNCTION NAME
+Get-TargetedCollectionPlanText
+
+.INPUTS
+Scope hashtable.
+
+.OUTPUTS
+String targeted collection plan text.
+#>
 function Get-TargetedCollectionPlanText {
   param([hashtable]$Scope)
 
@@ -140,6 +190,23 @@ function Get-TargetedCollectionPlanText {
   return ($lines -join [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Builds the bounded parallelism assessment text.
+
+.DESCRIPTION
+Returns the analyst-facing explanation of the currently implemented bounded runtime
+parallelism posture and its validation expectations.
+
+.FUNCTION NAME
+Get-CollectorParallelismAssessmentText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String parallelism assessment text.
+#>
 function Get-CollectorParallelismAssessmentText {
   $lines = @()
   $lines += "COLLECTOR_PARALLELISM_ASSESSMENT"
@@ -169,6 +236,23 @@ function Get-CollectorParallelismAssessmentText {
   return ($lines -join [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Builds the analyst overview artifact.
+
+.DESCRIPTION
+Writes the analyst-first overview artifact that points review toward metadata, upload
+summary, high-signal artifacts, and any targeted plan emitted for the run.
+
+.FUNCTION NAME
+New-AnalystOverviewArtifact
+
+.INPUTS
+State hashtable and Baseline hashtable.
+
+.OUTPUTS
+String analyst overview artifact path.
+#>
 function New-AnalystOverviewArtifact {
   param([hashtable]$State,[hashtable]$Baseline)
 
@@ -219,6 +303,23 @@ function New-AnalystOverviewArtifact {
   return $overviewPath
 }
 
+<#
+.SYNOPSIS
+Reads the synthetic oversized-artifact validation size.
+
+.DESCRIPTION
+Returns the requested synthetic oversized artifact size in KB from the process
+environment or zero when the override is absent or invalid.
+
+.FUNCTION NAME
+Get-ValidationSyntheticOversizeArtifactKB
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+Integer requested synthetic artifact size in KB.
+#>
 function Get-ValidationSyntheticOversizeArtifactKB {
   $raw = [Environment]::GetEnvironmentVariable('DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB', 'Process')
   if ([string]::IsNullOrWhiteSpace($raw)) { return 0 }
@@ -227,6 +328,23 @@ function Get-ValidationSyntheticOversizeArtifactKB {
   return 0
 }
 
+<#
+.SYNOPSIS
+Builds the synthetic oversized artifact text.
+
+.DESCRIPTION
+Creates deterministic text content large enough to exceed the requested size for chunking
+validation.
+
+.FUNCTION NAME
+New-SyntheticOversizeArtifactText
+
+.INPUTS
+RequestedKB integer.
+
+.OUTPUTS
+String synthetic oversized artifact content.
+#>
 function New-SyntheticOversizeArtifactText {
   param([int]$RequestedKB)
 
@@ -244,6 +362,23 @@ function New-SyntheticOversizeArtifactText {
   return $sb.ToString()
 }
 
+<#
+.SYNOPSIS
+Writes exact UTF-8 text without BOM to an artifact path.
+
+.DESCRIPTION
+Builds a deterministic artifact filename and writes the supplied text exactly using
+UTF-8 without BOM.
+
+.FUNCTION NAME
+Write-ArtifactTextExact
+
+.INPUTS
+ArtifactsDir, Section, Name, and Text strings.
+
+.OUTPUTS
+String artifact path.
+#>
 function Write-ArtifactTextExact {
   param(
     [string]$ArtifactsDir,
@@ -262,6 +397,23 @@ function Write-ArtifactTextExact {
   return $path
 }
 
+<#
+.SYNOPSIS
+Splits a validation text artifact into smaller chunks.
+
+.DESCRIPTION
+Breaks the supplied source artifact into multiple ordered chunk files sized for upload
+budget validation and reconstruction testing.
+
+.FUNCTION NAME
+Split-ValidationTextArtifactIntoChunks
+
+.INPUTS
+SourcePath, ArtifactsDir, RequestedKB, and TargetChunkKB.
+
+.OUTPUTS
+Hashtable describing chunk paths, sizes, and reconstruction metadata.
+#>
 function Split-ValidationTextArtifactIntoChunks {
   param(
     [string]$SourcePath,
@@ -310,6 +462,23 @@ function Split-ValidationTextArtifactIntoChunks {
   }
 }
 
+<#
+.SYNOPSIS
+Builds the synthetic chunk-validation artifacts.
+
+.DESCRIPTION
+Creates the synthetic oversized source, chunk files, path list, and manifest, then
+registers them into collector state and baseline artifacts.
+
+.FUNCTION NAME
+New-SyntheticOversizeChunkValidationArtifacts
+
+.INPUTS
+State hashtable, Baseline hashtable, and RequestedKB integer.
+
+.OUTPUTS
+No direct output. Updates state and baseline structures.
+#>
 function New-SyntheticOversizeChunkValidationArtifacts {
   param([hashtable]$State,[hashtable]$Baseline,[int]$RequestedKB)
 
@@ -355,6 +524,23 @@ function New-SyntheticOversizeChunkValidationArtifacts {
   Add-CollectorNote ('Synthetic oversized validation artifact and chunk set were emitted for collector chunking regression at {0} KB.' -f $RequestedKB)
 }
 
+<#
+.SYNOPSIS
+Applies feature-wave collect enhancements to one baseline run.
+
+.DESCRIPTION
+Adds targeted collection artifacts, parallelism assessment, optional targeted planning,
+and optional synthetic chunk-validation artifacts into the current baseline result.
+
+.FUNCTION NAME
+Apply-FeatureWaveCollectEnhancements
+
+.INPUTS
+State hashtable and Baseline hashtable.
+
+.OUTPUTS
+No direct output. Updates state, baseline, and collector notes/recommendations.
+#>
 function Apply-FeatureWaveCollectEnhancements {
   param([hashtable]$State,[hashtable]$Baseline)
 
