@@ -10,6 +10,7 @@ name: validate-on-push
 # - Auto push triggering is disabled to conserve GitHub Actions minutes.
 # - Pre-change trigger config was saved at:
 #   project_sources/workflow_backups/validate-on-push.pre-manual-only.2026-04-21.yml.txt
+# - Current use is a bounded manual pre-live validation pass before larger live collector testing.
 
 on:
   workflow_dispatch:
@@ -91,7 +92,10 @@ jobs:
             'project_sources/CP-02_DCOIR_Change_Log.txt',
             'project_sources/DCOIR_Collector.ps1',
             'project_sources/run_DCOIR_Tests.ps1',
+            'project_sources/collector_parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1',
+            'project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1',
             'project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1',
+            'project_sources/collector_parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1',
             'project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1',
             'project_sources/Collector_Runtime_Package_Manifest.json.txt',
             'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
@@ -155,13 +159,13 @@ jobs:
           "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/generation_validation/out_validate_collector/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
           "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/generation_validation/out_validate_collector/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
 
-      - name: Run routine collector harness coverage
+      - name: Run collector major-version pre-live suite
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite MajorVersion -MasterZipPath $env:HARNESS_RUNTIME_ZIP
           if ($LASTEXITCODE -ne 0) {
-            throw 'Collector harness suite failed: Core'
+            throw 'Collector harness suite failed: MajorVersion'
           }
 
       - name: Generate collector documentation audit report
