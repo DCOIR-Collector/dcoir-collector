@@ -147,6 +147,11 @@
       "domain": "generic",
       "type": "session_promotion",
       "path": "knowledge/task_memory/20_logs/session_promotions/2026-04-21-gemini-enterprise-behavior-and-validation-research.yaml"
+    },
+    "SP-2026-04-21-GEM-ADK-INTEGRATION": {
+      "domain": "generic",
+      "type": "session_promotion",
+      "path": "knowledge/task_memory/20_logs/session_promotions/2026-04-21-gemini-adk-enterprise-integration-research.yaml"
     }
   }
 }
