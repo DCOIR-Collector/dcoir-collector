@@ -142,6 +142,11 @@
       "domain": "generic",
       "type": "session_promotion",
       "path": "knowledge/task_memory/20_logs/session_promotions/2026-04-21-gemini-enterprise-research-airtable-reference.yaml"
+    },
+    "SP-2026-04-21-GEM-BEHAVIOR": {
+      "domain": "generic",
+      "type": "session_promotion",
+      "path": "knowledge/task_memory/20_logs/session_promotions/2026-04-21-gemini-enterprise-behavior-and-validation-research.yaml"
     }
   }
 }
