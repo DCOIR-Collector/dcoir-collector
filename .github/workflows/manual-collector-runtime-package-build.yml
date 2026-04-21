@@ -86,10 +86,15 @@ jobs:
             'project_sources/DCOIR_Collector.ps1',
             'project_sources/run_DCOIR_Tests.ps1',
             'project_sources/collector_parts',
+            'project_sources/collector_parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1',
+            'project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1',
             'project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1',
+            'project_sources/collector_parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1',
+            'project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1',
             'project_sources/generation_validation/compile_dcoir_collector_runtime.py',
             'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py',
-            'project_sources/generation_validation/build_dcoir_collector_runtime_package.py'
+            'project_sources/generation_validation/build_dcoir_collector_runtime_package.py',
+            'project_sources/generation_validation/restore_dcoir_collector_runtime_zip.py'
           )
           $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
           if ($missing.Count -gt 0) {
@@ -127,13 +132,42 @@ jobs:
             throw 'Collector runtime package build failed.'
           }
 
+      - name: Restore built collector runtime for harness smoke
+        shell: pwsh
+        run: |
+          $deliveryZip = Get-ChildItem -Path project_sources/generation_validation/out -File -Filter 'DCOIR_Collector_Delivery_Package_*.zip' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $deliveryZip) {
+            throw 'Collector delivery package zip was not produced.'
+          }
+          python project_sources/generation_validation/restore_dcoir_collector_runtime_zip.py --delivery-package-zip $deliveryZip.FullName --base-runtime-zip supporting_assets/DCOIR_Collector.zip --output-dir project_sources/generation_validation/out --output-name DCOIR_Collector_runtime_for_harness.zip
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector runtime zip restore bridge failed.'
+          }
+          $extractDir = 'project_sources/generation_validation/out/runtime_harness'
+          Remove-Item -Recurse -Force $extractDir -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
+          Expand-Archive -LiteralPath project_sources/generation_validation/out/DCOIR_Collector_runtime_for_harness.zip -DestinationPath $extractDir -Force
+          "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/generation_validation/out/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
+          "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/generation_validation/out/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
+
+      - name: Run collector core smoke on built runtime package
+        shell: pwsh
+        working-directory: project_sources
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector runtime package Core smoke failed.'
+          }
+
       - name: Upload collector runtime package artifacts
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: manual-collector-runtime-package-build
           path: |
+            project_sources/TestResults/**
             project_sources/generation_validation/out/*.zip
             project_sources/generation_validation/out/*report.json
+            project_sources/generation_validation/out/runtime_harness/**
           if-no-files-found: warn
           retention-days: 21
