@@ -137,6 +137,11 @@
       "domain": "generic",
       "type": "session_promotion",
       "path": "knowledge/task_memory/20_logs/session_promotions/2026-04-16-github-connector-capability-validation-and-parity-closeout.yaml"
+    },
+    "SP-2026-04-21-GEM-RESEARCH": {
+      "domain": "generic",
+      "type": "session_promotion",
+      "path": "knowledge/task_memory/20_logs/session_promotions/2026-04-21-gemini-enterprise-research-airtable-reference.yaml"
     }
   }
 }
