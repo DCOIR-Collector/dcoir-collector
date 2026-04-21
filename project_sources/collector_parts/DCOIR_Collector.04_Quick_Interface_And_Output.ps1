@@ -19,6 +19,22 @@ Strings for help/usage and next-step guidance, updated collector runtime paramet
 quick shortcuts, and cleanup side effects on package/run paths.
 #>
 
+<#
+.SYNOPSIS
+Builds the short quick-command usage text.
+
+.DESCRIPTION
+Returns the operator-facing quick-command examples used by the collector help surface.
+
+.FUNCTION NAME
+Get-QuickUsageText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing newline-joined quick-command examples.
+#>
 function Get-QuickUsageText {
   $cmd = Get-CollectorPowerShellCommandBase
   return @(
@@ -42,11 +58,44 @@ function Get-QuickUsageText {
   ) -join [Environment]::NewLine
 }
 
+<#
+.SYNOPSIS
+Builds the collector build-identity string.
+
+.DESCRIPTION
+Returns the transport/runtime identity string used by version output and validation.
+
+.FUNCTION NAME
+Get-CollectorBuildIdentity
+
+.INPUTS
+Optional version string.
+
+.OUTPUTS
+String build identity.
+#>
 function Get-CollectorBuildIdentity {
   param([string]$Version = $ScriptVersion)
   return ("DCOIR_Collector.ps1/{0}" -f $Version)
 }
 
+<#
+.SYNOPSIS
+Builds the collector version text block.
+
+.DESCRIPTION
+Returns the collector version, build identity, runtime filename, package name, and
+script path in key-value form.
+
+.FUNCTION NAME
+Get-CollectorVersionText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing newline-joined version/build metadata.
+#>
 function Get-CollectorVersionText {
   $scriptPath = Get-CollectorAbsolutePath
   $resolvedPackageName = if ([string]::IsNullOrWhiteSpace($PackageName)) { "DCOIR_Collector.zip" } else { $PackageName }
@@ -59,15 +108,65 @@ function Get-CollectorVersionText {
   ) -join [Environment]::NewLine
 }
 
+<#
+.SYNOPSIS
+Builds the response-action-safe collector command base.
+
+.DESCRIPTION
+Returns the endpoint response-action-safe collector command using the runtime filename.
+
+.FUNCTION NAME
+Get-CollectorResponseActionCommandBase
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing the response-action-safe command base.
+#>
 function Get-CollectorResponseActionCommandBase {
   return "powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\DCOIR_Collector.ps1'"
 }
 
+<#
+.SYNOPSIS
+Builds the delete-script command text.
+
+.DESCRIPTION
+Returns the response-action-safe literal-path script-removal command for the uploaded
+collector file.
+
+.FUNCTION NAME
+Get-CollectorDeleteScriptCommandText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String delete-script command.
+#>
 function Get-CollectorDeleteScriptCommandText {
   $collectorPath = Get-CollectorAbsolutePath
   return ('execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Remove-Item -LiteralPath ''{0}'' -Force" --comment "Remove uploaded DCOIR_Collector script"' -f $collectorPath)
 }
 
+<#
+.SYNOPSIS
+Builds the full collector help text.
+
+.DESCRIPTION
+Returns the operator-facing help text including top-level usage, quick shortcuts,
+version/build preflight guidance, targeted examples, and lane guidance.
+
+.FUNCTION NAME
+Get-CollectorHelpText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing newline-joined help text.
+#>
 function Get-CollectorHelpText {
   $cmd = Get-CollectorPowerShellCommandBase
   $responseCmd = Get-CollectorResponseActionCommandBase
@@ -117,23 +216,88 @@ function Get-CollectorHelpText {
   return ($lines -join [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Translates supported quick shortcuts into full collector parameters.
+
+.DESCRIPTION
+Maps -Quick values into mode, tier, action, target, and finalize/session settings.
+
+.FUNCTION NAME
+Apply-QuickShortcut
+
+.INPUTS
+No direct parameters. Uses collector runtime globals.
+
+.OUTPUTS
+No direct output. Updates script-scoped collector parameters.
+#>
 function Apply-QuickShortcut {
   param()
 
   if ([string]::IsNullOrWhiteSpace($Quick)) { return }
   $q = $Quick.ToLowerInvariant().Replace('_','-')
 
+  <#
+  .SYNOPSIS
+  Validates that a quick shortcut has a path target.
+
+  .DESCRIPTION
+  Throws when -Target is missing for a quick action that requires a file path.
+
+  .FUNCTION NAME
+  Require-QuickTargetPath
+
+  .INPUTS
+  No direct parameters. Uses -Target and the current quick shortcut name.
+
+  .OUTPUTS
+  Returns the validated target path string.
+  #>
   function Require-QuickTargetPath {
     if ([string]::IsNullOrWhiteSpace($Target)) { throw ("Quick {0} requires -Target <path>." -f $q) }
     return $Target
   }
 
+  <#
+  .SYNOPSIS
+  Validates that a quick shortcut has a named target.
+
+  .DESCRIPTION
+  Throws when -Target is missing for a quick action that requires a named target such as
+  a service name, task path, or registry path.
+
+  .FUNCTION NAME
+  Require-QuickTargetName
+
+  .INPUTS
+  Label string describing the required target type.
+
+  .OUTPUTS
+  Returns the validated target string.
+  #>
   function Require-QuickTargetName {
     param([string]$Label)
     if ([string]::IsNullOrWhiteSpace($Target)) { throw ("Quick {0} requires -Target <{1}>." -f $q, $Label) }
     return $Target
   }
 
+  <#
+  .SYNOPSIS
+  Validates that a quick shortcut has a numeric PID target.
+
+  .DESCRIPTION
+  Throws when -Target is missing or non-numeric for a quick action that requires a PID.
+
+  .FUNCTION NAME
+  Require-QuickTargetPid
+
+  .INPUTS
+  No direct parameters. Uses -Target and the current quick shortcut name.
+
+  .OUTPUTS
+  Returns the validated PID integer.
+  #>
   function Require-QuickTargetPid {
     if ([string]::IsNullOrWhiteSpace($Target)) { throw ("Quick {0} requires -Target <pid>." -f $q) }
     $tmp = 0
@@ -200,6 +364,23 @@ function Apply-QuickShortcut {
   }
 }
 
+<#
+.SYNOPSIS
+Prints operator next-step quick commands.
+
+.DESCRIPTION
+Emits phase-specific follow-up commands and workflow guidance after collect, enrich, and
+cleanup phases.
+
+.FUNCTION NAME
+Write-QuickNextSteps
+
+.INPUTS
+Phase string.
+
+.OUTPUTS
+Writes next-step lines to standard output.
+#>
 function Write-QuickNextSteps {
   param([string]$Phase)
 
@@ -229,6 +410,22 @@ function Write-QuickNextSteps {
   }
 }
 
+<#
+.SYNOPSIS
+Removes run/package artifacts during cleanup.
+
+.DESCRIPTION
+Deletes the package path and run root recorded in the supplied collector state object.
+
+.FUNCTION NAME
+Invoke-Cleanup
+
+.INPUTS
+Collector state object.
+
+.OUTPUTS
+No direct output. Removes cleanup targets as a side effect.
+#>
 function Invoke-Cleanup {
   param($StateObject)
   $targets = @([string]$StateObject.PackagePath,[string]$StateObject.RunRoot) | Where-Object { $_ -and (Test-Path -LiteralPath $_) }
