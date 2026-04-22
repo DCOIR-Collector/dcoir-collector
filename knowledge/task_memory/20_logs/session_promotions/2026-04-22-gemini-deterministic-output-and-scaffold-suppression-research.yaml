@@ -1,0 +1,46 @@
+session_promotion_id: SP-2026-04-22-GEM-DETERMINISM
+captured_from: 2026-04-22 project session
+scope: T3.9.2 deterministic Gemini instruction-pattern research normalized for later governed Gemini source updates
+research_batch: DR-2026-04-22-T3.9.2
+airtable_records_imported:
+  - DR-2026-04-22-T3.9.2-F01
+  - DR-2026-04-22-T3.9.2-F02
+  - DR-2026-04-22-T3.9.2-F03
+  - DR-2026-04-22-T3.9.2-F04
+  - DR-2026-04-22-T3.9.2-F05
+validated_observations:
+  - Schema-first response contracts are the strongest Google-documented path for exact final-form compliance when the runtime path supports responseSchema and JSON responseMimeType.
+  - Single-answer low-variance generation hygiene reduces duplicate drafts, repeated sections, and run-on output, but Google documents it as best-effort determinism rather than a full determinism guarantee.
+  - Visible reasoning requests and includeThoughts-style controls increase the chance that planning text appears in the operator-visible answer.
+  - System instructions are useful behavior controls but are not a safe hidden-scaffold vault because Google explicitly warns they do not fully prevent leaks or jailbreak exposure.
+  - Cleaner prompt topology materially helps suppress duplicate sections and noisy intermediate structure: fewer conflicting instructions, delimiter-separated sections, minimal consistent few-shot examples, and smaller task batches.
+  - Grounded-answer guardrails should combine prompt wording with service-side controls: evidence-only answering, citations, refusal-capable fallback when relevance is weak, and claim-support verification where available.
+actionable_findings_for_later_governed_updates:
+  prompt_source_files:
+    - Move final operator-facing contract language toward schema-first behavior and remove duplicated schema prose from prompt text.
+    - Remove visible-reasoning requests from prime and sub-agent operator-facing output rules unless explicit reasoning output is truly required.
+    - Add an explicit rule that hidden scaffold or planning text must not be surfaced and must not be relied on from system instructions as a secure hidden store.
+    - Simplify prompt topology: remove redundant or conflicting instructions, separate instructions/context/examples with delimiters, and keep few-shot examples minimal and format-consistent.
+    - Strengthen evidence-only wording for grounded answers, including fallback or refusal behavior when support is weak.
+  validation_rows:
+    - Add a deterministic final-form contract row that fails when required sections or JSON-like fields drift, reorder incorrectly, or extra headings appear.
+    - Add a no-scaffold-leak row that fails on planning text, hidden-structure leakage, visible chain-of-thought style content, or raw internal state objects.
+    - Add a duplicate-section row that fails on repeated BLUF, repeated FACTS or ANALYSIS sections, or multi-draft restarts in one answer.
+    - Add a grounded-answer row that fails when unsupported claims appear, citations are missing where expected, or weak-evidence cases do not fall back cleanly.
+  runtime_only_tests:
+    - Tune low-variance generation settings such as candidateCount, temperature, topK-style constraints, maxOutputTokens, stopSequences, and seed without hard-coding those choices into prose-only prompt layers.
+    - Run bounded thinking-budget or includeThoughts-off retests to confirm that reduced thought output does not damage operator-facing answer quality.
+false_hypotheses_to_avoid:
+  - Do not claim that low-temperature or fixed-seed Gemini settings make output fully deterministic.
+  - Do not claim that system instructions are a leak-proof place to hide internal scaffold.
+  - Do not claim that prompt wording alone is enough to guarantee grounded-only answers when service-side citations or relevance controls are absent.
+operator_impact:
+  - T3.9.2 is now durably preserved for later T3.9.5 governed Gemini source work without starting the broad sweep yet.
+  - Future Gemini source edits should treat this note and the paired Airtable research batch as the deterministic-output and no-scaffold-leak baseline rather than relying on chat memory.
+airtable_reference:
+  base_id: appM4KSwnVf3G3OTK
+  table_name: Gemini Research Reference
+  table_id: tblfZnARJxcMJ0yHW
+  research_batch: DR-2026-04-22-T3.9.2
+  imported_findings_count: 5
+  usage_rule: Consult this research batch before later governed Gemini prompt-source, validation-row, and runtime-tuning changes for deterministic final-form behavior and scaffold suppression.
