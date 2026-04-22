@@ -23,6 +23,7 @@ A good attachment file on this line should:
 - remain grounded in the current project sources and current runtime posture
 - help a brand-new operator understand what to do and what not to do
 - be long because it is useful, not because it is padded
+- stay free of duplicated filler or repeated appendix blocks that add no new meaning
 
 ## Validation expectations for attachment changes
 
@@ -30,145 +31,26 @@ A useful validation pass after attachment changes should check at least the foll
 - every intended attachment file is present in the runtime source tree
 - the attachment map matches the inventory
 - the manifest inventory is still coherent with the intended required set
-- each attachment remains topical and avoids meta filler
+- each attachment remains topical and avoids meta filler or duplicated appendix bloat
 - collector-facing attachment files preserve command-lane separation and explicit operational guidance
-- Gemini-facing attachment files preserve stored-source, topology, output-contract, and maintenance rules accurately
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
-## Expanded design appendix
-
-The Gemini runtime becomes more reliable when its stored-source text, its visible knowledge attachments, and its packaging rules all tell the same story. A mismatch among those surfaces causes the operator to lose trust quickly because one file says the runtime should behave one way while another surface implies a different build or attachment model. Coherence is therefore a first-class design goal.
-
-Another useful design principle is that verbosity should be deliberate. The goal is not to make files large for appearance. The goal is to preserve route selection, boundaries, evidence rules, and failure-handling logic that would otherwise disappear in a short summary. Detailed text is justified when it prevents the runtime from becoming generic.
-
+- Gemini-facing attachment files preserve stored-source, topology, output-contract, grounding-lane honesty, and maintenance rules accurately
+- Airtable `Validation Test Cases` includes the runtime-only checks needed for any newly enforced behavior
+
+## Research-backed maintenance notes
+
+When Gemini-facing attachments discuss runtime behavior, keep these boundaries explicit:
+- enterprise web grounding is not the same thing as broad unqualified web search
+- uploaded files are not the same thing as live enterprise connector retrieval
+- the runtime should not claim completed actions, grounded completion, or internal-knowledge access without the actual support surface
+- exact output contracts are easier to keep stable when the underlying structure stays compact enough to be enforced reliably
+
+## Maintenance rhythm
+
+After meaningful Gemini changes:
+1. update the maintained `knowledge/*.md` working files when the human-readable knowledge layer changed
+2. update mirrored attachment copies under `02_PRIME_AGENT_ATTACHMENTS/` when those attachments are part of the shipped knowledge layer
+3. refresh attachment inventory or manifest entries when required files changed
+4. update Airtable `Validation Test Cases` for any new live-behavior checks
+5. compile or package only after the source, attachment, and validation surfaces tell the same story
+
+> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
