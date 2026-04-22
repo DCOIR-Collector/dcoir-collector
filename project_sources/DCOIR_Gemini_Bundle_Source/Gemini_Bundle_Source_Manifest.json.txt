@@ -32,6 +32,7 @@
     "quick_start_file": "00_START_HERE/Gemini_Build_Quick_Start.md.txt"
   },
   "required_files": [
+    "README.md",
     "00_START_HERE/Agent_Attachment_Map.md.txt",
     "00_START_HERE/Gemini_Build_Quick_Start.md.txt",
     "00_START_HERE/README_FIRST.md.txt",

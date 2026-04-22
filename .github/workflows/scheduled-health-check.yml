@@ -188,16 +188,6 @@ jobs:
         run: |
           powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite FullRegression -MasterZipPath $env:HARNESS_RUNTIME_ZIP
 
-      - name: Generate collector documentation audit report
-        shell: pwsh
-        run: |
-          Remove-Item -Recurse -Force project_sources/generation_validation/out_health_documentation_quality -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out_health_documentation_quality | Out-Null
-          python project_sources/generation_validation/verify_collector_documentation_quality.py --repo-root . --output-json project_sources/generation_validation/out_health_documentation_quality/collector_documentation_quality.json
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector documentation audit script failed unexpectedly.'
-          }
-
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh
         run: |
@@ -218,6 +208,7 @@ jobs:
             project_sources/generation_validation/out_health_gemini/**
             project_sources/generation_validation/out_health_collector/**
             project_sources/generation_validation/out_health_validate_dcoir_run_fixtures/**
+            project_sources/generation_validation/out_preflight_documentation_quality/**
             project_sources/generation_validation/out_health_documentation_quality/**
           if-no-files-found: warn
           retention-days: 14
