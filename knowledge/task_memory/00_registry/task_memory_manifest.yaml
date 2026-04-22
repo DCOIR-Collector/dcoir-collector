@@ -57,6 +57,7 @@ current_priority_records:
   - SP-2026-04-21-GEM-RESEARCH
   - SP-2026-04-21-GEM-BEHAVIOR
   - SP-2026-04-21-GEM-ADK-INTEGRATION
+  - SP-2026-04-22-GEM-GROUNDING-TRUTHFUL-SEARCH
 notes:
   - GitHub is the canonical storage substrate for this memory bank.
   - Compiled indexes are acceleration layers, not sources of truth.
