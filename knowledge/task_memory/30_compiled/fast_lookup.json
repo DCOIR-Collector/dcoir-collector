@@ -152,6 +152,11 @@
       "domain": "generic",
       "type": "session_promotion",
       "path": "knowledge/task_memory/20_logs/session_promotions/2026-04-21-gemini-adk-enterprise-integration-research.yaml"
+    },
+    "SP-2026-04-22-GEM-GROUNDING-TRUTHFUL-SEARCH": {
+      "domain": "generic",
+      "type": "session_promotion",
+      "path": "knowledge/task_memory/20_logs/session_promotions/2026-04-22-gemini-grounding-and-truthful-search-narration-research.yaml"
     }
   }
 }
