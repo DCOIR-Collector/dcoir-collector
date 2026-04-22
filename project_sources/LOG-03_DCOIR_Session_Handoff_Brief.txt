@@ -15,6 +15,9 @@ Active branch
 Queued next branch
 - `PLAN-20260415-workflow-collector-gemini-remediation-wave`
 - Operator reprioritized Gemini ahead of Airtable hardening on 2026-04-20.
+- Gemini Task 0 deep research is durably complete through DR-2026-04-21-01, DR-2026-04-21-02, and DR-2026-04-21-03 writeback into Airtable `Gemini Research Reference` and governed GitHub task-memory surfaces.
+- Instruction-density parity is no longer the leading Gemini repair concern. Governed source verification on 2026-04-22 confirmed that the current stored-source runtime tree is baseline-plus relative to the accepted comparative-reference agent markdowns, so source-level density restoration for issue #44 and VTC-007 is closed.
+- Remaining Gemini work should now start from the runtime and operator-surface branches rather than density restoration, including startup-path cleanup, raw-JSON leakage suppression, command and query discipline, truthful search or action behavior, lane-aware response-action rendering, schema-safe osquery behavior, governed version/build answer behavior, exact Elastic close-term rendering, bold high-signal output emphasis, and the corresponding validation rows.
 
 Blocked later branch
 - `PLAN-20260415-airtable-operations-and-workflow-hardening`
