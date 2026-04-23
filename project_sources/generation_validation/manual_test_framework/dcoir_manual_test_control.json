@@ -23,6 +23,7 @@
     {"id": "runtime_restore", "label": "Restore and stage live runtime"},
     {"id": "help_top", "label": "Top-level help"},
     {"id": "help_quick", "label": "Quick help"},
+    {"id": "help_contextual", "label": "Contextual help"},
     {"id": "bad_quick", "label": "Bad command help fallback"},
     {"id": "nonadmin_collect", "label": "Non-admin collect"},
     {"id": "nonadmin_validate", "label": "Non-admin validator check"},

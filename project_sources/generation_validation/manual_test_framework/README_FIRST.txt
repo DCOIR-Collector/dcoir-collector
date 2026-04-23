@@ -6,7 +6,8 @@ What changed in v8
 - The admin phase now launches through the PowerShell launcher so the elevated window follows the same dashboard path.
 - The framework now removes staged runtime files and transient build/staging folders during cleanup.
 - Expected non-admin collector limitations are graded as PASS with honest notes instead of surfacing as framework PARTIAL results.
-- Quick help is now graded as PASS when the help text prints correctly, while still noting the current collector quirk that returns a nonzero exit code.
+- Quick help is now expected to print and return cleanly without relying on the old nonzero-exit quirk.
+- Contextual help is now part of the graded manual test surface.
 
 Files
 - run_dcoir_manual_tests.ps1 : bootstrap launcher
@@ -38,4 +39,4 @@ What the dashboard does
 Important notes
 - The framework now stages runtime files inside _test_output\live_runtime.
 - The framework intentionally preserves the report/state/runs for review after the run.
-- Richer contextual help is still a separate follow-on feature.
+- Richer contextual help is now part of the current testable collector surface.

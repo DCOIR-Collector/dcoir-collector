@@ -1,14 +1,14 @@
+Apply-QuickShortcut
+
 if ($ShowVersion) {
   Write-Output (Get-CollectorVersionText)
   return
 }
 
 if ($ShowHelp) {
-  Write-Output (Get-CollectorHelpText)
+  Write-Output (Get-CollectorHelpText -Topic $script:ContextualHelpTopic)
   return
 }
-
-Apply-QuickShortcut
 
 try {
   Ensure-Directory -Path $OutRoot

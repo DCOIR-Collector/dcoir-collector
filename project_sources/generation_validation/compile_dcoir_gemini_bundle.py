@@ -1,16 +1,30 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+
 import argparse
 import json
-from pathlib import Path
+import re
 import zipfile
+from pathlib import Path
 
-EXCLUDE = {'Gemini_Bundle_Source_Manifest.json.txt'}
+MANIFEST_NAME = 'Gemini_Bundle_Source_Manifest.json.txt'
+EXCLUDE = {'.DS_Store'}
 
 
 def load_manifest(source_root: Path) -> dict:
-    mf = source_root / 'Gemini_Bundle_Source_Manifest.json.txt'
-    return json.loads(mf.read_text(encoding='utf-8'))
+    return json.loads((source_root / MANIFEST_NAME).read_text(encoding='utf-8'))
+
+
+def derive_bundle_version(source_root: Path, manifest: dict) -> str:
+    index_rel = manifest.get('topology', {}).get('generated_index_file')
+    if index_rel:
+        index_path = source_root / index_rel
+        if index_path.exists():
+            text = index_path.read_text(encoding='utf-8', errors='ignore')
+            match = re.search(r'(?m)^Bundle version:\s*([0-9_]+)\s*$', text)
+            if match:
+                return match.group(1)
+    return manifest['bundle_version']
 
 
 def main() -> int:
@@ -25,9 +39,9 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     manifest = load_manifest(source_root)
-    version = args.version or manifest['bundle_version']
+    version = args.version or derive_bundle_version(source_root, manifest)
     bundle_name = manifest['bundle_name']
-    top_level = f"{bundle_name}_v{version}"
+    top_level = f"{bundle_name}_{version}"
 
     required = manifest.get('required_files', [])
     missing = []
@@ -39,7 +53,7 @@ def main() -> int:
     if missing:
         raise SystemExit('Missing required source files: ' + ', '.join(missing))
 
-    zip_path = output_dir / f"{bundle_name}_v{version}.zip"
+    zip_path = output_dir / f"{bundle_name}_{version}.zip"
     count = 0
     with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
         for path in sorted(source_root.rglob('*')):
@@ -66,6 +80,7 @@ def main() -> int:
     report_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps(report, indent=2))
     return 0
+
 
 if __name__ == '__main__':
     raise SystemExit(main())

@@ -54,7 +54,12 @@ function Get-QuickUsageText {
     "  $cmd -Quick enrich-start-listdlls -Target 1234",
     "  $cmd -Quick enrich-add-listdlls -Target 1234",
     "  $cmd -Quick enrich-finalize",
-    "  $cmd -Quick cleanup"
+    "  $cmd -Quick cleanup",
+    "  $cmd -Quick help-collect",
+    "  $cmd -Quick help-enrich",
+    "  $cmd -Quick help-cleanup",
+    "  $cmd -Quick help-targeted",
+    "  $cmd -Quick help-version"
   ) -join [Environment]::NewLine
 }
 
@@ -125,7 +130,7 @@ No direct parameters.
 String containing the response-action-safe command base.
 #>
 function Get-CollectorResponseActionCommandBase {
-  return "powershell.exe -NoProfile -ExecutionPolicy Bypass -File '.\DCOIR_Collector.ps1'"
+  return "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"""
 }
 
 <#
@@ -152,6 +157,104 @@ function Get-CollectorDeleteScriptCommandText {
 
 <#
 .SYNOPSIS
+Builds contextual collector help for a specific workflow area.
+
+.DESCRIPTION
+Returns a narrower help block for collect, enrich, cleanup, targeted, or version guidance
+when the operator asks for area-specific help.
+
+.FUNCTION NAME
+Get-CollectorContextualHelpText
+
+.INPUTS
+Optional topic string.
+
+.OUTPUTS
+String containing newline-joined contextual help text.
+#>
+function Get-CollectorContextualHelpText {
+  param([string]$Topic)
+
+  $cmd = Get-CollectorPowerShellCommandBase
+  $responseCmd = Get-CollectorResponseActionCommandBase
+  $topicKey = if ([string]::IsNullOrWhiteSpace($Topic)) { 'general' } else { $Topic.ToLowerInvariant() }
+  $lines = @()
+
+  switch ($topicKey) {
+    'collect' {
+      $lines += 'DCOIR Collector Contextual Help - Collect'
+      $lines += ''
+      $lines += 'Use this when you need a baseline collection bundle.'
+      $lines += 'Recommended first commands:'
+      $lines += "  $cmd -Quick collect-t1"
+      $lines += "  $cmd -Quick collect-t2"
+      $lines += ''
+      $lines += 'Response-action-safe examples:'
+      $lines += ('  execute --command "{0} -Quick collect-t1" --comment "Run DCOIR collect T1"' -f $responseCmd)
+      $lines += ('  execute --command "{0} -Quick collect-t2" --comment "Run DCOIR collect T2"' -f $responseCmd)
+      $lines += ''
+      $lines += 'Use T1 when you want the smaller baseline-first path.'
+      $lines += 'Use T2 when you need the deeper persistence and investigative path.'
+      $lines += 'Run -Version first if you are validating a specific PS1/ZIP pair.'
+    }
+    'enrich' {
+      $lines += 'DCOIR Collector Contextual Help - Enrich'
+      $lines += ''
+      $lines += 'Use this when you already have a run id and want targeted follow-up collection.'
+      $lines += 'Session pattern:'
+      $lines += "  $cmd -Quick enrich-start-tcp"
+      $lines += "  $cmd -Quick enrich-add-lograw -Target Security"
+      $lines += "  $cmd -Quick enrich-finalize"
+      $lines += ''
+      $lines += 'Response-action-safe examples:'
+      $lines += ('  execute --command "{0} -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment"' -f $responseCmd)
+      $lines += ('  execute --command "{0} -Quick enrich-add-lograw -Target Security" --comment "Add raw Security log enrichment"' -f $responseCmd)
+      $lines += ('  execute --command "{0} -Quick enrich-finalize" --comment "Finalize current DCOIR enrichment session"' -f $responseCmd)
+      $lines += ''
+      $lines += 'Start a session once, add related actions to the same session, then finalize before cleanup.'
+    }
+    'cleanup' {
+      $lines += 'DCOIR Collector Contextual Help - Cleanup'
+      $lines += ''
+      $lines += 'Cleanup removes the run root and consumed package state.'
+      $lines += 'Cleanup does not remove the uploaded collector script unless you run DELETE_SCRIPT_COMMAND explicitly.'
+      $lines += ''
+      $lines += 'Response-action-safe example:'
+      $lines += ('  execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $responseCmd)
+      $lines += ''
+      $lines += 'If you plan another collect-style run in the response-action lane, restage the runtime zip first.'
+    }
+    'targeted' {
+      $lines += 'DCOIR Collector Contextual Help - Targeted'
+      $lines += ''
+      $lines += 'Use targeted mode when the operator has a narrower event window, user report, process, path, or indicator.'
+      $lines += 'Examples:'
+      $lines += "  $cmd -Quick collect-targeted-popup -Target \"User reported popup around 2026-04-08T09:00Z\""
+      $lines += "  $cmd -Quick collect-targeted-script -Target \"Suspicious script execution follow-up\" -Target2 \"powershell.exe\""
+      $lines += ''
+      $lines += 'Pair targeted mode with WindowStart/WindowEnd and the most specific focus fields you have.'
+      $lines += 'Targeted mode narrows guidance and prioritization even when full exact-time filtering is not universal yet.'
+    }
+    'version' {
+      $lines += 'DCOIR Collector Contextual Help - Version'
+      $lines += ''
+      $lines += 'Use version preflight before collect, enrich, cleanup, or package movement when you need to prove the runtime identity.'
+      $lines += 'Examples:'
+      $lines += "  $cmd -Version"
+      $lines += ('  execute --command "{0} -Version" --comment "Get DCOIR collector version"' -f $responseCmd)
+      $lines += ''
+      $lines += 'Compare COLLECTOR_VERSION, COLLECTOR_BUILD_IDENTITY, and EXPECTED_PACKAGE_NAME before live validation.'
+    }
+    default {
+      return $null
+    }
+  }
+
+  return ($lines -join [Environment]::NewLine)
+}
+
+<#
+.SYNOPSIS
 Builds the full collector help text.
 
 .DESCRIPTION
@@ -162,12 +265,19 @@ version/build preflight guidance, targeted examples, and lane guidance.
 Get-CollectorHelpText
 
 .INPUTS
-No direct parameters.
+Optional topic string.
 
 .OUTPUTS
 String containing newline-joined help text.
 #>
 function Get-CollectorHelpText {
+  param([string]$Topic)
+
+  $contextual = Get-CollectorContextualHelpText -Topic $Topic
+  if (-not [string]::IsNullOrWhiteSpace($contextual)) {
+    return $contextual
+  }
+
   $cmd = Get-CollectorPowerShellCommandBase
   $responseCmd = Get-CollectorResponseActionCommandBase
   $lines = @()
@@ -183,6 +293,13 @@ function Get-CollectorHelpText {
   $lines += ""
   $lines += "Quick usage:"
   $lines += (Get-QuickUsageText)
+  $lines += ""
+  $lines += "Contextual help shortcuts:"
+  $lines += "  $cmd -Quick help-collect"
+  $lines += "  $cmd -Quick help-enrich"
+  $lines += "  $cmd -Quick help-cleanup"
+  $lines += "  $cmd -Quick help-targeted"
+  $lines += "  $cmd -Quick help-version"
   $lines += ""
   $lines += "Accepted top-level modes: Collect, Enrich, Cleanup"
   $lines += "Accepted tiers: T1, T2"
@@ -209,7 +326,7 @@ function Get-CollectorHelpText {
   $lines += ""
   $lines += "Lane guidance:"
   $lines += "  - Endpoint response-console usage should wrap the PowerShell command in an Elastic response action."
-  $lines += "  - Use the response-action-safe runtime pattern with '.\DCOIR_Collector.ps1' inside the execute --command string."
+  $lines += "  - Use the response-action-safe runtime pattern with doubled double quotes around .\DCOIR_Collector.ps1 inside the execute --command string."
   $lines += "  - Use the collector-emitted DELETE_SCRIPT_COMMAND literal-path form for script removal in the response-action lane."
   $lines += "  - Local workstation and regression usage should run the PowerShell command directly without the response-action wrapper."
   $lines += "  - Prefer PowerShell 5.1 syntax and the runtime filename DCOIR_Collector.ps1."
@@ -359,7 +476,12 @@ function Apply-QuickShortcut {
     "enrich-add-pull-wmi-file" { $script:Mode = "Enrich"; $script:Action = "PullWmiReferencedFile"; $script:Path = Require-QuickTargetPath; return }
     "enrich-finalize" { $script:Mode = "Enrich"; $script:FinalizeEnrichSession = $true; return }
     "cleanup" { $script:Mode = "Cleanup"; return }
-    "help" { throw (Get-CollectorHelpText) }
+    "help" { $script:ShowHelp = $true; $script:ContextualHelpTopic = $null; return }
+    "help-collect" { $script:ShowHelp = $true; $script:ContextualHelpTopic = "collect"; return }
+    "help-enrich" { $script:ShowHelp = $true; $script:ContextualHelpTopic = "enrich"; return }
+    "help-cleanup" { $script:ShowHelp = $true; $script:ContextualHelpTopic = "cleanup"; return }
+    "help-targeted" { $script:ShowHelp = $true; $script:ContextualHelpTopic = "targeted"; return }
+    "help-version" { $script:ShowHelp = $true; $script:ContextualHelpTopic = "version"; return }
     default { throw ("Unknown -Quick value: {0}`r`n{1}" -f $Quick, (Get-CollectorHelpText)) }
   }
 }

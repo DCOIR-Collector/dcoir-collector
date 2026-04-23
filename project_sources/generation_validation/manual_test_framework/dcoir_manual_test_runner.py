@@ -36,6 +36,7 @@ STEP_ORDER = [
     ("runtime_restore", "Restore and stage live runtime"),
     ("help_top", "Top-level help"),
     ("help_quick", "Quick help"),
+    ("help_contextual", "Contextual help"),
     ("bad_quick", "Bad command help fallback"),
     ("nonadmin_collect", "Non-admin collect"),
     ("nonadmin_validate", "Non-admin validator check"),
@@ -528,12 +529,20 @@ def run_help_tests() -> None:
     cmd = powershell_cmd("-File", str(collector_script_path()), "-Quick", "help")
     result = run_command("help_quick", cmd, BASE_DIR, "Running quick help.", allow_error=True)
     combined = (result["stdout"] or "") + "\n" + (result["stderr"] or "")
-    if test_output_has_all(combined, ["Quick command examples:", "collect-t1"]):
-        note = "Quick help printed the expected examples. Current collector behavior still returns a nonzero exit code, but the framework now treats that as an informational collector quirk, not a tester failure."
-        update_step("help_quick", "PASS", note)
+    if result["exit_code"] == 0 and test_output_has_all(combined, ["Quick command examples:", "collect-t1"]):
+        update_step("help_quick", "PASS", "Quick help printed the expected examples and returned cleanly.")
     else:
-        update_step("help_quick", "FAIL", "Quick help did not print the expected examples.")
+        update_step("help_quick", "FAIL", "Quick help did not print the expected examples cleanly.")
         raise RuntimeError("Quick help test failed.")
+
+    cmd = powershell_cmd("-File", str(collector_script_path()), "-Quick", "help-collect")
+    result = run_command("help_contextual", cmd, BASE_DIR, "Running contextual collect help.", allow_error=True)
+    combined = (result["stdout"] or "") + "\n" + (result["stderr"] or "")
+    if result["exit_code"] == 0 and test_output_has_all(combined, ["DCOIR Collector Contextual Help - Collect", "collect-t1"]):
+        update_step("help_contextual", "PASS", "Contextual help printed collect-specific guidance and returned cleanly.")
+    else:
+        update_step("help_contextual", "FAIL", "Contextual help did not print the expected collect-specific guidance.")
+        raise RuntimeError("Contextual help test failed.")
 
     cmd = powershell_cmd("-File", str(collector_script_path()), "-Quick", "bad-value")
     result = run_command("bad_quick", cmd, BASE_DIR, "Running a bad quick command to test the help fallback.", allow_error=True)
@@ -543,7 +552,6 @@ def run_help_tests() -> None:
     else:
         update_step("bad_quick", "FAIL", "Bad quick command did not fail in a clear helpful way.")
         raise RuntimeError("Bad quick fallback test failed.")
-
 
 def classify_collect_note(markers: Dict[str, str], targeted: bool = False) -> str:
     expected_nonadmin = markers.get("AUDIT_POLICY_ACCESS_STATUS") == "PRIVILEGE_REQUIRED_NON_ELEVATED"

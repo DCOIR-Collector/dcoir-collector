@@ -68,7 +68,7 @@ param(
 Set-StrictMode -Version 2
 $ErrorActionPreference = "Continue"
 $ScriptFilePath = $MyInvocation.MyCommand.Path
-$ScriptVersion = "4.0.4"
+$ScriptVersion = "4.0.5"
 
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList
@@ -77,6 +77,7 @@ $Global:ExecutionTxtPath = $null
 $Global:ExecutionJsonlPath = $null
 $Global:ErrorsLogPath = $null
 $Global:CurrentRunId = $null
+$script:ContextualHelpTopic = $null
 
 $collectorPartsRoot = Join-Path (Split-Path -Parent $ScriptFilePath) "collector_parts"
 $collectorPartFiles = @(

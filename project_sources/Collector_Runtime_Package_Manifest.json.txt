@@ -1,7 +1,7 @@
 {
   "bundle_name": "DCOIR_Collector_Delivery_Package",
-  "bundle_version": "2_0_0",
-  "top_level_folder": "DCOIR_Collector_Delivery_Package_v2_0_0",
+  "bundle_version": "4_0_5",
+  "top_level_folder": "DCOIR_Collector_Delivery_Package_4_0_5",
   "source_strategy": "compile_single_runtime_then_package",
   "collector_wrapper_source": "project_sources/DCOIR_Collector.ps1",
   "collector_part_files": [
@@ -57,7 +57,6 @@
     "Targeted collection parameterization is now part of the maintained collector source line and therefore part of the compiled runtime output.",
     "Bounded parallel runtime execution is now part of the maintained collector source line and therefore part of the compiled runtime output.",
     "Diagnostic context and Security visibility overrides are now part of the maintained collector source line and therefore part of the compiled runtime output.",
-    "Tier 2 deep-check repair overrides are now part of the maintained collector source line and therefore part of the compiled runtime output.",
     "Script entries in this artifact intentionally end in .txt to bypass mail filters.",
     "Do not refresh supporting_assets/DCOIR_Collector.zip directly from this transport-safe artifact without restoring native runtime filenames first."
   ]
