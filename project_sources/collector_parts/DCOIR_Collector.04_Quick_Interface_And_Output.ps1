@@ -130,7 +130,7 @@ No direct parameters.
 String containing the response-action-safe command base.
 #>
 function Get-CollectorResponseActionCommandBase {
-  return "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"""
+  return "powershell.exe -NoProfile -ExecutionPolicy Bypass -File """".\DCOIR_Collector.ps1"""""
 }
 
 <#

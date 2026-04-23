@@ -188,6 +188,7 @@ function Get-SecurityHighSignalSummaryText {
       $targetIsBuiltinService = $targetUser -in @('SYSTEM','LOCAL SERVICE','NETWORK SERVICE','ANONYMOUS LOGON')
       $isServiceStyleLogon = $logonType -in @('0','5')
       $taskIsMicrosoftManaged = $taskName -like '\Microsoft\Windows\*'
+      $taskIsKnownRoutineEnvironmentChurn = $taskName -match '(?i)^\\(UptimeCheck|UptimePopup|Deploy_Sysmon_Production|Cleanup Old PS Transcripts)$'
       $serviceFileIsWindowsManaged = $serviceFileName -match '^(?i)(%systemroot%|[A-Z]:\\Windows\\)'
       $serviceHostStyle = ($serviceFileName -match '(?i)\\svchost\.exe(\s|$)') -or ($serviceFileName -match '(?i)\\services\.exe(\s|$)')
       $serviceNameLooksPerUser = $serviceName -match '(?i)^(CDPUserSvc|OneSyncSvc|UnistoreSvc|UserDataSvc|WpnUserService|BcastDVRUserService|PimIndexMaintenanceSvc|PrintWorkflowUserSvc|UdkUserSvc|CaptureService|ConsentUxUserSvc|CredentialEnrollmentManagerUserSvc|DevicePickerUserSvc|DevicesFlowUserSvc)(_[0-9a-f]+)?$'
@@ -215,9 +216,13 @@ function Get-SecurityHighSignalSummaryText {
           }
         }
         4698 {
-          if (($subjectIsMachine -or $subjectIsBuiltinService) -and $taskIsMicrosoftManaged) {
+          if (($subjectIsMachine -or $subjectIsBuiltinService) -and ($taskIsMicrosoftManaged -or $taskIsKnownRoutineEnvironmentChurn)) {
             $suppress = $true
-            $suppressReason = 'routine Microsoft-managed scheduled task registration or update'
+            if ($taskIsMicrosoftManaged) {
+              $suppressReason = 'routine Microsoft-managed scheduled task registration or update'
+            } else {
+              $suppressReason = 'routine environment-managed scheduled task registration or update'
+            }
           }
         }
       }

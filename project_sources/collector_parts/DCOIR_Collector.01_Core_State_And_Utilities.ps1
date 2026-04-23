@@ -1630,6 +1630,10 @@ function Get-SuspiciousProcessFindings {
     $pathValue = [string]$proc.ExecutablePath
     $nameValue = [string]$proc.Name
 
+    $isCollectorSelfRun = ($cmd -match '(?i)DCOIR_Collector\.ps1') -and ($nameValue -match '^(powershell|pwsh|cmd)(\.exe)?$')
+    $isDefenderDlpUserAgent = ($nameValue -match '^(DlpUserAgent)(\.exe)?$') -and ($pathValue -match '(?i)\\ProgramData\\Microsoft\\Windows Defender\\Platform\\[^\\]+\\DlpUserAgent\.exe$')
+    if ($isCollectorSelfRun -or $isDefenderDlpUserAgent) { continue }
+
     if ($cmd -match '(?i)(-enc\b|-encodedcommand\b|downloadstring|frombase64string|iex\b|invoke-expression\b|-w\s+hidden|-nop\b|-noni\b)') {
       [void]$reasons.Add("suspicious PowerShell style command line")
     }

@@ -68,7 +68,7 @@ param(
 Set-StrictMode -Version 2
 $ErrorActionPreference = "Continue"
 $ScriptFilePath = $MyInvocation.MyCommand.Path
-$ScriptVersion = "4.0.5"
+$ScriptVersion = "4.0.6"
 
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList

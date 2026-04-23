@@ -268,11 +268,22 @@ function New-AnalystOverviewArtifact {
   [void]$lines.Add("DoNotAssumeMonolithicBaselineUpload=true")
   [void]$lines.Add("MergedBaselineReportEmitted=false")
   [void]$lines.Add(("DefaultGeminiUploadSetStatus={0}" -f $State.DefaultGeminiUploadSetStatus))
+  [void]$lines.Add(("CollectTier={0}" -f $Tier))
+  $collectorErrorCount = @($Global:CollectorErrors).Count
+  [void]$lines.Add(("CollectorObservedErrorCount={0}" -f $collectorErrorCount))
+  if ($collectorErrorCount -gt 0) {
+    [void]$lines.Add('RunHealth=DEGRADED_OR_PARTIAL_REVIEW_REQUIRED')
+  } else {
+    [void]$lines.Add('RunHealth=NO_DEGRADED_STATE_OBSERVED_DURING_COLLECTION')
+  }
   [void]$lines.Add("")
   [void]$lines.Add("WHAT_TO_REVIEW_FIRST")
   [void]$lines.Add("1. Start with this overview, the upload summary, and the metadata report.")
   [void]$lines.Add("2. Use the analyst follow-up queue and security high-signal summary as the first decisive triage surface.")
   [void]$lines.Add("3. Use representative process, network, and defender artifacts before expanding into broader local review.")
+  if ($collectorErrorCount -gt 0) {
+    [void]$lines.Add("4. This run recorded degraded or partial conditions. Review errors.log and the affected truth surfaces before treating the overview as complete.")
+  }
   if ($State.TargetedCollectionPlanPath) {
     [void]$lines.Add("4. A targeted collection plan was emitted for this run; review it first when the incident is narrow.")
   }
@@ -296,6 +307,11 @@ function New-AnalystOverviewArtifact {
     }
   }
   [void]$lines.Add("")
+  if ($collectorErrorCount -gt 0) {
+    [void]$lines.Add("DEGRADED_REVIEW_NOTE")
+    [void]$lines.Add("This run emitted collector errors during collection. Use errors.log plus the specific affected artifacts as the truth surface for degraded lanes.")
+    [void]$lines.Add("")
+  }
   [void]$lines.Add("NO_MERGED_BASELINE_REPORT")
   [void]$lines.Add("No merged baseline report is emitted in this build. Use metadata plus representative artifacts for broader local review.")
 

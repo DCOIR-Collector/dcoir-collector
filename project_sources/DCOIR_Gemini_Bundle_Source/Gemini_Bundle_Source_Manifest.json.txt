@@ -1,7 +1,7 @@
 {
   "bundle_name": "DCOIR_Gemini_Email_Build_Bundle",
-  "bundle_version": "3_0_1",
-  "top_level_folder": "DCOIR_Gemini_Email_Build_Bundle_3_0_1",
+  "bundle_version": "3_0_2",
+  "top_level_folder": "DCOIR_Gemini_Email_Build_Bundle_3_0_2",
   "source_strategy": "stored_source_compile",
   "authoritative_runtime_source": "project_sources/DCOIR_Gemini_Bundle_Source",
   "behavioral_authority": [
