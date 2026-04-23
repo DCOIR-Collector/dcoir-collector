@@ -363,65 +363,88 @@ Collector state hashtable and ToolMap hashtable.
 .OUTPUTS
 String containing the combined Tier 2 persistence and deep-check text surface.
 #>
+function Invoke-Tier2RegistryQueryText {
+  param(
+    [Parameter(Mandatory=$true)][string]$RegistryPath,
+    [Parameter(Mandatory=$true)][string]$StepName,
+    [string]$FailureLabel = 'Tier 2 registry query'
+  )
+
+  $result = Invoke-ProcessCapture -FilePath 'reg.exe' -Arguments @('query', $RegistryPath, '/s') -StepName $StepName -AllowedExitCodes @(0,1)
+  if ($result.ExitCode -ne 0) {
+    Add-CollectorError ('{0} returned ExitCode={1} for path [{2}]. Review the artifact for the exact bounded output.' -f $FailureLabel, $result.ExitCode, $RegistryPath)
+  }
+  return (Get-CombinedProcessOutput -Result $result)
+}
+
+function Get-Tier2WmiPersistenceText {
+  $classNames = @(
+    '__EventFilter',
+    'CommandLineEventConsumer',
+    'ActiveScriptEventConsumer',
+    'FilterToConsumerBinding'
+  )
+
+  $sections = New-Object System.Collections.ArrayList
+  foreach ($className in $classNames) {
+    [void]$sections.Add(('WMI_CLASS={0}' -f $className))
+    [void]$sections.Add('')
+    try {
+      $instances = @(Get-CimInstance -Namespace 'root\subscription' -ClassName $className -ErrorAction Stop)
+      if (@($instances).Count -gt 0) {
+        [void]$sections.Add((($instances | Format-List * | Out-String -Width 500).TrimEnd()))
+      } else {
+        [void]$sections.Add('NO_RESULTS')
+      }
+    } catch {
+      $message = 'ERROR collecting WMI persistence class [{0}]: {1}' -f $className, $_.Exception.Message
+      Add-CollectorError $message
+      [void]$sections.Add($message)
+    }
+    [void]$sections.Add('')
+    [void]$sections.Add(('—' * 80))
+    [void]$sections.Add('')
+  }
+
+  return ($sections -join [Environment]::NewLine)
+}
+
 function Get-Tier2PersistenceText {
   param([hashtable]$State,[hashtable]$ToolMap)
 
   $sb = New-Object System.Text.StringBuilder
-  $regIfeo = Get-CmdText -Command 'reg query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options" /s' -StepName "TIER2_REG_IFEO"
-  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "TIER2_DEEP_CHECKS" -Name "tier2_reg_ifeo.txt" -Text $regIfeo)
-  Add-Section -Builder $sb -Name "TIER2_REG_IFEO" -Text $regIfeo
 
-  $regWinlogon = Get-CmdText -Command 'reg query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon" /s' -StepName "TIER2_REG_WINLOGON"
-  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "TIER2_DEEP_CHECKS" -Name "tier2_reg_winlogon.txt" -Text $regWinlogon)
-  Add-Section -Builder $sb -Name "TIER2_REG_WINLOGON" -Text $regWinlogon
+  $regIfeo = Invoke-Tier2RegistryQueryText -RegistryPath 'HKLM\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options' -StepName 'TIER2_REG_IFEO' -FailureLabel 'Tier 2 IFEO registry query'
+  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'TIER2_DEEP_CHECKS' -Name 'tier2_reg_ifeo.txt' -Text $regIfeo)
+  Add-Section -Builder $sb -Name 'TIER2_REG_IFEO' -Text $regIfeo
 
-  $regLsa = Get-CmdText -Command 'reg query "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /s' -StepName "TIER2_REG_LSA"
-  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "TIER2_DEEP_CHECKS" -Name "tier2_reg_lsa.txt" -Text $regLsa)
-  Add-Section -Builder $sb -Name "TIER2_REG_LSA" -Text $regLsa
+  $regWinlogon = Invoke-Tier2RegistryQueryText -RegistryPath 'HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon' -StepName 'TIER2_REG_WINLOGON' -FailureLabel 'Tier 2 Winlogon registry query'
+  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'TIER2_DEEP_CHECKS' -Name 'tier2_reg_winlogon.txt' -Text $regWinlogon)
+  Add-Section -Builder $sb -Name 'TIER2_REG_WINLOGON' -Text $regWinlogon
 
-  try {
-    $wmiText = Get-CimInstance -Namespace root\subscription -ClassName __EventFilter,CommandLineEventConsumer,ActiveScriptEventConsumer,FilterToConsumerBinding -ErrorAction Stop |
-      Format-List * | Out-String -Width 500
-  } catch {
-    $wmiText = "ERROR collecting WMI persistence data: $($_.Exception.Message)"
-    Add-CollectorError $wmiText
-  }
-  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "TIER2_DEEP_CHECKS" -Name "tier2_wmi_persistence.txt" -Text $wmiText)
-  Add-Section -Builder $sb -Name "TIER2_WMI_PERSISTENCE" -Text $wmiText
+  $regLsa = Invoke-Tier2RegistryQueryText -RegistryPath 'HKLM\SYSTEM\CurrentControlSet\Control\Lsa' -StepName 'TIER2_REG_LSA' -FailureLabel 'Tier 2 LSA registry query'
+  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'TIER2_DEEP_CHECKS' -Name 'tier2_reg_lsa.txt' -Text $regLsa)
+  Add-Section -Builder $sb -Name 'TIER2_REG_LSA' -Text $regLsa
 
-  $netShare = Get-CmdText -Command 'net share' -StepName "TIER2_NET_SHARE"
-  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "TIER2_DEEP_CHECKS" -Name "tier2_net_share.txt" -Text $netShare)
-  Add-Section -Builder $sb -Name "TIER2_NET_SHARE" -Text $netShare
+  $wmiText = Get-Tier2WmiPersistenceText
+  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'TIER2_DEEP_CHECKS' -Name 'tier2_wmi_persistence.txt' -Text $wmiText)
+  Add-Section -Builder $sb -Name 'TIER2_WMI_PERSISTENCE' -Text $wmiText
 
-  $netSession = Get-CmdText -Command 'net session' -StepName "TIER2_NET_SESSION" -AllowedExitCodes @(0,2)
-  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "TIER2_DEEP_CHECKS" -Name "tier2_net_session.txt" -Text $netSession)
-  Add-Section -Builder $sb -Name "TIER2_NET_SESSION" -Text $netSession
+  $netShare = Get-CmdText -Command 'net share' -StepName 'TIER2_NET_SHARE'
+  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'TIER2_DEEP_CHECKS' -Name 'tier2_net_share.txt' -Text $netShare)
+  Add-Section -Builder $sb -Name 'TIER2_NET_SHARE' -Text $netShare
 
-  $fw = Get-CmdText -Command 'netsh advfirewall show allprofiles' -StepName "TIER2_FIREWALL_PROFILES"
-  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "TIER2_DEEP_CHECKS" -Name "tier2_firewall_profiles.txt" -Text $fw)
-  Add-Section -Builder $sb -Name "TIER2_FIREWALL_PROFILES" -Text $fw
+  $netSession = Get-CmdText -Command 'net session' -StepName 'TIER2_NET_SESSION' -AllowedExitCodes @(0,2)
+  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'TIER2_DEEP_CHECKS' -Name 'tier2_net_session.txt' -Text $netSession)
+  Add-Section -Builder $sb -Name 'TIER2_NET_SESSION' -Text $netSession
+
+  $fw = Get-CmdText -Command 'netsh advfirewall show allprofiles' -StepName 'TIER2_FIREWALL_PROFILES'
+  [void](Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'TIER2_DEEP_CHECKS' -Name 'tier2_firewall_profiles.txt' -Text $fw)
+  Add-Section -Builder $sb -Name 'TIER2_FIREWALL_PROFILES' -Text $fw
 
   return $sb.ToString()
 }
 
-<#
-.SYNOPSIS
-Builds the baseline report and baseline artifact set.
-
-.DESCRIPTION
-Collects the baseline artifact families, writes them to disk, appends them into the
-main baseline report, emits analyst follow-up recommendations, and returns the report
-builder plus artifact path and map structures.
-
-.FUNCTION NAME
-New-BaselineReport
-
-.INPUTS
-Collector state hashtable and ToolMap hashtable.
-
-.OUTPUTS
-Hashtable containing ReportBuilder, ReportText, ArtifactPaths, and ArtifactMap.
-#>
 function New-BaselineReport {
   param([hashtable]$State,[hashtable]$ToolMap)
 
