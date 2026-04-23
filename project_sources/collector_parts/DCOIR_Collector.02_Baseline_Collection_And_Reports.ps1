@@ -347,21 +347,21 @@ function New-CollectUploadArtifacts {
 
 <#
 .SYNOPSIS
-Builds the Tier 2 persistence deep-check text surface.
+Runs one Tier 2 registry query through direct reg.exe capture.
 
 .DESCRIPTION
-Collects Tier 2-only registry, WMI persistence, share, session, and firewall text
-artifacts, writes each one to disk, and returns the combined text surface for report
-inclusion.
+Invokes reg.exe directly for one Tier 2 deep-check registry path, preserves the bounded
+captured output, and records a collector error when the query returns a non-zero exit
+code so the artifact remains the truth surface instead of failing invisibly.
 
 .FUNCTION NAME
-Get-Tier2PersistenceText
+Invoke-Tier2RegistryQueryText
 
 .INPUTS
-Collector state hashtable and ToolMap hashtable.
+RegistryPath string, StepName string, and optional FailureLabel string.
 
 .OUTPUTS
-String containing the combined Tier 2 persistence and deep-check text surface.
+String containing the combined direct-process output for the Tier 2 registry query.
 #>
 function Invoke-Tier2RegistryQueryText {
   param(
@@ -377,6 +377,25 @@ function Invoke-Tier2RegistryQueryText {
   return (Get-CombinedProcessOutput -Result $result)
 }
 
+<#
+.SYNOPSIS
+Builds the Tier 2 WMI persistence text surface class by class.
+
+.DESCRIPTION
+Queries the root\subscription WMI classes one at a time so one failing class does not
+break the whole Tier 2 WMI persistence surface. Each class writes either formatted
+results, NO_RESULTS, or one bounded error line that is also added to the collector error
+list.
+
+.FUNCTION NAME
+Get-Tier2WmiPersistenceText
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String containing the combined Tier 2 WMI persistence text surface.
+#>
 function Get-Tier2WmiPersistenceText {
   $classNames = @(
     '__EventFilter',
@@ -409,6 +428,24 @@ function Get-Tier2WmiPersistenceText {
   return ($sections -join [Environment]::NewLine)
 }
 
+<#
+.SYNOPSIS
+Builds the Tier 2 persistence deep-check text surface.
+
+.DESCRIPTION
+Collects Tier 2-only registry, WMI persistence, share, session, and firewall text
+artifacts, writes each one to disk, and returns the combined text surface for report
+inclusion.
+
+.FUNCTION NAME
+Get-Tier2PersistenceText
+
+.INPUTS
+Collector state hashtable and ToolMap hashtable.
+
+.OUTPUTS
+String containing the combined Tier 2 persistence and deep-check text surface.
+#>
 function Get-Tier2PersistenceText {
   param([hashtable]$State,[hashtable]$ToolMap)
 
@@ -445,6 +482,24 @@ function Get-Tier2PersistenceText {
   return $sb.ToString()
 }
 
+<#
+.SYNOPSIS
+Builds the baseline report and baseline artifact set.
+
+.DESCRIPTION
+Collects the baseline artifact families, writes them to disk, appends them into the
+main baseline report, emits analyst follow-up recommendations, and returns the report
+builder plus artifact path and map structures.
+
+.FUNCTION NAME
+New-BaselineReport
+
+.INPUTS
+Collector state hashtable and ToolMap hashtable.
+
+.OUTPUTS
+Hashtable containing ReportBuilder, ReportText, ArtifactPaths, and ArtifactMap.
+#>
 function New-BaselineReport {
   param([hashtable]$State,[hashtable]$ToolMap)
 
