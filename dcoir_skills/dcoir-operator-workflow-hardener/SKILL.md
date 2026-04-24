@@ -1,7 +1,3 @@
----
-name: dcoir-operator-workflow-hardener
-description: harden and normalize operator-facing dcoir workflow guidance for elastic endpoint execution, collector staging, bundle retrieval, cleanup, and pasted collector-output interpretation. use when chatgpt must tell the operator the exact next endpoint step, interpret dcoir collector output, choose between endpoint and local execution lanes, normalize runtime filenames, explain next_get_file or cleanup handling, or keep collection and enrichment flows aligned to the current control plane with minimal ambiguity. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
----
 
 # DCOIR Operator Workflow Hardener
 
