@@ -1,7 +1,3 @@
----
-name: dcoir-live-test-remediation-planner
-description: turn dcoir live-test findings into a ranked remediation plan with impacted files, helper-skill refreshes, deep-regression requirements, delivery posture, and stop conditions. use when chatgpt needs to decide what to fix first after live operator testing, gemini workflow validation, collector workflow issues, output-quality findings, packaging drift, or any other dcoir validation result that needs explicit remediation sequencing. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
----
 
 # DCOIR Live Test Remediation Planner
 
