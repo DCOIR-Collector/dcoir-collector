@@ -34,6 +34,23 @@ For that readback:
 - if a visible Airtable view would help, ask the operator first instead of showing it automatically
 - when no relevant active operator preference is found, say that plainly and continue with the normal startup chain
 
+## Three-division governance table awareness
+During session-start bootstrap and any resume/current-state report, consult the Airtable three-division governance tables after GitHub `CP-01` / `CP-02` re-anchor and before selecting the next work lane.
+
+Use silent Airtable reads only for these tables unless the operator explicitly asks to display them:
+- `Governance Control Plane`: current GitHub / Airtable / ChatGPT Project authority model and startup-chain expectations
+- `Repo Surface Registry`: major repo surfaces, their authority status, keep/delete state, replacement surface, and owning division
+- `Skill State Registry`: installed and governed `dcoir-*` skills, startup relevance, invocation priority, parity status, and maintenance state
+- `Repo File Classification Detail`: optional supporting file-level evidence for cleanup or repo-shrink decisions; do not treat it as control-plane authority
+
+Startup use rules:
+- Use `Governance Control Plane` to confirm the three-division model when the operator asks where project authority lives or when a branch may change repo/Airtable/Project boundaries.
+- Use `Skill State Registry` to improve skill awareness before claiming no helper skill exists for a task family.
+- Use `Repo Surface Registry` before recommending repo cleanup, deletion, surface movement, or GitHub-versus-Airtable boundary changes.
+- Do not let `Repo File Classification Detail` override GitHub source authority; use it only as snapshot-derived supporting evidence.
+- Continue to treat Airtable `Queue Control`, `Work Items`, and active `Plans` as the live queue authority.
+
+
 ## Airtable todo authority
 Treat Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` as the sole live todo authority for ordinary queue priority, resume order, branch supersession, and active-versus-parked decisions.
 

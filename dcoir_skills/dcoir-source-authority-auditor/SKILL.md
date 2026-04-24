@@ -14,6 +14,25 @@ Use this skill before or during DCOIR work when source authority or current-stat
 
 This skill verifies the control plane, checks current-versus-historical file handling, compares the active continuity surfaces for the shared `current_state_id` and the `CP-01` / `CP-02` version pair when those surfaces are in scope, and tells ChatGPT whether it can proceed, proceed in a bounded way, or must stop.
 
+## Three-division Airtable authority surfaces
+When a source-authority audit touches current-state boundaries, repo cleanup, skill-source governance, startup behavior, or migration from GitHub-readable state into Airtable, include the Airtable three-division tables in the audit context after GitHub `CP-01` / `CP-02` are resolved.
+
+Use silent Airtable reads only unless the operator explicitly asks for visible tables.
+
+Table roles:
+- `Governance Control Plane`: durable Airtable governance reference for the GitHub / Airtable / ChatGPT Project authority split
+- `Repo Surface Registry`: major repo-surface classification and keep/delete/replacement decisions
+- `Skill State Registry`: governed `dcoir-*` skill inventory, startup relevance, parity status, and maintenance state
+- `Repo File Classification Detail`: supporting snapshot-level file evidence only; never a replacement for GitHub source authority
+
+Audit posture:
+- Treat GitHub `CP-01` and `CP-02` as the source-authority re-anchor before consulting Airtable.
+- Treat Airtable `Queue Control`, `Work Items`, and active `Plans` as live queue authority.
+- Treat `Governance Control Plane`, `Repo Surface Registry`, and `Skill State Registry` as durable Airtable governance and registry surfaces.
+- Treat `Repo File Classification Detail` as supporting evidence for cleanup or classification, not as a hard-stop authority surface.
+- If a three-division table contradicts a stale GitHub todo or retired helper-memory claim, prefer Airtable for live governance and report the stale GitHub surface as historical or promoted history unless the GitHub control plane explicitly says otherwise.
+
+
 ## Workflow
 
 1. Resolve the current manifest and change log from the current GitHub-primary control plane.

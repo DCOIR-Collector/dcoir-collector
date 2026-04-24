@@ -41,6 +41,20 @@ Run this mode again after a blocker or failed attempt is successfully overcome w
 - governed process documentation
 
 ## Canonical memory sources
+## Three-division governance preflight
+For `session_start_bootstrap`, repo cleanup, skill routing, source-authority review, or governance-boundary work, consult the Airtable three-division tables as part of preflight before relying on older GitHub todo or ad hoc skill-memory assumptions.
+
+Use silent Airtable reads only unless the operator explicitly asks to display a table.
+
+Consult these tables when the task family matches:
+- `Governance Control Plane`: authority-order, startup-chain, live queue authority, and GitHub/Airtable/Project role definitions
+- `Repo Surface Registry`: major repo-surface keep/delete/move classification and replacement-surface notes
+- `Skill State Registry`: available `dcoir-*` skills, startup relevance, invocation priority, and maintenance/parity status
+- `Repo File Classification Detail`: optional file-level evidence for cleanup and migration review only
+
+Preflight outcomes should mention these tables when they materially affect the lane. If the tables are missing or inaccessible, proceed bounded and say which table could not be checked rather than silently falling back to stale repo memory.
+
+
 ## Airtable queue-authority readback
 When current branch priority or next-work-item order matters, read Airtable `Queue Control` first, then active Airtable `Work Items`, then active Airtable `Plans`.
 
