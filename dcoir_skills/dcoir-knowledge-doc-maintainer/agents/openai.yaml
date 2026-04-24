@@ -1,6 +1,6 @@
 interface:
   display_name: DCOIR Knowledge Doc Maintainer
-  short_description: Maintains and emits Knowledge docs from current GitHub-primary DCOIR sources
+  short_description: Maintain DCOIR supporting knowledge docs from authoritative GitHub-primary project sources.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
