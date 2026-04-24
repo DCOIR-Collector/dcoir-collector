@@ -2,6 +2,7 @@
 
 Richer contextual help is now part of the collector command/help surface.
 This plan tests both the main help and the new per-area contextual help path.
+It also checks the collector's tuned first-review surfaces and records the bounded manual T2-pathway mapping follow-on.
 
 | Order | Test | What it checks | Pass | Fail | Grade |
 |---:|---|---|---|---|---|
@@ -17,14 +18,16 @@ This plan tests both the main help and the new per-area contextual help path.
 | 10 | Bad quick fallback | Bad quick command fails clearly and shows help | Clear error + help | Confusing failure | PASS / FAIL |
 | 11 | Non-admin collect | Full live-style collect in normal PowerShell | Key output markers and bundle appear | Hard fail or missing outputs | PASS / PARTIAL / FAIL |
 | 12 | Non-admin validator | Validator grades the non-admin run honestly | Validator passes | Validator fails or crashes | PASS / FAIL |
-| 13 | Non-admin targeted collect | Targeted collect emits targeted outputs | Scope and plan are present | Targeted outputs missing | PASS / PARTIAL / FAIL |
-| 14 | Non-admin enrich lifecycle | Start/add/finalize session behavior | Session behaves correctly | Session behavior breaks | PASS / PARTIAL / FAIL |
-| 15 | Non-admin bad inputs | Mistyped/bad commands fail clearly | Failures are clear and honest | Failures are confusing | PASS / PARTIAL / FAIL |
-| 16 | Admin phase launch | Elevated phase opens | Admin phase starts | UAC launch fails | PASS / FAIL |
-| 17 | Admin collect | Full live-style collect under admin | Key output markers and bundle appear | Hard fail or missing outputs | PASS / PARTIAL / FAIL |
-| 18 | Admin validator | Validator grades the admin run honestly | Validator passes | Validator fails or crashes | PASS / FAIL |
-| 19 | Admin vs non-admin compare | Elevation-related differences are visible | Differences are visible and explainable | Comparison data missing or unclear | PASS / PARTIAL / FAIL |
-| 20 | FullRegression harness | Deep regression against the staged runtime | FullRegression passes | FullRegression fails | PASS / FAIL |
-| 21 | Package parity recheck | Package rules still pass after the run | Recheck passes | Recheck fails | PASS / FAIL |
-| 22 | Cleanup | Cleanup works after evidence is saved | Cleanup completes | Cleanup is incomplete | PASS / PARTIAL / FAIL |
-| 23 | Final signoff | One final verdict is produced | Ready / Ready with reservations / Not ready | No verdict | PASS / PARTIAL |
+| 13 | Review-surface tuning | Follow-up queue, high-signal summary, and overview reflect the recent tuning | Benign noise is suppressed and overview fields are present | Known benign noise remains or overview fields are missing | PASS / FAIL |
+| 14 | Non-admin targeted collect | Targeted collect emits targeted outputs | Scope and plan are present | Targeted outputs missing | PASS / PARTIAL / FAIL |
+| 15 | Non-admin enrich lifecycle | Start/add/finalize session behavior | Session behaves correctly | Session behavior breaks | PASS / PARTIAL / FAIL |
+| 16 | Non-admin bad inputs | Mistyped/bad commands fail clearly | Failures are clear and honest | Failures are confusing | PASS / PARTIAL / FAIL |
+| 17 | Admin phase launch | Elevated phase opens | Admin phase starts | UAC launch fails | PASS / FAIL |
+| 18 | Admin collect | Full live-style collect under admin | Key output markers and bundle appear | Hard fail or missing outputs | PASS / PARTIAL / FAIL |
+| 19 | Admin validator | Validator grades the admin run honestly | Validator passes | Validator fails or crashes | PASS / FAIL |
+| 20 | Admin vs non-admin compare | Elevation-related differences are visible | Differences are visible and explainable | Comparison data missing or unclear | PASS / PARTIAL / FAIL |
+| 21 | T2 pathway mapping note | Operator gets the bounded follow-on for explicit T2 pathway proof | Clear next action is recorded | No usable guidance is recorded | ACTION |
+| 22 | FullRegression harness | Deep regression against the staged runtime | FullRegression passes | FullRegression fails | PASS / FAIL |
+| 23 | Package parity recheck | Package rules still pass after the run | Recheck passes | Recheck fails | PASS / FAIL |
+| 24 | Cleanup | Cleanup works after evidence is saved | Cleanup completes | Cleanup is incomplete | PASS / PARTIAL / FAIL |
+| 25 | Final signoff | One final verdict is produced | Ready / Ready with reservations / Not ready | No verdict | PASS / PARTIAL |

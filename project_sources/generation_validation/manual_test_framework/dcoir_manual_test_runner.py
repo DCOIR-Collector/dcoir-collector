@@ -40,6 +40,7 @@ STEP_ORDER = [
     ("bad_quick", "Bad command help fallback"),
     ("nonadmin_collect", "Non-admin collect"),
     ("nonadmin_validate", "Non-admin validator check"),
+    ("review_surfaces", "Review-surface tuning"),
     ("nonadmin_targeted", "Non-admin targeted collect"),
     ("nonadmin_enrich", "Non-admin enrich lifecycle"),
     ("nonadmin_negative", "Non-admin bad input cases"),
@@ -47,6 +48,7 @@ STEP_ORDER = [
     ("admin_collect", "Admin collect"),
     ("admin_validate", "Admin validator check"),
     ("admin_compare", "Admin vs non-admin compare"),
+    ("t2_pathway_note", "T2 pathway mapping note"),
     ("full_regression", "FullRegression harness"),
     ("package_recheck", "Package build parity recheck"),
     ("cleanup", "Cleanup and evidence closeout"),
@@ -661,6 +663,73 @@ def run_enrich_lifecycle(step_id: str, outroot: Path) -> Dict[str, Dict[str, str
     return results
 
 
+def find_first_glob(root: Path, pattern: str) -> Optional[Path]:
+    matches = sorted(root.glob(pattern))
+    return matches[0] if matches else None
+
+
+def safe_read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8-sig", errors="ignore")
+
+
+def run_review_surfaces(run_root: Path) -> None:
+    update_step("review_surfaces", "RUNNING", "Inspecting tuned first-review collector surfaces.")
+    follow_up = find_first_glob(run_root, "final_artifacts/35_ANALYST_FOLLOW_UP_QUEUE_*.txt")
+    high_signal = find_first_glob(run_root, "final_artifacts/25A_EVENT_TIMELINE_TEXT_security_high_signal_summary.txt")
+    overview = find_first_glob(run_root, "DCOIR_ANALYST_OVERVIEW_*.txt")
+    missing = []
+    if not follow_up:
+        missing.append("analyst follow-up queue")
+    if not high_signal:
+        missing.append("security high-signal summary")
+    if not overview:
+        missing.append("analyst overview")
+    if missing:
+        update_step("review_surfaces", "FAIL", "Missing required review-surface files: " + ", ".join(missing) + ".")
+        raise RuntimeError("Review-surface files missing.")
+
+    follow_up_text = safe_read_text(follow_up)
+    high_signal_text = safe_read_text(high_signal)
+    overview_text = safe_read_text(overview)
+
+    noisy_follow_up_hits = []
+    if "DlpUserAgent.exe" in follow_up_text:
+        noisy_follow_up_hits.append("DlpUserAgent.exe")
+    if "-Quick collect-t1" in follow_up_text or "DCOIR_Collector.ps1" in follow_up_text and "collect-t1" in follow_up_text:
+        noisy_follow_up_hits.append("collector self-run command")
+
+    noisy_task_hits = []
+    for task_name in [r"\UptimeCheck", r"\UptimePopup", r"\Deploy_Sysmon_Production", r"\Cleanup Old PS Transcripts"]:
+        if task_name in high_signal_text:
+            noisy_task_hits.append(task_name)
+
+    missing_overview_fields = [token for token in ["CollectTier=", "CollectorObservedErrorCount=", "RunHealth="] if token not in overview_text]
+
+    problems = []
+    if noisy_follow_up_hits:
+        problems.append("follow-up queue still surfaced known benign items: " + ", ".join(noisy_follow_up_hits))
+    if noisy_task_hits:
+        problems.append("high-signal summary still surfaced suppressed scheduled tasks: " + ", ".join(noisy_task_hits))
+    if missing_overview_fields:
+        problems.append("analyst overview missing fields: " + ", ".join(missing_overview_fields))
+
+    if problems:
+        update_step("review_surfaces", "FAIL", "; ".join(problems))
+        raise RuntimeError("Review-surface tuning check failed.")
+
+    update_step("review_surfaces", "PASS", "Review surfaces reflect tuned suppression and overview fields.")
+
+
+def record_t2_pathway_note() -> None:
+    note = (
+        "Framework recorded the bounded follow-on only. Use Airtable test case COL-T2-PATH-001 to compare T2-first, T2-after-T1, and any other bounded live pathway scenarios outside this automated framework."
+    )
+    append_report("\n" + "=" * 90 + "\n")
+    append_report("T2 PATHWAY FOLLOW-ON NOTE")
+    append_report(note)
+    update_step("t2_pathway_note", "ACTION", note)
+
+
 def run_negative_cases(step_id: str, outroot: Path) -> None:
     ensure_runtime_available()
     cases = [
@@ -868,6 +937,8 @@ def main() -> int:
             STATE["context"]["nonadmin_validator_rc"] = nonadmin_validator_rc
             save_state()
 
+            run_review_surfaces(nonadmin_run_root)
+
             targeted_out = RUNS_DIR / "nonadmin_targeted"
             targeted_output, targeted_markers, targeted_run_root = run_collect("nonadmin_targeted", targeted_out, targeted=True)
             STATE["context"]["nonadmin_targeted_output"] = targeted_output
@@ -897,6 +968,7 @@ def main() -> int:
         save_state()
 
         compare_admin_nonadmin()
+        record_t2_pathway_note()
         run_full_regression()
         recheck_package()
         run_cleanup()

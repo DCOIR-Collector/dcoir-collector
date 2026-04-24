@@ -15,28 +15,105 @@
     "preserve_runs_and_history_until_operator_review": true
   },
   "steps": [
-    {"id": "git_check", "label": "Git prerequisite"},
-    {"id": "python_check", "label": "Python prerequisite"},
-    {"id": "repo_fetch", "label": "Fetch or update repo"},
-    {"id": "package_validate", "label": "Validate package rules"},
-    {"id": "package_build", "label": "Build delivery package"},
-    {"id": "runtime_restore", "label": "Restore and stage live runtime"},
-    {"id": "help_top", "label": "Top-level help"},
-    {"id": "help_quick", "label": "Quick help"},
-    {"id": "help_contextual", "label": "Contextual help"},
-    {"id": "bad_quick", "label": "Bad command help fallback"},
-    {"id": "nonadmin_collect", "label": "Non-admin collect"},
-    {"id": "nonadmin_validate", "label": "Non-admin validator check"},
-    {"id": "nonadmin_targeted", "label": "Non-admin targeted collect"},
-    {"id": "nonadmin_enrich", "label": "Non-admin enrich lifecycle"},
-    {"id": "nonadmin_negative", "label": "Non-admin bad input cases"},
-    {"id": "admin_launch", "label": "Launch admin phase"},
-    {"id": "admin_collect", "label": "Admin collect"},
-    {"id": "admin_validate", "label": "Admin validator check"},
-    {"id": "admin_compare", "label": "Admin vs non-admin compare"},
-    {"id": "full_regression", "label": "FullRegression harness"},
-    {"id": "package_recheck", "label": "Package build parity recheck"},
-    {"id": "cleanup", "label": "Cleanup and evidence closeout"},
-    {"id": "final_signoff", "label": "Final signoff summary"}
+    {
+      "id": "git_check",
+      "label": "Git prerequisite"
+    },
+    {
+      "id": "python_check",
+      "label": "Python prerequisite"
+    },
+    {
+      "id": "repo_fetch",
+      "label": "Fetch or update repo"
+    },
+    {
+      "id": "package_validate",
+      "label": "Validate package rules"
+    },
+    {
+      "id": "package_build",
+      "label": "Build delivery package"
+    },
+    {
+      "id": "runtime_restore",
+      "label": "Restore and stage live runtime"
+    },
+    {
+      "id": "help_top",
+      "label": "Top-level help"
+    },
+    {
+      "id": "help_quick",
+      "label": "Quick help"
+    },
+    {
+      "id": "help_contextual",
+      "label": "Contextual help"
+    },
+    {
+      "id": "bad_quick",
+      "label": "Bad command help fallback"
+    },
+    {
+      "id": "nonadmin_collect",
+      "label": "Non-admin collect"
+    },
+    {
+      "id": "nonadmin_validate",
+      "label": "Non-admin validator check"
+    },
+    {
+      "id": "review_surfaces",
+      "label": "Review-surface tuning"
+    },
+    {
+      "id": "nonadmin_targeted",
+      "label": "Non-admin targeted collect"
+    },
+    {
+      "id": "nonadmin_enrich",
+      "label": "Non-admin enrich lifecycle"
+    },
+    {
+      "id": "nonadmin_negative",
+      "label": "Non-admin bad input cases"
+    },
+    {
+      "id": "admin_launch",
+      "label": "Launch admin phase"
+    },
+    {
+      "id": "admin_collect",
+      "label": "Admin collect"
+    },
+    {
+      "id": "admin_validate",
+      "label": "Admin validator check"
+    },
+    {
+      "id": "admin_compare",
+      "label": "Admin vs non-admin compare"
+    },
+    {
+      "id": "t2_pathway_note",
+      "label": "T2 pathway mapping note"
+    },
+    {
+      "id": "full_regression",
+      "label": "FullRegression harness"
+    },
+    {
+      "id": "package_recheck",
+      "label": "Package build parity recheck"
+    },
+    {
+      "id": "cleanup",
+      "label": "Cleanup and evidence closeout"
+    },
+    {
+      "id": "final_signoff",
+      "label": "Final signoff summary"
+    }
   ]
 }

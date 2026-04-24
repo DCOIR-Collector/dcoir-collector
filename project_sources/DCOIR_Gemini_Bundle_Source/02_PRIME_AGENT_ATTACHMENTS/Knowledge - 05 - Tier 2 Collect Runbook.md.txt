@@ -16,7 +16,7 @@ _Deeper collection workflow for additional persistence and configuration checks_
 | --- | --- |
 | Local collector quick alias | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t2 |
 | Explicit parameter form | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T2 -Hours 72 |
-| Elastic endpoint form | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t2" --comment "Run DCOIR Tier 2 collect" |
+| Elastic endpoint form | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick collect-t2" --comment "Run DCOIR Tier 2 collect" |
 
 ## What Tier 2 adds
 

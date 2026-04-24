@@ -1,4 +1,4 @@
-DCOIR Manual Test Framework Bundle v8
+DCOIR Manual Test Framework Bundle v9
 
 What changed in v8
 - The Git and Python prerequisite rows are now bound to bootstrap results instead of staying stuck at PENDING.
@@ -8,6 +8,8 @@ What changed in v8
 - Expected non-admin collector limitations are graded as PASS with honest notes instead of surfacing as framework PARTIAL results.
 - Quick help is now expected to print and return cleanly without relying on the old nonzero-exit quirk.
 - Contextual help is now part of the graded manual test surface.
+- Review-surface tuning checks are now part of the graded manual test surface.
+- The framework now records a bounded T2-pathway mapping follow-on note so the operator does not lose that required live proof step.
 
 Files
 - run_dcoir_manual_tests.ps1 : bootstrap launcher
@@ -40,3 +42,4 @@ Important notes
 - The framework now stages runtime files inside _test_output\live_runtime.
 - The framework intentionally preserves the report/state/runs for review after the run.
 - Richer contextual help is now part of the current testable collector surface.
+- Review-surface tuning and the bounded T2-pathway follow-on are now part of the current testable collector surface.

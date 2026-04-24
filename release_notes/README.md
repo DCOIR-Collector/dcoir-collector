@@ -6,3 +6,5 @@ Use this folder for:
 - QA reports
 - change-impact reports
 - promotion-readiness notes
+
+- bounded batch notes for current repo-update waves

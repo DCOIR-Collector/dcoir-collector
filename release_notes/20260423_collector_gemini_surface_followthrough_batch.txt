@@ -1,0 +1,27 @@
+DCOIR Collector and Gemini Surface Follow-Through Batch
+Date: 2026-04-23
+
+Purpose
+- Finish the remaining governed repo tasks after the collector 4.0.6 surface-hardening push.
+- Align the current manual test framework, current knowledge docs, and current Gemini bundle source attachments to the validated response-action command pattern and the newly added collector review-surface checks.
+
+Included changes
+- Manual test framework v9 now includes:
+  - review-surface tuning checks for the analyst follow-up queue, security high-signal summary, and analyst overview
+  - a bounded T2-pathway mapping follow-on note in the dashboard/report path
+- Current knowledge/operator docs now use the response-action-safe doubled-double-quote script-path pattern inside execute --command examples.
+- Current Gemini bundle source attachments were refreshed to the same command pattern.
+- Gemini bundle source version advanced from 3_0_2 to 3_0_3 because bundle-source attachment content changed.
+
+Collector runtime note
+- The collector runtime version remains 4.0.6 in this follow-through batch because no collector runtime code-path behavior changed here.
+- This batch is a documentation, testing-surface, and Gemini bundle-source alignment pass, not a new collector runtime release.
+
+Validation notes
+- Python syntax checks were rerun for the updated manual test framework runner.
+- Gemini bundle compile should emit DCOIR_Gemini_Email_Build_Bundle_3_0_3.zip after this batch.
+- Knowledge and Gemini source attachment docs were re-grepped to remove the current stale single-quote/unescaped endpoint examples from the maintained current surfaces.
+
+Operator follow-through
+- After applying this batch, run the GitHub actions/workflows for collector compliance.
+- Treat the Gemini agent itself as live-test pending until the later operator-driven Gemini evaluation wave.

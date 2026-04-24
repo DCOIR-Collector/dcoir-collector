@@ -16,7 +16,7 @@ _Baseline collection workflow for standard first-pass collection_
 | --- | --- |
 | Local collector quick alias | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t1 |
 | Explicit parameter form | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T1 -Hours 24 |
-| Elastic endpoint form | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t1" --comment "Run DCOIR Tier 1 collect" |
+| Elastic endpoint form | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick collect-t1" --comment "Run DCOIR Tier 1 collect" |
 
 ## What Tier 1 is for
 
