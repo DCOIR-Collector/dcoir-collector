@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-24T10:43:54Z
+- generated_at_utc: 2026-04-24T15:26:45Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -134,13 +134,13 @@
 
 ## dcoir-memory-preflight
 
-- source_tree_hash: `dfe4267dd083e4186e5d4515a7814b590b05ca8ec2dea0eb0a2b1591e082d13b`
+- source_tree_hash: `13d1c972a199645a6a4a2593a2e0c1462b250dc4785243ba5bc7896284c81bea`
 - release_zip_name: `dcoir-memory-preflight.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `7`
 
-- `SKILL.md` — `3be1b0ddd4f85d6f653cded263b453bd008624e3c0c052e4c6e378fbfd6e80ff`
+- `SKILL.md` — `e3d3d2c17885717abd92b43285633106619e578248a722e155a1d9eb96718897`
 - `agents/openai.yaml` — `e5e97e75c7076793addee2bc5976c54960ffc469b7b0b8a80f6d923de04325e9`
 - `assets/icon.svg` — `8936b24f674a1250d999e2c2b5901374fb4240426f32bd1ae340c352a90d617d`
 - `references/github_memory_query_map.md` — `45a5c8c9dc4424ba30eb0cba4da780a827b2d3f1e533586878a5747bc1d30279`
@@ -282,13 +282,13 @@
 
 ## dcoir-session-resume
 
-- source_tree_hash: `a23906b3c1318ecc189371ade585f1a8ef84878842e12ebad5cfc0a3802e373d`
+- source_tree_hash: `27651bf379baeb21a45948536560a64f1a3f159966cc0cdc6c9f1190d289abae`
 - release_zip_name: `dcoir-session-resume.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `4`
 
-- `SKILL.md` — `50697e4e17f2364732e9f81f6f0138132956e0411c9d8e6914054e38bb623edd`
+- `SKILL.md` — `f99cd75d12c6960413546cb63f088ff77f5ab474b782bb6a705291f34adb3ce9`
 - `agents/openai.yaml` — `7799c01fbdd256586de52434bcc937ab387a5eed34dfb7180cd1b6db65eff318`
 - `assets/icon.svg` — `b9335d9586762b1fa4adc141adbc286f624e3bcdd7e5293587e7916985ee37a8`
 - `references/resume_output_contract.md` — `4f76493f3b3e452c4d94780e16d57f6f1e276f3a1aa86fb4ac66e0bcabe06754`
@@ -340,13 +340,13 @@
 
 ## dcoir-source-authority-auditor
 
-- source_tree_hash: `c2de0e7f7f9cf8e9940f486672e055d132d74cd9476ef8710201e017cdcb3d70`
+- source_tree_hash: `326fdb220f51addd233925c911ae66c2418881d75f2c3e7d3390775653a10ac3`
 - release_zip_name: `dcoir-source-authority-auditor.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `6`
 
-- `SKILL.md` — `bdeef116190e9af155fbb3b27f341fdfad6ecc9d2a82a1d957f488fb1beca9bd`
+- `SKILL.md` — `80c8f7625fc793d0a517a07aa62a09efb2ef89d0724333050844145d530391a1`
 - `agents/openai.yaml` — `8284c8167bcd5a7f5a234d3fa00e53067759ce276c21e1f1656638c5eade28e7`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/audit_rules.md` — `72ce87cc663c75e321e6cef2b376f2d99e668813e9d570d28249da779c84fca4`
