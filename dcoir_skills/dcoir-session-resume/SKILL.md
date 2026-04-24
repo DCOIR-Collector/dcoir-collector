@@ -1,7 +1,3 @@
----
-name: dcoir-session-resume
-description: resume the africom_soc_ir / dcoir workspace from the current authoritative control plane. use at the first substantive turn of every new africom_soc_ir or dcoir session to re-anchor to the current state, then continue the required startup chain through dcoir-memory-preflight, dcoir-session-tracker airtable leftover recovery, and conditional dcoir-plan-tracker active-plan recovery. also use when the operator asks where are we, resume, what is current, what changed, or get me back on track. prefer the governed github readable-text fast path for simple current-state checks, silent airtable reads during startup, and plain-english state summaries unless the operator explicitly wants a deeper technical report.
----
 
 # DCOIR Session Resume
 
