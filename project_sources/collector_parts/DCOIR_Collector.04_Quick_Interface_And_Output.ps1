@@ -229,8 +229,8 @@ function Get-CollectorContextualHelpText {
       $lines += ''
       $lines += 'Use targeted mode when the operator has a narrower event window, user report, process, path, or indicator.'
       $lines += 'Examples:'
-      $lines += "  $cmd -Quick collect-targeted-popup -Target \"User reported popup around 2026-04-08T09:00Z\""
-      $lines += "  $cmd -Quick collect-targeted-script -Target \"Suspicious script execution follow-up\" -Target2 \"powershell.exe\""
+      $lines += "  $cmd -Quick collect-targeted-popup -Target ""User reported popup around 2026-04-08T09:00Z"""
+      $lines += "  $cmd -Quick collect-targeted-script -Target ""Suspicious script execution follow-up"" -Target2 ""powershell.exe"""
       $lines += ''
       $lines += 'Pair targeted mode with WindowStart/WindowEnd and the most specific focus fields you have.'
       $lines += 'Targeted mode narrows guidance and prioritization even when full exact-time filtering is not universal yet.'
