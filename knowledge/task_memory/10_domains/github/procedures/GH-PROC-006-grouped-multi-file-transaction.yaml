@@ -5,6 +5,7 @@ operation: grouped_multi_file_transaction
 object_type: governed_readable_text_change_set
 problem_signature: multiple related existing-file changes or deletions should land in one bounded repo transaction rather than one-file-at-a-time writes
 primary_lane: low_level_git_object_flow
+fast_lane: inline_tree_content_flow
 preconditions:
   - repository and all touched paths are known
   - replacement content is fully prepared before write
@@ -20,7 +21,7 @@ step_sequence:
     purpose: recover the current head commit sha for parent_sha and base_tree_sha
   - step: prepare_blobs
     action: create_blob
-    purpose: create immutable content objects for every changed file that is not a deletion
+    purpose: create immutable content objects for every changed file that is not a deletion when using the explicit-blob lane
   - step: build_grouped_tree
     action: create_tree
     purpose: attach all changed paths in one tree transaction and use sha null for deletions
@@ -33,8 +34,29 @@ step_sequence:
   - step: verify_every_path
     action: fetch_file
     purpose: confirm the exact final state of every touched path, including 404 verification for deleted files
+fast_inline_tree_lane:
+  description: use create_tree entries with inline UTF-8 content for bounded source-folder syncs when the connector accepts content entries
+  when_to_use:
+    - bounded skill-folder or small-to-medium grouped source updates
+    - GitHub Desktop is unavailable
+    - one huge generated local payload would be unsafe to paste or bridge through the connector
+    - the replacement content can be placed safely inside the tool call
+  sequence:
+    - compare_commits to resolve current main head
+    - create_tree with base_tree_sha set to the current head and tree_elements containing path, mode, type blob, and inline content for changed files
+    - create_commit with the returned tree sha and current head as parent
+    - update_ref main to the new commit sha with force false
+    - fetch_file readback for representative or every changed critical path
+  notes:
+    - explicit create_blob is optional in this lane because GitHub creates blob objects implicitly from create_tree content entries
+    - if using sha entries and GitHub returns not a valid blob, create only the missing blob explicitly or switch that entry to inline content and retry the grouped tree
+    - if create_tree returns the same tree sha as the current head tree, the proposed batch is a no-op and should not be committed
+    - exclude runtime residue such as __pycache__, .pyc, and .DS_Store from source syncs unless the workflow explicitly says otherwise
+  validated_example:
+    - 2026-04-24 dcoir skill-source sync used bounded per-skill and small-family inline-tree batches against malwaredevil/dcoir-collector
 verification_steps:
-  - fetch every changed path from main after the ref move
+  - fetch every changed path from main after the ref move when the change set is small enough
+  - for larger bounded batches, fetch representative critical files and any files most likely to have drifted, then refresh the parity or validation surface that covers the full batch
   - compare content for updated paths, not just commit success
   - verify deleted paths by absence or 404 behavior
   - if structural or control-plane files changed, verify the downstream docs and logs that should stay aligned
@@ -43,15 +65,16 @@ anti_patterns:
   - do not perform one-file-at-a-time existing-file writes when the change set belongs together
   - do not treat commit creation alone as success
   - do not skip deleted-path verification after a grouped change
+  - do not try to paste or hand-transfer a giant generated local tree payload when bounded inline-tree batches or a repo-native generator workflow is safer
   - do not write durable connector, tool, or capability-boundary claims before a named low-level step in this lane has actually failed after correct preflight and execution
 known_good_signatures:
   - compare_commits base=head=main returned current head sha
-  - create_tree accepted the full grouped path set
+  - create_tree accepted the full grouped path set or a bounded inline-content batch
   - create_commit returned one commit sha for the full change set
   - update_ref returned success true
-  - readback verification matched the intended final state for every touched path
+  - readback verification matched the intended final state for every touched path or a covering parity surface was refreshed
 fallbacks:
   - GH-PROC-004
   - GH-PROC-005
-last_validated: 2026-04-03
+last_validated: 2026-04-24
 confidence: high
