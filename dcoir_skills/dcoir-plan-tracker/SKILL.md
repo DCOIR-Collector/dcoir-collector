@@ -1,7 +1,3 @@
----
-name: dcoir-plan-tracker
-description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state, hierarchical task decomposition, blocker capture, closed-loop blocker recovery, decision-aware execution, operator-visible milestone signaling, and conditional startup active-plan recovery. use when chatgpt needs to break a dcoir task into tasks, subtasks, and subsubtasks; preserve active plan continuity beyond fragile local container state; automatically create or update governed tracker files in github; resume paused work; recover open airtable-backed plan state after session-start leftover scans; record blockers and mitigations; classify reusable lessons after blocker recovery; stage promotion-ready candidates; consult decision defaults before pausing for operator input; or export a clean handoff for follow-on execution.
----
 
 # DCOIR Plan Tracker
 
@@ -289,7 +285,6 @@ This skill may accumulate session-local tracker state before GitHub flush time.
 
 Buffer when:
 - several related tracker files should land together
-- the grouped-write posture is safer than repeated small writes
 - blocker-recovery notes are still settling and should not be prematurely promoted
 - the current task is moving quickly and the next flush-check trigger is near
 
@@ -304,7 +299,7 @@ Preferred flush-check trigger points:
 
 When buffering is active, `05_resume_state.md` should make the pending flush state obvious.
 
-At the beginning of each new session that uses a local plan cache, prefer Airtable-backed plan state first and run the local `plan_state.json` preflight only when a cache proof step is useful.
+At the beginning of each new session that uses a local plan cache, prefer Airtable-backed durable state first and run the local `plan_state.json` preflight only when a cache proof or deterministic rendering is useful.
 
 A valid flush/manicure check for this skill must:
 - inspect the current plan state and active task
