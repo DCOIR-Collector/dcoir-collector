@@ -2,10 +2,6 @@ name: refresh-skill-parity-surfaces
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '.github/skill-parity-refresh-trigger.txt'
-      - '.github/workflows/refresh-skill-parity-surfaces.yml'
 
 permissions:
   contents: write
