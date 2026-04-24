@@ -6,13 +6,38 @@ name: validate-on-push
 #   directly in this workflow file.
 # - Do not rely on adjacent folder changes or implicit coverage.
 #
-# Manual-only posture:
-# - Auto push triggering is disabled to conserve GitHub Actions minutes.
-# - Pre-change trigger config was saved at:
+# Targeted automatic posture:
+# - Push triggering is enabled only for collector, Gemini, packaging, validation,
+#   maintained knowledge, and this workflow's own definition paths.
+# - The targeted path list was restored from:
 #   project_sources/workflow_backups/validate-on-push.pre-manual-only.2026-04-21.yml.txt
-# - Current use is a bounded manual pre-live validation pass before larger live collector testing.
+# - Routine automatic coverage runs the Core collector harness suite for speed.
+# - Deeper collector regression remains in manual-full-validation.
 
 on:
+  push:
+    paths:
+      - 'project_sources/DCOIR_Collector.ps1'
+      - 'project_sources/run_DCOIR_Tests.ps1'
+      - 'project_sources/validate_DCOIR_Run.ps1'
+      - 'project_sources/collector_parts/**'
+      - 'project_sources/Collector_Runtime_Package_Manifest.json.txt'
+      - 'project_sources/DCOIR_Gemini_Bundle_Source/**'
+      - 'project_sources/generation_validation/test_verify_collector_documentation_quality.py'
+      - 'project_sources/generation_validation/run_validate_dcoir_run_fixture_tests.ps1'
+      - 'project_sources/generation_validation/build_dcoir_collector_runtime_package.py'
+      - 'project_sources/generation_validation/restore_dcoir_collector_runtime_zip.py'
+      - 'project_sources/generation_validation/verify_collector_documentation_quality.py'
+      - 'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py'
+      - 'project_sources/generation_validation/compile_dcoir_collector_runtime.py'
+      - 'project_sources/generation_validation/build_dcoir_gemini_release.py'
+      - 'project_sources/generation_validation/sync_dcoir_gemini_knowledge_attachments.py'
+      - 'project_sources/generation_validation/validate_dcoir_gemini_bundle.py'
+      - 'project_sources/generation_validation/validate_dcoir_gemini_behavior_scenarios.py'
+      - 'project_sources/generation_validation/compile_dcoir_gemini_bundle.py'
+      - 'knowledge/Knowledge - *.md'
+      - 'supporting_assets/DCOIR_Collector.zip'
+      - '.github/workflows/validate-on-push.yml'
   workflow_dispatch:
 
 concurrency:
@@ -188,13 +213,13 @@ jobs:
           "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/generation_validation/out_validate_collector/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
           "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/generation_validation/out_validate_collector/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
 
-      - name: Run collector major-version pre-live suite
+      - name: Run collector core pre-live suite
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite MajorVersion -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
           if ($LASTEXITCODE -ne 0) {
-            throw 'Collector harness suite failed: MajorVersion'
+            throw 'Collector harness suite failed: Core'
           }
 
       - name: Smoke-test Gemini bundle build algorithm
