@@ -1,11 +1,7 @@
----
-name: dcoir-memory-preflight
-description: consult the canonical dcoir github task-memory bank before high-friction or known-procedure work and again after blocker recovery when a reusable lesson may need staging. after the session-start resume bootstrap, also use this skill at the first substantive turn of every new africom_soc_ir or dcoir session to classify the immediate work family and avoid rediscovering the right lane later. use when dcoir work involves github read/write/update/delete operations, grouped repo edits, file removals, control-plane changes, packaging or bundle generation, skill maintenance, structural refactors, repeated high-friction workflows, coordinated multi-skill campaigns, or recovered failures that may justify a reusable procedure, limitation, failure-signature, or helper-skill/process update candidate.
----
 
 # DCOIR Memory Preflight
 
-<!-- skill-marker: updated-skill|20260417T073500Z|dcoir-memory-preflight|SKILL.md|R03 -->
+<!-- skill-marker: updated-skill|20260417T064500Z|dcoir-memory-preflight|SKILL.md|R02 -->
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
@@ -31,7 +27,6 @@ Use it to:
 - surface the best bounded lane, anti-patterns, and likely flush triggers before high-friction work starts
 - keep simple resume-status work on the bounded governed GitHub readable-text lane instead of drifting into unnecessary execution paths
 - resolve the active queue branch from Airtable `Queue Control`, active `Work Items`, and active `Plans` before old GitHub todo surfaces bias the lane
-- when connector-backed startup state reads only need routing or state, prefer the canonical non-display connector procedure before any visible table rendering
 
 ### 1. pre-execution mode
 Run this mode before choosing an execution lane when the task family is likely to have reusable canonical guidance.
@@ -88,7 +83,7 @@ Run this skill again after blocker recovery when the recovered lesson could matt
 4. Identify the likely memory domain, preferring `github` first for repo work.
 5. Read the task-memory manifest and compiled lookup.
 6. Select the smallest relevant set of canonical records.
-7. If the task is GitHub-family lane selection or connector-shape selection, include `GH-PROC-007` and `GH-PROC-008` when relevant. If session-start bootstrap needs connector-backed state without operator-facing UI, include `GEN-PROC-003` too. For GitHub Desktop manual repo-update deliveries or grouped governed pushes, also pair the grouped-transaction and post-write-verification records so the delivery lane stays aligned to the same governed write posture.
+7. If the task is GitHub-family lane selection or connector-shape selection, include `GH-PROC-007` and `GH-PROC-008` when relevant. For GitHub Desktop manual repo-update deliveries or grouped governed pushes, also pair the grouped-transaction and post-write-verification records so the delivery lane stays aligned to the same governed write posture.
 8. For `pre_execution`, summarize the recommended lane, preconditions, anti-patterns, and required verification.
 9. For `post_blocker`, classify the recovered lesson as one of:
    - `one_off_only`
@@ -113,7 +108,6 @@ For GitHub governed-readable-text work:
 - do not treat one-file-at-a-time writes as the default for grouped repo changes
 - read the post-write verification procedure before claiming success
 - when choosing a connector function shape or candidate lane, use the governed connector reference pack through `GH-PROC-008` but still treat the live connector surface as final authority
-- when the task only needs connector-backed state or routing information, prefer `GEN-PROC-003` and other non-display retrieval paths before any visible connector table rendering
 
 ## Required companion routing
 The surrounding workflow should use:

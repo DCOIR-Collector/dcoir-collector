@@ -10,8 +10,6 @@
 - github preflight routing -> `GH-PROC-007`
 - connector reference assisted lane selection -> `GH-PROC-008`
 
-- quiet connector-backed state read or startup Airtable queue-state read without visible rendering -> `GEN-PROC-003`
-
 ## Notes
 - prefer the compiled lookup first, then open only the selected canonical records
 - for grouped changes, pair the transaction procedure with post-write verification
@@ -25,7 +23,3 @@
 ## Additional governed-delivery pairings
 - coordinated multi-skill patch campaign -> `GH-PROC-007` + `GH-PROC-008`, then pair grouped existing-file delivery with `GH-PROC-006` + `GH-PROC-005` when the change set is already known
 - GitHub Desktop manual repo-update delivery or grouped governed-push bundle -> `GH-PROC-006` + `GH-PROC-005`; include `GH-PROC-008` when connector-lane or function-shape choice is still ambiguous
-
-## Quiet connector-state pairing
-- startup or re-anchor Airtable queue-state read without operator-facing UI -> pair `GEN-PROC-003` with `GH-PROC-007` when the result still drives GitHub-family lane selection
-- if a visible Airtable table might help but is not explicitly requested, keep the read silent and ask before any display path
