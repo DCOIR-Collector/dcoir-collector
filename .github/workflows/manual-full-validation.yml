@@ -185,6 +185,30 @@ jobs:
           "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/generation_validation/out_manual_full_collector/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
           "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/generation_validation/out_manual_full_collector/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
 
+      - name: Apply QuickHelp harness assertion patch
+        shell: pwsh
+        working-directory: project_sources
+        run: |
+          $harnessPath = '.\run_DCOIR_Tests.ps1'
+          $old = '[void](Invoke-ExpectedFailureStep -StepName "95_QuickHelp" -CollectorArgs @("-Quick","help") -ExpectedOutcome ''BIND_REJECT'' -ExpectedPatterns @("Quick command examples:"))'
+          $new = @'
+          $quickHelp = Invoke-CollectorStep -StepName "95_QuickHelp" -CollectorArgs @("-Quick","help")
+          Assert-CollectorStepSucceeded -StepName "95_QuickHelp" -CollectorStep $quickHelp
+          if (-not [regex]::IsMatch($quickHelp.StdOut, [regex]::Escape("Quick command examples:"))) {
+            throw "Quick help output did not include quick command examples."
+          }
+          '@.TrimEnd()
+          $text = Get-Content -LiteralPath $harnessPath -Raw
+          if (-not $text.Contains($old)) {
+            throw 'Expected 95_QuickHelp bind-reject assertion was not found; refusing to run an ambiguous harness patch.'
+          }
+          $patched = $text.Replace($old, $new)
+          Set-Content -LiteralPath $harnessPath -Value $patched -Encoding UTF8
+          $verifyText = Get-Content -LiteralPath $harnessPath -Raw
+          if (-not $verifyText.Contains('Assert-CollectorStepSucceeded -StepName "95_QuickHelp"')) {
+            throw '95_QuickHelp positive assertion patch did not apply.'
+          }
+
       - name: Run selected harness suite
         shell: pwsh
         working-directory: project_sources
