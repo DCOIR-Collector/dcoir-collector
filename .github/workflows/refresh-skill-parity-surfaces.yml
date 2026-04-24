@@ -2,6 +2,11 @@ name: refresh-skill-parity-surfaces
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'dcoir_skills/**'
+      - '!dcoir_skills/skill_parity_manifest.json'
+      - '!dcoir_skills/skill_parity_summary.md'
 
 permissions:
   contents: write
