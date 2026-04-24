@@ -1,0 +1,52 @@
+name: refresh-skill-parity-surfaces
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/skill-parity-refresh-trigger.txt'
+      - '.github/workflows/refresh-skill-parity-surfaces.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh_skill_parity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Regenerate skill parity surfaces
+        shell: bash
+        run: |
+          python dcoir_skills/dcoir-parity-verifier/scripts/build_skill_parity_manifest.py \
+            --skills-root dcoir_skills \
+            --output dcoir_skills/skill_parity_manifest.json \
+            --skill-prefix dcoir- \
+            --baseline-origin repo_source \
+            --contract dcoir_skills/project_discovery_contract.json \
+            --project 'AFRICOM_SOC_IR / DCOIR'
+          python dcoir_skills/dcoir-parity-verifier/scripts/render_skill_parity_summary.py \
+            --manifest dcoir_skills/skill_parity_manifest.json \
+            --output dcoir_skills/skill_parity_summary.md
+
+      - name: Commit parity refresh if changed
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git diff --quiet -- dcoir_skills/skill_parity_manifest.json dcoir_skills/skill_parity_summary.md; then
+            echo 'No skill parity surface changes to commit.'
+            exit 0
+          fi
+          git add dcoir_skills/skill_parity_manifest.json dcoir_skills/skill_parity_summary.md
+          git commit -m 'Refresh dcoir skill parity surfaces'
+          git push
