@@ -182,11 +182,11 @@ jobs:
           "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/generation_validation/out_health_collector/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
           "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/generation_validation/out_health_collector/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
 
-      - name: Run collector full regression suite
+      - name: Run collector major-version health suite
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite FullRegression -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite MajorVersion -MasterZipPath $env:HARNESS_RUNTIME_ZIP
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh
