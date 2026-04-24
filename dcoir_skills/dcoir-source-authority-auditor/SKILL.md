@@ -1,11 +1,7 @@
----
-name: dcoir-source-authority-auditor
-description: audit whether a requested dcoir task is grounded in the current authoritative source set and stop when control-plane, current_state_id, or continuity drift would make the result unsafe or misleading. use when chatgpt must verify current authority, compare active continuity surfaces for alignment, detect stale or contradictory current-state signals, flag historical-versus-current confusion, or decide whether work can proceed, must stay bounded, or must stop for an exact conflict report. supporting-asset absence alone should bound the path rather than hard-stop it unless the current task depends on that asset as authority.
----
 
 # DCOIR Source Authority Auditor
 
-<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-source-authority-auditor|SKILL.md|R01 -->
+<!-- skill-marker: updated-skill|20260415T170500Z|dcoir-source-authority-auditor|SKILL.md|R02 -->
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
