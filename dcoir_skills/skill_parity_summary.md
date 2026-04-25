@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-25T08:47:32Z
+- generated_at_utc: 2026-04-25T08:54:10Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
