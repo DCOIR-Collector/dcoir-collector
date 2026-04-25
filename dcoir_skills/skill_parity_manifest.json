@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-04-25T07:33:56Z",
+  "generated_at_utc": "2026-04-25T07:23:51Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -99,12 +99,12 @@
     },
     "dcoir-collector-qa": {
       "source_root": "dcoir-collector-qa",
-      "source_tree_hash": "edf658fd7b8dc9730c5a4f1aa0930b6bfec4e678504873b0fc0493e14bbf7614",
+      "source_tree_hash": "580f1cfea693c11793411278d6e27ec6ad6b5c4703c57f9491aae53e47442cda",
       "release_zip_name": "dcoir-collector-qa.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 17,
-      "total_bytes": 53638,
+      "file_count": 16,
+      "total_bytes": 51595,
       "files": [
         {
           "path": "SKILL.md",
@@ -130,11 +130,6 @@
           "path": "references/execution_modes.md",
           "sha256": "89bda4edd498ac887fa98bab682d2c0b68c716028f719d5312bcdf9d9f267413",
           "size_bytes": 2111
-        },
-        {
-          "path": "references/github_memory_workflow.md",
-          "sha256": "7de4c6199c18cf55d174c2e998f1d9b2865cba7e166398b67fb746cf3f6d8027",
-          "size_bytes": 2043
         },
         {
           "path": "references/known_failure_lane.md",
@@ -195,12 +190,12 @@
     },
     "dcoir-decision-policy": {
       "source_root": "dcoir-decision-policy",
-      "source_tree_hash": "cb11c24360e15b5ea6b65f0bb60106ab88e23af9106cd166eb8d895576ee61d9",
+      "source_tree_hash": "0c9669faa8bac2a361804a49c4f0e0f7619e0be7ef4ff6240bbc3e5241cebc89",
       "release_zip_name": "dcoir-decision-policy.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 15,
-      "total_bytes": 63240,
+      "file_count": 14,
+      "total_bytes": 61046,
       "files": [
         {
           "path": "SKILL.md",
@@ -236,11 +231,6 @@
           "path": "references/decision_matrix.md",
           "sha256": "0b49e3deb3309649b5ae120bc5c69611a061b3297a011dda4d9ef5d359850686",
           "size_bytes": 4149
-        },
-        {
-          "path": "references/github_memory_workflow.md",
-          "sha256": "c6ba66d924f95d3a94c58cf1355296f7de702f5b01b19b064c5fcbc3d284e487",
-          "size_bytes": 2194
         },
         {
           "path": "references/hard_stop_conditions.md",
@@ -373,12 +363,12 @@
     },
     "dcoir-live-test-remediation-planner": {
       "source_root": "dcoir-live-test-remediation-planner",
-      "source_tree_hash": "9efdbbf4bf17776b020bafd2bcfc772266a7eefecba0d63ef4c0cf83810b3e68",
+      "source_tree_hash": "76d02787052a6d082710bc8b660c0cf6cf40f6918a7c2417866c65c6854c2054",
       "release_zip_name": "dcoir-live-test-remediation-planner.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 9,
-      "total_bytes": 27769,
+      "file_count": 8,
+      "total_bytes": 26874,
       "files": [
         {
           "path": "SKILL.md",
@@ -399,11 +389,6 @@
           "path": "references/airtable_memory_workflow.md",
           "sha256": "3623ffff2de7aa317c73cb99298bc5f80faa32e4069f7cbb39df16754288e269",
           "size_bytes": 1233
-        },
-        {
-          "path": "references/github_memory_workflow.md",
-          "sha256": "57bcadc2cb5e22305d83633222f06c6a841a05cd5507eedf27e71d5571c89c4c",
-          "size_bytes": 895
         },
         {
           "path": "references/remediation_model.md",
@@ -990,12 +975,12 @@
     },
     "dcoir-skill-regression-auditor": {
       "source_root": "dcoir-skill-regression-auditor",
-      "source_tree_hash": "492f824a867aae15b57f1d3ae424951fd64f5bf4e0649630018d3768f80e403f",
+      "source_tree_hash": "05c42a852de1c39f14c9d5ef3d0ae1dde52c332d33f8624e0bb1180e74fde914",
       "release_zip_name": "dcoir-skill-regression-auditor.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 12,
-      "total_bytes": 25079,
+      "file_count": 11,
+      "total_bytes": 22860,
       "files": [
         {
           "path": "SKILL.md",
@@ -1016,11 +1001,6 @@
           "path": "references/airtable_memory_workflow.md",
           "sha256": "376e99321bdbe7146b628aa37b97009823114005d9fbe4f31a3a5cccdfed4a79",
           "size_bytes": 1223
-        },
-        {
-          "path": "references/github_memory_workflow.md",
-          "sha256": "b21bd7d7910335cacb80f816e4645ff188a6922ce4c77d47649f968989a4d577",
-          "size_bytes": 2219
         },
         {
           "path": "references/package_hygiene_workflow.md",
@@ -1174,12 +1154,12 @@
     },
     "dcoir-validation-orchestrator": {
       "source_root": "dcoir-validation-orchestrator",
-      "source_tree_hash": "728a6dc08c0801d8fa7667ee6051e0a85a9ef6315709b7c52e94137e4a28aa8e",
+      "source_tree_hash": "6468406984fc90de87326bb979847b00c7ff3d049de4eb638860bcf2ee5e7868",
       "release_zip_name": "dcoir-validation-orchestrator.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 8,
-      "total_bytes": 20456,
+      "file_count": 7,
+      "total_bytes": 18133,
       "files": [
         {
           "path": "SKILL.md",
@@ -1200,11 +1180,6 @@
           "path": "references/airtable_memory_workflow.md",
           "sha256": "54c5099637578dd497c6245128569f48ec53caae90072acd0a16cf5a1b96b0f9",
           "size_bytes": 1221
-        },
-        {
-          "path": "references/github_memory_workflow.md",
-          "sha256": "128c37f6df6861f9ba9bda478f61ce60f5631992d11b19e337daf72cd19f23f0",
-          "size_bytes": 2323
         },
         {
           "path": "references/validation_scenario_library.md",
