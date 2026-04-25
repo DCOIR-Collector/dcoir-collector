@@ -3,6 +3,8 @@ name: dcoir-readme-maintainer
 description: maintain root and folder readme surfaces for africom_soc_ir / dcoir work. use when chatgpt needs to improve the repository root readme, improve or create a major folder readme such as knowledge/readme.md or project_sources/readme.md, refresh readme navigation or cross-links after repo changes, detect missing readme coverage in major governed folders, align readme summaries to the current control plane and visible governed working line, or refresh the helper-skill routing note when inventory or workflow rules changed materially and the note would otherwise drift from the maintained readme surfaces. do not use for broader knowledge-doc generation, source-authority judgment, release readiness, or package-class choice.
 ---
 
+<!-- skill-marker: updated-skill|20260425T104200Z|T2.4-late-added-marker-verification|marker-add|dcoir-readme-maintainer|SKILL.md -->
+
 # DCOIR README Maintainer
 
 ## Required project gate

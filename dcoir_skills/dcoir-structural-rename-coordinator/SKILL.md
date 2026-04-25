@@ -2,6 +2,9 @@
 name: dcoir-structural-rename-coordinator
 description: coordinate dcoir structural renames and naming-model changes so dependent files, mappings, skills, delivery bundles, and release posture stay aligned. use when a file, source class, asset class, skill name, or layout rule is being renamed or re-homed and chatgpt must identify every downstream touchpoint, stop unsafe partial updates, and stage the correct refresh set before promotion. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
 ---
+
+<!-- skill-marker: updated-skill|20260425T104200Z|T2.4-late-added-marker-verification|marker-add|dcoir-structural-rename-coordinator|SKILL.md -->
+
 # DCOIR Structural Rename Coordinator
 
 ## Required project gate

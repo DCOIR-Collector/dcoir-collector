@@ -3,6 +3,8 @@ name: dcoir-release-scope-builder
 description: determine the right dcoir release or packaging class for an already-identified africom_soc_ir / dcoir project change. use only when working inside the africom_soc_ir / dcoir project context and chatgpt needs to choose whether the change stays local, becomes a targeted skill update, becomes a batched multi-skill update wave, becomes a github desktop manual repo-update bundle, becomes a repo-layout test bundle, or requires a full-refresh project upload bundle with release instructions. this skill owns packaging-class selection, not general decision branching or promotion-readiness judgment.
 ---
 
+<!-- skill-marker: updated-skill|20260425T104200Z|T2.4-late-added-marker-verification|marker-add|dcoir-release-scope-builder|SKILL.md -->
+
 # DCOIR Release Scope Builder
 
 ## Required project gate
