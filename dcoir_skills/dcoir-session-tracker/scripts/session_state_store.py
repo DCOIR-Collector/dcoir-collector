@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-session-tracker|session_state_store.py
 """Maintain a real local DCOIR session-state JSON file."""
 from __future__ import annotations
 
@@ -21,13 +22,13 @@ BUCKETS = [
     'blocked_or_needs_authority',
 ]
 DEFAULT_TARGETS = {
-    'candidate_log01': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
-    'candidate_log02': ['project_sources/LOG-02_DCOIR_Lessons_Learned_Log.txt'],
-    'candidate_log03': ['project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt'],
-    'durable_preference_candidate': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
-    'new_skill_idea': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
-    'follow_on_validation': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
-    'blocked_or_needs_authority': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
+    'candidate_log01': ['Airtable: Work Items', 'Airtable: Plan Tasks', 'Airtable: Queue Control'],
+    'candidate_log02': ['Airtable: Session Checkpoints', 'Airtable: skill memory tables'],
+    'candidate_log03': ['Airtable: Session Checkpoints'],
+    'durable_preference_candidate': ['Airtable: Work Items', 'Airtable: Plan Tasks', 'Airtable: Queue Control'],
+    'new_skill_idea': ['Airtable: Work Items', 'Airtable: Plan Tasks', 'Airtable: Queue Control'],
+    'follow_on_validation': ['Airtable: Work Items', 'Airtable: Plan Tasks', 'Airtable: Queue Control'],
+    'blocked_or_needs_authority': ['Airtable: Work Items', 'Airtable: Plan Tasks', 'Airtable: Queue Control'],
 }
 
 
@@ -318,7 +319,7 @@ def derive_pre_push_review(state: dict[str, Any]) -> dict[str, Any]:
         if bucket in {'candidate_log01', 'durable_preference_candidate', 'new_skill_idea', 'follow_on_validation', 'blocked_or_needs_authority'} or any('todo' in t.lower() or 'LOG-01' in t for t in targets):
             entry = normalize_stage({
                 'title': f'remove or update completed item {item_id} in active todo surfaces',
-                'target_paths': ['project_sources/LOG-01_DCOIR_Todo_Log.txt', 'project_sources/todo/01_Active_Now.txt'],
+                'target_paths': ['Airtable: Work Items', 'Airtable: Plan Tasks', 'Airtable: Queue Control'],
                 'source_item_ids': [item_id],
                 'action': 'remove_or_update',
                 'why': item.get('completion_note', '') or 'completed item should no longer remain as active todo',

@@ -3,6 +3,8 @@ name: dcoir-repo-packager
 description: build strict dcoir repo-layout zips, github-primary bootstrap bundles, and github desktop manual repo-update patch bundles from the current authoritative dcoir project files. use when chatgpt needs to package the current project workspace for local repo-style testing, prepare a bootstrap refresh that follows the no-duplicate-readable-source rule, or emit a github desktop manual repo-update bundle containing only affected repo-relative files with no wrapper root. this skill is class-prefix aware, prefers control-plane roles over brittle legacy filenames, supports the current github-primary layout, and must stop if the required control-plane roles or requested paths cannot be resolved safely.
 ---
 
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-repo-packager|SKILL.md -->
+
 # DCOIR Repo Packager
 
 ## Overview
@@ -21,8 +23,8 @@ Before packaging anything, verify that the control plane can be resolved from th
 Preferred current control-plane files:
 - `project_sources/CP-01_DCOIR_Version_Manifest.txt`
 - `project_sources/CP-02_DCOIR_Change_Log.txt`
-- `project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt`
-- `project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt`
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
+- Airtable `Repo Surface Registry` / `Schema Registry`
 
 Legacy compatibility aliases may be accepted only when the bundled mapping rules explicitly allow them.
 
@@ -34,7 +36,7 @@ Also stop if any of these are true:
 
 ## What this skill may do
 - Build a strict `DCOIR_Project/` repo-layout ZIP for local testing.
-- Build a GitHub-primary bootstrap/update bundle with only `project_settings/`, retained `supporting_assets/` when present, and `release_notes/RELEASE_INSTRUCTIONS.txt`.
+- Build a GitHub-primary bootstrap/update bundle with only `Airtable Operator Preferences / governed control-plane references`, retained `supporting_assets/` when present, and Airtable `Release Artifacts` / delivery instructions.
 - Build a GitHub Desktop manual repo-update bundle with only the affected repo-relative files and folders, no wrapper root, and a suggested commit summary surfaced in the report.
 - Build repo and update outputs in one run when asked.
 - Report exactly what it created and where files were emitted.
@@ -58,16 +60,16 @@ Also stop if any of these are true:
      - `dcoir_skills/`
      - `knowledge/`
      - `project_sources/`
-     - `project_settings/`
+     - `Airtable Operator Preferences / governed control-plane references`
      - `supporting_assets/`
      - optional `release_notes/`
 
 2. **Update mode**
    - Use for a Project bootstrap refresh bundle.
    - Include only bootstrap material that follows the no-duplicate-readable-source rule:
-     - `project_settings/` when present
+     - `Airtable Operator Preferences / governed control-plane references` when present
      - retained `supporting_assets/` when present
-     - `release_notes/RELEASE_INSTRUCTIONS.txt`
+     - Airtable `Release Artifacts` / delivery instructions
    - Do not include readable governed text mirrors from `project_sources/`, `knowledge/`, or `dcoir_skills/` in the bootstrap bundle.
 
 3. **Both mode**
@@ -115,7 +117,7 @@ After the script runs:
 - If `success` is false, explain the failure plainly and do not present the ZIP as valid.
 - If `success` is true, provide the resulting ZIP link or links.
 - For repo mode, describe it as a strict local-testing repo-layout bundle.
-- For update mode, describe it as a GitHub-primary bootstrap bundle and remind the user to follow `release_notes/RELEASE_INSTRUCTIONS.txt`.
+- For update mode, describe it as a GitHub-primary bootstrap bundle and remind the user to follow Airtable `Release Artifacts` / delivery instructions.
 - For GitHub Desktop manual repo-update mode, describe it as a patch-style GitHub Desktop bundle containing only the affected repo-relative paths with no wrapper root, and include the suggested commit summary in the response.
 - Treat settings content and supporting assets as separate bootstrap-bundle classes.
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-structural-rename-coordinator|map_rename_impact.py
 from __future__ import annotations
 
 import argparse
@@ -9,8 +10,8 @@ TOP_LEVEL_STRUCTURAL = {
     'project_sources/',
     'knowledge/',
     'supporting_assets/',
-    'project_settings/',
-    'release_notes/'
+    'Airtable Operator Preferences',
+    'Airtable Release Artifacts'
 }
 CONTROL_PLANE_NAMES = {
     'cp-01_dcoir_version_manifest.txt',

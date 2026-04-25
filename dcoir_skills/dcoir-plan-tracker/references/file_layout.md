@@ -1,12 +1,14 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-plan-tracker|file_layout.md -->
+
 # DCOIR Plan Tracker File Layout
 
 ## Purpose
 This reference defines the fixed durable layout for `dcoir-plan-tracker` plans stored in GitHub.
 
 ## Root layout
-- `dcoir_skill_memory/dcoir-plan-tracker/plan_tracker_memory.md`
-- `dcoir_skill_memory/dcoir-plan-tracker/plan_tracker_registry.json`
-- `dcoir_skill_memory/dcoir-plan-tracker/plans/PLAN-YYYYMMDD-short-slug/`
+- Airtable `Plans` / `Plan Tasks`
+- Airtable `Tracking Registry`
+- Airtable plan/task hierarchy records
 
 ## Per-plan required files
 - `00_index.md`

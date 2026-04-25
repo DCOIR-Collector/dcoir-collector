@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-knowledge-doc-maintainer|scan_project.py
 from __future__ import annotations
 
 import argparse
@@ -329,7 +330,7 @@ def main() -> int:
         'current_repo_guide': 'README.md' if (source_dir / 'README.md').exists() else None,
         'current_split_todo_structure': sorted([
             str(p.relative_to(source_dir))
-            for p in ([source_dir / 'project_sources' / 'LOG-01_DCOIR_Todo_Log.txt', source_dir / 'project_sources' / 'LOG-01_DCOIR_Todo_Index.txt'] + sorted((source_dir / 'project_sources' / 'todo').glob('*.txt')) if (source_dir / 'project_sources' / 'todo').exists() else [source_dir / 'project_sources' / 'LOG-01_DCOIR_Todo_Log.txt', source_dir / 'project_sources' / 'LOG-01_DCOIR_Todo_Index.txt'])
+            # Legacy todo/log GitHub surfaces are no longer live scan targets; use Airtable Queue Control, Work Items, and Plan Tasks instead.
             if p.exists()
         ]),
         'recognized_governed_knowledge_sources': governed_knowledge_sources,

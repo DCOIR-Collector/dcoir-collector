@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-repo-packager|create_dcoir_bundle.py
 """Create strict DCOIR repo-layout, bootstrap, and GitHub Desktop patch bundles."""
 
 from __future__ import annotations
@@ -226,7 +227,7 @@ Notes
 - The current no-duplicate-readable-source rule is assumed.
 """
     (release_notes / 'RELEASE_INSTRUCTIONS.txt').write_text(instructions, encoding='utf-8')
-    included.append('release_notes/RELEASE_INSTRUCTIONS.txt')
+    included.append('Airtable Release Artifacts / repo release-note source basisRELEASE_INSTRUCTIONS.txt')
 
     update_zip = output_dir / 'DCOIR_Project_bootstrap_bundle.zip'
     zip_dir(bundle_root, update_zip, bundle_root)

@@ -1,3 +1,5 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-session-tracker|promotion_handoff.md -->
+
 # Promotion handoff
 
 ## Purpose
@@ -18,9 +20,9 @@ Use this reference when a session-tracker item needs to become a real Project up
 
 ## Promotion-ready text blocks
 When useful, prepare ready-to-drop candidate text for:
-- `LOG-01_DCOIR_Todo_Log.txt`
-- `LOG-02_DCOIR_Lessons_Learned_Log.txt`
-- `LOG-03_DCOIR_Session_Handoff_Brief.txt`
+- `Airtable Work Items / Plan Tasks`
+- `Airtable skill-memory or Session Checkpoints`
+- `Airtable Session Checkpoints`
 
 Do not imply these candidate blocks are already promoted.
 
@@ -37,8 +39,8 @@ Use this sequence when the operator is moving to another session and the current
 
 ## Close-out candidate destinations
 When relevant, prepare ready-to-drop candidate text for:
-- `LOG-01_DCOIR_Todo_Log.txt`
-- `LOG-02_DCOIR_Lessons_Learned_Log.txt`
-- `LOG-03_DCOIR_Session_Handoff_Brief.txt`
+- `Airtable Work Items / Plan Tasks`
+- `Airtable skill-memory or Session Checkpoints`
+- `Airtable Session Checkpoints`
 
 Do not imply these candidate blocks are already promoted unless they were actually written.

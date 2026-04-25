@@ -1,3 +1,5 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-repo-packager|layout_rules.md -->
+
 # DCOIR Repo Layout Rules
 
 ## Project gate
@@ -6,8 +8,8 @@ Resolve the current control plane by role.
 Preferred current control-plane files:
 - `project_sources/CP-01_DCOIR_Version_Manifest.txt`
 - `project_sources/CP-02_DCOIR_Change_Log.txt`
-- `project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt`
-- `project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt`
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
+- Airtable `Repo Surface Registry` / `Schema Registry`
 
 Legacy aliases may be accepted only when the bundled mapping rules explicitly include them.
 Stop if the control-plane roles cannot be resolved.
@@ -18,15 +20,15 @@ Repo mode should preserve the current repo-style layout under:
 - `DCOIR_Project/dcoir_skills/` when present
 - `DCOIR_Project/knowledge/` when present
 - `DCOIR_Project/project_sources/` when present
-- `DCOIR_Project/project_settings/` when present
+- `DCOIR_Project/Airtable Operator Preferences / governed control-plane references` when present
 - `DCOIR_Project/supporting_assets/` when present
-- `DCOIR_Project/release_notes/` when present
+- `DCOIR_Project/Airtable Release Artifacts / repo release-note source basis` when present
 
 ## Canonical update-mode bundle tree
 Update mode should include only bootstrap-safe roots:
-- `project_settings/` when present
+- `Airtable Operator Preferences / governed control-plane references` when present
 - `supporting_assets/` when present
-- `release_notes/RELEASE_INSTRUCTIONS.txt`
+- `Airtable Release Artifacts / repo release-note source basisRELEASE_INSTRUCTIONS.txt`
 
 ## Canonical GitHub Desktop manual repo-update bundle tree
 GitHub Desktop manual repo-update mode should include only the affected repo-relative files or folders requested for the current patch set:

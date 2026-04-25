@@ -9,12 +9,12 @@
       "CP-02_DCOIR_Change_Log.txt"
     ],
     "setup_workflow": [
-      "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
-      "DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt"
+      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "CP-01_DCOIR_Version_Manifest.txt"
     ],
     "layout_spec": [
-      "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
-      "DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt"
+      "Airtable: Repo Surface Registry",
+      "Airtable: Repo Surface Registry"
     ]
   },
   "repo_mode_include_roots": [
@@ -22,20 +22,20 @@
     "dcoir_skills",
     "knowledge",
     "project_sources",
-    "project_settings",
+    "Airtable Operator Preferences",
     "supporting_assets",
-    "release_notes"
+    "Airtable Release Artifacts"
   ],
   "update_mode_include_roots": [
-    "project_settings",
+    "Airtable Operator Preferences",
     "supporting_assets"
   ],
   "required_repo_mode_entries": [
     "README.md",
     "project_sources/CP-01_DCOIR_Version_Manifest.txt",
     "project_sources/CP-02_DCOIR_Change_Log.txt",
-    "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
-    "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt"
+    "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+    "Airtable: Repo Surface Registry"
   ],
   "update_bundle_include_settings": true,
   "update_bundle_include_supporting_assets": true,

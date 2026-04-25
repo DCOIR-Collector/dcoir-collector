@@ -1,3 +1,5 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-release-scope-builder|release_instruction_templates.md -->
+
 # Release Instruction Templates
 
 ## targeted skill update
@@ -19,7 +21,7 @@ Use when current project sources, supporting assets, or structural mappings chan
 Template cues:
 - delete/replace the current uploaded project source set as directed
 - upload all required current classes from the bundle
-- follow release_notes/RELEASE_INSTRUCTIONS.txt
+- follow Airtable Release Artifacts / repo release-note source-basis filesRELEASE_INSTRUCTIONS.txt
 
 ## github desktop manual repo-update
 Use when governed repo-readable files changed in the GitHub-primary working line and the operator is applying a repo patch through GitHub Desktop.

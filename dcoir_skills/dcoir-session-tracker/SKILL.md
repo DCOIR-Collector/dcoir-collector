@@ -3,6 +3,8 @@ name: dcoir-session-tracker
 description: maintain a session-local dcoir tracker with airtable-first durable working state, idea capture, checkpointing, verbose continuity capture, derived pre-push review bundles, staged governed updates, todo-sync proposals, handoff exports, and startup airtable leftover recovery. use when chatgpt needs to catch important project thoughts before they are lost, preserve session continuity beyond fragile local container state, answer what remains, checkpoint durable working memory into airtable, recover leftovers at session start after dcoir-session-resume and dcoir-memory-preflight, prepare follow-up promotion into governed project files, derive what should land in the next grouped github push, or close out a session safely for later resume inside africom_soc_ir / dcoir work.
 ---
 
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-session-tracker|SKILL.md -->
+
 # DCOIR Session Tracker
 
 <!-- skill-marker: updated-skill|20260417T064500Z|dcoir-session-tracker|SKILL.md|R02 -->

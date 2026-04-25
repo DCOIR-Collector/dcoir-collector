@@ -1,3 +1,5 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-readme-maintainer|readme_patterns.md -->
+
 # README Patterns
 
 Use these as the default structure unless the current surface clearly needs a narrower variant.
@@ -87,7 +89,7 @@ Use relative links and keep them limited to surfaces that materially help the re
 Good examples:
 - `[project_sources](project_sources/)`
 - `[knowledge](knowledge/)`
-- `` `knowledge/github_connector_reference/` ``
+- `` `knowledge/README.md and GitHub issue-template guidance surfaces/` ``
 
 Avoid:
 - speculative links to future files

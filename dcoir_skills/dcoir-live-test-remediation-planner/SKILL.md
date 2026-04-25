@@ -1,3 +1,5 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-live-test-remediation-planner|SKILL.md -->
+
 
 # DCOIR Live Test Remediation Planner
 
@@ -13,8 +15,8 @@ Before planning remediation, verify the current authoritative control-plane file
 Preferred current files:
 - `project_sources/CP-01_DCOIR_Version_Manifest.txt`
 - `project_sources/CP-02_DCOIR_Change_Log.txt`
-- `project_sources/LOG-01_DCOIR_Todo_Log.txt`
-- `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt`
+- Airtable `Work Items` / `Plan Tasks`
+- Airtable `Session Checkpoints`
 
 Stop if the manifest or change log cannot be resolved.
 
@@ -25,8 +27,8 @@ Stop if the manifest or change log cannot be resolved.
 4. Identify the live-test findings, defects, or operator-friction notes from the user request.
 5. Run `scripts/plan_live_test_remediation.py` with the findings.
 6. Read the generated markdown and json reports.
-7. When the remediation state changed materially, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when the connector cannot safely complete the write.
-8. Return the ranked remediation order, impacted sources, deep-regression requirements, recommended delivery posture, and any GitHub-memory change that matters.
+7. When the remediation state changed materially, use Airtable table `dcoir-live-test-remediation-planner` to read or update durable helper memory as described in `references/airtable_memory_workflow.md`, reducing operator burden to the smallest bounded manual Airtable action only when the connector cannot safely complete the write.
+8. Return the ranked remediation order, impacted sources, deep-regression requirements, recommended delivery posture, and any Airtable-memory change that matters.
 
 ## Hard rules
 - Do not treat live-test findings as fixed until the repaired path is re-tested.
@@ -35,7 +37,7 @@ Stop if the manifest or change log cannot be resolved.
 - Prefer the smallest truthful remediation slice first, unless the findings indicate a structural change requiring coordinated multi-file work.
 - Use the current delivery classes, not the retired targeted-versus-full-refresh split alone.
 - Treat `project_sources/DCOIR_Collector.ps1` as the current readable collector source and `DCOIR_Collector.ps1` as the canonical runtime filename.
-- Keep the canonical GitHub memory file human-readable and continuously updated after material remediation-state changes when repo persistence is available.
+- Keep the canonical Airtable memory table human-readable and continuously updated after material remediation-state changes when Airtable access is available.
 
 ## Delivery posture classes
 Use these delivery classes when they fit the repaired change set:
@@ -66,7 +68,7 @@ python scripts/plan_live_test_remediation.py \
 ## References
 - `references/remediation_rules.json`
 - `references/remediation_model.md`
-- `references/github_memory_workflow.md`
+- `references/airtable_memory_workflow.md`
 
 ## Airtable remediation traceability
 

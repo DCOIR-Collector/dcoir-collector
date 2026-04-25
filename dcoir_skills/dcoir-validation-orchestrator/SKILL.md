@@ -1,7 +1,9 @@
 ---
 name: dcoir-validation-orchestrator
-description: build explicit validation plans for dcoir changes and workflows, with deep regression as the default for anything testable before live use and after every patch. use when chatgpt needs to decide what to test, in what order, with what evidence thresholds, what gates must pass before a skill, script, prompt-pack flow, bundle generator, documentation alignment batch, session-memory workflow, or other dcoir change is considered ready, or when the workflow should read and update the dcoir-validation-orchestrator GitHub skill-memory file in the current governed repository resolved through the project discovery contract. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
+description: build explicit validation plans for dcoir changes and workflows, with deep regression as the default for anything testable before live use and after every patch. use when chatgpt needs to decide what to test, in what order, with what evidence thresholds, what gates must pass before a skill, script, prompt-pack flow, bundle generator, documentation alignment batch, session-memory workflow, or other dcoir change is considered ready, or when the workflow should read and update the dcoir-validation-orchestrator dedicated Airtable memory table in the current governed repository resolved through the project discovery contract. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
 ---
+
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-validation-orchestrator|SKILL.md -->
 
 # DCOIR Validation Orchestrator
 
@@ -20,8 +22,8 @@ Use this skill to turn a DCOIR change, workflow, campaign, or inventory-derived 
 5. Run `scripts/emit_validation_plan.py`.
 6. If the current branch includes session-memory-enabled or buffer-capable skills and a governed push is likely, include pre-push flush and post-push cleanup validation in the plan.
 7. When the operator prefers batched manual GitHub/Desktop updates, group compatible skill changes into bounded delivery waves and include package-cleanliness plus installability checks for the whole batch before surfacing the manual update step.
-8. When the validation state changed materially, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when the connector cannot safely complete the write.
-9. Return the gates, smoke tests, deep-regression set, evidence requirements, live-readiness criteria, buffered validation state, and any GitHub-memory change that matters.
+8. When the validation state changed materially, use Airtable table `dcoir-validation-orchestrator` to read or update durable helper memory as described in `references/airtable_memory_workflow.md`, reducing operator burden to the smallest bounded manual Airtable action only when the connector cannot safely complete the write.
+9. Return the gates, smoke tests, deep-regression set, evidence requirements, live-readiness criteria, buffered validation state, and any Airtable-memory change that matters.
 
 ## Validation regime ownership
 This skill now owns:
@@ -33,13 +35,12 @@ This skill now owns:
 - session-memory pre-push contract validation planning
 - coordinated multi-skill delivery-wave validation planning
 
-## GitHub-backed skill memory
-Use the GitHub connector directly against the current governed repository resolved through `dcoir_skills/project_discovery_contract.json` when reusable validation-plan state should persist outside the current chat.
+## Airtable-backed skill memory
+Use Airtable table `dcoir-validation-orchestrator` when reusable validation-plan state should persist outside the current chat.
 
-GitHub skill-memory layout (resolved from the governed discovery contract plus the current skill name):
-- root folder: `dcoir_skill_memory/`
-- per-skill folder: `dcoir_skill_memory/dcoir-validation-orchestrator/`
-- canonical memory file: `dcoir_skill_memory/dcoir-validation-orchestrator/validation_orchestrator_memory.md`
+Airtable skill-memory layout:
+- live table: `dcoir-validation-orchestrator`
+- source_basis history: migrated GitHub memory rows may cite former repo paths
 
 Use this memory surface for helper working state such as:
 - active validation plans that are still in flight
@@ -50,12 +51,12 @@ Use this memory surface for helper working state such as:
 - deferred review counters or countdown-gated decisions that affect later validation timing
 
 Rules:
-- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing the memory file
-- treat the GitHub memory file as helper working state only, not control-plane authority
-- keep one canonical markdown file and update it through the GitHub connector directly when the available connector action surface can complete the modification safely
-- if the GitHub connector cannot safely complete the write, say that plainly and reduce the operator burden to the smallest bounded manual GitHub action or surface the markdown content for later commit
+- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing Airtable memory rows
+- treat the Airtable memory table as helper working state only, not control-plane authority
+- keep one canonical Airtable row set for live memory and update it directly when connector access permits
+- if Airtable access is blocked, say that plainly and reduce the operator burden to the smallest bounded manual Airtable action
 
-When rendering memory content locally, use `scripts/render_validation_memory.py`.
+When rendering memory content locally, prefer Airtable memory rows; use migrated source-basis files only for historical comparison.
 
 ## Hard rules
 - Default to deep regression for anything testable before live use and after every patch.
@@ -64,11 +65,11 @@ When rendering memory content locally, use `scripts/render_validation_memory.py`
 - Expand to cross-skill or cross-bundle regression when the change is structural, runtime-affecting, authority-adjacent, or inventory-wide.
 - When session-memory-enabled or buffer-capable skills are in scope, include pre-push flush and post-push cleanup checks instead of assuming that state will promote itself.
 - When a bounded multi-skill batch is being prepared for manual GitHub/Desktop application, include grouped installability, package-cleanliness, and no-wrapper-root delivery checks instead of validating each changed skill in isolation only.
-- Keep the canonical GitHub memory file human-readable and continuously updated after material validation-state changes when repo persistence is available.
+- Keep the canonical Airtable memory table human-readable and continuously updated after material validation-state changes when Airtable access is available.
 
 ## References
 - `references/validation_scenario_library.md`
-- `references/github_memory_workflow.md`
+- `references/airtable_memory_workflow.md`
 - `../project_discovery_contract.json` when current repository or helper-memory naming assumptions matter
 
 ## Airtable validation catalog default

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-collector-qa|render_collector_qa_report.py
 from __future__ import annotations
 
 import argparse
@@ -121,8 +122,8 @@ Static and hybrid QA review of the current DCOIR collector readable source, harn
 - `project_sources/run_DCOIR_Tests.ps1`
 - `project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt` when present for rollback comparison
 - `project_sources/CP-01_DCOIR_Version_Manifest.txt`
-- `project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt`
-- `project_sources/LOG-01_DCOIR_Todo_Log.txt`, `project_sources/LOG-01_DCOIR_Todo_Index.txt`, and `project_sources/todo/*.txt` when the active work-line split matters to current QA follow-through
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt and project_sources/CP-02_DCOIR_Change_Log.txt`
+- `Airtable Queue Control, Work Items, Plans, and Plan Tasks when the active work-line split matters to current QA follow-through
 
 ## Run posture
 - {run_posture}

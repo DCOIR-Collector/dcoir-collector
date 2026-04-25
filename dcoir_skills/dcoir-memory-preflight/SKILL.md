@@ -1,3 +1,5 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-memory-preflight|SKILL.md -->
+
 
 # DCOIR Memory Preflight
 

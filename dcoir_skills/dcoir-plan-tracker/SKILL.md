@@ -1,3 +1,5 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-plan-tracker|SKILL.md -->
+
 
 # DCOIR Plan Tracker
 
@@ -70,16 +72,16 @@ Use Airtable as the primary durable execution-state surface for live plan contin
 
 ### Governed repo surfaces
 Use this github-backed promoted memory root:
-`dcoir_skill_memory/dcoir-plan-tracker/`
+Airtable `Plans`, `Plan Tasks`, `Plan Checkpoints`, and `Session Checkpoints`
 
 ### Root files
 Maintain:
-- `dcoir_skill_memory/dcoir-plan-tracker/plan_tracker_memory.md`
-- `dcoir_skill_memory/dcoir-plan-tracker/plan_tracker_registry.json`
+- Airtable `Plans` / `Plan Tasks`
+- Airtable `Tracking Registry`
 
 ### Per-plan folder
 Each plan lives under:
-`dcoir_skill_memory/dcoir-plan-tracker/plans/PLAN-YYYYMMDD-short-slug/`
+Airtable plan/task hierarchy records
 
 ### Locked plan files
 Create and maintain these files for every plan:

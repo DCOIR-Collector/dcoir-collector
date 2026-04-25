@@ -13,14 +13,14 @@
       "DCOIR_Change_Log.txt"
     ],
     "setup": [
-      "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
-      "DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
+      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "CP-01_DCOIR_Version_Manifest.txt",
       "project_sources/AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
       "AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt"
     ],
     "layout": [
-      "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
-      "DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
+      "Airtable: Repo Surface Registry",
+      "Airtable: Repo Surface Registry",
       "project_sources/DCOIR_Repository_Layout_Spec_v1_0_0.txt",
       "DCOIR_Repository_Layout_Spec_v1_0_0.txt"
     ]
@@ -51,17 +51,17 @@
       },
       "required_refresh": [
         "control_plane_review",
-        "release_notes_review",
+        "release_tracking_review",
         "session_resume_outputs_review"
       ],
       "conditional_review": [
-        "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
-        "project_sources/DOC-02_DCOIR_Project_Transition_Checklist.txt",
-        "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "Airtable: Plans / Plan Tasks",
+        "Airtable: Repo Surface Registry",
         "all current dcoir-* skills",
         "README.md",
-        "project_sources/LOG-01_DCOIR_Todo_Index.txt",
-        "project_sources/todo/*.txt"
+        "Airtable: Queue Control",
+        "Airtable: Plan Tasks"
       ],
       "deep_regression": [
         "dcoir-session-resume",
@@ -92,7 +92,7 @@
         "affected evergreen document"
       ],
       "conditional_review": [
-        "release_notes/RELEASE_INSTRUCTIONS.txt",
+        "Airtable: Release Artifacts / Release Validation Evidence",
         "any helper skill that encodes the changed workflow"
       ],
       "deep_regression": [
@@ -117,7 +117,7 @@
         ],
         "exact": [
           "LOG-01_DCOIR_Todo_Index.txt",
-          "project_sources/LOG-01_DCOIR_Todo_Index.txt"
+          "Airtable: Queue Control"
         ],
         "regex": [
           "^project_sources/todo/.+\\.txt$"
@@ -128,8 +128,8 @@
       ],
       "conditional_review": [
         "resume outputs if the active work line or handoff state changed",
-        "project_sources/LOG-01_DCOIR_Todo_Index.txt",
-        "project_sources/todo/*.txt"
+        "Airtable: Queue Control",
+        "Airtable: Plan Tasks"
       ],
       "deep_regression": [],
       "skill_impacts": [
@@ -156,14 +156,14 @@
       ],
       "conditional_review": [
         "supporting_assets/supporting_knowledge_docs.zip",
-        "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
-        "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "Airtable: Repo Surface Registry",
         "repo/update bundle mappings",
-        "project_sources/LOG-01_DCOIR_Todo_Log.txt",
-        "project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt",
+        "Airtable: Work Items / Plan Tasks",
+        "Airtable: Session Checkpoints",
         "README.md",
-        "project_sources/LOG-01_DCOIR_Todo_Index.txt",
-        "project_sources/todo/*.txt"
+        "Airtable: Queue Control",
+        "Airtable: Plan Tasks"
       ],
       "deep_regression": [
         "collector local regression harness",
@@ -251,8 +251,8 @@
         "affected supporting asset"
       ],
       "conditional_review": [
-        "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
-        "project_sources/DOC-02_DCOIR_Project_Transition_Checklist.txt",
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "Airtable: Plans / Plan Tasks",
         "any workflow or skill that builds or references the retained knowledge zip"
       ],
       "deep_regression": [
@@ -272,11 +272,11 @@
       "id": "settings-mirror-change",
       "match": {
         "prefix": [
-          "project_settings/SET-",
+          "Airtable: Operator Preferences",
           "SET-"
         ],
         "exact": [
-          "project_settings/GITHUB_WORKING_REPOSITORY_NOTE.md",
+          "project_sources/CP-01_DCOIR_Version_Manifest.txt",
           "GITHUB_WORKING_REPOSITORY_NOTE.md"
         ]
       },
@@ -505,11 +505,11 @@
         "repo guide review"
       ],
       "conditional_review": [
-        "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
-        "project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt",
-        "project_sources/LOG-01_DCOIR_Todo_Log.txt",
-        "project_sources/LOG-01_DCOIR_Todo_Index.txt",
-        "project_sources/todo/*.txt"
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "Airtable: Repo Surface Registry",
+        "Airtable: Work Items / Plan Tasks",
+        "Airtable: Queue Control",
+        "Airtable: Plan Tasks"
       ],
       "deep_regression": [
         "dcoir-session-resume",

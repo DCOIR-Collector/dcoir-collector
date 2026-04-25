@@ -1,3 +1,5 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-session-tracker|session_state_schema.md -->
+
 # Session state schema
 
 ## Exported markdown structure

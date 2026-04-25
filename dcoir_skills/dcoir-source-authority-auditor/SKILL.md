@@ -1,3 +1,5 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-source-authority-auditor|SKILL.md -->
+
 
 # DCOIR Source Authority Auditor
 
@@ -41,8 +43,8 @@ Audit posture:
 4. Resolve the initial active enforcement surface set when those files or records are present in the workspace:
    - `CP-01`
    - `CP-02`
-   - `LOG-03`
-   - `LOG-05`
+   - `Airtable Session Checkpoints`
+   - `Airtable Queue Control / Work Items / Plan Tasks`
    - active Airtable `Queue Control`
    - active Airtable `Work Items` rows that define the live branch
    - active Airtable `Plans` rows when a plan owns the live branch

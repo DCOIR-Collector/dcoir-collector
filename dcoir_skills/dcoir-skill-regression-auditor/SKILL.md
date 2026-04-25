@@ -3,6 +3,8 @@ name: dcoir-skill-regression-auditor
 description: plan and audit deeper regression for dcoir skills before live use and after every patch. use when chatgpt needs to define regression fixtures, harness expectations, success and failure paths, output-verification checks for one or more dcoir skills, enforce the mandatory post-create or post-update regression rule, stage regression state in a session-local buffer before a grouped github flush, or manage a bounded coordinated multi-skill patch campaign with explicit self-first validation and one grouped regression bundle.
 ---
 
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-skill-regression-auditor|SKILL.md -->
+
 # DCOIR Skill Regression Auditor
 
 <!-- skill-marker: updated-skill|20260415T135556Z|dcoir-skill-regression-auditor|SKILL.md|R01 -->
@@ -37,8 +39,8 @@ In a broad helper-skill patch campaign, regression-test `dcoir-skill-regression-
 11. Use the skill editor as primary truth for that marker confirmation when it is available. Treat assistant-side readback as secondary and potentially delayed.
 12. If regression revealed a blocker that is later overcome, invoke `dcoir-memory-preflight` again when the recovered lesson could improve a reusable procedure, limitation note, failure signature, or helper-skill/process guidance.
 13. Keep regression-state changes session-local until the next suitable flush-check trigger when grouped GitHub writes are preferred.
-14. When the regression-state changed materially and the write lane is safe, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`.
-15. Return the regression suites, failure gates, artifact checks, readiness criteria, campaign scope, buffer state, and any GitHub-memory change that matters.
+14. When the regression-state changed materially and the write lane is safe, use the GitHub connector directly to read or update the canonical Airtable memory table defined in `references/airtable_memory_workflow.md`.
+15. Return the regression suites, failure gates, artifact checks, readiness criteria, campaign scope, buffer state, and any Airtable-memory change that matters.
 
 ## Session-local buffer behavior
 This skill may stage regression memory, fixture deltas, follow-through notes, or campaign-scope notes session-locally before GitHub flush time.
@@ -62,13 +64,12 @@ A valid flush/manicure review for this skill should surface:
 - the next flush trigger
 - one best next move
 
-## GitHub-backed skill memory
-Use the GitHub connector directly against the current governed repository resolved from the governed discovery contract when reusable regression-planning state should persist outside the current chat.
+## Airtable-backed skill memory
+Use Airtable table `dcoir-skill-regression-auditor` when reusable regression-planning state should persist outside the current chat.
 
-GitHub skill-memory layout:
-- root folder: use the governed discovery contract helper-memory root
-- per-skill folder: `helper_memory.root` + `dcoir-skill-regression-auditor/`
-- canonical memory file: `helper_memory.root` + `dcoir-skill-regression-auditor/skill_regression_memory.md`
+Airtable skill-memory layout:
+- live table: `dcoir-skill-regression-auditor`
+- source-basis history: migrated rows may cite former repo memory paths
 
 Use this memory surface for helper working state such as:
 - tracked skills with active regression follow-through
@@ -78,12 +79,12 @@ Use this memory surface for helper working state such as:
 - coordinated campaign coverage summaries when a bounded multi-skill patch cycle is in flight
 
 Rules:
-- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing the memory file
-- treat the GitHub memory file as helper working state only, not control-plane authority
-- keep one canonical markdown file and update it through the GitHub connector directly when the available connector action surface can complete the modification safely
-- if the GitHub connector cannot safely complete the write, say that plainly and reduce the operator burden to the smallest bounded manual GitHub action or surface the markdown content for later commit
+- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing Airtable memory rows
+- treat the Airtable memory table as helper working state only, not control-plane authority
+- keep one canonical Airtable row set for live memory and update it directly when connector access permits
+- if Airtable access is blocked, say that plainly and reduce the operator burden to the smallest bounded manual Airtable action
 
-When rendering memory content locally, use `scripts/render_skill_regression_memory.py`.
+When rendering memory content locally, prefer Airtable memory rows; use migrated source-basis files only for historical comparison.
 
 ## Hard rules
 - do not treat packaging success as sufficient proof of runtime correctness
@@ -96,13 +97,13 @@ When rendering memory content locally, use `scripts/render_skill_regression_memo
 - after a patch, rerun the same failing case that motivated the fix, then expand outward
 - after every helper-skill create or update, require regression coverage before claiming readiness
 - do not treat a manually installed updated skill as ready for GitHub sync, repo-bundle generation, parity closure, or broader rollout until the expected current `skill-marker:` entries are confirmed in the edited installed file set
-- keep the canonical GitHub memory file human-readable and continuously updated after material regression-state changes when repo persistence is available
+- keep the canonical Airtable memory table human-readable and continuously updated after material regression-state changes when Airtable access is available
 - do not claim buffered regression state is durable before GitHub flush or export actually happened
 - do not call a coordinated campaign complete unless every materially changed skill has an explicit regression result or a plainly bounded untested reason
 
 ## References
 - `references/regression_fixture_catalog.md`
 - `references/skill_test_harness_definitions.md`
-- `references/github_memory_workflow.md`
+- `references/airtable_memory_workflow.md`
 - `references/session_buffer_workflow.md`
 - `references/package_hygiene_workflow.md`

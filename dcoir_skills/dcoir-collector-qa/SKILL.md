@@ -1,7 +1,9 @@
 ---
 name: dcoir-collector-qa
-description: validate, troubleshoot, regression-test, repair, and maintain the dcoir collector and its harness files inside the africom_soc_ir / dcoir project. use when chatgpt needs to audit or patch the current github-native collector or harness files, validate a collector execution error, generate markdown test reports or repair plans, regenerate targeted maintenance guidance from the current authoritative collector sources, or read and update the dcoir-collector-qa GitHub skill-memory file in malwaredevil/dcoir-collector. prefer the current github-primary control plane and current native filenames over older project-mirror readable-source names. use only when the africom_soc_ir / dcoir project context is present.
+description: validate, troubleshoot, regression-test, repair, and maintain the dcoir collector and its harness files inside the africom_soc_ir / dcoir project. use when chatgpt needs to audit or patch the current github-native collector or harness files, validate a collector execution error, generate markdown test reports or repair plans, regenerate targeted maintenance guidance from the current authoritative collector sources, or read and update the dcoir-collector-qa dedicated Airtable memory table in malwaredevil/dcoir-collector. prefer the current github-primary control plane and current native filenames over older project-mirror readable-source names. use only when the africom_soc_ir / dcoir project context is present.
 ---
+
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-collector-qa|SKILL.md -->
 
 # DCOIR Collector QA
 
@@ -12,7 +14,7 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 
 ## Overview
 Use this skill to run a controlled QA / V&V / regression loop for the DCOIR collector line.
-The primary scope is the current GitHub-readable collector and harness sources, the emitted runtime filename rules, the maintained documentation surface for those files, and rollback reference material only when explicit comparison or historical regression context is needed.
+The primary scope is the current GitHub-readable collector and harness sources, the emitted runtime filename rules, CP-01/CP-02 current-state control plane, Airtable validation/test rows when available, and rollback reference material only when explicit comparison or historical regression context is needed.
 
 ## Authoritative source set
 Re-anchor to the current control plane first.
@@ -21,11 +23,7 @@ Treat these current GitHub-readable files as the primary collector QA scope unle
 - `project_sources/run_DCOIR_Tests.ps1`
 - `project_sources/CP-01_DCOIR_Version_Manifest.txt`
 - `project_sources/CP-02_DCOIR_Change_Log.txt`
-- `project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt`
-- `project_sources/LOG-01_DCOIR_Todo_Log.txt`
-- `project_sources/LOG-01_DCOIR_Todo_Index.txt` and `project_sources/todo/*.txt` when the active work-line split matters to current QA follow-through
-- `project_sources/LOG-02_DCOIR_Lessons_Learned_Log.txt` when lessons or failing cases need preservation
-- `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt` when validating against the current phase handoff
+- Airtable `Validation Test Cases`, `Plans`, `Plan Tasks`, and `Session Checkpoints` when QA state, test catalog state, or active follow-through matters
 - Use `project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt` only when explicit rollback comparison, historical regression reference, or bounded rollback analysis is part of the QA question.
 
 ## Default posture
@@ -48,21 +46,20 @@ Use a hybrid posture by default:
 6. Preserve the known-failure lane for the Gemini collector transcript error even if the exact failing excerpt is still pending recovery.
 7. If the user asks for code repair or in-code documentation refresh, switch into explicit repair mode using `references/repair_mode.md` and run `scripts/render_repair_plan.py` so the changed targets, documentation targets, validation lanes, and stop conditions are explicit before claiming a fix.
 8. Use `scripts/render_collector_qa_report.py` to emit a timestamped markdown report and, when helpful, a companion JSON results file.
-9. When the QA state changed materially, use the GitHub connector directly to read or update the canonical GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when the connector cannot safely complete the write.
+9. When the QA state changed materially, use Airtable table `dcoir-collector-qa` to read or update durable helper memory as described in `references/airtable_memory_workflow.md`, reducing operator burden to the smallest bounded manual Airtable action only when the connector cannot safely complete the write.
 10. In repair mode, update the readable collector or harness source only for the defect-under-test, refresh targeted in-code documentation when it materially improves future maintenance, regenerate the maintenance code blocks from the current authoritative sources, rerun the motivating failure lane, rerun at least one known-good control lane, and only then report the patch as validated.
 
-## GitHub-backed skill memory
+## Airtable-backed skill memory
 
 Project preference: prefer the GitHub connector directly for governed readable-text updates and helper-memory persistence whenever the connector can complete the operation safely. Use the smallest bounded manual GitHub action only when connector limitations prevent safe in-chat completion.
 
 
 
-Use the GitHub connector directly against repository `malwaredevil/dcoir-collector` when collector QA state should persist outside the current chat.
+Use Airtable table `dcoir-collector-qa` when collector QA state should persist outside the current chat.
 
-GitHub skill-memory layout:
-- root folder: `dcoir_skill_memory/`
-- per-skill folder: `dcoir_skill_memory/dcoir-collector-qa/`
-- canonical memory file: `dcoir_skill_memory/dcoir-collector-qa/collector_qa_memory.md`
+Airtable skill-memory layout:
+- live table: `dcoir-collector-qa`
+- source-basis history: migrated rows may cite former repo memory paths
 
 Use this memory surface for helper working state such as:
 - active known-failure lanes and whether they are still placeholders
@@ -71,12 +68,12 @@ Use this memory surface for helper working state such as:
 - notes about regression scope that should remain visible before later QA passes
 
 Rules:
-- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing the memory file
-- treat the GitHub memory file as helper working state only, not control-plane authority
-- keep one canonical markdown file and update it through the GitHub connector directly when the available connector action surface can complete the modification safely
-- if the GitHub connector cannot safely complete the write, say that plainly and reduce the operator burden to the smallest bounded manual GitHub action or surface the markdown content for later commit
+- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing Airtable memory rows
+- treat the Airtable memory table as helper working state only, not control-plane authority
+- keep one canonical Airtable row set for live memory and update it directly when connector access permits
+- if Airtable access is blocked, say that plainly and reduce the operator burden to the smallest bounded manual Airtable action
 
-When rendering memory content locally, use `scripts/render_collector_qa_memory.py`.
+When rendering memory content locally, prefer Airtable rows; use migrated source-basis files only for historical comparison.
 
 ## Hard rules
 - Do not treat packaging success as proof that the collector works.
@@ -85,7 +82,7 @@ When rendering memory content locally, use `scripts/render_collector_qa_memory.p
 - Do not mix Elastic response-action syntax and local Windows PowerShell 5.1 syntax in one malformed instruction block.
 - Preserve the distinction between observed facts, grounded inference, and unresolved gaps.
 - Keep the known Gemini collector error as an explicit regression lane from day one, even if the exact transcript excerpt is still a placeholder.
-- Keep the canonical GitHub memory file human-readable and continuously updated after material QA-state changes when repo persistence is available.
+- Keep the canonical Airtable memory table human-readable and continuously updated after material QA-state changes when Airtable access is available.
 
 ## Output contract
 Default deliverables per run:
@@ -101,7 +98,7 @@ Default deliverables per run:
 - `references/known_failure_lane.md`
 - `references/repair_mode.md`
 - `references/sample_manual_results.json`
-- `references/github_memory_workflow.md`
+- `references/airtable_memory_workflow.md`
 
 ## Airtable test-catalog enforcement
 

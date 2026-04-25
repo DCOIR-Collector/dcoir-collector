@@ -1,3 +1,5 @@
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-session-tracker|classification_rules.md -->
+
 # Classification rules
 
 ## Purpose
@@ -9,10 +11,10 @@ Use these rules to decide where a captured item belongs.
 Use for reminders, short-term sequencing notes, and current-chat scratch items that do not yet justify governed promotion.
 
 ### candidate_log01
-Use for future work, queued tasks, deferred patches, or explicit "we still need to do X" items that should likely land in `LOG-01_DCOIR_Todo_Log.txt` if approved.
+Use for future work, queued tasks, deferred patches, or explicit "we still need to do X" items that should likely land in `Airtable Work Items / Plan Tasks` if approved.
 
 ### candidate_log02
-Use for lessons learned, regression findings, design conclusions, or workflow mistakes that should likely land in `LOG-02_DCOIR_Lessons_Learned_Log.txt` if approved.
+Use for lessons learned, regression findings, design conclusions, or workflow mistakes that should likely land in `Airtable skill-memory or Session Checkpoints` if approved.
 
 ### candidate_log03
 Use for handoff notes that a future worker would need to resume the exact branch cleanly. These usually include current phase, exact stop point, preserved concerns, or next move context.

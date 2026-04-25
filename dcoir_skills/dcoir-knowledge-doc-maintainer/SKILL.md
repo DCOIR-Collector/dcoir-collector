@@ -3,6 +3,8 @@ name: dcoir-knowledge-doc-maintainer
 description: maintain and emit africom_soc_ir / dcoir supporting knowledge docs from the current authoritative github-primary project sources. use when chatgpt needs to regenerate or update knowledge markdown, inventory documentation-impacting source changes, explain local testing versus elastic response-action execution, refresh stale knowledge-doc clusters that share the same outdated source-name or removed-wrapper assumptions, or keep retained supporting knowledge zips aligned to the current governed readable working set. do not use this skill to decide authority, promotions, or content edits. use only after the control plane settles what is current and when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
 ---
 
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-knowledge-doc-maintainer|SKILL.md -->
+
 # DCOIR Knowledge Doc Maintainer
 
 ## Required project gate

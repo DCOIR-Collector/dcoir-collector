@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-release-scope-builder|build_release_scope.py
 from __future__ import annotations
 import argparse
 
@@ -12,7 +13,7 @@ def choose_scope(targets: list[str]) -> tuple[str, str]:
     if any(x in joined for x in ['repo', 'local test', 'local-only']):
         return 'repo-layout-local-testing', 'request is centered on local execution or testing'
 
-    if any(x in joined for x in ['project upload', 'full refresh upload', 'supporting_assets/', 'project_settings/', 'structural', 'rename']):
+    if any(x in joined for x in ['project upload', 'full refresh upload', 'supporting_assets/', 'Airtable Operator Preferences', 'structural', 'rename']):
         return 'full-refresh-project-upload', 'broader project-upload or structural change detected'
 
     if non_skill_targets:

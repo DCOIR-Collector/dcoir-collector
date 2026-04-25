@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+# skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-prompt-pack-assembler|assemble_dcoir_prompt_pack.py
 import argparse, datetime as dt, json
 from pathlib import Path
 
 CONTROL_FILE_ALIASES = {
     'manifest': ['project_sources/CP-01_DCOIR_Version_Manifest.txt','CP-01_DCOIR_Version_Manifest.txt','project_sources/DCOIR_Version_Manifest.txt','DCOIR_Version_Manifest.txt'],
     'change_log': ['project_sources/CP-02_DCOIR_Change_Log.txt','CP-02_DCOIR_Change_Log.txt','project_sources/DCOIR_Change_Log.txt','DCOIR_Change_Log.txt'],
-    'setup': ['project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt','DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt','project_sources/AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt','AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt'],
+    'setup': ['project_sources/CP-01_DCOIR_Version_Manifest.txt','project_sources/CP-02_DCOIR_Change_Log.txt'],
 }
 PATTERNS = {
     'system': ['project_sources/PP-01_*.txt','PP-01_*.txt'],

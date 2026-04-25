@@ -3,6 +3,8 @@ name: dcoir-decision-policy
 description: apply the operator's default decision matrix for africom_soc_ir / dcoir project work so chatgpt can proceed with minimal clarification while enforcing closed-loop memory-preflight, explicit session-local buffer or flush surfacing, coordinated multi-skill campaign defaults when the remaining similar scope is already known, and approval-gated durable preference capture. use only when working inside the africom_soc_ir / dcoir project context and multiple reasonable execution paths exist, operator preferences affect the branch, blocker recovery may produce reusable lessons, grouped repo or skill updates are being considered, or a deferred governance decision needs an explicit remaining-count review trigger.
 ---
 
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-decision-policy|SKILL.md -->
+
 # DCOIR Decision Policy
 
 <!-- skill-marker: updated-skill|20260415T154500Z|dcoir-decision-policy|SKILL.md|R02 -->
@@ -49,8 +51,8 @@ It does not silently persist reusable lessons into canonical task memory.
 18. For manual skill-install update flows, require marker-based installed-skill verification in the edited file set before treating the installed copy as safe for GitHub source sync, GitHub Desktop repo-update bundle generation, parity closure, or readiness claims.
 19. Use the skill editor as primary truth for that installed-skill verification when it is available. Treat assistant-side readback as secondary and potentially delayed.
 20. When editor confirmation and assistant-side readback disagree, keep the state bounded and wait for expected marker confirmation in the edited installed file set or explicit operator editor confirmation before continuing into GitHub sync or parity closure.
-21. When a material reusable decision rule, delivery preference, or pending learning changed, use the GitHub connector directly to update the GitHub memory file defined in `references/github_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when connector limitations prevent safe completion.
-22. Report only the load-bearing assumptions, conflicts, learned rule candidates, buffer state, deferred review countdowns, GitHub-memory changes, or next actions.
+21. When a material reusable decision rule, delivery preference, or pending learning changed, use the GitHub connector directly to update the Airtable memory table defined in `references/airtable_memory_workflow.md`, reducing operator burden to the smallest bounded manual GitHub action only when connector limitations prevent safe completion.
+22. Report only the load-bearing assumptions, conflicts, learned rule candidates, buffer state, deferred review countdowns, Airtable-memory changes, or next actions.
 
 ## Control-plane precedence
 Always use this precedence order unless the operator explicitly overrides it:
@@ -154,7 +156,7 @@ When the operator states a preference, opinion, correction, or process principle
 Within a single conversation, treat the operator's answered or stated preference as an authoritative overlay on top of this skill.
 Across future conversations, do not assume the learned rule persists unless one of these has happened:
 - the skill was updated and repackaged
-- the canonical GitHub memory file for this skill was updated and the new conversation re-anchors to it
+- the canonical Airtable memory table for this skill was updated and the new conversation re-anchors to it
 - a current project-readable policy or control document was updated to carry the new rule
 - the operator explicitly re-stated the rule in the new conversation
 
@@ -227,13 +229,12 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - report exact filenames, bundle names, stop reasons, validation boundaries when they matter
 - avoid asking for confirmation when the matrix already resolves the choice
 
-## GitHub-backed skill memory
+## Airtable-backed skill memory
 Use the GitHub connector directly against the current governed repository resolved from the governed discovery contract when the task needs reusable decision-state continuity outside the current chat.
 
-GitHub skill-memory layout:
-- root folder: use the governed discovery contract helper-memory root
-- per-skill folder: `helper_memory.root` + `dcoir-decision-policy/`
-- canonical memory file: `helper_memory.root` + `dcoir-decision-policy/decision_policy_memory.md`
+Airtable skill-memory layout:
+- live table: `dcoir-decision-policy`
+- source-basis history: migrated rows may cite former repo memory paths
 
 Use this memory surface for helper working state such as:
 - approved overlay snapshots already reflected in the skill
@@ -244,8 +245,8 @@ Use this memory surface for helper working state such as:
 - conflicts that should be revisited before promoting a new default
 
 Rules:
-- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing the memory file
-- treat the GitHub memory file as helper working state only, not control-plane authority
+- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing Airtable memory rows
+- treat the Airtable memory table as helper working state only, not control-plane authority
 - keep one canonical markdown file unless the operator explicitly wants snapshots
 - keep the file human-readable and update it through the GitHub connector directly when the available connector action surface can complete the modification safely
 - if the GitHub connector cannot safely complete the write, say that plainly and reduce the operator burden to the smallest bounded manual GitHub action or surface the markdown content for later commit
@@ -278,5 +279,5 @@ Read these when needed:
 - `references/operator_intent_matrix.md`
 - `references/decision_learning_log.json`
 - `references/policy_update_candidate_template.md`
-- `references/github_memory_workflow.md`
+- `references/airtable_memory_workflow.md`
 - `references/session_buffer_workflow.md`

@@ -3,6 +3,8 @@ name: dcoir-change-impact-analyzer
 description: analyze proposed or completed changes in the africom_soc_ir / dcoir project and determine the downstream refresh set, helper-skill impacts, regression requirements, primary delivery recommendation, any secondary skill-delivery recommendation, and stop conditions. use when chatgpt needs to answer what else must change after a file, asset, skill, workflow, packaging, or prompt-pack update; when validating whether a change is safe to promote; or when deciding whether a targeted update or full-refresh bundle is required. prefer the current gitHub-primary control plane, current manifest roles, and current gitHub-native collector or harness filenames over older project-mirror assumptions. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
 ---
 
+<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-change-impact-analyzer|SKILL.md -->
+
 # DCOIR Change Impact Analyzer
 
 <!-- skill-marker: updated-skill|20260415T154500Z|dcoir-change-impact-analyzer|SKILL.md|R01 -->
@@ -34,8 +36,9 @@ Before analyzing impact, verify the current authoritative control-plane files fr
 Preferred current control-plane files:
 - `project_sources/CP-01_DCOIR_Version_Manifest.txt`
 - `project_sources/CP-02_DCOIR_Change_Log.txt`
-- `project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt`
-- `project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt`
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
+- `project_sources/CP-02_DCOIR_Change_Log.txt`
+- Airtable `Schema Registry`, `Repo Surface Registry`, `Tracking Registry`, and release tracking tables when downstream impact matters
 - `README.md` when the current repo-guide posture is part of the changed set
 - Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` when the active work-line structure changed
 - retired GitHub todo files only when the migration or retirement path itself is part of the changed set
