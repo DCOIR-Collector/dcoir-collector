@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-04-25T09:45:35Z",
+  "generated_at_utc": "2026-04-25T11:38:00Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -735,17 +735,17 @@
     },
     "dcoir-readme-maintainer": {
       "source_root": "dcoir-readme-maintainer",
-      "source_tree_hash": "9bbcfe40a6420821d197648ed3fff5d02eb11f4fa19440624918a81d4fe73b90",
+      "source_tree_hash": "781df65fd1d9c6f02d3d0a867701e9de87fe646f62d42d56c11f054d90dcca57",
       "release_zip_name": "dcoir-readme-maintainer.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 6,
-      "total_bytes": 17983,
+      "total_bytes": 18118,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "9593ccfb3cc409239f8f3cd466713bc4ed4ebf7a7c2a901e904996154e148698",
-          "size_bytes": 7528
+          "sha256": "1bbd48d809402901417d1555286fe08c4c196ac78843ef9c8cad8c77b2b8f061",
+          "size_bytes": 7663
         },
         {
           "path": "agents/openai.yaml",
@@ -776,17 +776,17 @@
     },
     "dcoir-release-scope-builder": {
       "source_root": "dcoir-release-scope-builder",
-      "source_tree_hash": "d28d78cb3eb85d768e536c715643c4d36b26f02e416a006dd1c4bdcec275e5e1",
+      "source_tree_hash": "95a612b6062fc1d7c634d6f4aefe2387a19ef6e7f5deb1556e4c2a91c3b58466",
       "release_zip_name": "dcoir-release-scope-builder.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 5,
-      "total_bytes": 7472,
+      "total_bytes": 7611,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "adc4059fa0441ad68f571a4547b18fee5b437f7e02ed43c392dfe74bf17a7b6a",
-          "size_bytes": 2728
+          "sha256": "69e2724cc491b4ef7522802768c24bd4686edc05f9a1abe525727a8ebba1aca1",
+          "size_bytes": 2867
         },
         {
           "path": "agents/openai.yaml",
@@ -1082,17 +1082,17 @@
     },
     "dcoir-structural-rename-coordinator": {
       "source_root": "dcoir-structural-rename-coordinator",
-      "source_tree_hash": "115fb2ae1479bb349bfe50d3a6d80cac8edd15f6fb09d757e2dc425cad767dcb",
+      "source_tree_hash": "84ad4751336a56bfae6e1bcbc06bfa3e114b249eb16d5ed8a171dcb62d1769cc",
       "release_zip_name": "dcoir-structural-rename-coordinator.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 5,
-      "total_bytes": 7677,
+      "total_bytes": 7825,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "ad79c5df627a96d5abdb62b64aa5e509f620ac596b5a1bc7873c33ad8fc5f694",
-          "size_bytes": 2440
+          "sha256": "fdd9935e5dd29409da1d16c55d128f44f7ddd90dc2ad96f9ceaeadf902a0afbd",
+          "size_bytes": 2588
         },
         {
           "path": "agents/openai.yaml",

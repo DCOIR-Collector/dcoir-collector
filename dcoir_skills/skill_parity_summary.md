@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-25T09:45:35Z
+- generated_at_utc: 2026-04-25T11:38:00Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -239,13 +239,13 @@
 
 ## dcoir-readme-maintainer
 
-- source_tree_hash: `9bbcfe40a6420821d197648ed3fff5d02eb11f4fa19440624918a81d4fe73b90`
+- source_tree_hash: `781df65fd1d9c6f02d3d0a867701e9de87fe646f62d42d56c11f054d90dcca57`
 - release_zip_name: `dcoir-readme-maintainer.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `6`
 
-- `SKILL.md` — `9593ccfb3cc409239f8f3cd466713bc4ed4ebf7a7c2a901e904996154e148698`
+- `SKILL.md` — `1bbd48d809402901417d1555286fe08c4c196ac78843ef9c8cad8c77b2b8f061`
 - `agents/openai.yaml` — `716b06bbe2406f5eadf8326362e830a3e7d32a698ffb090728bb1d52b1e980a8`
 - `assets/icon.svg` — `49315dda7125ec5fc77ef5f2b96126d8b2121c6e72944b4702972e90f321d3ee`
 - `references/readme_patterns.md` — `df93e94cf52051064ee499bbed7358a008de5b4d80423938c6d674cc65561424`
@@ -254,13 +254,13 @@
 
 ## dcoir-release-scope-builder
 
-- source_tree_hash: `d28d78cb3eb85d768e536c715643c4d36b26f02e416a006dd1c4bdcec275e5e1`
+- source_tree_hash: `95a612b6062fc1d7c634d6f4aefe2387a19ef6e7f5deb1556e4c2a91c3b58466`
 - release_zip_name: `dcoir-release-scope-builder.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `5`
 
-- `SKILL.md` — `adc4059fa0441ad68f571a4547b18fee5b437f7e02ed43c392dfe74bf17a7b6a`
+- `SKILL.md` — `69e2724cc491b4ef7522802768c24bd4686edc05f9a1abe525727a8ebba1aca1`
 - `agents/openai.yaml` — `c72f1c584a2ac73799cd12d2ed89762fb85bc74e2b4d72419314c8f1c3d78e68`
 - `assets/icon.svg` — `72343cc4b66256ae7de8474c7cad14e711ad84a94c473732a44f96a56124c42d`
 - `references/release_instruction_templates.md` — `aae3a753291afd3d409a9dad490d44e3dfe2a28f39da1daf283330f43bca08b3`
@@ -356,13 +356,13 @@
 
 ## dcoir-structural-rename-coordinator
 
-- source_tree_hash: `115fb2ae1479bb349bfe50d3a6d80cac8edd15f6fb09d757e2dc425cad767dcb`
+- source_tree_hash: `84ad4751336a56bfae6e1bcbc06bfa3e114b249eb16d5ed8a171dcb62d1769cc`
 - release_zip_name: `dcoir-structural-rename-coordinator.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `5`
 
-- `SKILL.md` — `ad79c5df627a96d5abdb62b64aa5e509f620ac596b5a1bc7873c33ad8fc5f694`
+- `SKILL.md` — `fdd9935e5dd29409da1d16c55d128f44f7ddd90dc2ad96f9ceaeadf902a0afbd`
 - `agents/openai.yaml` — `258eaca996b58f2bcffdcd992c48798fe0cb905c8c73d8ce1524f6d7e1c02210`
 - `assets/icon.svg` — `1a60fe493ffc6b9f6193946dba47932aaca9767c4e75df0a94326629f5f194a9`
 - `references/rename_rules.md` — `0684d4b63c7018345a39b83e3bdb8a725a6534000f8935063a1ea4ad01a85683`
