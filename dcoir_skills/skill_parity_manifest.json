@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-04-25T08:54:10Z",
+  "generated_at_utc": "2026-04-25T09:45:35Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -363,17 +363,17 @@
     },
     "dcoir-live-test-remediation-planner": {
       "source_root": "dcoir-live-test-remediation-planner",
-      "source_tree_hash": "76d02787052a6d082710bc8b660c0cf6cf40f6918a7c2417866c65c6854c2054",
+      "source_tree_hash": "f7a6fa4daa5bbee61f3158bfd510e14307f34e4bf974a4bca861cca105d28b44",
       "release_zip_name": "dcoir-live-test-remediation-planner.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 8,
-      "total_bytes": 26874,
+      "total_bytes": 27449,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "f0edfbfa31304ed1e053b21cd7a7eaaa081f9faef5d8a2531129bde41a6a2f07",
-          "size_bytes": 4199
+          "sha256": "ca7d4e34deff034ca2edbeb4cd153c368117e3e328cfa047013511aa09f0812e",
+          "size_bytes": 4774
         },
         {
           "path": "agents/openai.yaml",
@@ -414,17 +414,17 @@
     },
     "dcoir-memory-preflight": {
       "source_root": "dcoir-memory-preflight",
-      "source_tree_hash": "e68a761eee44524e08190616e715c7c62dbffc4137c26ef60037cda9c4964308",
+      "source_tree_hash": "5e4fbcbf97e4ae33724fcf901c780f2b7e3a9d30d2f8732f3ea2e61f78a63712",
       "release_zip_name": "dcoir-memory-preflight.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 8,
-      "total_bytes": 20660,
+      "total_bytes": 21107,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "4256ffa3285bda60fb0fe71fb3a37ac357b07d3aaaf422a41d35ce82c3b1f886",
-          "size_bytes": 12339
+          "sha256": "c863402b26531b448905a5cdcaa3858054e09e89376344bf8b09db422b1376af",
+          "size_bytes": 12786
         },
         {
           "path": "agents/openai.yaml",
@@ -562,17 +562,17 @@
     },
     "dcoir-plan-tracker": {
       "source_root": "dcoir-plan-tracker",
-      "source_tree_hash": "6f40fe064058a8b32c9cc2b7c8a936f33a28f71f0bed84ede88b7f62a819b8c0",
+      "source_tree_hash": "d1216023053906502bd1f0704a5019688932a05a38ac811203d9da0cbada6908",
       "release_zip_name": "dcoir-plan-tracker.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 17,
-      "total_bytes": 73864,
+      "total_bytes": 74379,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "a4702186463b11786812e7c6292e266176d633f382180e9f599bf90062c0e088",
-          "size_bytes": 19356
+          "sha256": "542976f7a8415fdcd18ea341dba97e50a4df3b4a9b7bc557cde4ecfbec67e477",
+          "size_bytes": 19871
         },
         {
           "path": "agents/openai.yaml",
@@ -1041,17 +1041,17 @@
     },
     "dcoir-source-authority-auditor": {
       "source_root": "dcoir-source-authority-auditor",
-      "source_tree_hash": "e6ab9e49c35ed37aa9a6f62392337391b48712388ec33b13bf4ff6bb442d287e",
+      "source_tree_hash": "608e83d646d8fdbf63af46035130e3e470179b07aae5c11378c021cafc18b76b",
       "release_zip_name": "dcoir-source-authority-auditor.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 6,
-      "total_bytes": 32022,
+      "total_bytes": 32417,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2384f1e30a4cddd74d51ebebf9f425c6a411cda9ce20002357ddd6385e32cd11",
-          "size_bytes": 5907
+          "sha256": "badb567455e1ead755f2eb13b772601c5e37d6140d11686a5909d973104bd93d",
+          "size_bytes": 6302
         },
         {
           "path": "agents/openai.yaml",
