@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: refresh-skill-parity-surfaces-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   refresh_skill_parity:
     runs-on: ubuntu-latest

@@ -1,0 +1,10 @@
+# DCOIR repository review routing.
+# Replace @malwaredevil with a narrower team or reviewer set if one is created.
+
+* @malwaredevil
+.github/ @malwaredevil
+project_sources/ @malwaredevil
+dcoir_skills/ @malwaredevil
+dcoir_skill_memory/ @malwaredevil
+knowledge/ @malwaredevil
+supporting_assets/ @malwaredevil

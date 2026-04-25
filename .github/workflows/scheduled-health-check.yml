@@ -5,6 +5,13 @@ on:
     - cron: '15 6 * * 1'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: scheduled-health-check-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   health_check:
     runs-on: windows-latest

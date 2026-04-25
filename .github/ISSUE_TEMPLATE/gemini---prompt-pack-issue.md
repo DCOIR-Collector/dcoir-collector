@@ -1,8 +1,8 @@
 ---
 name: Gemini / prompt-pack issue
-about: Report a Gemini instruction, prompt-pack, or agent-routing issue
-title: ''
-labels: ''
+about: Report a Gemini prime-agent, sub-agent, combined prompt, modular prompt-pack, routing, or output-format issue
+title: '[Gemini/prompt-pack]: '
+labels: ['gemini', 'prompt-pack', 'needs-triage']
 assignees: ''
 
 ---
@@ -15,20 +15,28 @@ assignees: ''
 - [ ] Combined prompt
 - [ ] Modular prompt-pack
 - [ ] Agent routing
-- [ ] Output format
+- [ ] Output contract / report format
+- [ ] Collector handoff guidance
 - [ ] Other
 
 ### What happened?
-Describe the behavior or instruction problem.
+Describe the behavior, instruction gap, routing issue, missing evidence handling, or output problem.
 
 ### What should have happened?
-Describe the expected behavior.
+Describe the expected behavior. Preserve prior accepted benchmark language when applicable; do not reduce it to a summary.
 
 ### Evidence
-Paste the relevant output, prompt section, screenshot, or issue link.
+Paste relevant output, prompt text, screenshots, issue links, test case IDs, or validation notes.
 
 ### Impact
-Explain whether this affects live testing, collector execution, analyst output, or documentation.
+- [ ] Blocks live Gemini testing
+- [ ] Blocks collector execution guidance
+- [ ] Degrades analyst output quality
+- [ ] Causes command-lane confusion
+- [ ] Documentation-only issue
+
+### Validation expectation
+Describe the scenario, fixture, or review needed to prove the repair.
 
 ### Recommended next action
 Describe the needed repair or review.

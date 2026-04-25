@@ -9,6 +9,13 @@ on:
         default: ''
         type: string
 
+permissions:
+  contents: read
+
+concurrency:
+  group: manual-collector-runtime-package-build-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build_collector_runtime_package:
     runs-on: windows-latest

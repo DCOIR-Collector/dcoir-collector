@@ -1,38 +1,48 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+about: Report a reproducible code, script, workflow, or repo behavior defect
+title: '[Bug]: '
+labels: ['bug', 'needs-triage']
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Bug report
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+### Affected surface
+- [ ] Collector source or harness
+- [ ] GitHub workflow or packaging pipeline
+- [ ] Helper-skill source or parity surface
+- [ ] Documentation build or validation script
+- [ ] Other
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+### Summary
+Describe the defect and the user-visible impact.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+### Reproduction steps
+1.
+2.
+3.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+### Actual result
+Paste the observed behavior, error text, log excerpt, or failed command output.
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+### Expected result
+Describe the expected behavior.
 
-**Additional context**
-Add any other context about the problem here.
+### Evidence
+Attach screenshots, logs, output files, workflow run links, issue links, or PR links.
+
+### Environment
+- OS / runner:
+- PowerShell version, if relevant:
+- Python version, if relevant:
+- Local workstation, GitHub Actions, or Elastic response-action lane:
+
+### Safety / security note
+Does this expose credentials, tokens, sensitive paths, or misleading operator instructions?
+- [ ] No
+- [ ] Yes - explain and treat as high priority
+
+### Recommended next action
+Describe the likely fix, validation, or follow-up investigation.

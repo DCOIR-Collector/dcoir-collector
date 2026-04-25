@@ -20,6 +20,13 @@ on:
           - FailureGates
           - FullRegression
 
+permissions:
+  contents: read
+
+concurrency:
+  group: manual-full-validation-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   full_validation:
     runs-on: windows-latest

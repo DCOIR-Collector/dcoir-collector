@@ -1,8 +1,8 @@
 ---
 name: Validation finding
-about: Report a validation or testing finding
-title: ''
-labels: ''
+about: Report a live-test, regression-test, acceptance-test, or workflow validation finding
+title: '[Validation]: '
+labels: ['validation', 'needs-triage']
 assignees: ''
 
 ---
@@ -10,19 +10,32 @@ assignees: ''
 ## Validation finding
 
 ### What was being tested?
-Describe the test, workflow, or feature being validated.
+Describe the test case, workflow, issue, branch, file, prompt, collector path, or validation gate.
 
-### What happened?
-Describe the actual result.
+### Test source
+- [ ] Airtable Validation Test Cases
+- [ ] GitHub Actions workflow
+- [ ] Local harness / script
+- [ ] Gemini workflow review
+- [ ] Operator live test
+- [ ] Other
 
-### What should have happened?
-Describe the expected result.
+### Actual result
+Describe what happened and paste relevant output.
+
+### Expected result
+Describe what should have happened.
 
 ### Evidence
-Paste logs, screenshots, error text, file names, issue links, or PR links.
+Paste logs, screenshots, file names, issue links, PR links, artifact names, or workflow run links.
 
 ### Impact
-Explain whether this blocks testing, affects documentation, affects collector execution, or affects analyst workflow.
+- [ ] Blocks release / promotion
+- [ ] Blocks live testing
+- [ ] Requires helper-skill refresh
+- [ ] Requires documentation refresh
+- [ ] Requires collector or harness repair
+- [ ] Non-blocking observation
 
 ### Recommended next action
-Describe the repair, retest, or follow-up needed.
+Describe the repair, retest, issue routing, or follow-up needed.

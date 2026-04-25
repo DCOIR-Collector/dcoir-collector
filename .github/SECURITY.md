@@ -1,0 +1,25 @@
+# Security policy
+
+## Reporting sensitive findings
+
+Use a private reporting path when a finding includes credentials, tokens, sensitive paths, endpoint details, or information that should not be public in an issue.
+
+If the finding is not sensitive, use the closest GitHub issue template:
+
+- Bug report for reproducible code or workflow defects.
+- Collector test failure for collector execution, harness, command, output, or packaging failures.
+- Validation finding for live-test, regression-test, acceptance-test, or workflow validation results.
+- Documentation / workflow correction for misleading, stale, or conflicting operator guidance.
+
+## DCOIR review priorities
+
+Treat these as high priority:
+
+- Credential, token, secret, or sensitive-path exposure.
+- Collector command-lane confusion that could cause unsafe endpoint or local execution.
+- Broken validation or packaging workflow that could produce misleading release confidence.
+- Documentation that contradicts the current authority model.
+
+## Handling guidance
+
+Do not paste secrets, endpoint identifiers, or sensitive logs into public issues. Redact evidence while preserving enough context to reproduce and validate the problem.

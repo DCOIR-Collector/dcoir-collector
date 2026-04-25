@@ -3,6 +3,13 @@ name: collector-documentation-quality
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: collector-documentation-quality-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   documentation_quality:
     runs-on: windows-latest
