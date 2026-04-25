@@ -328,11 +328,8 @@ def main() -> int:
         },
         'recognized_governed_github_readable_sources': recognized_sources,
         'current_repo_guide': 'README.md' if (source_dir / 'README.md').exists() else None,
-        'current_split_todo_structure': sorted([
-            str(p.relative_to(source_dir))
-            # Legacy todo/log GitHub surfaces are no longer live scan targets; use Airtable Queue Control, Work Items, and Plan Tasks instead.
-            if p.exists()
-        ]),
+        # Legacy todo/log GitHub surfaces are no longer live scan targets; use Airtable Queue Control, Work Items, and Plan Tasks instead.
+        'current_split_todo_structure': [],
         'recognized_governed_knowledge_sources': governed_knowledge_sources,
         'supporting_assets': supporting_assets,
         'settings_references': settings_references,

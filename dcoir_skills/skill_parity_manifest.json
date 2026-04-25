@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-04-25T07:52:50Z",
+  "generated_at_utc": "2026-04-25T08:47:32Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -271,12 +271,12 @@
     },
     "dcoir-knowledge-doc-maintainer": {
       "source_root": "dcoir-knowledge-doc-maintainer",
-      "source_tree_hash": "027fe50580c0f86d4ac21ba75d201622150df6d152ce843d5e0c4e40647ddae7",
+      "source_tree_hash": "6b2cce71af836c7aab15591e96321f2a37e6a7a0ad22d31fce164f459a5426e5",
       "release_zip_name": "dcoir-knowledge-doc-maintainer.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 9,
-      "total_bytes": 40967,
+      "total_bytes": 40877,
       "files": [
         {
           "path": "SKILL.md",
@@ -320,8 +320,8 @@
         },
         {
           "path": "scripts/scan_project.py",
-          "sha256": "7b5dcfaaefd3cccadfb4b1f4ce9d53ae89b9bf1d28525377e89a249e44442bce",
-          "size_bytes": 16490
+          "sha256": "910b00c6807239d6aacb357e58684c37520e03c203bbaab5c60c5f3ef9828309",
+          "size_bytes": 16400
         }
       ]
     },

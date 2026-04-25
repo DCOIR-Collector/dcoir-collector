@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-25T07:52:50Z
+- generated_at_utc: 2026-04-25T08:47:32Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -85,7 +85,7 @@
 
 ## dcoir-knowledge-doc-maintainer
 
-- source_tree_hash: `027fe50580c0f86d4ac21ba75d201622150df6d152ce843d5e0c4e40647ddae7`
+- source_tree_hash: `6b2cce71af836c7aab15591e96321f2a37e6a7a0ad22d31fce164f459a5426e5`
 - release_zip_name: `dcoir-knowledge-doc-maintainer.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
@@ -99,7 +99,7 @@
 - `references/project_discovery_contract.json` — `43ff953355a8df1c17973cc2e438a13ec5ef8a2d34243bbdffb7917f003576e4`
 - `references/reinventory_prompt_template.md` — `521834073167201cb2656a71c6c4407f44ee15a931f4348ebcd832e3378d3df5`
 - `scripts/build_knowledge_docs.py` — `b82bf51c4dd463955fb021782a16fb0d785e0a963fbff4dd64fd917c4da28d2e`
-- `scripts/scan_project.py` — `7b5dcfaaefd3cccadfb4b1f4ce9d53ae89b9bf1d28525377e89a249e44442bce`
+- `scripts/scan_project.py` — `910b00c6807239d6aacb357e58684c37520e03c203bbaab5c60c5f3ef9828309`
 
 ## dcoir-large-file-intake-manager
 
