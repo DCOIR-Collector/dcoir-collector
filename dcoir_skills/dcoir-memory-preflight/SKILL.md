@@ -1,9 +1,12 @@
-<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-memory-preflight|SKILL.md -->
+---
+name: dcoir-memory-preflight
+description: >-
+  consult the canonical dcoir github task-memory bank before high-friction or known-procedure work and again after blocker recovery when a reusable lesson may need staging. after session-start resume bootstrap, also use this skill at the first substantive turn of every new africom_soc_ir or dcoir session to classify the immediate work family, consult airtable queue authority and three-division governance tables, improve skill routing, and avoid rediscovering the right lane later.
+---
 
+<!-- skill-marker: updated-skill|20260425T092546Z|T2.4-install-frontmatter-repair|frontmatter-fix|dcoir-memory-preflight|SKILL.md -->
 
 # DCOIR Memory Preflight
-
-<!-- skill-marker: updated-skill|20260417T064500Z|dcoir-memory-preflight|SKILL.md|R02 -->
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
@@ -55,7 +58,6 @@ Consult these tables when the task family matches:
 - `Repo File Classification Detail`: optional file-level evidence for cleanup and migration review only
 
 Preflight outcomes should mention these tables when they materially affect the lane. If the tables are missing or inaccessible, proceed bounded and say which table could not be checked rather than silently falling back to stale repo memory.
-
 
 ## Airtable queue-authority readback
 When current branch priority or next-work-item order matters, read Airtable `Queue Control` first, then active Airtable `Work Items`, then active Airtable `Plans`.

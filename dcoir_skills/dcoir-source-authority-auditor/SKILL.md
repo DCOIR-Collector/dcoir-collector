@@ -1,9 +1,12 @@
-<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-source-authority-auditor|SKILL.md -->
+---
+name: dcoir-source-authority-auditor
+description: >-
+  audit whether a requested dcoir task is grounded in the current authoritative source set and stop when control-plane, current_state_id, or continuity drift would make the result unsafe or misleading. use when chatgpt must verify current authority, compare active continuity surfaces, detect stale or contradictory current-state signals, or include three-division airtable governance and registry tables in source-authority review.
+---
 
+<!-- skill-marker: updated-skill|20260425T092546Z|T2.4-install-frontmatter-repair|frontmatter-fix|dcoir-source-authority-auditor|SKILL.md -->
 
 # DCOIR Source Authority Auditor
-
-<!-- skill-marker: updated-skill|20260415T170500Z|dcoir-source-authority-auditor|SKILL.md|R02 -->
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
@@ -33,7 +36,6 @@ Audit posture:
 - Treat `Governance Control Plane`, `Repo Surface Registry`, and `Skill State Registry` as durable Airtable governance and registry surfaces.
 - Treat `Repo File Classification Detail` as supporting evidence for cleanup or classification, not as a hard-stop authority surface.
 - If a three-division table contradicts a stale GitHub todo or retired helper-memory claim, prefer Airtable for live governance and report the stale GitHub surface as historical or promoted history unless the GitHub control plane explicitly says otherwise.
-
 
 ## Workflow
 

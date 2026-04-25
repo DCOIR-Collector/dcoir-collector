@@ -1,9 +1,12 @@
-<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-plan-tracker|SKILL.md -->
+---
+name: dcoir-plan-tracker
+description: >-
+  plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state, hierarchical task decomposition, blocker capture, closed-loop blocker recovery, decision-aware execution, operator-visible milestone signaling, and conditional startup active-plan recovery. use when chatgpt needs to break a dcoir task into tasks, preserve active plan continuity, recover open airtable-backed plan state, update governed trackers, record blockers and mitigations, stage promotion candidates, or export a clean handoff.
+---
 
+<!-- skill-marker: updated-skill|20260425T092546Z|T2.4-install-frontmatter-repair|frontmatter-fix|dcoir-plan-tracker|SKILL.md -->
 
 # DCOIR Plan Tracker
-
-<!-- skill-marker: updated-skill|20260417T064500Z|dcoir-plan-tracker|SKILL.md|R02 -->
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
@@ -98,7 +101,6 @@ Create and maintain these files for every plan:
 Read `references/file_layout.md` when creating or validating plan surfaces.
 Read `references/local_plan_state_workflow.md` when a local plan cache or `plan_state.json` proof check is in scope.
 Read `references/airtable_plan_sync_workflow.md` when Airtable-first plan persistence or recovery is in scope.
-
 
 ## Conditional session-start active-plan recovery
 After `dcoir-session-resume`, `dcoir-memory-preflight`, and `dcoir-session-tracker` startup leftover recovery, use this skill when Airtable shows open or active plan state or when the leftover scan indicates unfinished plan work.
@@ -236,7 +238,6 @@ Supported commands include:
 15. Verify repo state after writes instead of trusting success messages alone.
 16. Emit user-visible attention signals only at milestone, blocked, and completion moments.
 17. On completion, write `07_closeout.md` and move the plan to `complete` or `archived`.
-
 
 ## Airtable-first durable execution state
 This skill now uses Airtable as the primary durable execution-state layer and keeps local `plan_state.json` only as an optional cache or render mirror.
@@ -431,7 +432,6 @@ Read when needed:
 - `references/session_buffer_workflow.md`
 - `references/airtable_plan_sync_workflow.md`
 - `references/startup_active_plan_recovery_workflow.md`
-
 
 ## Local plan-state proof rules
 When a local plan folder is being used before a GitHub write:
