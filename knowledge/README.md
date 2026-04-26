@@ -6,9 +6,10 @@ Purpose
 - The maintained set now includes fifteen knowledge pages: the original collector and workflow references plus four Gemini-runtime-specific attachment pages.
 
 Source-of-truth rule
-- The maintained `knowledge/*.md` files are the editable source of truth.
+- The maintained `knowledge/*.md` files are the editable source of truth while retained and current.
 - The Gemini build path syncs these maintained files into `project_sources/DCOIR_Gemini_Bundle_Source/02_PRIME_AGENT_ATTACHMENTS/*.md.txt` before validation and compile.
 - Do not treat the synced attachment files as the primary maintained editing surface.
+- If final repo reduction changes where maintained knowledge files live, use Airtable `Retained Repo Manifest`, `Repo Surface Registry`, and active `Plans` / `Plan Tasks` to confirm the current retained knowledge surface before editing.
 
 Current major-version expectation
 - Each knowledge file should be more detailed than the earlier versions.

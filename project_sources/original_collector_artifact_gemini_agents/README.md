@@ -10,9 +10,9 @@ How to use this folder
 - Treat the child files as source material for workflow analysis and integration, not as control-plane authority by default.
 
 Current status
-- This folder is part of the current governed repo working line and is explicitly listed in the current manifest as an extracted readable source folder.
+- This folder is part of the current governed repo working line when retained and explicitly listed in the current manifest as an extracted readable source folder.
 - The child files appear to preserve extracted original naming and content shapes; future normalization should be dependency-checked before any rename or restructuring.
 
 Structural note
 - This README provides the stable index-plus-child-file entrypoint required by the structural refactor standard.
-- Current project authority still begins with Project Instructions, CP-01, and CP-02.
+- Current project authority begins with current retained control-plane files when present/current; if final repo reduction removes or relocates them, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Retained Repo Manifest`, active `Plans`, and `Plan Tasks` to resolve live operating state.
