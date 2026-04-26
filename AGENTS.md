@@ -56,7 +56,7 @@ This repository supports the AFRICOM SOC IR / DCOIR workflow. Preserve evidence-
 - When editing code, run the closest available validation or test command and record limitations honestly.
 - When changing documentation, check nearby files for naming, authority, retained-manifest, and current-state consistency.
 - Preserve evidence, rationale, assumptions, constraints, validation notes, workflow explanations, and downstream implications unless the task explicitly asks for a narrower form.
-- Treat misleading documentation, broken test instructions, collector execution-lane confusion, accidental sensitive-path exposure, and retained-file references to removed paths as high-priority review items.
+- Treat misleading documentation, broken test instructions, collector execution-lane confusion, accidental sensitive-path exposure, and unresolved live-authority references to removed paths as high-priority review items.
 - If a change cannot be validated because a tool, snapshot, or Airtable connector is unavailable, say exactly what was not verified.
 
 ## Codex working pattern
@@ -70,7 +70,7 @@ This repository supports the AFRICOM SOC IR / DCOIR workflow. Preserve evidence-
 ## Manual delivery preference
 - Unless the operator asks for more, deliver only affected skills and affected repo-relative files.
 - If exactly one skill is affected, deliver only that skill ZIP.
-- If multiple skills are affected, deliver one outer ZIP containing only affected per-skill ZIPs.
+- If multiple skills changed, deliver one outer ZIP containing only affected per-skill ZIPs.
 - For GitHub Desktop manual repo-update bundles, deliver only affected repo-relative folders/files with no wrapper root and include a suggested commit summary unless overridden.
 
 ## GitHub issue intake rules
@@ -93,5 +93,5 @@ If no template fits, recommend creating a new issue template first.
 - Treat collector execution-lane confusion as high priority.
 - Treat accidental credential, token, or sensitive-path exposure as high priority.
 - Treat misleading documentation as review-worthy, not cosmetic.
-- Treat retained-file references to soon-removed paths as review-worthy, not cosmetic.
+- Treat unresolved live-authority references to removed paths as review-worthy; do not chase clearly historical references that do not drive current behavior.
 - Check whether changes preserve Windows PowerShell 5.1 compatibility where collector instructions are involved.
