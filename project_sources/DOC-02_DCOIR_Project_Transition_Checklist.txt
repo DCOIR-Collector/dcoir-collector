@@ -1,52 +1,72 @@
 DCOIR Project Transition Checklist
 
 Purpose
-- This is the evergreen checklist for applying Project updates.
-- Use it together with release_notes/RELEASE_INSTRUCTIONS.txt from the current update bundle.
+- This is the evergreen checklist for applying bounded DCOIR repo or Project-context updates.
+- Use it together with the current control plane, the active Airtable plan/task state, and any release instructions included with the current update bundle.
 - Do not rewrite this checklist for every normal release.
 
+Current authority baseline
+- GitHub repository `malwaredevil/dcoir-collector` is the governed readable source, helper-skill source, control plane, release history, and promoted-decision surface.
+- Airtable owns live operational state: queue order, branch priority, active execution order, plans, plan tasks, session carry-forward, operator preferences, validation catalog state, and dedicated helper-skill durable memory where tables exist.
+- ChatGPT Project space is a bootstrap/runtime anchor only. Do not recreate a duplicate editable Project-space readable-source repository.
+- GitHub todo files and old active-now files are retained as migration/promoted-history surfaces only unless Airtable explicitly reauthorizes them.
+
 Before applying an update
-- Confirm which Project version is currently authoritative by reading CP-01_DCOIR_Version_Manifest.txt.
-- Confirm the change intent by reading CP-02_DCOIR_Change_Log.txt.
-- Download and extract the current update ZIP bundle.
-- Open release_notes/RELEASE_INSTRUCTIONS.txt.
-- If the bundle includes project_settings/, plan to apply those settings updates in the Project settings surface after uploaded file replacement is complete.
+- Confirm current source authority by reading `project_sources/CP-01_DCOIR_Version_Manifest.txt` first and `project_sources/CP-02_DCOIR_Change_Log.txt` second when current-state claims matter.
+- Confirm live execution state from Airtable `Queue Control`, `Work Items`, active `Plans`, and active `Plan Tasks` when branch order or resume state matters.
+- Confirm whether the update is one of these classes:
+  - affected-file-only GitHub Desktop manual repo-update bundle
+  - targeted helper-skill package update
+  - grouped helper-skill package update
+  - retained supporting-asset refresh
+  - special full repo working-tree replacement for T99 final cleanup only
+- Confirm that the bundle shape matches the declared update class.
 
-Apply the update
-1. If a settings update is included, read it first so you understand any changed collaboration, workflow, or generation behavior.
-2. Delete the currently uploaded Project files listed for deletion in RELEASE_INSTRUCTIONS.txt.
-3. Delete the currently uploaded supporting assets listed for deletion in RELEASE_INSTRUCTIONS.txt.
-4. Upload every file from project_sources/.
-5. Upload every file from supporting_assets/.
-6. Apply any project_settings/ content manually where required.
-7. Verify that the uploaded working set now matches CP-01_DCOIR_Version_Manifest.txt.
+Apply an affected-file-only GitHub Desktop manual repo-update bundle
+1. Extract the bundle locally.
+2. Confirm the bundle has no wrapper root and no `.git` directory.
+3. Confirm every included path is an affected repo-relative path.
+4. Copy or overwrite only those paths into the local `malwaredevil/dcoir-collector` working tree.
+5. Inspect the GitHub Desktop diff before committing.
+6. Commit with the suggested Summary unless the operator intentionally chooses another Summary.
+7. Push.
+8. Request GitHub readback verification before treating the update as complete.
 
-Specific checks for this Project
-- Confirm the current readable collector source filename matches the manifest.
-- Confirm the current emitted runtime collector filename rule still maps to DCOIR_Collector.ps1.
-- Confirm the current supporting_knowledge_docs.zip file is present when the bundle says Knowledge docs were refreshed.
-- Confirm any comparative reference or generated agent-markdown zip assets named in the manifest are present.
-- Confirm the current Project settings baseline name in the manifest matches the applied settings text.
-- If the refresh depends on updated external helper skills, replace those external skill packages separately after the file upload step.
-- Verify icon/metadata are present where expected for any helper skills refreshed outside chat.
-- If dcoir-github-operator is part of the refresh, verify the installed package reflects the validated write model: high-level create for bounded new-file creates and low-level git-object lane for existing-file updates.
-- Rerun post-update invocation/accessibility regression where the refresh materially changed helper-skill behavior, routing expectations, or required-use points.
+Apply helper-skill updates
+- If exactly one skill is affected, install only that skill ZIP.
+- If multiple skills are affected, install the provided affected-skill ZIPs from the outer package.
+- After skill installation, verify marker/readback and run the required regression or parity checks before claiming readiness.
+- If skill source changed, the governed source under `dcoir_skills/` must also be updated or already match the delivered package.
+
+Apply Project-space/bootstrap updates
+- Apply Project Instructions or Project-space bootstrap pointer updates only when the current control plane or operator request explicitly requires it.
+- Do not upload every file from `project_sources/` into Project space as a normal update pattern.
+- Do not use Project space as a second editable readable-source repository.
+- CP-00-style Project-space files are bootstrap pointers only and must not replace GitHub CP-01/CP-02.
+
+Specific checks for this project
+- Confirm the current readable collector source remains `project_sources/DCOIR_Collector.ps1` unless CP-01 changes it.
+- Confirm operator-facing runtime examples use `DCOIR_Collector.ps1` as the emitted collector filename.
+- Confirm PowerShell 5.1 remains the local workstation/test lane unless explicitly changed by the control plane.
+- Confirm Elastic Defend response-action instructions and local PowerShell workstation instructions are not mixed.
+- Confirm `Validation Test Cases` is used as the manual testing catalog for collector/Gemini testing branches.
+- Confirm any retained supporting asset or generated ZIP is represented as a supporting artifact, not as editable readable authority.
+- Confirm old helper-memory markdown under `dcoir_skill_memory/` is treated as legacy/source-basis history when a dedicated Airtable memory table exists.
 
 After applying the update
-- Open a fresh Project chat.
-- Resume from CP-01_DCOIR_Version_Manifest.txt and CP-02_DCOIR_Change_Log.txt.
-- Verify that the next planned work item in the manifest, todo log, and session handoff brief all point to the same active work line.
-- If the update included Gemini workflow or bounded design artifact changes, use the refreshed files as the authoritative Project-readable design references before editing Gemini fields in the separate Gemini environment.
-- If the update included Knowledge-doc changes, treat knowledge/*.md in GitHub as the authoritative editable knowledge set, treat project_sources/DCOIR_Gemini_Bundle_Source/02_PRIME_AGENT_ATTACHMENTS/*.md.txt as synced derived copies, and treat supporting_knowledge_docs.zip as a retained delivery/reference asset rather than the source of truth.
-- If the update included substantive helper-skill operationalization changes, ensure a governed project refresh followed the skill changes so the control plane, logs, and evergreen workflow docs still describe the live workflow accurately.
-- If the update included dcoir-github-operator or first-wave adopter skills, rerun the formerly failing existing-file update case or an equivalent bounded helper-memory modification case before treating the refresh as live.
+- Open a fresh Project chat or continue the current branch only after the operator has pushed the local commit.
+- Re-read the affected GitHub files from `malwaredevil/dcoir-collector` and verify the expected content is present.
+- Update the relevant Airtable plan task only after readback verifies the remote GitHub state.
+- Keep T99 deletion/final cleanup deferred unless the active plan explicitly authorizes T99 work and all cleanup gates have passed.
 
 When to stop and resolve a mismatch
-- Stop if the uploaded Project source set does not match the manifest after the update.
-- Stop if RELEASE_INSTRUCTIONS.txt and the manifest disagree about what should be current.
-- Stop if the current readable collector source filename, current settings baseline, or current supporting assets do not match the manifest.
-- Stop if the bundle is missing release_notes/RELEASE_INSTRUCTIONS.txt.
+- Stop if the bundle shape does not match the declared update class.
+- Stop if an affected-file-only bundle includes unrelated files, a wrapper root, or `.git`.
+- Stop if CP-01/CP-02 conflict with Project Instructions or CP-00 on current-state or startup behavior.
+- Stop if Airtable live plan/task state conflicts with a proposed branch move.
+- Stop if a retained file hard-references a removed path without historical/fallback wording and no bounded fix has been prepared.
 
 Default reminder
-- Exact sync actions for any given bundle belong in release_notes/RELEASE_INSTRUCTIONS.txt.
-- This checklist remains evergreen and should only change when the evergreen update process materially changes.
+- Prefer affected-file-only bundles for bounded repo patches.
+- Prefer targeted skill ZIPs for skill changes.
+- Reserve full repo working-tree replacement for the special T99 final end-state cleanup lane only.

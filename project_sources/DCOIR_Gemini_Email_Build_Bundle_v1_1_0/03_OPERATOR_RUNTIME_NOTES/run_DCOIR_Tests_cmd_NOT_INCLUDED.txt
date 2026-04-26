@@ -1,11 +1,19 @@
-# run_DCOIR_Tests.cmd Not Included
+# Legacy run_DCOIR_Tests.cmd Note
 
-This bundle intentionally omits the live `run_DCOIR_Tests.cmd` wrapper body.
+This retained legacy bundle intentionally omits the old `run_DCOIR_Tests.cmd` wrapper body.
 
-Target runtime filename:
-- run_DCOIR_Tests.cmd
+Current status:
+- This file is historical legacy-bundle context only.
+- It is not current harness authority.
+- It must not be used to reintroduce a `.cmd` harness wrapper into the current repo line.
 
-Authoritative readable source name in the project:
-- run_DCOIR_Tests.cmd.txt
+Current governed harness source:
+- `project_sources/run_DCOIR_Tests.ps1` when retained and current in CP-01 / the current control plane.
 
-Use the full Knowledge doc set for wrapper purpose and local execution guidance, and reconstruct the actual wrapper body later from the authoritative source.
+Current runtime filename:
+- `run_DCOIR_Tests.ps1`
+
+Historical note:
+- Older bundle material referenced `run_DCOIR_Tests.cmd` and `run_DCOIR_Tests.cmd.txt` as wrapper names.
+- That wrapper reference is retained here only to explain why the legacy bundle did not include the body.
+- Treat any future wrapper reintroduction as a new governed change requiring CP/control-plane review, not as an implied current dependency from this legacy bundle.
