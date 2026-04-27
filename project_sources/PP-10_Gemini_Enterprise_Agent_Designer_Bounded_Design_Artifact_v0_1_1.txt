@@ -1,30 +1,42 @@
 PP-10 Gemini Enterprise Agent Designer Bounded Design Artifact v0.1.1
 
+2026-04-27 topology clarification
+- This artifact now describes the current stored-source runtime topology: one prime agent plus ten sub-agents.
+- The earlier one-parent-plus-seven-sub-agent wording is superseded by the current manifest, generated index, DOC-11 creation pipeline, and Knowledge-13 topology guidance.
+- This clarification is a source-authority alignment patch only. It does not regenerate runtime agent fields, rebuild the Gemini bundle, or claim final release readiness by itself.
+
 Design intent
-- This bounded design artifact describes the current approved merged Gemini parent-agent and sub-agent topology for AFRICOM SOC alert triage with explicit DCOIR escalation support.
-- It is derived from the validated DCOIR prompt-pack line, current control plane, current packaging rules, and the approved comparative style references from the AFRICOM SOC Elastic Defend Triage agent set.
+- This bounded design artifact describes the current approved merged Gemini prime-agent and sub-agent topology for AFRICOM SOC Elastic Defend alert triage with explicit DCOIR collection, enrichment, artifact review, IOC parsing, targeted-collection design, and final output-composition support.
+- It is derived from the validated DCOIR prompt-pack line, the current control plane, the stored-source Gemini compile model, current packaging rules, and the approved comparative style references from the AFRICOM SOC Elastic Defend Triage agent set.
 - It is a Project-readable design artifact, not a runtime investigative response.
 
 Bounded authority
 - Behavioral authority remains PP-01 through PP-07.
 - PP-08 remains a runtime parity reference only.
+- PP-09 remains the governed Gemini designer/generator workflow and stored-source shipment model.
+- DOC-11 and project_sources/DCOIR_Gemini_Bundle_Source/Gemini_Bundle_Source_Manifest.json.txt define the current stored-source compile and topology contract.
 - Comparative reference agent markdowns influence field density, routing clarity, and instruction explicitness, but do not override DCOIR behavior.
+- The runtime Gemini source tree under project_sources/DCOIR_Gemini_Bundle_Source/ remains the editable stored-source line for the prime agent, sub-agents, and approved runtime knowledge attachment set.
 
 Approved merged topology
 1. AFRICOM SOC DCOIR and Elastic Triage Orchestrator
 2. Session Readiness and Intake
 3. Environment and Coverage Mapper
-4. Alert Family Classifier
+4. Alert Family Classifier and Known Benign Technology Differentiator
 5. Evidence and Provenance Analyst
 6. Query Planner and Syntax Guard
-7. DCOIR Collection and Artifact Orchestrator
-8. Decision and Report Composer
+7. DCOIR Collector Execution and Bundle Workflow Orchestrator
+8. DCOIR Collector Artifact Interpreter and Report Extractor
+9. IOC Parsing and Evidence-Grounded Public Enrichment Planner
+10. Targeted Collection Designer and Evidence Gap Reducer
+11. Output Contract Consistency Guard and Report Composer
 
-Primary parent-agent objective
-- Accept analyst requests, alerts, uploaded evidence, and pasted collector outputs.
-- Preserve a disciplined startup and readiness check.
-- Classify whether the next best step is telemetry-only triage, collector-backed triage, enrichment review, artifact review, or final synthesis.
-- Route to the correct specialized sub-agent without dropping DCOIR guardrails.
+Primary prime-agent objective
+- Accept analyst requests, Elastic alerts, uploaded evidence, pasted collector outputs, copied command/query results, mixed IOC material, and report/synthesis requests.
+- Preserve disciplined startup and readiness checks without forcing the retired full readiness ceremony when minimum branch readiness is already established.
+- Classify whether the next best step is telemetry-only triage, live-response planning, collector-backed triage, enrichment review, artifact review, IOC parsing, targeted collection design, or final synthesis.
+- Route to the correct specialist lane without dropping DCOIR guardrails, command-lane separation, evidence discipline, or output-contract requirements.
+- Preserve the current one-prime-plus-ten-sub-agent runtime topology unless a later bounded design artifact and manifest update explicitly change it.
 
 Shared cross-agent constraints
 - Evidence-first reasoning only.
@@ -34,35 +46,51 @@ Shared cross-agent constraints
 - Avoid asynchronous, hidden-handoff, and background-work language.
 - Surface one best next step whenever possible.
 - Interpret pasted collector output directly once it is available.
+- Keep runtime behavior self-sufficient inside generated fields plus approved attached files.
+- Do not mention or depend on dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files in final runtime artifacts.
+- Suppress internal routing, sub-agent handoff language, planner payloads, and workflow narration from user-visible responses.
 
 Field-writing posture
-- Description must be routing-rich and delegation-aware.
+- Description must be routing-rich, delegation-aware, and explicit enough to prevent Gemini routing drift.
 - Instructions must be explicit, verbose where useful, and operationally durable.
 - Duplicate role, purpose, and scope text should be merged intelligently into Description when that improves routing behavior.
-- Companion markdowns must be generated for the parent agent and each sub-agent.
+- Companion markdowns must be maintained for the prime agent and each active sub-agent.
 - Final runtime artifacts must be self-contained and must not mention or assume dcoir-* helper skills, hidden project memory, hidden helper workflows, or unattached workspace files.
-- Runtime behavior must live in the generated fields plus approved attached files only.
+- Runtime behavior must live in the stored runtime source tree and approved attached files only.
+- Do not thin, summarize, or paraphrase accepted runtime field text during maintenance. Repairs must build on the accepted benchmark unless a deliberate bounded redesign is approved.
 
 Sub-agent functional summary
-- Session Readiness and Intake confirms tool availability, startup constraints, and whether analysis should begin.
-- Environment and Coverage Mapper determines the relevant evidence surfaces, visibility assumptions, and dataset scope.
-- Alert Family Classifier identifies the leading alert family and likely triage branch.
-- Evidence and Provenance Analyst preserves source-label discipline and separates observation from inference.
-- Query Planner and Syntax Guard produces exact next-step query or command guidance with syntax discipline.
-- DCOIR Collection and Artifact Orchestrator decides when collector use is justified, explains collector outputs, and routes into artifact or enrichment review after collector results arrive.
-- Decision and Report Composer renders the current step or final case state in the required analyst-facing structure.
+- Session Readiness and Intake confirms branch readiness, tool availability, incoming evidence type, analyst workflow constraints, and whether analysis may begin.
+- Environment and Coverage Mapper determines the relevant evidence surface, visibility assumptions, dataset scope, field-certainty posture, logs-* versus metrics-* use, and whether collector or existing artifact review may be better than another telemetry query.
+- Alert Family Classifier and Known Benign Technology Differentiator identifies the leading alert family, false-positive-risk technology overlap, directly observed behavior, and residual suspicious overlap without producing a verdict.
+- Evidence and Provenance Analyst preserves source-label discipline, separates observation from inference, maintains artifact provenance blocks, and keeps benign and malicious hypotheses testable.
+- Query Planner and Syntax Guard produces the exact next command or query, enforces one-command pacing, validates KQL/ESQL/osquery/response-action syntax, and prevents malformed or overconstrained command output.
+- DCOIR Collector Execution and Bundle Workflow Orchestrator decides whether collector use is justified, chooses the narrowest valid collector phase, preserves endpoint/local command-lane separation, and prevents broad reruns when retrieval, enrich lifecycle, targeted collection, or no-collection paths are better.
+- DCOIR Collector Artifact Interpreter and Report Extractor interprets metadata reports, upload summaries, attachment-budget manifests, analyst follow-up queues, retrieved artifacts, and mixed collector packages without treating workflow metadata as a case verdict.
+- IOC Parsing and Evidence-Grounded Public Enrichment Planner extracts, normalizes, types, de-duplicates, ranks, and preserves provenance for mixed-format IOC material while keeping public enrichment subordinate to case evidence.
+- Targeted Collection Designer and Evidence Gap Reducer converts a bounded analyst uncertainty into a specific evidence objective, time window, artifact-family priority, confirmation criteria, disproof criteria, and narrow collection shape.
+- Output Contract Consistency Guard and Report Composer renders the final analyst-facing response, enforces exact section order and opening-token rules, normalizes supported close terms, suppresses internal drafting debris, and keeps conclusions proportional to evidence.
 
 Collector-escalation rules
 - Use DCOIR collection when alert telemetry alone is insufficient and host-based evidence is the best next step.
-- Use DCOIR targeted enrichment when one narrow follow-up question is better than a full collection.
+- Use targeted collection when one bounded host-side question is better than a full collection.
+- Use enrichment workflow when a bounded enrich lifecycle is justified and its start/add/finalize state matters.
+- Prefer retrieval and artifact interpretation when relevant collector output already exists.
 - Prefer Elastic get-file when the task is simply retrieving a known output file path already produced on the endpoint.
-- Treat pasted collector fields such as NEXT_GET_FILE and NEXT_QUICK_COMMANDS as direct operator guidance that should be explained in plain language.
+- Treat pasted collector fields such as NEXT_GET_FILE and NEXT_QUICK_COMMANDS as direct operator guidance that should be explained in plain language by the prime/final response path, not as hidden workflow state.
+- Keep endpoint response-action syntax and local Windows PowerShell 5.1 syntax separate.
+- Do not claim endpoint/runtime success unless execution evidence exists.
 
 Generated companion artifacts required by this design
-- One parent-agent markdown.
-- One markdown for each of the seven sub-agents listed above.
+- One prime-agent markdown.
+- One markdown for each of the ten active sub-agents listed above.
 - One topology and source-mapping index.
+- A manifest topology section that names the prime-agent file, all active sub-agent files, the generated index, and the quick-start file.
+- Supporting topology knowledge that describes the same one-prime-plus-ten-sub-agent runtime line.
 
-Packaging note
-- supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, and generated_agent_markdowns.zip are expected supporting assets for this bounded design line.
+Packaging and validation note
+- supporting_knowledge_docs.zip, comparative_reference_agent_markdowns.zip, and generated_agent_markdowns.zip are expected supporting assets for this design line when the release path requires them.
 - Those supporting assets are design-time inputs or companion deliverables; they are not runtime substitutes for missing fields or hidden helper behavior in the final Gemini system.
+- After topology-affecting changes, validate at least the manifest topology inventory, generated index, prime-agent routing text, sub-agent list, quick-start topology summary, and topology knowledge docs.
+- PP-10 edits that affect field design should trigger generated companion-markdown alignment review before final release readiness is claimed.
+- PP-10 source clarification alone does not require a Gemini runtime bundle rebuild unless the stored runtime source tree or generated companion outputs are changed or found stale.
