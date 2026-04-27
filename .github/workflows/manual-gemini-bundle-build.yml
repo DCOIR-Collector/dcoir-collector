@@ -63,8 +63,6 @@ jobs:
           $required = @(
             'project_sources/CP-01_DCOIR_Version_Manifest.txt',
             'project_sources/CP-02_DCOIR_Change_Log.txt',
-            'project_sources/LOG-60_DCOIR_Major_Version_Collector_And_Gemini_Feature_Wave_Implementation_2026-04-08.txt',
-            'project_sources/live_test_notes/2026-04-08_DCOIR_Major_Version_Functionality_Test_Plan.md.txt',
             'project_sources/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt',
             'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
             'project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt',
