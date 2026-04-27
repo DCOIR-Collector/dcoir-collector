@@ -4,7 +4,7 @@ Purpose
 - Store the authoritative readable project source set here in native formats where possible.
 
 What belongs here
-- CP control-plane files when retained and current
+- CP source/promoted-history files when retained for repo source-role checks, packaging/readback, or T99 review
 - DOC evergreen workflow and layout files
 - LOG situational continuity and decision logs
 - PP modular prompt-pack files
@@ -13,7 +13,7 @@ What belongs here
 - extracted readable Gemini source folders with ongoing project value
 
 Current important surfaces
-- `CP-01_DCOIR_Version_Manifest.txt` and `CP-02_DCOIR_Change_Log.txt` — current control-plane pair when present and marked current
+- `CP-01_DCOIR_Version_Manifest.txt` and `CP-02_DCOIR_Change_Log.txt` — retained source/promoted-history pair for repo source-role checks, packaging/readback, promoted-history comparison, or T99 keep/delete review; not normal startup authority when Airtable `CONTROL-STARTUP-AIRTABLE-FIRST` is present/current
 - `LOG-01_DCOIR_Todo_Log.txt`, `LOG-01_DCOIR_Todo_Index.txt`, and `todo/*.txt` — retired queue/migration history unless Airtable explicitly reauthorizes them
 - `DCOIR_Collector.ps1` and `run_DCOIR_Tests.ps1` — current runtime and harness entry points
 - `PP-01` through `PP-07` — authoritative modular prompt-pack source line

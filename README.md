@@ -1,6 +1,6 @@
 # DCOIR Collector
 
-GitHub-primary working source for the AFRICOM SOC DCOIR framework.
+Airtable-first DCOIR workspace with GitHub retained as governed source/readback for the AFRICOM SOC DCOIR framework.
 
 GitHub repo `malwaredevil/dcoir-collector` remains the governed readable source for retained repository files and helper-skill source. Project space is the bootstrap/runtime anchor. Airtable is the live operational authority for queue order, branch priority, active plans, plan tasks, session carry-forward, operator preferences, validation catalog state, and stateful helper-skill durable memory where tables exist.
 
@@ -16,7 +16,8 @@ GitHub repo `malwaredevil/dcoir-collector` remains the governed readable source 
 
 ## Current-State and Final-State Authority
 
-- When `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` are present and current, use them as the governed current-state manifest/change-log pair.
+- For normal startup, resume, queue selection, administrative control, and active-plan recovery, use Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`, then Airtable `Session Checkpoints`, `Queue Control`, `Work Items`, active `Plans`, `Plan Tasks`, `Operator Preferences`, and relevant helper-memory tables.
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` are retained source/promoted-history references, not normal startup authority. Read them only for repo source-role resolution, packaging/readback, promoted-history comparison, explicit repo-source inspection, or final keep/delete review.
 - If final repo reduction later removes or relocates a previously referenced file, do not invent a replacement. Use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Retained Repo Manifest`, `Queue Control`, `Work Items`, `Plans`, and `Plan Tasks` to establish live operating state and report the missing retained source as a validation finding.
 - Before adding or preserving a repo path reference in retained documentation, check whether that path is current, retained, or clearly historical.
 
