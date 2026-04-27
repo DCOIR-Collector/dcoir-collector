@@ -1,15 +1,23 @@
 ---
 name: dcoir-validation-orchestrator
-description: build explicit validation plans for dcoir changes and workflows, with deep regression as the default for anything testable before live use and after every patch. use when chatgpt needs to decide what to test, in what order, with what evidence thresholds, what gates must pass before a skill, script, prompt-pack flow, bundle generator, documentation alignment batch, session-memory workflow, or other dcoir change is considered ready, or when the workflow should read and update the dcoir-validation-orchestrator dedicated Airtable memory table in the current governed repository resolved through the project discovery contract. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
+description: build explicit validation plans for dcoir changes and workflows, with deep regression as the default for anything testable before live use and after every patch. use when chatgpt needs to decide what to test, in what order, with what evidence thresholds, what gates must pass before a skill, script, prompt-pack flow, bundle generator, documentation alignment batch, session-memory workflow, or other dcoir change is considered ready, or when the workflow should read and update the dcoir-validation-orchestrator dedicated Airtable memory table in the current governed repository resolved through the project discovery contract. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill. follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
 ---
 
-<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-validation-orchestrator|SKILL.md -->
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-validation-orchestrator|SKILL.md -->
 
 # DCOIR Validation Orchestrator
 
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
-Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current Airtable-first authority model or current governed GitHub source working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 Use this skill to turn a DCOIR change, workflow, campaign, or inventory-derived gap area into an explicit validation plan.
@@ -51,7 +59,7 @@ Use this memory surface for helper working state such as:
 - deferred review counters or countdown-gated decisions that affect later validation timing
 
 Rules:
-- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing Airtable memory rows
+- re-anchor to Project Instructions, CP-00 as a pointer, and Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`; read GitHub `CP-01`/`CP-02` only for repository-source tasks before reading or writing Airtable memory rows
 - treat the Airtable memory table as helper working state only, not control-plane authority
 - keep one canonical Airtable row set for live memory and update it directly when connector access permits
 - if Airtable access is blocked, say that plainly and reduce the operator burden to the smallest bounded manual Airtable action

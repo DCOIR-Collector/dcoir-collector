@@ -1,18 +1,26 @@
 ---
 name: dcoir-live-test-remediation-planner
-description: >-
+description: >- follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
   turn dcoir live-test findings into a ranked remediation plan with impacted files, helper-skill refreshes, deep-regression requirements, delivery posture, and stop conditions. use when chatgpt needs to decide what to fix first after live operator testing, gemini workflow validation, collector workflow issues, output-quality findings, packaging drift, or any other dcoir validation result that needs explicit remediation sequencing. use only when working inside the africom_soc_ir / dcoir project context.
 ---
 
-<!-- skill-marker: updated-skill|20260425T092546Z|T2.4-install-frontmatter-repair|frontmatter-fix|dcoir-live-test-remediation-planner|SKILL.md -->
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-live-test-remediation-planner|SKILL.md -->
 
 # DCOIR Live Test Remediation Planner
+
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
 
 Use this skill to convert live-test findings into an explicit remediation queue and verification plan.
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
-Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current Airtable-first authority model or current governed GitHub source working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 Before planning remediation, verify the current authoritative control-plane files from the workspace.
@@ -23,11 +31,11 @@ Preferred current files:
 - Airtable `Work Items` / `Plan Tasks`
 - Airtable `Session Checkpoints`
 
-Stop if the manifest or change log cannot be resolved.
+Stop only when the required authority surface for the current task cannot be resolved. For startup/admin/live-queue tasks, use Airtable authority; for repository-source tasks, use GitHub CP/source files or their Airtable replacement rows if CP files have been detached.
 
 ## Core workflow
-1. Read the current manifest first.
-2. Read the current change log second.
+1. Resolve Airtable-first startup/control-plane authority first for live state and queue context.
+2. Read GitHub `CP-01`/`CP-02` only when the remediation analysis requires repository-source role resolution, promoted-history comparison, or source-file inspection.
 3. Use the current todo log and current handoff brief as supporting context for active remediation themes.
 4. Identify the live-test findings, defects, or operator-friction notes from the user request.
 5. Run `scripts/plan_live_test_remediation.py` with the findings.

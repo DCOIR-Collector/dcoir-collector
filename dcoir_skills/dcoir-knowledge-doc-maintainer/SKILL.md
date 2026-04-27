@@ -1,20 +1,28 @@
 ---
 name: dcoir-knowledge-doc-maintainer
-description: maintain and emit africom_soc_ir / dcoir supporting knowledge docs from the current authoritative github-primary project sources. use when chatgpt needs to regenerate or update knowledge markdown, inventory documentation-impacting source changes, explain local testing versus elastic response-action execution, refresh stale knowledge-doc clusters that share the same outdated source-name or removed-wrapper assumptions, or keep retained supporting knowledge zips aligned to the current governed readable working set. do not use this skill to decide authority, promotions, or content edits. use only after the control plane settles what is current and when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
+description: maintain and emit africom_soc_ir / dcoir supporting knowledge docs from the current authoritative github-primary project sources. use when chatgpt needs to regenerate or update knowledge markdown, inventory documentation-impacting source changes, explain local testing versus elastic response-action execution, refresh stale knowledge-doc clusters that share the same outdated source-name or removed-wrapper assumptions, or keep retained supporting knowledge zips aligned to the current governed readable working set. do not use this skill to decide authority, promotions, or content edits. use only after the control plane settles what is current and when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill. follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
 ---
 
-<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-knowledge-doc-maintainer|SKILL.md -->
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-knowledge-doc-maintainer|SKILL.md -->
 
 # DCOIR Knowledge Doc Maintainer
 
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
-Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current Airtable-first authority model or current governed GitHub source working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 ## Core workflow
-1. Read the current manifest first, preferring `project_sources/CP-01_DCOIR_Version_Manifest.txt` and falling back to the legacy manifest name only if needed.
-2. Read the current change log second, preferring `project_sources/CP-02_DCOIR_Change_Log.txt` and falling back to the legacy change-log name only if needed.
+1. Resolve Airtable-first startup/control-plane authority first for live state.
+2. Read GitHub `CP-01`/`CP-02` only when the documentation task depends on governed repo source roles, promoted-history comparison, or source-file inspection.
 3. Treat only files marked current in the manifest as authoritative governed GitHub readable sources.
 4. Treat `supporting_assets/supporting_knowledge_docs.zip`, settings mirrors, and `supporting_assets/DCOIR_Collector.zip` as supporting inputs or retained delivery assets, not control-plane authority.
 5. Run `scripts/scan_project.py` against the current source directory to inventory current sources, the current root repo guide, the split todo structure, current knowledge markdown from `knowledge/`, retained delivery assets, collector or harness parameters, quick-command examples, and Sysinternals tools inside `DCOIR_Collector.zip`. Do not assume the retired extracted folder `knowledge/supporting_knowledge_docs/` is present or current.

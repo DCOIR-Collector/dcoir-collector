@@ -1,0 +1,26 @@
+DCOIR Skill Cutover and Manual Install Order v2
+
+Purpose
+Use this attachment to keep DCOIR helper-skill update, manual install, marker verification, and repo parity steps consistent.
+
+Airtable-first startup cutover rule
+Helper skills must not require GitHub CP-01/CP-02 for normal startup, resume, queue selection, active plan recovery, administrative control, helper-memory lookup, or operator-preference recovery. Skills must use Airtable CONTROL-STARTUP-AIRTABLE-FIRST and live Airtable state first. GitHub CP/source files are allowed only for repository-source inspection, source-role resolution, packaging/readback, promoted-history comparison, explicit operator request, or T99 final keep/delete review.
+
+Manual install rule for future skill updates
+1. Patch governed skill source under dcoir_skills/<skill-name>/.
+2. Ensure SKILL.md starts with YAML frontmatter. No marker or comment may appear before the opening ---.
+3. Add or update one skill-marker entry after YAML frontmatter for changed SKILL.md files.
+4. Validate SKILL.md frontmatter, agents/openai.yaml, icon presence, referenced files, file names, package size, and runtime residue.
+5. Run relevant script syntax checks and skill regression checks.
+6. Package only affected skill ZIPs.
+7. If multiple skills changed, deliver one outer ZIP containing only affected per-skill ZIPs named after live skills.
+8. Operator installs skill ZIPs manually.
+9. Verify installed markers using the skill editor as primary truth when available. Assistant readback is secondary and may lag.
+10. Only after install succeeds, apply matching GitHub Desktop repo parity bundle or direct GitHub update.
+11. Verify repo readback and update Airtable Plan Tasks / Skill State Registry as needed.
+
+Known install blocker avoided
+Do not place HTML markers, comments, or any text before SKILL.md YAML frontmatter. ChatGPT skill install can reject that as malformed frontmatter.
+
+Durable memory posture
+Stateful dcoir helper skills should use Airtable durable helper-memory tables where those tables exist. GitHub dcoir_skill_memory/ is legacy/source-basis history pending T99 final cleanup.

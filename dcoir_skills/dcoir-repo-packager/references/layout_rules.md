@@ -3,16 +3,15 @@
 # DCOIR Repo Layout Rules
 
 ## Project gate
-Resolve the current control plane by role.
+Resolve Airtable-first authority and task-required governed source roles by role.
 
-Preferred current control-plane files:
-- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
-- `project_sources/CP-02_DCOIR_Change_Log.txt`
-- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
-- Airtable `Repo Surface Registry` / `Schema Registry`
+Preferred current authority surfaces:
+- Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST` for startup/admin authority
+- Airtable `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and `Schema Registry` for final cleanup and retained-surface classification
+- GitHub `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` only when packaging depends on governed repo source roles or promoted-history comparison
 
 Legacy aliases may be accepted only when the bundled mapping rules explicitly include them.
-Stop if the control-plane roles cannot be resolved.
+Stop only if the task-required authority/source roles cannot be resolved. Missing GitHub CP files are not a startup blocker when Airtable replacement rows are present.
 
 ## Canonical repo-mode bundle tree
 Repo mode should preserve the current repo-style layout under:

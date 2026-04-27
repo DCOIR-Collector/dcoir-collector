@@ -2,7 +2,7 @@
 
 Stop and ask or report conflict when any of these are true:
 
-1. The current manifest is missing, unreadable, or inconsistent with the current change log.
+1. The task-required authority surface is missing or inconsistent. For startup/admin/live-queue work, Airtable `CONTROL-STARTUP-AIRTABLE-FIRST` and live Airtable state are sufficient; missing GitHub CP files are not a blocker unless repository-source work requires them.
 2. The task would require treating a non-current file as authoritative.
 3. The requested result would change the released file set in materially different ways depending on an unresolved operator choice.
 4. The task requires a safety-sensitive action or a claim of verification that cannot be supported.

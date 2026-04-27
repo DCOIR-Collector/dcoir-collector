@@ -1,16 +1,24 @@
 ---
 name: dcoir-memory-preflight
-description: >-
+description: >- follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
   consult the canonical dcoir github task-memory bank before high-friction or known-procedure work and again after blocker recovery when a reusable lesson may need staging. after session-start resume bootstrap, also use this skill at the first substantive turn of every new africom_soc_ir or dcoir session to classify the immediate work family, consult airtable queue authority and three-division governance tables, improve skill routing, and avoid rediscovering the right lane later.
 ---
 
-<!-- skill-marker: updated-skill|20260425T092546Z|T2.4-install-frontmatter-repair|frontmatter-fix|dcoir-memory-preflight|SKILL.md -->
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-memory-preflight|SKILL.md -->
 
 # DCOIR Memory Preflight
 
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
-Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current Airtable-first authority model or current governed GitHub source working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 ## Purpose
@@ -95,7 +103,7 @@ Run this skill before choosing the execution lane when the task family includes 
 Run this skill again after blocker recovery when the recovered lesson could matter beyond the current one-off fix.
 
 ## Core workflow
-1. Re-anchor to Project Instructions, then CP-01, then CP-02.
+1. Re-anchor to Project Instructions, CP-00 as a pointer, and Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`; read GitHub `CP-01`/`CP-02` only for repository-source tasks.
 2. Determine whether the current use is `session_start_bootstrap`, `pre_execution`, or `post_blocker`.
 3. Classify the task family or recovered-lesson family.
 4. Identify the likely memory domain, preferring `github` first for repo work.

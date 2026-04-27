@@ -1,15 +1,24 @@
 ---
 name: dcoir-parity-verifier
-description: verify governed dcoir skill source, installed skill packages, and parity manifests for africom_soc_ir / dcoir work. use when chatgpt needs to generate or refresh the canonical skill parity manifest, render the human-readable parity summary, compare installed skills or skill zips against governed repo source, check whether a skill package matches its governed files, or audit parity drift before or after a grouped skill update. use only when working inside the africom_soc_ir / dcoir project context.
+description: verify governed dcoir skill source, installed skill packages, and parity manifests for africom_soc_ir / dcoir work. use when chatgpt needs to generate or refresh the canonical skill parity manifest, render the human-readable parity summary, compare installed skills or skill zips against governed repo source, check whether a skill package matches its governed files, or audit parity drift before or after a grouped skill update. use only when working inside the africom_soc_ir / dcoir project context. follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
 ---
+
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-parity-verifier|SKILL.md -->
 
 # DCOIR Parity Verifier
 
-<!-- skill-marker: updated-skill|20260415T135556Z|dcoir-parity-verifier|SKILL.md|R01 -->
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
+
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
-Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current Airtable-first authority model or current governed GitHub source working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 ## Purpose
@@ -25,7 +34,7 @@ Treat runtime residue in packaged skill zips such as `__pycache__/` and `*.pyc` 
 
 ### 1. Refresh governed parity surfaces
 Use when the governed repo-side skill source changed.
-1. Re-anchor to Project Instructions, then CP-01, then CP-02.
+1. Re-anchor to Project Instructions, CP-00 as a pointer, and Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`; read GitHub `CP-01`/`CP-02` only for repository-source tasks.
 2. Read `references/manifest_schema.md`, `references/hash_policy.md`, and `references/verification_workflow.md` when needed.
 3. Resolve the current project label, governed repository naming, and skill prefix from `dcoir_skills/project_discovery_contract.json` when those assumptions matter.
 4. Build or refresh `dcoir_skills/skill_parity_manifest.json` from the governed skill-source root.
@@ -40,7 +49,6 @@ Use when the operator wants to know whether the installed skill package still ma
 3. Compare per-file hashes first.
 4. Compare normalized tree hash second.
 5. Report zip hash only as a secondary package check.
-6. When the update workflow used marker-based installed-skill verification, check the expected current `skill-marker:` entries in the edited installed file set and report marker-confirmation status separately from source drift.
 7. Treat missing expected markers as pending install or readback confirmation until the edited installed files are confirmed, not as automatic governed-source drift.
 8. Run a package-cleanliness check on the zip contents and call out runtime residue such as `__pycache__/`, `*.pyc`, or equivalent packaging contamination explicitly.
 9. Call out missing files, extra files, hash mismatches, marker-confirmation gaps, and contamination separately.

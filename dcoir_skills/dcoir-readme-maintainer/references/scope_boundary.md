@@ -58,7 +58,7 @@ When control-plane, deliverables, folder inventory, helper-skill inventory, or e
 - broad markdown maintenance outside README surfaces except for narrow summary or link refresh needed to keep a README accurate and the routing note aligned
 
 ## Operating posture
-- re-anchor to Project Instructions, then `CP-01`, then `CP-02`
+- re-anchor to Project Instructions, CP-00 as a pointer, and Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`; read GitHub `CP-01`/`CP-02` only for repository-source tasks
 - read current root README and relevant folder README surfaces first
 - read the current documentation-and-knowledge todo lane when scope or priorities are unclear
 - prefer specific README or routing-note fixes over broad narrative rewrites

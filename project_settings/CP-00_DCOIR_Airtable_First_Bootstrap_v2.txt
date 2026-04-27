@@ -1,0 +1,31 @@
+CP-00 DCOIR Airtable-First Bootstrap v2
+
+Purpose
+This file is a ChatGPT Project-space bootstrap pointer for AFRICOM_SOC_IR / DCOIR. It is not a governed readable-source repository and must not replace Airtable live authority or GitHub governed source files.
+
+Authority split
+1. Project Instructions are the first startup anchor.
+2. This CP-00 file is the second startup pointer when present.
+3. Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST is the normal startup/load-sequence authority.
+4. Airtable is live operational authority for queue order, branch priority, active execution order, plans, plan tasks, session carry-forward, operator preferences, testing catalog state, cleanup state, and stateful helper-skill durable memory where a memory table exists.
+5. GitHub repository malwaredevil/dcoir-collector remains governed source/readback, helper-skill source, source-code truth, packaging source, and promoted history only when a repository-source task requires it.
+6. GitHub CP-01/CP-02 and old GitHub todo files are detached from normal startup. They are fallback/promoted-history/source-task inputs only.
+
+Required startup order
+On the first substantive AFRICOM_SOC_IR / DCOIR turn of a new session:
+1. Use Project Instructions.
+2. Read this CP-00 pointer when present.
+3. Read Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST.
+4. Invoke dcoir-session-resume.
+5. Invoke dcoir-memory-preflight.
+6. Silently read Airtable Session Checkpoints, Queue Control, Work Items, active Plans, Plan Tasks, Operator Preferences, and relevant helper-memory tables.
+7. Read GitHub only when the immediate task requires governed repo source/readback, promoted-history comparison, packaging, or final T99 keep/delete review.
+
+Conflict handling
+If Project Instructions, this CP-00 pointer, Airtable Governance Control Plane, or live Airtable state conflict on startup behavior, stop and report the exact conflict. If GitHub CP/current-state files conflict with Airtable live queue/startup state, prefer Airtable for startup and report GitHub as promoted-history drift unless the current task explicitly requires source-authority comparison.
+
+Project-space rule
+Project space may hold this bootstrap pointer and operator-facing attachment files. It must not become a duplicate editable readable-source repository. Durable startup/control-plane state lives in Airtable. Durable governed source files remain in GitHub until T99 or a later explicit source-authority decision.
+
+T99 deferral
+Legacy GitHub helper-memory and obsolete repo surfaces must not be removed during ordinary work. Final end-state cleanup is deferred to plan task T99 after validation, skill parity, Airtable coverage, and final keep/delete authority checks are complete.

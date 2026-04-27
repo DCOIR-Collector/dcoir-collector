@@ -5,8 +5,8 @@ Use this reference when the operator indicates that work is moving to another se
 
 ## Required close-out sequence
 1. Re-anchor to Project Instructions.
-2. Read the current manifest.
-3. Read the current change log.
+2. Read Airtable `CONTROL-STARTUP-AIRTABLE-FIRST` and live Airtable state for startup/admin/queue continuity.
+3. Read GitHub `CP-01`/`CP-02` only when the closeout includes repository-source promotion, source-role comparison, or explicit repo readback.
 4. Review current session-tracker state.
 5. Review known open items from the current conversation.
 6. Run a flush check across buffered state.

@@ -1,9 +1,22 @@
+---
+name: dcoir-session-resume
+description: resume the africom_soc_ir / dcoir workspace from the current Airtable-first authority model. use at the first substantive turn of every new africom_soc_ir or dcoir session to re-anchor current state, then continue the required startup chain through memory preflight, airtable leftover recovery, conditional active-plan recovery, operator preferences, and three-division governance table awareness. use when the operator asks where are we, resume, what is current, what changed, or get me back on track.
+---
+
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-session-resume|SKILL.md -->
 
 # DCOIR Session Resume
 
-<!-- skill-marker: updated-skill|20260417T064500Z|dcoir-session-resume|SKILL.md|R04 -->
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
 
-Resume the AFRICOM_SOC_IR / DCOIR workspace from the current authoritative control plane.
+
+
+Resume the AFRICOM_SOC_IR / DCOIR workspace from the current Airtable-first authority model.
 
 ## Workspace gate
 Proceed only when the current chat, project, or custom GPT is operating as the AFRICOM_SOC_IR / DCOIR workspace.
@@ -35,7 +48,7 @@ For that readback:
 - when no relevant active operator preference is found, say that plainly and continue with the normal startup chain
 
 ## Three-division governance table awareness
-During session-start bootstrap and any resume/current-state report, consult the Airtable three-division governance tables after GitHub `CP-01` / `CP-02` re-anchor and before selecting the next work lane.
+During session-start bootstrap and any resume/current-state report, consult Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`, Queue Control, Work Items, active Plans, Plan Tasks, Session Checkpoints, Operator Preferences, and relevant governance/registry tables before selecting the next work lane. Do not fetch GitHub `CP-01`/`CP-02` for normal startup when Airtable startup authority is present.
 
 Use silent Airtable reads only for these tables unless the operator explicitly asks to display them:
 - `Governance Control Plane`: current GitHub / Airtable / ChatGPT Project authority model and startup-chain expectations
@@ -66,8 +79,8 @@ When the current request is a simple current-state, resume-status, or "where are
 
 Default fast path order:
 1. `dcoir_skills/project_discovery_contract.json` when present
-2. the current manifest
-3. the current change log
+2. Airtable `CONTROL-STARTUP-AIRTABLE-FIRST` and live Airtable state
+3. GitHub manifest/change log only for repository-source fallback
 4. the current supporting continuity surfaces resolved from the control plane and drift gate
 
 For this resume-status fast path:
@@ -89,24 +102,24 @@ For this resume-status fast path:
 ## First-anchor rule
 Use the first available bootstrap anchor in this order:
 1. AFRICOM_SOC_IR / DCOIR workspace instructions if present.
-2. Uploaded bootstrap pointer such as `CP-00_DCOIR_GitHub_Primary_Bootstrap.txt` if present.
-3. Then GitHub control plane in the repository named in `dcoir_skills/project_discovery_contract.json` when that contract is present.
-4. If no governed discovery contract is available, fall back to repository `malwaredevil/dcoir-collector`.
+2. Uploaded bootstrap pointer such as `CP-00_DCOIR_Airtable_First_Bootstrap.txt` if present; treat it as a pointer only.
+3. Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST` when present.
+4. Airtable live state tables: `Session Checkpoints`, `Queue Control`, `Work Items`, active `Plans`, `Plan Tasks`, and `Operator Preferences`.
+5. GitHub repository `malwaredevil/dcoir-collector` only when the immediate task requires governed source/readback, promoted-history comparison, packaging, or final T99 keep/delete review.
 
 ## Core workflow
 1. Determine whether the current use is `session_start_bootstrap` or an explicit user resume request.
-2. Read `dcoir_skills/project_discovery_contract.json` when it is present and use it to resolve the current manifest path, change-log path, supporting continuity surfaces, and repository name.
-3. Read the current manifest file first. Expected current path remains `project_sources/CP-01_DCOIR_Version_Manifest.txt` when no better contract-driven path is available.
-4. Read the current change log second. Expected current path remains `project_sources/CP-02_DCOIR_Change_Log.txt` when no better contract-driven path is available.
-5. Invoke `dcoir-source-authority-auditor` as the explicit drift gate before trusting the supporting continuity surfaces resolved from the current discovery contract or the current default active-surface set.
+2. Read Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`, then live `Session Checkpoints`, `Queue Control`, `Work Items`, active `Plans`, `Plan Tasks`, and `Operator Preferences` for startup/resume state.
+3. Read `dcoir_skills/project_discovery_contract.json` and GitHub `CP-01`/`CP-02` only when the resume request requires governed source/readback, promoted-history comparison, packaging, or final T99 keep/delete review.
+4. Invoke `dcoir-source-authority-auditor` as a drift gate only when source-authority, repo cleanup, skill-source governance, or promoted-history comparison is in scope. For ordinary startup/resume, use Airtable live authority first and report missing GitHub CP files as non-blocking if Airtable replacement rows exist.
 6. If the drift gate returns `hard_stop_conflict`, stop and report the exact conflict plainly instead of producing a normal resume summary.
 7. If the drift gate returns `proceed_bounded`, continue only with bounded claims and say exactly which active surfaces were unavailable.
 8. If the drift gate returns `clear_to_proceed`, continue into the normal resume summary.
-9. Use only files or patterns marked current in the manifest as authoritative governed GitHub readable sources.
-10. Use the current todo structure and current session handoff brief only as supporting context after the drift gate clears or bounds the path.
-11. If the manifest, change log, or workspace state conflict, stop and report the conflict plainly.
-12. For `session_start_bootstrap` and explicit resume-status requests, use the resume-status fast path by default unless the current task already shows that the primary GitHub readable-text lane cannot resolve the state.
-13. For `session_start_bootstrap`, invoke `dcoir-memory-preflight` immediately after the control plane is re-anchored.
+9. Use only Airtable live records as queue/resume authority unless the task explicitly requires governed GitHub source content.
+10. Use GitHub todo files and old current-state narratives only as promoted history or comparison support after Airtable authority is established.
+11. If Airtable startup authority conflicts with an older GitHub CP/current-state narrative, prefer Airtable for live queue/startup and report the GitHub surface as promoted-history drift unless the source task explicitly requires a hard-stop comparison.
+12. For `session_start_bootstrap` and explicit resume-status requests, use the Airtable-first resume-status fast path by default.
+13. For `session_start_bootstrap`, invoke `dcoir-memory-preflight` immediately after Airtable startup authority is re-anchored.
 14. After `dcoir-memory-preflight`, invoke `dcoir-session-tracker` to scan Airtable durable leftovers, open idea-capture items, and buffered promotion candidates that are not yet durably represented in governed GitHub sources.
 15. After the session-tracker leftover scan, invoke `dcoir-plan-tracker` only when open or active Airtable-backed plan state exists, or when the leftover scan indicates unfinished plan work.
 16. Read the active Airtable `Queue Control` row when it exists using silent Airtable retrieval only.
@@ -114,14 +127,14 @@ Use the first available bootstrap anchor in this order:
 18. During startup or re-anchor, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
 19. If a visible Airtable view would help, ask the operator first instead of displaying it automatically.
 20. Treat Airtable queue state as the live source for ordinary next-work-item priority and treat older GitHub todo files only as retired history or migration surfaces.
-21. Surface startup leftovers as carry-forward context, but distinguish clearly between governed GitHub authority and Airtable durable working-state leftovers.
+21. Surface startup leftovers as carry-forward context, but distinguish clearly between governed GitHub source/promoted-history context and Airtable durable working-state leftovers.
 22. When the current workflow favors grouped manual updates or grouped skill-install waves, prefer grouped ready follow-up prompts over one-skill-at-a-time prompts.
 
 ## Required rules
 - Treat the first substantive session turn as a mandatory resume bootstrap point for this workspace unless the request is clearly outside DCOIR scope.
 - Treat `dcoir-memory-preflight`, `dcoir-session-tracker`, and conditional `dcoir-plan-tracker` recovery as part of the same startup chain instead of optional later conveniences.
 - Treat the current AFRICOM_SOC_IR / DCOIR workspace as the operational workspace, not the historical archive.
-- Treat the first available bootstrap anchor plus the current manifest plus the current change log as the default control plane.
+- Treat Project Instructions plus CP-00 pointer plus Airtable `CONTROL-STARTUP-AIRTABLE-FIRST` plus live Airtable state as the default startup authority. Treat GitHub manifest/change log only as repository-source fallback or promoted history when explicitly in scope.
 - Treat the repository named in `dcoir_skills/project_discovery_contract.json` as the sole working source for readable governed text when that contract is present.
 - Treat Airtable `Queue Control`, `Work Items`, and active `Plans` as the sole live todo authority for queue order and resume priority.
 - Treat GitHub todo files as retired live-queue surfaces once the Airtable queue-control record exists.

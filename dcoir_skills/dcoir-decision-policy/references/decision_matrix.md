@@ -6,10 +6,10 @@ Use this matrix when the operator's likely preference must be inferred.
 
 | Situation | Default action |
 | --- | --- |
-| Current manifest and change log are present and consistent | Proceed using the current manifest-defined source set |
+| Airtable startup/control-plane row and live Airtable state are present | Proceed using Airtable-first startup/admin authority; read GitHub CP/source files only when repository-source work requires them |
 | Current and historical files coexist | Prefer the current manifest role and ignore historical files unless explicitly requested |
 | A needed file exists but is not current in the manifest | Do not treat it as authoritative |
-| Manifest and change log disagree | Stop and report the exact conflict |
+| GitHub manifest and change log disagree outside repository-source scope | Report promoted-history drift and proceed from Airtable live authority for startup/admin/queue work |
 | Control-plane role cannot be resolved | Stop and report the missing role |
 
 ## B. Packaging and release scope

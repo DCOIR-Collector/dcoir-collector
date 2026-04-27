@@ -1,20 +1,27 @@
 ---
 name: dcoir-change-impact-analyzer
-description: analyze proposed or completed changes in the africom_soc_ir / dcoir project and determine the downstream refresh set, helper-skill impacts, regression requirements, primary delivery recommendation, any secondary skill-delivery recommendation, and stop conditions. use when chatgpt needs to answer what else must change after a file, asset, skill, workflow, packaging, or prompt-pack update; when validating whether a change is safe to promote; or when deciding whether a targeted update or full-refresh bundle is required. prefer the current gitHub-primary control plane, current manifest roles, and current gitHub-native collector or harness filenames over older project-mirror assumptions. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
+description: analyze proposed or completed changes in the africom_soc_ir / dcoir project and determine the downstream refresh set, helper-skill impacts, regression requirements, primary delivery recommendation, any secondary skill-delivery recommendation, and stop conditions. use when chatgpt needs to answer what else must change after a file, asset, skill, workflow, packaging, or prompt-pack update; when validating whether a change is safe to promote; or when deciding whether a targeted update or full-refresh bundle is required. prefer the current Airtable-first governance posture plus governed GitHub source/readback surface, current manifest roles, and current gitHub-native collector or harness filenames over older project-mirror assumptions. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
 ---
 
-<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-change-impact-analyzer|SKILL.md -->
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-change-impact-analyzer|SKILL.md -->
 
 # DCOIR Change Impact Analyzer
 
-<!-- skill-marker: updated-skill|20260415T154500Z|dcoir-change-impact-analyzer|SKILL.md|R01 -->
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
+
 
 Use this skill to turn a proposed or completed DCOIR change into an explicit downstream work list.
 
 ## Core workflow
-1. Read the current manifest first.
-2. Read the current change log second.
-3. Resolve the current control plane and current working set from those files.
+1. Resolve Airtable-first startup/control-plane authority for startup, queue, administrative, and helper-memory context.
+2. Read GitHub `CP-01`/`CP-02` only when the impact analysis requires repository-source role resolution, source-file comparison, packaging scope, promoted-history comparison, or final T99 keep/delete review.
+3. Resolve the current working set from Airtable live state plus governed GitHub source files only when those source files are in scope.
 4. Identify the changed files, changed assets, changed skills, or changed workflow targets from the user request.
 5. Run `scripts/analyze_change_impact.py` with the changed targets.
 6. Read the generated markdown and json reports.
@@ -28,22 +35,20 @@ Use this skill to turn a proposed or completed DCOIR change into an explicit dow
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
-Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current Airtable-first authority model or current governed GitHub source working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
-Before analyzing impact, verify the current authoritative control-plane files from the workspace.
+Before analyzing impact, verify the task-required authority surface from the workspace.
 
-Preferred current control-plane files:
-- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
-- `project_sources/CP-02_DCOIR_Change_Log.txt`
-- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
-- `project_sources/CP-02_DCOIR_Change_Log.txt`
-- Airtable `Schema Registry`, `Repo Surface Registry`, `Tracking Registry`, and release tracking tables when downstream impact matters
-- `README.md` when the current repo-guide posture is part of the changed set
-- Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` when the active work-line structure changed
+Preferred current authority surfaces:
+- Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST` for startup/admin/current-state authority
+- Airtable `Queue Control`, `Work Items`, active `Plans`, and `Plan Tasks` when the active work-line structure changed
+- Airtable `Schema Registry`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, `Tracking Registry`, and release tracking tables when downstream impact matters
+- GitHub `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` only when repository-source role resolution, promoted-history comparison, packaging, or final T99 keep/delete review is in scope
+- `README.md` and governed repo source files when the current repo-guide posture or source content is part of the changed set
 - retired GitHub todo files only when the migration or retirement path itself is part of the changed set
 
-Stop if the manifest or change log cannot be resolved.
+Stop only when the required authority surface for the current task cannot be resolved. For startup/admin/live-queue tasks, use Airtable authority; for repository-source tasks, use GitHub CP/source files or their Airtable replacement rows if CP files have been detached.
 
 ## Hard rules
 - Do not decide authority or promotion status.

@@ -1,0 +1,50 @@
+DCOIR Airtable Surface Map and Startup Order v2
+
+Purpose
+Use this file as an operator-readable attachment that explains which Airtable tables are live authority during AFRICOM_SOC_IR / DCOIR work. It supports startup and recovery. It is not a second governed source repository.
+
+Startup order
+1. Project Instructions.
+2. CP-00_DCOIR_Airtable_First_Bootstrap when present, as pointer only.
+3. Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST.
+4. dcoir-session-resume.
+5. dcoir-memory-preflight.
+6. Airtable Session Checkpoints, Queue Control, Work Items, active Plans, Plan Tasks, Operator Preferences, and skill-specific durable memory tables.
+7. GitHub only when repository source/readback, promoted-history comparison, packaging, or final T99 keep/delete review requires it.
+
+Live queue and execution authority
+- Governance Control Plane: startup/control-plane authority and GitHub/Airtable/Project role definitions.
+- Queue Control: canonical queue branch and resume-first pointer.
+- Work Items: canonical ranked work queue and branch priority.
+- Plans: canonical plan-level execution state.
+- Plan Tasks: canonical task hierarchy, active task, blockers, validation gates, and next actions.
+- Plan Checkpoints: durable plan milestones, blockers, recovery notes, and handoff checkpoints.
+
+Session and preference continuity
+- Session Checkpoints: session closeout, resume notes, and continuity checkpoints.
+- Idea Inbox: carry-forward ideas and promotion candidates that are not yet governed changes.
+- Operator Preferences: durable operator workflow preferences and approved process rules.
+
+Testing and validation
+- Validation Test Cases: dynamic catalog for collector, Gemini, prompt-pack, regression, and acceptance tests.
+- Release Validation Evidence: evidence created during release-readiness or packaging validation.
+
+Governance and registry tables
+- Governance Control Plane: Airtable-side startup/control authority.
+- Repo Surface Registry: major repo-surface keep/delete/move classification and replacement-surface notes.
+- Repo File Coverage Detail: file-level evidence and content snapshots for repo cleanup/migration review.
+- Retained Repo Manifest: final retained repository manifest and post-switchover validation surface.
+- Skill State Registry: dcoir skill inventory, startup relevance, parity status, and maintenance state.
+- Schema Registry: table and field inventory / schema support.
+- Tracking Registry: metadata after a durable domain record already exists.
+
+Skill-specific durable helper memory
+Stateful helper skills use their own Airtable tables where present, such as dcoir-collector-qa, dcoir-decision-policy, dcoir-live-test-remediation-planner, dcoir-memory-preflight, dcoir-plan-tracker, dcoir-session-tracker, dcoir-skill-regression-auditor, and dcoir-validation-orchestrator.
+
+Rules
+- Prefer silent Airtable reads during startup and recovery.
+- Do not render Airtable UI unless the operator asks for it or approves it.
+- Do not fetch GitHub CP-01/CP-02 during normal startup when CONTROL-STARTUP-AIRTABLE-FIRST is present and current.
+- Do not let stale GitHub todo files override Airtable live queue records.
+- Do not treat Airtable helper-memory tables as GitHub source authority.
+- Do not silently persist new durable preferences; surface them for operator approval first.

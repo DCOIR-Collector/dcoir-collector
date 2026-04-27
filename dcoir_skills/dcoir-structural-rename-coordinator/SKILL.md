@@ -1,15 +1,23 @@
 ---
 name: dcoir-structural-rename-coordinator
-description: coordinate dcoir structural renames and naming-model changes so dependent files, mappings, skills, delivery bundles, and release posture stay aligned. use when a file, source class, asset class, skill name, or layout rule is being renamed or re-homed and chatgpt must identify every downstream touchpoint, stop unsafe partial updates, and stage the correct refresh set before promotion. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill.
+description: coordinate dcoir structural renames and naming-model changes so dependent files, mappings, skills, delivery bundles, and release posture stay aligned. use when a file, source class, asset class, skill name, or layout rule is being renamed or re-homed and chatgpt must identify every downstream touchpoint, stop unsafe partial updates, and stage the correct refresh set before promotion. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill. follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
 ---
 
-<!-- skill-marker: updated-skill|20260425T104200Z|T2.4-late-added-marker-verification|marker-add|dcoir-structural-rename-coordinator|SKILL.md -->
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-structural-rename-coordinator|SKILL.md -->
 
 # DCOIR Structural Rename Coordinator
 
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
+
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
-Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current Airtable-first authority model or current governed GitHub source working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 Use this skill for renames, source-class transitions, and layout-structure changes.

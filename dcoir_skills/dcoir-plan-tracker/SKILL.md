@@ -1,21 +1,30 @@
 ---
 name: dcoir-plan-tracker
-description: >-
+description: >- follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
   plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state, hierarchical task decomposition, blocker capture, closed-loop blocker recovery, decision-aware execution, operator-visible milestone signaling, and conditional startup active-plan recovery. use when chatgpt needs to break a dcoir task into tasks, preserve active plan continuity, recover open airtable-backed plan state, update governed trackers, record blockers and mitigations, stage promotion candidates, or export a clean handoff.
 ---
 
-<!-- skill-marker: updated-skill|20260425T092546Z|T2.4-install-frontmatter-repair|frontmatter-fix|dcoir-plan-tracker|SKILL.md -->
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-plan-tracker|SKILL.md -->
 
 # DCOIR Plan Tracker
+
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
 
 Before proceeding:
-1. Re-anchor to Project Instructions.
-2. Read the current `CP-01` manifest.
-3. Read the current `CP-02` change log.
-4. Confirm the task is inside the current governed DCOIR working line.
+1. Re-anchor to Project Instructions and CP-00 as a bootstrap pointer when present.
+2. Read Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`.
+3. Read Airtable `Queue Control`, `Work Items`, active `Plans`, and `Plan Tasks` for live execution authority.
+4. Read GitHub `CP-01`/`CP-02` only when the immediate plan-tracker task requires repository-source role comparison, promoted-history comparison, packaging, or final T99 keep/delete review.
+5. Confirm the task is inside the current governed DCOIR working line.
 
 If authority is unclear or the control plane conflicts, stop and report the exact conflict.
 
@@ -221,7 +230,7 @@ Supported commands include:
 - `export_handoff`
 
 ## Core workflow
-1. Re-anchor to Project Instructions, `CP-01`, and `CP-02`.
+1. Re-anchor to Project Instructions, CP-00 as a pointer, and Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`; read GitHub `CP-01`/`CP-02` only for repository-source tasks.
 2. Consult `dcoir-decision-policy` when branch choice exists.
 3. Consult `dcoir-memory-preflight` when the task family requires canonical memory preflight.
 4. Create or open the plan folder.

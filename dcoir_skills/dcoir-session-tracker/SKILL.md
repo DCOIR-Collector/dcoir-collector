@@ -3,15 +3,22 @@ name: dcoir-session-tracker
 description: maintain a session-local dcoir tracker with airtable-first durable working state, idea capture, checkpointing, verbose continuity capture, derived pre-push review bundles, staged governed updates, todo-sync proposals, handoff exports, and startup airtable leftover recovery. use when chatgpt needs to catch important project thoughts before they are lost, preserve session continuity beyond fragile local container state, answer what remains, checkpoint durable working memory into airtable, recover leftovers at session start after dcoir-session-resume and dcoir-memory-preflight, prepare follow-up promotion into governed project files, derive what should land in the next grouped github push, or close out a session safely for later resume inside africom_soc_ir / dcoir work.
 ---
 
-<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-session-tracker|SKILL.md -->
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-session-tracker|SKILL.md -->
 
 # DCOIR Session Tracker
 
-<!-- skill-marker: updated-skill|20260417T064500Z|dcoir-session-tracker|SKILL.md|R02 -->
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
+
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
-Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current Airtable-first authority model or current governed GitHub source working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 ## Overview
@@ -177,7 +184,7 @@ Run the full close-out routine below and distinguish:
 - what is still open and must be carried forward
 
 Required close-out checks:
-1. Re-anchor to Project Instructions, then CP-01, then CP-02.
+1. Re-anchor to Project Instructions, CP-00 as a pointer, and Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`; read GitHub `CP-01`/`CP-02` only for repository-source tasks.
 2. Run a flush check against all known buffered session-tracker state.
 3. Inspect Airtable checkpoint state first and inspect the local session-state cache when it exists.
 4. If no local session-state cache exists at close-out time, say so plainly, but distinguish cache absence from durable-state loss when Airtable remains current.

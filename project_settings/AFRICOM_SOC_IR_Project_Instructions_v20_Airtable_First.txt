@@ -1,0 +1,97 @@
+AFRICOM_SOC_IR Project Instructions v20 Airtable-first startup draft
+
+Purpose
+Treat AFRICOM_SOC_IR as the current DCOIR workspace. Use it for the DCOIR workflow, collector, prompt-pack, Gemini design, governed logs, Airtable execution state, and supporting assets.
+
+Authority and startup
+- Project Instructions are the first bootstrap anchor.
+- Read Project-space CP-00 second when present. CP-00 is a bootstrap pointer only, not a second readable-source repository.
+- Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST is the normal startup/load-sequence authority.
+- Airtable is live authority for startup state, queue order, branch priority, resume-first state, active execution order, plans, plan tasks, session carry-forward, operator preferences, testing catalog state, cleanup state, and stateful helper-skill durable memory where a memory table exists.
+- GitHub repo malwaredevil/dcoir-collector remains governed readable-source, source-code truth, helper-skill source, packaging/readback surface, and promoted history.
+- Do not read GitHub CP-01/CP-02 during normal startup when Airtable CONTROL-STARTUP-AIRTABLE-FIRST is present and current.
+- Read GitHub CP-01/CP-02 only when the immediate task requires repository-source role resolution, source-file inspection, packaging/release bundles, promoted-history comparison, explicit repo readback, or final T99 keep/delete review.
+- If Project Instructions, CP-00, Airtable Governance Control Plane, or live Airtable state conflict on startup/live queue behavior, stop and report the exact conflict.
+- If older GitHub CP/current-state files conflict with Airtable live state on queue/order/startup, prefer Airtable and report the GitHub surface as promoted-history drift unless the current task explicitly requires source-authority comparison.
+
+Session-start bootstrap
+On the first substantive AFRICOM_SOC_IR/DCOIR turn of each new session unless outside scope or blocked:
+1. Use Project Instructions.
+2. Read Project-space CP-00 when present as a pointer only.
+3. Read Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST.
+4. Invoke dcoir-session-resume.
+5. Invoke dcoir-memory-preflight.
+6. Silently read Airtable Session Checkpoints, Queue Control, Work Items, active Plans, Plan Tasks, Operator Preferences, and relevant helper-memory tables as live authority.
+7. Read GitHub only when the immediate task requires governed repo source/readback or promoted-history comparison.
+Do not wait for the operator to say resume/preflight. Do not let CP-00, CP-01, CP-02, stale GitHub todo files, or retired active-now files override Airtable live queue records.
+
+Working-source and todo rules
+- GitHub repo malwaredevil/dcoir-collector is the sole working source for governed source files and promoted history until T99 or an explicit later authority change.
+- Do not keep duplicate editable readable text files in GitHub and Project space.
+- Project space is bootstrap/runtime anchor only.
+- Use Airtable Governance Control Plane as normal startup/control-plane authority.
+- Use Airtable Queue Control as canonical queue control.
+- Use Airtable Work Items as canonical ranked work queue.
+- Use Airtable Plans and Plan Tasks as canonical execution-plan surfaces.
+- Use Airtable Session Checkpoints and Idea Inbox for carry-forward/promotion candidates.
+- Treat GitHub CP-01/CP-02 as source/promoted-history fallback, not normal startup authority.
+- Treat GitHub todo files/old queue references as history unless explicitly reauthorized.
+- Do not mirror ordinary queue churn into GitHub. Promote only important decisions, closeouts, durable workflow changes, source changes, and governed history.
+
+Airtable durable skill memory
+- Stateful dcoir helper skills use Airtable tables for durable helper memory when those tables exist.
+- GitHub dcoir_skill_memory and older markdown helper-memory are legacy/source-basis history unless explicitly reauthorized.
+- Do not delete legacy GitHub helper-memory during ordinary work. Retirement belongs to deferred final cleanup T99 after validation/parity gates close.
+
+Collector line
+- Treat project_sources/DCOIR_Collector.ps1 as current readable collector source unless a source-task authority review changes it.
+- Treat DCOIR_Collector.ps1 as the canonical emitted runtime filename for execution examples.
+- Keep Windows PowerShell 5.1 as a hard requirement for local test instructions unless explicitly changed.
+- Use Elastic Defend response-action syntax for endpoint instructions and PowerShell 5.1 for local workstation/test instructions. Do not mix lanes.
+
+Helper-skill boundary
+- dcoir-* helper skills are Project-side authoring, QA, packaging, workflow, and maintenance aids.
+- Use the relevant dcoir-* helper skill when a Project task clearly matches it.
+- Final combined prompts and Gemini outputs must be runtime-self-sufficient and must not mention helper workflows, project memory, or unattached files.
+- When a helper skill changes materially, deliver affected skill package, verify marker/readback, rerun relevant regression, and refresh governed sources if durable workflow changed.
+- For in-session skill updates, use marker-based verification before claiming installed parity, GitHub sync, readiness, or bundle follow-through.
+- Treat skill editor as primary truth for installed-skill verification; assistant readback is secondary and may lag.
+
+Execution planning and reporting
+- Before executing a DCOIR branch, show the execution path down to the deepest relevant task level and track/validate at that depth.
+- Do not stop at parent-level summaries when leaf tasks matter.
+- Preserve evidence, rationale, assumptions, constraints, validation notes, workflow explanations, and downstream implications unless narrower output is required.
+- Promote substantive test-session lessons into governed logs/control-plane files or Airtable durable memory, not only chat.
+- Preserve DCOIR evidence-first discipline, bounded confidence, exact command-lane separation, and explicit stop conditions.
+- Use dcoir-attention-signaler on first substantive DCOIR response, major milestones, action/approval needed, blocked state, and major completion.
+
+Gemini and prompt-pack posture
+- Gemini instructions must preserve workflow, error handling, tool usage, output contracts, and stop conditions.
+- Preserve approved Gemini topology: 1 parent plus 7 sub-agents unless a bounded design artifact changes it.
+- Use dcoir-prompt-pack-assembler only after control-plane review settles the current modular prompt-pack set.
+
+Validation and release
+- Default to deep regression for testable changes before live use and after every patch.
+- Use dcoir-validation-orchestrator for validation planning and dcoir-skill-regression-auditor for skill regression.
+- Use dcoir-change-impact-analyzer for impact, dcoir-release-scope-builder for packaging class, and dcoir-promotion-readiness-reviewer for readiness.
+- Keep rollback handling manual/local-only unless the operator changes that decision.
+
+Manual delivery preference
+- Unless the operator asks for more, deliver only affected skills and affected repo-relative files.
+- If exactly one skill is affected, deliver only that skill ZIP.
+- If multiple skills are affected, deliver one outer ZIP whose top level contains only affected per-skill ZIPs named after live skills, with no subfolders.
+- For GitHub Desktop manual repo-update bundles, deliver only affected repo-relative folders/files with no wrapper root and include suggested commit Summary unless overridden.
+- T99 final end-state replacement is special: deliver one full repo working-tree replacement ZIP with no wrapper root and no .git. Operator preserves local .git, replaces other working-tree contents, commits, and pushes.
+
+Resume behavior
+When asked to resume/report current state, summarize: stable baseline, Airtable Governance Control Plane state, Airtable queue authority, active Airtable plan/work branch, governed GitHub source/readback role when relevant, retained supporting assets, governance state, validated status, refresh watchlist, and one next move. Use GitHub CP/handoff/historical queue surfaces only as support or source-task inputs.
+
+GitHub issue-template rule
+For malwaredevil/dcoir-collector GitHub issues, use the closest repository issue template:
+- Bug report: code/product defects.
+- Feature request: new capability requests.
+- Validation finding: live-test, regression-test, or acceptance-test findings.
+- Collector test failure: collector execution, harness, command, output, or packaging failures.
+- Gemini / prompt-pack issue: Gemini prime agent, sub-agent, combined prompt, modular prompt-pack, routing, or output-format issues.
+- Documentation / workflow correction: stale, unclear, conflicting, missing, or misleading docs/operator workflow.
+Do not recommend blank issues unless no template fits. If none fits, recommend a new template first.

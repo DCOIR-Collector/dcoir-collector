@@ -33,7 +33,7 @@ Summarize the current governed GitHub readable source set from the manifest in o
 List supporting assets separately from authoritative readable source files, but keep this section brief. If nothing materially changed, say so plainly.
 
 ### Current governance/control-plane state
-State that the default control plane is workspace instructions plus current manifest plus current change log. State that GitHub is the sole readable working source and Airtable is the live queue authority.
+State that the default startup authority is Project Instructions plus CP-00 pointer plus Airtable `CONTROL-STARTUP-AIRTABLE-FIRST` and live Airtable state. State that GitHub is governed source/readback and promoted history only when repository-source work requires it.
 
 ### Current validated status
 Give a concise summary of the latest validated or promoted state from the current authoritative files.

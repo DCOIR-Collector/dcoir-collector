@@ -1,17 +1,24 @@
 ---
 name: dcoir-skill-regression-auditor
-description: plan and audit deeper regression for dcoir skills before live use and after every patch. use when chatgpt needs to define regression fixtures, harness expectations, success and failure paths, output-verification checks for one or more dcoir skills, enforce the mandatory post-create or post-update regression rule, stage regression state in a session-local buffer before a grouped github flush, or manage a bounded coordinated multi-skill patch campaign with explicit self-first validation and one grouped regression bundle.
+description: plan and audit deeper regression for dcoir skills before live use and after every patch. use when chatgpt needs to define regression fixtures, harness expectations, success and failure paths, output-verification checks for one or more dcoir skills, enforce the mandatory post-create or post-update regression rule, stage regression state in a session-local buffer before a grouped github flush, or manage a bounded coordinated multi-skill patch campaign with explicit self-first validation and one grouped regression bundle. follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
 ---
 
-<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-skill-regression-auditor|SKILL.md -->
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-skill-regression-auditor|SKILL.md -->
 
 # DCOIR Skill Regression Auditor
 
-<!-- skill-marker: updated-skill|20260415T135556Z|dcoir-skill-regression-auditor|SKILL.md|R01 -->
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
+
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
-Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current Airtable-first authority model or current governed GitHub source working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 Use this skill to define and audit deeper regression for DCOIR skills.
@@ -34,8 +41,6 @@ In a broad helper-skill patch campaign, regression-test `dcoir-skill-regression-
 6. Run `scripts/plan_skill_regression.py`.
 7. Produce the regression suites, failure gates, artifact checks, package-cleanliness checks, preventive bytecode-suppression steps, cleanup steps, readiness criteria, campaign ordering, and grouped regression-bundle expectations.
 8. Before packaging or handing back any updated skill zip, run `scripts/clean_skill_runtime_residue.py --clean` against every materially changed skill folder and rerun `scripts/clean_skill_runtime_residue.py --check` so residue prevention is explicit instead of ad hoc.
-9. For helper-skill update flows that use manual install, remove older `skill-marker:` lines or comments from the edited files, add one fresh `skill-marker:` entry to each edited file before packaging, and record the expected marker list as part of regression readiness.
-10. After the operator saves the installed skill update, verify the expected current `skill-marker:` entries in the edited installed file set before treating the result as ready for GitHub sync, GitHub Desktop repo-update bundle generation, parity closure, or broader readiness claims.
 11. Use the skill editor as primary truth for that marker confirmation when it is available. Treat assistant-side readback as secondary and potentially delayed.
 12. If regression revealed a blocker that is later overcome, invoke `dcoir-memory-preflight` again when the recovered lesson could improve a reusable procedure, limitation note, failure signature, or helper-skill/process guidance.
 13. Keep regression-state changes session-local until the next suitable flush-check trigger when grouped GitHub writes are preferred.
@@ -79,7 +84,7 @@ Use this memory surface for helper working state such as:
 - coordinated campaign coverage summaries when a bounded multi-skill patch cycle is in flight
 
 Rules:
-- re-anchor to Project Instructions, then CP-01, then CP-02 before reading or writing Airtable memory rows
+- re-anchor to Project Instructions, CP-00 as a pointer, and Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`; read GitHub `CP-01`/`CP-02` only for repository-source tasks before reading or writing Airtable memory rows
 - treat the Airtable memory table as helper working state only, not control-plane authority
 - keep one canonical Airtable row set for live memory and update it directly when connector access permits
 - if Airtable access is blocked, say that plainly and reduce the operator burden to the smallest bounded manual Airtable action
@@ -96,7 +101,6 @@ When rendering memory content locally, prefer Airtable memory rows; use migrated
 - in a broad helper-skill patch campaign, patch and regression-test this skill first before using it to judge other skills
 - after a patch, rerun the same failing case that motivated the fix, then expand outward
 - after every helper-skill create or update, require regression coverage before claiming readiness
-- do not treat a manually installed updated skill as ready for GitHub sync, repo-bundle generation, parity closure, or broader rollout until the expected current `skill-marker:` entries are confirmed in the edited installed file set
 - keep the canonical Airtable memory table human-readable and continuously updated after material regression-state changes when Airtable access is available
 - do not claim buffered regression state is durable before GitHub flush or export actually happened
 - do not call a coordinated campaign complete unless every materially changed skill has an explicit regression result or a plainly bounded untested reason

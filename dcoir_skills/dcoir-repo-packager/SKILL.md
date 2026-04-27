@@ -1,11 +1,19 @@
 ---
 name: dcoir-repo-packager
-description: build strict dcoir repo-layout zips, github-primary bootstrap bundles, and github desktop manual repo-update patch bundles from the current authoritative dcoir project files. use when chatgpt needs to package the current project workspace for local repo-style testing, prepare a bootstrap refresh that follows the no-duplicate-readable-source rule, or emit a github desktop manual repo-update bundle containing only affected repo-relative files with no wrapper root. this skill is class-prefix aware, prefers control-plane roles over brittle legacy filenames, supports the current github-primary layout, and must stop if the required control-plane roles or requested paths cannot be resolved safely.
+description: build strict dcoir repo-layout zips, github-primary bootstrap bundles, and github desktop manual repo-update patch bundles from the current authoritative dcoir project files. use when chatgpt needs to package the current project workspace for local repo-style testing, prepare a bootstrap refresh that follows the no-duplicate-readable-source rule, or emit a github desktop manual repo-update bundle containing only affected repo-relative files with no wrapper root. this skill is class-prefix aware, prefers control-plane roles over brittle legacy filenames, supports the current github-primary layout, and must stop if the required control-plane roles or requested paths cannot be resolved safely. follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
 ---
 
-<!-- skill-marker: updated-skill|20260425T071800Z|T2.3-airtable-first-skill-repair|source-update|dcoir-repo-packager|SKILL.md -->
+<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-repo-packager|SKILL.md -->
 
 # DCOIR Repo Packager
+
+## Airtable-first startup authority
+- For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+
 
 ## Overview
 Build strict DCOIR repo-layout ZIPs, GitHub-primary bootstrap/update bundles, and GitHub Desktop manual repo-update patch bundles from the current approved DCOIR file set.
@@ -15,16 +23,15 @@ Use this skill after authority, promotion, rename, and content decisions are alr
 
 ## Required project gate
 This skill is for the AFRICOM_SOC_IR / DCOIR project only.
-Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current project control plane or current project working line.
+Before proceeding, verify that the current task is actually inside the AFRICOM_SOC_IR / DCOIR project context and grounded in the current Airtable-first authority model or current governed GitHub source working line.
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
-Before packaging anything, verify that the control plane can be resolved from the working file set. Prefer the governed discovery contract `dcoir_skills/project_discovery_contract.json` when it is present in the current repo tree, then fall back to the packaged mapping rules.
+Before packaging anything, verify that Airtable-first startup/governance authority and any task-required governed source roles can be resolved. Prefer Airtable governance/registry tables for startup and final cleanup posture; use the governed discovery contract `dcoir_skills/project_discovery_contract.json` and GitHub CP files only when the package depends on repo source roles or promoted-history comparison.
 
-Preferred current control-plane files:
-- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
-- `project_sources/CP-02_DCOIR_Change_Log.txt`
-- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
-- Airtable `Repo Surface Registry` / `Schema Registry`
+Preferred current authority surfaces:
+- Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST` for startup/admin authority
+- Airtable `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and `Schema Registry` for final cleanup and retained-surface classification
+- GitHub `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` only when packaging depends on governed repo source roles or promoted-history comparison
 
 Legacy compatibility aliases may be accepted only when the bundled mapping rules explicitly allow them.
 

@@ -4,7 +4,7 @@
 This skill determines what else must be refreshed, reviewed, regression-tested, or repackaged when a DCOIR file, asset, workflow, or skill changes.
 
 ## Decision hierarchy
-1. Resolve the current GitHub-primary control plane from the workspace.
+1. Resolve Airtable-first startup/control-plane authority from `CONTROL-STARTUP-AIRTABLE-FIRST` and live Airtable state; read GitHub CP/source files only when repository-source impact is in scope.
 2. Classify the changed target by current role, stable naming pattern, current repo-relative path, or known skill name.
 3. Apply direct refresh rules.
 4. Apply cross-cutting review rules.
