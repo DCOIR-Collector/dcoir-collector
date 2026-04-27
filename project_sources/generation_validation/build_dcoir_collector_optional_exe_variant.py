@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -65,14 +64,19 @@ def main() -> int:
 
     ps_script = f"""
 $ErrorActionPreference = 'Stop'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 if (-not (Get-Command Invoke-PS2EXE -ErrorAction SilentlyContinue)) {{
   if ({'$true' if args.skip_ps2exe_install else '$false'}) {{
     throw 'Invoke-PS2EXE is unavailable and --skip-ps2exe-install was set.'
   }}
-  Install-Module -Name ps2exe -Scope CurrentUser -Force -AllowClobber
+  try {{
+    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -ErrorAction SilentlyContinue
+  }} catch {{}}
+  Install-Module -Name ps2exe -Repository PSGallery -Scope CurrentUser -Force -AllowClobber -Confirm:$false
+  Import-Module ps2exe -Force
 }}
 if (-not (Get-Command Invoke-PS2EXE -ErrorAction SilentlyContinue)) {{
-  throw 'Invoke-PS2EXE is unavailable after install attempt.'
+  throw 'Invoke-PS2EXE is unavailable after install/import attempt.'
 }}
 Invoke-PS2EXE -InputFile '{compiled_collector}' -OutputFile '{exe_path}' -NoConsole:$false -RequireAdmin:$false -Verbose
 if (-not (Test-Path -LiteralPath '{exe_path}')) {{
