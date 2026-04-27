@@ -1,24 +1,46 @@
+param(
+    [string]$BundlePath = '',
+    [string]$InstallDir = 'C:\DCOIR_TESTER'
+)
+
 $ErrorActionPreference = 'Stop'
 
-$ZipPath    = 'C:\Users\batch_lrjfue\Downloads\dcoir_manual_test_framework_bundle_v8_full.zip'
-$InstallDir = 'C:\DCOIR_TESTER'
+function Resolve-ManualTestBundlePath {
+    param([string]$RequestedPath)
+
+    if (-not [string]::IsNullOrWhiteSpace($RequestedPath)) {
+        $expanded = [Environment]::ExpandEnvironmentVariables($RequestedPath)
+        if (Test-Path -LiteralPath $expanded) {
+            return (Resolve-Path -LiteralPath $expanded).Path
+        }
+        throw "BundlePath was provided but the file was not found: $RequestedPath"
+    }
+
+    $downloads = Join-Path $env:USERPROFILE 'Downloads'
+    $matches = @(Get-ChildItem -LiteralPath $downloads -File -Filter 'dcoir_manual_test_framework_bundle_*_full.zip' -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending)
+    if ($matches.Count -gt 0) {
+        return $matches[0].FullName
+    }
+
+    throw "No dcoir_manual_test_framework_bundle_*_full.zip file was found in $downloads. Provide -BundlePath or download/build the bundle first."
+}
+
+$ZipPath = Resolve-ManualTestBundlePath -RequestedPath $BundlePath
 $OutputDir  = Join-Path $InstallDir '_test_output'
 $StageDir   = Join-Path $env:TEMP ('DCOIR_STAGE_' + [guid]::NewGuid().ToString('N'))
 
 Write-Host ''
 Write-Host '=== DCOIR_TESTER framework install + launch ===' -ForegroundColor Cyan
-
-if (-not (Test-Path -LiteralPath $ZipPath)) {
-    Write-Host "Zip not found: $ZipPath" -ForegroundColor Red
-    exit 1
-}
+Write-Host "Bundle: $ZipPath" -ForegroundColor Cyan
+Write-Host "InstallDir: $InstallDir" -ForegroundColor Cyan
 
 New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
 New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 New-Item -ItemType Directory -Path $StageDir -Force | Out-Null
 
 try {
-    Write-Host 'Extracting downloaded bundle...' -ForegroundColor Cyan
+    Write-Host 'Extracting manual-test framework bundle...' -ForegroundColor Cyan
     Expand-Archive -LiteralPath $ZipPath -DestinationPath $StageDir -Force
 
     Write-Host 'Removing previous framework app files...' -ForegroundColor Cyan
@@ -29,6 +51,7 @@ try {
         'README_FIRST.txt',
         'install_and_run_from_downloads.ps1',
         'DCOIR_manual_test_plan.md',
+        'manual_test_framework_bundle_manifest.json',
         '__pycache__'
     )
     foreach ($item in $OldFrameworkItems) {
@@ -57,11 +80,8 @@ try {
         }
     }
 
-    Write-Host 'Copying new framework files into C:\DCOIR_TESTER...' -ForegroundColor Cyan
+    Write-Host 'Copying new framework files into install folder...' -ForegroundColor Cyan
     Copy-Item -Path (Join-Path $StageDir '*') -Destination $InstallDir -Recurse -Force
-
-    Write-Host 'Deleting downloaded zip...' -ForegroundColor Cyan
-    Remove-Item -LiteralPath $ZipPath -Force
 
     Write-Host 'Cleaning up temporary extraction files...' -ForegroundColor Cyan
     Remove-Item -LiteralPath $StageDir -Recurse -Force
