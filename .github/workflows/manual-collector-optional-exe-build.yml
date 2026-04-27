@@ -9,7 +9,7 @@ on:
         default: ''
         type: string
       skip_ps2exe_install:
-        description: Fail if PS2EXE is not already available instead of installing it for the current user
+        description: Fail if PS2EXE is not already available instead of acquiring it for the build
         required: false
         default: false
         type: boolean
@@ -80,7 +80,7 @@ jobs:
             }
           }
 
-      - name: Build optional EXE variant from compiled collector runtime
+      - name: Build optional EXE variant from compiled collector runtime with embedded tools
         shell: pwsh
         run: |
           Remove-Item -Recurse -Force project_sources/generation_validation/out_optional_exe -ErrorAction SilentlyContinue
@@ -89,7 +89,8 @@ jobs:
             'python',
             'project_sources/generation_validation/build_dcoir_collector_optional_exe_variant.py',
             '--source-dir', '.',
-            '--output-dir', 'project_sources/generation_validation/out_optional_exe'
+            '--output-dir', 'project_sources/generation_validation/out_optional_exe',
+            '--embedded-tools-source-zip', 'supporting_assets/DCOIR_Collector.zip'
           )
           if (-not [string]::IsNullOrWhiteSpace($env:PACKAGE_VERSION_OVERRIDE)) {
             $cmd += @('--version', $env:PACKAGE_VERSION_OVERRIDE)
@@ -105,6 +106,10 @@ jobs:
           if (-not $exe) {
             throw 'Optional EXE artifact was not produced.'
           }
+          $payloadManifest = 'project_sources/generation_validation/out_optional_exe/optional_exe_variant/embedded_tool_payload_manifest.json'
+          if (-not (Test-Path -LiteralPath $payloadManifest)) {
+            throw 'Embedded tool payload manifest was not produced beside the optional EXE.'
+          }
           Write-Host "OPTIONAL_EXE_PATH=$($exe.FullName)"
 
       - name: Upload optional EXE variant artifacts
@@ -113,6 +118,8 @@ jobs:
         with:
           name: optional-collector-exe-variant
           path: |
-            project_sources/generation_validation/out_optional_exe/**
+            project_sources/generation_validation/out_optional_exe/build_dcoir_collector_optional_exe_variant_report.json
+            project_sources/generation_validation/out_optional_exe/DCOIR_Collector_Delivery_Package_*.zip
+            project_sources/generation_validation/out_optional_exe/optional_exe_variant/**
           if-no-files-found: warn
           retention-days: 14
