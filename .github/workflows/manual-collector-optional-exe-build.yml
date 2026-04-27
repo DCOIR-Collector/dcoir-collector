@@ -1,0 +1,118 @@
+name: manual-collector-optional-exe-build
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_version_override:
+        description: Optional package version override forwarded to the PS1 package builder
+        required: false
+        default: ''
+        type: string
+      skip_ps2exe_install:
+        description: Fail if PS2EXE is not already available instead of installing it for the current user
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: manual-collector-optional-exe-build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build_optional_exe_variant:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    env:
+      PACKAGE_VERSION_OVERRIDE: ${{ github.event.inputs.package_version_override }}
+      SKIP_PS2EXE_INSTALL: ${{ github.event.inputs.skip_ps2exe_install }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Validate Python syntax
+        shell: pwsh
+        run: |
+          $pyFiles = @(
+            'project_sources/generation_validation/build_dcoir_collector_runtime_package.py',
+            'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py',
+            'project_sources/generation_validation/compile_dcoir_collector_runtime.py',
+            'project_sources/generation_validation/build_dcoir_collector_optional_exe_variant.py'
+          )
+          foreach ($file in $pyFiles) {
+            if (-not (Test-Path -LiteralPath $file)) {
+              throw "Required Python build file missing: $file"
+            }
+            python -m py_compile $file
+            if ($LASTEXITCODE -ne 0) {
+              throw "Python syntax validation failed: $file"
+            }
+          }
+
+      - name: Validate PowerShell source syntax
+        shell: pwsh
+        run: |
+          $psFiles = @(
+            'project_sources/DCOIR_Collector.ps1',
+            'project_sources/run_DCOIR_Tests.ps1'
+          )
+          if (Test-Path -LiteralPath 'project_sources/collector_parts') {
+            $psFiles += Get-ChildItem -Path 'project_sources/collector_parts' -File -Filter '*.ps1' | ForEach-Object { $_.FullName }
+          }
+          foreach ($file in $psFiles) {
+            if (-not (Test-Path -LiteralPath $file)) {
+              throw "Required PowerShell file missing: $file"
+            }
+            $tokens = $null
+            $parseErrors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$tokens, [ref]$parseErrors)
+            if ($parseErrors.Count -gt 0) {
+              $messages = ($parseErrors | ForEach-Object { $_.Message }) -join ' | '
+              throw "PowerShell syntax validation failed: $file: $messages"
+            }
+          }
+
+      - name: Build optional EXE variant from compiled collector runtime
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force project_sources/generation_validation/out_optional_exe -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out_optional_exe | Out-Null
+          $cmd = @(
+            'python',
+            'project_sources/generation_validation/build_dcoir_collector_optional_exe_variant.py',
+            '--source-dir', '.',
+            '--output-dir', 'project_sources/generation_validation/out_optional_exe'
+          )
+          if (-not [string]::IsNullOrWhiteSpace($env:PACKAGE_VERSION_OVERRIDE)) {
+            $cmd += @('--version', $env:PACKAGE_VERSION_OVERRIDE)
+          }
+          if ($env:SKIP_PS2EXE_INSTALL -eq 'true') {
+            $cmd += '--skip-ps2exe-install'
+          }
+          & $cmd[0] $cmd[1..($cmd.Count - 1)]
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Optional collector EXE variant build failed.'
+          }
+          $exe = Get-ChildItem -LiteralPath project_sources/generation_validation/out_optional_exe/optional_exe_variant -File -Filter '*.exe' | Select-Object -First 1
+          if (-not $exe) {
+            throw 'Optional EXE artifact was not produced.'
+          }
+          Write-Host "OPTIONAL_EXE_PATH=$($exe.FullName)"
+
+      - name: Upload optional EXE variant artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: optional-collector-exe-variant
+          path: |
+            project_sources/generation_validation/out_optional_exe/**
+          if-no-files-found: warn
+          retention-days: 14
