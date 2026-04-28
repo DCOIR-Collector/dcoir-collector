@@ -1,7 +1,0 @@
-{
-  "alert_name": "Windows Driver Reputation Alert",
-  "host": "NADE02L748B6L3",
-  "driver_sha256": "111122223333444455556666777788889999AAAABBBBCCCCDDDDEEEEFFFF0000",
-  "vendor": "Example Vendor",
-  "note": "Fixture for repeated singular-command regression testing."
-}
