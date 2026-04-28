@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-04-28T05:28:41Z",
+  "generated_at_utc": "2026-04-28T09:16:27Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -53,17 +53,17 @@
     },
     "dcoir-change-impact-analyzer": {
       "source_root": "dcoir-change-impact-analyzer",
-      "source_tree_hash": "046a998c5d5b1fc913d839f454675cb2f0fb5f024652143354372bdce0229fda",
+      "source_tree_hash": "7fd16bfb734832170e3d1766a21627160f069f8499e86784b2cedc44ab8db5e4",
       "release_zip_name": "dcoir-change-impact-analyzer.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 7,
-      "total_bytes": 53686,
+      "total_bytes": 54325,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "13bae5531e53a21be87a0845d0d7b136655d2bc84ec70c95627d6b509b1d3115",
-          "size_bytes": 8810
+          "sha256": "7f54b672004b35179ca141653b9ae0d13eba102e0758031749f8f771ceac16fe",
+          "size_bytes": 8894
         },
         {
           "path": "agents/openai.yaml",
@@ -82,13 +82,13 @@
         },
         {
           "path": "references/impact_rules.json",
-          "sha256": "3839f7f6f0d3b540e08129f5b799c9caf1b95fd5af69ea4f7c74740f6a0015c6",
-          "size_bytes": 19391
+          "sha256": "532091d518761a9e1c1732e474febe805361c2f181b6ec5da02d85826ec82f4f",
+          "size_bytes": 19726
         },
         {
           "path": "references/project_discovery_contract.json",
-          "sha256": "43ff953355a8df1c17973cc2e438a13ec5ef8a2d34243bbdffb7917f003576e4",
-          "size_bytes": 7336
+          "sha256": "ea86ae4f5fedb50de8d80bedf24aba3444dca254ef6975584840b6d6011ea14e",
+          "size_bytes": 7556
         },
         {
           "path": "scripts/analyze_change_impact.py",
@@ -99,17 +99,17 @@
     },
     "dcoir-collector-qa": {
       "source_root": "dcoir-collector-qa",
-      "source_tree_hash": "d2fea2edfa285caf2eb2dff1d00fb0ac27f458e4c133cf29f934c055d1d9f864",
+      "source_tree_hash": "840fb09ad861c24332fb51b401e9202d4dacde7210ee1fe6187618a1dd23febc",
       "release_zip_name": "dcoir-collector-qa.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 16,
-      "total_bytes": 53431,
+      "total_bytes": 53796,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "59f5e1e03e30a91cf318e5cfe3c5ca884cd6e201722619b55dac6727a772efb3",
-          "size_bytes": 9792
+          "sha256": "391a38740697ed904b599d9813a4e1184879a3c9739b6b3898ccd34a69d132ea",
+          "size_bytes": 9827
         },
         {
           "path": "agents/openai.yaml",
@@ -143,8 +143,8 @@
         },
         {
           "path": "references/project_discovery_contract.json",
-          "sha256": "43ff953355a8df1c17973cc2e438a13ec5ef8a2d34243bbdffb7917f003576e4",
-          "size_bytes": 7336
+          "sha256": "ea86ae4f5fedb50de8d80bedf24aba3444dca254ef6975584840b6d6011ea14e",
+          "size_bytes": 7556
         },
         {
           "path": "references/repair_mode.md",
@@ -178,8 +178,8 @@
         },
         {
           "path": "scripts/render_collector_qa_report.py",
-          "sha256": "3602216472f7051025b1264bb800f00d9168378415749b7b6c70d943fe71879c",
-          "size_bytes": 7173
+          "sha256": "76c2eb316be7f559c2797396f474fd543fb44fa5f6c39b45aac7c7a468cdd6a7",
+          "size_bytes": 7283
         },
         {
           "path": "scripts/render_repair_plan.py",
@@ -190,17 +190,17 @@
     },
     "dcoir-decision-policy": {
       "source_root": "dcoir-decision-policy",
-      "source_tree_hash": "deb6b63ff568971dc8c629f6b31969a87e75ecade6f2b39191f765f34fdf1a6a",
+      "source_tree_hash": "a087f9f86783e8c79b92d25ff3477e3745092ba162bd8e3e8d3d87f7f44073dc",
       "release_zip_name": "dcoir-decision-policy.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 14,
-      "total_bytes": 63536,
+      "total_bytes": 63571,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "cfd4b2e692d7cd16df097d29dda84c8345227aac5096c5bd2e638911a9904fa0",
-          "size_bytes": 25243
+          "sha256": "e8cf3ca4ac203c8ab6958e58679032d7eccaf3a12fe2b2e4c74ab2a90a23077b",
+          "size_bytes": 25278
         },
         {
           "path": "agents/openai.yaml",
@@ -271,17 +271,17 @@
     },
     "dcoir-knowledge-doc-maintainer": {
       "source_root": "dcoir-knowledge-doc-maintainer",
-      "source_tree_hash": "7c69aa9b95a43b450d4ba060446e6dd94d124518c69649868379e14730d440fe",
+      "source_tree_hash": "5f74bac23811d24694fdf5675e947a4343ee54b61c130b9ee8c31f3201c221ef",
       "release_zip_name": "dcoir-knowledge-doc-maintainer.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 9,
-      "total_bytes": 42417,
+      "total_bytes": 42707,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "19e4077c7d318a627792acb0a8a44cdaefa3e6a6cef8cc7b7da001adb7aa3db1",
-          "size_bytes": 9976
+          "sha256": "3fef25232f5a2d5537227318e982f899c50437f08b8da00012250c55f10f91f7",
+          "size_bytes": 10011
         },
         {
           "path": "agents/openai.yaml",
@@ -305,8 +305,8 @@
         },
         {
           "path": "references/project_discovery_contract.json",
-          "sha256": "43ff953355a8df1c17973cc2e438a13ec5ef8a2d34243bbdffb7917f003576e4",
-          "size_bytes": 7336
+          "sha256": "ea86ae4f5fedb50de8d80bedf24aba3444dca254ef6975584840b6d6011ea14e",
+          "size_bytes": 7556
         },
         {
           "path": "references/reinventory_prompt_template.md",
@@ -320,8 +320,8 @@
         },
         {
           "path": "scripts/scan_project.py",
-          "sha256": "910b00c6807239d6aacb357e58684c37520e03c203bbaab5c60c5f3ef9828309",
-          "size_bytes": 16400
+          "sha256": "c0f5760fadb9480566d770db493c578b702210b86b4625b696455af6b3f4375e",
+          "size_bytes": 16435
         }
       ]
     },
@@ -363,17 +363,17 @@
     },
     "dcoir-live-test-remediation-planner": {
       "source_root": "dcoir-live-test-remediation-planner",
-      "source_tree_hash": "3297f790ad4d031444508e7052893ae5503df25124637a656caf35f09afda91f",
+      "source_tree_hash": "18bb95484443355f3e5f4846cb28c0bdbd2f449b87a1a9d72b78164de6edfcc7",
       "release_zip_name": "dcoir-live-test-remediation-planner.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 8,
-      "total_bytes": 29470,
+      "total_bytes": 29662,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "d719ad8fe456a5d8741afcf2d37b72fca31a7c889db3fae97d0f667ceeac1fa6",
-          "size_bytes": 6795
+          "sha256": "800c4e0331d39a191ea0e78d66db10656259c885b11f4d8a4e25275b5cc2ce1b",
+          "size_bytes": 6862
         },
         {
           "path": "agents/openai.yaml",
@@ -397,8 +397,8 @@
         },
         {
           "path": "references/remediation_rules.json",
-          "sha256": "4481f3e6f10c52c4d5370a8e50f496728392b5d327520310b928179d25713074",
-          "size_bytes": 8758
+          "sha256": "4d0a244fac3bfbc414cdf036241fd3515d9db2bf37ea2326e1c0f87b5c212f98",
+          "size_bytes": 8883
         },
         {
           "path": "scripts/plan_live_test_remediation.py",
@@ -465,17 +465,17 @@
     },
     "dcoir-operator-workflow-hardener": {
       "source_root": "dcoir-operator-workflow-hardener",
-      "source_tree_hash": "bdbc8250de889b637f08dd67e9984b0f4d425720b848b869151d15bb4df36b77",
+      "source_tree_hash": "992bf560364e3f47d3827fa3d82eeaacf65990896bc99e9a84138e0e9b9e912d",
       "release_zip_name": "dcoir-operator-workflow-hardener.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 6,
-      "total_bytes": 17175,
+      "total_bytes": 17192,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "664d49998b1cf640c82dbc6d08d057fb369401b6b85437455aaa1ad3b1c6bbb4",
-          "size_bytes": 8260
+          "sha256": "93c6caf76cea8946f60cfd57a4f250b92035e746aac2b81ca5c0ed8b1d939ab2",
+          "size_bytes": 8277
         },
         {
           "path": "agents/openai.yaml",
@@ -694,17 +694,17 @@
     },
     "dcoir-prompt-pack-assembler": {
       "source_root": "dcoir-prompt-pack-assembler",
-      "source_tree_hash": "2d913ef5acc3155762d5b4235568d3f7991f166896cc84e7b51dbaca2d7cd60b",
+      "source_tree_hash": "8e170a1c2c022f0001d12ad1a8f39c350c9337983b18cd10cdba3b8a46bcdfcd",
       "release_zip_name": "dcoir-prompt-pack-assembler.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 6,
-      "total_bytes": 13293,
+      "total_bytes": 13443,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "0519b1b51b39f0eb31bf6982037fee22d2855f8bcbf4d685fe0415d97488b8bd",
-          "size_bytes": 3936
+          "sha256": "cdc60341ccadd42e6899941414a204e20eaca3afb8c6f5142ee3b48524b2e5f0",
+          "size_bytes": 3986
         },
         {
           "path": "agents/openai.yaml",
@@ -728,8 +728,8 @@
         },
         {
           "path": "scripts/assemble_dcoir_prompt_pack.py",
-          "sha256": "94a23ffa06eb09ef0e1f4d5b06a572204df41442384235b11ffabef3c3641e2c",
-          "size_bytes": 5793
+          "sha256": "95b371f8dfd9bad191ec34711a6107470d5c0e428bdad0b5c73f768679eb223a",
+          "size_bytes": 5893
         }
       ]
     },
@@ -812,17 +812,17 @@
     },
     "dcoir-repo-packager": {
       "source_root": "dcoir-repo-packager",
-      "source_tree_hash": "5036625e89f6840c6a024911a321c6ca6222d3bdee46de5ec8dd9215e4ab2c72",
+      "source_tree_hash": "6520bd656d1d1fb86a0a83cee13875fe6a83544824c71386ffeb09170cf331ea",
       "release_zip_name": "dcoir-repo-packager.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 6,
-      "total_bytes": 29755,
+      "total_bytes": 30030,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "e3d3690ed1cbe12f419d18973876a4ba44a03229cf82b036c266afb6d45e4745",
-          "size_bytes": 9461
+          "sha256": "224e345add004d2a465f23700d0395d3c12a88a9c7c065923a46fbaae2f3696c",
+          "size_bytes": 9536
         },
         {
           "path": "agents/openai.yaml",
@@ -836,13 +836,13 @@
         },
         {
           "path": "references/layout_rules.md",
-          "sha256": "47e3c9003e9f1be9b35ac16f1a8268c47541b82c791881114f350e81d8f551eb",
-          "size_bytes": 2976
+          "sha256": "9ddd192384d7fc64fa1811225f50eab9f8e58ea797f953aa6c242099ff0f9479",
+          "size_bytes": 3026
         },
         {
           "path": "references/source_mapping.json",
-          "sha256": "44e36d3a0729d7630ddc97688bed808f4fc784b56ea013cf5a57e2ae226eb9b6",
-          "size_bytes": 1266
+          "sha256": "2475a819f256adc01378436bcced25b3fdca9b226c4ed84fa65a3b071aa6c80f",
+          "size_bytes": 1416
         },
         {
           "path": "scripts/create_dcoir_bundle.py",
@@ -1041,12 +1041,12 @@
     },
     "dcoir-source-authority-auditor": {
       "source_root": "dcoir-source-authority-auditor",
-      "source_tree_hash": "2fc1be6cb0d252aeb125ab8698cbc25c3ce68ddfd01f569fa79427cc74e70aa0",
+      "source_tree_hash": "00bf16485efdaf411d178b41cee4d66dfa7671a2d71a485bbdb98d24afb0c595",
       "release_zip_name": "dcoir-source-authority-auditor.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 6,
-      "total_bytes": 35093,
+      "total_bytes": 35363,
       "files": [
         {
           "path": "SKILL.md",
@@ -1070,13 +1070,13 @@
         },
         {
           "path": "references/project_discovery_contract.json",
-          "sha256": "43ff953355a8df1c17973cc2e438a13ec5ef8a2d34243bbdffb7917f003576e4",
-          "size_bytes": 7336
+          "sha256": "ea86ae4f5fedb50de8d80bedf24aba3444dca254ef6975584840b6d6011ea14e",
+          "size_bytes": 7556
         },
         {
           "path": "scripts/audit_source_authority.py",
-          "sha256": "2ab6631c5dc47c239e719ec3fa573fbe6057196e9fc2a5b7a7e7c14c4b3c3d39",
-          "size_bytes": 16345
+          "sha256": "d9e4fb9a30da717155272e1a7a7478812f726d225be0a4dea6a2a14885eaeb88",
+          "size_bytes": 16395
         }
       ]
     },
