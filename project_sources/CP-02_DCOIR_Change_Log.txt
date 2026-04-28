@@ -1,0 +1,30 @@
+DCOIR Change Log
+
+[CURRENT]
+Version: 4.0.9
+Current state id: 2026-04-17-infrastructure-first-reprioritization-closeout-v1
+Change class: Infrastructure-first reprioritization closeout
+
+What changed
+- Promoted the infrastructure-first reprioritization closeout into governed GitHub history.
+- Kept Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` as the sole live todo authority for ordinary queue priority and resume order.
+- Refreshed the affected current-state narrative surfaces so `CP-01`, `CP-02`, and `LOG-03` now reflect the live Airtable queue order.
+- Preserved retired GitHub todo files as migration notes and history rather than reactivating them as queue authority.
+
+Why
+- The live Airtable queue had already reprioritized work to the overlap-cleanup line.
+- The governed repo narrative still named collector hardening as the active branch in multiple current-state surfaces.
+- Promoting a bounded closeout record preserves the durable queue decision and cleanup outcome without turning GitHub back into the operational queue.
+
+Validation notes
+- Live queue authority now places `PLAN-20260417-github-airtable-overlap-cleanup` first, followed by `PLAN-20260415-airtable-operations-and-workflow-hardening`, `PLAN-20260416-collector-master-wave`, and `PLAN-20260415-workflow-collector-gemini-remediation-wave`.
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt`, `project_sources/CP-02_DCOIR_Change_Log.txt`, and `project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt` were refreshed in a bounded pass to match that live queue order.
+- No GitHub delete action was required in this closeout pass.
+- The manual-delete fallback remains available for any later cleanup candidate whose delete path proves unreliable.
+
+Current live queue note
+- After the 2026-04-17 promoted closeout, Airtable queue authority advanced again.
+- Bounded Airtable reconciliation on 2026-04-20 confirmed that `PLAN-20260416-collector-master-wave` is the live execution branch.
+- Operator reprioritization on 2026-04-20 moved `PLAN-20260415-workflow-collector-gemini-remediation-wave` ahead of `PLAN-20260415-airtable-operations-and-workflow-hardening`.
+- `PLAN-20260415-airtable-operations-and-workflow-hardening` remains blocked pending automatic scheduled-health-check proof and is now queued behind Gemini.
+- Treat Airtable `Queue Control`, Airtable `Work Items`, and active Airtable `Plans` as the live queue source when they are newer than the promoted 2026-04-17 closeout narrative.
