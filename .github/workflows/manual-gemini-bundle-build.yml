@@ -9,7 +9,7 @@ on:
         default: ''
         type: string
       skip_validation:
-        description: Retained compatibility input. Stored-source packaging always validates manifest-required files.
+        description: Skip validate_dcoir_gemini_bundle.py and behavior-scenario checks before compile
         required: true
         default: false
         type: boolean
@@ -30,6 +30,7 @@ jobs:
       BUNDLE_VERSION_OVERRIDE: ${{ github.event.inputs.bundle_version_override }}
       SKIP_VALIDATION: ${{ github.event.inputs.skip_validation }}
       GEMINI_SOURCE_ROOT: project_sources/DCOIR_Gemini_Bundle_Source
+      GEMINI_OUTPUT_DIR: project_sources/generation_validation/out
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -58,94 +59,59 @@ jobs:
             throw "Python syntax validation failed: $($failed -join ', ')"
           }
 
-      - name: Verify stored Gemini bundle source
+      - name: Verify Gemini bundle build toolchain
         shell: pwsh
         run: |
-          $sourceRoot = $env:GEMINI_SOURCE_ROOT
-          $manifestPath = Join-Path $sourceRoot 'Gemini_Bundle_Source_Manifest.json.txt'
-
-          if (-not (Test-Path -LiteralPath $sourceRoot -PathType Container)) {
-            throw "Missing Gemini stored-source root: $sourceRoot"
-          }
-          if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
-            throw "Missing Gemini source manifest: $manifestPath"
-          }
-
-          $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-          if ($manifest.authoritative_runtime_source -ne $sourceRoot) {
-            throw "Gemini source manifest authoritative_runtime_source is '$($manifest.authoritative_runtime_source)', expected '$sourceRoot'."
-          }
-
-          $required = @('Gemini_Bundle_Source_Manifest.json.txt') + @($manifest.required_files)
-          $missing = @()
-          foreach ($relativePath in $required) {
-            $candidate = Join-Path $sourceRoot $relativePath
-            if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) {
-              $missing += $relativePath
-            }
-          }
+          $required = @(
+            'project_sources/DCOIR_Gemini_Bundle_Source/Gemini_Bundle_Source_Manifest.json.txt',
+            'project_sources/DCOIR_Gemini_Bundle_Source/README.md',
+            'project_sources/generation_validation/sync_dcoir_gemini_knowledge_attachments.py',
+            'project_sources/generation_validation/validate_dcoir_gemini_bundle.py',
+            'project_sources/generation_validation/validate_dcoir_gemini_behavior_scenarios.py',
+            'project_sources/generation_validation/compile_dcoir_gemini_bundle.py',
+            'project_sources/generation_validation/build_dcoir_gemini_release.py'
+          )
+          $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
           if ($missing.Count -gt 0) {
-            throw "Missing required stored Gemini bundle files under ${sourceRoot}: $($missing -join ', ')"
+            throw "Missing required Gemini build toolchain surfaces: $($missing -join ', ')"
           }
 
+          $manifest = Get-Content -LiteralPath 'project_sources/DCOIR_Gemini_Bundle_Source/Gemini_Bundle_Source_Manifest.json.txt' -Raw | ConvertFrom-Json
+          if ($manifest.authoritative_runtime_source -ne $env:GEMINI_SOURCE_ROOT) {
+            throw "Gemini source manifest authoritative_runtime_source is '$($manifest.authoritative_runtime_source)', expected '$env:GEMINI_SOURCE_ROOT'."
+          }
           $subAgentCount = @($manifest.topology.sub_agent_files).Count
           if ($subAgentCount -ne 10) {
             throw "Gemini topology mismatch: expected 10 sub-agents, found $subAgentCount."
           }
+          Write-Host "Gemini build toolchain verification passed. Sub-agents: $subAgentCount."
 
-          Write-Host "Stored Gemini source verification passed. Required files: $($required.Count). Sub-agents: $subAgentCount."
-
-      - name: Package stored Gemini bundle
+      - name: Create output directory
         shell: pwsh
         run: |
-          $sourceRoot = $env:GEMINI_SOURCE_ROOT
-          $manifestPath = Join-Path $sourceRoot 'Gemini_Bundle_Source_Manifest.json.txt'
-          $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+          New-Item -ItemType Directory -Force -Path $env:GEMINI_OUTPUT_DIR | Out-Null
 
-          $version = $manifest.bundle_version
-          if (-not [string]::IsNullOrWhiteSpace($env:BUNDLE_VERSION_OVERRIDE)) {
-            $version = $env:BUNDLE_VERSION_OVERRIDE.Trim()
+      - name: Run Gemini validation and build
+        shell: pwsh
+        run: |
+          $skipValidation = $env:SKIP_VALIDATION
+          $versionOverride = $env:BUNDLE_VERSION_OVERRIDE
+          $cmd = @(
+            'python',
+            'project_sources/generation_validation/build_dcoir_gemini_release.py',
+            '--source-root', $env:GEMINI_SOURCE_ROOT,
+            '--output-dir', $env:GEMINI_OUTPUT_DIR
+          )
+          if ($skipValidation -eq 'true') {
+            $cmd += '--skip-validation'
           }
-
-          $topLevelFolder = $manifest.top_level_folder
-          if (-not [string]::IsNullOrWhiteSpace($env:BUNDLE_VERSION_OVERRIDE)) {
-            $topLevelFolder = "DCOIR_Gemini_Email_Build_Bundle_$version"
+          if (-not [string]::IsNullOrWhiteSpace($versionOverride)) {
+            $cmd += @('--version', $versionOverride)
           }
-
-          $outDir = Join-Path $env:RUNNER_TEMP 'manual-gemini-bundle-build'
-          $stageRoot = Join-Path $env:RUNNER_TEMP 'manual-gemini-bundle-stage'
-          $stageBundleRoot = Join-Path $stageRoot $topLevelFolder
-          New-Item -ItemType Directory -Force -Path $outDir | Out-Null
-          if (Test-Path -LiteralPath $stageRoot) {
-            Remove-Item -LiteralPath $stageRoot -Recurse -Force
+          & $cmd[0] $cmd[1..($cmd.Count - 1)]
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Gemini bundle build failed.'
           }
-          New-Item -ItemType Directory -Force -Path $stageBundleRoot | Out-Null
-
-          Copy-Item -LiteralPath (Join-Path $sourceRoot '*') -Destination $stageBundleRoot -Recurse -Force
-
-          $zipPath = Join-Path $outDir "$topLevelFolder.zip"
-          if (Test-Path -LiteralPath $zipPath) {
-            Remove-Item -LiteralPath $zipPath -Force
-          }
-          Compress-Archive -LiteralPath $stageBundleRoot -DestinationPath $zipPath -Force
-
-          $report = [ordered]@{
-            bundle_name = $manifest.bundle_name
-            bundle_version = $version
-            top_level_folder = $topLevelFolder
-            source_root = $sourceRoot
-            source_strategy = 'stored_source_package'
-            validation_mode = 'manifest_required_files'
-            skip_validation_input = $env:SKIP_VALIDATION
-            zip_path = $zipPath
-            generated_at_utc = (Get-Date).ToUniversalTime().ToString('o')
-            file_count = @(Get-ChildItem -LiteralPath $stageBundleRoot -Recurse -File).Count
-          }
-          $reportPath = Join-Path $outDir "$topLevelFolder.report.json"
-          $report | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $reportPath -Encoding utf8
-
-          Write-Host "Created Gemini bundle artifact: $zipPath"
-          Write-Host "Created Gemini bundle report: $reportPath"
 
       - name: Upload Gemini bundle artifacts
         if: always()
@@ -153,7 +119,7 @@ jobs:
         with:
           name: manual-gemini-bundle-build
           path: |
-            ${{ runner.temp }}\manual-gemini-bundle-build\*.zip
-            ${{ runner.temp }}\manual-gemini-bundle-build\*report.json
-          if-no-files-found: error
+            project_sources/generation_validation/out/*.zip
+            project_sources/generation_validation/out/*report.json
+          if-no-files-found: warn
           retention-days: 21
