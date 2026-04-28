@@ -31,8 +31,6 @@ jobs:
         run: |
           $required = @(
             'README.md',
-            'project_sources/CP-01_DCOIR_Version_Manifest.txt',
-            'project_sources/CP-02_DCOIR_Change_Log.txt',
             'project_sources/DCOIR_Collector.ps1',
             'project_sources/run_DCOIR_Tests.ps1',
             'project_sources/collector_parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1',
@@ -47,8 +45,6 @@ jobs:
             'project_sources/collector_parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1',
             'project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1',
             'project_sources/Collector_Runtime_Package_Manifest.json.txt',
-            'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
-            'project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt',
             'project_sources/DCOIR_Gemini_Bundle_Source/Gemini_Bundle_Source_Manifest.json.txt',
             'project_sources/DCOIR_Gemini_Bundle_Source/README.md',
             'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/README_FIRST.md.txt',
@@ -66,7 +62,6 @@ jobs:
             'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt',
             'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt',
             'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt',
-            'project_sources/LOG-43_DCOIR_GitHub_Automation_And_AI_Enablement_Strategy_2026-04-05.txt',
             'project_sources/generation_validation/run_validate_dcoir_run_fixture_tests.ps1',
             'project_sources/generation_validation/verify_collector_documentation_quality.py',
             'project_sources/generation_validation/test_verify_collector_documentation_quality.py',
