@@ -1,0 +1,28 @@
+DCOIR Gemini And Standalone Test Plan v1.0.0
+
+Required lanes
+1. Collector collect-bundle interpretation test
+2. Collector enrich-bundle interpretation test
+3. Collector execution and harness test
+4. Enrich session-behavior test for start/add/finalize
+5. IOC-enrichment trigger / ownership test
+6. Security-product negative-control test
+7. SINGULAR TRIAGE COMMAND repeated-session regression test
+8. Generated standalone bundle verification
+9. Generated Gemini bundle verification
+10. Manual Gemini live run after repo-side verification passes
+
+Minimum useful artifact set
+- one successful collect bundle
+- one TCP enrich run
+- one Security log enrich run
+- one finalized enrich bundle
+- cleanup output after retrieval
+
+Pass themes
+- grounded interpretation
+- no invented workflow state
+- correct operator-state awareness
+- correct next-step guidance
+- upload-safe file selection
+- stable command-contract adherence
