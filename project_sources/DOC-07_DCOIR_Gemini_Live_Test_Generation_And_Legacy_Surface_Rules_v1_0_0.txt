@@ -1,0 +1,46 @@
+DCOIR Gemini Live-Test Generation and Legacy Surface Rules v1.0.0
+
+PURPOSE
+- Preserve the April 7 live-test findings that must govern future Gemini-generation rounds.
+- Supplement DOC-04, DOC-09, and PP-09 with more explicit generation, validation, and live-lane rules.
+
+APRIL 7 LIVE-TEST RULES STILL IN FORCE
+- preserve high-density field writing
+- merge role/purpose into one strong Description field when that improves routing
+- default Instructions to the “You are …” style
+- include parent starter prompts by default when supported
+- make collector-artifact interpretation explicit
+- make collector pivoting explicit when SIEM-native evidence leaves host-side gaps
+- make IOC ownership explicit
+- add false-positive-aware security-product validation
+- enforce SINGULAR TRIAGE COMMAND consistency
+
+OFFICE GEMINI UPLOAD-BUDGET RULE
+- hard ceiling: 1000 KB per file and 2000 KB total attachments per prompt
+- safe target: 900 KB per file and 1800 KB total per prompt
+- prefer chunk-first artifact intake
+- do not assume the monolithic baseline report is the default upload surface
+- scope clarification: this rule applies only to collector-emitted analyst-facing artifacts and default Gemini attachment sets built from them
+- it does not require shrinking, chunking, or thinning backbone deliverables such as DCOIR_Collector.ps1, collector part source files, run_DCOIR_Tests.ps1, PP-01 through PP-10, the full standalone master prompt assembly, or parent/sub-agent definition files
+- if email, transport, or platform limits affect a backbone deliverable, preserve the full governed substance and solve the transport problem separately unless the operator explicitly directs a reduced deliverable
+
+HARNESS / LIVE-FIRE RULES DERIVED FROM THE TRANSCRIPT
+- for the first true live response-action collector test, prefer the direct collector lane before the harness
+- align live-test guidance to the C:\Temp lane
+- use the canonical runtime filename DCOIR_Collector.ps1
+- use cmd.exe-native move/delete examples when file relocation is the task in that lane
+- prefer simple response-action commands: single backslashes, no unnecessary backslash-escaped quotes, one command at a time
+- preserve the distinction between local harness validation and remote live-fire endpoint execution
+
+VALIDATION RULES
+- include a dedicated collector-artifact interpretation test plan
+- include a dedicated collector execution / collection-path and harness test plan
+- include a dedicated IOC-enrichment trigger / ownership test plan
+- include repeated-session checks for start/add/finalize semantics
+- include repeated-session checks for SINGULAR TRIAGE COMMAND consistency
+- include upload-budget conformance checks for default uploadable artifact sets
+- include a scope-guard check so attachment-budget limits are never applied to backbone deliverables by mistake
+- include manual QC for operator-state awareness and no-filler behavior
+
+END STATE
+- Future Gemini generations and bundle workflows should now be governed by the measured office upload budget, the transcript-derived live-lane lessons, stronger validation/QC expectations, and an explicit scope guard that keeps backbone deliverables out of collector-artifact attachment budgeting.

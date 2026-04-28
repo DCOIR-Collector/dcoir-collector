@@ -1,0 +1,20 @@
+DCOIR GitHub Helper Skill Source Layout And Rollout
+
+Purpose
+- Define the GitHub layout and rollout rules for governed DCOIR helper-skill source.
+
+Governed source root
+- `dcoir_skills/`
+
+Authority rules
+- GitHub remains the readable source-of-truth for helper-skill source once landed under `dcoir_skills/`.
+- Airtable queue authority does not replace GitHub skill-source authority.
+
+Rollout rules
+- For a helper skill that already has governed GitHub source, update the source under `dcoir_skills/` and verify the changed files by readback or bounded manual proof.
+- For manual skill-install flows, require marker-based installed-skill verification before calling the rollout complete.
+- Prefer grouped readable-source updates when related skills belong together.
+
+Queue-authority note
+- Do not use GitHub helper-skill source updates as a substitute for Airtable queue management.
+- GitHub source holds behavior and workflow rules; Airtable holds live priority.
