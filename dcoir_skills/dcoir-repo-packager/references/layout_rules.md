@@ -8,7 +8,7 @@ Resolve Airtable-first authority and task-required governed source roles by role
 Preferred current authority surfaces:
 - Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST` for startup/admin authority
 - Airtable `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and `Schema Registry` for final cleanup and retained-surface classification
-- GitHub `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` only when packaging depends on governed repo source roles or promoted-history comparison
+- GitHub `project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt` only when packaging depends on governed repo source roles or promoted-history comparison
 
 Legacy aliases may be accepted only when the bundled mapping rules explicitly include them.
 Stop only if the task-required authority/source roles cannot be resolved. Missing GitHub CP files are not a startup blocker when Airtable replacement rows are present.

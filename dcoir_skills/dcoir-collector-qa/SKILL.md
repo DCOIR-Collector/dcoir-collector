@@ -27,8 +27,8 @@ The primary scope is the current GitHub-readable collector and harness sources, 
 ## Authoritative source set
 Re-anchor to Airtable-first startup/control-plane authority first when the task involves live state, queue state, QA follow-through, or test catalog state.
 Treat these current GitHub-readable files as the primary collector source scope when collector source inspection or packaging is required:
-- `project_sources/DCOIR_Collector.ps1`
-- `project_sources/run_DCOIR_Tests.ps1`
+- `project_sources/collector/source/DCOIR_Collector.ps1`
+- `project_sources/collector/harness/run_DCOIR_Tests.ps1`
 - GitHub `CP-01`/`CP-02` only for source-role/promoted-history fallback when needed
 - Airtable `Validation Test Cases`, `Plans`, `Plan Tasks`, and `Session Checkpoints` when QA state, test catalog state, or active follow-through matters
 - Use `project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt` only when explicit rollback comparison, historical regression reference, or bounded rollback analysis is part of the QA question.

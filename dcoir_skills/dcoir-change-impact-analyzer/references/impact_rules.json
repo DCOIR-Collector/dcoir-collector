@@ -1,19 +1,19 @@
 {
   "control_file_roles": {
     "manifest": [
-      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
       "CP-01_DCOIR_Version_Manifest.txt",
       "project_sources/DCOIR_Version_Manifest.txt",
       "DCOIR_Version_Manifest.txt"
     ],
     "change_log": [
-      "project_sources/CP-02_DCOIR_Change_Log.txt",
+      "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
       "CP-02_DCOIR_Change_Log.txt",
       "project_sources/DCOIR_Change_Log.txt",
       "DCOIR_Change_Log.txt"
     ],
     "setup": [
-      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
       "CP-01_DCOIR_Version_Manifest.txt",
       "project_sources/AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
       "AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt"
@@ -44,9 +44,9 @@
       "match": {
         "exact": [
           "CP-01_DCOIR_Version_Manifest.txt",
-          "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+          "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
           "CP-02_DCOIR_Change_Log.txt",
-          "project_sources/CP-02_DCOIR_Change_Log.txt"
+          "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt"
         ]
       },
       "required_refresh": [
@@ -55,7 +55,7 @@
         "session_resume_outputs_review"
       ],
       "conditional_review": [
-        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
         "Airtable: Plans / Plan Tasks",
         "Airtable: Repo Surface Registry",
         "all current dcoir-* skills",
@@ -143,9 +143,9 @@
       "match": {
         "exact": [
           "DCOIR_Collector.ps1",
-          "project_sources/DCOIR_Collector.ps1",
+          "project_sources/collector/source/DCOIR_Collector.ps1",
           "run_DCOIR_Tests.ps1",
-          "project_sources/run_DCOIR_Tests.ps1",
+          "project_sources/collector/harness/run_DCOIR_Tests.ps1",
           "RB-01_DCOIR_Collector_refinement_2_1_3.txt",
           "project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt"
         ]
@@ -156,7 +156,7 @@
       ],
       "conditional_review": [
         "supporting_assets/supporting_knowledge_docs.zip",
-        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
         "Airtable: Repo Surface Registry",
         "repo/update bundle mappings",
         "Airtable: Work Items / Plan Tasks",
@@ -251,7 +251,7 @@
         "affected supporting asset"
       ],
       "conditional_review": [
-        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
         "Airtable: Plans / Plan Tasks",
         "any workflow or skill that builds or references the retained knowledge zip"
       ],
@@ -276,7 +276,7 @@
           "SET-"
         ],
         "exact": [
-          "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+          "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
           "GITHUB_WORKING_REPOSITORY_NOTE.md"
         ]
       },
@@ -285,8 +285,8 @@
         "bootstrap behavior review"
       ],
       "conditional_review": [
-        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
-        "project_sources/CP-02_DCOIR_Change_Log.txt",
+        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
         "resume and packaging helper skills"
       ],
       "deep_regression": [
@@ -505,7 +505,7 @@
         "repo guide review"
       ],
       "conditional_review": [
-        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
         "Airtable: Repo Surface Registry",
         "Airtable: Work Items / Plan Tasks",
         "Airtable: Queue Control",

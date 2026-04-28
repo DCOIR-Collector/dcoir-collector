@@ -5,13 +5,13 @@
   },
   "control_file_roles": {
     "manifest": [
-      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
       "CP-01_DCOIR_Version_Manifest.txt",
       "project_sources/DCOIR_Version_Manifest.txt",
       "DCOIR_Version_Manifest.txt"
     ],
     "change_log": [
-      "project_sources/CP-02_DCOIR_Change_Log.txt",
+      "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
       "CP-02_DCOIR_Change_Log.txt",
       "project_sources/DCOIR_Change_Log.txt",
       "DCOIR_Change_Log.txt"
@@ -26,8 +26,8 @@
     ]
   },
   "active_surface_paths": {
-    "manifest": "project_sources/CP-01_DCOIR_Version_Manifest.txt",
-    "change_log": "project_sources/CP-02_DCOIR_Change_Log.txt",
+    "manifest": "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+    "change_log": "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
     "session_handoff": "project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt",
     "session_resume": "project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt",
     "todo_log": "project_sources/LOG-01_DCOIR_Todo_Log.txt",
@@ -63,12 +63,12 @@
   },
   "collector_runtime_alias_contract": {
     "manifest_required_strings": [
-      "project_sources/DCOIR_Collector.ps1",
-      "project_sources/run_DCOIR_Tests.ps1"
+      "project_sources/collector/source/DCOIR_Collector.ps1",
+      "project_sources/collector/harness/run_DCOIR_Tests.ps1"
     ],
     "layout_any_strings": [
-      "project_sources/DCOIR_Collector.ps1",
-      "project_sources/run_DCOIR_Tests.ps1",
+      "project_sources/collector/source/DCOIR_Collector.ps1",
+      "project_sources/collector/harness/run_DCOIR_Tests.ps1",
       "GitHub repository malwaredevil/dcoir-collector is the sole working source for readable governed text files.",
       "GitHub repository malwaredevil/dcoir-collector is the sole readable working-source location for governed text."
     ],
@@ -100,8 +100,8 @@
   "current_authority_model": {
     "workspace_model": "Airtable-first execution state; GitHub governed readable source/control plane/promoted history; Project space bootstrap/runtime anchor only.",
     "current_state_read_order": [
-      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
-      "project_sources/CP-02_DCOIR_Change_Log.txt",
+      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
       "Airtable Queue Control, Work Items, Plans, and Plan Tasks for live execution order"
     ],
     "live_todo_authority": "Airtable",

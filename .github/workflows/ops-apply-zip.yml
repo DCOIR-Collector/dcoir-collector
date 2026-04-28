@@ -1,0 +1,9 @@
+name: Ops apply zip request
+on:
+  workflow_dispatch:
+jobs:
+  dry_run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: test -d ops/requests/apply_zip || mkdir -p ops/requests/apply_zip

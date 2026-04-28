@@ -3,7 +3,7 @@ name: manual-test-framework-validate
 on:
   push:
     paths:
-      - 'project_sources/generation_validation/manual_test_framework/**'
+      - 'project_sources/validation/manual_test_framework/**'
       - '.github/workflows/manual-test-framework-validate.yml'
   workflow_dispatch:
 
@@ -31,7 +31,7 @@ jobs:
       - name: Validate manual-test framework Python syntax
         shell: pwsh
         run: |
-          $pyFiles = Get-ChildItem -LiteralPath project_sources/generation_validation/manual_test_framework -File -Filter '*.py'
+          $pyFiles = Get-ChildItem -LiteralPath project_sources/validation/manual_test_framework -File -Filter '*.py'
           if (-not $pyFiles) {
             throw 'No manual-test framework Python files found.'
           }
@@ -45,7 +45,7 @@ jobs:
       - name: Validate manual-test framework PowerShell syntax
         shell: pwsh
         run: |
-          $psFiles = Get-ChildItem -LiteralPath project_sources/generation_validation/manual_test_framework -File -Filter '*.ps1'
+          $psFiles = Get-ChildItem -LiteralPath project_sources/validation/manual_test_framework -File -Filter '*.ps1'
           if (-not $psFiles) {
             throw 'No manual-test framework PowerShell files found.'
           }
@@ -62,12 +62,12 @@ jobs:
       - name: Build manual-test framework download bundle
         shell: pwsh
         run: |
-          Remove-Item -Recurse -Force project_sources/generation_validation/manual_test_framework/out_manual_test_framework_bundle -ErrorAction SilentlyContinue
-          python project_sources/generation_validation/manual_test_framework/build_dcoir_manual_test_framework_bundle.py --source-dir project_sources/generation_validation/manual_test_framework --output-dir project_sources/generation_validation/manual_test_framework/out_manual_test_framework_bundle --version v9
+          Remove-Item -Recurse -Force project_sources/validation/manual_test_framework/out_manual_test_framework_bundle -ErrorAction SilentlyContinue
+          python project_sources/validation/manual_test_framework/build_dcoir_manual_test_framework_bundle.py --source-dir project_sources/validation/manual_test_framework --output-dir project_sources/validation/manual_test_framework/out_manual_test_framework_bundle --version v9
           if ($LASTEXITCODE -ne 0) {
             throw 'Manual-test framework bundle build failed.'
           }
-          $bundle = Get-ChildItem -LiteralPath project_sources/generation_validation/manual_test_framework/out_manual_test_framework_bundle -File -Filter 'dcoir_manual_test_framework_bundle_v9_full.zip' | Select-Object -First 1
+          $bundle = Get-ChildItem -LiteralPath project_sources/validation/manual_test_framework/out_manual_test_framework_bundle -File -Filter 'dcoir_manual_test_framework_bundle_v9_full.zip' | Select-Object -First 1
           if (-not $bundle) {
             throw 'Manual-test framework bundle zip was not produced.'
           }
@@ -78,6 +78,6 @@ jobs:
         with:
           name: manual-test-framework-bundle
           path: |
-            project_sources/generation_validation/manual_test_framework/out_manual_test_framework_bundle/**
+            project_sources/validation/manual_test_framework/out_manual_test_framework_bundle/**
           if-no-files-found: warn
           retention-days: 14

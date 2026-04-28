@@ -1,15 +1,15 @@
 {
   "control_file_roles": {
     "manifest": [
-      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
       "CP-01_DCOIR_Version_Manifest.txt"
     ],
     "change_log": [
-      "project_sources/CP-02_DCOIR_Change_Log.txt",
+      "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
       "CP-02_DCOIR_Change_Log.txt"
     ],
     "setup_workflow": [
-      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
       "CP-01_DCOIR_Version_Manifest.txt"
     ],
     "layout_spec": [
@@ -32,9 +32,9 @@
   ],
   "required_repo_mode_entries": [
     "README.md",
-    "project_sources/CP-01_DCOIR_Version_Manifest.txt",
-    "project_sources/CP-02_DCOIR_Change_Log.txt",
-    "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+    "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+    "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
+    "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
     "Airtable: Repo Surface Registry"
   ],
   "update_bundle_include_settings": true,

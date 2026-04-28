@@ -25,7 +25,7 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 Preferred authority inputs:
 - Airtable `CONTROL-STARTUP-AIRTABLE-FIRST` for startup/admin authority
 - active Airtable plan state for current branch context
-- GitHub `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` only when prompt-pack source-role or promoted-history comparison is required
+- GitHub `project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt` only when prompt-pack source-role or promoted-history comparison is required
 
 ## Required behavior
 - resolve Airtable-first authority first for current branch context; resolve GitHub control/source files only when prompt-pack source-role validation requires them

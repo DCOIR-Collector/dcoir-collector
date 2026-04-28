@@ -7,7 +7,7 @@ Purpose
 
 Source-of-truth rule
 - The maintained `knowledge/*.md` files are the editable source of truth while retained and current.
-- The Gemini build path syncs these maintained files into `project_sources/DCOIR_Gemini_Bundle_Source/02_PRIME_AGENT_ATTACHMENTS/*.md.txt` before validation and compile.
+- The Gemini build path syncs these maintained files into `project_sources/gemini/bundle_source/02_PRIME_AGENT_ATTACHMENTS/*.md.txt` before validation and compile.
 - Do not treat the synced attachment files as the primary maintained editing surface.
 - If final repo reduction changes where maintained knowledge files live, use Airtable `Retained Repo Manifest`, `Repo Surface Registry`, and active `Plans` / `Plan Tasks` to confirm the current retained knowledge surface before editing.
 

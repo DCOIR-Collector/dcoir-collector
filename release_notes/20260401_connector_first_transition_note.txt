@@ -24,7 +24,7 @@ Current validation state at the time of this note
 - This was sufficient at the time to treat the harness reporting patch as locally validated.
 
 Historical next active governed branch at the time of this note
-- Patch project_sources/DCOIR_Collector.ps1 and project_sources/run_DCOIR_Tests.ps1 so operator-facing output displays full paths instead of relative paths.
+- Patch project_sources/collector/source/DCOIR_Collector.ps1 and project_sources/collector/harness/run_DCOIR_Tests.ps1 so operator-facing output displays full paths instead of relative paths.
 - Remove project_sources/run_DCOIR_Tests.cmd from the governed source set and clean up all impacted governed references.
 - Refresh the control-plane and log files so they reflect the completed local validation and the connector-first project preference.
 

@@ -1,12 +1,12 @@
 {
   "control_file_roles": {
     "manifest": [
-      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
       "CP-01_DCOIR_Version_Manifest.txt",
       "DCOIR_Version_Manifest.txt"
     ],
     "change_log": [
-      "project_sources/CP-02_DCOIR_Change_Log.txt",
+      "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
       "CP-02_DCOIR_Change_Log.txt",
       "DCOIR_Change_Log.txt"
     ],
@@ -68,7 +68,7 @@
       "impacted": [
         "project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt",
         "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt",
-        "project_sources/CP-01_DCOIR_Version_Manifest.txt"
+        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt"
       ],
       "deep_regression": [
         "re-test staging guidance",
@@ -194,8 +194,8 @@
       "remediation": "repair the compatible helper-skill set in one grouped install wave",
       "impacted": [
         "affected dcoir-* skills",
-        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
-        "project_sources/CP-02_DCOIR_Change_Log.txt"
+        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt"
       ],
       "deep_regression": [
         "re-test each changed skill",

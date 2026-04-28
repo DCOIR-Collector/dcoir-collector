@@ -39,7 +39,7 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 - Do not rewrite control-plane or evergreen files.
 - Do not let Knowledge docs become control-plane authority.
 - Do not guess unclear code intent.
-- Prefer current GitHub-native readable script sources such as `project_sources/DCOIR_Collector.ps1` and `project_sources/run_DCOIR_Tests.ps1` when reasoning about the current project files.
+- Prefer current GitHub-native readable script sources such as `project_sources/collector/source/DCOIR_Collector.ps1` and `project_sources/collector/harness/run_DCOIR_Tests.ps1` when reasoning about the current project files.
 - Treat `README.md` and the split todo structure as current human-readable project context when they are present in the current control plane.
 - When documenting execution, testing, or operator usage for a script-like file, reference the runtime filename the operator will actually use and keep the current GitHub-readable repo path only as provenance.
 - Keep Windows PowerShell 5.1 compatibility as a hard requirement unless the project changes it.

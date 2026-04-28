@@ -1,0 +1,9 @@
+name: Ops restructure map request
+on:
+  workflow_dispatch:
+jobs:
+  dry_run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python ops/tools/ops_request_guard.py ops/requests/restructure_map.json

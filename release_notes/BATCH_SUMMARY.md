@@ -8,8 +8,8 @@ Included surfaces
 - project_sources/README.md
 - dcoir_skills/README.md
 - knowledge/DCOIR_Helper_Skills_Routing_Note.md
-- project_sources/CP-01_DCOIR_Version_Manifest.txt
-- project_sources/CP-02_DCOIR_Change_Log.txt
+- project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt
+- project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt
 - project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt
 - project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt
 - project_sources/LOG-01_DCOIR_Todo_Log.txt

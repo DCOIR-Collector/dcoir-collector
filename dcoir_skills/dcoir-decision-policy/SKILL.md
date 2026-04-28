@@ -220,7 +220,7 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - for endpoint instructions, use Elastic Defend response-action syntax
 - for local workstation instructions, use Windows PowerShell 5.1 syntax unless the control plane changes
 - do not mix endpoint syntax and workstation syntax in the same malformed instruction
-- when documenting execution for current GitHub-readable script sources such as `project_sources/DCOIR_Collector.ps1` or `project_sources/run_DCOIR_Tests.ps1`, use the canonical runtime filename in operator-facing steps and keep the repo path for provenance
+- when documenting execution for current GitHub-readable script sources such as `project_sources/collector/source/DCOIR_Collector.ps1` or `project_sources/collector/harness/run_DCOIR_Tests.ps1`, use the canonical runtime filename in operator-facing steps and keep the repo path for provenance
 
 ### 7. Large-file and partial-input handling
 - if a file is too large or missing, switch to a staged or narrowed intake path rather than blocking the workflow

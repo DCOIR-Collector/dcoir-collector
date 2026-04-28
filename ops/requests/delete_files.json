@@ -1,0 +1,5 @@
+{
+  "mode": "dry-run",
+  "paths": [],
+  "reason": "Add reviewed repo-relative paths to delete."
+}

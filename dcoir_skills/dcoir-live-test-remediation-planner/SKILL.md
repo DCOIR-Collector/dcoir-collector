@@ -26,8 +26,8 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 Before planning remediation, verify the current authoritative control-plane files from the workspace.
 
 Preferred current files:
-- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
-- `project_sources/CP-02_DCOIR_Change_Log.txt`
+- `project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt`
+- `project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt`
 - Airtable `Work Items` / `Plan Tasks`
 - Airtable `Session Checkpoints`
 
@@ -49,7 +49,7 @@ Stop only when the required authority surface for the current task cannot be res
 - Prefer the active work line from the todo log and handoff brief over stale historical assumptions.
 - Prefer the smallest truthful remediation slice first, unless the findings indicate a structural change requiring coordinated multi-file work.
 - Use the current delivery classes, not the retired targeted-versus-full-refresh split alone.
-- Treat `project_sources/DCOIR_Collector.ps1` as the current readable collector source and `DCOIR_Collector.ps1` as the canonical runtime filename.
+- Treat `project_sources/collector/source/DCOIR_Collector.ps1` as the current readable collector source and `DCOIR_Collector.ps1` as the canonical runtime filename.
 - Keep the canonical Airtable memory table human-readable and continuously updated after material remediation-state changes when Airtable access is available.
 
 ## Delivery posture classes

@@ -11,7 +11,7 @@ This repository supports the AFRICOM SOC IR / DCOIR workflow. Preserve evidence-
 ## Authority and startup
 - Treat this repository as the governed readable-source surface for retained DCOIR code, helper-skill source, release history, and promoted workflow decisions.
 - For normal startup, resume, current live queue, active-plan recovery, administrative control, helper-memory lookup, and operator-preference recovery, use Airtable-first authority: Project Instructions, CP-00 only as bootstrap pointer when present, Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`, `Session Checkpoints`, `Queue Control`, `Work Items`, active `Plans`, `Plan Tasks`, `Operator Preferences`, and relevant helper-memory tables.
-- Read `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` only for repository-source tasks such as source-role resolution, packaging/readback, promoted-history comparison, explicit source inspection, or final T99 keep/delete review. Do not use CP-01/CP-02 as normal startup authority when Airtable startup authority is present and current.
+- Read `project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt` only for repository-source tasks such as source-role resolution, packaging/readback, promoted-history comparison, explicit source inspection, or final T99 keep/delete review. Do not use CP-01/CP-02 as normal startup authority when Airtable startup authority is present and current.
 - If CP-01 or CP-02 is absent after a final repo-reduction or split, do not invent a replacement current state. Use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Retained Repo Manifest`, `Queue Control`, `Work Items`, `Plans`, and `Plan Tasks` as the live operating surfaces, then report the missing retained source as a validation finding.
 - Treat Project Instructions and CP-00 bootstrap content as startup anchors when they are supplied by the operator, but do not let them override newer Airtable live queue or active-plan records.
 - If authority sources conflict in a way that affects current-state claims, stop and report the exact conflict before editing.
@@ -40,7 +40,7 @@ This repository supports the AFRICOM SOC IR / DCOIR workflow. Preserve evidence-
 - For final cleanup, do not remove a file solely because it looks stale. Removal requires a current authority basis, retained-manifest check, Airtable coverage check, and no remaining live dependency.
 
 ## Collector line
-- Treat `project_sources/DCOIR_Collector.ps1` as the current readable collector source when present unless the current control plane changes that authority.
+- Treat `project_sources/collector/source/DCOIR_Collector.ps1` as the current readable collector source when present unless the current control plane changes that authority.
 - Treat `DCOIR_Collector.ps1` as the canonical emitted runtime filename for execution examples.
 - Keep Windows PowerShell 5.1 compatibility as a hard requirement for local workstation/test instructions unless explicitly changed.
 - Use Elastic Defend response-action syntax for endpoint instructions and PowerShell 5.1 syntax for local workstation/test instructions.

@@ -28,7 +28,7 @@ Use this skill to turn a proposed or completed DCOIR change into an explicit dow
 7. Return the direct refresh set, conditional review set, deep-regression set, primary delivery recommendation, any secondary skill-delivery recommendation, and stop conditions.
 
 ## Inputs this skill supports
-- Explicit file list such as `project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt`, `PP-07_Agent_Guardrails_v1_0_0.txt`, or `project_sources/DCOIR_Collector.ps1`
+- Explicit file list such as `project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt`, `PP-07_Agent_Guardrails_v1_0_0.txt`, or `project_sources/collector/source/DCOIR_Collector.ps1`
 - Supporting assets such as `supporting_assets/supporting_knowledge_docs.zip` or `supporting_knowledge_docs.zip`
 - Skill names such as `dcoir-repo-packager`
 - Short natural-language requests when ChatGPT can confidently map the request to the changed targets before running the script
@@ -44,7 +44,7 @@ Preferred current authority surfaces:
 - Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST` for startup/admin/current-state authority
 - Airtable `Queue Control`, `Work Items`, active `Plans`, and `Plan Tasks` when the active work-line structure changed
 - Airtable `Schema Registry`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, `Tracking Registry`, and release tracking tables when downstream impact matters
-- GitHub `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` only when repository-source role resolution, promoted-history comparison, packaging, or final T99 keep/delete review is in scope
+- GitHub `project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt` only when repository-source role resolution, promoted-history comparison, packaging, or final T99 keep/delete review is in scope
 - `README.md` and governed repo source files when the current repo-guide posture or source content is part of the changed set
 - retired GitHub todo files only when the migration or retirement path itself is part of the changed set
 
@@ -87,7 +87,7 @@ Return these sections in order:
 ## Commands
 Analyze explicit changed targets:
 ```bash
-python scripts/analyze_change_impact.py   --source-dir /mnt/data   --output-dir /mnt/data/dcoir_change_impact_out   --changed-target PP-03_Baseline_Triage_Prompt_v1_0_0.txt   --changed-target project_sources/DCOIR_Collector.ps1
+python scripts/analyze_change_impact.py   --source-dir /mnt/data   --output-dir /mnt/data/dcoir_change_impact_out   --changed-target PP-03_Baseline_Triage_Prompt_v1_0_0.txt   --changed-target project_sources/collector/source/DCOIR_Collector.ps1
 ```
 
 Analyze a skill change:

@@ -1,0 +1,52 @@
+DCOIR Collector Runtime Packaging Pipeline v2.2.0
+
+Purpose
+- Define the validate-and-build workflow for packaging the current collector maintained source line into a compiled single-runtime delivery package plus harness.
+- Keep the collector packaging line synchronized with the governed build scripts and the associated Actions workflows.
+- Preserve transport-safe delivery naming while still treating the maintained source line as the editable truth.
+- Define the bounded optional EXE variant lane without replacing the PS1-first collector package contract.
+- Define the single-upload embedded support-tool payload model for the optional EXE variant.
+
+Current source model
+- `project_sources/collector/source/DCOIR_Collector.ps1` is the wrapper entry and part-loader source.
+- `project_sources/collector/source/parts/*.ps1` is the maintained collector source-part set.
+- `project_sources/collector/harness/run_DCOIR_Tests.ps1` is the maintained PowerShell harness source.
+- `project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json` defines the compiled-runtime and delivery-package contract.
+- `supporting_assets/DCOIR_Collector.zip` is the governed retained runtime/tool ZIP used as the curated support-tool payload source for the optional embedded EXE build.
+
+Major-version feature wave focus
+- The major-version collector line now includes bounded targeted-collection parameterization.
+- The major-version collector line now emits an explicit parallelism or multithreading assessment surface as part of the output.
+- The major-version collector delivery path still compiles one runtime `DCOIR_Collector.ps1` before packaging.
+
+Primary delivery contract
+- The primary supported collector delivery remains PS1-first:
+  - compiled single-runtime `DCOIR_Collector.ps1`
+  - maintained `run_DCOIR_Tests.ps1` harness
+  - transport-safe delivery package with script entries suffixed as `.txt`
+- The PS1 transport-safe delivery package is the normal operator-facing collector package until a later explicit promotion decision changes the contract.
+
+Optional EXE variant lane
+- `project_sources/collector/tools/build_dcoir_collector_optional_exe_variant.py` is an additive manual-trigger build helper for an optional PS2EXE-based EXE variant.
+- `.github/workflows/manual-collector-optional-exe-build.yml` is the manual GitHub Actions lane for the optional EXE variant.
+- The optional EXE is built from the same compiled `DCOIR_Collector.ps1` runtime used by the primary PS1 package.
+- The optional EXE is single-upload oriented: it embeds support-tool binaries staged from `supporting_assets/DCOIR_Collector.zip` during the build.
+- The optional EXE builder records an `embedded_tool_payload_manifest.json` beside the EXE with the source ZIP hash, embedded file count, target embed root, and per-file hashes.
+- The optional EXE output is labeled `optional_exe_variant` and includes a README that states it does not replace the PS1-first collector delivery contract.
+- A successful optional EXE build proves that the manual lane produced an EXE artifact and embedded-payload manifest from the governed runtime ZIP. It does not by itself prove live endpoint suitability, Elastic response-action suitability, or replacement readiness.
+- A failed optional EXE build does not invalidate the primary PS1 transport-safe collector delivery package by itself.
+
+Embedded support-tool payload rules
+- The embedded payload source is repo-relative `supporting_assets/DCOIR_Collector.zip` unless explicitly overridden for a controlled internal build.
+- Do not download fresh support-tool binaries during the optional EXE build when the goal is parity with the governed retained runtime ZIP.
+- Do not commit extracted third-party binaries as separate source files during ordinary source updates.
+- Do not upload the raw extracted staging cache as a workflow artifact; upload the final EXE, embedded payload manifest, optional EXE README, build report, and related package outputs only.
+- The collector EXE lane must remain auditable through hashes, source ZIP identity, and build report output.
+
+Hard rules
+- Do not ship a wrapper-only collector package.
+- Do not omit any required collector part file from the maintained source line.
+- Do not overwrite the retained runtime zip directly from the transport-safe delivery artifact without a restore-and-refresh step.
+- Keep the primary delivery package transport-safe with `.txt` suffixes for script entries.
+- Do not treat the optional EXE variant as the default collector package.
+- Do not replace the PS1-first collector contract with the EXE variant without explicit later promotion authorization and runtime validation evidence.

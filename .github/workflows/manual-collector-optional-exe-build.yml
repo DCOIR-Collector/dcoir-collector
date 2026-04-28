@@ -42,10 +42,10 @@ jobs:
         shell: pwsh
         run: |
           $pyFiles = @(
-            'project_sources/generation_validation/build_dcoir_collector_runtime_package.py',
-            'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py',
-            'project_sources/generation_validation/compile_dcoir_collector_runtime.py',
-            'project_sources/generation_validation/build_dcoir_collector_optional_exe_variant.py'
+            'project_sources/collector/tools/build_dcoir_collector_runtime_package.py',
+            'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py',
+            'project_sources/collector/tools/compile_dcoir_collector_runtime.py',
+            'project_sources/collector/tools/build_dcoir_collector_optional_exe_variant.py'
           )
           foreach ($file in $pyFiles) {
             if (-not (Test-Path -LiteralPath $file)) {
@@ -61,11 +61,11 @@ jobs:
         shell: pwsh
         run: |
           $psFiles = @(
-            'project_sources/DCOIR_Collector.ps1',
-            'project_sources/run_DCOIR_Tests.ps1'
+            'project_sources/collector/source/DCOIR_Collector.ps1',
+            'project_sources/collector/harness/run_DCOIR_Tests.ps1'
           )
-          if (Test-Path -LiteralPath 'project_sources/collector_parts') {
-            $psFiles += Get-ChildItem -Path 'project_sources/collector_parts' -File -Filter '*.ps1' | ForEach-Object { $_.FullName }
+          if (Test-Path -LiteralPath 'project_sources/collector/source/parts') {
+            $psFiles += Get-ChildItem -Path 'project_sources/collector/source/parts' -File -Filter '*.ps1' | ForEach-Object { $_.FullName }
           }
           foreach ($file in $psFiles) {
             if (-not (Test-Path -LiteralPath $file)) {
@@ -83,13 +83,13 @@ jobs:
       - name: Build optional EXE variant from compiled collector runtime with embedded tools
         shell: pwsh
         run: |
-          Remove-Item -Recurse -Force project_sources/generation_validation/out_optional_exe -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out_optional_exe | Out-Null
+          Remove-Item -Recurse -Force project_sources/validation/out_optional_exe -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/validation/out_optional_exe | Out-Null
           $cmd = @(
             'python',
-            'project_sources/generation_validation/build_dcoir_collector_optional_exe_variant.py',
+            'project_sources/collector/tools/build_dcoir_collector_optional_exe_variant.py',
             '--source-dir', '.',
-            '--output-dir', 'project_sources/generation_validation/out_optional_exe',
+            '--output-dir', 'project_sources/validation/out_optional_exe',
             '--embedded-tools-source-zip', 'supporting_assets/DCOIR_Collector.zip'
           )
           if (-not [string]::IsNullOrWhiteSpace($env:PACKAGE_VERSION_OVERRIDE)) {
@@ -102,11 +102,11 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw 'Optional collector EXE variant build failed.'
           }
-          $exe = Get-ChildItem -LiteralPath project_sources/generation_validation/out_optional_exe/optional_exe_variant -File -Filter '*.exe' | Select-Object -First 1
+          $exe = Get-ChildItem -LiteralPath project_sources/validation/out_optional_exe/optional_exe_variant -File -Filter '*.exe' | Select-Object -First 1
           if (-not $exe) {
             throw 'Optional EXE artifact was not produced.'
           }
-          $payloadManifest = 'project_sources/generation_validation/out_optional_exe/optional_exe_variant/embedded_tool_payload_manifest.json'
+          $payloadManifest = 'project_sources/validation/out_optional_exe/optional_exe_variant/embedded_tool_payload_manifest.json'
           if (-not (Test-Path -LiteralPath $payloadManifest)) {
             throw 'Embedded tool payload manifest was not produced beside the optional EXE.'
           }
@@ -118,8 +118,8 @@ jobs:
         with:
           name: optional-collector-exe-variant
           path: |
-            project_sources/generation_validation/out_optional_exe/build_dcoir_collector_optional_exe_variant_report.json
-            project_sources/generation_validation/out_optional_exe/DCOIR_Collector_Delivery_Package_*.zip
-            project_sources/generation_validation/out_optional_exe/optional_exe_variant/**
+            project_sources/validation/out_optional_exe/build_dcoir_collector_optional_exe_variant_report.json
+            project_sources/validation/out_optional_exe/DCOIR_Collector_Delivery_Package_*.zip
+            project_sources/validation/out_optional_exe/optional_exe_variant/**
           if-no-files-found: warn
           retention-days: 14

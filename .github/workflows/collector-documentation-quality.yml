@@ -27,11 +27,11 @@ jobs:
       - name: Validate Python syntax
         shell: pwsh
         run: |
-          python -m py_compile project_sources/generation_validation/verify_collector_documentation_quality.py
+          python -m py_compile project_sources/collector/tools/verify_collector_documentation_quality.py
           if ($LASTEXITCODE -ne 0) {
             throw 'Documentation audit script syntax validation failed.'
           }
-          python -m py_compile project_sources/generation_validation/test_verify_collector_documentation_quality.py
+          python -m py_compile project_sources/collector/tools/test_verify_collector_documentation_quality.py
           if ($LASTEXITCODE -ne 0) {
             throw 'Documentation audit self-test script syntax validation failed.'
           }
@@ -39,7 +39,7 @@ jobs:
       - name: Run validator self-tests
         shell: pwsh
         run: |
-          python project_sources/generation_validation/test_verify_collector_documentation_quality.py
+          python project_sources/collector/tools/test_verify_collector_documentation_quality.py
           if ($LASTEXITCODE -ne 0) {
             throw 'Documentation audit validator self-tests failed.'
           }
@@ -48,9 +48,9 @@ jobs:
         shell: pwsh
         run: |
           $psFiles = @(
-            'project_sources/DCOIR_Collector.ps1',
-            'project_sources/run_DCOIR_Tests.ps1'
-          ) + @(Get-ChildItem -LiteralPath project_sources/collector_parts -File -Filter '*.ps1' | ForEach-Object { $_.FullName })
+            'project_sources/collector/source/DCOIR_Collector.ps1',
+            'project_sources/collector/harness/run_DCOIR_Tests.ps1'
+          ) + @(Get-ChildItem -LiteralPath project_sources/collector/source/parts -File -Filter '*.ps1' | ForEach-Object { $_.FullName })
           $parseFailures = @()
           foreach ($file in $psFiles) {
             $tokens = $null
@@ -69,9 +69,9 @@ jobs:
       - name: Run auto-discovery documentation audit
         shell: pwsh
         run: |
-          Remove-Item -Recurse -Force project_sources/generation_validation/out_collector_documentation_quality -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out_collector_documentation_quality | Out-Null
-          python project_sources/generation_validation/verify_collector_documentation_quality.py --repo-root . --output-json project_sources/generation_validation/out_collector_documentation_quality/collector_documentation_quality.json --fail-on-missing-file-help --fail-on-undocumented-functions
+          Remove-Item -Recurse -Force project_sources/validation/out_collector_documentation_quality -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/validation/out_collector_documentation_quality | Out-Null
+          python project_sources/collector/tools/verify_collector_documentation_quality.py --repo-root . --output-json project_sources/validation/out_collector_documentation_quality/collector_documentation_quality.json --fail-on-missing-file-help --fail-on-undocumented-functions
 
       - name: Upload documentation audit artifacts
         if: always()
@@ -79,6 +79,6 @@ jobs:
         with:
           name: collector-documentation-quality
           path: |
-            project_sources/generation_validation/out_collector_documentation_quality/**
+            project_sources/validation/out_collector_documentation_quality/**
           if-no-files-found: warn
           retention-days: 21

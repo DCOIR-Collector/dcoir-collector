@@ -1,0 +1,60 @@
+DCOIR Gemini Stored-Source And Compile Strategy v1.0.0
+
+Purpose
+- Replace the fragile on-the-fly Gemini bundle creation path with a stored-source and compile model.
+- Preserve the operator-accepted good Gemini bundle as a governed editable source set in GitHub.
+- Make future Gemini changes behave more like the collector source line and the prompt-pack-to-standalone assembly line.
+
+Core decision
+- The default operator-facing Gemini bundle should no longer be created by free-form generation at bundle time.
+- The default operator-facing Gemini bundle should now be compiled from a maintained stored source tree in GitHub.
+
+Authoritative roles
+1. Behavioral authority
+- PP-01 through PP-07 remain the design-time behavioral authority for DCOIR workflow expectations.
+- PP-09 and PP-10 remain design and generation guidance, not the runtime shipment surface by themselves.
+
+2. Runtime Gemini bundle authority
+- `project_sources/gemini/bundle_source/` is the governed editable runtime source tree for the operator-facing Gemini bundle.
+- Its contents are the current accepted steady-state parent-agent, sub-agent, and prime-agent-attachment files.
+- The current baseline imported into that tree is the accepted good v2 Gemini bundle content.
+
+3. Compile output
+- The shipped Gemini zip should be produced by compiling `project_sources/gemini/bundle_source/` into a versioned bundle zip.
+- Compilation is packaging and validation, not free-form generation.
+
+Editing model
+- When requirements change, edit the relevant files directly in `project_sources/gemini/bundle_source/`.
+- Expected normal edits include:
+  - one start-here file
+  - the parent agent file
+  - one or more sub-agent files
+  - one or more knowledge attachment files
+  - the generated index or attachment map when the topology or attachment set changes
+  - the source manifest when the bundle version or required file set changes
+- If a new sub-agent is intentionally added, add its source file here first, update the index, update the manifest, and then compile.
+
+Compile workflow
+1. Confirm the current control plane.
+2. Confirm the desired Gemini source tree under `project_sources/gemini/bundle_source/`.
+3. Edit the source files that need changing.
+4. Update `Gemini_Bundle_Source_Manifest.json.txt` when the version, required files, or topology changed.
+5. Run `project_sources/gemini/tools/compile_dcoir_gemini_bundle.py`.
+6. Validate the compiled bundle before shipment.
+7. Ship the compiled zip.
+
+Hard rules
+- Do not ship `knowledge/generated_agent_markdowns/` directly as the default operator bundle.
+- Do not treat older stored generated markdowns as shipment authority unless the operator explicitly asks for that exact stored surface.
+- Do not regenerate agent fields on the fly during ordinary bundle packaging when the stored source tree is available.
+- Do not substitute governance docs or validation docs for the approved knowledge attachment set.
+- Do not thin or summarize an agent file during bundle packaging. Edit the source file itself if a real content change is intended.
+
+Relationship to the collector and standalone prompt
+- Collector pattern: maintain in parts, then assemble or ship the runtime form.
+- Standalone prompt pattern: keep modular authority, then assemble the full runtime prompt.
+- Gemini pattern after this change: keep the accepted runtime bundle in maintainable stored source files, then compile that source tree into the bundle zip.
+
+End state
+- Gemini bundle delivery should now be predictable, inspectable, and maintainable.
+- Routine Gemini downloads should come from compilation of stored governed source, not from ad hoc generation.

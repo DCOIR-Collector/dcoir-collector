@@ -55,11 +55,11 @@ jobs:
         shell: pwsh
         run: |
           $psFiles = @(
-            'project_sources/DCOIR_Collector.ps1',
-            'project_sources/run_DCOIR_Tests.ps1'
+            'project_sources/collector/source/DCOIR_Collector.ps1',
+            'project_sources/collector/harness/run_DCOIR_Tests.ps1'
           )
-          if (Test-Path -LiteralPath 'project_sources/collector_parts') {
-            $psFiles += Get-ChildItem -Path 'project_sources/collector_parts' -File -Filter '*.ps1' | ForEach-Object { $_.FullName }
+          if (Test-Path -LiteralPath 'project_sources/collector/source/parts') {
+            $psFiles += Get-ChildItem -Path 'project_sources/collector/source/parts' -File -Filter '*.ps1' | ForEach-Object { $_.FullName }
           }
           $psFiles = @($psFiles | Where-Object { Test-Path -LiteralPath $_ })
           if (-not $psFiles) {
@@ -84,28 +84,28 @@ jobs:
         shell: pwsh
         run: |
           $required = @(
-            'project_sources/CP-01_DCOIR_Version_Manifest.txt',
-            'project_sources/CP-02_DCOIR_Change_Log.txt',
+            'project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt',
+            'project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt',
             'project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt',
-            'project_sources/Collector_Runtime_Package_Manifest.json.txt',
-            'project_sources/DCOIR_Collector.ps1',
-            'project_sources/run_DCOIR_Tests.ps1',
-            'project_sources/collector_parts',
-            'project_sources/collector_parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1',
-            'project_sources/collector_parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1',
-            'project_sources/collector_parts/DCOIR_Collector.03A_Enrich_Session_State.ps1',
-            'project_sources/collector_parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1',
-            'project_sources/collector_parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1',
-            'project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1',
-            'project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1',
-            'project_sources/collector_parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1',
-            'project_sources/collector_parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1',
-            'project_sources/collector_parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1',
-            'project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1',
-            'project_sources/generation_validation/compile_dcoir_collector_runtime.py',
-            'project_sources/generation_validation/validate_dcoir_collector_runtime_package.py',
-            'project_sources/generation_validation/build_dcoir_collector_runtime_package.py',
-            'project_sources/generation_validation/restore_dcoir_collector_runtime_zip.py'
+            'project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json',
+            'project_sources/collector/source/DCOIR_Collector.ps1',
+            'project_sources/collector/harness/run_DCOIR_Tests.ps1',
+            'project_sources/collector/source/parts',
+            'project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1',
+            'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1',
+            'project_sources/collector/source/parts/DCOIR_Collector.03A_Enrich_Session_State.ps1',
+            'project_sources/collector/source/parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1',
+            'project_sources/collector/source/parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1',
+            'project_sources/collector/source/parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1',
+            'project_sources/collector/source/parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1',
+            'project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1',
+            'project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1',
+            'project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1',
+            'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1',
+            'project_sources/collector/tools/compile_dcoir_collector_runtime.py',
+            'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py',
+            'project_sources/collector/tools/build_dcoir_collector_runtime_package.py',
+            'project_sources/collector/tools/restore_dcoir_collector_runtime_zip.py'
           )
           $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
           if ($missing.Count -gt 0) {
@@ -115,12 +115,12 @@ jobs:
       - name: Create output directory
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out | Out-Null
+          New-Item -ItemType Directory -Force -Path project_sources/validation/out | Out-Null
 
       - name: Run collector runtime package validation
         shell: pwsh
         run: |
-          python project_sources/generation_validation/validate_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/generation_validation/out
+          python project_sources/collector/tools/validate_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/validation/out
           if ($LASTEXITCODE -ne 0) {
             throw 'Collector runtime package validation failed.'
           }
@@ -128,9 +128,9 @@ jobs:
       - name: Run collector documentation quality gate
         shell: pwsh
         run: |
-          Remove-Item -Recurse -Force project_sources/generation_validation/out_preflight_documentation_quality -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out_preflight_documentation_quality | Out-Null
-          python project_sources/generation_validation/verify_collector_documentation_quality.py --repo-root . --output-json project_sources/generation_validation/out_preflight_documentation_quality/collector_documentation_quality.json --fail-on-missing-file-help --fail-on-undocumented-functions
+          Remove-Item -Recurse -Force project_sources/validation/out_preflight_documentation_quality -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/validation/out_preflight_documentation_quality | Out-Null
+          python project_sources/collector/tools/verify_collector_documentation_quality.py --repo-root . --output-json project_sources/validation/out_preflight_documentation_quality/collector_documentation_quality.json --fail-on-missing-file-help --fail-on-undocumented-functions
           if ($LASTEXITCODE -ne 0) {
             throw 'Collector documentation quality gate failed before packaging.'
           }
@@ -141,9 +141,9 @@ jobs:
           $versionOverride = $env:PACKAGE_VERSION_OVERRIDE
           $cmd = @(
             'python',
-            'project_sources/generation_validation/build_dcoir_collector_runtime_package.py',
+            'project_sources/collector/tools/build_dcoir_collector_runtime_package.py',
             '--source-dir', '.',
-            '--output-dir', 'project_sources/generation_validation/out'
+            '--output-dir', 'project_sources/validation/out'
           )
           if (-not [string]::IsNullOrWhiteSpace($versionOverride)) {
             $cmd += @('--version', $versionOverride)
@@ -156,20 +156,20 @@ jobs:
       - name: Restore built collector runtime for harness smoke
         shell: pwsh
         run: |
-          $deliveryZip = Get-ChildItem -Path project_sources/generation_validation/out -File -Filter 'DCOIR_Collector_Delivery_Package_*.zip' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          $deliveryZip = Get-ChildItem -Path project_sources/validation/out -File -Filter 'DCOIR_Collector_Delivery_Package_*.zip' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
           if (-not $deliveryZip) {
             throw 'Collector delivery package zip was not produced.'
           }
-          python project_sources/generation_validation/restore_dcoir_collector_runtime_zip.py --delivery-package-zip $deliveryZip.FullName --base-runtime-zip supporting_assets/DCOIR_Collector.zip --output-dir project_sources/generation_validation/out --output-name DCOIR_Collector_runtime_for_harness.zip
+          python project_sources/collector/tools/restore_dcoir_collector_runtime_zip.py --delivery-package-zip $deliveryZip.FullName --base-runtime-zip supporting_assets/DCOIR_Collector.zip --output-dir project_sources/validation/out --output-name DCOIR_Collector_runtime_for_harness.zip
           if ($LASTEXITCODE -ne 0) {
             throw 'Collector runtime zip restore bridge failed.'
           }
-          $extractDir = 'project_sources/generation_validation/out/runtime_harness'
+          $extractDir = 'project_sources/validation/out/runtime_harness'
           Remove-Item -Recurse -Force $extractDir -ErrorAction SilentlyContinue
           New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
-          Expand-Archive -LiteralPath project_sources/generation_validation/out/DCOIR_Collector_runtime_for_harness.zip -DestinationPath $extractDir -Force
-          "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/generation_validation/out/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
-          "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/generation_validation/out/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
+          Expand-Archive -LiteralPath project_sources/validation/out/DCOIR_Collector_runtime_for_harness.zip -DestinationPath $extractDir -Force
+          "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/validation/out/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
+          "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/validation/out/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
 
       - name: Run collector core smoke on built runtime package
         shell: pwsh
@@ -187,10 +187,10 @@ jobs:
           name: manual-collector-runtime-package-build
           path: |
             project_sources/TestResults/**
-            project_sources/generation_validation/out/*.zip
-            project_sources/generation_validation/out/*report.json
-            project_sources/generation_validation/out/compiled_runtime/**
-            project_sources/generation_validation/out/runtime_harness/**
-            project_sources/generation_validation/out_preflight_documentation_quality/**
+            project_sources/validation/out/*.zip
+            project_sources/validation/out/*report.json
+            project_sources/validation/out/compiled_runtime/**
+            project_sources/validation/out/runtime_harness/**
+            project_sources/validation/out_preflight_documentation_quality/**
           if-no-files-found: warn
           retention-days: 21

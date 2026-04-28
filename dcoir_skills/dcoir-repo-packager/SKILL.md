@@ -31,7 +31,7 @@ Before packaging anything, verify that Airtable-first startup/governance authori
 Preferred current authority surfaces:
 - Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST` for startup/admin authority
 - Airtable `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and `Schema Registry` for final cleanup and retained-surface classification
-- GitHub `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` only when packaging depends on governed repo source roles or promoted-history comparison
+- GitHub `project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt` only when packaging depends on governed repo source roles or promoted-history comparison
 
 Legacy compatibility aliases may be accepted only when the bundled mapping rules explicitly allow them.
 
@@ -115,7 +115,7 @@ python scripts/create_dcoir_bundle.py --source-dir /mnt/data --output-dir /mnt/d
 
 GitHub Desktop manual repo-update bundle:
 ```bash
-python scripts/create_dcoir_bundle.py --source-dir /mnt/data --output-dir /mnt/data/dcoir_packager_out --mode github-desktop-manual-update --include-path project_sources/CP-01_DCOIR_Version_Manifest.txt --include-path dcoir_skills/dcoir-repo-packager/SKILL.md --commit-summary "record startup validation and repair github desktop patch-bundle packaging"
+python scripts/create_dcoir_bundle.py --source-dir /mnt/data --output-dir /mnt/data/dcoir_packager_out --mode github-desktop-manual-update --include-path project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt --include-path dcoir_skills/dcoir-repo-packager/SKILL.md --commit-summary "record startup validation and repair github desktop patch-bundle packaging"
 ```
 
 ## Output handling

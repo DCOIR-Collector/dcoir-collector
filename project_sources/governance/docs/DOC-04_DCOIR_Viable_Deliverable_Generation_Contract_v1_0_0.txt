@@ -1,0 +1,133 @@
+DCOIR Viable Deliverable Generation Contract v1.0.0
+
+Purpose
+- Capture the durable rules that produced the first operator-acceptable v2 standalone prompt bundle and v2 Gemini email build bundle shape.
+- Prevent future drift back into packaging old generated artifacts, under-dense Gemini fields, or standalone prompt rewrites that omit prompt-pack substance.
+- Keep the project aligned to explicit validation gates and operator-facing bundle shapes that can be tested directly.
+
+Scope
+- This contract governs two deliverable classes:
+  1. the standalone analyst-facing all-in-one prompt bundle
+  2. the Gemini parent-agent plus seven-sub-agent bundle
+- This contract is for deliverable generation and test-facing packaging, not for replacing behavioral authority.
+
+Role hierarchy
+1. Behavioral authority
+- PP-01 through PP-07 remain the design-time behavioral source of truth.
+
+2. Standalone runtime deliverable
+- The shipped standalone prompt must be freshly generated from PP-01 through PP-07 as a true full assembly.
+- PP-08 may exist in GitHub as the regenerated runtime parity artifact, but PP-08 is not the design-time source of truth and is not a license to ship a condensed rewrite.
+
+3. Gemini runtime deliverable
+- The default operator-facing Gemini bundle now follows a stored-source and compile model.
+- `project_sources/gemini/bundle_source/` is the governed editable runtime source tree for the parent agent, sub-agents, and attachment files.
+- The shipped Gemini bundle should normally be compiled from that source tree rather than regenerated on the fly.
+- PP-09 remains the Gemini workflow source and PP-10 remains the bounded design artifact for designing, refreshing, or structurally changing the Gemini line, but they are not by themselves the runtime shipment surface.
+
+4. Gold-standard style and density benchmark
+- `project_sources/original_alert_triage_gemini_agents/` is the approved style, density, routing, and field-writing benchmark.
+- Its Description and Instructions posture is the minimum acceptable baseline for future Gemini refreshes.
+- Future Gemini source-tree updates should be at least as explicit, routing-rich, and operationally dense as that benchmark set.
+
+5. Structure and naming reference only
+- `project_sources/DCOIR_Gemini_Email_Build_Bundle_v1_1_0/` is an approved structure and naming reference only.
+- Use its bundle shape, folder model, and naming lessons when they help the operator-facing delivery shape.
+- Do not treat its wording or agent text as current quality authority.
+
+6. Failure-reference surfaces
+- `project_sources/original_collector_artifact_gemini_agents/` is a historical failure reference for what not to ship when the generated fields are too thin.
+- Earlier stored generated markdowns are generated-output working surfaces only. They are not the default shipment surface unless the operator explicitly asks for the stored version.
+
+Standalone prompt-generation rules
+- The standalone prompt must be a true full prompt-pack assembly from PP-01 through PP-07.
+- Do not ship a condensed rewrite that drops material from the modular source line.
+- Attachments may support runtime use, but they must not substitute for omitted prompt-pack substance.
+
+Gemini stored-source rules
+- Keep one governed editable source tree for the accepted runtime Gemini bundle.
+- The source tree should contain the parent agent, each sub-agent, start-here files, and the approved knowledge attachment set.
+- Routine bundle downloads should compile this stored source tree directly.
+- If requirements change, edit the relevant source-tree files first, then compile.
+- Only use on-the-fly generation when the operator explicitly wants a redesign, topology change, or major rewrite path before those results are promoted into the stored source tree.
+- Do not default to packaging `knowledge/generated_agent_markdowns/` as the runtime bundle.
+- Do not substitute governance docs, validation docs, or helper-workflow notes for the approved knowledge attachment set.
+
+Preferred operator-facing bundle shapes
+
+Gemini bundle
+- Top-level folder name pattern:
+  - `DCOIR_Gemini_Email_Build_Bundle_<version>/`
+- Preferred subfolders:
+  - `00_START_HERE/`
+  - `01_GEMINI_AGENT_BUILD/`
+  - `02_PRIME_AGENT_ATTACHMENTS/`
+- Preferred `00_START_HERE/` files:
+  - `README_FIRST.md.txt`
+  - `Gemini_Build_Quick_Start.md.txt`
+  - `Agent_Attachment_Map.md.txt`
+- Preferred `01_GEMINI_AGENT_BUILD/` files:
+  - `Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt`
+  - `Sub_Agent_01_Session_Readiness_and_Intake.md.txt`
+  - `Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt`
+  - `Sub_Agent_03_Alert_Family_Classifier.md.txt`
+  - `Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt`
+  - `Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt`
+  - `Sub_Agent_06_DCOIR_Collection_and_Artifact_Orchestrator.md.txt`
+  - `Sub_Agent_07_Decision_and_Report_Composer.md.txt`
+  - `Generated_DCOIR_Gemini_Agent_Index.md.txt`
+- Preferred `02_PRIME_AGENT_ATTACHMENTS/` baseline attachment set:
+  - `Knowledge - 01 - Overview and About.md.txt`
+  - `Knowledge - 02 - Elastic Quick Start.md.txt`
+  - `Knowledge - 03 - Local Test and Regression.md.txt`
+  - `Knowledge - 04 - Tier 1 Collect Runbook.md.txt`
+  - `Knowledge - 05 - Tier 2 Collect Runbook.md.txt`
+  - `Knowledge - 06 - Enrichment Actions.md.txt`
+  - `Knowledge - 07 - Artifact Review Guide.md.txt`
+  - `Knowledge - 08 - Troubleshooting.md.txt`
+  - `Knowledge - 09 - FAQ.md.txt`
+  - `Knowledge - 10 - AI Prompt and Agent Design.md.txt`
+  - `Knowledge - 11 - IOC Enrichment and Public Sources.md.txt`
+
+Standalone prompt bundle
+- Top-level folder name pattern:
+  - `DCOIR_Standalone_Prompt_Build_Bundle_<version>/`
+- Preferred subfolders:
+  - `00_START_HERE/`
+  - `01_STANDALONE_PROMPT/`
+  - `02_PROMPT_ATTACHMENTS/`
+- Preferred `00_START_HERE/` files:
+  - `README_FIRST.md.txt`
+  - `Standalone_Prompt_Quick_Start.md.txt`
+  - `Prompt_Attachment_Map.md.txt`
+- Preferred `01_STANDALONE_PROMPT/` file:
+  - `AFRICOM_SOC_DCOIR_Standalone_Master_Prompt_Full_Assembly.txt`
+- Preferred `02_PROMPT_ATTACHMENTS/` baseline attachment set:
+  - the same Knowledge 01 through Knowledge 11 files listed above unless a later bounded generation round explicitly changes that attachment baseline
+
+Packaging and clarity rules
+- Keep the shipped test-facing bundles minimal and operator-facing.
+- Do not mix control-plane logs, packager reports, helper-workflow notes, collector internals, harness files, or other unrelated repo material into the Gemini or standalone test bundles by default.
+- Keep agent-definition files and attachment files in clearly separate folders.
+- Add `.txt` to mail-sensitive markdown or zip-like payload names when the operator needs the bundle to pass email filters.
+
+Hard validation gates
+Reject a Gemini bundle if any of these are true:
+- the runtime bundle was not compiled from `project_sources/gemini/bundle_source/` during ordinary shipment
+- the parent or any sub-agent is materially thinner or less explicit than the approved alert-triage benchmark set
+- Description is not routing-rich enough to support delegation well
+- Instructions are not operationally explicit enough to preserve workflow, error handling, stop conditions, and output contract
+- extra confusing materials are mixed into the main build folder
+- the output depends on hidden project helpers or hidden memory
+- the approved knowledge attachment set was substituted with governance or validation files
+
+Reject a standalone prompt if any of these are true:
+- the all-in-one prompt is a condensed rewrite rather than a true full prompt-pack assembly
+- attachments are being used to replace missing prompt-pack substance
+- the prompt omits alert triage, escalation logic, IOC enrichment, artifact review, or final synthesis behavior that exists in the modular source line
+
+End state
+- The durable success condition is repeatable generation of:
+  1. a fresh standalone all-in-one prompt that truly preserves prompt-pack substance
+  2. a compiled Gemini parent-plus-seven-sub-agent bundle produced from the governed stored source tree
+- Both deliverables must be shippable for operator testing without requiring reconstruction from buried chat history.

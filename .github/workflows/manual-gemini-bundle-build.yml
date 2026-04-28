@@ -61,34 +61,34 @@ jobs:
         shell: pwsh
         run: |
           $required = @(
-            'project_sources/CP-01_DCOIR_Version_Manifest.txt',
-            'project_sources/CP-02_DCOIR_Change_Log.txt',
+            'project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt',
+            'project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt',
             'project_sources/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt',
             'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
             'project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/Gemini_Bundle_Source_Manifest.json.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/README.md',
-            'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/README_FIRST.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/Agent_Attachment_Map.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/00_START_HERE/Gemini_Build_Quick_Start.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Generated_DCOIR_Gemini_Agent_Index.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_01_Session_Readiness_and_Intake.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_03_Alert_Family_Classifier_and_Known_Benign_Technology_Differentiator.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_06_DCOIR_Collector_Execution_and_Bundle_Workflow_Orchestrator.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_07_DCOIR_Collector_Artifact_Interpreter_and_Report_Extractor.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt',
-            'project_sources/DCOIR_Gemini_Bundle_Source/01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt',
+            'project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json',
+            'project_sources/gemini/bundle_source/README.md',
+            'project_sources/gemini/bundle_source/00_START_HERE/README_FIRST.md.txt',
+            'project_sources/gemini/bundle_source/00_START_HERE/Agent_Attachment_Map.md.txt',
+            'project_sources/gemini/bundle_source/00_START_HERE/Gemini_Build_Quick_Start.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Generated_DCOIR_Gemini_Agent_Index.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_01_Session_Readiness_and_Intake.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_03_Alert_Family_Classifier_and_Known_Benign_Technology_Differentiator.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_06_DCOIR_Collector_Execution_and_Bundle_Workflow_Orchestrator.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_07_DCOIR_Collector_Artifact_Interpreter_and_Report_Extractor.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt',
+            'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt',
             'knowledge/README.md',
             'knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md',
-            'project_sources/generation_validation/sync_dcoir_gemini_knowledge_attachments.py',
-            'project_sources/generation_validation/validate_dcoir_gemini_bundle.py',
-            'project_sources/generation_validation/compile_dcoir_gemini_bundle.py',
-            'project_sources/generation_validation/build_dcoir_gemini_release.py'
+            'project_sources/gemini/tools/sync_dcoir_gemini_knowledge_attachments.py',
+            'project_sources/gemini/tools/validate_dcoir_gemini_bundle.py',
+            'project_sources/gemini/tools/compile_dcoir_gemini_bundle.py',
+            'project_sources/gemini/tools/build_dcoir_gemini_release.py'
           )
           $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
           if ($missing.Count -gt 0) {
@@ -102,7 +102,7 @@ jobs:
       - name: Create output directory
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path project_sources/generation_validation/out | Out-Null
+          New-Item -ItemType Directory -Force -Path project_sources/validation/out | Out-Null
 
       - name: Run Gemini validation and build
         shell: pwsh
@@ -111,9 +111,9 @@ jobs:
           $versionOverride = $env:BUNDLE_VERSION_OVERRIDE
           $cmd = @(
             'python',
-            'project_sources/generation_validation/build_dcoir_gemini_release.py',
-            '--source-root', 'project_sources/DCOIR_Gemini_Bundle_Source',
-            '--output-dir', 'project_sources/generation_validation/out'
+            'project_sources/gemini/tools/build_dcoir_gemini_release.py',
+            '--source-root', 'project_sources/gemini/bundle_source',
+            '--output-dir', 'project_sources/validation/out'
           )
           if ($skipValidation -eq 'true') {
             $cmd += '--skip-validation'
@@ -132,7 +132,7 @@ jobs:
         with:
           name: manual-gemini-bundle-build
           path: |
-            project_sources/generation_validation/out/*.zip
-            project_sources/generation_validation/out/*report.json
+            project_sources/validation/out/*.zip
+            project_sources/validation/out/*report.json
           if-no-files-found: warn
           retention-days: 21

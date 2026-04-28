@@ -38,7 +38,7 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 - For endpoint-side actions, use Elastic Defend response-action syntax only.
 - For analyst workstation or local test steps, use Windows PowerShell 5.1 syntax only.
 - Do not blend endpoint syntax and local syntax in one malformed instruction.
-- When reasoning from the current GitHub-readable collector source `project_sources/DCOIR_Collector.ps1`, document operator runtime execution as `DCOIR_Collector.ps1`.
+- When reasoning from the current GitHub-readable collector source `project_sources/collector/source/DCOIR_Collector.ps1`, document operator runtime execution as `DCOIR_Collector.ps1`.
 - Prefer one best next action when the operator is trying to move a live workflow forward.
 - When collector output contains explicit `NEXT_GET_FILE`, `CLEANUP_COMMAND`, or `DELETE_SCRIPT_COMMAND` markers, treat them as high-priority operator cues.
 - Default to deeper regression for any scriptable or reproducible workflow helper before live use and after patches when testing is part of the task.
