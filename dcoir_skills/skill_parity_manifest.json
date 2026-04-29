@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-04-29T16:06:13Z",
+  "generated_at_utc": "2026-04-29T16:23:46Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -12,12 +12,12 @@
   "skills": {
     "dcoir-artifact-intake-router": {
       "source_root": "dcoir-artifact-intake-router",
-      "source_tree_hash": "8ce99129870533ef6b05ec363bb7c2cd1a3039cdc8fe32b07cbf55cf9247f863",
+      "source_tree_hash": "64360653b70dc033bdf2585e78c116f8db7c2c760d50ade902dca07675bdb673",
       "release_zip_name": "dcoir-artifact-intake-router.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 5,
-      "total_bytes": 15636,
+      "total_bytes": 16418,
       "files": [
         {
           "path": "SKILL.md",
@@ -41,8 +41,8 @@
         },
         {
           "path": "scripts/build_artifact_manifest.py",
-          "sha256": "88e0e3619929f44f953ee0df8ad25db6f77eb687f37dc820ff47c549c88dda12",
-          "size_bytes": 5694
+          "sha256": "70be7e6420a340a1baa9f70e58e911a9ef1f89b890091161eff94e506c2edba8",
+          "size_bytes": 6476
         }
       ]
     },
