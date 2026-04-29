@@ -1,0 +1,14 @@
+interface:
+  display_name: DCOIR Airtable Schema Cache
+  short_description: Caches and checks DCOIR Airtable schema readback.
+  icon: assets/icon.svg
+  brand_color: '#334155'
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
