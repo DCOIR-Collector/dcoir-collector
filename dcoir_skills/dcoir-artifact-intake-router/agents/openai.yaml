@@ -1,0 +1,5 @@
+interface:
+  display_name: "DCOIR Artifact Intake Router"
+  short_description: "Classifies uploaded DCOIR archives and routes them safely."
+  icon: "assets/icon.svg"
+  brand_color: "#334155"
