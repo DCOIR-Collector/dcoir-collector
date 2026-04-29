@@ -1,18 +1,29 @@
 ---
 name: dcoir-readme-maintainer
-description: maintain root and folder readme surfaces for africom_soc_ir / dcoir work. use when chatgpt needs to improve the repository root readme, improve or create a major folder readme such as knowledge/readme.md or project_sources/readme.md, refresh readme navigation or cross-links after repo changes, detect missing readme coverage in major governed folders, align readme summaries to the current control plane and visible governed working line, or refresh the helper-skill routing note when inventory or workflow rules changed materially and the note would otherwise drift from the maintained readme surfaces. do not use for broader knowledge-doc generation, source-authority judgment, release readiness, or package-class choice. follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
+description: maintain root and folder readme surfaces for africom_soc_ir / dcoir work and align readme navigation with current governed workflow rules.
 ---
-
-<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-readme-maintainer|SKILL.md -->
+<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-readme-maintainer|SKILL.md -->
 
 # DCOIR README Maintainer
 
+## Airtable operational schema alignment
+Airtable cutover and skill cutover are complete. Use the current Airtable schema as live operational authority, not historical migration or cleanup plans.
+
+Use `references/airtable_operational_schema_contract.md` for durable rules covering:
+- current live authority tables
+- idea-to-work-item-to-plan promotion
+- Delete Queue deletion requests and dependency order
+- DCOIR Lifecycle Ledger readback/history events
+- Local Configuration Registry secret-safe configuration references
+
+Do not assume retired or absent tables exist. In particular, do not require `Plan Tasks`, `Plan Checkpoints`, `Skill State Registry`, `Schema Registry`, `Tracking Registry`, `Repo File Coverage Detail`, or `Retained Repo Manifest` unless live Airtable schema readback proves the table exists for the current task.
+
 ## Airtable-first startup authority
 - For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
-- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Work Items for task execution`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
 - Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
-- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
-- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, explicit repo cleanup/source-role review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo Surface Registry supporting evidence`, `Repo Surface Registry retained-state evidence`, and active plan state before stopping.
 
 
 ## Required project gate
@@ -21,7 +32,7 @@ Use this skill only for the AFRICOM_SOC_IR / DCOIR project.
 Before doing README work:
 1. Re-anchor to Project Instructions.
 2. Read Airtable `CONTROL-STARTUP-AIRTABLE-FIRST` and live Airtable state for startup/admin/current-state context.
-3. Read `dcoir_skills/project_discovery_contract.json` and GitHub `CP-01`/`CP-02` only when README work depends on governed repo source roles, promoted-history comparison, packaging, or T99 keep/delete review.
+3. Read `dcoir_skills/project_discovery_contract.json` and GitHub `CP-01`/`CP-02` only when README work depends on governed repo source roles, promoted-history comparison, packaging, or explicit repo cleanup/source-role review.
 4. Confirm the task is inside the current governed DCOIR working line.
 
 If authority is unclear or the control plane conflicts, stop and report the exact conflict instead of rewriting README surfaces from stale assumptions.
@@ -146,3 +157,20 @@ Use when helpful:
 ## Airtable testing workflow alignment
 
 When README surfaces are refreshed after workflow changes, keep them aligned with the current testing posture that uses Airtable table `Validation Test Cases` as the standard dynamic manual-testing surface for collector and Gemini sessions.
+
+
+## Fast Airtable helper-memory read contract
+
+Use the skill-specific Airtable helper-memory table directly when this skill needs durable helper memory.
+
+- Airtable base id: `appM4KSwnVf3G3OTK`
+- Airtable table name: `dcoir-readme-maintainer`
+- Airtable table id: `tblzaBfC7EUCrVRUe`
+- Primary lookup/dedupe field: `readme_entry_id`
+
+Read pattern:
+- Use the Airtable connector with `baseId="appM4KSwnVf3G3OTK"` and `tableId="tblzaBfC7EUCrVRUe"` when supported; use the table name only as fallback.
+- Use non-display Airtable reads such as `search_records`, direct table reads, or equivalent connector calls. Do not ask the operator whether to display an interactive Airtable view.
+- Pull only this skill's own helper-memory table for routine memory lookup. Do not scan a unified helper-memory table and filter by skill.
+- Keep helper-memory rows human-readable and update this same table when material reusable state changes.
+- If the connector cannot query by tableId, state the limitation and use the table name `dcoir-readme-maintainer` without switching to a merged memory table.

@@ -1,0 +1,27 @@
+CP-00 DCOIR Airtable-First Bootstrap v4
+
+Purpose
+This file is a ChatGPT Project-space bootstrap pointer for AFRICOM_SOC_IR / DCOIR. Airtable is operational authority now. CP-00 is not a governed readable-source repository and must not replace Airtable live authority or GitHub governed source files.
+
+Authority split
+1. Project Instructions are the first startup anchor.
+2. This CP-00 file is the second startup pointer when present.
+3. Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST is active startup/load-sequence authority.
+4. Airtable is live operational authority for queue order, branch priority, active execution order, Plans, Work Items, Session Checkpoints, Idea Inbox, Operator Preferences, Validation Test Cases, Validation Evidence, Delete Queue, DCOIR Lifecycle Ledger, Admin Registry, Repo Surface Registry, Local Configuration Registry, and helper-skill durable memory where a table exists.
+5. GitHub repository malwaredevil/dcoir-collector remains governed source/readback, helper-skill source, source-code truth, packaging source, and promoted history only when a repository-source task requires it.
+6. GitHub CP-01/CP-02 and old GitHub todo files are detached from normal startup. They are fallback/promoted-history/source-task inputs only.
+
+Required startup order
+1. Use Project Instructions.
+2. Read this CP-00 pointer when present.
+3. Read Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST.
+4. Invoke dcoir-session-resume.
+5. Invoke dcoir-memory-preflight.
+6. Silently read Airtable Session Checkpoints, Queue Control, Work Items, active Plans, Operator Preferences, Admin Registry skill-state rows, and relevant helper-memory tables.
+7. Read GitHub only when the immediate task requires governed repo source/readback, promoted-history comparison, packaging, source-code validation, or explicit repo readback.
+
+Schema-readback rule
+Use current Airtable schema readback before assuming any registry or task-detail table exists. Do not require Plan Tasks, Plan Checkpoints, Skill State Registry, Schema Registry, Tracking Registry, Repo File Coverage Detail, or Retained Repo Manifest unless current schema readback proves the table exists.
+
+Project-space rule
+Project space may hold this bootstrap pointer and operator-facing attachment files. It must not become a duplicate editable readable-source repository. Durable startup/control-plane state lives in Airtable. Durable governed source files remain in GitHub unless an explicit source-authority decision changes that role.

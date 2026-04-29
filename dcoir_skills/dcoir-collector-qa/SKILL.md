@@ -1,18 +1,29 @@
 ---
 name: dcoir-collector-qa
-description: validate, troubleshoot, regression-test, repair, and maintain the dcoir collector and its harness files inside the africom_soc_ir / dcoir project. use when chatgpt needs to audit or patch the current github-native collector or harness files, validate a collector execution error, generate markdown test reports or repair plans, regenerate targeted maintenance guidance from the current authoritative collector sources, or read and update the dcoir-collector-qa dedicated Airtable memory table in malwaredevil/dcoir-collector. prefer the current Airtable-first governance posture plus governed GitHub source/readback surface and current native filenames over older project-mirror readable-source names. use only when the africom_soc_ir / dcoir project context is present.
+description: validate, troubleshoot, regression-test, repair, and maintain the dcoir collector and harness files using airtable-first governance and governed github source/readback when needed.
 ---
-
-<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-collector-qa|SKILL.md -->
+<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-collector-qa|SKILL.md -->
 
 # DCOIR Collector QA
 
+## Airtable operational schema alignment
+Airtable cutover and skill cutover are complete. Use the current Airtable schema as live operational authority, not historical migration or cleanup plans.
+
+Use `references/airtable_operational_schema_contract.md` for durable rules covering:
+- current live authority tables
+- idea-to-work-item-to-plan promotion
+- Delete Queue deletion requests and dependency order
+- DCOIR Lifecycle Ledger readback/history events
+- Local Configuration Registry secret-safe configuration references
+
+Do not assume retired or absent tables exist. In particular, do not require `Plan Tasks`, `Plan Checkpoints`, `Skill State Registry`, `Schema Registry`, `Tracking Registry`, `Repo File Coverage Detail`, or `Retained Repo Manifest` unless live Airtable schema readback proves the table exists for the current task.
+
 ## Airtable-first startup authority
 - For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
-- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Work Items for task execution`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
 - Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
-- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
-- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, explicit repo cleanup/source-role review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo Surface Registry supporting evidence`, `Repo Surface Registry retained-state evidence`, and active plan state before stopping.
 
 
 ## Required project gate
@@ -22,15 +33,15 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 
 ## Overview
 Use this skill to run a controlled QA / V&V / regression loop for the DCOIR collector line.
-The primary scope is the current GitHub-readable collector and harness sources, the emitted runtime filename rules, Airtable validation/test rows, and rollback reference material only when explicit comparison or historical regression context is needed. Use GitHub `CP-01`/`CP-02` only when collector source-role resolution, promoted-history comparison, packaging, or final T99 keep/delete review is in scope.
+The primary scope is the current GitHub-readable collector and harness sources, the emitted runtime filename rules, Airtable validation/test rows, and rollback reference material only when explicit comparison or historical regression context is needed. Use GitHub `CP-01`/`CP-02` only when collector source-role resolution, promoted-history comparison, packaging, or explicit repo cleanup/source-role review is in scope.
 
 ## Authoritative source set
 Re-anchor to Airtable-first startup/control-plane authority first when the task involves live state, queue state, QA follow-through, or test catalog state.
 Treat these current GitHub-readable files as the primary collector source scope when collector source inspection or packaging is required:
-- `project_sources/collector/source/DCOIR_Collector.ps1`
-- `project_sources/collector/harness/run_DCOIR_Tests.ps1`
+- `project_sources/DCOIR_Collector.ps1`
+- `project_sources/run_DCOIR_Tests.ps1`
 - GitHub `CP-01`/`CP-02` only for source-role/promoted-history fallback when needed
-- Airtable `Validation Test Cases`, `Plans`, `Plan Tasks`, and `Session Checkpoints` when QA state, test catalog state, or active follow-through matters
+- Airtable `Validation Test Cases`, `Plans`, `Work Items for task execution`, and `Session Checkpoints` when QA state, test catalog state, or active follow-through matters
 - Use `project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt` only when explicit rollback comparison, historical regression reference, or bounded rollback analysis is part of the QA question.
 
 ## Default posture
@@ -55,6 +66,22 @@ Use a hybrid posture by default:
 8. Use `scripts/render_collector_qa_report.py` to emit a timestamped markdown report and, when helpful, a companion JSON results file.
 9. When the QA state changed materially, use Airtable table `dcoir-collector-qa` to read or update durable helper memory as described in `references/airtable_memory_workflow.md`, reducing operator burden to the smallest bounded manual Airtable action only when the connector cannot safely complete the write.
 10. In repair mode, update the readable collector or harness source only for the defect-under-test, refresh targeted in-code documentation when it materially improves future maintenance, regenerate the maintenance code blocks from the current authoritative sources, rerun the motivating failure lane, rerun at least one known-good control lane, and only then report the patch as validated.
+
+## Fast Airtable helper-memory read contract
+
+Use the skill-specific Airtable helper-memory table directly when this skill needs durable helper memory.
+
+- Airtable base id: `appM4KSwnVf3G3OTK`
+- Airtable table name: `dcoir-collector-qa`
+- Airtable table id: `tblwbMhMjQ7gzwj0C`
+- Primary lookup/dedupe field: `qa_entry_id`
+
+Read pattern:
+- Use the Airtable connector with `baseId="appM4KSwnVf3G3OTK"` and `tableId="tblwbMhMjQ7gzwj0C"` when supported; use the table name only as fallback.
+- Use non-display Airtable reads such as `search_records`, direct table reads, or equivalent connector calls. Do not ask the operator whether to display an interactive Airtable view.
+- Pull only this skill's own helper-memory table for routine memory lookup. Do not scan a unified helper-memory table and filter by skill.
+- Keep helper-memory rows human-readable and update this same table when material reusable state changes.
+- If the connector cannot query by tableId, state the limitation and use the table name `dcoir-collector-qa` without switching to a merged memory table.
 
 ## Airtable-backed skill memory
 

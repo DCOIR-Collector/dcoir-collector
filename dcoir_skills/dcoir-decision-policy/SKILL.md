@@ -1,18 +1,29 @@
 ---
 name: dcoir-decision-policy
-description: apply the operator's default decision matrix for africom_soc_ir / dcoir project work so chatgpt can proceed with minimal clarification while enforcing closed-loop memory-preflight, explicit session-local buffer or flush surfacing, coordinated multi-skill campaign defaults when the remaining similar scope is already known, and approval-gated durable preference capture. use only when working inside the africom_soc_ir / dcoir project context and multiple reasonable execution paths exist, operator preferences affect the branch, blocker recovery may produce reusable lessons, grouped repo or skill updates are being considered, or a deferred governance decision needs an explicit remaining-count review trigger. follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
+description: apply the operator default decision matrix for africom_soc_ir / dcoir project work, including branch choice, blocker recovery, grouped delivery posture, and governance decision surfacing.
 ---
-
-<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-decision-policy|SKILL.md -->
+<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-decision-policy|SKILL.md -->
 
 # DCOIR Decision Policy
 
+## Airtable operational schema alignment
+Airtable cutover and skill cutover are complete. Use the current Airtable schema as live operational authority, not historical migration or cleanup plans.
+
+Use `references/airtable_operational_schema_contract.md` for durable rules covering:
+- current live authority tables
+- idea-to-work-item-to-plan promotion
+- Delete Queue deletion requests and dependency order
+- DCOIR Lifecycle Ledger readback/history events
+- Local Configuration Registry secret-safe configuration references
+
+Do not assume retired or absent tables exist. In particular, do not require `Plan Tasks`, `Plan Checkpoints`, `Skill State Registry`, `Schema Registry`, `Tracking Registry`, `Repo File Coverage Detail`, or `Retained Repo Manifest` unless live Airtable schema readback proves the table exists for the current task.
+
 ## Airtable-first startup authority
 - For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
-- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Work Items for task execution`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
 - Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
-- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
-- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, explicit repo cleanup/source-role review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo Surface Registry supporting evidence`, `Repo Surface Registry retained-state evidence`, and active plan state before stopping.
 
 
 
@@ -65,8 +76,8 @@ Always use this precedence order unless the operator explicitly overrides it:
 1. Project Instructions
 2. CP-00 as a bootstrap pointer only when present
 3. Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`
-4. Airtable live authority tables: `Queue Control`, `Work Items`, active `Plans`, `Plan Tasks`, `Session Checkpoints`, and `Operator Preferences`
-5. Current governed GitHub source files only when repository-source, packaging, promoted-history, or T99 keep/delete work requires them
+4. Airtable live authority tables: `Queue Control`, `Work Items`, active `Plans`, `Work Items for task execution`, `Session Checkpoints`, and `Operator Preferences`
+5. Current governed GitHub source files only when repository-source, packaging, promoted-history, or explicit cleanup keep/delete work requires them
 6. Current evergreen docs and situational logs only as supporting/source-context surfaces
 7. rollback or historical references only when the operator explicitly asks for them
 
@@ -176,7 +187,7 @@ When a newly stated preference conflicts with an existing approved durable rule,
 ### 1. Project-state recovery and source selection
 - use Airtable `Queue Control`, active `Work Items`, and active `Plans` as the sole live todo authority when branch priority is the real question
 - treat GitHub todo files as retired live-queue surfaces unless the task is explicitly migrating, auditing, or documenting them
-- use Airtable live authority for startup/admin/queue decisions; use GitHub source files as authoritative only for repository-source, packaging, promoted-history, or T99 keep/delete tasks
+- use Airtable live authority for startup/admin/queue decisions; use GitHub source files as authoritative only for repository-source, packaging, promoted-history, or explicit cleanup keep/delete tasks
 - treat supporting assets, settings-only references, and local-only operator files separately
 - if GitHub manifest/change-log conflict on a repository-source task, stop and report the exact conflict; for startup/admin/queue tasks, report promoted-history drift and use Airtable live authority
 - if the manifest is clear, do not pause just because older files also exist
@@ -220,7 +231,7 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - for endpoint instructions, use Elastic Defend response-action syntax
 - for local workstation instructions, use Windows PowerShell 5.1 syntax unless the control plane changes
 - do not mix endpoint syntax and workstation syntax in the same malformed instruction
-- when documenting execution for current GitHub-readable script sources such as `project_sources/collector/source/DCOIR_Collector.ps1` or `project_sources/collector/harness/run_DCOIR_Tests.ps1`, use the canonical runtime filename in operator-facing steps and keep the repo path for provenance
+- when documenting execution for current GitHub-readable script sources such as `project_sources/DCOIR_Collector.ps1` or `project_sources/run_DCOIR_Tests.ps1`, use the canonical runtime filename in operator-facing steps and keep the repo path for provenance
 
 ### 7. Large-file and partial-input handling
 - if a file is too large or missing, switch to a staged or narrowed intake path rather than blocking the workflow
@@ -234,6 +245,22 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - show partial findings as soon as they are actionable, but keep the surrounding context rich enough that a future worker can reconstruct the branch choice and why it was taken
 - report exact filenames, bundle names, stop reasons, validation boundaries when they matter
 - avoid asking for confirmation when the matrix already resolves the choice
+
+## Fast Airtable helper-memory read contract
+
+Use the skill-specific Airtable helper-memory table directly when this skill needs durable helper memory.
+
+- Airtable base id: `appM4KSwnVf3G3OTK`
+- Airtable table name: `dcoir-decision-policy`
+- Airtable table id: `tblKHVXq16Xd5I31m`
+- Primary lookup/dedupe field: `decision_entry_id`
+
+Read pattern:
+- Use the Airtable connector with `baseId="appM4KSwnVf3G3OTK"` and `tableId="tblKHVXq16Xd5I31m"` when supported; use the table name only as fallback.
+- Use non-display Airtable reads such as `search_records`, direct table reads, or equivalent connector calls. Do not ask the operator whether to display an interactive Airtable view.
+- Pull only this skill's own helper-memory table for routine memory lookup. Do not scan a unified helper-memory table and filter by skill.
+- Keep helper-memory rows human-readable and update this same table when material reusable state changes.
+- If the connector cannot query by tableId, state the limitation and use the table name `dcoir-decision-policy` without switching to a merged memory table.
 
 ## Airtable-backed skill memory
 Use the GitHub connector directly against the current governed repository resolved from the governed discovery contract when the task needs reusable decision-state continuity outside the current chat.

@@ -1,18 +1,29 @@
 ---
 name: dcoir-operator-workflow-hardener
-description: harden and normalize operator-facing dcoir workflow guidance for elastic endpoint execution, collector staging, bundle retrieval, cleanup, and pasted collector-output interpretation. use when chatgpt must tell the operator the exact next endpoint step, interpret dcoir collector output, choose between endpoint and local execution lanes, normalize runtime filenames, explain next_get_file or cleanup handling, or keep collection and enrichment flows aligned to the current control plane with minimal ambiguity. use only when working inside the africom_soc_ir / dcoir project context; if that project context is not present, do not use this skill. follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
+description: harden and normalize operator-facing dcoir workflow guidance for elastic endpoint execution, collector staging, retrieval, cleanup, and output interpretation.
 ---
-
-<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-operator-workflow-hardener|SKILL.md -->
+<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-operator-workflow-hardener|SKILL.md -->
 
 # DCOIR Operator Workflow Hardener
 
+## Airtable operational schema alignment
+Airtable cutover and skill cutover are complete. Use the current Airtable schema as live operational authority, not historical migration or cleanup plans.
+
+Use `references/airtable_operational_schema_contract.md` for durable rules covering:
+- current live authority tables
+- idea-to-work-item-to-plan promotion
+- Delete Queue deletion requests and dependency order
+- DCOIR Lifecycle Ledger readback/history events
+- Local Configuration Registry secret-safe configuration references
+
+Do not assume retired or absent tables exist. In particular, do not require `Plan Tasks`, `Plan Checkpoints`, `Skill State Registry`, `Schema Registry`, `Tracking Registry`, `Repo File Coverage Detail`, or `Retained Repo Manifest` unless live Airtable schema readback proves the table exists for the current task.
+
 ## Airtable-first startup authority
 - For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
-- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Work Items for task execution`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
 - Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
-- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
-- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, explicit repo cleanup/source-role review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo Surface Registry supporting evidence`, `Repo Surface Registry retained-state evidence`, and active plan state before stopping.
 
 
 ## Overview
@@ -38,7 +49,7 @@ If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not pro
 - For endpoint-side actions, use Elastic Defend response-action syntax only.
 - For analyst workstation or local test steps, use Windows PowerShell 5.1 syntax only.
 - Do not blend endpoint syntax and local syntax in one malformed instruction.
-- When reasoning from the current GitHub-readable collector source `project_sources/collector/source/DCOIR_Collector.ps1`, document operator runtime execution as `DCOIR_Collector.ps1`.
+- When reasoning from the current GitHub-readable collector source `project_sources/DCOIR_Collector.ps1`, document operator runtime execution as `DCOIR_Collector.ps1`.
 - Prefer one best next action when the operator is trying to move a live workflow forward.
 - When collector output contains explicit `NEXT_GET_FILE`, `CLEANUP_COMMAND`, or `DELETE_SCRIPT_COMMAND` markers, treat them as high-priority operator cues.
 - Default to deeper regression for any scriptable or reproducible workflow helper before live use and after patches when testing is part of the task.

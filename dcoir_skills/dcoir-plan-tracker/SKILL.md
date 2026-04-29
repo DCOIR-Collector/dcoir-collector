@@ -1,19 +1,29 @@
 ---
 name: dcoir-plan-tracker
-description: >- follow the airtable-first startup/control-plane model and use github only for governed source, promoted history, packaging, or explicit repo readback when required.
-  plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state, hierarchical task decomposition, blocker capture, closed-loop blocker recovery, decision-aware execution, operator-visible milestone signaling, and conditional startup active-plan recovery. use when chatgpt needs to break a dcoir task into tasks, preserve active plan continuity, recover open airtable-backed plan state, update governed trackers, record blockers and mitigations, stage promotion candidates, or export a clean handoff.
+description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state and hierarchy-aware task decomposition.
 ---
-
-<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-plan-tracker|SKILL.md -->
+<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-plan-tracker|SKILL.md -->
 
 # DCOIR Plan Tracker
 
+## Airtable operational schema alignment
+Airtable cutover and skill cutover are complete. Use the current Airtable schema as live operational authority, not historical migration or cleanup plans.
+
+Use `references/airtable_operational_schema_contract.md` for durable rules covering:
+- current live authority tables
+- idea-to-work-item-to-plan promotion
+- Delete Queue deletion requests and dependency order
+- DCOIR Lifecycle Ledger readback/history events
+- Local Configuration Registry secret-safe configuration references
+
+Do not assume retired or absent tables exist. In particular, do not require `Plan Tasks`, `Plan Checkpoints`, `Skill State Registry`, `Schema Registry`, `Tracking Registry`, `Repo File Coverage Detail`, or `Retained Repo Manifest` unless live Airtable schema readback proves the table exists for the current task.
+
 ## Airtable-first startup authority
 - For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
-- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Work Items for task execution`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
 - Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
-- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
-- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, explicit repo cleanup/source-role review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo Surface Registry supporting evidence`, `Repo Surface Registry retained-state evidence`, and active plan state before stopping.
 
 
 ## Required project gate
@@ -22,8 +32,8 @@ This skill is for the AFRICOM_SOC_IR / DCOIR project only.
 Before proceeding:
 1. Re-anchor to Project Instructions and CP-00 as a bootstrap pointer when present.
 2. Read Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`.
-3. Read Airtable `Queue Control`, `Work Items`, active `Plans`, and `Plan Tasks` for live execution authority.
-4. Read GitHub `CP-01`/`CP-02` only when the immediate plan-tracker task requires repository-source role comparison, promoted-history comparison, packaging, or final T99 keep/delete review.
+3. Read Airtable `Queue Control`, `Work Items`, active `Plans`, and `Work Items for task execution` for live execution authority.
+4. Read GitHub `CP-01`/`CP-02` only when the immediate plan-tracker task requires repository-source role comparison, promoted-history comparison, packaging, or explicit repo cleanup/source-role review.
 5. Confirm the task is inside the current governed DCOIR working line.
 
 If authority is unclear or the control plane conflicts, stop and report the exact conflict.
@@ -84,12 +94,12 @@ Use Airtable as the primary durable execution-state surface for live plan contin
 
 ### Governed repo surfaces
 Use this github-backed promoted memory root:
-Airtable `Plans`, `Plan Tasks`, `Plan Checkpoints`, and `Session Checkpoints`
+Airtable `Plans`, `Work Items for task execution`, `Session Checkpoints or DCOIR Lifecycle Ledger events`, and `Session Checkpoints`
 
 ### Root files
 Maintain:
-- Airtable `Plans` / `Plan Tasks`
-- Airtable `Tracking Registry`
+- Airtable `Plans` / `Work Items for task execution`
+- Airtable `Admin Registry or table-specific records`
 
 ### Per-plan folder
 Each plan lives under:
@@ -117,7 +127,7 @@ After `dcoir-session-resume`, `dcoir-memory-preflight`, and `dcoir-session-track
 Startup recovery workflow:
 1. Read `Plans` rows whose `plan_state` is still open enough to matter: `draft`, `approved_to_execute`, `active`, `blocked`, or `paused`. Use silent Airtable reads only.
 2. If multiple open plans exist, prefer the most recently updated plan unless the control plane or session-tracker leftover scan points to a different plan explicitly.
-3. Read matching `Plan Tasks` rows and the newest relevant `Plan Checkpoints` rows for the candidate plan.
+3. Read matching `Work Items for task execution` rows and the newest relevant `Session Checkpoints or DCOIR Lifecycle Ledger events` rows for the candidate plan.
 4. Surface the active task, blockers, buffered promotion candidates, and best next move from Airtable-backed plan state before trusting a missing or stale local `plan_state.json` cache.
 5. During automatic startup plan recovery, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
 6. If a visible Airtable view might help, ask the operator first instead of displaying it automatically.
@@ -259,9 +269,9 @@ Truth model:
 Known Airtable targets for this project:
 - base id: `appM4KSwnVf3G3OTK`
 - `Plans` table id: `tblBcp5FyMIfOm7Xe`
-- `Plan Tasks` table id: `tblsATLIDeh6gtcoM`
-- `Plan Checkpoints` table id: `tbl6z4Lyai2RABMyw`
-- `Tracking Registry` table id: `tblohiMxxVbDUnN77`
+- `Work Items for task execution` table id: `tblsATLIDeh6gtcoM`
+- `Session Checkpoints or DCOIR Lifecycle Ledger events` table id: `tbl6z4Lyai2RABMyw`
+- `Admin Registry or table-specific records` table id: `tblohiMxxVbDUnN77`
 - `Queue Control` table id: `tblf13aCslg6rJBah`
 
 Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
@@ -269,9 +279,9 @@ Prefer direct table-id writes against the known base instead of querying Airtabl
 Airtable write posture:
 - when a plan is the live execution branch, keep `Queue Control` and queue-ranked `Work Items` aligned to that fact
 - upsert `Plans` first on material plan-state changes
-- batch `Plan Tasks` writes when task structure or statuses materially change
-- create sparse `Plan Checkpoints` rows for blockers, flush reviews, milestones, before-GitHub-write checkpoints, and handoff moments
-- use `Tracking Registry` only as metadata after the durable domain record already exists
+- batch `Work Items for task execution` writes when task structure or statuses materially change
+- create sparse `Session Checkpoints or DCOIR Lifecycle Ledger events` rows for blockers, flush reviews, milestones, before-GitHub-write checkpoints, and handoff moments
+- use `Admin Registry or table-specific records` only as metadata after the durable domain record already exists
 
 Use `scripts/render_airtable_plan_bundle.py` to render Airtable-ready payloads from a local plan cache when one exists.
 If the local cache is missing, reconstruct the needed Airtable payload from the current plan reasoning and write Airtable first rather than blocking on local file recovery.

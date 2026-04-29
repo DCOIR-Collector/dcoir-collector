@@ -1,14 +1,26 @@
 ---
 name: dcoir-artifact-intake-router
-description: classify and route uploaded africom_soc_ir / dcoir artifacts before expensive extraction or reading. use when chatgpt receives a zip, archive, github actions artifact, workflow log bundle, repo snapshot, skill package, collector output, prompt-pack file, gemini instruction file, evidence bundle, or unknown mixed upload and must inspect minimally, avoid timeout-prone brute-force reads, choose the correct downstream dcoir helper skill, state stop conditions, and produce an intake verdict before deeper analysis.
+description: classify and route uploaded africom_soc_ir / dcoir artifacts using bounded manifest-first inspection before expensive extraction or reading; use for archives, github actions artifacts, repo bundles, skill packages, collector output, prompt-pack files, evidence bundles, or unknown mixed uploads.
 ---
-<!-- skill-marker: created-skill|20260429T000000Z|artifact-intake-router-initial|source-create|dcoir-artifact-intake-router|SKILL.md -->
+<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-artifact-intake-router|SKILL.md -->
 
 # DCOIR Artifact Intake Router
 
+## Airtable operational schema alignment
+Airtable cutover and skill cutover are complete. Use the current Airtable schema as live operational authority, not historical migration or cleanup plans.
+
+Use `references/airtable_operational_schema_contract.md` for durable rules covering:
+- current live authority tables
+- idea-to-work-item-to-plan promotion
+- Delete Queue deletion requests and dependency order
+- DCOIR Lifecycle Ledger readback/history events
+- Local Configuration Registry secret-safe configuration references
+
+Do not assume retired or absent tables exist. In particular, do not require `Plan Tasks`, `Plan Checkpoints`, `Skill State Registry`, `Schema Registry`, `Tracking Registry`, `Repo File Coverage Detail`, or `Retained Repo Manifest` unless live Airtable schema readback proves the table exists for the current task.
+
 ## Airtable-first startup authority
 - For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
-- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Work Items for task execution`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
 - Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
 - Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, or explicit operator request.
 - Treat older final-cleanup references as historical unless live Airtable authority says they remain active.

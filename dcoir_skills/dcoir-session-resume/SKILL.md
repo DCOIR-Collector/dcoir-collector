@@ -1,18 +1,29 @@
 ---
 name: dcoir-session-resume
-description: resume the africom_soc_ir / dcoir workspace from the current Airtable-first authority model. use at the first substantive turn of every new africom_soc_ir or dcoir session to re-anchor current state, then continue the required startup chain through memory preflight, airtable leftover recovery, conditional active-plan recovery, operator preferences, and three-division governance table awareness. use when the operator asks where are we, resume, what is current, what changed, or get me back on track.
+description: resume the africom_soc_ir / dcoir workspace from the current airtable-first operational authority model and current queue state.
 ---
-
-<!-- skill-marker: updated-skill|20260427T180000Z|T4.0.5.9-airtable-first-startup-cutover|source-update|dcoir-session-resume|SKILL.md -->
+<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-session-resume|SKILL.md -->
 
 # DCOIR Session Resume
 
+## Airtable operational schema alignment
+Airtable cutover and skill cutover are complete. Use the current Airtable schema as live operational authority, not historical migration or cleanup plans.
+
+Use `references/airtable_operational_schema_contract.md` for durable rules covering:
+- current live authority tables
+- idea-to-work-item-to-plan promotion
+- Delete Queue deletion requests and dependency order
+- DCOIR Lifecycle Ledger readback/history events
+- Local Configuration Registry secret-safe configuration references
+
+Do not assume retired or absent tables exist. In particular, do not require `Plan Tasks`, `Plan Checkpoints`, `Skill State Registry`, `Schema Registry`, `Tracking Registry`, `Repo File Coverage Detail`, or `Retained Repo Manifest` unless live Airtable schema readback proves the table exists for the current task.
+
 ## Airtable-first startup authority
 - For normal AFRICOM_SOC_IR / DCOIR startup, resume, current-state reporting, administrative control, queue selection, active-plan recovery, helper-memory lookup, or operator-preference recovery, use Airtable-first authority.
-- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Plan Tasks`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
+- Required order: Project Instructions; CP-00 only as a bootstrap pointer when present; Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`; Airtable `Session Checkpoints`; Airtable `Queue Control`; Airtable `Work Items`; active Airtable `Plans` and `Work Items for task execution`; Airtable `Operator Preferences`; then skill-specific Airtable memory tables when relevant.
 - Do not fetch GitHub `CP-01` or `CP-02` during normal startup when the Airtable startup-control row is available and current.
-- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, final T99 keep/delete review, or explicit operator request.
-- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo File Coverage Detail`, `Retained Repo Manifest`, and active plan state before stopping.
+- Read GitHub CP files only for repository-source tasks: source-file role resolution, packaging or release bundles, prompt/collector source inspection, promoted-history comparison, explicit repo cleanup/source-role review, or explicit operator request.
+- Treat any older instruction that says to read `CP-01` and `CP-02` first as superseded for startup, resume, queue, administrative-control, helper-memory, and operator-preference branches. If a source task still requires those files and they are absent, use Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo Surface Registry supporting evidence`, `Repo Surface Registry retained-state evidence`, and active plan state before stopping.
 
 
 
@@ -48,17 +59,17 @@ For that readback:
 - when no relevant active operator preference is found, say that plainly and continue with the normal startup chain
 
 ## Three-division governance table awareness
-During session-start bootstrap and any resume/current-state report, consult Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`, Queue Control, Work Items, active Plans, Plan Tasks, Session Checkpoints, Operator Preferences, and relevant governance/registry tables before selecting the next work lane. Do not fetch GitHub `CP-01`/`CP-02` for normal startup when Airtable startup authority is present.
+During session-start bootstrap and any resume/current-state report, consult Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`, Queue Control, Work Items, active Plans, Work Items for task execution, Session Checkpoints, Operator Preferences, and relevant governance/registry tables before selecting the next work lane. Do not fetch GitHub `CP-01`/`CP-02` for normal startup when Airtable startup authority is present.
 
 Use silent Airtable reads only for these tables unless the operator explicitly asks to display them:
 - `Governance Control Plane`: current GitHub / Airtable / ChatGPT Project authority model and startup-chain expectations
 - `Repo Surface Registry`: major repo surfaces, their authority status, keep/delete state, replacement surface, and owning division
-- `Skill State Registry`: installed and governed `dcoir-*` skills, startup relevance, invocation priority, parity status, and maintenance state
+- `Admin Registry skill-state rows`: installed and governed `dcoir-*` skills, startup relevance, invocation priority, parity status, and maintenance state
 - `Repo File Classification Detail`: optional supporting file-level evidence for cleanup or repo-shrink decisions; do not treat it as control-plane authority
 
 Startup use rules:
 - Use `Governance Control Plane` to confirm the three-division model when the operator asks where project authority lives or when a branch may change repo/Airtable/Project boundaries.
-- Use `Skill State Registry` to improve skill awareness before claiming no helper skill exists for a task family.
+- Use `Admin Registry skill-state rows` to improve skill awareness before claiming no helper skill exists for a task family.
 - Use `Repo Surface Registry` before recommending repo cleanup, deletion, surface movement, or GitHub-versus-Airtable boundary changes.
 - Do not let `Repo File Classification Detail` override GitHub source authority; use it only as snapshot-derived supporting evidence.
 - Continue to treat Airtable `Queue Control`, `Work Items`, and active `Plans` as the live queue authority.
@@ -104,13 +115,13 @@ Use the first available bootstrap anchor in this order:
 1. AFRICOM_SOC_IR / DCOIR workspace instructions if present.
 2. Uploaded bootstrap pointer such as `CP-00_DCOIR_Airtable_First_Bootstrap.txt` if present; treat it as a pointer only.
 3. Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST` when present.
-4. Airtable live state tables: `Session Checkpoints`, `Queue Control`, `Work Items`, active `Plans`, `Plan Tasks`, and `Operator Preferences`.
-5. GitHub repository `malwaredevil/dcoir-collector` only when the immediate task requires governed source/readback, promoted-history comparison, packaging, or final T99 keep/delete review.
+4. Airtable live state tables: `Session Checkpoints`, `Queue Control`, `Work Items`, active `Plans`, `Work Items for task execution`, and `Operator Preferences`.
+5. GitHub repository `malwaredevil/dcoir-collector` only when the immediate task requires governed source/readback, promoted-history comparison, packaging, or explicit repo cleanup/source-role review.
 
 ## Core workflow
 1. Determine whether the current use is `session_start_bootstrap` or an explicit user resume request.
-2. Read Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`, then live `Session Checkpoints`, `Queue Control`, `Work Items`, active `Plans`, `Plan Tasks`, and `Operator Preferences` for startup/resume state.
-3. Read `dcoir_skills/project_discovery_contract.json` and GitHub `CP-01`/`CP-02` only when the resume request requires governed source/readback, promoted-history comparison, packaging, or final T99 keep/delete review.
+2. Read Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`, then live `Session Checkpoints`, `Queue Control`, `Work Items`, active `Plans`, `Work Items for task execution`, and `Operator Preferences` for startup/resume state.
+3. Read `dcoir_skills/project_discovery_contract.json` and GitHub `CP-01`/`CP-02` only when the resume request requires governed source/readback, promoted-history comparison, packaging, or explicit repo cleanup/source-role review.
 4. Invoke `dcoir-source-authority-auditor` as a drift gate only when source-authority, repo cleanup, skill-source governance, or promoted-history comparison is in scope. For ordinary startup/resume, use Airtable live authority first and report missing GitHub CP files as non-blocking if Airtable replacement rows exist.
 6. If the drift gate returns `hard_stop_conflict`, stop and report the exact conflict plainly instead of producing a normal resume summary.
 7. If the drift gate returns `proceed_bounded`, continue only with bounded claims and say exactly which active surfaces were unavailable.
