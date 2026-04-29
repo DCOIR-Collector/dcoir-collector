@@ -88,16 +88,36 @@ No direct parameters.
 .OUTPUTS
 String absolute path to the active script or EXE runtime.
 #>
+function Test-DCOIRRuntimePathCandidate {
+  param([string]$Path)
+
+  if ([string]::IsNullOrWhiteSpace($Path)) { return $false }
+
+  try {
+    $leaf = [System.IO.Path]::GetFileName($Path)
+    if ($leaf -in @("powershell.exe", "pwsh.exe", "powershell", "pwsh")) { return $false }
+    return $true
+  } catch {
+    return $false
+  }
+}
+
 function Resolve-DCOIRRuntimePath {
+  foreach ($candidate in @($PSCommandPath, $MyInvocation.PSCommandPath)) {
+    if (Test-DCOIRRuntimePathCandidate -Path $candidate) {
+      return [System.IO.Path]::GetFullPath([string]$candidate)
+    }
+  }
+
   try {
     $cmd = $MyInvocation.MyCommand
     if ($null -ne $cmd) {
       $pathProperty = $cmd.PSObject.Properties['Path']
-      if ($pathProperty -and -not [string]::IsNullOrWhiteSpace([string]$pathProperty.Value)) {
+      if ($pathProperty -and (Test-DCOIRRuntimePathCandidate -Path ([string]$pathProperty.Value))) {
         return [System.IO.Path]::GetFullPath([string]$pathProperty.Value)
       }
       $sourceProperty = $cmd.PSObject.Properties['Source']
-      if ($sourceProperty -and -not [string]::IsNullOrWhiteSpace([string]$sourceProperty.Value)) {
+      if ($sourceProperty -and (Test-DCOIRRuntimePathCandidate -Path ([string]$sourceProperty.Value))) {
         return [System.IO.Path]::GetFullPath([string]$sourceProperty.Value)
       }
     }
@@ -105,7 +125,7 @@ function Resolve-DCOIRRuntimePath {
 
   try {
     $processPath = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
-    if (-not [string]::IsNullOrWhiteSpace($processPath)) {
+    if (Test-DCOIRRuntimePathCandidate -Path $processPath) {
       return [System.IO.Path]::GetFullPath($processPath)
     }
   } catch { }

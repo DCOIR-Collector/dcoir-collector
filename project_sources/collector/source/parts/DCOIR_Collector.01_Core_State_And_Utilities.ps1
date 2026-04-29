@@ -184,20 +184,36 @@ No direct parameters.
 .OUTPUTS
 String absolute path to the collector script.
 #>
+function Test-CollectorRuntimePathCandidate {
+  param([string]$Path)
+
+  if ([string]::IsNullOrWhiteSpace($Path)) { return $false }
+
+  try {
+    $leaf = [System.IO.Path]::GetFileName($Path)
+    if ($leaf -in @("powershell.exe", "pwsh.exe", "powershell", "pwsh")) { return $false }
+    return $true
+  } catch {
+    return $false
+  }
+}
+
 function Get-CollectorAbsolutePath {
-  if (-not [string]::IsNullOrWhiteSpace($ScriptFilePath)) {
-    return [System.IO.Path]::GetFullPath($ScriptFilePath)
+  foreach ($candidate in @($ScriptFilePath, $PSCommandPath, $MyInvocation.PSCommandPath)) {
+    if (Test-CollectorRuntimePathCandidate -Path $candidate) {
+      return [System.IO.Path]::GetFullPath([string]$candidate)
+    }
   }
 
   try {
     $cmd = $MyInvocation.MyCommand
     if ($null -ne $cmd) {
       $pathProperty = $cmd.PSObject.Properties['Path']
-      if ($pathProperty -and -not [string]::IsNullOrWhiteSpace([string]$pathProperty.Value)) {
+      if ($pathProperty -and (Test-CollectorRuntimePathCandidate -Path ([string]$pathProperty.Value))) {
         return [System.IO.Path]::GetFullPath([string]$pathProperty.Value)
       }
       $sourceProperty = $cmd.PSObject.Properties['Source']
-      if ($sourceProperty -and -not [string]::IsNullOrWhiteSpace([string]$sourceProperty.Value)) {
+      if ($sourceProperty -and (Test-CollectorRuntimePathCandidate -Path ([string]$sourceProperty.Value))) {
         return [System.IO.Path]::GetFullPath([string]$sourceProperty.Value)
       }
     }
@@ -205,7 +221,7 @@ function Get-CollectorAbsolutePath {
 
   try {
     $processPath = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
-    if (-not [string]::IsNullOrWhiteSpace($processPath)) {
+    if (Test-CollectorRuntimePathCandidate -Path $processPath) {
       return [System.IO.Path]::GetFullPath($processPath)
     }
   } catch { }

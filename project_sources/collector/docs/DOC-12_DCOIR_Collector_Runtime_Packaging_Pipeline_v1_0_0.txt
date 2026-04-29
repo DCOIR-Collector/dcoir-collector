@@ -55,3 +55,8 @@ Hard rules
 - Optional EXE harness validation revealed that PS2EXE execution can expose a MyInvocation command object without a Path property.
 - Collector runtime path resolution now uses safe PSObject property lookup for Path/Source and falls back to the current process executable path.
 - The harness now invokes collector processes through System.Diagnostics.Process so native stderr is captured in per-step logs instead of aborting before a harness result is written.
+
+2026-04-29 paired PS1 and optional EXE path guard update:
+- Optional EXE validation must be paired with the closest matching PS1 manual-full-validation suite to prove EXE-specific changes did not regress the PS1-first collector lane.
+- Runtime path resolution now prefers PSCommandPath for script execution before considering process executable fallback.
+- Process executable fallback is reserved for non-PowerShell host paths, such as the optional EXE variant, so PS1 execution does not mistake powershell.exe or pwsh.exe for the collector runtime location.
