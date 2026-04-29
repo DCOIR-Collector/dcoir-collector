@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-04-29T17:04:37Z",
+  "generated_at_utc": "2026-04-29T17:29:14Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -10,6 +10,47 @@
     "zip_hash_role": "secondary package/install check"
   },
   "skills": {
+    "dcoir-airtable-schema-cache": {
+      "source_root": "dcoir-airtable-schema-cache",
+      "source_tree_hash": "d66d3275e1c42f3cac583f154cf1a67e9eeaf7f472e4ae047e05ea4a3623cd8a",
+      "release_zip_name": "dcoir-airtable-schema-cache.zip",
+      "release_zip_hash": "",
+      "status": "verified",
+      "file_count": 6,
+      "total_bytes": 14354,
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "205d9206c1274e4447492d827e852d4f3fc3611ab63a9d791729d93ae96c14dc",
+          "size_bytes": 5109
+        },
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "8d8fbb54e73b3df302235b20e1287839ddc18eeecaf48d52af9f7ed9bffb35df",
+          "size_bytes": 329
+        },
+        {
+          "path": "assets/icon.svg",
+          "sha256": "850d5dabc559c7919996456a6a9b013f37221976467b25ddac8c5d534cc154fb",
+          "size_bytes": 336
+        },
+        {
+          "path": "references/cache_contract.md",
+          "sha256": "59e7f71376f3b10efca5f785f03fc56c6f52e05331d8b6531ead920822f3a6b0",
+          "size_bytes": 1110
+        },
+        {
+          "path": "references/current_operational_tables.json",
+          "sha256": "29e885dbe86db7d3e34dd1d6a35442a9e6927362bab2c5df493284bd58835bfc",
+          "size_bytes": 1032
+        },
+        {
+          "path": "scripts/schema_cache.py",
+          "sha256": "ac88bb2cc30506ff26eb80e678355490fd460b5e7a85aadb03977490f021aaa4",
+          "size_bytes": 6438
+        }
+      ]
+    },
     "dcoir-artifact-intake-router": {
       "source_root": "dcoir-artifact-intake-router",
       "source_tree_hash": "f5c8c820c26b9fbb8bdaa2989a62cd9dfad4161098f4815b8d6024911db3e53c",
@@ -94,6 +135,52 @@
           "path": "scripts/render_attention_signal.py",
           "sha256": "98becd6f9642fc1e4bd9aecda4e72abb230c5c4719b4cf004ef7a65286673d44",
           "size_bytes": 1058
+        }
+      ]
+    },
+    "dcoir-authority-drift-reporter": {
+      "source_root": "dcoir-authority-drift-reporter",
+      "source_tree_hash": "fc1ae8071d99f7ffce9f5949ec59787575fe6cacaae86152191498d94b6e0b0f",
+      "release_zip_name": "dcoir-authority-drift-reporter.zip",
+      "release_zip_hash": "",
+      "status": "verified",
+      "file_count": 7,
+      "total_bytes": 13816,
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "1fe248891c1d8ee1164e8fc9a44d542a6a4985452484bf04740bbd96fe0247be",
+          "size_bytes": 4692
+        },
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "698b7e1707380f6444ba96d0bce2d6260a416791c3e1d69bdd21a767fe924bf4",
+          "size_bytes": 337
+        },
+        {
+          "path": "assets/icon.svg",
+          "sha256": "850d5dabc559c7919996456a6a9b013f37221976467b25ddac8c5d534cc154fb",
+          "size_bytes": 336
+        },
+        {
+          "path": "references/drift_taxonomy.md",
+          "sha256": "4aa64b24b6c72c8dfa3c81f062a442b2f35c63391e07d260c5a8e9999c1e3d23",
+          "size_bytes": 1445
+        },
+        {
+          "path": "references/repair_prompt_contract.md",
+          "sha256": "a12dbc641f60da869db679b95109772ce5e4af7c24dc837dbe21034bc13033ba",
+          "size_bytes": 502
+        },
+        {
+          "path": "references/report_template.md",
+          "sha256": "7ce720c8eafc1d4d6b8a2e43fffd1bb967d9fd53d602b3395d6feaf07063b659",
+          "size_bytes": 447
+        },
+        {
+          "path": "scripts/authority_drift_report.py",
+          "sha256": "4a8b9cbff188a04febd20d6a112b29970de6d881a20a03e1082d70b64370f863",
+          "size_bytes": 6057
         }
       ]
     },

@@ -1,8 +1,23 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-29T17:04:37Z
+- generated_at_utc: 2026-04-29T17:29:14Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
+
+## dcoir-airtable-schema-cache
+
+- source_tree_hash: `d66d3275e1c42f3cac583f154cf1a67e9eeaf7f472e4ae047e05ea4a3623cd8a`
+- release_zip_name: `dcoir-airtable-schema-cache.zip`
+- release_zip_hash: `not-recorded`
+- status: `verified`
+- file_count: `6`
+
+- `SKILL.md` — `205d9206c1274e4447492d827e852d4f3fc3611ab63a9d791729d93ae96c14dc`
+- `agents/openai.yaml` — `8d8fbb54e73b3df302235b20e1287839ddc18eeecaf48d52af9f7ed9bffb35df`
+- `assets/icon.svg` — `850d5dabc559c7919996456a6a9b013f37221976467b25ddac8c5d534cc154fb`
+- `references/cache_contract.md` — `59e7f71376f3b10efca5f785f03fc56c6f52e05331d8b6531ead920822f3a6b0`
+- `references/current_operational_tables.json` — `29e885dbe86db7d3e34dd1d6a35442a9e6927362bab2c5df493284bd58835bfc`
+- `scripts/schema_cache.py` — `ac88bb2cc30506ff26eb80e678355490fd460b5e7a85aadb03977490f021aaa4`
 
 ## dcoir-artifact-intake-router
 
@@ -34,6 +49,22 @@
 - `references/attention_modes.md` — `75b927c6671c703b70a03be24dad018457bac93000a8254c70c6fdaad77ba66e`
 - `references/banner_message_templates.md` — `b7fe5b731f94275deaa2b127f6e561ca1abcf3bd178bd03254c2bbf871bb0a74`
 - `scripts/render_attention_signal.py` — `98becd6f9642fc1e4bd9aecda4e72abb230c5c4719b4cf004ef7a65286673d44`
+
+## dcoir-authority-drift-reporter
+
+- source_tree_hash: `fc1ae8071d99f7ffce9f5949ec59787575fe6cacaae86152191498d94b6e0b0f`
+- release_zip_name: `dcoir-authority-drift-reporter.zip`
+- release_zip_hash: `not-recorded`
+- status: `verified`
+- file_count: `7`
+
+- `SKILL.md` — `1fe248891c1d8ee1164e8fc9a44d542a6a4985452484bf04740bbd96fe0247be`
+- `agents/openai.yaml` — `698b7e1707380f6444ba96d0bce2d6260a416791c3e1d69bdd21a767fe924bf4`
+- `assets/icon.svg` — `850d5dabc559c7919996456a6a9b013f37221976467b25ddac8c5d534cc154fb`
+- `references/drift_taxonomy.md` — `4aa64b24b6c72c8dfa3c81f062a442b2f35c63391e07d260c5a8e9999c1e3d23`
+- `references/repair_prompt_contract.md` — `a12dbc641f60da869db679b95109772ce5e4af7c24dc837dbe21034bc13033ba`
+- `references/report_template.md` — `7ce720c8eafc1d4d6b8a2e43fffd1bb967d9fd53d602b3395d6feaf07063b659`
+- `scripts/authority_drift_report.py` — `4a8b9cbff188a04febd20d6a112b29970de6d881a20a03e1082d70b64370f863`
 
 ## dcoir-change-impact-analyzer
 
