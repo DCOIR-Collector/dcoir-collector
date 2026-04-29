@@ -51,3 +51,7 @@ Hard rules
 - Keep the primary delivery package transport-safe with `.txt` suffixes for script entries.
 - Do not treat the optional EXE variant as the default collector package.
 - Do not replace the PS1-first collector contract with the EXE variant without explicit later promotion authorization and runtime validation evidence.
+2026-04-29 optional EXE strict-mode path fix:
+- Optional EXE harness validation revealed that PS2EXE execution can expose a MyInvocation command object without a Path property.
+- Collector runtime path resolution now uses safe PSObject property lookup for Path/Source and falls back to the current process executable path.
+- The harness now invokes collector processes through System.Diagnostics.Process so native stderr is captured in per-step logs instead of aborting before a harness result is written.

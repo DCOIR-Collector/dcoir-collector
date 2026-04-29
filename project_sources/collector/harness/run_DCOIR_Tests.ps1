@@ -376,10 +376,23 @@ function Invoke-CollectorStep {
   Ensure-Directory -Path $LogsDir
   $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
   $start = Get-Date
-  $allOutput = & $invocation.FileName @($invocation.Arguments) 2>&1
-  $exitCode = $LASTEXITCODE
+  $process = New-Object System.Diagnostics.Process
+  $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $process.StartInfo.FileName = $invocation.FileName
+  $process.StartInfo.UseShellExecute = $false
+  $process.StartInfo.RedirectStandardOutput = $true
+  $process.StartInfo.RedirectStandardError = $true
+  $process.StartInfo.CreateNoWindow = $true
+  $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues @($invocation.Arguments)
+  [void]$process.Start()
+  $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+  $stderrTask = $process.StandardError.ReadToEndAsync()
+  $process.WaitForExit()
+  $stdoutText = $stdoutTask.GetAwaiter().GetResult()
+  $stderrText = $stderrTask.GetAwaiter().GetResult()
+  $exitCode = $process.ExitCode
   $end = Get-Date
-  $stdout = ($allOutput | ForEach-Object { if ($null -eq $_) { "" } else { $_.ToString() } }) -join [Environment]::NewLine
+  $stdout = @($stdoutText, $stderrText | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
   $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
   $logLines = New-Object System.Collections.ArrayList
   [void]$logLines.Add("STEP=$StepName")

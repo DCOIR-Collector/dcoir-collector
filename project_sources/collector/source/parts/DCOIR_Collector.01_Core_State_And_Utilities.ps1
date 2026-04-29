@@ -188,9 +188,28 @@ function Get-CollectorAbsolutePath {
   if (-not [string]::IsNullOrWhiteSpace($ScriptFilePath)) {
     return [System.IO.Path]::GetFullPath($ScriptFilePath)
   }
-  if ($MyInvocation -and $MyInvocation.MyCommand -and $MyInvocation.MyCommand.Path) {
-    return [System.IO.Path]::GetFullPath($MyInvocation.MyCommand.Path)
-  }
+
+  try {
+    $cmd = $MyInvocation.MyCommand
+    if ($null -ne $cmd) {
+      $pathProperty = $cmd.PSObject.Properties['Path']
+      if ($pathProperty -and -not [string]::IsNullOrWhiteSpace([string]$pathProperty.Value)) {
+        return [System.IO.Path]::GetFullPath([string]$pathProperty.Value)
+      }
+      $sourceProperty = $cmd.PSObject.Properties['Source']
+      if ($sourceProperty -and -not [string]::IsNullOrWhiteSpace([string]$sourceProperty.Value)) {
+        return [System.IO.Path]::GetFullPath([string]$sourceProperty.Value)
+      }
+    }
+  } catch { }
+
+  try {
+    $processPath = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+    if (-not [string]::IsNullOrWhiteSpace($processPath)) {
+      return [System.IO.Path]::GetFullPath($processPath)
+    }
+  } catch { }
+
   return [System.IO.Path]::GetFullPath((Join-Path (Get-Location).Path "DCOIR_Collector.ps1"))
 }
 

@@ -67,7 +67,53 @@ param(
 
 Set-StrictMode -Version 2
 $ErrorActionPreference = "Continue"
-$ScriptFilePath = $MyInvocation.MyCommand.Path
+
+<#
+.SYNOPSIS
+Resolves the collector runtime path for both script and optional EXE execution.
+
+.DESCRIPTION
+PowerShell script execution exposes MyInvocation.MyCommand.Path. PS2EXE/optional EXE
+execution can expose a command object without Path, so strict-mode property access can
+fail before the collector starts. This resolver uses safe property lookup and falls back
+to the current process path so the optional EXE variant can locate its embedded runtime
+folder.
+
+.FUNCTION NAME
+Resolve-DCOIRRuntimePath
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String absolute path to the active script or EXE runtime.
+#>
+function Resolve-DCOIRRuntimePath {
+  try {
+    $cmd = $MyInvocation.MyCommand
+    if ($null -ne $cmd) {
+      $pathProperty = $cmd.PSObject.Properties['Path']
+      if ($pathProperty -and -not [string]::IsNullOrWhiteSpace([string]$pathProperty.Value)) {
+        return [System.IO.Path]::GetFullPath([string]$pathProperty.Value)
+      }
+      $sourceProperty = $cmd.PSObject.Properties['Source']
+      if ($sourceProperty -and -not [string]::IsNullOrWhiteSpace([string]$sourceProperty.Value)) {
+        return [System.IO.Path]::GetFullPath([string]$sourceProperty.Value)
+      }
+    }
+  } catch { }
+
+  try {
+    $processPath = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+    if (-not [string]::IsNullOrWhiteSpace($processPath)) {
+      return [System.IO.Path]::GetFullPath($processPath)
+    }
+  } catch { }
+
+  return [System.IO.Path]::GetFullPath((Join-Path (Get-Location).Path "DCOIR_Collector.ps1"))
+}
+
+$ScriptFilePath = Resolve-DCOIRRuntimePath
 $ScriptVersion = "4.0.6"
 
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
