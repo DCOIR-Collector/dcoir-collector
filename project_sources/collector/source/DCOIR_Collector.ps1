@@ -70,23 +70,20 @@ $ErrorActionPreference = "Continue"
 
 <#
 .SYNOPSIS
-Resolves the collector runtime path for both script and optional EXE execution.
+Checks whether one runtime path candidate is usable for collector self-location.
 
 .DESCRIPTION
-PowerShell script execution exposes MyInvocation.MyCommand.Path. PS2EXE/optional EXE
-execution can expose a command object without Path, so strict-mode property access can
-fail before the collector starts. This resolver uses safe property lookup and falls back
-to the current process path so the optional EXE variant can locate its embedded runtime
-folder.
+Rejects blank paths and host shell executable paths such as powershell.exe or pwsh.exe
+so script-mode execution does not mistake the PowerShell host for the collector source.
 
 .FUNCTION NAME
-Resolve-DCOIRRuntimePath
+Test-DCOIRRuntimePathCandidate
 
 .INPUTS
-No direct parameters.
+Path string.
 
 .OUTPUTS
-String absolute path to the active script or EXE runtime.
+Boolean indicating whether the candidate is a usable collector runtime path.
 #>
 function Test-DCOIRRuntimePathCandidate {
   param([string]$Path)
@@ -102,6 +99,26 @@ function Test-DCOIRRuntimePathCandidate {
   }
 }
 
+<#
+.SYNOPSIS
+Resolves the collector runtime path for script and optional EXE execution.
+
+.DESCRIPTION
+Prefers script-specific paths such as PSCommandPath and MyInvocation.PSCommandPath for
+PowerShell script execution, then safely checks MyInvocation.MyCommand properties, and
+finally falls back to the current process executable path for the optional EXE variant.
+The resolver avoids strict-mode property errors when PS2EXE command metadata lacks a
+Path property.
+
+.FUNCTION NAME
+Resolve-DCOIRRuntimePath
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String absolute path to the active collector script or optional EXE runtime.
+#>
 function Resolve-DCOIRRuntimePath {
   foreach ($candidate in @($PSCommandPath, $MyInvocation.PSCommandPath)) {
     if (Test-DCOIRRuntimePathCandidate -Path $candidate) {

@@ -169,20 +169,21 @@ function Join-ArgString {
 
 <#
 .SYNOPSIS
-Returns the absolute path to the active collector script.
+Checks whether one collector runtime path candidate is usable.
 
 .DESCRIPTION
-Resolves the collector script path from ScriptFilePath when present, then MyInvocation,
-and finally falls back to a DCOIR_Collector.ps1 path in the current directory.
+Rejects blank paths and PowerShell host executable paths so the primary PS1 lane keeps
+using the collector script path, while the optional EXE lane can still use a real EXE
+runtime path when appropriate.
 
 .FUNCTION NAME
-Get-CollectorAbsolutePath
+Test-CollectorRuntimePathCandidate
 
 .INPUTS
-No direct parameters.
+Path string.
 
 .OUTPUTS
-String absolute path to the collector script.
+Boolean indicating whether the candidate is a usable collector runtime path.
 #>
 function Test-CollectorRuntimePathCandidate {
   param([string]$Path)
@@ -198,6 +199,25 @@ function Test-CollectorRuntimePathCandidate {
   }
 }
 
+<#
+.SYNOPSIS
+Returns the absolute path to the active collector runtime.
+
+.DESCRIPTION
+Resolves the collector path by preferring the script path for PowerShell execution,
+checking safe MyInvocation metadata without strict-mode property failures, and falling
+back to the optional EXE process path only when the process itself is the collector
+runtime rather than powershell.exe or pwsh.exe.
+
+.FUNCTION NAME
+Get-CollectorAbsolutePath
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String absolute path to the active collector script or optional EXE runtime.
+#>
 function Get-CollectorAbsolutePath {
   foreach ($candidate in @($ScriptFilePath, $PSCommandPath, $MyInvocation.PSCommandPath)) {
     if (Test-CollectorRuntimePathCandidate -Path $candidate) {
