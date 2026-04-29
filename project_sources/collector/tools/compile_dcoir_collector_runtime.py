@@ -7,12 +7,12 @@ import re
 from pathlib import Path
 from typing import List
 
-MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json.txt'
+MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json'
 PATTERN = re.compile(r"(?ms)^\$collectorPartsRoot = .*?^foreach \(\$partFile in \$collectorPartFiles\) \{.*?^\}\s*")
 
 
 def load_manifest(source_dir: Path) -> dict:
-    return json.loads((source_dir / 'project_sources' / MANIFEST_NAME).read_text(encoding='utf-8'))
+    return json.loads((source_dir / 'project_sources' / 'collector' / 'manifests' / MANIFEST_NAME).read_text(encoding='utf-8'))
 
 
 def build_inline_block(part_paths: List[Path]) -> str:

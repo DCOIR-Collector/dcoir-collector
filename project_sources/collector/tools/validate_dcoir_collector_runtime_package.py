@@ -6,10 +6,10 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json.txt'
+MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json'
 
 def load_manifest(source_dir: Path) -> Dict:
-    return json.loads((source_dir / 'project_sources' / MANIFEST_NAME).read_text(encoding='utf-8'))
+    return json.loads((source_dir / 'project_sources' / 'collector' / 'manifests' / MANIFEST_NAME).read_text(encoding='utf-8'))
 
 def main() -> int:
     ap = argparse.ArgumentParser()

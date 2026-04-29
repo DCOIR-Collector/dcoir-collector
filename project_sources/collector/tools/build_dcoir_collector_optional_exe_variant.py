@@ -11,7 +11,7 @@ import zipfile
 from pathlib import Path
 from typing import Iterable
 
-MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json.txt'
+MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json'
 DEFAULT_PS2EXE_VERSION = '1.0.17'
 DEFAULT_EMBEDDED_TOOLS_SOURCE_ZIP = 'supporting_assets/DCOIR_Collector.zip'
 DEFAULT_EMBED_ROOT = r'.\DCOIR_EmbeddedTools\Sysinternals'
@@ -23,7 +23,7 @@ def run_step(cmd: list[str]) -> subprocess.CompletedProcess[str]:
 
 
 def load_manifest(source_dir: Path) -> dict:
-    return json.loads((source_dir / 'project_sources' / MANIFEST_NAME).read_text(encoding='utf-8'))
+    return json.loads((source_dir / 'project_sources' / 'collector' / 'manifests' / MANIFEST_NAME).read_text(encoding='utf-8'))
 
 
 def write_report(output_dir: Path, report: dict) -> None:

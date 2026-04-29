@@ -9,7 +9,7 @@ import sys
 import zipfile
 from pathlib import Path
 
-MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json.txt'
+MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json'
 
 
 def run_step(cmd: list[str]) -> subprocess.CompletedProcess[str]:
@@ -17,7 +17,7 @@ def run_step(cmd: list[str]) -> subprocess.CompletedProcess[str]:
 
 
 def load_manifest(source_dir: Path) -> dict:
-    return json.loads((source_dir / 'project_sources' / MANIFEST_NAME).read_text(encoding='utf-8'))
+    return json.loads((source_dir / 'project_sources' / 'collector' / 'manifests' / MANIFEST_NAME).read_text(encoding='utf-8'))
 
 
 def derive_collector_version(source_dir: Path, manifest: dict) -> tuple[str, str]:
