@@ -42,21 +42,43 @@ def priority_score(name: str) -> int:
 
 
 def classify(rows: list[dict]) -> tuple[str, list[str]]:
-    names = "\n".join(row["path"].lower() for row in rows[:5000])
+    """Classify by archive structure before keyword-only hints.
+
+    Structural classes are intentionally checked before broad words such as
+    "actions" so a skill source bundle with a GitHub Actions playbook is not
+    misclassified as a GitHub Actions artifact.
+    """
+    paths = [row["path"].lower() for row in rows[:5000]]
+    names = "\n".join(paths)
     classes = []
-    if any(term in names for term in ("workflow", "actions", "junit", "pytest", "coverage", "sarif", "##[error]")):
-        classes.append("github-actions-artifact")
-    if "skill.md" in names:
+
+    has_skill = any(path.endswith("/skill.md") or path == "skill.md" for path in paths)
+    has_repo_skill_root = any(path.startswith("dcoir_skills/") for path in paths)
+    has_repo_roots = any(
+        term in names
+        for term in (".github/workflows/", "project_sources/", "knowledge/", "dcoir_skills/")
+    )
+
+    if has_skill:
         classes.append("skill-package")
+    if has_repo_skill_root and not any(path.startswith((".github/", "project_sources/", "knowledge/")) for path in paths):
+        classes.append("repo-update-bundle")
+    elif has_repo_roots:
+        classes.append("repo-snapshot")
     if any(term in names for term in ("dcoir_collector", "dcoir-collector", "collector", "retrieved", "endpoint")):
         classes.append("collector-output")
     if any(term in names for term in ("gemini", "prompt-pack", "sub-agent", "parent-agent")):
         classes.append("gemini-or-prompt-pack")
-    if any(term in names for term in (".github/workflows", "project_sources/", "dcoir_skills/", "knowledge/")):
-        classes.append("repo-snapshot")
-    if not classes:
+    if any(term in names for term in ("workflow", "junit", "pytest", "coverage", "sarif", "##[error]")):
+        classes.append("github-actions-artifact")
+
+    ordered = []
+    for item in classes:
+        if item not in ordered:
+            ordered.append(item)
+    if not ordered:
         return "unknown-mixed", []
-    return classes[0], classes[1:]
+    return ordered[0], ordered[1:]
 
 
 def manifest_zip(path: Path, max_rows: int) -> tuple[list[dict], int]:
