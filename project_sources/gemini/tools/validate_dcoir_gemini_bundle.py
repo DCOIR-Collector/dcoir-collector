@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-MANIFEST_NAME = 'Gemini_Bundle_Source_Manifest.json.txt'
+MANIFEST_NAME = 'Gemini_Bundle_Source_Manifest.json'
 VISIBILITY_CHECKS = {
     'collector_artifact_interpretation_visibility': ['collector artifact', 'upload summary'],
     'collector_pivot_visibility': ['targeted collection', 'collector'],

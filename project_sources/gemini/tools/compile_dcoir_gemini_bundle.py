@@ -7,7 +7,7 @@ import re
 import zipfile
 from pathlib import Path
 
-MANIFEST_NAME = 'Gemini_Bundle_Source_Manifest.json.txt'
+MANIFEST_NAME = 'Gemini_Bundle_Source_Manifest.json'
 EXCLUDE = {'.DS_Store'}
 
 
