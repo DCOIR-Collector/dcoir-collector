@@ -1,8 +1,22 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-29T13:14:58Z
+- generated_at_utc: 2026-04-29T16:06:13Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
+
+## dcoir-artifact-intake-router
+
+- source_tree_hash: `8ce99129870533ef6b05ec363bb7c2cd1a3039cdc8fe32b07cbf55cf9247f863`
+- release_zip_name: `dcoir-artifact-intake-router.zip`
+- release_zip_hash: `not-recorded`
+- status: `verified`
+- file_count: `5`
+
+- `SKILL.md` — `e7fd80688c6476f57cd8ec25672c86f7af4cf08ee9aa4e62ba1ed839bff4a779`
+- `agents/openai.yaml` — `1a112f3f32fe5c16c4a4a63c5f45336ec351510015c00fed34bcaa49645aa4ce`
+- `assets/icon.svg` — `43a29d63b20e12776ffa9085782cc8b8776a72468a2e4d29515cd50f67fc18d7`
+- `references/github_actions_artifact_playbook.md` — `c73640c0de62cfa8e31c9867de0a3325ad7a8fabb8291c6931ceb61aeef51fe1`
+- `scripts/build_artifact_manifest.py` — `88e0e3619929f44f953ee0df8ad25db6f77eb687f37dc820ff47c549c88dda12`
 
 ## dcoir-attention-signaler
 

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-04-29T13:14:58Z",
+  "generated_at_utc": "2026-04-29T16:06:13Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -10,6 +10,42 @@
     "zip_hash_role": "secondary package/install check"
   },
   "skills": {
+    "dcoir-artifact-intake-router": {
+      "source_root": "dcoir-artifact-intake-router",
+      "source_tree_hash": "8ce99129870533ef6b05ec363bb7c2cd1a3039cdc8fe32b07cbf55cf9247f863",
+      "release_zip_name": "dcoir-artifact-intake-router.zip",
+      "release_zip_hash": "",
+      "status": "verified",
+      "file_count": 5,
+      "total_bytes": 15636,
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "e7fd80688c6476f57cd8ec25672c86f7af4cf08ee9aa4e62ba1ed839bff4a779",
+          "size_bytes": 8411
+        },
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "1a112f3f32fe5c16c4a4a63c5f45336ec351510015c00fed34bcaa49645aa4ce",
+          "size_bytes": 191
+        },
+        {
+          "path": "assets/icon.svg",
+          "sha256": "43a29d63b20e12776ffa9085782cc8b8776a72468a2e4d29515cd50f67fc18d7",
+          "size_bytes": 433
+        },
+        {
+          "path": "references/github_actions_artifact_playbook.md",
+          "sha256": "c73640c0de62cfa8e31c9867de0a3325ad7a8fabb8291c6931ceb61aeef51fe1",
+          "size_bytes": 907
+        },
+        {
+          "path": "scripts/build_artifact_manifest.py",
+          "sha256": "88e0e3619929f44f953ee0df8ad25db6f77eb687f37dc820ff47c549c88dda12",
+          "size_bytes": 5694
+        }
+      ]
+    },
     "dcoir-attention-signaler": {
       "source_root": "dcoir-attention-signaler",
       "source_tree_hash": "1ee9d465f54defb71399b4a1d32fe71ab14febde10a900caa25b95cfb21baafd",
