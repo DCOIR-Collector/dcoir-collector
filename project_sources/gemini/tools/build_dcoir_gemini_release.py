@@ -30,7 +30,8 @@ def main() -> int:
     source_root = Path(args.source_root).resolve()
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-    repo_root = source_root.parent.parent
+    # source_root is <repo>/project_sources/gemini/bundle_source; maintained knowledge docs live at <repo>/knowledge.
+    repo_root = source_root.parent.parent.parent
 
     sync_script = script_root / 'sync_dcoir_gemini_knowledge_attachments.py'
     validate_script = script_root / 'validate_dcoir_gemini_bundle.py'

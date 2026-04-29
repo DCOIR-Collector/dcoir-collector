@@ -198,7 +198,7 @@ jobs:
         working-directory: project_sources
         run: |
           $suite = '${{ github.event.inputs.suite }}'
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite $suite -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite $suite -MasterZipPath $env:HARNESS_RUNTIME_ZIP
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh

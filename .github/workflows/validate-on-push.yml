@@ -220,7 +220,7 @@ jobs:
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
           if ($LASTEXITCODE -ne 0) {
             throw 'Collector harness suite failed: Core'
           }

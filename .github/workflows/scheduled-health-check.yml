@@ -188,7 +188,7 @@ jobs:
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite MajorVersion -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite MajorVersion -MasterZipPath $env:HARNESS_RUNTIME_ZIP
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh
