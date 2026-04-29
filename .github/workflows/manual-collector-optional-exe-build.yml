@@ -8,6 +8,22 @@ on:
         required: false
         default: ''
         type: string
+      exe_validation_suite:
+        description: Harness suite to run against the produced optional EXE
+        required: true
+        default: Core
+        type: choice
+        options:
+          - Core
+          - Retrieval
+          - QuickAliases
+          - SessionBehavior
+          - TargetedCollection
+          - ChunkingOversizeArtifact
+          - ChunkingReconstructionMetadata
+          - MajorVersion
+          - FailureGates
+          - FullRegression
       skip_ps2exe_install:
         description: Fail if PS2EXE is not already available instead of acquiring it for the build
         required: false
@@ -28,6 +44,7 @@ jobs:
       contents: read
     env:
       PACKAGE_VERSION_OVERRIDE: ${{ github.event.inputs.package_version_override }}
+      EXE_VALIDATION_SUITE: ${{ github.event.inputs.exe_validation_suite }}
       SKIP_PS2EXE_INSTALL: ${{ github.event.inputs.skip_ps2exe_install }}
     steps:
       - name: Checkout repository
@@ -45,7 +62,8 @@ jobs:
             'project_sources/collector/tools/build_dcoir_collector_runtime_package.py',
             'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py',
             'project_sources/collector/tools/compile_dcoir_collector_runtime.py',
-            'project_sources/collector/tools/build_dcoir_collector_optional_exe_variant.py'
+            'project_sources/collector/tools/build_dcoir_collector_optional_exe_variant.py',
+            'project_sources/collector/tools/restore_dcoir_collector_runtime_zip.py'
           )
           foreach ($file in $pyFiles) {
             if (-not (Test-Path -LiteralPath $file)) {
@@ -111,6 +129,30 @@ jobs:
             throw 'Embedded tool payload manifest was not produced beside the optional EXE.'
           }
           Write-Host "OPTIONAL_EXE_PATH=$($exe.FullName)"
+          $deliveryZip = Get-ChildItem -Path project_sources/validation/out_optional_exe -File -Filter 'DCOIR_Collector_Delivery_Package_*.zip' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $deliveryZip) {
+            throw 'Collector delivery package zip was not produced for optional EXE harness validation.'
+          }
+          python project_sources/collector/tools/restore_dcoir_collector_runtime_zip.py --delivery-package-zip $deliveryZip.FullName --base-runtime-zip supporting_assets/DCOIR_Collector.zip --output-dir project_sources/validation/out_optional_exe --output-name DCOIR_Collector_optional_exe_runtime_for_harness.zip
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector runtime zip restore bridge failed for optional EXE harness validation.'
+          }
+          $harnessOutputRoot = Resolve-Path project_sources/validation/out_optional_exe
+          "OPTIONAL_EXE_PATH=$($exe.FullName)" | Add-Content -Path $env:GITHUB_ENV
+          "OPTIONAL_EXE_RUNTIME_ZIP=$((Resolve-Path project_sources/validation/out_optional_exe/DCOIR_Collector_optional_exe_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
+          "OPTIONAL_EXE_HARNESS_OUTPUT_ROOT=$($harnessOutputRoot.Path)\exe_harness_results" | Add-Content -Path $env:GITHUB_ENV
+
+      - name: Run selected harness suite against optional EXE variant
+        shell: pwsh
+        working-directory: project_sources
+        run: |
+          $suite = $env:EXE_VALIDATION_SUITE
+          if ([string]::IsNullOrWhiteSpace($suite)) { $suite = 'Core' }
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:OPTIONAL_EXE_PATH -CollectorInvocationMode Executable -Suite $suite -MasterZipPath $env:OPTIONAL_EXE_RUNTIME_ZIP -OutputRoot $env:OPTIONAL_EXE_HARNESS_OUTPUT_ROOT
+          if ($LASTEXITCODE -ne 0) {
+            throw "Optional EXE variant harness suite failed: $suite"
+          }
+
 
       - name: Upload optional EXE variant artifacts
         if: always()
@@ -121,5 +163,6 @@ jobs:
             project_sources/validation/out_optional_exe/build_dcoir_collector_optional_exe_variant_report.json
             project_sources/validation/out_optional_exe/DCOIR_Collector_Delivery_Package_*.zip
             project_sources/validation/out_optional_exe/optional_exe_variant/**
+            project_sources/validation/out_optional_exe/exe_harness_results/**
           if-no-files-found: warn
           retention-days: 14

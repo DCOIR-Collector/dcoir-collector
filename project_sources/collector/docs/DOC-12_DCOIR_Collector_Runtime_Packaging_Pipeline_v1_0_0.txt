@@ -1,4 +1,4 @@
-DCOIR Collector Runtime Packaging Pipeline v2.2.0
+DCOIR Collector Runtime Packaging Pipeline v2.3.0
 
 Purpose
 - Define the validate-and-build workflow for packaging the current collector maintained source line into a compiled single-runtime delivery package plus harness.
@@ -33,7 +33,8 @@ Optional EXE variant lane
 - The optional EXE is single-upload oriented: it embeds support-tool binaries staged from `supporting_assets/DCOIR_Collector.zip` during the build.
 - The optional EXE builder records an `embedded_tool_payload_manifest.json` beside the EXE with the source ZIP hash, embedded file count, target embed root, and per-file hashes.
 - The optional EXE output is labeled `optional_exe_variant` and includes a README that states it does not replace the PS1-first collector delivery contract.
-- A successful optional EXE build proves that the manual lane produced an EXE artifact and embedded-payload manifest from the governed runtime ZIP. It does not by itself prove live endpoint suitability, Elastic response-action suitability, or replacement readiness.
+- The optional EXE workflow now exposes the same bounded harness suite choices used by manual full validation: `Core`, `Retrieval`, `QuickAliases`, `SessionBehavior`, `TargetedCollection`, `ChunkingOversizeArtifact`, `ChunkingReconstructionMetadata`, `MajorVersion`, `FailureGates`, and `FullRegression`.
+- A successful optional EXE workflow run must prove that the manual lane produced an EXE artifact, emitted the embedded-payload manifest from the governed runtime ZIP, and ran the selected harness suite against the produced EXE through executable invocation mode. It does not by itself prove live endpoint suitability, Elastic response-action suitability, or default-package replacement readiness.
 - A failed optional EXE build does not invalidate the primary PS1 transport-safe collector delivery package by itself.
 
 Embedded support-tool payload rules

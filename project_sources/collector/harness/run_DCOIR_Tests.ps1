@@ -41,7 +41,10 @@ param(
 
   [switch]$ContinueOnError,
 
-  [switch]$SkipCleanup
+  [switch]$SkipCleanup,
+
+  [ValidateSet("Auto","PowerShellFile","Executable")]
+  [string]$CollectorInvocationMode = "Auto"
 )
 
 Set-StrictMode -Version 2
@@ -55,6 +58,15 @@ if ($LiveResponseMode) {
 
 $ProjectRoot = Split-Path -Parent (Resolve-Path -LiteralPath $CollectorPath)
 $CollectorFullPath = (Resolve-Path -LiteralPath $CollectorPath).Path
+$script:ResolvedCollectorInvocationMode = $CollectorInvocationMode
+if ($script:ResolvedCollectorInvocationMode -eq "Auto") {
+  $collectorExtension = [System.IO.Path]::GetExtension($CollectorFullPath)
+  if ($collectorExtension -ieq ".exe") {
+    $script:ResolvedCollectorInvocationMode = "Executable"
+  } else {
+    $script:ResolvedCollectorInvocationMode = "PowerShellFile"
+  }
+}
 $Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $OutputRootFullPath = if ([System.IO.Path]::IsPathRooted($OutputRoot)) {
   [System.IO.Path]::GetFullPath($OutputRoot)
@@ -244,6 +256,43 @@ function Build-ArgumentString {
 
 <#
 .SYNOPSIS
+Builds the collector process invocation for PS1 or optional EXE collector runtimes.
+
+.DESCRIPTION
+Returns the executable path, argument array, and display command used by harness steps.
+PowerShell-file mode runs powershell.exe -File against the collector script. Executable
+mode invokes the optional collector EXE directly while preserving the same collector
+argument surface used by the PS1 runtime.
+
+.FUNCTION NAME
+New-CollectorInvocation
+
+.INPUTS
+CollectorArgs string array.
+
+.OUTPUTS
+PSCustomObject containing FileName, Arguments, and DisplayCommand.
+#>
+function New-CollectorInvocation {
+  param([string[]]$CollectorArgs)
+  if ($script:ResolvedCollectorInvocationMode -eq "Executable") {
+    return [pscustomobject]@{
+      FileName = $CollectorFullPath
+      Arguments = @($CollectorArgs)
+      DisplayCommand = ("{0} {1}" -f (Quote-Arg -Value $CollectorFullPath), (Build-ArgumentString -ArgumentValues $CollectorArgs)).Trim()
+    }
+  }
+
+  $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
+  return [pscustomobject]@{
+    FileName = 'powershell.exe'
+    Arguments = $invokeArgs
+    DisplayCommand = ("powershell.exe {0}" -f (Build-ArgumentString -ArgumentValues $invokeArgs))
+  }
+}
+
+<#
+.SYNOPSIS
 Restores the working collector ZIP from the master ZIP.
 
 .DESCRIPTION
@@ -325,10 +374,9 @@ function Invoke-CollectorStep {
     [Parameter(Mandatory=$true)][string[]]$CollectorArgs
   )
   Ensure-Directory -Path $LogsDir
-  $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
-  $displayArgs = Build-ArgumentString -ArgumentValues $invokeArgs
+  $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
   $start = Get-Date
-  $allOutput = & powershell.exe @invokeArgs 2>&1
+  $allOutput = & $invocation.FileName @($invocation.Arguments) 2>&1
   $exitCode = $LASTEXITCODE
   $end = Get-Date
   $stdout = ($allOutput | ForEach-Object { if ($null -eq $_) { "" } else { $_.ToString() } }) -join [Environment]::NewLine
@@ -340,7 +388,7 @@ function Invoke-CollectorStep {
   [void]$logLines.Add(("DURATION_MS={0}" -f [int][Math]::Round(($end - $start).TotalMilliseconds)))
   [void]$logLines.Add("EXIT_CODE=$exitCode")
   if ($collectorReportedStatus) { [void]$logLines.Add("COLLECTOR_STATUS=$collectorReportedStatus") }
-  [void]$logLines.Add(("COMMAND=powershell.exe {0}" -f $displayArgs))
+  [void]$logLines.Add(("COMMAND={0}" -f $invocation.DisplayCommand))
   [void]$logLines.Add("")
   [void]$logLines.Add("STDOUT:")
   [void]$logLines.Add($stdout)
@@ -449,18 +497,17 @@ function Invoke-ExpectedFailureStep {
   )
 
   Ensure-Directory -Path $LogsDir
-  $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
-  $displayArgs = Build-ArgumentString -ArgumentValues $invokeArgs
+  $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
   $start = Get-Date
 
   $process = New-Object System.Diagnostics.Process
   $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
-  $process.StartInfo.FileName = 'powershell.exe'
+  $process.StartInfo.FileName = $invocation.FileName
   $process.StartInfo.UseShellExecute = $false
   $process.StartInfo.RedirectStandardOutput = $true
   $process.StartInfo.RedirectStandardError = $true
   $process.StartInfo.CreateNoWindow = $true
-  $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues $invokeArgs
+  $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues @($invocation.Arguments)
   [void]$process.Start()
   $stdoutTask = $process.StandardOutput.ReadToEndAsync()
   $stderrTask = $process.StandardError.ReadToEndAsync()
@@ -515,7 +562,7 @@ function Invoke-ExpectedFailureStep {
   if ($collectorReportedStatus) { [void]$logLines.Add("COLLECTOR_STATUS=$collectorReportedStatus") }
   [void]$logLines.Add("STATUS=$status")
   if ($message) { [void]$logLines.Add("MESSAGE=$message") }
-  [void]$logLines.Add(("COMMAND=powershell.exe {0}" -f $displayArgs))
+  [void]$logLines.Add(("COMMAND={0}" -f $invocation.DisplayCommand))
   [void]$logLines.Add("")
   [void]$logLines.Add("STDOUT:")
   [void]$logLines.Add($stdoutText)
@@ -1165,6 +1212,7 @@ function Save-Summary {
   $lines += ("LIVE_RESPONSE_MODE={0}" -f $LiveResponseMode)
   $lines += ("PROJECT_ROOT={0}" -f $ProjectRoot)
   $lines += ("COLLECTOR_PATH={0}" -f $CollectorFullPath)
+  $lines += ("COLLECTOR_INVOCATION_MODE={0}" -f $script:ResolvedCollectorInvocationMode)
   $lines += ("MASTER_ZIP={0}" -f $MasterZipFullPath)
   $lines += ("WORKING_ZIP={0}" -f $WorkingZipPath)
   $lines += ("TEST_RUN_OUTPUT={0}" -f $RunOutputRoot)
@@ -1184,6 +1232,7 @@ function Save-Summary {
     LiveResponseMode = [bool]$LiveResponseMode
     ProjectRoot = $ProjectRoot
     CollectorPath = $CollectorFullPath
+    CollectorInvocationMode = $script:ResolvedCollectorInvocationMode
     MasterZip = $MasterZipFullPath
     WorkingZip = $WorkingZipPath
     TestRunOutput = $RunOutputRoot
