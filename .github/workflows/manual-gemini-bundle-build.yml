@@ -63,9 +63,9 @@ jobs:
           $required = @(
             'project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt',
             'project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt',
-            'project_sources/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt',
-            'project_sources/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
-            'project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt',
+            'project_sources/gemini/docs/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt',
+            'project_sources/gemini/docs/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
+            'project_sources/gemini/prompt_pack/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt',
             'project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json',
             'project_sources/gemini/bundle_source/README.md',
             'project_sources/gemini/bundle_source/00_START_HERE/README_FIRST.md.txt',
