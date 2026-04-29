@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-MANIFEST_NAME = 'Gemini_Bundle_Source_Manifest.json.txt'
+MANIFEST_NAME = 'Gemini_Bundle_Source_Manifest.json'
 KNOWLEDGE_DIR = '02_PRIME_AGENT_ATTACHMENTS'
 
 
