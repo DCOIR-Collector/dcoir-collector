@@ -1,56 +1,59 @@
 # Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance
 
-_Attachment inventory, update discipline, validation expectations, and ongoing maintenance rules for the Gemini knowledge set_
+_Gemini knowledge attachment inventory and maintenance rules_
 
-**Summary:** Attachment inventory, validation expectations, manifest and map refresh rules, and the maintenance rhythm for the Gemini knowledge set.
+**Summary:** The Gemini attachment set is synced from maintained `knowledge/*.md` files and must stay aligned with the manifest, attachment map, and workflow checks.
 
-| Source class | Authoritative basis |
+---
+
+## Attachment model
+
+| Surface | Role |
 | --- | --- |
-| Project sources | project_sources/gemini/bundle_source/00_START_HERE/Agent_Attachment_Map.md.txt; project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json; project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt; project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt |
-| Official external sources | Not required for this page |
-| Scope note | Attachment maintenance belongs to the runtime source tree and should be handled as part of ordinary stored-source bundle maintenance when the knowledge set changes. |
+| `knowledge/*.md` | Maintained editable source |
+| `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` | Gemini runtime attachment copies |
+| `Agent_Attachment_Map.md.txt` | Human/runtime inventory explanation |
+| `Gemini_Bundle_Source_Manifest.json` | Required file inventory |
+| GitHub Actions workflows | Validation and required-surface enforcement |
 
-## What the attachment set is doing
+---
 
-The attachment set is the shared knowledge layer carried with the prime agent. These files give the runtime stable topical coverage on collector operation, command-lane discipline, artifact review, troubleshooting, AI design posture, IOC enrichment boundaries, and the deeper Gemini-specific runtime model.
+## Current inventory
 
-## What a good attachment file looks like
+The maintained set contains 17 knowledge pages. Knowledge 16 covers optional EXE usage and runtime behavior. Knowledge 17 covers collector features and output contract reference.
 
-A good attachment file on this line should:
-- stay topical rather than meta
-- preserve subject-matter distinctions and branch logic
-- explain what matters operationally, not just what filenames exist
-- remain grounded in the current project sources and current runtime posture
-- help a brand-new operator understand what to do and what not to do
-- be long because it is useful, not because it is padded
-- stay free of duplicated filler or repeated appendix blocks that add no new meaning
+---
 
-## Validation expectations for attachment changes
+## Update rule
 
-A useful validation pass after attachment changes should check at least the following:
-- every intended attachment file is present in the runtime source tree
-- the attachment map matches the inventory
-- the manifest inventory is still coherent with the intended required set
-- each attachment remains topical and avoids meta filler or duplicated appendix bloat
-- collector-facing attachment files preserve command-lane separation and explicit operational guidance
-- Gemini-facing attachment files preserve stored-source, topology, output-contract, grounding-lane honesty, and maintenance rules accurately
-- Airtable `Validation Test Cases` includes the runtime-only checks needed for any newly enforced behavior
+When the knowledge set changes:
 
-## Research-backed maintenance notes
+1. Update maintained `knowledge/*.md` source.
+2. Sync `.md.txt` attachment copies.
+3. Update the attachment map.
+4. Update the manifest required-files list.
+5. Update GitHub Actions required-surface checks.
+6. Add or update Airtable validation rows if runtime behavior changed.
 
-When Gemini-facing attachments discuss runtime behavior, keep these boundaries explicit:
-- enterprise web grounding is not the same thing as broad unqualified web search
-- uploaded files are not the same thing as live enterprise connector retrieval
-- the runtime should not claim completed actions, grounded completion, or internal-knowledge access without the actual support surface
-- exact output contracts are easier to keep stable when the underlying structure stays compact enough to be enforced reliably
+---
 
-## Maintenance rhythm
+## Validation expectations
 
-After meaningful Gemini changes:
-1. update the maintained `knowledge/*.md` working files when the human-readable knowledge layer changed
-2. update mirrored attachment copies under `02_PRIME_AGENT_ATTACHMENTS/` when those attachments are part of the shipped knowledge layer
-3. refresh attachment inventory or manifest entries when required files changed
-4. update Airtable `Validation Test Cases` for any new live-behavior checks
-5. compile or package only after the source, attachment, and validation surfaces tell the same story
+After attachment changes, verify:
+
+- every required attachment exists;
+- maintained source and attachment copies match;
+- manifest and attachment map include the same inventory;
+- workflow checks enforce the current count and required files;
+- agent instructions reference the correct attachment surfaces;
+- no stale duplicated filler or meta-writing text remains.
+
+---
+
+## Grounding boundary
+
+Attachments can provide stable project context. They do not create live connector access, enterprise retrieval, or web-grounding capability by themselves.
+
+---
 
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
