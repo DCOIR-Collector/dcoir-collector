@@ -1,100 +1,114 @@
 # Knowledge - 08 - Troubleshooting
 
-_Common operational, packaging, and lane-separation issues on the current DCOIR line_
+_Common DCOIR execution, packaging, validation, and interpretation failures_
 
-**Summary:** Current collector, harness, packaging, and lane-separation failure patterns, with bounded troubleshooting habits grounded in the active line, current live response-action lessons, and the current proven boundary for large-output chunking.
+**Summary:** Use this page to separate lane mistakes, staging problems, packaging issues, wrapper limitations, and real collector defects.
 
-| Source class | Authoritative basis |
+---
+
+## First checks
+
+Before editing source or rerunning broad validation, confirm:
+
+- execution lane: Elastic endpoint, local workstation, GitHub Actions, PS1, or EXE;
+- runtime path and filename;
+- staged package or asset state;
+- current branch/ref used by GitHub Actions;
+- whether output already exists and should be reviewed or retrieved;
+- whether the symptom is build, packaging, runtime, harness, or interpretation.
+
+---
+
+## Lane mixing
+
+| Symptom | Check |
 | --- | --- |
-| Project sources | project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/collector/source/DCOIR_Collector.ps1; project_sources/collector/harness/run_DCOIR_Tests.ps1; project_sources/LOG-63_DCOIR_Chunking_Reconstruction_Hotfix_2026-04-09.txt; project_sources/LOG-70_DCOIR_Infrastructure_First_Reprioritization_Closeout_2026-04-17.txt |
-| Official external sources | Microsoft Learn / Sysinternals tool pages; Microsoft Learn / PowerShell help references; Elastic Docs / endpoint response actions |
-| Scope note | This page focuses on current durable lessons rather than speculative fixes. |
+| Local command fails in Elastic | Missing `execute --command` wrapper or quoting issue |
+| Endpoint command pasted locally | Response-action syntax used in wrong lane |
+| Valid command gives unexpected context | Wrong runtime path or working directory |
 
-## First things to verify
+Use Knowledge 02 for endpoint command syntax.
 
-- Reason from the current GitHub-readable source paths in the repo, but run the native runtime filename `DCOIR_Collector.ps1` the operator will actually use.
-- The local harness can find `./DCOIR_Collector.ps1` and `./assets/DCOIR_Collector.zip` from the repo-style or local test layout.
-- You are using PowerShell 5.1-compatible syntax and not assuming PowerShell 7 features.
-- You are not mixing Elastic response-console syntax with local workstation or local regression syntax.
-- The current governed line does not include a default `run_DCOIR_Tests.cmd` harness wrapper, so local regression should use `run_DCOIR_Tests.ps1` unless the control plane later restores a wrapper.
-- Before a repeated collect-style run, verify that the currently staged runtime/package state is still the one you mean to execute.
+---
 
-## Troubleshooting posture
+## Local regression path failures
 
-Troubleshooting on the current DCOIR line should stay bounded, lane-aware, and source-grounded. The goal is not to improvise around every ambiguous symptom with speculative fixes. The goal is to identify whether the issue is a layout problem, a lane mistake, a packaging mismatch, a harness invocation problem, a staging-state problem, a documentation/expectation gap, or a genuine runtime defect.
+Check:
 
-## Symptom: command looked right but produced the wrong lane behavior
+- `run_DCOIR_Tests.ps1` is the harness being used;
+- `DCOIR_Collector.ps1` or EXE path exists at `-CollectorPath`;
+- master ZIP exists at `-MasterZipPath`;
+- current directory matches the command examples;
+- PowerShell 5.1 compatibility is preserved.
 
-The most common root cause is lane mixing. A local PowerShell example pasted into the endpoint response console is not the same command operationally. The inverse mistake also happens when an operator adds a response-action wrapper to a local test command and then wonders why the workstation run makes no sense.
+---
 
-Check these first:
-- is the entire PowerShell command inside the `execute --command` quoted string?
-- is the path written as `.\DCOIR_Collector.ps1` in the endpoint lane?
-- is the `--comment` field carrying the operator explanation instead of command fragments?
-- was a local command copied into Elastic unchanged, or vice versa?
+## EXE-specific failures
 
-## Symptom: local regression cannot find the collector or asset paths
+The optional EXE can differ from PS1 in native PowerShell diagnostic behavior.
 
-This is usually a repo-layout or working-directory problem before it is a collector problem. Check whether:
-- the current shell is in the expected repo-style layout
-- `DCOIR_Collector.ps1` exists at the path the operator actually invoked
-- `run_DCOIR_Tests.ps1` is being used directly when the current line does not carry a default CMD wrapper
-- `assets/DCOIR_Collector.zip` exists where the harness expects the master ZIP
+Expected EXE differences may include:
 
-## Symptom: repeated collect-style runs behave unexpectedly
+- missing native bind-reject text;
+- different exit-code behavior;
+- wrapper-limited failure output.
 
-Treat repeated collect-style runs as a fresh staging question before treating them as a collector defect.
+Do not treat those as collector defects unless the output contract, artifact creation, or functional behavior is wrong. Use Knowledge 16 for EXE-specific interpretation.
 
-Check whether:
-- the needed output already exists and should be reviewed or retrieved instead of rerun
-- the current staged runtime or ZIP is still the correct one for the next action
-- the endpoint staging state was changed, removed, or replaced after the prior run
-- the operator silently assumed an earlier staged ZIP was still the right baseline for the new run
+---
 
-If the current staging state is uncertain, re-stage before drawing conclusions from the rerun.
+## Repeated collect runs
 
-## Symptom: large real outputs stayed monolithic instead of chunking
+Before rerunning collection:
 
-Current governed evidence matters here.
+- review or retrieve existing output first;
+- verify staging state;
+- re-stage when uncertain;
+- name the new question the rerun must answer.
 
-The 2026-04-09 chunking hotfix proves deterministic reconstruction for the **synthetic chunking validation fixture**. It does **not** prove that every oversized real baseline report or large real final artifact is chunked automatically by default.
+---
 
-That means a monolithic large real output should currently be interpreted like this:
-- first ask whether the output is exposing a known implementation boundary rather than a fresh source defect
-- do not claim that chunking is broken everywhere if the only proven chunking lane is synthetic validation
-- if the workflow needs guaranteed real-output chunking, treat that as a new implementation requirement with a bounded repro and validation plan
-- if the current workflow can proceed with retrieval/review planning, do that honestly instead of inventing chunk-manifest expectations the runtime has not yet proven
+## Targeted collection expectations
 
-## Symptom: targeted mode did not narrow as much as expected
+Targeted mode narrows intent and output emphasis. Do not claim exact filtering unless that specific path has validated exact filtering behavior.
 
-Current live findings require honest boundaries here. Targeted mode should currently be treated as a narrower guidance, scope, and prioritization lane unless the exact path has been proven to implement true exact filtering for the requested subset.
+If targeted output is broader than expected, decide whether this is:
 
-Troubleshooting questions:
-- was the operator expecting exact filtering semantics that this path has not yet proven?
-- did the run narrow the workflow intent but still produce artifacts similar to a broader baseline?
-- is the next need a docs/language correction or a true implementation change?
+- documentation/expectation drift;
+- a validated limitation;
+- or a new implementation requirement.
 
-Do not describe targeted mode as exact filtering unless the specific lane has been validated that way.
+---
 
-## Symptom: packaging or bundle contents do not look like the repo changes
+## Large output and chunking
 
-Packaging problems often come from one of four causes:
-- the wrong source tree was treated as authoritative
-- a stored-source compile path was expected but an older generated surface was used
-- a patch-style bundle omitted a needed supporting file such as a manifest or map update
-- the operator is reading a retained ZIP as though it were the current editable source
+Synthetic chunking reconstruction is validated for the regression fixture. That does not prove every real large output chunks automatically.
 
-## Symptom: tool-backed enrichment action behaved unexpectedly
+Treat large monolithic live output as a retrieval/review or implementation-boundary issue unless exact live chunking has been validated.
 
-Treat tool-backed actions as a combination of collector behavior and bundled utility behavior. Verify that the action itself is supported as currently exposed. Then, if interpretation still depends on the exact behavior of the underlying utility, consult the official Sysinternals documentation rather than inventing flags or side effects.
+---
 
-## Good troubleshooting habits
+## Packaging and bundle issues
 
-- state the symptom in one sentence
-- state which lane it happened in
-- identify whether the failure is before execution, during execution, or during interpretation
-- verify the current source assumption before editing anything
-- preserve the narrowest possible fix
-- when documentation is ambiguous, ask for the exact parameter names, accepted values, emitted markers, or command examples rather than inventing prose-based meaning
+Common causes:
+
+- wrong source treated as authoritative;
+- manifest/map not updated with new files;
+- generated attachment edited instead of maintained source;
+- retained ZIP read as current source;
+- workflow required-surface checks not updated.
+
+---
+
+## Troubleshooting pattern
+
+1. State the symptom.
+2. Identify the lane.
+3. Identify failure stage: build, packaging, execution, validation, or interpretation.
+4. Check source and staging assumptions.
+5. Apply the narrowest fix.
+6. Validate the specific behavior before broad regression.
+
+---
 
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
