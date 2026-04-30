@@ -85,6 +85,8 @@ jobs:
             'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt',
             'knowledge/README.md',
             'knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md',
+            'knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md',
+            'knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md',
             'project_sources/gemini/tools/sync_dcoir_gemini_knowledge_attachments.py',
             'project_sources/gemini/tools/validate_dcoir_gemini_bundle.py',
             'project_sources/gemini/tools/compile_dcoir_gemini_bundle.py',
@@ -95,8 +97,8 @@ jobs:
             throw "Missing required Gemini bundle surfaces: $($missing -join ', ')"
           }
           $knowledgeFiles = Get-ChildItem -LiteralPath knowledge -File -Filter 'Knowledge - *.md'
-          if ($knowledgeFiles.Count -lt 15) {
-            throw "Maintained knowledge set is smaller than expected. Found $($knowledgeFiles.Count) files; expected at least 15."
+          if ($knowledgeFiles.Count -lt 17) {
+            throw "Maintained knowledge set is smaller than expected. Found $($knowledgeFiles.Count) files; expected at least 17."
           }
 
       - name: Create output directory
