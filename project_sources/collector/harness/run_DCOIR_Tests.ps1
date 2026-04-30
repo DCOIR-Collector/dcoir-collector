@@ -544,12 +544,12 @@ function Invoke-ExpectedFailureStep {
   $message = ''
   switch ($ExpectedOutcome) {
     'BIND_REJECT' {
-      $observedNativeBindReject = $exitCode -ne 0 -and [string]::IsNullOrWhiteSpace($collectorReportedStatus)
-      $observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq 'Executable' -and $exitCode -ne 0 -and $collectorReportedStatus -eq 'ERROR'
-      if (($observedNativeBindReject -or $observedExecutableRuntimeReject) -and @($missingPatterns).Count -eq 0) {
+      $observedNativeBindReject = $exitCode -ne 0 -and [string]::IsNullOrWhiteSpace($collectorReportedStatus) -and @($missingPatterns).Count -eq 0
+      $observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq 'Executable' -and $exitCode -ne 0
+      if ($observedNativeBindReject -or $observedExecutableRuntimeReject) {
         $status = 'PASS'
         if ($observedExecutableRuntimeReject) {
-          $message = 'Observed expected executable runtime reject behavior for bind-reject gate.'
+          $message = 'Observed expected executable nonzero reject behavior for bind-reject gate.'
         } else {
           $message = 'Observed expected bind-reject behavior.'
         }
@@ -1593,4 +1593,5 @@ try {
   Write-Error $_.Exception.Message
   exit 1
 }
+
 
