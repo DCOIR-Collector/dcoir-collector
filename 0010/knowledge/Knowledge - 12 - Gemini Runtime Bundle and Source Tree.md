@@ -24,7 +24,7 @@ Generated or packaged outputs are delivery artifacts, not the editing surface.
 | --- | --- |
 | `00_START_HERE/` | Entry surfaces, quick start, attachment map |
 | `01_GEMINI_AGENT_BUILD/` | Prime agent, sub-agents, generated index |
-| `02_PRIME_AGENT_ATTACHMENTS/` | Synced knowledge attachment copies |
+| `02_PRIME_AGENT_ATTACHMENTS/` | Generated release-ZIP attachment path populated from `knowledge/*.md` at package time |
 | `Gemini_Bundle_Source_Manifest.json` | Required inventory and topology |
 
 ---

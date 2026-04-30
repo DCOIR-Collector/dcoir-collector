@@ -1,0 +1,58 @@
+# Agent Attachment Map
+
+This map is intentionally explicit. It exists so the operator, the maintainer, and the future validation workflow can see exactly which shared knowledge files feed the prime-agent attachment set and why they matter.
+
+1. Knowledge - 01 - Overview and About
+- Purpose: define current DCOIR posture, source classes, governance boundaries, and the working relationship between the collector line, the Gemini line, and the maintained knowledge set.
+
+2. Knowledge - 02 - Elastic Quick Start
+- Purpose: preserve endpoint response-console usage, local-versus-endpoint command-lane separation, quick-start action patterns, and endpoint-side guardrails.
+
+3. Knowledge - 03 - Local Test and Regression
+- Purpose: preserve local harness philosophy, suite selection, restaging behavior, manual validation standards, and practical regression use from the current repo-style layout.
+
+4. Knowledge - 04 - Tier 1 Collect Runbook
+- Purpose: preserve first-pass baseline collection posture, outputs, review order, and escalation logic from baseline into narrower next steps.
+
+5. Knowledge - 05 - Tier 2 Collect Runbook
+- Purpose: preserve deeper-collection logic, persistence-and-configuration context, and decision rules for when deeper context is justified.
+
+6. Knowledge - 06 - Enrichment Actions
+- Purpose: preserve the one-action-at-a-time enrich model, action-family selection, finalize behavior, retrieval expectations, and tool-backed action discipline.
+
+7. Knowledge - 07 - Artifact Review Guide
+- Purpose: preserve evidence-first artifact review order, wrapper-versus-evidence-carrier distinctions, upload priority logic, and retrieved-artifact interpretation discipline.
+
+8. Knowledge - 08 - Troubleshooting
+- Purpose: preserve bounded troubleshooting rules, lane-specific failure diagnosis, packaging and runtime triage habits, and non-overreach behavior.
+
+9. Knowledge - 09 - FAQ
+- Purpose: preserve repeated operator answers about workflow, packaging, authority, command lanes, and runtime-maintenance habits in a fast-reference format.
+
+10. Knowledge - 10 - AI Prompt and Agent Design
+- Purpose: preserve the current prompt-pack and Gemini design posture, including description-field routing quality, instruction density, comparative-reference usage, and stored-source compile rules.
+
+11. Knowledge - 11 - IOC Enrichment and Public Sources
+- Purpose: preserve evidence-grounded IOC enrichment policy, source-tier distinctions, public-corroboration boundaries, and per-indicator-type guidance.
+
+12. Knowledge - 12 - Gemini Runtime Bundle and Source Tree
+- Purpose: preserve stored-source compile behavior, source-tree layout, manifest-driven inventory thinking, and the practical rules for keeping the runtime bundle coherent.
+
+13. Knowledge - 13 - Gemini Agent Topology and Routing
+- Purpose: preserve the current one-prime-plus-ten-sub-agent runtime topology, the ownership of each sub-agent, and the routing rules that keep responsibilities explicit.
+
+14. Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline
+- Purpose: preserve final response-structure rules, decision-state discipline, singular-command behavior, and endpoint-versus-local command-lane separation.
+
+15. Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance
+- Purpose: preserve attachment-inventory logic, map and manifest refresh rules, validation expectations, and the maintenance rhythm for the shared Gemini knowledge set.
+
+16. Knowledge - 16 - Collector EXE Usage and Runtime Behavior
+- Purpose: preserve optional EXE usage, GitHub Actions build-and-validation flow, EXE-versus-PS1 runtime differences, and EXE-aware FailureGates behavior so Gemini and operators do not misread wrapper-limited behavior as a collector regression.
+
+17. Knowledge - 17 - Collector Feature and Output Contract Reference
+- Purpose: preserve the canonical collector feature map and high-level output contract so feature descriptions, validation expectations, and Gemini interpretation do not drift across runbooks, troubleshooting, FAQ, and EXE guidance.
+## Maintenance rule
+
+The maintained source is `knowledge/*.md`. The build process packages those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` inside the generated release ZIP by appending `.txt` to the source filename. Do not maintain duplicate Knowledge attachment source files under `bundle_source`. `DCOIR_KNOWLEDGE_INDEX.md` is a repo-level operator entry point and is not part of the Gemini attachment set unless the manifest is intentionally expanded.
+
