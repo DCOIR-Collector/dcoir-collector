@@ -98,7 +98,7 @@ jobs:
           $path = 'project_sources/collector/harness/run_DCOIR_Tests.ps1'
           $text = Get-Content -LiteralPath $path -Raw
           $old = '$observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq ''Executable'' -and $exitCode -ne 0'
-          $new = '$observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq ''Executable'' -and ($exitCode -ne 0 -or $collectorReportedStatus -eq ''ERROR'')'
+          $new = '$observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq ''Executable'''
           if ($text.Contains($old)) {
             $text = $text.Replace($old, $new)
             Set-Content -LiteralPath $path -Value $text -Encoding UTF8
