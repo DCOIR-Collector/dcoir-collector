@@ -1,0 +1,14 @@
+original_path: chatgpt_staging/testdata/source/sample_beta.md
+blob_sha: 527f916020e4b753f5b331641d97f4f01646b091
+sha256: 3378b25044fbaedccfa5beef9c7daaac5ac60943920182a5bb0362665944c25e
+chunk: 1
+line_start: 1
+line_end: 7
+---
+# sample_beta
+
+This Markdown file is safe test data for the ChatGPT GitHub Staging Lane.
+
+- Original value: beta-zip-updated
+- Expected update target: beta-zip-updated
+- Applied by: manual-chatgpt-apply-zip-b64-test
