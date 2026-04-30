@@ -1,3 +1,4 @@
+[CmdletBinding()]
 param(
     [string]$RepoRoot = $env:DCOIR_REPO_ROOT,
     [string]$OutputDir = $env:DCOIR_DOWNLOADS_DIR,
@@ -8,7 +9,9 @@ param(
 
 $ErrorActionPreference = "Continue"
 if (-not $RepoRoot) { throw "DCOIR_REPO_ROOT is not set." }
+if (-not (Test-Path -LiteralPath $RepoRoot -PathType Container)) { throw "Repo root not found: $RepoRoot" }
 if (-not $OutputDir) { $OutputDir = Join-Path $env:USERPROFILE "Downloads" }
+if (-not (Test-Path -LiteralPath $OutputDir -PathType Container)) { New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null }
 
 $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $log = Join-Path $OutputDir "dcoir_safe_prepull_apply_$stamp.txt"
@@ -67,7 +70,7 @@ Set-Location $RepoRoot
 
     ""
     "RESULT: If status shows only intended changes and no conflict files, review and commit in GitHub Desktop. Do not drop stashes until instructed."
-} 2>&1 | Tee-Object -FilePath $log
+} 2>&1 | Tee-Object -FilePath $log | Out-Null
 
 Write-Host ""
 Write-Host "Saved log to:"

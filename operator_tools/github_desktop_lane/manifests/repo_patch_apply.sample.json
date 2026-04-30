@@ -1,0 +1,36 @@
+{
+  "manifest_version": "2026-05-01.1",
+  "tool": "Invoke-DcoirRepoPatchApply.ps1",
+  "patch_id": "sample-doc-update",
+  "expected_branch": "main",
+  "payload_root_policy": "auto",
+  "allow_dirty_tree": false,
+  "allowed_target_roots": [
+    "operator_tools/",
+    "knowledge/",
+    "project_sources/",
+    "dcoir_skills/",
+    ".github/",
+    "project_settings/",
+    "release_notes/",
+    "README.md",
+    "DCOIR_KNOWLEDGE_INDEX.md"
+  ],
+  "precheck_existing_hashes": [
+    {
+      "path": "README.md",
+      "allow_missing": true
+    }
+  ],
+  "copy_map": [
+    {
+      "source": "root/README.sample.md",
+      "target": "operator_tools/github_desktop_lane/tests/fixtures/applied_README.sample.md"
+    }
+  ],
+  "delete_paths": [],
+  "postcheck_required_paths": [
+    "operator_tools/github_desktop_lane/tests/fixtures/applied_README.sample.md"
+  ],
+  "postcheck_hashes": []
+}

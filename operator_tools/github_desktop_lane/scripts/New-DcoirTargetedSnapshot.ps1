@@ -1,3 +1,4 @@
+[CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
     [string]$ManifestJson,
@@ -8,25 +9,23 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-
 if (-not $RepoRoot) { throw "DCOIR_REPO_ROOT is not set." }
+if (-not (Test-Path -LiteralPath $RepoRoot -PathType Container)) { throw "Repo root not found: $RepoRoot" }
 if (-not $OutputDir) { $OutputDir = Join-Path $env:USERPROFILE "Downloads" }
+if (-not (Test-Path -LiteralPath $OutputDir -PathType Container)) { New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null }
 if (-not (Test-Path -LiteralPath $ManifestJson)) { throw "Manifest not found: $ManifestJson" }
-if (-not (Test-Path -LiteralPath $RepoRoot)) { throw "Repo root not found: $RepoRoot" }
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
-$OutputDir = if (Test-Path -LiteralPath $OutputDir) { (Resolve-Path -LiteralPath $OutputDir).Path } else { $OutputDir }
-New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
-
+$OutputDir = (Resolve-Path -LiteralPath $OutputDir).Path
 $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $manifest = Get-Content -Raw -LiteralPath $ManifestJson | ConvertFrom-Json
 $name = $manifest.name
 if (-not $name) { $name = "targeted_snapshot" }
-
-$tmp = Join-Path $env:TEMP "${name}_$stamp"
-$stage = Join-Path $tmp "repo_snapshot"
-$zip = Join-Path $OutputDir "${name}_$stamp.zip"
-$log = Join-Path $OutputDir "${name}_$stamp.log.txt"
+$safeName = ($name -replace '[^A-Za-z0-9_.-]', '_')
+$tmp = Join-Path $OutputDir "${safeName}_$stamp"
+$stage = Join-Path $tmp "snapshot"
+$zip = Join-Path $OutputDir "${safeName}_$stamp.zip"
+$log = Join-Path $OutputDir "${safeName}_$stamp.log.txt"
 
 function Write-Log {
     param([AllowEmptyString()][string]$Text)
@@ -35,28 +34,19 @@ function Write-Log {
 
 function ConvertTo-NativeArgumentString {
     param([AllowEmptyString()][string]$Argument)
-
     if ($null -eq $Argument) { return '""' }
     if ($Argument.Length -eq 0) { return '""' }
     if ($Argument -notmatch '[\s"]') { return $Argument }
-
-    # Windows command-line quoting for a single native argument.
     $escaped = $Argument -replace '(\\*)"', '$1$1\"'
     $escaped = $escaped -replace '(\\+)$', '$1$1'
     return '"' + $escaped + '"'
 }
 
 function Invoke-GitLogged {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string[]]$Arguments
-    )
-
+    param([Parameter(Mandatory = $true)][string[]]$Arguments)
     Write-Log ""
     Write-Log (">>> git " + ($Arguments -join " "))
-
     $argumentString = ($Arguments | ForEach-Object { ConvertTo-NativeArgumentString ([string]$_) }) -join ' '
-
     Push-Location $RepoRoot
     try {
         $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -67,7 +57,6 @@ function Invoke-GitLogged {
         $psi.RedirectStandardOutput = $true
         $psi.RedirectStandardError = $true
         $psi.CreateNoWindow = $true
-
         $process = New-Object System.Diagnostics.Process
         $process.StartInfo = $psi
         [void]$process.Start()
@@ -79,61 +68,48 @@ function Invoke-GitLogged {
     finally {
         Pop-Location
     }
-
     $lines = New-Object System.Collections.Generic.List[string]
     foreach ($text in @($stdout, $stderr)) {
         if ($null -ne $text -and $text.Length -gt 0) {
             $normalized = $text -replace "`r`n", "`n"
             foreach ($line in ($normalized -split "`n")) {
                 if ($line.Length -gt 0) {
-                    $lines.Add([string]$line)
+                    $lines.Add([string]$line) | Out-Null
                     Write-Log ([string]$line)
                 }
             }
         }
     }
-
-    if ($exitCode -ne 0) {
-        throw "git $($Arguments -join ' ') failed with exit code $exitCode"
-    }
-
+    if ($exitCode -ne 0) { throw "git $($Arguments -join ' ') failed with exit code $exitCode" }
     return @($lines.ToArray())
 }
 
 function Copy-RepoPath {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$RelativePath
-    )
-
+    param([Parameter(Mandatory = $true)][string]$RelativePath)
+    if ($RelativePath -match '^[A-Za-z]:') { throw "Absolute path is not allowed: $RelativePath" }
+    if ($RelativePath -match '(^|[\\/])\.\.([\\/]|$)') { throw "Parent path segment is not allowed: $RelativePath" }
     $src = Join-Path $RepoRoot $RelativePath
-    if (-not (Test-Path -LiteralPath $src)) {
-        throw "Missing requested path: $RelativePath"
-    }
-
+    if (-not (Test-Path -LiteralPath $src)) { throw "Requested path is missing: $RelativePath" }
     $dst = Join-Path $stage $RelativePath
     $parent = Split-Path -Parent $dst
     if ($parent) { New-Item -ItemType Directory -Force -Path $parent | Out-Null }
-
     if (Test-Path -LiteralPath $src -PathType Container) {
         New-Item -ItemType Directory -Force -Path $dst | Out-Null
         Get-ChildItem -LiteralPath $src -Force | ForEach-Object {
             Copy-Item -LiteralPath $_.FullName -Destination $dst -Recurse -Force
         }
-    }
-    else {
+    } else {
         Copy-Item -LiteralPath $src -Destination $dst -Force
     }
-
     Write-Log "COPIED: $RelativePath"
 }
 
 try {
+    if (Test-Path -LiteralPath $log) { Remove-Item -LiteralPath $log -Force }
     Write-Log "DCOIR Targeted Snapshot Builder"
     Write-Log "Timestamp: $(Get-Date -Format o)"
     Write-Log "Repo: $RepoRoot"
     Write-Log "Manifest: $ManifestJson"
-    Write-Log "OutputDir: $OutputDir"
 
     Write-Log ""
     Write-Log "== BRANCH CHECK =="
@@ -165,15 +141,10 @@ try {
 
     Remove-Item -LiteralPath $tmp -Recurse -Force -ErrorAction SilentlyContinue
     New-Item -ItemType Directory -Force -Path $stage | Out-Null
-
-    Write-Log ""
-    Write-Log "== COPY TARGET PATHS =="
-    if (-not $manifest.paths) { throw "Manifest has no paths array." }
     foreach ($rel in $manifest.paths) {
         if (-not $rel) { continue }
         Copy-RepoPath -RelativePath ([string]$rel)
     }
-
     if (Test-Path -LiteralPath $zip) { Remove-Item -LiteralPath $zip -Force }
     Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zip -Force
     Remove-Item -LiteralPath $tmp -Recurse -Force -ErrorAction SilentlyContinue
@@ -182,8 +153,6 @@ try {
     Write-Log "== Snapshot complete =="
     Write-Log "ZIP: $zip"
     Write-Log "LOG: $log"
-
-    Write-Host ""
     Write-Host "Saved snapshot ZIP:"
     Write-Host $zip
     Write-Host "Saved log:"
