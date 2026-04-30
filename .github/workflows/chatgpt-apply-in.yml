@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -92,7 +92,7 @@ jobs:
           fi
 
           python - "$WORK_DIR/extract/apply_manifest.json" "$WORK_DIR/extract" <<'PY'
-          import hashlib, json, os, pathlib, shutil, subprocess, sys
+          import hashlib, json, pathlib, shutil, subprocess, sys
 
           manifest_path = pathlib.Path(sys.argv[1])
           extract_root = pathlib.Path(sys.argv[2])
@@ -159,6 +159,8 @@ jobs:
           out.mkdir(parents=True, exist_ok=True)
           report = out / f"{manifest.get('request_id', 'unknown')}_apply_report.md"
           report.write_text("# ChatGPT apply-in report\n\n" + "\n".join(f"- applied: `{p}`" for p in applied) + "\n", encoding="utf-8")
+          pathlib.Path("chatgpt_staging/work/applied_paths.txt").parent.mkdir(parents=True, exist_ok=True)
+          pathlib.Path("chatgpt_staging/work/applied_paths.txt").write_text("\n".join(applied) + "\n", encoding="utf-8")
           PY
 
           echo "REQUEST_ID=$REQUEST_ID" >> "$GITHUB_ENV"
@@ -171,7 +173,13 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+
+          if [[ -f chatgpt_staging/work/applied_paths.txt ]]; then
+            while IFS= read -r p; do
+              [[ -n "$p" ]] && git add -- "$p"
+            done < chatgpt_staging/work/applied_paths.txt
+          fi
+          git add chatgpt_staging/apply_reports || true
           if [[ "${{ github.event_name }}" == "push" || "${{ inputs.delete_payload_after_success }}" == "true" ]]; then
             git rm -f "$PAYLOAD" || true
           fi
