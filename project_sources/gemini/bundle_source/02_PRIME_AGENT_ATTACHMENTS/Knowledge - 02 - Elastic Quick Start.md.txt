@@ -1,103 +1,95 @@
 # Knowledge - 02 - Elastic Quick Start
 
-_Endpoint response-console usage versus local workstation usage_
+_Endpoint response-console execution versus local workstation execution_
 
-**Summary:** Endpoint-side DCOIR execution in Elastic Defend, with explicit separation from local workstation and local-regression command lanes, plus bounded guidance for repeated collect-style runs and targeted-mode expectations.
+**Summary:** Use this page when running DCOIR through Elastic response actions. It separates endpoint syntax from local PowerShell syntax and keeps collection, enrichment, retrieval, and cleanup actions bounded.
 
-| Source class | Authoritative basis |
-| --- | --- |
-| Project sources | project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/collector/source/DCOIR_Collector.ps1; project_sources/LOG-70_DCOIR_Infrastructure_First_Reprioritization_Closeout_2026-04-17.txt |
-| Official external sources | Elastic Docs / endpoint response actions |
-| Scope note | Examples are grounded in the current runtime filename `DCOIR_Collector.ps1`, the current response-action lane, and the live collector guidance issues now tracked in GitHub. |
+---
 
-## Execution context split
+## Command-lane rule
 
-- Use Elastic Defend response-action syntax for endpoint instructions.
-- Use PowerShell 5.1 commands for local workstation and local regression tasks.
-- Do not paste a local-only command directly into the response console without the response-action wrapper.
-- Do not add the Elastic response-console wrapper when running the same command on a local workstation or test repo.
-- Keep endpoint and local lanes sequential when both are needed; never blend them into one malformed command.
+| Lane | Use for | Syntax |
+| --- | --- | --- |
+| Elastic response console | Endpoint-side collector execution | `execute --command "powershell.exe ..." --comment "..."` |
+| Local workstation | Repo testing, harness runs, packaging checks | Direct PowerShell command |
+| GitHub Actions | Build, validation, and release workflows | Workflow inputs |
 
-## Endpoint-side example commands
+Do not paste local commands into the response console without the response-action wrapper. Do not add the response-action wrapper to local workstation commands.
+
+---
+
+## Endpoint command pattern
+
+Use this shape:
+
+```text
+execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" <collector args>" --comment "<operator intent>"
+```
+
+Keep prose in `--comment`, not inside the PowerShell command body.
+
+---
+
+## Common endpoint actions
 
 | Intent | Example |
 | --- | --- |
-| Run version/build preflight | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Version" --comment "Get DCOIR collector version" |
-| Run TCP enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment" |
-| Run raw Security-log enrichment | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick enrich-start-lograw -Target Security" --comment "Run DCOIR raw Security log enrichment" |
-| Cleanup current DCOIR run | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick cleanup" --comment "Run DCOIR cleanup" |
+| Version preflight | `execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -ShowVersion" --comment "Get DCOIR collector version"` |
+| Help | `execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -ShowHelp" --comment "Show DCOIR collector help"` |
+| Tier 1 collect | `execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Mode Collect -Tier T1 -Hours 24" --comment "Run DCOIR Tier 1 collect"` |
+| TCP enrichment | `execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick enrich-start-tcp" --comment "Run DCOIR TCP enrichment"` |
+| Cleanup | `execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick cleanup" --comment "Run DCOIR cleanup"` |
 
-## Response-action quoting and path lessons
+---
 
-- Keep the entire PowerShell invocation inside the `execute --command` quoted string.
-- Use the runtime filename the operator actually stages and runs: `DCOIR_Collector.ps1`.
-- Inside the response-action `execute --command` string, keep the collector path in the doubled-double-quote form `"".\DCOIR_Collector.ps1""` unless the response-action lane later proves a different staged path.
-- Prefer one proven quoted-relative runtime pattern consistently rather than mixing absolute-path and relative-path styles in endpoint guidance.
-- Put the operator intent in the `--comment` field instead of cramming prose into the command body.
-- For script removal in the response-action lane, prefer the collector-emitted `DELETE_SCRIPT_COMMAND` literal-path form.
-- If a command works locally but fails in the response console, first check lane separation and quoting before assuming a collector defect.
+## Before running on an endpoint
 
-## When to use Elastic quick start
+Confirm:
 
-- The endpoint already has the collector package staged and you want a controlled DCOIR action from the response console.
-- You are following the collector's Elastic-facing next-step hints after a collect or enrich stage.
-- You need one bounded action at a time, not broad free-form shell work.
-- The next investigative question is truly endpoint-facing rather than a repo-local or analyst-workstation question.
+- the collector package is staged on the endpoint;
+- the runtime filename matches the command (`DCOIR_Collector.ps1` unless an EXE lane is explicitly being used);
+- the action answers a defined investigative question;
+- artifacts from a previous run have been retrieved or intentionally left in place;
+- cleanup will not remove evidence still needed for review.
 
-## Repeated collect-style runs and staging checks
+---
 
-Repeated collect-style runs should not assume the previously staged package state is still the right runtime baseline.
+## EXE note
 
-Before rerunning a collect-style action:
-- confirm that the endpoint still has the expected collector runtime staged
-- confirm that the runtime filename and current package state still match the action you are about to run
-- if the prior run changed or removed the expected staging state, re-stage the collector package before retrying
-- prefer retrieval or review first when the needed artifact already exists rather than rerunning collection reflexively
+The optional EXE lane is documented in Knowledge 16. Do not substitute EXE commands into endpoint guidance unless the EXE artifact is the intended staged runtime and the operator has selected that execution form.
 
-The important discipline here is not to invent hidden restaging mechanics. The current safe guidance is simpler: verify staged state before rerun, and re-stage when that state is no longer trustworthy.
+---
 
-## Targeted-mode boundary
+## Targeted collection boundary
 
-Treat targeted mode honestly.
+Targeted mode narrows intent and output emphasis. It should not be described as exact filtering unless the specific lane being used has validated exact filtering behavior.
 
-Current live findings indicate that targeted mode should be treated as a narrower guidance, scope, and prioritization lane unless and until a specific path is proven to perform true exact filtering for the requested subset. That means:
-- targeted mode is still useful for narrowing operator intent and follow-through
-- targeted mode should not be oversold as proof that every baseline helper has been rewritten into exact filtering semantics
-- when the investigative question requires proven exact start/end filtering or exact artifact-family reduction, confirm that the specific lane supports it before claiming that it does
+Use targeted collection when:
 
-## Guardrails
+- the investigative question is narrow;
+- a time window or indicator is known;
+- the operator needs focused follow-up rather than another broad baseline.
 
-- Keep command syntax explicit and minimal.
-- Preserve the distinction between endpoint collection activity and analyst workstation analysis activity.
-- Treat the response console as the place for endpoint actions; treat the local repo as the place for development and regression.
-- Prefer retrieval or review when the current output already answers the next question.
-- Do not use cleanup as a convenience shortcut while artifacts still need review or retrieval.
+---
 
-## Quick operator decision matrix
+## After execution
 
-**Use endpoint-side DCOIR execution when:**
-- the question is truly endpoint-facing
-- the collector package is already staged on the host
-- the action is bounded and specific
-- the next evidence path is best answered on-host rather than by repo-local testing
+1. Capture emitted `STATUS`, `RUN_ID`, and artifact paths.
+2. Retrieve or review the highest-signal artifact first.
+3. Prefer retrieval/review over rerunning collection when the needed artifact already exists.
+4. Use one enrichment action at a time.
+5. Cleanup only after evidence is safe.
 
-**Use local workstation execution when:**
-- testing the collector runtime or harness
-- validating packaging or quick alias behavior outside the incident host
-- reproducing a regression issue
-- reading or editing the repo itself
+---
 
-**Use neither yet when:**
-- the question is still better answered by telemetry
-- the next best move is artifact review
-- the current uncertainty is about syntax, staging state, or workflow-state interpretation rather than host evidence
+## Common mistakes
 
-## After a quick-start action completes
+- mixing endpoint and local command syntax;
+- rerunning collection because output was not reviewed;
+- treating cleanup as harmless before retrieval;
+- interpreting staging or quoting errors as collector logic failures;
+- using broad collection when telemetry or a targeted action would answer the question.
 
-1. Confirm the action completed and note any emitted next-step hints.
-2. Decide whether the result is primarily a collection, enrichment, retrieval, or cleanup state.
-3. Read the highest-signal summary or metadata file first.
-4. Decide whether the next move is review, retrieval, one bounded enrich action, or no further collection.
-5. Resist broadening the workflow unless the current result truly left the main question unanswered.
+---
 
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
