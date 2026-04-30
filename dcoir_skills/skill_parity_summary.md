@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-30T21:53:22Z
+- generated_at_utc: 2026-04-30T22:14:50Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -373,11 +373,11 @@
 
 ## dcoir-session-tracker
 
-- source_tree_hash: `52544b57bc912f9af186f6c872fa522bfc6d0daf302d1ece202987c405699180`
+- source_tree_hash: `76d95a031a358a5d81430827d47b6d4e300fbc9e74564c96a58727cb8cadf9fc`
 - release_zip_name: `dcoir-session-tracker.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
-- file_count: `15`
+- file_count: `17`
 
 - `SKILL.md` — `59c10dea8f7fa309820a5965acdba718d766b9adcdf5680e2fc733397d5cf354`
 - `agents/openai.yaml` — `41265ce0f6539ad3c298612b28286c15e8934f3fec132d4968488df3ed83183d`
@@ -394,6 +394,8 @@
 - `references/session_state_schema.md` — `305cdaa417804f399bf816f67d460624e3ad1ba2343f04ff80e72f239a953d97`
 - `references/startup_airtable_recovery_workflow.md` — `27edcd170ace07c7eb45daf19e0687042294373c3191a02753913c6caeb5df79`
 - `scripts/render_airtable_session_bundle.py` — `c692142dd1af43853e4a16dd1f295a9b16e21d3b41e9904a6366279295506084`
+- `scripts/render_session_state.py` — `07d830ccf1879b58fdd2e4b530639adb686d6d4a8c331e7593a7d6f625d77306`
+- `scripts/session_state_store.py` — `99c84ec85457daab61145993daf1d78fc60a599b870e7ee0b941967048283526`
 
 ## dcoir-skill-regression-auditor
 
@@ -478,20 +480,3 @@
 - `references/validation_scenario_library.md` — `39bd08187eaecbddcd120b4c8409235ae4b42bc2a2279d80f1514682e504508d`
 - `scripts/emit_validation_plan.py` — `a4e319d7c96547ee3f0c25dfe931ab230664e8eb71d8daedc2f4a5f2bd4d642d`
 - `scripts/render_validation_memory.py` — `70abd072ccb44babe5b1b20add5899f2fbf942e36af19704f8fa900c03f623c5`
-
-## skill-creator
-
-- source_tree_hash: `0c7c1ccf9499ebdbe94f4564623a141cecd50d44d890d20043ae0540f3651025`
-- release_zip_name: `skill-creator.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `8`
-
-- `LICENSE.txt` — `4dd13869245e356246a5b770723247bbb80a8f07a181d1d3d873a1734297cdb9`
-- `SKILL.md` — `ca1157c7319f84a62d44f63cdc2f2ddf538e9e9a67063a42aa8c810aa390ba5d`
-- `references/output-patterns.md` — `0d1df6074af450044307f46e0f1e36df911640c8140c27e3bab263786cc3fda9`
-- `references/sample-prompts.md` — `1491df8e984a0c00ca80a0dbb64de7327f2468046c5dcd05ea046a20e9991afc`
-- `references/workflows.md` — `db09b8cd4cb278d524eb4d9dd222f2356201b3444cf7fea5b9179becee129790`
-- `scripts/init_skill.py` — `9f059591de7c51f2bb7214f557ec294680443b590596ee9a856c9341448ad672`
-- `scripts/package_skill.py` — `0d35d264355c4369fa6546e24d4f3dbb2ac493973cbe774f5f29f6bf51442555`
-- `scripts/quick_validate.py` — `de8c8500eacd20806274e00700ec237dc6a39480bd4fa9574df16132eb1cd0c4`

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "project": "AFRICOM_SOC_IR / DCOIR helper skills skill-pass 20260430",
-  "generated_at_utc": "2026-04-30T21:53:22Z",
+  "project": "AFRICOM_SOC_IR / DCOIR",
+  "generated_at_utc": "2026-04-30T22:14:50Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -1133,12 +1133,12 @@
     },
     "dcoir-session-tracker": {
       "source_root": "dcoir-session-tracker",
-      "source_tree_hash": "52544b57bc912f9af186f6c872fa522bfc6d0daf302d1ece202987c405699180",
+      "source_tree_hash": "76d95a031a358a5d81430827d47b6d4e300fbc9e74564c96a58727cb8cadf9fc",
       "release_zip_name": "dcoir-session-tracker.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 15,
-      "total_bytes": 67112,
+      "file_count": 17,
+      "total_bytes": 105133,
       "files": [
         {
           "path": "SKILL.md",
@@ -1214,6 +1214,16 @@
           "path": "scripts/render_airtable_session_bundle.py",
           "sha256": "c692142dd1af43853e4a16dd1f295a9b16e21d3b41e9904a6366279295506084",
           "size_bytes": 8015
+        },
+        {
+          "path": "scripts/render_session_state.py",
+          "sha256": "07d830ccf1879b58fdd2e4b530639adb686d6d4a8c331e7593a7d6f625d77306",
+          "size_bytes": 5682
+        },
+        {
+          "path": "scripts/session_state_store.py",
+          "sha256": "99c84ec85457daab61145993daf1d78fc60a599b870e7ee0b941967048283526",
+          "size_bytes": 32339
         }
       ]
     },
@@ -1464,57 +1474,6 @@
           "path": "scripts/render_validation_memory.py",
           "sha256": "70abd072ccb44babe5b1b20add5899f2fbf942e36af19704f8fa900c03f623c5",
           "size_bytes": 3146
-        }
-      ]
-    },
-    "skill-creator": {
-      "source_root": "skill-creator",
-      "source_tree_hash": "0c7c1ccf9499ebdbe94f4564623a141cecd50d44d890d20043ae0540f3651025",
-      "release_zip_name": "skill-creator.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 8,
-      "total_bytes": 55560,
-      "files": [
-        {
-          "path": "LICENSE.txt",
-          "sha256": "4dd13869245e356246a5b770723247bbb80a8f07a181d1d3d873a1734297cdb9",
-          "size_bytes": 10776
-        },
-        {
-          "path": "SKILL.md",
-          "sha256": "ca1157c7319f84a62d44f63cdc2f2ddf538e9e9a67063a42aa8c810aa390ba5d",
-          "size_bytes": 22920
-        },
-        {
-          "path": "references/output-patterns.md",
-          "sha256": "0d1df6074af450044307f46e0f1e36df911640c8140c27e3bab263786cc3fda9",
-          "size_bytes": 1814
-        },
-        {
-          "path": "references/sample-prompts.md",
-          "sha256": "1491df8e984a0c00ca80a0dbb64de7327f2468046c5dcd05ea046a20e9991afc",
-          "size_bytes": 620
-        },
-        {
-          "path": "references/workflows.md",
-          "sha256": "db09b8cd4cb278d524eb4d9dd222f2356201b3444cf7fea5b9179becee129790",
-          "size_bytes": 820
-        },
-        {
-          "path": "scripts/init_skill.py",
-          "sha256": "9f059591de7c51f2bb7214f557ec294680443b590596ee9a856c9341448ad672",
-          "size_bytes": 11482
-        },
-        {
-          "path": "scripts/package_skill.py",
-          "sha256": "0d35d264355c4369fa6546e24d4f3dbb2ac493973cbe774f5f29f6bf51442555",
-          "size_bytes": 3621
-        },
-        {
-          "path": "scripts/quick_validate.py",
-          "sha256": "de8c8500eacd20806274e00700ec237dc6a39480bd4fa9574df16132eb1cd0c4",
-          "size_bytes": 3507
         }
       ]
     }
