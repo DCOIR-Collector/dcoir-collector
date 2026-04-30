@@ -1,0 +1,119 @@
+name: manual-chatgpt-apply-zip-b64-test
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload_b64_path:
+        description: "Repo-relative base64 ZIP payload under chatgpt_staging/in/<request_id>/payload.zip.b64"
+        required: true
+        default: "chatgpt_staging/in/test_apply_zip_b64_001/payload.zip.b64"
+        type: string
+      commit_changes:
+        description: "Commit applied file changes"
+        required: true
+        default: true
+        type: boolean
+      delete_payload_after_success:
+        description: "Delete payload.zip.b64 after successful apply to reduce repo bloat"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manual-chatgpt-apply-zip-b64-test-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-zip-b64:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Decode ZIP payload and apply test bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          PAYLOAD='${{ inputs.payload_b64_path }}'
+
+          if [[ "$PAYLOAD" != chatgpt_staging/in/*/payload.zip.b64 ]]; then
+            echo "Payload must match chatgpt_staging/in/<request_id>/payload.zip.b64" >&2
+            exit 1
+          fi
+          if [[ ! -f "$PAYLOAD" ]]; then
+            echo "Payload file not found: $PAYLOAD" >&2
+            exit 1
+          fi
+
+          REQUEST_ID="$(basename "$(dirname "$PAYLOAD")")"
+          WORK_DIR="chatgpt_staging/work/$REQUEST_ID"
+          rm -rf "$WORK_DIR"
+          mkdir -p "$WORK_DIR/extract"
+
+          base64 -d "$PAYLOAD" > "$WORK_DIR/payload.zip"
+          unzip -q "$WORK_DIR/payload.zip" -d "$WORK_DIR/extract"
+
+          if [[ ! -f "$WORK_DIR/extract/apply_manifest.json" ]]; then
+            echo "Decoded ZIP did not contain apply_manifest.json" >&2
+            exit 1
+          fi
+
+          python - "$WORK_DIR/extract/apply_manifest.json" "$WORK_DIR/extract" <<'PY'
+          import json, pathlib, shutil, sys
+
+          manifest_path = pathlib.Path(sys.argv[1])
+          extract_root = pathlib.Path(sys.argv[2])
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          allowed_roots = manifest.get("allowed_roots") or ["chatgpt_staging/testdata/"]
+
+          def safe_rel(path: str) -> bool:
+              if path.startswith("/") or ".." in pathlib.PurePosixPath(path).parts:
+                  return False
+              return any(path == root.rstrip("/") or path.startswith(root) for root in allowed_roots)
+
+          applied = []
+          for item in manifest.get("files", []):
+              target = item.get("path", "")
+              source = item.get("source", "")
+              if not safe_rel(target):
+                  raise SystemExit(f"Unsafe or disallowed target path: {target}")
+              if not source or source.startswith("/") or ".." in pathlib.PurePosixPath(source).parts:
+                  raise SystemExit(f"Unsafe source path: {source}")
+              src_path = extract_root / source
+              if not src_path.is_file():
+                  raise SystemExit(f"Source file missing in ZIP: {src_path}")
+              dst_path = pathlib.Path(target)
+              dst_path.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(src_path, dst_path)
+              applied.append(target)
+
+          if not applied:
+              raise SystemExit("No files applied")
+
+          out = pathlib.Path("chatgpt_staging/apply_reports")
+          out.mkdir(parents=True, exist_ok=True)
+          report = out / f"{manifest.get('request_id', 'unknown')}_zip_b64_apply_report.md"
+          report.write_text("# ChatGPT ZIP base64 apply-in test report\n\n" + "\n".join(f"- applied: `{p}`" for p in applied) + "\n", encoding="utf-8")
+          PY
+
+          echo "REQUEST_ID=$REQUEST_ID" >> "$GITHUB_ENV"
+          echo "PAYLOAD=$PAYLOAD" >> "$GITHUB_ENV"
+
+      - name: Commit applied changes
+        if: ${{ inputs.commit_changes }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add chatgpt_staging/testdata/source chatgpt_staging/apply_reports
+          if [[ '${{ inputs.delete_payload_after_success }}' == 'true' ]]; then
+            git rm -f "$PAYLOAD"
+          fi
+          git commit -m "Apply ChatGPT base64 ZIP staging lane test bundle" || exit 0
+          git push
