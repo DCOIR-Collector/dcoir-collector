@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# ChatGPT GitHub Staging Lane transient workspace.
+# Keep request/in/out/apply_reports tracked intentionally; ignore only scratch work.
+chatgpt_staging/work/
