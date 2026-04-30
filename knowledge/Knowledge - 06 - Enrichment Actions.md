@@ -86,4 +86,12 @@ It is not automatically a final verdict.
 
 ---
 
+## Cross-reference boundaries
+
+- Use this page for enrichment and retrieval workflow.
+- Use Knowledge 17 for collector feature and output-contract facts.
+- Use Knowledge 07 for artifact review order after enrichment produces or references evidence carriers.
+
+---
+
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

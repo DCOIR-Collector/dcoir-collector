@@ -65,4 +65,13 @@ Topology changes should be checked against:
 
 ---
 
+## Cross-reference boundaries
+
+- Use this page for agent topology and routing summary.
+- Use stored-source agent files for full runtime instructions.
+- Use Knowledge 14 for output-contract and command-lane behavior.
+- Use Knowledge 15 for attachment inventory.
+
+---
+
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

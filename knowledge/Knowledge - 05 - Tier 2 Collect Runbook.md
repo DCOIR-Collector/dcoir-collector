@@ -86,4 +86,12 @@ Ask:
 
 ---
 
+## Cross-reference boundaries
+
+- Use this page for Tier 2 procedure and decision criteria.
+- Use Knowledge 17 for collector feature families, parameter reference, and output contract.
+- Use Knowledge 16 for optional EXE command form and EXE-specific interpretation.
+
+---
+
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

@@ -76,4 +76,13 @@ Do not upload broad low-value output before high-signal evidence.
 
 ---
 
+## Cross-reference boundaries
+
+- Use this page for evidence review order and upload priority.
+- Use Knowledge 14 for Gemini response and command-lane discipline.
+- Use Knowledge 15 for Gemini attachment inventory and maintenance.
+- Use Knowledge 17 for collector output-contract expectations.
+
+---
+
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

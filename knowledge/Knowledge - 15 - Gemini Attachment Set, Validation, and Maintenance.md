@@ -20,7 +20,29 @@ _Gemini knowledge attachment inventory and maintenance rules_
 
 ## Current inventory
 
-The maintained set contains 17 knowledge pages. Knowledge 16 covers optional EXE usage and runtime behavior. Knowledge 17 covers collector features and output contract reference.
+The maintained set contains 17 knowledge pages. Each source page has a matching Gemini attachment copy under `02_PRIME_AGENT_ATTACHMENTS/` using the same title plus `.txt`.
+
+| # | Attachment | Primary purpose |
+| --- | --- | --- |
+| 01 | Overview and About | Authority model, source classes, and system lanes |
+| 02 | Elastic Quick Start | Endpoint-vs-local quick command posture |
+| 03 | Local Test and Regression | Harness, validation lanes, and result interpretation |
+| 04 | Tier 1 Collect Runbook | First-pass collection procedure |
+| 05 | Tier 2 Collect Runbook | Deeper collection procedure |
+| 06 | Enrichment Actions | Enrichment and retrieval lifecycle |
+| 07 | Artifact Review Guide | Evidence-review order and upload priority |
+| 08 | Troubleshooting | Failure classification and recovery patterns |
+| 09 | FAQ | Short recurring answers only |
+| 10 | AI Prompt and Agent Design | Gemini design principles |
+| 11 | IOC Enrichment and Public Sources | Public-enrichment boundaries |
+| 12 | Gemini Runtime Bundle and Source Tree | Stored-source bundle layout |
+| 13 | Gemini Agent Topology and Routing | Agent role/routing summary |
+| 14 | Gemini Output Contract and Command-Lane Discipline | Gemini response format and command lanes |
+| 15 | Gemini Attachment Set, Validation, and Maintenance | Attachment inventory and sync workflow |
+| 16 | Collector EXE Usage and Runtime Behavior | Optional EXE behavior and EXE-specific validation |
+| 17 | Collector Feature and Output Contract Reference | Feature map, parameters, output contract, and validation map |
+
+Knowledge 16 is the owner for optional EXE usage and runtime behavior. Knowledge 17 is the owner for collector feature and output-contract reference.
 
 ---
 

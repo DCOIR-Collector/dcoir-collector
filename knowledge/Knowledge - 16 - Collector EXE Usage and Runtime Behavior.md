@@ -102,4 +102,13 @@ After EXE-facing changes, verify:
 
 ---
 
+## Cross-reference boundaries
+
+- Use this page for optional EXE behavior and EXE-specific validation interpretation.
+- Use Knowledge 03 for broader validation-lane selection.
+- Use Knowledge 17 for collector features, parameters, and output contract.
+- Use runbooks only for procedure, not EXE behavior ownership.
+
+---
+
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

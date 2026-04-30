@@ -69,4 +69,10 @@ _Short answers to recurring DCOIR operator questions_
 
 ---
 
+## FAQ boundary
+
+FAQ answers are intentionally short. When the answer requires procedure, feature detail, EXE nuance, or output-contract interpretation, follow the owner page instead of expanding this FAQ into duplicate guidance.
+
+---
+
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

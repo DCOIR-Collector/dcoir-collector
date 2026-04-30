@@ -89,4 +89,13 @@ Output-contract validation should check:
 
 ---
 
+## Cross-reference boundaries
+
+- Use this page for Gemini user-visible response and command-lane discipline.
+- Use Knowledge 17 for collector output-contract details.
+- Use Knowledge 02 for Elastic endpoint quick-start command examples.
+- Use Knowledge 15 for attachment maintenance.
+
+---
+
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

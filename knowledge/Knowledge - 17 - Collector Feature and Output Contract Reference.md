@@ -93,4 +93,13 @@ Failure behavior is validated by FailureGates. PS1 and EXE can render failure su
 
 ---
 
+## Cross-reference boundaries
+
+- Use this page for feature families, common parameters, output contract, failure behavior, and validation map.
+- Use Knowledge 04 and 05 for collection procedure.
+- Use Knowledge 06 for enrichment workflow.
+- Use Knowledge 16 for optional EXE behavior.
+
+---
+
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

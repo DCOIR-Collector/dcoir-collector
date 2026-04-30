@@ -111,4 +111,13 @@ Common causes:
 
 ---
 
+## Cross-reference boundaries
+
+- Use this page for failure classification and recovery patterns.
+- Use Knowledge 03 for validation-lane selection and harness interpretation.
+- Use Knowledge 16 for EXE-specific wrapper limitations.
+- Use Knowledge 17 for collector feature and output-contract expectations.
+
+---
+
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.

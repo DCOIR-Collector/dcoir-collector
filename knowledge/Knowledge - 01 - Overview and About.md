@@ -47,6 +47,28 @@ The maintained set currently contains 17 pages:
 
 ---
 
+## Knowledge ownership map
+
+Use one owner per topic to avoid duplicate guidance.
+
+| Topic | Owner | Supporting references |
+| --- | --- | --- |
+| Authority model and source classes | Knowledge 01 | `DCOIR_KNOWLEDGE_INDEX.md`, README |
+| Endpoint command lane | Knowledge 02 | Knowledge 14 |
+| Local and CI validation | Knowledge 03 | `validate-on-push.yml`, `manual-full-validation.yml`, Knowledge 16/17 |
+| Tier 1 procedure | Knowledge 04 | Knowledge 17 for feature/output facts |
+| Tier 2 procedure | Knowledge 05 | Knowledge 17 for feature/output facts |
+| Enrichment and retrieval workflow | Knowledge 06 | Knowledge 07 and 17 |
+| Artifact review and upload priority | Knowledge 07 | Knowledge 14/15 for Gemini upload behavior |
+| Troubleshooting | Knowledge 08 | Knowledge 03, 16, and 17 |
+| FAQ | Knowledge 09 | All owner docs; FAQ must stay shallow |
+| Gemini design, routing, output, and attachments | Knowledge 10, 12, 13, 14, 15 | Gemini stored-source agent files |
+| Public IOC enrichment | Knowledge 11 | Case evidence and source-tier rules |
+| Optional EXE behavior | Knowledge 16 | Knowledge 03 and 08 |
+| Collector features, parameters, and output contract | Knowledge 17 | Knowledge 04, 05, 06, 07, and 16 |
+
+---
+
 ## Source classes
 
 | Class | Examples | How to use it |

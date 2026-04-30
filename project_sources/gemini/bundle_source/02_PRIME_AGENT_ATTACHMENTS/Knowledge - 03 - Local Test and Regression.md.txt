@@ -56,6 +56,19 @@ Key parameters:
 
 ---
 
+## GitHub Actions validation lanes
+
+| Workflow | Role | Trigger model |
+| --- | --- | --- |
+| `.github/workflows/validate-on-push.yml` | Targeted automatic Core gate for maintained collector, Gemini, validation, knowledge, and workflow surfaces | `push` path filters plus manual dispatch |
+| `.github/workflows/manual-full-validation.yml` | Deeper operator-selected regression lane | Manual dispatch |
+| `.github/workflows/manual-gemini-bundle-build.yml` | Gemini bundle build and attachment validation | Manual dispatch |
+| `.github/workflows/manual-collector-optional-exe-build.yml` | Optional EXE build and selected validation lane | Manual dispatch |
+
+Automatic validation proves the watched surfaces still satisfy the targeted Core gate. It does not replace a deliberate manual full-regression run when the change affects deeper runtime behavior.
+
+---
+
 ## Suite intent (non-duplicated)
 
 | Suite | What it proves |

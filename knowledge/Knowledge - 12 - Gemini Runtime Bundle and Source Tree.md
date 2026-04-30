@@ -57,4 +57,13 @@ The bundle does not create unavailable retrieval or connector capability. Agent 
 
 ---
 
+## Cross-reference boundaries
+
+- Use this page for source-tree layout and compile workflow.
+- Use Knowledge 15 for attachment inventory and sync rules.
+- Use Knowledge 13 for agent topology.
+- Use Knowledge 14 for Gemini output and command-lane discipline.
+
+---
+
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
