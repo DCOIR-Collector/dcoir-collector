@@ -1,23 +1,16 @@
 # DCOIR Maintained Knowledge Set
 
-Purpose
-- This folder is the maintained readable source of truth for the shared knowledge set that feeds the Gemini bundle attachments.
-- The current major-version Gemini build does not expect these files to remain short. It expects them to be operationally explicit, more verbose, and more useful as stand-alone operator references.
-- The maintained set now includes fifteen knowledge pages: the original collector and workflow references plus four Gemini-runtime-specific attachment pages.
+This folder is the maintained readable source for the shared DCOIR knowledge set that feeds Gemini bundle attachments.
 
-Source-of-truth rule
-- The maintained `knowledge/*.md` files are the editable source of truth while retained and current.
-- The Gemini build path syncs these maintained files into `project_sources/gemini/bundle_source/02_PRIME_AGENT_ATTACHMENTS/*.md.txt` before validation and compile.
-- Do not treat the synced attachment files as the primary maintained editing surface.
-- If final repo reduction changes where maintained knowledge files live, use Airtable `Retained Repo Manifest`, `Repo Surface Registry`, and active `Plans` / `Plan Tasks` to confirm the current retained knowledge surface before editing.
+## Authority
 
-Current major-version expectation
-- Each knowledge file should be more detailed than the earlier versions.
-- The current bias is to remove ambiguity, not to optimize for shortness.
-- If a workflow step, artifact type, bundle output, or analyst decision could be misunderstood, spell it out rather than summarizing it away.
-- When the attachment set changes, update the maintained knowledge file set, the attachment map, the Gemini manifest required-files inventory, and the sync/validation surfaces together so ordinary builds stay coherent.
+- `knowledge/*.md` files are the editable maintained source.
+- Gemini attachment copies live under `project_sources/gemini/bundle_source/02_PRIME_AGENT_ATTACHMENTS/*.md.txt`.
+- The attachment copies are synced from this folder and should not be treated as the primary editing surface.
+- Knowledge docs support operators and Gemini, but they do not override Airtable live state, Project Instructions, or governed GitHub source.
 
-Current maintained knowledge pages
+## Current pages
+
 1. Knowledge - 01 - Overview and About
 2. Knowledge - 02 - Elastic Quick Start
 3. Knowledge - 03 - Local Test and Regression
@@ -33,3 +26,15 @@ Current maintained knowledge pages
 13. Knowledge - 13 - Gemini Agent Topology and Routing
 14. Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline
 15. Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance
+16. Knowledge - 16 - Collector EXE Usage and Runtime Behavior
+17. Knowledge - 17 - Collector Feature and Output Contract Reference
+
+## Maintenance triggers
+
+When the page list, attachment set, collector behavior, EXE behavior, Gemini agent behavior, or workflow validation coverage changes, update these surfaces together:
+
+- maintained `knowledge/*.md` source files;
+- synced Gemini `.md.txt` attachment files;
+- `Agent_Attachment_Map.md.txt`;
+- `Gemini_Bundle_Source_Manifest.json`;
+- GitHub Actions required-surface checks.
