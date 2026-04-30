@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-04-30.3",
+  "catalog_version": "2026-04-30.4",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/",
     "registry_source": "airtable Operator Tools Registry",
@@ -28,6 +28,15 @@
       "output_pattern": "*_snapshot_*.zip",
       "version_or_hash": "2026-04-30.3",
       "notes": "Uses System.Diagnostics.Process for git calls so native stderr/progress is logged without becoming a PowerShell error."
+    },
+    {
+      "tool_id": "DCOIR-TEXT-ONLY-REPO-SNAPSHOT",
+      "tool_name": "DCOIR Text-Only Repo Snapshot Builder",
+      "tool_family": "snapshot_bundle",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirTextOnlyRepoSnapshot.ps1",
+      "output_pattern": "dcoir_text_only_repo_snapshot_*.zip; dcoir_text_only_repo_snapshot_*.log.txt; dcoir_text_only_repo_snapshot_*.manifest.json",
+      "version_or_hash": "2026-04-30.1",
+      "notes": "Read-only full-repo text snapshot for ChatGPT review. Defaults to DCOIR_REPO_ROOT and DCOIR_DOWNLOADS_DIR, excludes common binary extensions and generated/dependency directories, binary-sniffs remaining files, and preserves repo-relative paths."
     }
   ]
 }
