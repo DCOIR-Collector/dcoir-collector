@@ -1,7 +1,9 @@
 ---
 name: dcoir-airtable-schema-cache
-description: cache, normalize, inspect, and compare africom_soc_ir / dcoir airtable schema readback. use when dcoir work needs table ids, field ids, field types, select options, linked-record details, schema freshness checks, reduced airtable roundtrips, or a bounded schema snapshot before using airtable connectors, helper-memory tables, delete queue, lifecycle ledger, plans, work items, admin registry, repo surface registry, validation evidence, or local configuration registry.
+description: cache, normalize, inspect, compare, and refresh africom_soc_ir / dcoir airtable schema readback during startup, re-anchor, resume, and schema-sensitive Airtable work. use when dcoir work needs table ids, field ids, field types, select options, linked-record details, schema freshness checks, reduced airtable roundtrips, or a bounded schema snapshot before using airtable connectors, helper-memory tables, delete queue, lifecycle ledger, plans, work items, admin registry, repo surface registry, validation evidence, or local configuration registry.
 ---
+
+<!-- skill-marker: updated-skill|20260429T203000Z|startup-reanchor-schema-cache|source-update|dcoir-airtable-schema-cache|SKILL.md -->
 
 # DCOIR Airtable Schema Cache
 
@@ -10,6 +12,10 @@ Use this skill only inside AFRICOM_SOC_IR / DCOIR work. The current authority mo
 
 ## Purpose
 Use this skill to reduce repeated Airtable schema-discovery roundtrips while preserving the project's hard rule: live schema readback is required before assuming a table, field, select option, or dependency path exists.
+
+This skill now has two roles:
+- startup/re-anchor schema readiness: refresh or validate a local schema cache immediately after `dcoir-session-resume` and `dcoir-memory-preflight` during DCOIR startup or re-anchor.
+- task-time schema assistance: provide fast table/field lookup, field-type checks, select-option checks, linked-record awareness, and drift warnings during normal Airtable work.
 
 This skill produces and consumes a local JSON schema cache. Treat the cache as a speed aid and decision aid, not as write authority.
 
@@ -45,8 +51,27 @@ Known operational tables to verify when relevant:
 - `Local Configuration Registry`
 - helper-specific `dcoir-*` memory tables where present
 
+## Startup and re-anchor invocation
+Invoke this skill during the first substantive AFRICOM_SOC_IR / DCOIR turn of a session and during explicit re-anchor/resume requests, after `dcoir-session-resume` and `dcoir-memory-preflight` and before broad Airtable table reads.
+
+Startup intent:
+1. Perform live Airtable schema readback or validate that a just-built cache is fresh enough for non-destructive lookup.
+2. Build or refresh `/mnt/data/dcoir_airtable_schema_cache.json` when code execution and file writing are available.
+3. Validate that the required operational tables are present and that retired tables are not assumed.
+4. Make table IDs, field IDs, field types, select options, and linked-record details available for the rest of the session.
+5. Report only compact schema readiness status unless the operator asks for details.
+
+Startup output should be brief:
+- cache refreshed or cache unavailable
+- live table count
+- missing required operational tables, if any
+- retired table assumptions detected, if any
+- live-readback-required warning for writes, deletes, or migrations
+
+Do not display Airtable UI during startup or re-anchor. Use silent schema readback and compact text output only.
+
 ## Workflow
-1. Decide whether a cache helps. Use this skill when schema lookup, table/field mapping, or repeated Airtable access is slowing the task or creating uncertainty.
+1. During startup or re-anchor, run schema readiness automatically when the Project Instructions or CP-00 sequence invokes this skill. During normal task work, decide whether a cache helps when schema lookup, table/field mapping, or repeated Airtable access is slowing the task or creating uncertainty.
 2. Call Airtable live schema readback when no current cache exists, the cache is stale, a write/delete/migration is planned, or the task is schema-sensitive.
 3. Write the live schema JSON to a temporary file such as `/mnt/data/dcoir_airtable_schema_raw.json`.
 4. Run `scripts/schema_cache.py build --schema-json /mnt/data/dcoir_airtable_schema_raw.json --output /mnt/data/dcoir_airtable_schema_cache.json`.
@@ -83,6 +108,7 @@ python scripts/schema_cache.py diff --old /mnt/data/schema_old.json --new /mnt/d
 
 ## Output contract
 Return:
+- startup/re-anchor schema readiness status when invoked during startup
 - cache path and timestamp
 - base id and table count
 - requested table/field ids and field types

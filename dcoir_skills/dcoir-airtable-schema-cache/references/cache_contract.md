@@ -16,3 +16,9 @@ Fresh cache is normally acceptable for read-only lookup during the same session.
 
 ## Delete Queue special rule
 Before queueing or processing deletions, verify current fields for approval and stage. The known current model includes `approved_to_delete` and `delete_stage`, but live schema wins.
+
+## Startup readiness contract
+
+During DCOIR startup or re-anchor, this skill should be invoked after `dcoir-session-resume` and `dcoir-memory-preflight`. Its job is to refresh or validate a local schema cache, confirm current operational tables, and make table/field metadata available before other skills perform repeated Airtable reads. The cache remains advisory and must not replace live schema readback for writes, deletes, migrations, linked-record changes, or any destructive action.
+
+Startup reports must stay compact and must not render Airtable UI.

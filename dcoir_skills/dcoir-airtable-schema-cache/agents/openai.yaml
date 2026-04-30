@@ -1,6 +1,6 @@
 interface:
   display_name: DCOIR Airtable Schema Cache
-  short_description: Caches and checks DCOIR Airtable schema readback.
+  short_description: Refreshes DCOIR Airtable schema cache during startup and Airtable work.
   icon: assets/icon.svg
   brand_color: '#334155'
   icon_small: assets/icon.svg
