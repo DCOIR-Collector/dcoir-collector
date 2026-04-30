@@ -1,75 +1,84 @@
 # Knowledge - 10 - AI Prompt and Agent Design
 
-_The current prompt-pack, Gemini workflow, and supporting design-artifact posture_
+_DCOIR prompt-pack and Gemini agent design boundaries_
 
-**Summary:** Current DCOIR prompt-pack and Gemini design posture, with emphasis on stored-source runtime maintenance, routing-rich descriptions, explicit instructions, truthful grounding boundaries, and exact operator-facing behavior.
+**Summary:** Use this page to distinguish prompt-pack authority, stored-source Gemini runtime files, grounding limits, and agent-routing expectations.
 
-| Source class | Authoritative basis |
+---
+
+## Runtime source model
+
+Gemini agent behavior must come from maintained source files in the repo, not one-off generated text that is never promoted back.
+
+Current source classes:
+
+- prompt-pack files define analyst-facing reasoning and output behavior;
+- Gemini bundle source defines agent files and runtime attachments;
+- knowledge docs provide supporting context;
+- generated artifacts are delivery outputs, not editing authority.
+
+---
+
+## Agent field responsibilities
+
+| Field | Purpose |
 | --- | --- |
-| Project sources | project_sources/PP-01_System_Prompt_v1_0_1.txt; project_sources/PP-02_Output_Schema_v1_0_0.txt; project_sources/PP-03_Baseline_Triage_Prompt_v1_0_0.txt; project_sources/PP-04_Enrichment_Review_Prompt_v0_1_1.txt; project_sources/PP-05_Retrieved_Artifact_Review_Prompt_v0_1_1.txt; project_sources/PP-06_Final_Case_Synthesis_Prompt_v0_1_1.txt; project_sources/PP-07_Agent_Guardrails_v1_0_0.txt; project_sources/PP-08_Combined_Analyst_Facing_Master_Prompt_v1_0_0.txt; project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt; project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt |
-| Official external sources | Not required for this page |
-| Scope note | This page is project-grounded; it does not redefine the schema or the prompt sources. |
+| Description | Routing: when this agent should be selected and what it owns |
+| Instructions | Behavior: what the agent must do, avoid, and output |
+| Attachments | Context: stable reference material for workflow, collector behavior, and interpretation |
 
-## Current design posture
+A short slogan is not enough for routing. Excessive repetition is also not useful.
 
-The current DCOIR Gemini design posture is explicit, verbose, stored-source based, and operationally durable. Important runtime behavior should live in the maintained source tree rather than in a one-off generation wave that never gets promoted back into the editable runtime. Predictability, routing quality, command-lane discipline, evidence-first reasoning, and explicit next-step guidance are the higher values.
+---
 
-## Description-field writing
+## Grounding honesty
 
-The Description field is routing-critical. A good Description should do more than name a role. It should help the runtime decide what class of work belongs to the agent, what inputs matter most, what outputs the agent owns, what branches it should not take, and when it should be selected instead of a sibling agent.
+Gemini output must distinguish:
 
-## Instructions-field writing
+- public web search;
+- uploaded/attached files;
+- configured connector or enterprise retrieval;
+- unsupported or unavailable retrieval.
 
-Instructions should preserve runtime behavior in enough detail that the final agent does not have to guess. High-quality instructions on this line should preserve startup behavior, branch order, evidence discipline, command-lane separation, error handling, guardrails against overstatement, stop conditions, output expectations, tool-use boundaries, and memory or context behavior when relevant.
+Do not claim internal or enterprise lookup happened unless the runtime actually used an available retrieval surface.
 
-## Grounding-lane honesty
-
-Gemini-facing design should distinguish clearly among:
-- broader public Google Search grounding
-- enterprise web grounding that is still public-web grounded but constrained by the enterprise surface
-- enterprise or internal retrieval grounded in uploaded files, configured first-party stores, connectors, or a sanctioned search bridge
-
-Do not let prompt text collapse those lanes into one vague statement such as "I searched everything" or "I checked enterprise sources" when the active runtime surface only had public web grounding or uploaded files.
-
-## Internal-knowledge honesty when connectors are absent
-
-When live enterprise connectors are absent, the safe and truthful internal-knowledge path is the material the operator uploaded or any other retrieval surface that is actually configured. Prompt text should say that plainly. Desired enterprise retrieval behavior cannot be achieved by wording alone when the runtime still lacks the underlying retrieval path.
+---
 
 ## Action-state honesty
 
-A strong Gemini design distinguishes among:
-- requested action
-- planned action
-- executed action
-- returned result
-- bounded inability or unsupported action
+Keep these separate:
 
-Do not let final text blur those states. The runtime should not narrate a search, lookup, or handoff as completed unless the surfaced answer includes the actual support for that action.
+- requested action;
+- planned action;
+- executed action;
+- returned result;
+- unsupported action.
 
-## Structured-output caution
+Do not describe a search, lookup, validation, or handoff as completed unless it actually returned usable evidence or output.
 
-When exact output-contract compliance matters, prefer a smaller and more enforceable structure over a large expressive schema that is hard for the runtime to satisfy reliably. Over-complex structures, deep nesting, bloated enums, and large optional-property sets can reduce reliability and increase malformed-output risk.
+---
 
-## Comparative references and what they are for
+## Output contracts
 
-Comparative-reference agent markdowns preserve the approved field-writing style for density, specificity, and instruction explicitness. They are not there to replace DCOIR behavior. They remind the maintainer what good runtime text looks like when the goal is predictable delegation and explicit operator-safe behavior.
+Prefer enforceable output structures over large schemas that are hard to satisfy. When exact formatting matters, keep required fields clear and avoid large optional structures unless they are necessary.
 
-## Stored-source compile model
+---
 
-The default operator-facing Gemini bundle should be compiled from the stored runtime source tree. Once a redesign or rewrite is accepted, the accepted text belongs back in the stored-source tree so future packaging can be compile-based, repeatable, and reviewable.
+## Anti-patterns
 
-## Anti-patterns to reject
+- treating design docs as runtime agent files;
+- thinning agent instructions until routing becomes vague;
+- repeating the same rule in multiple words to create artificial verbosity;
+- claiming unavailable search or connector access;
+- allowing generated bundle output to drift from stored source;
+- changing attachments without updating the manifest and attachment map.
 
-- treating generated markdown artifacts as the default runtime shipment surface when a stored-source compile tree exists
-- using PP-09 or PP-10 as substitutes for actual runtime field text
-- thinning agent runtime files during packaging
-- letting Description become a short slogan instead of a routing-rich field
-- letting Instructions collapse into brief reminders for complex behavior
-- claiming enterprise retrieval, enterprise search, or grounded completion without the actual active support surface
-- using over-complex output schemas when a smaller exact contract is sufficient
+---
 
-## Relationship to manual validation
+## Manual validation alignment
 
-Manual validation should live in the dynamic testing lane while source truth remains in GitHub. Airtable `Validation Test Cases` is the standard manual-testing surface for tracking what was run, what failed, and what needs follow-up. The maintained runtime files and attachment files should still be edited in the repo.
+Use Airtable `Validation Test Cases` for dynamic manual test state. Keep durable source changes in GitHub.
+
+---
 
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
