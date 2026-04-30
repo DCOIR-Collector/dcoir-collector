@@ -2,5 +2,6 @@
 
 This is safe test data for the ChatGPT GitHub Staging Lane.
 
-Original value: alpha
+Original value: alpha-updated
 Expected update target: alpha-updated
+Applied by: manual-chatgpt-apply-in-test
