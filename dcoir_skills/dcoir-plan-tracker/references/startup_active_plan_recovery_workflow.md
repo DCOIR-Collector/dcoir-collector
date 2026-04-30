@@ -1,32 +1,25 @@
-# Startup Active Plan Recovery Workflow
+# Startup active-plan recovery workflow
 
-Use this workflow only after `dcoir-session-resume`, `dcoir-memory-preflight`, and `dcoir-session-tracker` startup leftover recovery.
+Use this workflow during DCOIR re-anchor or resume when plan state matters.
 
-## Purpose
-Recover Airtable-backed active plan state when unfinished plan work exists, without forcing plan-tracker into sessions that have no open plan carry-forward.
+## Authority order
+1. Project Instructions.
+2. CP-00 as pointer only when present.
+3. Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST`.
+4. `Session Checkpoints` for the latest resume continuity.
+5. `Queue Control` for active branch and resume rule.
+6. `Work Items` for executable task rows.
+7. Active `Plans` for parent scope and next action.
+8. `Operator Preferences`, `Admin Registry`, helper-memory tables, and SKILLROUTE rows when relevant.
 
-## Tables
-- base id: `appM4KSwnVf3G3OTK`
-- `Plans`: `tblBcp5FyMIfOm7Xe`
-- `Plan Tasks`: `tblsATLIDeh6gtcoM`
-- `Plan Checkpoints`: `tbl6z4Lyai2RABMyw`
+## Recovery steps
+1. Read the latest active/current checkpoint matching the requested resume branch.
+2. Read Queue Control to confirm the active branch and supersession notes.
+3. Read active Plans and Work Items that match the checkpoint or queue branch.
+4. Prefer Work Items plus Plans for execution hierarchy; do not require a dedicated task/checkpoint table unless live schema readback proves it exists.
+5. Report the exact next move and any authority drift before executing changes.
 
-## Recovery sequence
-1. Read `Plans` rows where `plan_state` is one of `draft`, `approved_to_execute`, `active`, `blocked`, or `paused`. Use silent Airtable reads only.
-2. If multiple open plans exist, prefer the most recently updated row unless the control plane or session-tracker leftover scan points to a different plan.
-3. Read the matching `Plan Tasks` rows for that plan.
-4. Read the newest relevant `Plan Checkpoints` rows for that plan.
-5. Surface the active task, current blocker state, pending promotion candidates, and one best next move.
-6. Only after Airtable-backed plan state is understood should local `plan_state.json` cache proof or refresh work matter.
-
-## Truth rules
-- Do not trust missing local cache as proof that plan continuity was lost when Airtable remains current.
-- Do not force plan recovery when no open or active Airtable-backed plan state exists.
-- Distinguish governed GitHub tracker files from Airtable live execution state and from transient local cache.
-
-
-## Airtable display posture
-- Automatic startup plan recovery must stay silent by default.
-- Do not use `display_records_for_table` during automatic startup plan recovery.
-- Prefer `search_records` or other non-display Airtable reads during automatic startup plan recovery.
-- If a visible Airtable view might help, ask the operator first and show Airtable only after explicit approval.
+## Stop conditions
+- Stop on conflict between Project Instructions, CP-00, Governance Control Plane, and live Airtable state.
+- Treat GitHub CP/current-state conflicts as promoted-history drift unless the current task is source-authority comparison.
+- Do not infer missing queue rows from old local JSON or GitHub todo files.

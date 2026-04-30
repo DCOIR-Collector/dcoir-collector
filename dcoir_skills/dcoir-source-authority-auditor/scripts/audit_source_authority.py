@@ -25,13 +25,13 @@ CURRENT_PROSE_HEADINGS = CONTRACT.get("current_prose_headings", {})
 
 CONTROL_FILE_CANDIDATES = {
     "manifest": [
-        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
         "CP-01_DCOIR_Version_Manifest.txt",
         "project_sources/DCOIR_Version_Manifest.txt",
         "DCOIR_Version_Manifest.txt",
     ],
     "change_log": [
-        "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
+        "project_sources/CP-02_DCOIR_Change_Log.txt",
         "CP-02_DCOIR_Change_Log.txt",
         "project_sources/DCOIR_Change_Log.txt",
         "DCOIR_Change_Log.txt",

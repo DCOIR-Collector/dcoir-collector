@@ -15,7 +15,7 @@ import zipfile
 from pathlib import Path
 from quick_validate import validate_skill
 
-MAX_SKILL_ZIP_BYTES = 15 * 1024 * 1024  # 15 MiB upload limit
+MAX_SKILL_ZIP_BYTES = 25 * 1024 * 1024  # 25 MiB upload limit
 
 
 def package_skill(skill_path, output_dir=None):
@@ -79,7 +79,7 @@ def package_skill(skill_path, output_dir=None):
         print(f"\n📏 Archive size: {archive_size:,} bytes")
         if archive_size > MAX_SKILL_ZIP_BYTES:
             print(
-                "⚠️ Warning: skill.zip exceeds the 15 MB upload limit "
+                "⚠️ Warning: skill.zip exceeds the 25 MB upload limit "
                 f"({MAX_SKILL_ZIP_BYTES:,} bytes). Reduce bundled files before upload."
             )
 

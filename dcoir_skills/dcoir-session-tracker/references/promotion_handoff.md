@@ -20,7 +20,7 @@ Use this reference when a session-tracker item needs to become a real Project up
 
 ## Promotion-ready text blocks
 When useful, prepare ready-to-drop candidate text for:
-- `Airtable Work Items / Plan Tasks`
+- `Airtable Work Items / Plans`
 - `Airtable skill-memory or Session Checkpoints`
 - `Airtable Session Checkpoints`
 
@@ -39,7 +39,7 @@ Use this sequence when the operator is moving to another session and the current
 
 ## Close-out candidate destinations
 When relevant, prepare ready-to-drop candidate text for:
-- `Airtable Work Items / Plan Tasks`
+- `Airtable Work Items / Plans`
 - `Airtable skill-memory or Session Checkpoints`
 - `Airtable Session Checkpoints`
 

@@ -1,44 +1,12 @@
-# DCOIR Plan Tracker GitHub Write Workflow
+# GitHub write workflow
 
-## Purpose
-This reference maps tracker-file updates to the canonical GitHub task-memory posture.
+Use this workflow only when the plan-tracker task requires governed repo source/readback, package generation, promoted-history comparison, or a GitHub Desktop update bundle.
 
-## Read-first posture
-Before high-friction GitHub-family work:
-1. re-anchor to Project Instructions, `CP-01`, and `CP-02`
-2. use `dcoir-memory-preflight`
-3. consult the smallest relevant canonical records
+1. Re-anchor to Project Instructions, CP-00 as pointer, and Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`.
+2. Confirm the active branch in Airtable Queue Control, Work Items, Plans, and Session Checkpoints.
+3. Read GitHub source files only for the specific repo-source role in scope.
+4. Build a GitHub Desktop manual repo-update bundle containing only affected repo-relative files, with no wrapper root and no `.git` directory.
+5. Surface the suggested commit summary in the response, not as an extra bundled file unless the operator asks.
+6. After operator install/commit/push, verify GitHub readback when repo readback is part of the task.
 
-## Key canonical records
-- `GH-PROC-007` for memory-preflight routing
-- `GH-PROC-006` for grouped multi-file transactions
-- `GH-PROC-005` for post-write verification
-
-## Default lane selection
-### When creating a new plan folder and its initial files
-- prefer the smallest safe create lane when the operation is just new-file creation
-- if the root registry and root memory file must also be updated in the same step, treat the full change set as grouped work
-
-### When updating multiple related tracker files
-Use grouped work when these belong together, for example:
-- `00_index.md`
-- `02_execution_table.md`
-- `05_resume_state.md`
-- `plan_state.json`
-- `plan_tracker_registry.json`
-- `plan_tracker_memory.md`
-
-In that case, prefer one bounded multi-file transaction instead of one-file-at-a-time updates.
-
-## Verification rules
-After any tracker write:
-1. fetch each changed path from the live repo state
-2. compare fetched content to intended content
-3. if the update changed root tracker memory or registry, verify both
-4. never stop at apparent write success alone
-
-## Anti-patterns
-- do not trust connector success without readback
-- do not leave markdown and JSON out of sync
-- do not perform one-file-at-a-time writes when a grouped state change belongs together
-- do not treat tracker memory as control-plane authority
+Do not fetch GitHub CP-01/CP-02 during normal startup or queue recovery just because this reference exists.

@@ -100,7 +100,7 @@ Files not intended to be loaded into context, but rather used within the output 
 ---
 
 **Any unneeded directories can be deleted.** Not every skill requires all three types of resources.
-**Packaging limit:** keep the final skill ZIP at or below 15 MB.
+**Packaging limit:** keep the final skill ZIP at or below 25 MB.
 """
 
 EXAMPLE_SCRIPT = '''#!/usr/bin/env python3
@@ -280,7 +280,7 @@ def init_skill(skill_name, path):
     print("1. Edit SKILL.md to complete the TODO items (keep name/description lowercase)")
     print("2. Customize or delete the example files in scripts/, references/, and assets/")
     print("3. Run the validator when ready to check the skill structure")
-    print("4. Keep the packaged skill ZIP at or below 15 MB")
+    print("4. Keep the packaged skill ZIP at or below 25 MB")
 
     return skill_dir
 

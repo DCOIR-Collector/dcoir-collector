@@ -3,6 +3,7 @@ name: dcoir-github-desktop-lane-advisor
 description: advise and maintain reusable africom_soc_ir / dcoir operator-side github desktop lane tools. use when the operator has a local git/github desktop problem, needs a targeted snapshot zip, needs a reusable powershell helper, asks which local helper tool to run, wants a tool captured instead of one-off chat code, or needs the operator_tools/github_desktop_lane repo folder and airtable operator tools registry kept aligned.
 ---
 
+<!-- skill-marker: updated-skill|20260430T214500Z|skill-pass-maintenance|source-update|dcoir-github-desktop-lane-advisor|SKILL.md -->
 # DCOIR GitHub Desktop Lane Advisor
 
 ## Project gate

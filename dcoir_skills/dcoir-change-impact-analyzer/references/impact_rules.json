@@ -1,19 +1,19 @@
 {
   "control_file_roles": {
     "manifest": [
-      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
       "CP-01_DCOIR_Version_Manifest.txt",
       "project_sources/DCOIR_Version_Manifest.txt",
       "DCOIR_Version_Manifest.txt"
     ],
     "change_log": [
-      "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
+      "project_sources/CP-02_DCOIR_Change_Log.txt",
       "CP-02_DCOIR_Change_Log.txt",
       "project_sources/DCOIR_Change_Log.txt",
       "DCOIR_Change_Log.txt"
     ],
     "setup": [
-      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
       "CP-01_DCOIR_Version_Manifest.txt",
       "project_sources/AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
       "AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt"
@@ -44,9 +44,9 @@
       "match": {
         "exact": [
           "CP-01_DCOIR_Version_Manifest.txt",
-          "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+          "project_sources/CP-01_DCOIR_Version_Manifest.txt",
           "CP-02_DCOIR_Change_Log.txt",
-          "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt"
+          "project_sources/CP-02_DCOIR_Change_Log.txt"
         ]
       },
       "required_refresh": [
@@ -55,13 +55,13 @@
         "session_resume_outputs_review"
       ],
       "conditional_review": [
-        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
-        "Airtable: Plans / Plan Tasks",
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "Airtable: Plans / Work Items",
         "Airtable: Repo Surface Registry",
         "all current dcoir-* skills",
         "README.md",
         "Airtable: Queue Control",
-        "Airtable: Plan Tasks"
+        "Airtable: Work Items"
       ],
       "deep_regression": [
         "dcoir-session-resume",
@@ -129,7 +129,7 @@
       "conditional_review": [
         "resume outputs if the active work line or handoff state changed",
         "Airtable: Queue Control",
-        "Airtable: Plan Tasks"
+        "Airtable: Work Items"
       ],
       "deep_regression": [],
       "skill_impacts": [
@@ -143,9 +143,9 @@
       "match": {
         "exact": [
           "DCOIR_Collector.ps1",
-          "project_sources/collector/source/DCOIR_Collector.ps1",
+          "project_sources/DCOIR_Collector.ps1",
           "run_DCOIR_Tests.ps1",
-          "project_sources/collector/harness/run_DCOIR_Tests.ps1",
+          "project_sources/run_DCOIR_Tests.ps1",
           "RB-01_DCOIR_Collector_refinement_2_1_3.txt",
           "project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt"
         ]
@@ -156,14 +156,14 @@
       ],
       "conditional_review": [
         "supporting_assets/supporting_knowledge_docs.zip",
-        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
         "Airtable: Repo Surface Registry",
         "repo/update bundle mappings",
-        "Airtable: Work Items / Plan Tasks",
+        "Airtable: Work Items / Plans",
         "Airtable: Session Checkpoints",
         "README.md",
         "Airtable: Queue Control",
-        "Airtable: Plan Tasks"
+        "Airtable: Work Items"
       ],
       "deep_regression": [
         "collector local regression harness",
@@ -251,8 +251,8 @@
         "affected supporting asset"
       ],
       "conditional_review": [
-        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
-        "Airtable: Plans / Plan Tasks",
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "Airtable: Plans / Work Items",
         "any workflow or skill that builds or references the retained knowledge zip"
       ],
       "deep_regression": [
@@ -276,7 +276,7 @@
           "SET-"
         ],
         "exact": [
-          "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+          "project_sources/CP-01_DCOIR_Version_Manifest.txt",
           "GITHUB_WORKING_REPOSITORY_NOTE.md"
         ]
       },
@@ -285,8 +285,8 @@
         "bootstrap behavior review"
       ],
       "conditional_review": [
-        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
-        "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/CP-02_DCOIR_Change_Log.txt",
         "resume and packaging helper skills"
       ],
       "deep_regression": [
@@ -505,11 +505,11 @@
         "repo guide review"
       ],
       "conditional_review": [
-        "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+        "project_sources/CP-01_DCOIR_Version_Manifest.txt",
         "Airtable: Repo Surface Registry",
-        "Airtable: Work Items / Plan Tasks",
+        "Airtable: Work Items / Plans",
         "Airtable: Queue Control",
-        "Airtable: Plan Tasks"
+        "Airtable: Work Items"
       ],
       "deep_regression": [
         "dcoir-session-resume",

@@ -295,8 +295,8 @@ def main() -> int:
     manifest_data = parse_manifest(manifest)
     prev_state = load_state(Path(args.state_file) if args.state_file else None)
 
-    collector = resolve_current_source(source_dir, manifest_data, ['Collector_Current'], ['project_sources/collector/source/DCOIR_Collector.ps1', 'DCOIR_Collector.ps1'])
-    harness = resolve_current_source(source_dir, manifest_data, ['Harness_PS1_Current', 'Harness_PS1_Project_Readable_Current'], ['project_sources/collector/harness/run_DCOIR_Tests.ps1', 'run_DCOIR_Tests.ps1'])
+    collector = resolve_current_source(source_dir, manifest_data, ['Collector_Current'], ['project_sources/DCOIR_Collector.ps1', 'DCOIR_Collector.ps1'])
+    harness = resolve_current_source(source_dir, manifest_data, ['Harness_PS1_Current', 'Harness_PS1_Project_Readable_Current'], ['project_sources/run_DCOIR_Tests.ps1', 'run_DCOIR_Tests.ps1'])
     collector_zip = source_dir / 'supporting_assets' / 'DCOIR_Collector.zip'
     if not collector_zip.exists():
         collector_zip = None

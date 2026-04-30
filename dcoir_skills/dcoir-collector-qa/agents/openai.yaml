@@ -1,6 +1,7 @@
 interface:
   display_name: DCOIR Collector QA
-  short_description: Validate, troubleshoot, regression-test, and maintain the DCOIR collector and harness.
+  short_description: Validate, troubleshoot, regression-test, and maintain the DCOIR
+    collector and harness.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

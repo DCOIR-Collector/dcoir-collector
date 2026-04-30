@@ -1,4 +1,3 @@
-# skill-marker: updated-skill|20260415T135556Z|dcoir-session-resume|agents/openai.yaml|R01
 interface:
   display_name: DCOIR Session Resume
   short_description: Resume the AFRICOM_SOC_IR / DCOIR workspace from the current

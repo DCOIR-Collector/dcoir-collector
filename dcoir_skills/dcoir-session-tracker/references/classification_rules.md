@@ -11,7 +11,7 @@ Use these rules to decide where a captured item belongs.
 Use for reminders, short-term sequencing notes, and current-chat scratch items that do not yet justify governed promotion.
 
 ### candidate_log01
-Use for future work, queued tasks, deferred patches, or explicit "we still need to do X" items that should likely land in `Airtable Work Items / Plan Tasks` if approved.
+Use for future work, queued tasks, deferred patches, or explicit "we still need to do X" items that should likely land in `Airtable Work Items / Plans` if approved.
 
 ### candidate_log02
 Use for lessons learned, regression findings, design conclusions, or workflow mistakes that should likely land in `Airtable skill-memory or Session Checkpoints` if approved.

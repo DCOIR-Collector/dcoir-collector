@@ -3,6 +3,7 @@ name: dcoir-authority-drift-reporter
 description: detect, structure, and report africom_soc_ir / dcoir source-authority confusion, stale workflow assumptions, missing airtable schema surfaces, github versus airtable drift, project attachment drift, helper-skill memory drift, repeated connector roundtrips, or uncertainty about where information should come from. use when chatgpt or a dcoir skill loops, hesitates, contradicts itself, relies on retired tables/files, or needs a paste-ready repair report for another session.
 ---
 
+<!-- skill-marker: updated-skill|20260430T214500Z|skill-pass-maintenance|source-update|dcoir-authority-drift-reporter|SKILL.md -->
 # DCOIR Authority Drift Reporter
 
 ## Project gate

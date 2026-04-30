@@ -4,9 +4,9 @@ import argparse, datetime as dt, json
 from pathlib import Path
 
 CONTROL_FILE_ALIASES = {
-    'manifest': ['project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt','CP-01_DCOIR_Version_Manifest.txt','project_sources/DCOIR_Version_Manifest.txt','DCOIR_Version_Manifest.txt'],
-    'change_log': ['project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt','CP-02_DCOIR_Change_Log.txt','project_sources/DCOIR_Change_Log.txt','DCOIR_Change_Log.txt'],
-    'setup': ['project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt','project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt'],
+    'manifest': ['project_sources/CP-01_DCOIR_Version_Manifest.txt','CP-01_DCOIR_Version_Manifest.txt','project_sources/DCOIR_Version_Manifest.txt','DCOIR_Version_Manifest.txt'],
+    'change_log': ['project_sources/CP-02_DCOIR_Change_Log.txt','CP-02_DCOIR_Change_Log.txt','project_sources/DCOIR_Change_Log.txt','DCOIR_Change_Log.txt'],
+    'setup': ['project_sources/CP-01_DCOIR_Version_Manifest.txt','project_sources/CP-02_DCOIR_Change_Log.txt'],
 }
 PATTERNS = {
     'system': ['project_sources/PP-01_*.txt','PP-01_*.txt'],

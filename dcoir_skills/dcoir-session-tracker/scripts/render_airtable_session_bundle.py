@@ -14,7 +14,7 @@ BASE_ID = 'appM4KSwnVf3G3OTK'
 TABLES = {
     'session_checkpoints': {'id': 'tblTe75HKZOJaPDGn', 'name': 'Session Checkpoints'},
     'idea_inbox': {'id': 'tblWwBxwrjZF6JR3r', 'name': 'Idea Inbox'},
-    'tracking_registry': {'id': 'tblohiMxxVbDUnN77', 'name': 'Tracking Registry'},
+    'admin_registry': {'id': 'tblFaJW1V2DPc9css', 'name': 'Admin Registry'},
 }
 
 
@@ -35,10 +35,6 @@ def load_state(path: Path) -> dict[str, Any]:
 
 def state_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def compact_items(items: list[dict[str, Any]]) -> str:
-    return '\n'.join(f"- {item.get('title', '')}: {item.get('next_action', '')}".rstrip(': ') for item in items if item.get('title'))
 
 
 def summarize_open_threads(state: dict[str, Any]) -> str:
@@ -81,7 +77,7 @@ def build_checkpoint_fields(state: dict[str, Any], path: Path, session_id: str, 
     return {
         'checkpoint_id': checkpoint_id,
         'session_id': session_id,
-        'checkpoint_time_text': utc_now(),
+        'checkpoint_at': utc_now(),
         'trigger': trigger,
         'state_summary': state.get('current_phase', 'not specified'),
         'current_focus': state.get('best_next_move', 'not specified'),
@@ -97,25 +93,12 @@ def build_checkpoint_fields(state: dict[str, Any], path: Path, session_id: str, 
     }
 
 
-def build_checkpoint_registry(fields: dict[str, Any]) -> dict[str, Any]:
+def build_admin_registry_hint(registry_key: str, object_name: str, owning_table: str, notes: str) -> dict[str, Any]:
     return {
-        'object_id': fields['checkpoint_id'],
-        'object_type': 'session_checkpoint',
-        'source_skill': 'dcoir-session-tracker',
-        'primary_title': fields['trigger'],
-        'parent_object_id': '',
-        'session_id': fields['session_id'],
-        'plan_id': '',
-        'status': fields['checkpoint_status'],
-        'created_time_text': fields['checkpoint_time_text'],
-        'updated_time_text': fields['checkpoint_time_text'],
-        'is_active': fields['checkpoint_status'] == 'active',
-        'airtable_table_name': TABLES['session_checkpoints']['name'],
-        'airtable_record_id': '',
-        'github_promotion_status': fields['github_promotion_status'],
-        'importance': 'medium',
-        'tags': 'session\ncheckpoint',
-        'summary': fields['state_summary'],
+        'registry_key': registry_key,
+        'object_name': object_name,
+        'owning_table': owning_table,
+        'notes': notes,
     }
 
 
@@ -134,7 +117,7 @@ def build_idea_fields(state: dict[str, Any], item: dict[str, Any], session_id: s
     return {
         'idea_id': item.get('id', ''),
         'session_id': session_id,
-        'captured_time_text': utc_now(),
+        'captured_at': utc_now(),
         'idea_title': item.get('title', ''),
         'idea_detail': item.get('detail', '') or item.get('title', ''),
         'why_it_matters': item.get('why', '') or item.get('impact_if_missed', ''),
@@ -144,28 +127,6 @@ def build_idea_fields(state: dict[str, Any], item: dict[str, Any], session_id: s
         'notes': item.get('carry_forward_note', '') or item.get('desired_outcome', ''),
         'promoted_to_github': item.get('persistence_status') == 'governed_written',
         'source_checkpoint_id': source_checkpoint_id,
-    }
-
-
-def build_idea_registry(fields: dict[str, Any]) -> dict[str, Any]:
-    return {
-        'object_id': fields['idea_id'],
-        'object_type': 'idea',
-        'source_skill': 'dcoir-session-tracker',
-        'primary_title': fields['idea_title'],
-        'parent_object_id': fields.get('source_checkpoint_id', ''),
-        'session_id': fields['session_id'],
-        'plan_id': '',
-        'status': fields['status'],
-        'created_time_text': fields['captured_time_text'],
-        'updated_time_text': fields['captured_time_text'],
-        'is_active': fields['status'] not in {'done', 'dropped'},
-        'airtable_table_name': TABLES['idea_inbox']['name'],
-        'airtable_record_id': '',
-        'github_promotion_status': 'promoted' if fields['promoted_to_github'] else 'candidate',
-        'importance': 'high',
-        'tags': 'idea\ntracker',
-        'summary': fields['idea_detail'],
     }
 
 
@@ -230,14 +191,24 @@ def main() -> int:
 
     if args.cmd == 'checkpoint':
         fields = build_checkpoint_fields(state, args.path, args.session_id, args.trigger, args.checkpoint_status, args.github_promotion_status)
-        emit({'base_id': BASE_ID, 'table': TABLES['session_checkpoints'], 'fields': fields, 'registry': build_checkpoint_registry(fields)}, args.output_json)
+        emit({
+            'base_id': BASE_ID,
+            'table': TABLES['session_checkpoints'],
+            'fields': fields,
+            'admin_registry_hint': build_admin_registry_hint(fields['checkpoint_id'], fields['trigger'], TABLES['session_checkpoints']['name'], fields['state_summary']),
+        }, args.output_json)
         return 0
 
     item = find_item(state, args.item_id)
     if item is None:
         raise SystemExit(f'item not found: {args.item_id}')
     fields = build_idea_fields(state, item, args.session_id, args.source_checkpoint_id)
-    emit({'base_id': BASE_ID, 'table': TABLES['idea_inbox'], 'fields': fields, 'registry': build_idea_registry(fields)}, args.output_json)
+    emit({
+        'base_id': BASE_ID,
+        'table': TABLES['idea_inbox'],
+        'fields': fields,
+        'admin_registry_hint': build_admin_registry_hint(fields['idea_id'], fields['idea_title'], TABLES['idea_inbox']['name'], fields['idea_detail']),
+    }, args.output_json)
     return 0
 
 

@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Render Airtable-ready payloads from dcoir-plan-tracker local plan folders."""
+"""Render Airtable-ready payloads from dcoir-plan-tracker local plan folders.
+
+Current model: Plans + Work Items + Session Checkpoints are live operational
+surfaces. Retired Plan Tasks / Plan Checkpoints / Tracking Registry surfaces are
+not required unless live schema readback proves they exist for a specific task.
+"""
 from __future__ import annotations
 
 import argparse
@@ -13,9 +18,9 @@ from plan_templates import flatten_tasks
 BASE_ID = 'appM4KSwnVf3G3OTK'
 TABLES = {
     'plans': {'id': 'tblBcp5FyMIfOm7Xe', 'name': 'Plans'},
-    'plan_tasks': {'id': 'tblsATLIDeh6gtcoM', 'name': 'Plan Tasks'},
-    'plan_checkpoints': {'id': 'tbl6z4Lyai2RABMyw', 'name': 'Plan Checkpoints'},
-    'tracking_registry': {'id': 'tblohiMxxVbDUnN77', 'name': 'Tracking Registry'},
+    'work_items': {'id': 'tblgsQAVWvh8K7gIR', 'name': 'Work Items'},
+    'session_checkpoints': {'id': 'tblTe75HKZOJaPDGn', 'name': 'Session Checkpoints'},
+    'admin_registry': {'id': 'tblFaJW1V2DPc9css', 'name': 'Admin Registry'},
 }
 
 
@@ -38,8 +43,7 @@ def multiline(items: list[str]) -> str:
 
 def plan_fields(plan: dict[str, Any]) -> dict[str, Any]:
     resume = plan.get('resume_state', {})
-    scope = []
-    scope.append(f"objective: {plan.get('objective', '')}")
+    scope = [f"objective: {plan.get('objective', '')}"]
     for key in ('assumptions', 'constraints', 'stop_conditions'):
         values = plan.get(key, []) or []
         if values:
@@ -47,7 +51,6 @@ def plan_fields(plan: dict[str, Any]) -> dict[str, Any]:
     return {
         'plan_id': plan.get('plan_id', ''),
         'plan_title': plan.get('title', ''),
-        'plan_state': plan.get('status', 'draft'),
         'active_task_id': plan.get('active_task_id', ''),
         'active_task_title': plan.get('active_task_title', ''),
         'scope_constraints': '\n'.join(scope),
@@ -61,112 +64,62 @@ def plan_fields(plan: dict[str, Any]) -> dict[str, Any]:
         'remain_local_notes': multiline(resume.get('remain_local_notes', [])),
         'next_recommended_action': plan.get('next_recommended_action', ''),
         'last_updated_text': plan.get('updated_at', ''),
+        'active_plan_task_id': plan.get('active_task_id', ''),
     }
 
 
-def plan_registry(fields: dict[str, Any]) -> dict[str, Any]:
+def admin_registry_hint(object_key: str, object_name: str, owning_table: str, notes: str) -> dict[str, Any]:
     return {
-        'object_id': fields['plan_id'],
-        'object_type': 'plan',
-        'source_skill': 'dcoir-plan-tracker',
-        'primary_title': fields['plan_title'],
-        'parent_object_id': '',
-        'session_id': '',
-        'plan_id': fields['plan_id'],
-        'status': fields['plan_state'],
-        'created_time_text': fields['last_updated_text'],
-        'updated_time_text': fields['last_updated_text'],
-        'is_active': fields['plan_state'] not in {'complete', 'archived'},
-        'airtable_table_name': TABLES['plans']['name'],
-        'airtable_record_id': '',
-        'github_promotion_status': 'candidate',
-        'importance': 'high',
-        'tags': 'plan\ntracker',
-        'summary': fields['next_recommended_action'],
+        'registry_key': object_key,
+        'object_name': object_name,
+        'owning_table': owning_table,
+        'notes': notes,
     }
 
 
 def task_fields(plan_id: str, task: dict[str, Any]) -> dict[str, Any]:
+    task_id = task.get('id', '')
+    notes = [
+        f"plan_id: {plan_id}",
+        f"parent_task_id: {task.get('parent_id', '')}",
+        f"level: {task.get('level', 'task')}",
+        f"owner: {task.get('owner', '')}",
+        f"why_it_matters: {task.get('why_it_matters', '')}",
+        f"expected_output: {task.get('expected_output', '')}",
+        f"validation_gate: {task.get('validation_gate', '')}",
+        f"last_update: {task.get('last_update', '')}",
+    ]
+    touched_paths = task.get('touched_paths', []) or []
     return {
-        'task_id': task.get('id', ''),
-        'plan_id': plan_id,
-        'parent_task_id': task.get('parent_id', ''),
-        'level': task.get('level', 'task'),
-        'title': task.get('title', ''),
-        'status': task.get('status', 'todo'),
-        'owner': task.get('owner', ''),
-        'why_it_matters': task.get('why_it_matters', ''),
-        'next_action': task.get('next_action', ''),
-        'expected_output': task.get('expected_output', ''),
-        'validation_gate': task.get('validation_gate', ''),
-        'touched_paths': '\n'.join(task.get('touched_paths', [])),
-        'blocking_dependency': task.get('blocking_dependency', ''),
-        'last_update_text': task.get('last_update', ''),
-    }
-
-
-def task_registry(fields: dict[str, Any]) -> dict[str, Any]:
-    return {
-        'object_id': fields['task_id'],
-        'object_type': 'plan_task',
-        'source_skill': 'dcoir-plan-tracker',
-        'primary_title': fields['title'],
-        'parent_object_id': fields['parent_task_id'],
-        'session_id': '',
-        'plan_id': fields['plan_id'],
-        'status': fields['status'],
-        'created_time_text': fields['last_update_text'],
-        'updated_time_text': fields['last_update_text'],
-        'is_active': fields['status'] not in {'done', 'skipped'},
-        'airtable_table_name': TABLES['plan_tasks']['name'],
-        'airtable_record_id': '',
-        'github_promotion_status': 'candidate',
-        'importance': 'medium',
-        'tags': f"task\n{fields['level']}",
-        'summary': fields['next_action'],
+        'Work Item': task.get('title', ''),
+        'Item ID': task_id,
+        'Repo Path or Skill': '\n'.join(touched_paths),
+        'Evidence / Notes': '\n'.join(notes),
+        'Blocker': task.get('blocking_dependency', ''),
+        'Next Action': task.get('next_action', ''),
+        'Active': task.get('status', 'todo') not in {'done', 'skipped', 'archived'},
+        'canonical_parent_plan_id': plan_id,
+        'source_table': 'local plan_state.json',
+        'source_record_id': task_id,
     }
 
 
 def checkpoint_fields(plan: dict[str, Any], trigger: str, blocker_signature: str, failed_attempt_summary: str, successful_mitigation: str, reusable_lesson_candidate: str, safe_to_flush_now: str, remain_local_for_now: str) -> dict[str, Any]:
     resume = plan.get('resume_state', {})
-    checkpoint_id = f"pcp-{short_stamp()}-{plan.get('plan_id', '')}"
+    checkpoint_id = f"scp-{short_stamp()}-{plan.get('plan_id', '')}"
     return {
-        'plan_checkpoint_id': checkpoint_id,
-        'plan_id': plan.get('plan_id', ''),
-        'checkpoint_time_text': utc_now(),
+        'checkpoint_id': checkpoint_id,
+        'session_id': plan.get('plan_id', ''),
+        'checkpoint_at': utc_now(),
         'trigger': trigger,
-        'active_task_id': plan.get('active_task_id', ''),
-        'blocker_signature': blocker_signature,
-        'failed_attempt_summary': failed_attempt_summary,
-        'successful_mitigation': successful_mitigation,
-        'reusable_lesson_candidate': reusable_lesson_candidate,
-        'buffered_state_summary': multiline(resume.get('pending_flush_items', [])),
-        'safe_to_flush_now': safe_to_flush_now,
-        'remain_local_for_now': remain_local_for_now,
-        'next_flush_trigger': resume.get('flush_trigger', ''),
-        'best_next_move': plan.get('next_recommended_action', ''),
-    }
-
-
-def checkpoint_registry(fields: dict[str, Any]) -> dict[str, Any]:
-    return {
-        'object_id': fields['plan_checkpoint_id'],
-        'object_type': 'plan_checkpoint',
-        'source_skill': 'dcoir-plan-tracker',
-        'primary_title': fields['trigger'],
-        'parent_object_id': fields['plan_id'],
-        'session_id': '',
-        'plan_id': fields['plan_id'],
-        'status': 'active',
-        'created_time_text': fields['checkpoint_time_text'],
-        'updated_time_text': fields['checkpoint_time_text'],
-        'is_active': True,
-        'airtable_table_name': TABLES['plan_checkpoints']['name'],
-        'airtable_record_id': '',
-        'github_promotion_status': 'candidate',
-        'importance': 'high',
-        'tags': 'plan\ncheckpoint',
-        'summary': fields['best_next_move'],
+        'state_summary': f"plan_id: {plan.get('plan_id', '')}\nactive_task_id: {plan.get('active_task_id', '')}",
+        'current_focus': plan.get('active_task_title', ''),
+        'open_threads': f"blocker_signature: {blocker_signature}\nfailed_attempt_summary: {failed_attempt_summary}",
+        'decisions_constraints': f"successful_mitigation: {successful_mitigation}\nreusable_lesson_candidate: {reusable_lesson_candidate}\nsafe_to_flush_now: {safe_to_flush_now}\nremain_local_for_now: {remain_local_for_now}",
+        'buffered_promotion_candidates': multiline(resume.get('promotion_candidates', [])),
+        'next_recommended_move': plan.get('next_recommended_action', ''),
+        'resume_prompt': resume.get('resume_detail', ''),
+        'checkpoint_status': 'active',
     }
 
 
@@ -205,13 +158,17 @@ def main() -> int:
 
     if args.cmd == 'plan':
         fields = plan_fields(plan)
-        emit({'base_id': BASE_ID, 'table': TABLES['plans'], 'fields': fields, 'registry': plan_registry(fields)}, args.output_json)
+        emit({
+            'base_id': BASE_ID,
+            'table': TABLES['plans'],
+            'fields': fields,
+            'admin_registry_hint': admin_registry_hint(fields['plan_id'], fields['plan_title'], TABLES['plans']['name'], fields.get('next_recommended_action', '')),
+        }, args.output_json)
         return 0
 
     if args.cmd == 'tasks':
         rows = [task_fields(plan.get('plan_id', ''), row) for row in flatten_tasks(plan.get('tasks', []))]
-        regs = [task_registry(row) for row in rows]
-        emit({'base_id': BASE_ID, 'table': TABLES['plan_tasks'], 'records': rows, 'registry_records': regs}, args.output_json)
+        emit({'base_id': BASE_ID, 'table': TABLES['work_items'], 'records': rows}, args.output_json)
         return 0
 
     fields = checkpoint_fields(
@@ -224,7 +181,12 @@ def main() -> int:
         args.safe_to_flush_now,
         args.remain_local_for_now,
     )
-    emit({'base_id': BASE_ID, 'table': TABLES['plan_checkpoints'], 'fields': fields, 'registry': checkpoint_registry(fields)}, args.output_json)
+    emit({
+        'base_id': BASE_ID,
+        'table': TABLES['session_checkpoints'],
+        'fields': fields,
+        'admin_registry_hint': admin_registry_hint(fields['checkpoint_id'], fields['trigger'], TABLES['session_checkpoints']['name'], fields.get('next_recommended_move', '')),
+    }, args.output_json)
     return 0
 
 

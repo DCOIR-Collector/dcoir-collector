@@ -79,7 +79,7 @@ Supporting files should exist only when they materially improve reliability, cla
   - Examples: slide/excel/document templates, brand assets/logos, images, fonts, boilerplate code
   - Not intended to be loaded into context, but rather used, modified or copied 
   - Enables reuse without consuming context tokens
-  - If requested assets/artifacts would cause the packaged skill ZIP to exceed the 15 MB limit, tell the user the artifacts are too large to upload in the skill and ask them to reduce/split/compress the assets.
+  - If requested assets/artifacts would cause the packaged skill ZIP to exceed the 25 MB limit, tell the user the artifacts are too large to upload in the skill and ask them to reduce/split/compress the assets.
 
 ## Progressive Loading and Context Efficiency
 ChatGPT automatically explores Skills and their information incrementally as it becomes relevant to minimize context usage. 
@@ -259,8 +259,8 @@ The script:
 - Creates example resource directories: `scripts/`, `references/`, and `assets/`
 - Adds example files in each directory that can be customized or deleted
 
-Packaging limit: the final skill ZIP must be 15 MB or smaller.
-If user-provided artifacts (especially files in `assets/`) would push the package over 15 MB, explicitly tell the user the artifacts are too large to upload in the skill.
+Packaging limit: the final skill ZIP must be 25 MB or smaller.
+If user-provided artifacts (especially files in `assets/`) would push the package over 25 MB, explicitly tell the user the artifacts are too large to upload in the skill.
 
 After initialization, customize or remove the generated SKILL.md and example files as needed.
 
@@ -285,7 +285,7 @@ Added scripts must be tested by actually running them to ensure there are no bug
 
 It is crucial to scan the Skill directory after you're done and remove all example files and directories that are not needed for the skill. The initialization script creates example files in `scripts/`, `references/`, and `assets/` to demonstrate structure, but most skills won't need all of them.
 
-Before packaging or sharing the skill, check whether bundled artifacts are likely to exceed the 15 MB skill upload limit. If they do, tell the user the artifacts are too large to upload in the skill and propose alternatives (reduce file size, split assets, or host externally if allowed by their workflow).
+Before packaging or sharing the skill, check whether bundled artifacts are likely to exceed the 25 MB skill upload limit. If they do, tell the user the artifacts are too large to upload in the skill and propose alternatives (reduce file size, split assets, or host externally if allowed by their workflow).
 
 #### Update SKILL.md
 Ensure the frontmatter `name` and `description` remain lowercase before packaging.

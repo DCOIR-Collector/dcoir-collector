@@ -1,6 +1,7 @@
 interface:
   display_name: DCOIR Structural Rename Coordinator
-  short_description: Coordinate DCOIR renames so files, skills, mappings, and bundles stay aligned.
+  short_description: Coordinate DCOIR renames so files, skills, mappings, and bundles
+    stay aligned.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

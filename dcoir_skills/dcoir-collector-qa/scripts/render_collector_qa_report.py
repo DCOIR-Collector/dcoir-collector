@@ -118,11 +118,11 @@ Generated: {timestamp}
 Static and hybrid QA review of the current DCOIR collector readable source, harness mirrors, runtime alias rules, documentation health, and preserved known-failure lane.
 
 ## Authoritative basis
-- `project_sources/collector/source/DCOIR_Collector.ps1`
-- `project_sources/collector/harness/run_DCOIR_Tests.ps1`
+- `project_sources/DCOIR_Collector.ps1`
+- `project_sources/run_DCOIR_Tests.ps1`
 - `project_sources/RB-01_DCOIR_Collector_refinement_2_1_3.txt` when present for rollback comparison
-- `project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt`
-- `project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt and project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt`
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt`
+- `project_sources/CP-01_DCOIR_Version_Manifest.txt and project_sources/CP-02_DCOIR_Change_Log.txt`
 - `Airtable Queue Control, Work Items, Plans, and Plan Tasks when the active work-line split matters to current QA follow-through
 
 ## Run posture

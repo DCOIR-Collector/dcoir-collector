@@ -1,85 +1,24 @@
-# Airtable-First Plan Sync Workflow
+# Airtable plan sync workflow
 
-Use this reference when `dcoir-plan-tracker` needs durable execution state that must survive fragile local container continuity.
+Use this workflow when dcoir-plan-tracker needs to render or prepare Airtable-ready plan state. Airtable is the live execution authority; local JSON is only a render buffer.
 
-## Truth model
-- Airtable is the primary durable execution-state surface
-- local `plan_state.json` is an optional cache or render mirror
-- GitHub remains the authoritative promoted state
+## Current target tables
+- `Plans` (`tblBcp5FyMIfOm7Xe`) holds multi-step parent scope, active task context, resume detail, and next action.
+- `Work Items` (`tblgsQAVWvh8K7gIR`) holds executable task rows. Use it instead of retired `Plan Tasks` unless live schema readback proves a dedicated task table exists for the current job.
+- `Session Checkpoints` (`tblTe75HKZOJaPDGn`) holds resume/checkpoint continuity. Use it instead of retired `Plan Checkpoints` unless live schema readback proves otherwise.
+- `Queue Control` (`tblf13aCslg6rJBah`) is updated only after executable Work Item or Plan state exists.
+- `Admin Registry` may carry skill-state or schema-governance housekeeping. It is not a live task queue.
 
-## Base and table targets
-- Airtable base id: `appM4KSwnVf3G3OTK`
-- `Plans` table id: `tblBcp5FyMIfOm7Xe`
-- `Plan Tasks` table id: `tblsATLIDeh6gtcoM`
-- `Plan Checkpoints` table id: `tbl6z4Lyai2RABMyw`
-- `Tracking Registry` table id: `tblohiMxxVbDUnN77`
-- `Schema Registry` table id: `tblwsD43VhzmjWNbc`
-- `Work Items` table id: `tblgsQAVWvh8K7gIR`
+## Sync order
+1. Read live schema before writing or migrating records.
+2. Render or upsert the `Plans` row first when parent scope changed.
+3. Render task-level rows to `Work Items`, preserving `canonical_parent_plan_id` when present.
+4. Render meaningful checkpoints to `Session Checkpoints`.
+5. Update `Queue Control` only after the Plan/Work Item rows exist and the operator-authorized queue branch is clear.
+6. Record material promotion, migration, retirement, or closeout in `DCOIR Lifecycle Ledger` when appropriate.
 
-Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
-
-## Table responsibilities
-### Plans
-Primary durable row per plan. Upsert on plan creation and material plan-state changes only.
-
-### Plan Tasks
-Primary durable normalized task rows for hierarchical execution state. Batch writes when task structure or task statuses materially change.
-
-### Plan Checkpoints
-Sparse durable checkpoint history for blockers, mitigations, flush reviews, resume moments, and handoff or close-out transitions.
-
-### Tracking Registry
-Metadata index only. Use after the durable domain record already exists.
-
-## Trigger rules
-Write Airtable state when:
-- a plan is created
-- the active task changes materially
-- a blocker is recorded or resolved
-- a flush/manicure review occurs
-- a before-GitHub-write checkpoint is needed
-- a handoff or close-out checkpoint is needed
-- local cache continuity is missing but durable plan continuity still matters
-
-## Call minimization rules
-- Prefer one `Plans` upsert plus one batched `Plan Tasks` write when a plan materially changes.
-- Prefer one `Plan Checkpoints` record per meaningful checkpoint event.
-- Prefer direct known base and table ids to avoid discovery calls.
-- Prefer text foreign keys like `plan_id` and `parent_task_id` over Airtable-native relationship dependence in the skill logic.
-
-## Local cache interaction
-- If the local cache exists and is current, use `scripts/render_airtable_plan_bundle.py` to render Airtable-ready payloads from it.
-- If the local cache is missing, reconstruct the Airtable payload from the current plan reasoning and write Airtable first.
-- Refresh or reinitialize the local cache only when deterministic export, local proof, or render parity is useful.
-
-## Promotion rule
-Airtable holds primary durable execution state for live plan continuity.
-GitHub plan surfaces remain the authoritative promoted record when the workflow decides the current plan state or learned lesson should become governed text.
-
-## Work-item lifecycle ownership
-When `dcoir-plan-tracker` opens or stages a `Work Items` row for plan-owned implementation work, it owns the full row lifecycle.
-
-Default completion behavior after success is verified:
-- update the same row to `Status = Done`
-- set `Active = false`
-- leave the row in place for history
-- avoid deleting rows unless they were clearly scratch-only or duplicate
-
-Do not require a second operator reminder just to close a row that this skill created.
-
-## Default interactive Work Items field set
-When rendering `Work Items` in chat for this workflow, prefer these fields by default unless the operator asked for a narrower view:
-- `Work Item`
-- `Item ID`
-- `Area`
-- `Work Type`
-- `Status`
-- `Priority`
-- `Owner`
-- `Repo Path or Skill`
-- `Next Action`
-- `Evidence / Notes`
-- `Blocker`
-- `Active`
-
-When the operator asked to see one specific row only, filter to that one row instead of rendering the whole table.
+## Safety rules
+- Do not require retired tables by name during normal startup or plan recovery.
+- Do not write directly from stale hard-coded table ids when live schema readback disagrees.
+- Do not treat GitHub CP/todo files as live queue authority.
+- Keep generated Airtable payloads secret-safe and operator-readable.

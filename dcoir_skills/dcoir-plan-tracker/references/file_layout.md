@@ -6,8 +6,8 @@
 This reference defines the fixed durable layout for `dcoir-plan-tracker` plans stored in GitHub.
 
 ## Root layout
-- Airtable `Plans` / `Plan Tasks`
-- Airtable `Tracking Registry`
+- Airtable `Plans` / `Work Items`
+- Airtable `Admin Registry` / helper-memory tables when relevant
 - Airtable plan/task hierarchy records
 
 ## Per-plan required files

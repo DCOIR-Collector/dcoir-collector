@@ -2,7 +2,7 @@
 name: dcoir-change-impact-analyzer
 description: analyze proposed or completed africom_soc_ir / dcoir project changes and determine downstream refresh sets, helper-skill impacts, regression requirements, delivery recommendations, and stop conditions.
 ---
-<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-change-impact-analyzer|SKILL.md -->
+<!-- skill-marker: updated-skill|20260430T214500Z|skill-pass-maintenance|source-update|dcoir-change-impact-analyzer|SKILL.md -->
 
 # DCOIR Change Impact Analyzer
 
@@ -53,7 +53,7 @@ Before analyzing impact, verify the task-required authority surface from the wor
 
 Preferred current authority surfaces:
 - Airtable `Governance Control Plane` row `CONTROL-STARTUP-AIRTABLE-FIRST` for startup/admin/current-state authority
-- Airtable `Queue Control`, `Work Items`, active `Plans`, and `Work Items for task execution` when the active work-line structure changed
+- Airtable `Queue Control`, `Work Items`, and active `Plans` when the active work-line structure changed
 - Airtable `Admin Registry and live schema readback`, `Repo Surface Registry`, `Repo Surface Registry supporting evidence`, `Repo Surface Registry retained-state evidence`, `Admin Registry or table-specific records`, and release tracking tables when downstream impact matters
 - GitHub `project_sources/CP-01_DCOIR_Version_Manifest.txt` and `project_sources/CP-02_DCOIR_Change_Log.txt` only when repository-source role resolution, promoted-history comparison, packaging, or explicit repo cleanup/source-role review is in scope
 - `README.md` and governed repo source files when the current repo-guide posture or source content is part of the changed set

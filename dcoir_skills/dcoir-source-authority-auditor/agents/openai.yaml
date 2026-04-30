@@ -1,4 +1,3 @@
-# skill-marker: updated-skill|20260415T170500Z|dcoir-source-authority-auditor|agents/openai.yaml|R02
 interface:
   display_name: DCOIR Source Authority Auditor
   short_description: Audit whether DCOIR work is grounded in the current authoritative

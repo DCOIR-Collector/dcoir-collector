@@ -1,9 +1,22 @@
 interface:
-  display_name: "dcoir repo packager"
+  display_name: dcoir repo packager
+  short_description: build strict dcoir repo-layout zips, github-primary bootstrap
+    bundles, and github desktop manual repo-update patch bundles from the current
+    authoritative dcoir project files. use when chatgpt needs to package the current
+    project workspace for local repo-style testing, prepare a bootstrap refresh that
+    follows the no-duplicate-readable-source rule, or emit a github desktop manual
+    repo-update bundle containing only affected repo-relative files with no wrapper
+    root. this skill is class-prefix aware, prefers control-plane roles over brittle
+    legacy filenames, supports the current github-primary layout, and must stop if
+    the required control-plane roles or requested paths cannot be resolved safely.
+    follow the airtable-first startup/control-plane model and use github only for
+    governed source, promoted history, packaging, or explicit repo readback when required.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
-    - "chatgpt"
-    - "codex"
-    - "api"
-    - "atlas"
+  - chatgpt
+  - codex
+  - api
+  - atlas
   allow_implicit_invocation: true

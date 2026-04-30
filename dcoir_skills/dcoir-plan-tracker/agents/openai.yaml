@@ -1,6 +1,7 @@
 interface:
   display_name: DCOIR Plan Tracker
-  short_description: Plan, track, resume, and document DCOIR work with GitHub-backed markdown and JSON state.
+  short_description: Plan, track, resume, and document DCOIR work with GitHub-backed
+    markdown and JSON state.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

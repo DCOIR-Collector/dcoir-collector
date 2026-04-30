@@ -2,7 +2,7 @@
 name: dcoir-plan-tracker
 description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state and hierarchy-aware task decomposition.
 ---
-<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-plan-tracker|SKILL.md -->
+<!-- skill-marker: updated-skill|20260430T214500Z|skill-pass-maintenance|source-update|dcoir-plan-tracker|SKILL.md -->
 
 # DCOIR Plan Tracker
 

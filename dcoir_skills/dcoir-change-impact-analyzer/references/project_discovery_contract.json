@@ -5,13 +5,13 @@
   },
   "control_file_roles": {
     "manifest": [
-      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
       "CP-01_DCOIR_Version_Manifest.txt",
       "project_sources/DCOIR_Version_Manifest.txt",
       "DCOIR_Version_Manifest.txt"
     ],
     "change_log": [
-      "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
+      "project_sources/CP-02_DCOIR_Change_Log.txt",
       "CP-02_DCOIR_Change_Log.txt",
       "project_sources/DCOIR_Change_Log.txt",
       "DCOIR_Change_Log.txt"
@@ -26,9 +26,9 @@
     ]
   },
   "active_surface_paths": {
-    "manifest": "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
-    "change_log": "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
-    "live_queue": "Airtable: Queue Control / Work Items / Plans / Plan Tasks",
+    "manifest": "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+    "change_log": "project_sources/CP-02_DCOIR_Change_Log.txt",
+    "live_queue": "Airtable: Queue Control / Work Items / Plans",
     "session_continuity": "Airtable: Session Checkpoints / Idea Inbox"
   },
   "repo_guide_surfaces": {
@@ -60,12 +60,12 @@
   },
   "collector_runtime_alias_contract": {
     "manifest_required_strings": [
-      "project_sources/collector/source/DCOIR_Collector.ps1",
-      "project_sources/collector/harness/run_DCOIR_Tests.ps1"
+      "project_sources/DCOIR_Collector.ps1",
+      "project_sources/run_DCOIR_Tests.ps1"
     ],
     "layout_any_strings": [
-      "project_sources/collector/source/DCOIR_Collector.ps1",
-      "project_sources/collector/harness/run_DCOIR_Tests.ps1",
+      "project_sources/DCOIR_Collector.ps1",
+      "project_sources/run_DCOIR_Tests.ps1",
       "GitHub repository malwaredevil/dcoir-collector is the sole working source for readable governed text files.",
       "GitHub repository malwaredevil/dcoir-collector is the sole readable working-source location for governed text."
     ],
@@ -82,8 +82,8 @@
   },
   "helper_memory": {
     "repository": "malwaredevil/dcoir-collector",
-    "root": "dcoir_skill_memory/",
-    "readme": "dcoir_skill_memory/README.md",
+    "root": "Airtable helper-memory tables or legacy dcoir_skill_memory/",
+    "readme": "Airtable helper-memory tables or legacy dcoir_skill_memory/README.md",
     "status": "legacy_source_basis_during_airtable_cutover",
     "live_airtable_memory_tables": [
       "dcoir-memory-preflight",
@@ -97,8 +97,8 @@
   "current_authority_model": {
     "workspace_model": "Airtable-first execution state; GitHub governed readable source/control plane/promoted history; Project space bootstrap/runtime anchor only.",
     "current_state_read_order": [
-      "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt",
-      "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
+      "project_sources/CP-01_DCOIR_Version_Manifest.txt",
+      "project_sources/CP-02_DCOIR_Change_Log.txt",
       "Airtable Queue Control, Work Items, Plans, and Plan Tasks for live execution order"
     ],
     "live_todo_authority": "Airtable",
@@ -164,7 +164,7 @@
     "active_now": "stale/deleted todo surface; do not use as live authority"
   },
   "retired_or_legacy_surface_policy": {
-    "dcoir_skill_memory/": "migrated source_basis/history for selected skill-memory entries; dedicated Airtable skill-memory tables are the live durable memory target after validation",
+    "Airtable helper-memory tables or legacy dcoir_skill_memory/": "migrated source_basis/history for selected skill-memory entries; dedicated Airtable skill-memory tables are the live durable memory target after validation",
     "project_settings/": "legacy project-setting mirror surface; do not treat as live project-instruction authority unless explicitly reintroduced by control plane",
     "release_notes/": "release-history/source_basis surface only; release index rows live in Airtable release tracking tables",
     "project_sources/todo/": "stale/deleted GitHub todo surface; live todo authority is Airtable"

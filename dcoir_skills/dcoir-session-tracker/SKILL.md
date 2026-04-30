@@ -2,7 +2,7 @@
 name: dcoir-session-tracker
 description: maintain session-local dcoir tracker state with airtable-first durable checkpoints, idea capture, promotion candidates, and safe handoff exports.
 ---
-<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-session-tracker|SKILL.md -->
+<!-- skill-marker: updated-skill|20260430T214500Z|skill-pass-maintenance|source-update|dcoir-session-tracker|SKILL.md -->
 
 # DCOIR Session Tracker
 
@@ -378,7 +378,7 @@ Known Airtable targets for this project:
 - base id: `appM4KSwnVf3G3OTK`
 - `Session Checkpoints` table id: `tblTe75HKZOJaPDGn`
 - `Idea Inbox` table id: `tblWwBxwrjZF6JR3r`
-- `Admin Registry or table-specific records` table id: `tblohiMxxVbDUnN77`
+- `Admin Registry` table id: `tblFaJW1V2DPc9css`
 - optional operational board `Work Items` table id: `tblgsQAVWvh8K7gIR`
 
 Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
