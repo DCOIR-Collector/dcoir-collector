@@ -55,11 +55,32 @@ jobs:
           esac
 
           removed=0
+          is_scaffold_path() {
+            local p="$1"
+            case "$p" in
+              chatgpt_staging/requests/.gitkeep|\
+              chatgpt_staging/in/.gitkeep|\
+              chatgpt_staging/out/.gitkeep|\
+              chatgpt_staging/apply_reports/.gitkeep|\
+              chatgpt_staging/testdata/source/.gitkeep|\
+              */.gitkeep)
+                return 0
+                ;;
+              *)
+                return 1
+                ;;
+            esac
+          }
+
           rm_path() {
             local p="$1"
             if [[ -z "$p" || "$p" == /tmp/* || "$p" == /* || "$p" == *..* ]]; then
               echo "Refusing unsafe cleanup path: $p" >&2
               exit 1
+            fi
+            if is_scaffold_path "$p"; then
+              echo "Skipping scaffold path: $p"
+              return 0
             fi
             if git ls-files --error-unmatch "$p" >/dev/null 2>&1; then
               git rm -r -f "$p"
@@ -78,6 +99,7 @@ jobs:
           if [[ '${{ inputs.cleanup_requests }}' == 'true' ]]; then
             for f in chatgpt_staging/requests/*.json; do
               [[ -e "$f" ]] || continue
+              is_scaffold_path "$f" && continue
               stem="$(basename "$f" .json)"
               if match_filter "$stem"; then
                 rm_path "$f"
@@ -88,6 +110,7 @@ jobs:
           if [[ '${{ inputs.cleanup_in_payloads }}' == 'true' ]]; then
             for d in chatgpt_staging/in/*; do
               [[ -d "$d" ]] || continue
+              is_scaffold_path "$d" && continue
               stem="$(basename "$d")"
               if match_filter "$stem"; then
                 rm_path "$d"
@@ -98,6 +121,7 @@ jobs:
           if [[ '${{ inputs.cleanup_out_bundles }}' == 'true' ]]; then
             for d in chatgpt_staging/out/*; do
               [[ -d "$d" ]] || continue
+              is_scaffold_path "$d" && continue
               stem="$(basename "$d")"
               if match_filter "$stem"; then
                 rm_path "$d"
@@ -108,6 +132,7 @@ jobs:
           if [[ '${{ inputs.cleanup_apply_reports }}' == 'true' ]]; then
             for f in chatgpt_staging/apply_reports/*.md; do
               [[ -e "$f" ]] || continue
+              is_scaffold_path "$f" && continue
               stem="$(basename "$f")"
               if match_filter "$stem"; then
                 rm_path "$f"
