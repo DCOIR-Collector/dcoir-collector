@@ -13,6 +13,14 @@ Reusable operator-side helper tools for AFRICOM_SOC_IR / DCOIR manual GitHub Des
 
 These tools favor read-only diagnostics, fast-forward-only pulls, explicit manifests, local logs, and stop-on-unsafe-state behavior. Do not use destructive git commands such as `git reset --hard`, `git clean`, or `git stash pop` unless a purpose-specific recovery plan calls for them.
 
+GitHub Actions terminology used by this toolset:
+
+- `workflow`: the YAML automation definition under `.github/workflows/`.
+- `workflow run`: one execution of a workflow.
+- `job`: an execution unit inside a workflow run.
+
+GitHub Actions allows multiple workflow runs by default, but a workflow or job may define a `concurrency` group. In a concurrency group, GitHub allows at most one running and one pending workflow run or job at a time. The orchestrator therefore uses `max_parallel` only as a local dispatch throttle; GitHub runner availability and workflow-level concurrency still decide actual execution order.
+
 ## Environment variables
 
 Most launchers default to these local environment variables:
@@ -34,6 +42,7 @@ $env:DCOIR_DOWNLOADS_DIR
 | `scripts/New-DcoirTextOnlyRepoSnapshot.ps1` | Build a read-only full-repo text snapshot ZIP for ChatGPT review while excluding binaries, generated/dependency folders, and oversized files. |
 | `scripts/Invoke-DcoirRepoPatchApply.ps1` | Apply an explicit repo-relative payload manifest with wrapper-root detection, target-root allow-listing, optional pre/post hashes, delete support, and UTF-8 verification logs. |
 | `scripts/New-DcoirChatGPTFriendlyZip.ps1` | Build rootless, metadata-clean, UTF-8-friendly ZIPs for ChatGPT upload and parsing, including diagnostic indexes and file manifests. |
+| `scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1` | Watch, capture, or dispatch 1..N GitHub Actions workflow runs from a manifest, monitor them, collect evidence, and produce a ChatGPT-friendly ZIP. |
 
 ## Git diagnostic launcher
 
@@ -61,15 +70,7 @@ Use this when ChatGPT needs to scan the local repository contents without binary
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\New-DcoirTextOnlyRepoSnapshot.ps1"
 ```
 
-Outputs are written to `DCOIR_DOWNLOADS_DIR` when set, otherwise to the current user's Downloads folder:
-
-```text
-dcoir_text_only_repo_snapshot_YYYYMMDD_HHMMSS.zip
-dcoir_text_only_repo_snapshot_YYYYMMDD_HHMMSS.log.txt
-dcoir_text_only_repo_snapshot_YYYYMMDD_HHMMSS.manifest.json
-```
-
-Upload all three outputs when asking ChatGPT to perform a full-repo text/reference scan.
+Outputs are written to `DCOIR_DOWNLOADS_DIR` when set, otherwise to the current user's Downloads folder.
 
 ## ChatGPT-friendly ZIP launcher
 
@@ -93,7 +94,31 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\op
 
 This tool is intentionally manifest-driven. It only copies files listed in `copy_map`, removes paths listed in `delete_paths`, and refuses targets outside the manifest allow-list.
 
+## Actions workflow orchestrator launcher
+
+Use this when you need to watch existing workflow runs, capture known run IDs, or dispatch a manifest-defined batch of 1..N workflow runs.
+
+Dry-run dispatch plan:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1" -ManifestJson "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\manifests\actions_workflow_orchestrator.dispatch.sample.json"
+```
+
+Live dispatch after reviewing the generated plan and setting `dry_run` to `false` in a copied manifest:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1" -ManifestJson "$env:DCOIR_DOWNLOADS_DIR\my_actions_manifest.json" -ConfirmDispatch
+```
+
+Watch latest runs without dispatching:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1" -ManifestJson "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\manifests\actions_workflow_orchestrator.watch.sample.json"
+```
+
 ## Manifest examples
 
 - Targeted snapshot: `manifests/docs_impl_snapshot.sample.json`
 - Repo patch/apply: `manifests/repo_patch_apply.sample.json`
+- Actions orchestrator dispatch: `manifests/actions_workflow_orchestrator.dispatch.sample.json`
+- Actions orchestrator watch: `manifests/actions_workflow_orchestrator.watch.sample.json`

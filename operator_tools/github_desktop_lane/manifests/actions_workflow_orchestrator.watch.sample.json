@@ -1,0 +1,20 @@
+{
+  "run_set_id": "dcoir-watch-latest-actions-sample",
+  "mode": "watch",
+  "repo": "malwaredevil/dcoir-collector",
+  "default_ref": "main",
+  "poll_interval_seconds": 30,
+  "timeout_minutes": 60,
+  "output": {
+    "folder": "%DCOIR_DOWNLOADS_DIR%",
+    "create_chatgpt_friendly_zip": true,
+    "zip_name": "dcoir_actions_watch_sample.chatgpt.zip"
+  },
+  "watch": {
+    "workflows": [
+      "validate-on-push.yml"
+    ],
+    "limit": 2,
+    "until_complete": true
+  }
+}

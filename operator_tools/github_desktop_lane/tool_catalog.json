@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-01.2",
+  "catalog_version": "2026-05-01.3",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/",
     "registry_source": "airtable Operator Tools Registry",
@@ -55,6 +55,15 @@
       "output_pattern": "*.chatgpt.zip or caller-defined ZIP path",
       "version_or_hash": "2026-05-01.1",
       "notes": "Reusable ZIP helper for DCOIR diagnostics and upload bundles. Skips hidden/system metadata, avoids wrapper-root junk, adds diagnostic_index.md/captured_files.json/zip_manifest.json, and can normalize text outputs to UTF-8 in the staged ZIP copy."
+    },
+    {
+      "tool_id": "DCOIR-ACTIONS-WORKFLOW-ORCHESTRATOR",
+      "tool_name": "DCOIR Actions Workflow Orchestrator",
+      "tool_family": "github_actions_orchestration",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1",
+      "output_pattern": "*_actions_*; *.chatgpt.zip; orchestrator_summary.json; orchestrator_summary.md",
+      "version_or_hash": "2026-05-01.1",
+      "notes": "Unified manifest-driven GitHub Actions tool. Modes: watch existing workflow runs, capture known run IDs, or dispatch 1..N workflow runs with per-run inputs. Uses dry_run by default for dispatch, requires explicit -ConfirmDispatch for live dispatch, monitors runs, captures logs/jobs/artifacts, and packages evidence with the ChatGPT-friendly ZIP helper."
     }
   ]
 }
