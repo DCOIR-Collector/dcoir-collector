@@ -33,6 +33,19 @@ function Write-Log {
     $Text | Tee-Object -FilePath $log -Append | Out-Null
 }
 
+function ConvertTo-NativeArgumentString {
+    param([AllowEmptyString()][string]$Argument)
+
+    if ($null -eq $Argument) { return '""' }
+    if ($Argument.Length -eq 0) { return '""' }
+    if ($Argument -notmatch '[\s"]') { return $Argument }
+
+    # Windows command-line quoting for a single native argument.
+    $escaped = $Argument -replace '(\\*)"', '$1$1\"'
+    $escaped = $escaped -replace '(\\+)$', '$1$1'
+    return '"' + $escaped + '"'
+}
+
 function Invoke-GitLogged {
     param(
         [Parameter(Mandatory = $true)]
@@ -42,22 +55,49 @@ function Invoke-GitLogged {
     Write-Log ""
     Write-Log (">>> git " + ($Arguments -join " "))
 
+    $argumentString = ($Arguments | ForEach-Object { ConvertTo-NativeArgumentString ([string]$_) }) -join ' '
+
     Push-Location $RepoRoot
     try {
-        $output = & git @Arguments 2>&1
-        $exitCode = $LASTEXITCODE
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = "git.exe"
+        $psi.Arguments = $argumentString
+        $psi.WorkingDirectory = $RepoRoot
+        $psi.UseShellExecute = $false
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.CreateNoWindow = $true
+
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $psi
+        [void]$process.Start()
+        $stdout = $process.StandardOutput.ReadToEnd()
+        $stderr = $process.StandardError.ReadToEnd()
+        $process.WaitForExit()
+        $exitCode = $process.ExitCode
     }
     finally {
         Pop-Location
     }
 
-    foreach ($line in $output) { Write-Log ([string]$line) }
+    $lines = New-Object System.Collections.Generic.List[string]
+    foreach ($text in @($stdout, $stderr)) {
+        if ($null -ne $text -and $text.Length -gt 0) {
+            $normalized = $text -replace "`r`n", "`n"
+            foreach ($line in ($normalized -split "`n")) {
+                if ($line.Length -gt 0) {
+                    $lines.Add([string]$line)
+                    Write-Log ([string]$line)
+                }
+            }
+        }
+    }
 
     if ($exitCode -ne 0) {
         throw "git $($Arguments -join ' ') failed with exit code $exitCode"
     }
 
-    return @($output | ForEach-Object { [string]$_ })
+    return @($lines.ToArray())
 }
 
 function Copy-RepoPath {
@@ -97,7 +137,8 @@ try {
 
     Write-Log ""
     Write-Log "== BRANCH CHECK =="
-    $currentBranch = (Invoke-GitLogged @('branch', '--show-current') | Select-Object -Last 1).Trim()
+    $branchOutput = @(Invoke-GitLogged @('branch', '--show-current'))
+    $currentBranch = ($branchOutput | Select-Object -Last 1).Trim()
     Write-Log "Current branch: $currentBranch"
     if ($currentBranch -ne $Branch) { throw "Expected branch '$Branch' but found '$currentBranch'." }
 
