@@ -1,236 +1,125 @@
 # Knowledge - 01 - Overview and About
 
-_AFRICOM_SOC_IR / DCOIR project context and supporting knowledge-doc charter_
+_AFRICOM_SOC_IR / DCOIR project context and maintained knowledge-doc charter_
 
-**Summary:** Current DCOIR posture, governing surfaces, source classes, and the role of the maintained Knowledge-doc set without granting it control-plane authority.
+**Summary:** Defines the role of the DCOIR knowledge set, the current authority model, and how operators and Gemini should use these documents without treating them as control-plane authority.
 
-| Source class | Authoritative basis |
+---
+
+## Current authority model
+
+DCOIR uses an Airtable-first operational model with GitHub as governed source/readback for repository files.
+
+| Surface | Role |
 | --- | --- |
-| Project sources | project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt; project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt; project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; project_sources/DOC-03_DCOIR_Repository_Layout_Spec_v1_0_0.txt; project_sources/LOG-01_DCOIR_Todo_Log.txt |
-| Official external sources | Not required for this page |
-| Scope note | Generated from the current GitHub-primary control plane and maintained supporting knowledge lane. |
+| Project Instructions | First bootstrap anchor |
+| Airtable Governance Control Plane | Startup/load-sequence authority |
+| Airtable Plans / Work Items / Session Checkpoints | Live execution and resume state |
+| GitHub repo | Source/readback for collector, harness, Gemini bundle, workflows, and promoted history |
+| `knowledge/*.md` | Maintained human-readable knowledge source |
+| Gemini `.md.txt` attachments | Runtime attachment copies synced from `knowledge/*.md` |
 
-## Current project posture
+Knowledge docs explain the system. They do not override Airtable live state, Project Instructions, or governed GitHub source.
 
-- The GitHub repository `malwaredevil/dcoir-collector` is the sole working source for governed readable text files.
-- Project Instructions, `project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt`, and `project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt` form the default control plane for current-state work.
-- The current collector runtime is `project_sources/collector/source/DCOIR_Collector.ps1` and the current local regression harness is `project_sources/collector/harness/run_DCOIR_Tests.ps1`.
-- The governed helper-skill source lives under `dcoir_skills/` and now supports grouped GitHub Desktop repo-update bundles, batched skill-install waves, and bounded current-state resume behavior.
-- The maintained Knowledge-doc set under `knowledge/` is supporting human-readable documentation only. It helps explain the current workflow but never overrides the control plane.
+---
 
-## Source classes that matter
+## What the knowledge set is for
 
-| Class | Examples | How to treat it |
+The knowledge set should help an operator or Gemini agent answer:
+
+- Which lane am I in?
+- What runtime or workflow should I use?
+- What does this output prove?
+- What does it not prove?
+- What is the next bounded action?
+
+Useful detail is welcome. Repetition is not. A concept should be defined once, then referenced by other pages.
+
+---
+
+## Current knowledge set
+
+The maintained set currently contains 17 pages:
+
+1. Overview and About
+2. Elastic Quick Start
+3. Local Test and Regression
+4. Tier 1 Collect Runbook
+5. Tier 2 Collect Runbook
+6. Enrichment Actions
+7. Artifact Review Guide
+8. Troubleshooting
+9. FAQ
+10. AI Prompt and Agent Design
+11. IOC Enrichment and Public Sources
+12. Gemini Runtime Bundle and Source Tree
+13. Gemini Agent Topology and Routing
+14. Gemini Output Contract and Command-Lane Discipline
+15. Gemini Attachment Set, Validation, and Maintenance
+16. Collector EXE Usage and Runtime Behavior
+17. Collector Feature and Output Contract Reference
+
+---
+
+## Source classes
+
+| Class | Examples | How to use it |
 | --- | --- | --- |
-| Control plane | Project Instructions; `project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt`; `project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt` | Authoritative for current status, governance, and what is current |
-| Governed GitHub-readable sources | `project_sources/collector/source/DCOIR_Collector.ps1`; `project_sources/collector/harness/run_DCOIR_Tests.ps1`; current prompt-pack and workflow files | Authoritative when marked current in the manifest |
-| Supporting assets | `supporting_assets/DCOIR_Collector.zip`; `supporting_assets/supporting_knowledge_docs.zip` | Important for delivery or local execution, but not control-plane authority |
-| Knowledge docs | `knowledge/Knowledge - ## - *.md` | Supporting human-readable docs only; never override the control plane |
+| Operational control | Airtable Governance Control Plane, Queue Control, Plans, Work Items, Session Checkpoints | Determines current work state and execution order |
+| Governed source | Collector source, harness, workflows, Gemini bundle source | Determines implemented behavior |
+| Supporting assets | Runtime ZIPs, delivery bundles, retained generated artifacts | Delivery or execution aids, not source of truth |
+| Knowledge docs | `knowledge/Knowledge - ## - *.md` | Human/Gemini guidance only |
 
-## What this Knowledge-doc set is for
+---
 
-- Give the operator readable explanations of the current collector, harness, workflow, enrichment, artifact-review, and AI-design posture.
-- Stay grounded in current approved sources and official vendor references where external truth is required.
-- Keep stable filenames so the docs can be refreshed as a current maintained set without changing authority rules.
-- Support GitHub-primary maintenance while still allowing a retained `supporting_knowledge_docs.zip` delivery asset when the workflow still wants that convenience bundle.
-- Reduce stale guidance drift by refreshing affected doc clusters together when the same outdated source-name or delivery-model assumption appears on multiple current pages.
+## Main system lanes
 
-## Current planned Knowledge-doc pages
+### Collector lane
+The collector produces bounded host-side evidence through collect, enrich, and cleanup-oriented actions.
 
-- Overview and About
-- Elastic Quick Start
-- Local Test and Regression
-- Tier 1 Collect Runbook
-- Tier 2 Collect Runbook
-- Enrichment Actions
-- Artifact Review Guide
-- Troubleshooting
-- FAQ
-- AI Prompt and Agent Design
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+### Harness lane
+The harness validates collector behavior from a repo-style layout and supports PS1 and optional EXE validation.
 
-## Governance and current working posture
+### Gemini lane
+The Gemini bundle uses stored-source agent instructions and maintained knowledge attachments to support analyst workflow, routing, output interpretation, and command-lane discipline.
 
-The governed DCOIR working line is GitHub-primary. Current readable source files live in the repository and remain the engineering truth for the collector runtime, the local regression harness, the Gemini stored-source tree, and the prompt-pack design line. The maintained knowledge set exists to make those working parts easier to understand, easier to use correctly, and harder to misuse when an operator is moving quickly during incident work.
+---
 
-The practical consequence is simple. When a statement affects what is current, what is allowed, what is compiled, what is packaged, or what is treated as a supported runtime behavior, the control plane and the current GitHub-readable project sources win. Knowledge docs help the operator move faster, but they do not get to silently redefine the system.
+## Common mistakes to avoid
 
-Several distinctions matter every time work starts:
-- project instructions and the current control-plane files establish what is current
-- the collector runtime and harness sources define executable behavior
-- the Gemini stored-source tree defines the editable operator-facing runtime attachment and agent source set
-- retained ZIP assets are delivery conveniences, not engineering authority
-- knowledge docs are human-readable operational guidance, not replacement source files
+- Treating knowledge docs as control-plane authority
+- Treating generated attachments as the editable source
+- Treating an EXE wrapper limitation as a collector regression
+- Treating package build success as runtime proof
+- Mixing endpoint-response syntax with local PowerShell syntax
+- Running broad collection before defining the investigative question
+- Repeating the same rule across multiple docs with slightly different wording
 
-## DCOIR operational scope
+---
 
-DCOIR sits in the narrow lane between alert triage and host-based evidence development. A DCOIR action is not the same thing as a generic incident-response script run, and it is not the same thing as an unconstrained remote shell. The collector line exists to answer bounded investigative questions by staging or retrieving host-side evidence in a disciplined way. The prompt-pack and Gemini lines exist to help analysts choose the next evidence-producing step without losing source discipline, command-lane discipline, or output consistency.
+## Maintenance rule
 
-In practice, DCOIR work frequently moves through these stages:
-1. startup and readiness checks
-2. baseline triage of existing alert or host evidence
-3. decision on whether telemetry, live response, or collection is the best next move
-4. bounded collection or enrichment when the host question cannot be answered from current evidence
-5. artifact review and evidence-grounded interpretation
-6. final synthesis, continued triage, benign disposition, malicious disposition, or unresolved closure only after real evidence paths were used
+When a behavior, workflow, contract, or attachment changes:
 
-That rhythm matters because misuse usually comes from skipping stages. The most common failures are broad collection without a clear question, treating workflow metadata as proof, mixing endpoint syntax with local syntax, or reading prompt-pack design artifacts as if they were the runtime itself.
+1. Update the owning knowledge page.
+2. Update dependent pages only by reference or minimal alignment.
+3. Update Gemini attachment copies, manifest, attachment map, and workflows when applicable.
+4. Verify that no stale duplicate wording remains.
 
-## Source classes and how to reason about them
+---
 
-Different source classes answer different questions.
+## Practical appendix
 
-### Control plane
-Control-plane files decide what is current, what role each durable file serves, and what the active working line is. They are the first place to check when a repo contains both current material and historical material.
+A good knowledge page earns its length by preventing mistakes. The best detail is usually:
 
-### Governed project sources
-Governed source files answer behavior questions. They are where the collector runtime, the harness, the Gemini bundle source, and the prompt-pack line actually live. If a quick alias, parameter, bundle rule, topology rule, or stored-source compile behavior matters, governed source is where the durable answer should come from.
+- branch conditions,
+- output interpretation boundaries,
+- command-lane distinctions,
+- what a result does not prove,
+- and when to stop or choose a narrower next step.
 
-### Supporting assets
-Supporting assets are useful, sometimes essential, but they are not automatically source of truth. A ZIP can be a valid delivery vehicle while still being secondary to the readable GitHub source that produced it.
+Verbose repetition does not improve the system. Clear ownership and clean references do.
 
-### Knowledge docs
-Knowledge docs sit in the operator-readability lane. Their job is to preserve a good explanation of current behavior, current guardrails, and current workflows in language that an operator can act on without having to reconstruct the entire repo every time.
-
-## Collector line, harness line, and Gemini line
-
-Three parallel surfaces are easy to confuse.
-
-### Collector line
-The collector line is the host-evidence engine. It is responsible for baseline collection, deeper collection, enrich-session actions, retrieval-oriented actions, and cleanup-oriented actions. It operates with explicit command lanes and should not be treated as a free-form shell framework.
-
-### Harness line
-The harness line exists to exercise the stable collector line from a local repo-style layout. It is intentionally separate from normal operator endpoint execution because regression and runtime use different command contexts even when they ultimately exercise the same collector behavior.
-
-### Gemini line
-The Gemini line is the stored-source, prompt-pack-grounded, operator-facing AI bundle. It is built from the stored runtime source tree, not from improvisational generation during ordinary packaging. It depends on detailed agent fields and a maintained attachment set so the runtime remains predictable and explicit instead of thin and vague.
-
-## Knowledge-doc expectations
-
-The maintained knowledge set is most useful when it is opinionated about the exact mistakes the operator should not make. Good knowledge docs on this line do not merely list filenames or repeat one command example. They should help someone who has never used the collector before understand:
-- which lane they are in
-- what the command will actually do
-- what outputs matter first
-- what a result does and does not prove
-- when to stop and use a narrower step instead of a broader one
-- how the Gemini design line relates to the collector line without becoming magic hidden behavior
-
-That means useful knowledge content should preserve:
-- exact runtime names when execution matters
-- command-lane separation every time endpoint and local work can be confused
-- evidence-first phrasing when an artifact is reviewed
-- explicit statements about what is workflow state versus what is case evidence
-- explicit statements about what the bundle and its attachments are for without treating them as authority
-
-## Common misunderstandings that the operator should avoid
-
-- A retained ZIP is not automatically the canonical source.
-- A knowledge page is not allowed to silently override a governed runtime file.
-- A collector action is not justified merely because the collector is available.
-- A retrieval or metadata artifact is not the same thing as host-behavior evidence.
-- A Gemini design note is not the same thing as the runtime field set that the operator will actually ship.
-- A local PowerShell example is not an endpoint response-console command until it is deliberately wrapped in the response-action lane.
-- A question that can still be answered by telemetry or live response does not automatically justify collection.
-- More text is only useful when it preserves operational meaning, branch conditions, and error prevention.
-
-## Working glossary
-
-**Baseline collect** means the broad first-pass host collection used to establish a starting evidence set.
-
-**Tier 2 collect** means a deeper host collection lane focused on additional persistence and configuration context when Tier 1 did not answer the question.
-
-**Enrichment session** means a one-action-at-a-time follow-up lane used to add bounded evidence or retrieval context after baseline review.
-
-**Retrieval-ready output** means workflow state showing that the next useful move may be getting a file or artifact that already exists rather than re-running a collector phase.
-
-**Stored-source compile** means the ordinary Gemini shipment model in which the runtime bundle is compiled from the editable source tree already checked into the repository.
-
-**Attachment set** means the shared knowledge files and related operator-readable support files that the Gemini runtime carries alongside the agent definitions.
-
-## Operator habits that scale well
-
-- Check the lane first. Decide whether the task is endpoint execution, local regression, artifact review, prompt design, or bundle maintenance.
-- Prefer the narrowest step that can answer the next real question.
-- Read workflow-state outputs as workflow-state outputs, not as verdicts.
-- Keep local examples and endpoint examples visibly different every time.
-- Update stored-source runtime text directly when the behavior or attachment set changes.
-- Refresh related explanation clusters together when a naming model or packaging rule changes, so stale guidance does not survive in neighboring pages.
-- Treat the Airtable Validation Test Cases table as the dynamic manual-testing surface for current validation work, while keeping GitHub as the engineering and packaging authority for the actual source line.
+---
 
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
-## Expanded practical appendix
-
-A good operational document earns its length by making future mistakes less likely. The most useful additional detail usually lives in branch conditions, review order, common misunderstandings, and the statements about what a result does not prove. Those are the parts that operators forget under pressure, and they are the parts that improve runtime behavior when the knowledge set is used as an attachment family.
-
