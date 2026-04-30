@@ -1,8 +1,8 @@
 ---
 name: dcoir-memory-preflight
-description: consult canonical dcoir task memory and airtable governance tables before high-friction work and after blocker recovery to avoid rediscovering known procedures or limitations.
+description: consult canonical dcoir task memory, airtable governance tables, helper-memory rows, and dynamic skill-routing rows before high-friction work and after blocker recovery. use for dcoir session-start preflight, execution-lane choice, blocker learning, github desktop workflow friction, skill-routing checks, and cases where a specialist dcoir helper skill may apply.
 ---
-<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-memory-preflight|SKILL.md -->
+<!-- skill-marker: updated-skill|20260430T170000Z|dynamic-airtable-skill-routing|source-update|dcoir-memory-preflight|SKILL.md -->
 
 # DCOIR Memory Preflight
 
@@ -116,25 +116,26 @@ Run this skill again after blocker recovery when the recovered lesson could matt
 1. Re-anchor to Project Instructions, CP-00 as a pointer, and Airtable `CONTROL-STARTUP-AIRTABLE-FIRST`; read GitHub `CP-01`/`CP-02` only for repository-source tasks.
 2. Determine whether the current use is `session_start_bootstrap`, `pre_execution`, or `post_blocker`.
 3. Classify the task family or recovered-lesson family.
-4. Identify the likely memory domain, preferring `github` first for repo work.
-5. Read the task-memory manifest and compiled lookup.
-6. Select the smallest relevant set of canonical records.
-7. If the task is GitHub-family lane selection or connector-shape selection, include `GH-PROC-007` and `GH-PROC-008` when relevant. For GitHub Desktop manual repo-update deliveries or grouped governed pushes, also pair the grouped-transaction and post-write-verification records so the delivery lane stays aligned to the same governed write posture.
-8. For `pre_execution`, summarize the recommended lane, preconditions, anti-patterns, and required verification.
-9. For `post_blocker`, classify the recovered lesson as one of:
+4. Search Airtable `dcoir-memory-preflight` for matching `SKILLROUTE-*` rows when a specialist helper skill may apply. Use rows as the live installed-skill routing catalog.
+5. Identify the likely memory domain, preferring `github` first for repo work.
+6. Read the task-memory manifest and compiled lookup when canonical GitHub task memory is relevant.
+7. Select the smallest relevant set of canonical records.
+8. If the task is GitHub-family lane selection or connector-shape selection, include `GH-PROC-007` and `GH-PROC-008` when relevant. For GitHub Desktop manual repo-update deliveries or grouped governed pushes, also pair the grouped-transaction and post-write-verification records so the delivery lane stays aligned to the same governed write posture.
+9. For `pre_execution`, summarize the recommended lane, matching SKILLROUTE rows, preconditions, anti-patterns, and required verification.
+10. For `post_blocker`, classify the recovered lesson as one of:
    - `one_off_only`
    - `reusable_procedure_candidate`
    - `reusable_limitation_candidate`
    - `reusable_failure_signature_candidate`
    - `reusable_helper_skill_or_process_doc_candidate`
-10. Stage a promotion-ready candidate instead of silently writing into canonical memory.
-11. When stateful helper skills are active, tell `dcoir-plan-tracker` and `dcoir-session-tracker` what blocker signature, failed attempt summary, successful mitigation, lesson classification, reusability notes, and flush trigger should stay buffered until flush time.
-12. Surface the next flush-check trigger when buffered state exists.
-13. Return one best next move and the consulted records that justify it.
-14. For `session_start_bootstrap`, resolve the live queue branch from Airtable before suggesting the next execution lane, using silent Airtable reads only.
-15. During `session_start_bootstrap`, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
-16. If a visible Airtable view might help during startup classification, ask the operator first instead of displaying it automatically.
-17. For `session_start_bootstrap` when the immediate task is simple resume-status or current-state reporting, keep the lane bounded to governed GitHub readable-text fetches for source authority, but let Airtable queue state decide ordinary next-work-item priority.
+11. Stage a promotion-ready candidate instead of silently writing into canonical memory.
+12. When stateful helper skills are active, tell `dcoir-plan-tracker` and `dcoir-session-tracker` what blocker signature, failed attempt summary, successful mitigation, lesson classification, reusability notes, and flush trigger should stay buffered until flush time.
+13. Surface the next flush-check trigger when buffered state exists.
+14. Return one best next move and the consulted records that justify it.
+15. For `session_start_bootstrap`, resolve the live queue branch from Airtable before suggesting the next execution lane, using silent Airtable reads only.
+16. During `session_start_bootstrap`, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
+17. If a visible Airtable view might help during startup classification, ask the operator first instead of displaying it automatically.
+18. For `session_start_bootstrap` when the immediate task is simple resume-status or current-state reporting, keep the lane bounded to governed GitHub readable-text fetches for source authority, but let Airtable queue state decide ordinary next-work-item priority.
 
 ## GitHub-family defaults
 For GitHub governed-readable-text work:
@@ -177,8 +178,8 @@ A valid flush/manicure review for this skill should surface:
 Return sections in this order:
 1. Invocation mode
 2. Task family or recovered-lesson family
-3. Memory records consulted
-4. Recommended lane or lesson classification
+3. Memory records consulted, including matching `SKILLROUTE-*` rows when skill routing is relevant
+4. Recommended lane, specialist skill, or lesson classification
 5. Preconditions and anti-patterns
 6. Required verification
 7. Buffered promotion candidate
@@ -209,6 +210,33 @@ Read pattern:
 - Keep helper-memory rows human-readable and update this same table when material reusable state changes.
 - If the connector cannot query by tableId, state the limitation and use the table name `dcoir-memory-preflight` without switching to a merged memory table.
 
+- When skill routing may apply, search this same table for `SKILLROUTE-*` rows; those rows are the live installed-skill routing catalog.
+
+## Dynamic installed-skill routing from Airtable
+
+Use Airtable `dcoir-memory-preflight` rows as the live routing catalog for installed/project helper skills. Skill names, descriptions, and trigger guidance must not be hardcoded as a point-in-time list inside this package.
+
+Routing row convention:
+- row key prefix: `SKILLROUTE-` in `memory_entry_id`
+- `consulted_records`: concise skill purpose and source basis
+- `selected_lane`: router family, such as `helper-skill-router:repo-packaging`
+- `preconditions`: when to invoke or recommend the specialist skill
+- `anti_patterns`: what not to do before checking the skill or related registry
+- `required_verification`: what proof or readback is required after using that skill
+- `buffered_candidate`: update guidance for that routing row; use this to say whether the row is dynamic and where updates should land
+
+Read pattern:
+1. Search this skill's Airtable table for likely matching `SKILLROUTE-*` rows whenever the task could involve a specialist helper skill, skill maintenance, repo packaging, artifact intake, Airtable schema work, GitHub Desktop lane tooling, validation, authority review, or session/startup routing.
+2. Use matching rows to decide whether to invoke, recommend, or pair a specialist skill with this preflight.
+3. If no matching `SKILLROUTE-*` row exists, say so and continue with the best bounded lane.
+4. When a skill is added, removed, renamed, or materially repurposed, update the Airtable `SKILLROUTE-*` row set. Do not repackage this skill solely to refresh the list of installed skills.
+5. If the operator asks to audit all skills or check whether skills are being invoked, use the `SKILLROUTE-*` rows as the live catalog and compare them with installed skill metadata and repo source.
+
+Hard boundary:
+- The package may describe how to read skill-routing rows, but must not carry a static installed-skill catalog.
+- Dynamic registries such as `Operator Tools Registry` and `SKILLROUTE-*` rows remain live discovery sources.
+- For GitHub Desktop lane tools, use `dcoir-github-desktop-lane-advisor` plus `Operator Tools Registry`; do not recreate one-off local scripts before checking those sources.
+
 ## Hard rules
 - Do not execute the change by default; this skill is for preflight reasoning.
 - Do not invent memory records that were not consulted.
@@ -225,6 +253,8 @@ Read when needed:
 - `references/github_memory_query_map.md`
 - `references/post_blocker_classification.md`
 - `references/session_buffer_flush_triggers.md`
+
+Skill routing is dynamic from Airtable `SKILLROUTE-*` rows; no static installed-skill catalog reference is bundled.
 
 ## Airtable collector and Gemini testing lane
 
