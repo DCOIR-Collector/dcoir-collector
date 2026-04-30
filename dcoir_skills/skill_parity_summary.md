@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-30T15:59:08Z
+- generated_at_utc: 2026-04-30T16:59:54Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -200,20 +200,20 @@
 
 ## dcoir-memory-preflight
 
-- source_tree_hash: `2faae9b05f32aff47d4632fcaa621d62449485cd14a2d70cd57d48fc301be293`
+- source_tree_hash: `e1f2b610006f6c9204fa951f22f1180f91dfcade1ce65b97d6a96d8b41a572f6`
 - release_zip_name: `dcoir-memory-preflight.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `9`
 
-- `SKILL.md` — `fb18a7ddc6f0840fe0f016ae6d85986b033da62b0d3d1048accbd3d738a5005f`
+- `SKILL.md` — `588cc50c7869193997b9d76a4d10af4bb50f480e433f311a52c501f6a451b634`
 - `agents/openai.yaml` — `e5e97e75c7076793addee2bc5976c54960ffc469b7b0b8a80f6d923de04325e9`
-- `assets/icon.svg` — `8936b24f674a1250d999e2c2b5901374fb4240426f32bd1ae340c352a90d617d`
+- `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_memory_workflow.md` — `0e4d8f47e30512f630bb3a1b5c0d6310ff195847bae3f3dbd03d27c32b065cee`
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
 - `references/github_memory_query_map.md` — `45a5c8c9dc4424ba30eb0cba4da780a827b2d3f1e533586878a5747bc1d30279`
 - `references/post_blocker_classification.md` — `6a17e59c1712b0d7bdb429e80b28552c8807268fef008b00bc97e443b32a23b0`
-- `references/preflight_task_families.md` — `bcabbbf545db5715252d5cb49e6e5227fb9a62a3eceb06f6c5d14bcfd3b0d7c2`
+- `references/preflight_task_families.md` — `1ce903b89599582f19eb9624c76ce1b650d9533d6be33331053c36cb3d31adb7`
 - `references/session_buffer_flush_triggers.md` — `2434194ba9c8b0da39d0ff65093f9cf96a0f08a465fad1314a5607bbaa3d79d1`
 
 ## dcoir-operator-workflow-hardener

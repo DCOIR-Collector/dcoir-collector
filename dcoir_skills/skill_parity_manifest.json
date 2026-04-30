@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-04-30T15:59:08Z",
+  "generated_at_utc": "2026-04-30T16:59:54Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -608,17 +608,17 @@
     },
     "dcoir-memory-preflight": {
       "source_root": "dcoir-memory-preflight",
-      "source_tree_hash": "2faae9b05f32aff47d4632fcaa621d62449485cd14a2d70cd57d48fc301be293",
+      "source_tree_hash": "e1f2b610006f6c9204fa951f22f1180f91dfcade1ce65b97d6a96d8b41a572f6",
       "release_zip_name": "dcoir-memory-preflight.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 9,
-      "total_bytes": 28792,
+      "total_bytes": 31238,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "fb18a7ddc6f0840fe0f016ae6d85986b033da62b0d3d1048accbd3d738a5005f",
-          "size_bytes": 16030
+          "sha256": "588cc50c7869193997b9d76a4d10af4bb50f480e433f311a52c501f6a451b634",
+          "size_bytes": 18980
         },
         {
           "path": "agents/openai.yaml",
@@ -627,8 +627,8 @@
         },
         {
           "path": "assets/icon.svg",
-          "sha256": "8936b24f674a1250d999e2c2b5901374fb4240426f32bd1ae340c352a90d617d",
-          "size_bytes": 1738
+          "sha256": "e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b",
+          "size_bytes": 420
         },
         {
           "path": "references/airtable_memory_workflow.md",
@@ -652,8 +652,8 @@
         },
         {
           "path": "references/preflight_task_families.md",
-          "sha256": "bcabbbf545db5715252d5cb49e6e5227fb9a62a3eceb06f6c5d14bcfd3b0d7c2",
-          "size_bytes": 752
+          "sha256": "1ce903b89599582f19eb9624c76ce1b650d9533d6be33331053c36cb3d31adb7",
+          "size_bytes": 1566
         },
         {
           "path": "references/session_buffer_flush_triggers.md",
