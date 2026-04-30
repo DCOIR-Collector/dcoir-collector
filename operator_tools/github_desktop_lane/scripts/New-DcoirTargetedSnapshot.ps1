@@ -30,7 +30,7 @@ $log = Join-Path $OutputDir "${name}_$stamp.log.txt"
 
 function Write-Log {
     param([AllowEmptyString()][string]$Text)
-    $Text | Tee-Object -FilePath $log -Append
+    $Text | Tee-Object -FilePath $log -Append | Out-Null
 }
 
 function Invoke-GitLogged {
@@ -77,7 +77,9 @@ function Copy-RepoPath {
 
     if (Test-Path -LiteralPath $src -PathType Container) {
         New-Item -ItemType Directory -Force -Path $dst | Out-Null
-        Copy-Item -LiteralPath (Join-Path $src '*') -Destination $dst -Recurse -Force
+        Get-ChildItem -LiteralPath $src -Force | ForEach-Object {
+            Copy-Item -LiteralPath $_.FullName -Destination $dst -Recurse -Force
+        }
     }
     else {
         Copy-Item -LiteralPath $src -Destination $dst -Force
@@ -101,8 +103,9 @@ try {
 
     Write-Log ""
     Write-Log "== DIRTY TREE CHECK BEFORE PULL =="
-    $dirty = Invoke-GitLogged @('status', '--porcelain')
+    $dirty = @(Invoke-GitLogged @('status', '--porcelain'))
     if ($dirty.Count -gt 0) {
+        foreach ($line in $dirty) { Write-Log "DIRTY: $line" }
         throw "Working tree is not clean before snapshot. Commit, stash, or ask for recovery before continuing."
     }
 
@@ -113,8 +116,9 @@ try {
 
     Write-Log ""
     Write-Log "== DIRTY TREE CHECK AFTER PULL =="
-    $dirtyAfter = Invoke-GitLogged @('status', '--porcelain')
+    $dirtyAfter = @(Invoke-GitLogged @('status', '--porcelain'))
     if ($dirtyAfter.Count -gt 0) {
+        foreach ($line in $dirtyAfter) { Write-Log "DIRTY: $line" }
         throw "Working tree is not clean after pull. Stop and upload log."
     }
 
