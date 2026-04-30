@@ -1,0 +1,17 @@
+{
+  "request_id": "test_apply_001",
+  "allowed_roots": [
+    "chatgpt_staging/testdata/"
+  ],
+  "files": [
+    {
+      "path": "chatgpt_staging/testdata/source/sample_alpha.txt",
+      "source": "files/chatgpt_staging/testdata/source/sample_alpha.txt"
+    },
+    {
+      "path": "chatgpt_staging/testdata/source/sample_beta.md",
+      "source": "files/chatgpt_staging/testdata/source/sample_beta.md"
+    }
+  ],
+  "notes": "Safe apply-in test. Only paths under chatgpt_staging/testdata/ are allowed."
+}
