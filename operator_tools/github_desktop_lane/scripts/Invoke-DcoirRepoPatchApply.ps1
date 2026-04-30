@@ -14,7 +14,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ToolVersion = "2026-05-01.1"
+$ToolVersion = "2026-05-01.2"
 
 if (-not $RepoRoot) { throw "DCOIR_REPO_ROOT is not set. Set it to your local dcoir-collector repo root or pass -RepoRoot." }
 if (-not (Test-Path -LiteralPath $RepoRoot -PathType Container)) { throw "Repo root not found: $RepoRoot" }
@@ -37,7 +37,9 @@ $Warnings = New-Object System.Collections.Generic.List[string]
 
 function Write-Log {
     param([AllowEmptyString()][string]$Text)
-    $Text | Tee-Object -FilePath $logPath -Append | Out-Null
+    Write-Host $Text
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::AppendAllText($logPath, ($Text + [Environment]::NewLine), $utf8NoBom)
 }
 
 function ConvertTo-NativeArgumentString {

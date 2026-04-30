@@ -29,7 +29,9 @@ $log = Join-Path $OutputDir "${safeName}_$stamp.log.txt"
 
 function Write-Log {
     param([AllowEmptyString()][string]$Text)
-    $Text | Tee-Object -FilePath $log -Append | Out-Null
+    Write-Host $Text
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::AppendAllText($log, ($Text + [Environment]::NewLine), $utf8NoBom)
 }
 
 function ConvertTo-NativeArgumentString {
@@ -146,7 +148,13 @@ try {
         Copy-RepoPath -RelativePath ([string]$rel)
     }
     if (Test-Path -LiteralPath $zip) { Remove-Item -LiteralPath $zip -Force }
-    Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zip -Force
+    $friendlyZipScript = Join-Path $PSScriptRoot "New-DcoirChatGPTFriendlyZip.ps1"
+    if (Test-Path -LiteralPath $friendlyZipScript -PathType Leaf) {
+        . $friendlyZipScript
+        New-DcoirChatGPTFriendlyZip -SourceFolder $stage -OutputZip $zip -IndexTitle "DCOIR targeted snapshot" -NormalizeTextEncoding | Out-Null
+    } else {
+        Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zip -Force
+    }
     Remove-Item -LiteralPath $tmp -Recurse -Force -ErrorAction SilentlyContinue
 
     Write-Log ""

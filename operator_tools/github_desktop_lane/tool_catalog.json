@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-01.1",
+  "catalog_version": "2026-05-01.2",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/",
     "registry_source": "airtable Operator Tools Registry",
@@ -26,7 +26,7 @@
       "tool_family": "snapshot_bundle",
       "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirTargetedSnapshot.ps1",
       "output_pattern": "*_snapshot_*.zip",
-      "version_or_hash": "2026-05-01.1",
+      "version_or_hash": "2026-05-01.2",
       "notes": "Uses System.Diagnostics.Process for git calls so native stderr/progress is logged without becoming a PowerShell error. Directory copies recurse. Missing requested paths are hard failures."
     },
     {
@@ -35,7 +35,7 @@
       "tool_family": "snapshot_bundle",
       "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirTextOnlyRepoSnapshot.ps1",
       "output_pattern": "dcoir_text_only_repo_snapshot_*.zip; dcoir_text_only_repo_snapshot_*.log.txt; dcoir_text_only_repo_snapshot_*.manifest.json",
-      "version_or_hash": "2026-05-01.1",
+      "version_or_hash": "2026-05-01.2",
       "notes": "Read-only full-repo text snapshot for ChatGPT review. Defaults to DCOIR_REPO_ROOT and DCOIR_DOWNLOADS_DIR, excludes common binary extensions and generated/dependency directories, binary-sniffs remaining files, and preserves repo-relative paths."
     },
     {
@@ -44,8 +44,17 @@
       "tool_family": "repo_repair_apply",
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirRepoPatchApply.ps1",
       "output_pattern": "dcoir_repo_patch_apply_*.log.txt; dcoir_repo_patch_apply_*.result.json",
+      "version_or_hash": "2026-05-01.2",
+      "notes": "Manifest-driven repo patch/apply helper for ChatGPT-provided payloads. Supports payload root detection, wrapper-root stripping, explicit repo-relative copy maps, git rm deletion lists, allowed target roots, pre/post hash checks, PowerShell 5.1 compatibility, logs, and result JSON. Writes UTF-8 logs as of 2026-05-01.2."
+    },
+    {
+      "tool_id": "DCOIR-CHATGPT-FRIENDLY-ZIP",
+      "tool_name": "DCOIR ChatGPT-Friendly ZIP Builder",
+      "tool_family": "upload_packaging",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirChatGPTFriendlyZip.ps1",
+      "output_pattern": "*.chatgpt.zip or caller-defined ZIP path",
       "version_or_hash": "2026-05-01.1",
-      "notes": "Manifest-driven repo patch/apply helper for ChatGPT-provided payloads. Supports payload root detection, wrapper-root stripping, explicit repo-relative copy maps, git rm deletion lists, allowed target roots, pre/post hash checks, PowerShell 5.1 compatibility, logs, and result JSON."
+      "notes": "Reusable ZIP helper for DCOIR diagnostics and upload bundles. Skips hidden/system metadata, avoids wrapper-root junk, adds diagnostic_index.md/captured_files.json/zip_manifest.json, and can normalize text outputs to UTF-8 in the staged ZIP copy."
     }
   ]
 }

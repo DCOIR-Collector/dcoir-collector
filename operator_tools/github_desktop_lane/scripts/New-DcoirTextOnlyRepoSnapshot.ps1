@@ -38,7 +38,7 @@ $manifestPath = Join-Path $OutputDir "${safeName}_$stamp.manifest.json"
 $included = New-Object System.Collections.Generic.List[object]
 $skipped = New-Object System.Collections.Generic.List[object]
 
-function Write-Log { param([AllowEmptyString()][string]$Text) $Text | Tee-Object -FilePath $logPath -Append | Out-Null }
+function Write-Log { param([AllowEmptyString()][string]$Text) Write-Host $Text; $utf8NoBom = New-Object System.Text.UTF8Encoding($false); [System.IO.File]::AppendAllText($logPath, ($Text + [Environment]::NewLine), $utf8NoBom) }
 function Add-Skip {
     param([string]$RelativePath, [string]$Reason, [Nullable[Int64]]$Size = $null)
     $skipped.Add([pscustomobject]@{ path = $RelativePath; reason = $Reason; size_bytes = $Size }) | Out-Null
@@ -137,10 +137,16 @@ try {
         $included.Add([pscustomobject]@{ path = $rel; size_bytes = $file.Length; extension = $ext }) | Out-Null
         Write-Log "INCLUDE: $rel"
     }
-    Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zipPath -Force
+    $friendlyZipScript = Join-Path $PSScriptRoot "New-DcoirChatGPTFriendlyZip.ps1"
+    if (Test-Path -LiteralPath $friendlyZipScript -PathType Leaf) {
+        . $friendlyZipScript
+        New-DcoirChatGPTFriendlyZip -SourceFolder $stage -OutputZip $zipPath -IndexTitle "DCOIR text-only repo snapshot" -NormalizeTextEncoding | Out-Null
+    } else {
+        Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zipPath -Force
+    }
     $manifest = [ordered]@{
         tool = "New-DcoirTextOnlyRepoSnapshot.ps1"
-        tool_version = "2026-05-01.1"
+        tool_version = "2026-05-01.2"
         created_at = (Get-Date -Format o)
         repo_root = $RepoRoot
         output_zip = $zipPath
