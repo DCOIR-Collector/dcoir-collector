@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-30T03:32:10Z
+- generated_at_utc: 2026-04-30T15:59:08Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -132,6 +132,19 @@
 - `references/policy_update_candidate_template.md` — `464b107c6fb1cf59a9945b8542ed99077425d7788b3cb6e90c04cc9ca45131e7`
 - `references/session_buffer_workflow.md` — `fbc6e70a4df5371b73d00047a357dcc7b91de3cdabc452f4058ab677dff9933b`
 - `scripts/render_decision_policy_memory.py` — `24128bd974139de9f3be97f9bec5eb4d23b685194d6ea4dba3a21e8fbef223a2`
+
+## dcoir-github-desktop-lane-advisor
+
+- source_tree_hash: `7f73834a899310f6e2b03301abe6818556912095108c8f1e87b58f568cc34de6`
+- release_zip_name: `dcoir-github-desktop-lane-advisor.zip`
+- release_zip_hash: `not-recorded`
+- status: `verified`
+- file_count: `4`
+
+- `SKILL.md` — `e9c04a9f99e3b0b569369f8c561325bed1d35869febebb42b60a4d056d56a23d`
+- `agents/openai.yaml` — `2af343b2b2f9cad70647ed4d95f7462bb0fa7aeecbfc61210d71681f94354969`
+- `references/github_desktop_lane_tool_families.md` — `0d07053bac4a0463232fbb505f9e5c7e4353d97313b457bae090d76782634d20`
+- `references/operator_tools_registry_contract.md` — `71e50155b138885ecb8876514b4d18b08127d7ca73780f28ad92688304107536`
 
 ## dcoir-knowledge-doc-maintainer
 
