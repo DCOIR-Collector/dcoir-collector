@@ -1,7 +1,7 @@
 {
   "bundle_name": "DCOIR_Gemini_Email_Build_Bundle",
-  "bundle_version": "3_0_3",
-  "top_level_folder": "DCOIR_Gemini_Email_Build_Bundle_3_0_3",
+  "bundle_version": "3_0_4",
+  "top_level_folder": "DCOIR_Gemini_Email_Build_Bundle_3_0_4",
   "source_strategy": "stored_source_compile",
   "authoritative_runtime_source": "project_sources/gemini/bundle_source",
   "behavioral_authority": [
@@ -62,6 +62,8 @@
     "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 12 - Gemini Runtime Bundle and Source Tree.md.txt",
     "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 13 - Gemini Agent Topology and Routing.md.txt",
     "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline.md.txt",
-    "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md.txt"
+    "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md.txt",
+    "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md.txt",
+    "02_PRIME_AGENT_ATTACHMENTS/Knowledge - 17 - Collector Feature and Output Contract Reference.md.txt"
   ]
 }
