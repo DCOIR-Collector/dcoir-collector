@@ -131,7 +131,6 @@ jobs:
             'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt',
             'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt',
             'project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt',
-            'project_sources/gemini/tools/sync_dcoir_gemini_knowledge_attachments.py',
             'project_sources/gemini/tools/build_dcoir_gemini_release.py',
             'project_sources/gemini/tools/validate_dcoir_gemini_bundle.py',
             'project_sources/gemini/tools/validate_dcoir_gemini_behavior_scenarios.py',

@@ -87,7 +87,6 @@ jobs:
             'knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md',
             'knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md',
             'knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md',
-            'project_sources/gemini/tools/sync_dcoir_gemini_knowledge_attachments.py',
             'project_sources/gemini/tools/validate_dcoir_gemini_bundle.py',
             'project_sources/gemini/tools/compile_dcoir_gemini_bundle.py',
             'project_sources/gemini/tools/build_dcoir_gemini_release.py'
