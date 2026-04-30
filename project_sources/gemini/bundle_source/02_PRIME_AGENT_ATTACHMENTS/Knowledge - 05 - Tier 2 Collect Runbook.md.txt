@@ -1,212 +1,89 @@
 # Knowledge - 05 - Tier 2 Collect Runbook
 
-_Deeper collection workflow for additional persistence and configuration checks_
+_Deeper collection workflow for persistence and configuration context_
 
-**Summary:** Deeper collection posture for persistence, registry, firewall, WMI, and share or session context when baseline review left a real unresolved question.
+**Summary:** Use Tier 2 only when Tier 1 or current evidence leaves a specific unresolved question that requires deeper host context.
 
-| Source class | Authoritative basis |
+---
+
+## When to use Tier 2
+
+Use Tier 2 when:
+
+- Tier 1 exposed persistence, service, task, registry, WMI, identity, firewall, share, or session questions;
+- the next question needs deeper host configuration context;
+- retrieval or a single enrichment action is not already the narrower answer.
+
+Do not use Tier 2 as a generic “do more” button.
+
+---
+
+## Entry points
+
+| Lane | Command |
 | --- | --- |
-| Project sources | project_sources/collector/source/DCOIR_Collector.ps1; project_sources/LOG-01_DCOIR_Todo_Log.txt |
-| Official external sources | Not required for this page |
-| Scope note | The quick alias collect-t2 sets Mode=Collect and Tier=T2, and uses a longer default time window than Tier 1. |
+| Local quick alias | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t2` |
+| Local explicit form | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T2 -Hours 72` |
+| Elastic endpoint form | `execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick collect-t2" --comment "Run DCOIR Tier 2 collect"` |
 
-## Collector entry points
+For optional EXE usage, use Knowledge 16.
 
-| Approach | Command |
-| --- | --- |
-| Local collector quick alias | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t2 |
-| Explicit parameter form | powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T2 -Hours 72 |
-| Elastic endpoint form | execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick collect-t2" --comment "Run DCOIR Tier 2 collect" |
+---
 
 ## What Tier 2 adds
 
-- Additional registry checks such as Image File Execution Options, Winlogon, and LSA paths.
-- WMI subscription and persistence inspection.
-- Network-share, network-session, and firewall-profile checks.
-- A longer default time window than the standard Tier 1 baseline run.
+Tier 2 adds deeper context around:
 
-## When to choose Tier 2
+- registry persistence, including IFEO, Winlogon, and LSA-related paths;
+- WMI subscription and persistence surfaces;
+- network share and session context;
+- firewall profile context;
+- longer time horizon than Tier 1.
 
-- Baseline review showed suspicious persistence, service, task, or identity activity that needs deeper context.
-- You need more host configuration detail before deciding the best enrichment step.
-- The case warrants additional persistence hunting without immediately retrieving files.
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+---
 
-## Tier 2 collection posture
+## Before running
 
-Tier 2 exists for cases where the standard baseline was helpful but not sufficient. It should be thought of as a deeper context lane, not as a reflexive “do more” button. The operator should enter Tier 2 because the baseline established a real unresolved question around persistence, registry configuration, WMI behavior, firewall posture, network shares or sessions, or similarly deeper host context.
+Confirm:
 
-## What Tier 2 adds beyond Tier 1
+- the exact Tier 1 or alert finding that justifies deeper collection;
+- which deeper evidence class is expected to answer the question;
+- whether retrieval or enrichment would answer it faster;
+- endpoint vs local lane;
+- output preservation needs.
 
-The current stable description of Tier 2 emphasizes additional persistence and configuration context. That includes:
-- more registry depth, including Image File Execution Options, Winlogon, and LSA-related paths
-- WMI subscription and persistence inspection
-- network-share and network-session context
-- firewall profile context
-- a longer default time horizon than the Tier 1 baseline
+---
 
-## The right reasons to choose Tier 2
+## How to read Tier 2 output
 
-Tier 2 is a good choice when:
-- baseline review revealed suspicious persistence indicators that need confirmation or disproof
-- service, task, or identity findings suggest a deeper configuration review is needed
-- the operator needs more host configuration detail before deciding which enrichment or retrieval lane is justified
-- the case warrants additional persistence hunting without yet jumping to broad file retrieval or speculative artifact pulls
+Read Tier 2 as deeper context, not automatic escalation.
 
-Tier 2 is not a good choice when:
-- the unresolved question is really about one narrow log or process detail that a targeted enrichment action can answer faster
-- a retrieval-ready artifact already exists and should be read first
-- the operator has not yet performed the baseline review and is simply assuming deeper is better
+Ask:
 
-## Reading Tier 2 output correctly
+- Which deeper surface produced a meaningful signal?
+- Did it support or weaken the leading explanation?
+- Does it justify retrieval, enrichment, artifact review, or stopping?
+- Is the finding evidence of use, or only evidence that a mechanism exists?
 
-Tier 2 output should be read as deeper context, not as automatic escalation. The operator should ask:
-- which deeper persistence or configuration areas actually produced meaningful signals
-- whether those signals materially changed the leading benign or malicious explanation
-- whether the result supports a narrower next step such as targeted retrieval, artifact review, or one bounded enrichment action
-- whether the result instead weakens the need for further collection by clarifying that the suspicious-looking baseline element was expected or benign
-
-## Common Tier 2 review targets
-
-### Registry persistence surfaces
-Useful when the baseline raised questions about startup behavior, interception behavior, or credential/security context tied to host configuration.
-
-### WMI persistence surfaces
-Useful when the case suggests event-driven persistence, execution triggered by WMI mechanisms, or host behavior that ordinary process review did not settle.
-
-### Share and session context
-Useful when the case includes questions around access patterns, lateral movement possibilities, or unexpected network interactions that need deeper host-side context.
-
-### Firewall profile context
-Useful when the operator needs to understand whether the host’s security posture or allowed behavior materially changes the interpretation of the observed activity.
-
-## Tier 2 and evidence discipline
-
-Tier 2 often exposes configuration artifacts that are easy to overread. A suspicious-looking path, a registry key, or a persistence-capable mechanism is not automatically evidence of malicious use. The operator still has to preserve the same discipline as elsewhere: observed configuration fact versus inference, benign explanation versus suspicious explanation, what the artifact proves versus what it merely allows, and whether the current case evidence actually ties the configuration finding to the alert under review.
+---
 
 ## Common Tier 2 mistakes
 
-- using Tier 2 because the baseline produced a lot of material and the operator wants one more big run instead of a bounded next step
-- assuming deeper registry or WMI coverage is itself evidence of compromise
-- failing to name the specific unresolved question before running the deeper tier
-- moving to cleanup or another broad run without actually reading the deeper outputs
-- skipping artifact retrieval that the Tier 2 results already made clearly useful
+- running Tier 2 before reading Tier 1;
+- treating persistence-capable configuration as proof of malicious use;
+- running broader collection when one artifact should be retrieved;
+- cleaning up before reviewing deeper outputs;
+- failing to name the unresolved question.
 
-## Tier 2 decision checklist
+---
 
-- What exact baseline finding drove the need for deeper collection?
-- Which deeper evidence class is expected to answer the question?
-- Is the longer window helpful or just noisier?
-- Does the resulting output materially support or weaken the leading explanation?
-- Is the next step now targeted retrieval, targeted enrichment, ordinary artifact review, or no more collection?
-- Would a narrower move have answered the same question faster?
+## Completion checklist
+
+- Driving finding named?
+- Deeper evidence class identified?
+- Output reviewed against the question?
+- Next move selected: retrieval, enrichment, review, stop, or additional collection?
+
+---
 
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
-## Expanded operational appendix
-
-The collector line is easiest to misuse when the operator treats it like a generic evidence vacuum. The safer posture is to let the next real investigative question drive the next collector choice. That principle applies in baseline collection, deeper collection, enrichment, retrieval, and cleanup. A bounded question produces bounded output. A vague question produces vague output and more review burden.
-
-A good DCOIR habit is to ask the same four questions after every bounded action: what did this step actually establish, what did it not establish, what artifact or review surface now matters most, and what narrower next step is justified instead of a broader one. Repeating those questions is not filler. It is how the workflow stays disciplined and useful.
-
