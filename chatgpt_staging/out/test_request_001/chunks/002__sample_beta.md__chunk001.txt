@@ -1,0 +1,13 @@
+original_path: chatgpt_staging/testdata/source/sample_beta.md
+blob_sha: b40f944c2c440873f1bc158f5633e9528a5e64a2
+sha256: 6fba440c7fb2f2ceed243b7c69ee82f8660faf45f0e54650a136b756c63520c5
+chunk: 1
+line_start: 1
+line_end: 6
+---
+# sample_beta
+
+This Markdown file is safe test data for the ChatGPT GitHub Staging Lane.
+
+- Original value: beta
+- Expected update target: beta-updated
