@@ -17,7 +17,7 @@ DCOIR uses an Airtable-first operational model with GitHub as governed source/re
 | Airtable Plans / Work Items / Session Checkpoints | Live execution and resume state |
 | GitHub repo | Source/readback for collector, harness, Gemini bundle, workflows, and promoted history |
 | `knowledge/*.md` | Maintained human-readable knowledge source |
-| Gemini `.md.txt` attachments | Runtime attachment copies synced from `knowledge/*.md` |
+| Gemini `.md.txt` attachments | Runtime attachment files generated in the release ZIP from `knowledge/*.md` |
 
 Knowledge docs explain the system. They do not override Airtable live state, Project Instructions, or governed GitHub source.
 

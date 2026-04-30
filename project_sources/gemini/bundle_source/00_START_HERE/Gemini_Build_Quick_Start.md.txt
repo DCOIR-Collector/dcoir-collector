@@ -58,5 +58,5 @@ Every serious review of the current bundle should explicitly cover:
 - false-positive-aware handling of known enterprise products
 - SINGULAR TRIAGE COMMAND consistency
 - leadership-writeup behavior
-- attachment-map, manifest, and maintained-knowledge synchronization
-- ordinary sync/build behavior when the shared knowledge set changes
+- attachment-map, manifest, and maintained-knowledge alignment
+- ordinary direct generation/build behavior when the shared knowledge set changes

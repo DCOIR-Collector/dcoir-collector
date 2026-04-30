@@ -3,7 +3,7 @@
 Purpose
 - This folder is the governed editable runtime source tree for the major-version Gemini bundle.
 - Edit these files directly when the accepted runtime wording changes.
-- Compile the bundle from this tree after the maintained knowledge sync, validation, and compile path runs.
+- Compile the bundle from this tree after the maintained knowledge, validation, and direct package-time attachment generation checks run.
 
 Major-version topology rule
 - `Gemini_Bundle_Source_Manifest.json.txt` is the explicit source of topology truth.
@@ -13,8 +13,8 @@ Major-version topology rule
 Knowledge-attachment rule
 - The manifest also governs the required shared knowledge attachment set.
 - The maintained `knowledge/*.md` working set is the editable source of truth for those attachments.
-- The attachment set now includes fifteen knowledge pages, including four Gemini-runtime-specific pages that must stay aligned with the attachment map, the maintained knowledge set, and the validator surfaces.
-- Ordinary shipment should fail if the maintained knowledge set, the synced attachment set, and the manifest inventory drift apart.
+- The attachment set now includes seventeen knowledge pages that must stay aligned with the attachment map, the maintained knowledge set, and the validator surfaces.
+- Ordinary shipment should fail if the maintained knowledge set, the generated attachment inventory, and the manifest inventory drift apart.
 
 Current major-version focus
 - The parent and sub-agents are intentionally more verbose than earlier versions.

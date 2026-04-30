@@ -327,11 +327,11 @@ def build_dir() -> Path:
 
 
 def validate_script() -> Path:
-    return repo_root() / "project_sources" / "validate_DCOIR_Run.ps1"
+    return repo_root() / "project_sources" / "collector" / "harness" / "validate_DCOIR_Run.ps1"
 
 
 def harness_script() -> Path:
-    return repo_root() / "project_sources" / "run_DCOIR_Tests.ps1"
+    return repo_root() / "project_sources" / "collector" / "harness" / "run_DCOIR_Tests.ps1"
 
 
 def collector_script_path() -> Path:
@@ -345,10 +345,10 @@ def live_zip_path() -> Path:
 def required_repo_paths() -> List[Path]:
     root = repo_root()
     return [
-        root / "project_sources" / "DCOIR_Collector.ps1",
-        root / "project_sources" / "collector_parts" / "DCOIR_Collector.05_Main_Entry.ps1",
-        root / "project_sources" / "generation_validation" / "build_dcoir_collector_runtime_package.py",
-        root / "project_sources" / "generation_validation" / "restore_dcoir_collector_runtime_zip.py",
+        root / "project_sources" / "collector" / "source" / "DCOIR_Collector.ps1",
+        root / "project_sources" / "collector" / "source" / "parts" / "DCOIR_Collector.05_Main_Entry.ps1",
+        root / "project_sources" / "collector" / "tools" / "build_dcoir_collector_runtime_package.py",
+        root / "project_sources" / "collector" / "tools" / "restore_dcoir_collector_runtime_zip.py",
         root / "supporting_assets" / "DCOIR_Collector.zip",
     ]
 
@@ -426,7 +426,7 @@ def validate_package(step_id: str = "package_validate") -> None:
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
-    script = repo_root() / "project_sources" / "generation_validation" / "validate_dcoir_collector_runtime_package.py"
+    script = repo_root() / "project_sources" / "collector" / "tools" / "validate_dcoir_collector_runtime_package.py"
     cmd = [sys.executable, str(script), "--source-dir", str(repo_root()), "--output-dir", str(out)]
     result = run_command(step_id, cmd, repo_root(), "Validating the current package rules.")
     if result["exit_code"] == 0:
@@ -439,7 +439,7 @@ def validate_package(step_id: str = "package_validate") -> None:
 def build_package(step_id: str = "package_build") -> None:
     out = build_dir()
     out.mkdir(parents=True, exist_ok=True)
-    script = repo_root() / "project_sources" / "generation_validation" / "build_dcoir_collector_runtime_package.py"
+    script = repo_root() / "project_sources" / "collector" / "tools" / "build_dcoir_collector_runtime_package.py"
     cmd = [sys.executable, str(script), "--source-dir", str(repo_root()), "--output-dir", str(out)]
     result = run_command(step_id, cmd, repo_root(), "Building the delivery package.")
     if result["exit_code"] == 0 and newest_delivery_zip().exists():
@@ -473,7 +473,7 @@ def restore_and_stage_runtime() -> None:
         shutil.rmtree(sdir)
     sdir.mkdir(parents=True, exist_ok=True)
 
-    restore_script = repo_root() / "project_sources" / "generation_validation" / "restore_dcoir_collector_runtime_zip.py"
+    restore_script = repo_root() / "project_sources" / "collector" / "tools" / "restore_dcoir_collector_runtime_zip.py"
     delivery_zip = newest_delivery_zip()
     base_runtime_zip = repo_root() / "supporting_assets" / "DCOIR_Collector.zip"
     restored_zip = sdir / "DCOIR_Collector_runtime_for_harness.zip"

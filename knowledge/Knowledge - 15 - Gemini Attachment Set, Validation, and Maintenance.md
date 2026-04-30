@@ -2,7 +2,7 @@
 
 _Gemini knowledge attachment inventory and maintenance rules_
 
-**Summary:** The Gemini attachment set is synced from maintained `knowledge/*.md` files and must stay aligned with the manifest, attachment map, and workflow checks.
+**Summary:** The Gemini attachment set is generated at package time from maintained `knowledge/*.md` files and must stay aligned with the manifest, attachment map, and workflow checks.
 
 ---
 
@@ -38,7 +38,7 @@ The maintained set contains 17 knowledge pages. During Gemini release packaging,
 | 12 | Gemini Runtime Bundle and Source Tree | Stored-source bundle layout |
 | 13 | Gemini Agent Topology and Routing | Agent role/routing summary |
 | 14 | Gemini Output Contract and Command-Lane Discipline | Gemini response format and command lanes |
-| 15 | Gemini Attachment Set, Validation, and Maintenance | Attachment inventory and sync workflow |
+| 15 | Gemini Attachment Set, Validation, and Maintenance | Attachment inventory and direct generation rules |
 | 16 | Collector EXE Usage and Runtime Behavior | Optional EXE behavior and EXE-specific validation |
 | 17 | Collector Feature and Output Contract Reference | Feature map, parameters, output contract, and validation map |
 
@@ -51,7 +51,7 @@ Knowledge 16 is the owner for optional EXE usage and runtime behavior. Knowledge
 When the knowledge set changes:
 
 1. Update maintained `knowledge/*.md` source.
-2. Sync `.md.txt` attachment copies.
+2. Let the build regenerate `.md.txt` attachment files from the maintained sources.
 3. Update the attachment map.
 4. Update the manifest required-files list.
 5. Update GitHub Actions required-surface checks.
@@ -64,7 +64,7 @@ When the knowledge set changes:
 After attachment changes, verify:
 
 - every required attachment exists;
-- maintained source and attachment copies match;
+- maintained sources and generated attachment inventory match;
 - manifest and attachment map include the same inventory;
 - workflow checks enforce the current count and required files;
 - agent instructions reference the correct attachment surfaces;

@@ -43,7 +43,7 @@ Generated or packaged outputs are delivery artifacts, not the editing surface.
 
 After Gemini source changes, verify:
 
-- source files match generated/attachment copies;
+- generated attachment inventory matches maintained `knowledge/*.md` sources;
 - manifest required files include the current inventory;
 - attachment map explains each attachment;
 - workflow required-surface checks match the inventory;
@@ -60,7 +60,7 @@ The bundle does not create unavailable retrieval or connector capability. Agent 
 ## Cross-reference boundaries
 
 - Use this page for source-tree layout and compile workflow.
-- Use Knowledge 15 for attachment inventory and sync rules.
+- Use Knowledge 15 for attachment inventory and direct package-time generation rules.
 - Use Knowledge 13 for agent topology.
 - Use Knowledge 14 for Gemini output and command-lane discipline.
 

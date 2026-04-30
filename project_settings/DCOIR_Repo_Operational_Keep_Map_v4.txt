@@ -9,7 +9,7 @@ Always keep unless current authority changes
 - AGENTS.md when present and current.
 - README.md and current folder README surfaces.
 - Current governed source files required by active Airtable plans or Repo Surface Registry.
-- project_sources/DCOIR_Collector.ps1 unless a source-authority review changes the collector source role.
+- project_sources/collector/source/DCOIR_Collector.ps1 unless a source-authority review changes the collector source role.
 - project_sources prompt-pack / Gemini source folders that active plan state or source review keeps current.
 - dcoir_skills/ current governed helper-skill source folders.
 - dcoir_skills/project_discovery_contract.json when still used for repo source-role discovery.

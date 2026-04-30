@@ -11,7 +11,7 @@ _Operator entry point for the maintained DCOIR knowledge set_
 - Airtable live state controls current queue, work items, plans, checkpoints, and resume order.
 - GitHub is governed source/readback for collector, harness, Gemini bundle, workflow, and promoted repository history.
 - `knowledge/*.md` files are maintained human-readable guidance.
-- `project_sources/gemini/bundle_source/02_PRIME_AGENT_ATTACHMENTS/*.md.txt` files are runtime copies synced from `knowledge/*.md`.
+- `project_sources/gemini/bundle_source/02_PRIME_AGENT_ATTACHMENTS/*.md.txt` files are generated runtime files created from `knowledge/*.md` during release packaging.
 - Knowledge docs do not override Project Instructions, Airtable control-plane rows, or implemented source behavior.
 
 ---
@@ -34,7 +34,7 @@ _Operator entry point for the maintained DCOIR knowledge set_
 | Understand Gemini source tree | `knowledge/Knowledge - 12 - Gemini Runtime Bundle and Source Tree.md` | Owns stored-source bundle layout. |
 | Understand agent roles | `knowledge/Knowledge - 13 - Gemini Agent Topology and Routing.md` | Owns agent topology summary. |
 | Control Gemini output and command format | `knowledge/Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline.md` | Owns Gemini response and command-lane discipline. |
-| Maintain Gemini attachments | `knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md` | Owns attachment inventory and sync workflow. |
+| Maintain Gemini attachments | `knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md` | Owns attachment inventory and direct package-time generation rules. |
 | Use or interpret the optional EXE | `knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md` | Owns EXE-specific behavior and validation. |
 | Look up collector features and output contract | `knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md` | Owns feature map, parameters, output contract, and validation map. |
 
@@ -45,9 +45,9 @@ _Operator entry point for the maintained DCOIR knowledge set_
 When a knowledge source changes, check the dependent surfaces before commit:
 
 1. source file under `knowledge/`;
-2. mirrored Gemini attachment under `02_PRIME_AGENT_ATTACHMENTS/`;
+2. generated Gemini attachment inventory under `02_PRIME_AGENT_ATTACHMENTS/` at release-build time;
 3. `Agent_Attachment_Map.md.txt` if purpose or inventory changed;
 4. `Gemini_Bundle_Source_Manifest.json` if required inventory changed;
 5. GitHub Actions validation surfaces if required-file or count checks changed.
 
-Do not edit Gemini attachment copies as the primary source. Sync them from the matching `knowledge/*.md` file.
+Do not edit Gemini attachment copies as the primary source. The build generates them from the matching `knowledge/*.md` file.

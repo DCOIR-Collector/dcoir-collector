@@ -8,7 +8,7 @@ For the repo-level starting point, use `DCOIR_KNOWLEDGE_INDEX.md`.
 
 - `knowledge/*.md` files are the editable maintained source.
 - Gemini attachment files are generated at package time from `knowledge/Knowledge - *.md` and written into the release ZIP under `02_PRIME_AGENT_ATTACHMENTS/*.md.txt`.
-- The attachment copies are synced from this folder and should not be treated as the primary editing surface.
+- The attachment files are generated from this folder at release package time and should not be treated as a primary editing surface.
 - Knowledge docs support operators and Gemini, but they do not override Airtable live state, Project Instructions, or governed GitHub source.
 
 ## Current pages and owners
@@ -29,7 +29,7 @@ For the repo-level starting point, use `DCOIR_KNOWLEDGE_INDEX.md`.
 | 12 | Gemini Runtime Bundle and Source Tree | Stored-source bundle layout |
 | 13 | Gemini Agent Topology and Routing | Agent role/routing summary |
 | 14 | Gemini Output Contract and Command-Lane Discipline | Gemini output format and command lanes |
-| 15 | Gemini Attachment Set, Validation, and Maintenance | Attachment inventory and sync rules |
+| 15 | Gemini Attachment Set, Validation, and Maintenance | Attachment inventory and direct generation rules |
 | 16 | Collector EXE Usage and Runtime Behavior | Optional EXE behavior and EXE-specific validation |
 | 17 | Collector Feature and Output Contract Reference | Feature map, parameters, output contract, and validation map |
 
@@ -38,7 +38,7 @@ For the repo-level starting point, use `DCOIR_KNOWLEDGE_INDEX.md`.
 When the page list, attachment set, collector behavior, EXE behavior, Gemini agent behavior, or workflow validation coverage changes, update these surfaces together:
 
 - maintained `knowledge/*.md` source files;
-- synced Gemini `.md.txt` attachment files;
+- generated Gemini `.md.txt` attachment inventory;
 - `project_sources/gemini/bundle_source/00_START_HERE/Agent_Attachment_Map.md.txt`;
 - `project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json`;
 - GitHub Actions required-surface checks.

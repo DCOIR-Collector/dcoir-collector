@@ -26,7 +26,7 @@ Files
 Build the downloadable bundle from a repo checkout
 From the repository root:
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "python .\project_sources\generation_validation\manual_test_framework\build_dcoir_manual_test_framework_bundle.py --source-dir .\project_sources\generation_validation\manual_test_framework --output-dir .\project_sources\generation_validation\manual_test_framework\out_manual_test_framework_bundle --version v9"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "python .\project_sources\validation\manual_test_framework\build_dcoir_manual_test_framework_bundle.py --source-dir .\project_sources\validation\manual_test_framework --output-dir .\project_sources\validation\manual_test_framework\out_manual_test_framework_bundle --version v9"
 
 The default ZIP name is:
 

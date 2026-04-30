@@ -1,6 +1,6 @@
 param(
   [string]$ValidatorPath = ".\validate_DCOIR_Run.ps1",
-  [string]$OutputRoot = ".\generation_validation\out_validate_dcoir_run_fixtures"
+  [string]$OutputRoot = ".\validation\out_validate_dcoir_run_fixtures"
 )
 
 Set-StrictMode -Version 2

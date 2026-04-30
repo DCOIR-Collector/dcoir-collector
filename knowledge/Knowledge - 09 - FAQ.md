@@ -11,7 +11,7 @@ _Short answers to recurring DCOIR operator questions_
 | Question | Answer |
 | --- | --- |
 | Are knowledge docs authoritative? | No. They support operators and Gemini but do not override Airtable live state, Project Instructions, or governed GitHub source. |
-| Which files should be edited? | Edit `knowledge/*.md` as the maintained source. Gemini `.md.txt` attachment copies are synced runtime surfaces. |
+| Which files should be edited? | Edit `knowledge/*.md` as the maintained source. Gemini `.md.txt` attachment files are generated runtime surfaces inside the release ZIP. |
 | Why do old references mention `.ps1.txt` or `.cmd.txt`? | Older bundle/readable-text surfaces used suffixes more heavily. Current governed runtime files use native repo paths. |
 | Is `DCOIR_Collector.zip` source of truth? | No. It is a retained supporting asset for delivery/execution support. |
 
@@ -54,7 +54,7 @@ _Short answers to recurring DCOIR operator questions_
 | Question | Answer |
 | --- | --- |
 | Why does Gemini need knowledge attachments? | They provide stable operational context for routing, output interpretation, and command-lane discipline. |
-| What happens when attachment files change? | Update maintained source, synced attachments, attachment map, manifest, and workflow checks together. |
+| What happens when attachment files change? | Update maintained source, attachment map, manifest, and workflow checks together; release packaging regenerates attachment files from `knowledge/*.md`. |
 | Where does manual testing state belong? | Airtable Validation Test Cases tracks dynamic manual testing. GitHub remains source and packaging authority. |
 
 ---
