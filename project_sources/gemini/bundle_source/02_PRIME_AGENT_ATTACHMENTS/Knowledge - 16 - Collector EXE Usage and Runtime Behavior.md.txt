@@ -1,0 +1,3 @@
+# Knowledge - 16 - Collector EXE Usage and Runtime Behavior
+
+(See maintained source in knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md)
