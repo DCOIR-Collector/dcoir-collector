@@ -1,0 +1,3 @@
+interface:
+  display_name: "DCOIR GitHub Desktop Lane Advisor"
+  short_description: "Routes and maintains reusable local GitHub Desktop helper tools for DCOIR."

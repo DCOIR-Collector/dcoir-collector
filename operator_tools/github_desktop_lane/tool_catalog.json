@@ -1,0 +1,31 @@
+{
+  "catalog_version": "2026-04-30",
+  "authority": {
+    "code_source": "github repo operator_tools/github_desktop_lane/",
+    "registry_source": "airtable Operator Tools Registry",
+    "advisor_skill": "dcoir-github-desktop-lane-advisor"
+  },
+  "tools": [
+    {
+      "tool_id": "DCOIR-GIT-DIAGNOSTIC",
+      "tool_name": "DCOIR Git Conflict Diagnostic",
+      "tool_family": "git_diagnostics",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/Get-DcoirGitConflictDiagnostic.ps1",
+      "output_pattern": "dcoir_git_conflict_diagnostic_*.txt"
+    },
+    {
+      "tool_id": "DCOIR-SAFE-PREPULL-APPLY",
+      "tool_name": "DCOIR Safe Pre-Pull Apply",
+      "tool_family": "repo_recovery",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirSafePrePullApply.ps1",
+      "output_pattern": "dcoir_safe_prepull_apply_*.txt"
+    },
+    {
+      "tool_id": "DCOIR-TARGETED-SNAPSHOT",
+      "tool_name": "DCOIR Targeted Snapshot Builder",
+      "tool_family": "snapshot_bundle",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirTargetedSnapshot.ps1",
+      "output_pattern": "*_snapshot_*.zip"
+    }
+  ]
+}

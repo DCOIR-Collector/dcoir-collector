@@ -1,0 +1,9 @@
+{
+  "name": "docs_impl_snapshot",
+  "paths": [
+    "DCOIR_KNOWLEDGE_INDEX.md",
+    "knowledge/README.md",
+    "knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md",
+    "knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md"
+  ]
+}
