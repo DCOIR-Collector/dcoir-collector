@@ -1,0 +1,26 @@
+# Generated DCOIR Gemini Agent Index
+
+Bundle version: 3_0_4
+
+## Prime agent
+- Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt
+
+## Active sub-agents
+- 01. Sub_Agent_01_Session_Readiness_and_Intake.md.txt
+- 02. Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt
+- 03. Sub_Agent_03_Alert_Family_Classifier_and_Known_Benign_Technology_Differentiator.md.txt
+- 04. Sub_Agent_04_Evidence_and_Provenance_Analyst.md.txt
+- 05. Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt
+- 06. Sub_Agent_06_DCOIR_Collector_Execution_and_Bundle_Workflow_Orchestrator.md.txt
+- 07. Sub_Agent_07_DCOIR_Collector_Artifact_Interpreter_and_Report_Extractor.md.txt
+- 08. Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt
+- 09. Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt
+- 10. Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt
+
+## Major-version feature coverage
+- explicit collector-artifact interpretation
+- mixed-format IOC parsing
+- targeted collection design
+- stricter singular-command consistency
+- stronger false-positive-aware handling of known products
+- extremely verbose description and instruction fields for predictable behavior
