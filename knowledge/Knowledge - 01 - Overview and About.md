@@ -2,7 +2,7 @@
 
 _AFRICOM_SOC_IR / DCOIR project context and maintained knowledge-doc charter_
 
-**Summary:** Defines the role of the DCOIR knowledge set, the current authority model, and how operators and Gemini should use these documents without treating them as control-plane authority.
+**Summary:** Defines the DCOIR authority model, source classes, and operational lanes so operators and Gemini can interpret collector, harness, and Gemini surfaces correctly.
 
 ---
 
@@ -20,20 +20,6 @@ DCOIR uses an Airtable-first operational model with GitHub as governed source/re
 | Gemini `.md.txt` attachments | Runtime attachment copies synced from `knowledge/*.md` |
 
 Knowledge docs explain the system. They do not override Airtable live state, Project Instructions, or governed GitHub source.
-
----
-
-## What the knowledge set is for
-
-The knowledge set should help an operator or Gemini agent answer:
-
-- Which lane am I in?
-- What runtime or workflow should I use?
-- What does this output prove?
-- What does it not prove?
-- What is the next bounded action?
-
-Useful detail is welcome. Repetition is not. A concept should be defined once, then referenced by other pages.
 
 ---
 
@@ -93,32 +79,19 @@ The Gemini bundle uses stored-source agent instructions and maintained knowledge
 - Treating package build success as runtime proof
 - Mixing endpoint-response syntax with local PowerShell syntax
 - Running broad collection before defining the investigative question
-- Repeating the same rule across multiple docs with slightly different wording
 
 ---
 
-## Maintenance rule
+## Maintenance trigger points
 
-When a behavior, workflow, contract, or attachment changes:
+Update dependent surfaces when any of these change:
 
-1. Update the owning knowledge page.
-2. Update dependent pages only by reference or minimal alignment.
-3. Update Gemini attachment copies, manifest, attachment map, and workflows when applicable.
-4. Verify that no stale duplicate wording remains.
-
----
-
-## Practical appendix
-
-A good knowledge page earns its length by preventing mistakes. The best detail is usually:
-
-- branch conditions,
-- output interpretation boundaries,
-- command-lane distinctions,
-- what a result does not prove,
-- and when to stop or choose a narrower next step.
-
-Verbose repetition does not improve the system. Clear ownership and clean references do.
+- collector behavior
+- harness behavior
+- EXE behavior
+- Gemini attachment inventory
+- manifest-required files
+- GitHub Actions validation coverage
 
 ---
 
