@@ -1,0 +1,179 @@
+name: chatgpt-apply-in
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload_b64_path:
+        description: "Repo-relative base64 ZIP payload under chatgpt_staging/in/<request_id>/payload.zip.b64"
+        required: true
+        default: "chatgpt_staging/in/request/payload.zip.b64"
+        type: string
+      commit_changes:
+        description: "Commit applied file changes"
+        required: true
+        default: true
+        type: boolean
+      delete_payload_after_success:
+        description: "Delete payload.zip.b64 after successful apply to reduce repo bloat"
+        required: true
+        default: true
+        type: boolean
+  push:
+    paths:
+      - "chatgpt_staging/in/*/payload.zip.b64"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chatgpt-apply-in-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-in:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve payload path
+        id: payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PAYLOAD='${{ inputs.payload_b64_path }}'
+          else
+            PAYLOAD=""
+            while IFS= read -r p; do
+              if [[ "$p" == chatgpt_staging/in/*/payload.zip.b64 && -f "$p" ]]; then
+                PAYLOAD="$p"
+                break
+              fi
+            done < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")
+          fi
+          if [[ -z "$PAYLOAD" ]]; then
+            echo "No payload.zip.b64 found in triggering commit; exiting successfully."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "payload_path=$PAYLOAD" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Decode ZIP payload and apply bundle
+        if: steps.payload.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          PAYLOAD='${{ steps.payload.outputs.payload_path }}'
+
+          if [[ "$PAYLOAD" != chatgpt_staging/in/*/payload.zip.b64 ]]; then
+            echo "Payload must match chatgpt_staging/in/<request_id>/payload.zip.b64" >&2
+            exit 1
+          fi
+          if [[ ! -f "$PAYLOAD" ]]; then
+            echo "Payload file not found: $PAYLOAD" >&2
+            exit 1
+          fi
+
+          REQUEST_ID="$(basename "$(dirname "$PAYLOAD")")"
+          WORK_DIR="chatgpt_staging/work/$REQUEST_ID"
+          rm -rf "$WORK_DIR"
+          mkdir -p "$WORK_DIR/extract"
+
+          base64 -d "$PAYLOAD" > "$WORK_DIR/payload.zip"
+          unzip -q "$WORK_DIR/payload.zip" -d "$WORK_DIR/extract"
+
+          if [[ ! -f "$WORK_DIR/extract/apply_manifest.json" ]]; then
+            echo "Decoded ZIP did not contain apply_manifest.json" >&2
+            exit 1
+          fi
+
+          python - "$WORK_DIR/extract/apply_manifest.json" "$WORK_DIR/extract" <<'PY'
+          import hashlib, json, os, pathlib, shutil, subprocess, sys
+
+          manifest_path = pathlib.Path(sys.argv[1])
+          extract_root = pathlib.Path(sys.argv[2])
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          allowed_roots = manifest.get("allowed_roots") or []
+          if not allowed_roots:
+              raise SystemExit("allowed_roots is required")
+
+          blocked_prefixes = [".git/", "chatgpt_staging/out/", "chatgpt_staging/work/", "chatgpt_staging/apply_reports/"]
+          allow_workflows = bool(manifest.get("allow_workflow_changes", False))
+
+          def safe_rel(path: str) -> bool:
+              p = pathlib.PurePosixPath(path)
+              if path.startswith("/") or ".." in p.parts:
+                  return False
+              if any(path.startswith(prefix) for prefix in blocked_prefixes):
+                  return False
+              if path.startswith(".github/workflows/") and not allow_workflows:
+                  return False
+              return any(path == root.rstrip("/") or path.startswith(root.rstrip("/") + "/") for root in allowed_roots)
+
+          applied = []
+          for item in manifest.get("files", []):
+              target = item.get("path", "")
+              source = item.get("source", "")
+              expected_blob_sha = item.get("expected_blob_sha")
+              expected_current_sha256 = item.get("expected_current_sha256")
+              expected_new_sha256 = item.get("expected_new_sha256")
+
+              if not safe_rel(target):
+                  raise SystemExit(f"Unsafe or disallowed target path: {target}")
+              if not source or source.startswith("/") or ".." in pathlib.PurePosixPath(source).parts:
+                  raise SystemExit(f"Unsafe source path: {source}")
+
+              src_path = extract_root / source
+              if not src_path.is_file():
+                  raise SystemExit(f"Source file missing in ZIP: {src_path}")
+
+              dst_path = pathlib.Path(target)
+              if expected_blob_sha and dst_path.exists():
+                  out = subprocess.check_output(["git", "ls-files", "-s", "--", target], text=True).split()
+                  actual_blob_sha = out[1] if len(out) > 1 else ""
+                  if actual_blob_sha != expected_blob_sha:
+                      raise SystemExit(f"Blob SHA mismatch for {target}: expected {expected_blob_sha}, got {actual_blob_sha}")
+
+              if expected_current_sha256 and dst_path.exists():
+                  actual = hashlib.sha256(dst_path.read_bytes()).hexdigest()
+                  if actual != expected_current_sha256:
+                      raise SystemExit(f"Current sha256 mismatch for {target}: expected {expected_current_sha256}, got {actual}")
+
+              if expected_new_sha256:
+                  actual_new = hashlib.sha256(src_path.read_bytes()).hexdigest()
+                  if actual_new != expected_new_sha256:
+                      raise SystemExit(f"New sha256 mismatch for {target}: expected {expected_new_sha256}, got {actual_new}")
+
+              dst_path.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(src_path, dst_path)
+              applied.append(target)
+
+          if not applied:
+              raise SystemExit("No files applied")
+
+          out = pathlib.Path("chatgpt_staging/apply_reports")
+          out.mkdir(parents=True, exist_ok=True)
+          report = out / f"{manifest.get('request_id', 'unknown')}_apply_report.md"
+          report.write_text("# ChatGPT apply-in report\n\n" + "\n".join(f"- applied: `{p}`" for p in applied) + "\n", encoding="utf-8")
+          PY
+
+          echo "REQUEST_ID=$REQUEST_ID" >> "$GITHUB_ENV"
+          echo "PAYLOAD=$PAYLOAD" >> "$GITHUB_ENV"
+
+      - name: Commit applied changes
+        if: steps.payload.outputs.skip != 'true' && (github.event_name == 'push' || inputs.commit_changes)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if [[ "${{ github.event_name }}" == "push" || "${{ inputs.delete_payload_after_success }}" == "true" ]]; then
+            git rm -f "$PAYLOAD" || true
+          fi
+          git commit -m "Apply ChatGPT staging bundle [skip validate-on-push]" || exit 0
+          git push
