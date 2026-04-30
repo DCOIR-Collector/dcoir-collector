@@ -17,13 +17,17 @@ VISIBILITY_CHECKS = {
     'operator_state_awareness_visibility': ['operator', 'analyst'],
 }
 AGENT_DIR = '01_GEMINI_AGENT_BUILD'
-KNOWLEDGE_DIR = '02_PRIME_AGENT_ATTACHMENTS'
 QUICK_START = '00_START_HERE/Gemini_Build_Quick_Start.md.txt'
 ATTACHMENT_MAP = '00_START_HERE/Agent_Attachment_Map.md.txt'
+DEFAULT_GENERATED_KNOWLEDGE_DIR = '02_PRIME_AGENT_ATTACHMENTS'
 
 
 def load_manifest(source_root: Path) -> Dict:
     return json.loads((source_root / MANIFEST_NAME).read_text(encoding='utf-8'))
+
+
+def resolve_repo_root(source_root: Path) -> Path:
+    return source_root.parent.parent.parent
 
 
 def gather_text(paths: List[Path]) -> str:
@@ -41,6 +45,13 @@ def rel_posix(path: Path, source_root: Path) -> str:
     return path.relative_to(source_root).as_posix()
 
 
+def generated_attachment_name(source_rel: str) -> str:
+    name = Path(source_rel).name
+    if not name.endswith('.md'):
+        raise ValueError(f'Knowledge attachment source must be a markdown file: {source_rel}')
+    return name + '.txt'
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--source-root', required=True)
@@ -48,6 +59,7 @@ def main() -> int:
     args = ap.parse_args()
 
     source_root = Path(args.source_root).resolve()
+    repo_root = resolve_repo_root(source_root)
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -56,8 +68,8 @@ def main() -> int:
     warnings: List[str] = []
     checks: Dict[str, object] = {}
 
-    if manifest.get('source_strategy') != 'stored_source_compile':
-        errors.append('source_strategy must be stored_source_compile for routine Gemini shipment')
+    if manifest.get('source_strategy') != 'stored_source_compile_with_direct_knowledge_attachment_generation':
+        errors.append('source_strategy must be stored_source_compile_with_direct_knowledge_attachment_generation for direct Knowledge packaging')
     checks['source_strategy'] = manifest.get('source_strategy')
 
     required_files = manifest.get('required_files', [])
@@ -65,7 +77,43 @@ def main() -> int:
     checks['required_files_present'] = len(missing_files) == 0
     checks['missing_required_files'] = missing_files
     if missing_files:
-        errors.append('missing required files: ' + ', '.join(missing_files))
+        errors.append('missing required source-root files: ' + ', '.join(missing_files))
+
+    generated_dir = manifest.get('generated_knowledge_attachment_dir', DEFAULT_GENERATED_KNOWLEDGE_DIR)
+    knowledge_sources = sorted(manifest.get('knowledge_attachment_sources', []))
+    discovered_sources = sorted(
+        p.relative_to(repo_root).as_posix()
+        for p in (repo_root / 'knowledge').glob('Knowledge - *.md')
+        if p.is_file()
+    )
+    missing_sources = [rel for rel in knowledge_sources if not (repo_root / rel).exists()]
+    unlisted_sources = [rel for rel in discovered_sources if rel not in knowledge_sources]
+    stale_manifest_sources = [rel for rel in knowledge_sources if rel not in discovered_sources]
+    checks['knowledge_attachment_sources'] = knowledge_sources
+    checks['discovered_knowledge_sources'] = discovered_sources
+    checks['knowledge_source_inventory_exact_match'] = not missing_sources and not unlisted_sources and not stale_manifest_sources
+    checks['missing_knowledge_sources'] = missing_sources
+    checks['unlisted_knowledge_sources'] = unlisted_sources
+    checks['stale_manifest_knowledge_sources'] = stale_manifest_sources
+    if missing_sources or unlisted_sources or stale_manifest_sources:
+        errors.append('knowledge source inventory drift detected between manifest and knowledge/')
+
+    manifest_knowledge_duplicates = [rel for rel in required_files if rel.startswith(f'{generated_dir}/Knowledge - ')]
+    source_duplicate_files = sorted(
+        p.relative_to(source_root).as_posix()
+        for p in (source_root / generated_dir).glob('Knowledge - *.md.txt')
+        if p.is_file()
+    )
+    expected_generated_attachments = sorted(f'{generated_dir}/{generated_attachment_name(rel)}' for rel in knowledge_sources)
+    checks['expected_generated_knowledge_attachments'] = expected_generated_attachments
+    checks['manifest_has_no_generated_knowledge_duplicates'] = len(manifest_knowledge_duplicates) == 0
+    checks['source_tree_has_no_generated_knowledge_duplicates'] = len(source_duplicate_files) == 0
+    checks['generated_knowledge_duplicates_in_manifest'] = manifest_knowledge_duplicates
+    checks['generated_knowledge_duplicates_in_source_tree'] = source_duplicate_files
+    if manifest_knowledge_duplicates:
+        errors.append('manifest required_files still lists generated Knowledge attachment copies')
+    if source_duplicate_files:
+        errors.append('bundle_source still contains generated Knowledge attachment copies; delete them and let compile generate them from knowledge/')
 
     operator_files = [source_root / rel for rel in required_files if rel != MANIFEST_NAME]
     non_txt = [str(p.relative_to(source_root)) for p in operator_files if p.exists() and p.suffix != '.txt']
@@ -73,25 +121,6 @@ def main() -> int:
     checks['non_txt_operator_files'] = non_txt
     if non_txt:
         warnings.append('some operator-facing files do not end with .txt: ' + ', '.join(non_txt))
-
-    manifest_knowledge = sorted(
-        rel for rel in required_files
-        if rel.startswith(f'{KNOWLEDGE_DIR}/') and Path(rel).name.startswith('Knowledge - ') and rel.endswith('.md.txt')
-    )
-    discovered_knowledge = sorted(
-        rel_posix(p, source_root)
-        for p in (source_root / KNOWLEDGE_DIR).glob('Knowledge - *.md.txt')
-        if p.is_file()
-    )
-    missing_knowledge = [rel for rel in manifest_knowledge if rel not in discovered_knowledge]
-    extra_knowledge = [rel for rel in discovered_knowledge if rel not in manifest_knowledge]
-    checks['manifest_knowledge_files'] = manifest_knowledge
-    checks['discovered_knowledge_files'] = discovered_knowledge
-    checks['knowledge_attachment_inventory_exact_match'] = len(missing_knowledge) == 0 and len(extra_knowledge) == 0
-    checks['missing_knowledge_files'] = missing_knowledge
-    checks['extra_unlisted_knowledge_files'] = extra_knowledge
-    if missing_knowledge or extra_knowledge:
-        errors.append('knowledge attachment inventory drift detected between manifest and attachment directory')
 
     topology = manifest.get('topology', {})
     prime_rel = topology.get('prime_agent_file')
@@ -115,13 +144,13 @@ def main() -> int:
 
     attachment_map_path = source_root / ATTACHMENT_MAP
     attachment_map_text = attachment_map_path.read_text(encoding='utf-8', errors='ignore').lower() if attachment_map_path.exists() else ''
-    map_missing_titles = [Path(rel).name[:-7].lower() for rel in manifest_knowledge if Path(rel).name[:-7].lower() not in attachment_map_text]
-    checks['attachment_map_mentions_all_manifest_knowledge_files'] = len(map_missing_titles) == 0
+    map_missing_titles = [Path(rel).stem.lower() for rel in knowledge_sources if Path(rel).stem.lower() not in attachment_map_text]
+    checks['attachment_map_mentions_all_knowledge_source_files'] = len(map_missing_titles) == 0
     checks['attachment_map_missing_titles'] = map_missing_titles
     if map_missing_titles:
-        errors.append('attachment map does not mention every manifest-listed knowledge attachment file')
+        errors.append('attachment map does not mention every manifest-listed knowledge source file')
 
-    combined = gather_text(list((source_root / AGENT_DIR).glob('*.txt')) + [source_root / QUICK_START]).lower()
+    combined = gather_text(list((source_root / AGENT_DIR).glob('*.txt')) + [source_root / QUICK_START] + [repo_root / rel for rel in knowledge_sources]).lower()
     for key, needles in VISIBILITY_CHECKS.items():
         present = all(needle in combined for needle in needles)
         checks[key] = present
@@ -129,7 +158,7 @@ def main() -> int:
             warnings.append(f'visibility check did not find all markers for {key}: {needles}')
 
     success = len(errors) == 0
-    report = {'success': success, 'source_root': str(source_root), 'bundle_name': manifest.get('bundle_name'), 'bundle_version': manifest.get('bundle_version'), 'checks': checks, 'warnings': warnings, 'errors': errors}
+    report = {'success': success, 'source_root': str(source_root), 'repo_root': str(repo_root), 'bundle_name': manifest.get('bundle_name'), 'bundle_version': manifest.get('bundle_version'), 'checks': checks, 'warnings': warnings, 'errors': errors}
     report_path = output_dir / 'validate_dcoir_gemini_bundle_report.json'
     report_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps(report, indent=2))

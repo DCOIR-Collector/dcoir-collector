@@ -30,28 +30,15 @@ def main() -> int:
     source_root = Path(args.source_root).resolve()
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-    # source_root is <repo>/project_sources/gemini/bundle_source; maintained knowledge docs live at <repo>/knowledge.
+    # source_root is <repo>/project_sources/gemini/bundle_source.
+    # Maintained knowledge docs live at <repo>/knowledge and are packaged directly by compile_dcoir_gemini_bundle.py.
     repo_root = source_root.parent.parent.parent
 
-    sync_script = script_root / 'sync_dcoir_gemini_knowledge_attachments.py'
     validate_script = script_root / 'validate_dcoir_gemini_bundle.py'
     scenario_script = script_root / 'validate_dcoir_gemini_behavior_scenarios.py'
     compile_script = script_root / 'compile_dcoir_gemini_bundle.py'
 
     steps = []
-
-    sync_cmd = [sys.executable, str(sync_script), '--repo-root', str(repo_root), '--source-root', str(source_root), '--output-dir', str(output_dir)]
-    sync_proc = run_step(sync_cmd)
-    steps.append({
-        'name': 'sync_knowledge_attachments',
-        'cmd': sync_cmd,
-        'returncode': sync_proc.returncode,
-        'stdout': sync_proc.stdout,
-        'stderr': sync_proc.stderr,
-    })
-    if sync_proc.returncode != 0:
-        write_report(output_dir, {'success': False, 'stage': 'sync_knowledge_attachments', 'steps': steps})
-        return 1
 
     if not args.skip_validation:
         validate_cmd = [sys.executable, str(validate_script), '--source-root', str(source_root), '--output-dir', str(output_dir)]

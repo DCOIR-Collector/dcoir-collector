@@ -7,7 +7,7 @@ For the repo-level starting point, use `DCOIR_KNOWLEDGE_INDEX.md`.
 ## Authority
 
 - `knowledge/*.md` files are the editable maintained source.
-- Gemini attachment copies live under `project_sources/gemini/bundle_source/02_PRIME_AGENT_ATTACHMENTS/*.md.txt`.
+- Gemini attachment files are generated at package time from `knowledge/Knowledge - *.md` and written into the release ZIP under `02_PRIME_AGENT_ATTACHMENTS/*.md.txt`.
 - The attachment copies are synced from this folder and should not be treated as the primary editing surface.
 - Knowledge docs support operators and Gemini, but they do not override Airtable live state, Project Instructions, or governed GitHub source.
 

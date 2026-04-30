@@ -9,7 +9,6 @@ from typing import Dict, List
 MANIFEST_NAME = 'Gemini_Bundle_Source_Manifest.json'
 AGENT_DIR = '01_GEMINI_AGENT_BUILD'
 QUICK_START = '00_START_HERE/Gemini_Build_Quick_Start.md.txt'
-KNOWLEDGE_DIR = '02_PRIME_AGENT_ATTACHMENTS'
 
 SCENARIOS = {
     'GeminiCollectorArtifactInterpretation': {
@@ -107,11 +106,11 @@ def main() -> int:
         source_paths.append(source_root / topology['prime_agent_file'])
     for rel in topology.get('sub_agent_files', []):
         source_paths.append(source_root / rel)
-    for rel in manifest.get('required_files', []):
-        if rel.startswith(f'{KNOWLEDGE_DIR}/'):
-            source_paths.append(source_root / rel)
+    repo_root = source_root.parent.parent.parent
+    for rel in manifest.get('knowledge_attachment_sources', []):
+        source_paths.append(repo_root / rel)
 
-    discovered_files = sorted({rel_posix(path, source_root) for path in source_paths if path.exists()})
+    discovered_files = sorted({path.as_posix() for path in source_paths if path.exists()})
     combined_text = gather_text(source_paths)
 
     scenario_results: Dict[str, object] = {}

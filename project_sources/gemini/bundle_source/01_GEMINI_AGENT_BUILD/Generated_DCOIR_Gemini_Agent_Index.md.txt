@@ -1,6 +1,6 @@
 # Generated DCOIR Gemini Agent Index
 
-Bundle version: 3_0_3
+Bundle version: 3_0_4
 
 ## Prime agent
 - Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt

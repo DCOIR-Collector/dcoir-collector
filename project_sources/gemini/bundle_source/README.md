@@ -23,7 +23,7 @@ Current major-version focus
 
 When changing the attachment set
 1. Edit the maintained `knowledge/*.md` files.
-2. Sync those files into `02_PRIME_AGENT_ATTACHMENTS/` through the governed build path.
+2. Let the governed build path package those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` in the release ZIP.
 3. Update `00_START_HERE/Agent_Attachment_Map.md.txt`.
 4. Update `Gemini_Bundle_Source_Manifest.json.txt` when the required attachment inventory changed.
 5. Re-run validation and build.
@@ -32,4 +32,4 @@ What not to do
 - Do not treat file drop alone as a topology or attachment-inventory change.
 - Do not rely on ad hoc folder discovery as shipment authority.
 - Do not skip manifest updates when adding or removing required shared knowledge files.
-- Do not let the maintained `knowledge/*.md` set and the synced `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` set drift silently.
+- Do not reintroduce separately maintained `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` source files. They are generated at package time from `knowledge/*.md`.

@@ -54,5 +54,5 @@ This map is intentionally explicit. It exists so the operator, the maintainer, a
 - Purpose: preserve the canonical collector feature map and high-level output contract so feature descriptions, validation expectations, and Gemini interpretation do not drift across runbooks, troubleshooting, FAQ, and EXE guidance.
 ## Maintenance rule
 
-The maintained source is `knowledge/*.md`. Files in `02_PRIME_AGENT_ATTACHMENTS/` are runtime copies and should be regenerated or synchronized from the matching source page. `DCOIR_KNOWLEDGE_INDEX.md` is a repo-level operator entry point and is not part of the Gemini attachment set unless the manifest is intentionally expanded.
+The maintained source is `knowledge/*.md`. The build process packages those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` inside the generated release ZIP by appending `.txt` to the source filename. Do not maintain duplicate Knowledge attachment source files under `bundle_source`. `DCOIR_KNOWLEDGE_INDEX.md` is a repo-level operator entry point and is not part of the Gemini attachment set unless the manifest is intentionally expanded.
 

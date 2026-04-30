@@ -11,7 +11,7 @@ _Gemini knowledge attachment inventory and maintenance rules_
 | Surface | Role |
 | --- | --- |
 | `knowledge/*.md` | Maintained editable source |
-| `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` | Gemini runtime attachment copies |
+| `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` | Generated Gemini runtime attachment files inside the release ZIP |
 | `Agent_Attachment_Map.md.txt` | Human/runtime inventory explanation |
 | `Gemini_Bundle_Source_Manifest.json` | Required file inventory |
 | GitHub Actions workflows | Validation and required-surface enforcement |
@@ -20,7 +20,7 @@ _Gemini knowledge attachment inventory and maintenance rules_
 
 ## Current inventory
 
-The maintained set contains 17 knowledge pages. Each source page has a matching Gemini attachment copy under `02_PRIME_AGENT_ATTACHMENTS/` using the same title plus `.txt`.
+The maintained set contains 17 knowledge pages. During Gemini release packaging, each source page is written into the release ZIP under `02_PRIME_AGENT_ATTACHMENTS/` using the same title plus `.txt`. Do not maintain separate source copies in `bundle_source`.
 
 | # | Attachment | Primary purpose |
 | --- | --- | --- |
