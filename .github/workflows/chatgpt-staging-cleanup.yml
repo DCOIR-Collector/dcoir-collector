@@ -1,0 +1,130 @@
+name: chatgpt-staging-cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      cleanup_requests:
+        description: "Delete consumed request JSON files"
+        required: true
+        default: true
+        type: boolean
+      cleanup_in_payloads:
+        description: "Delete inbound payload folders under chatgpt_staging/in/"
+        required: true
+        default: true
+        type: boolean
+      cleanup_out_bundles:
+        description: "Delete staged output bundles under chatgpt_staging/out/"
+        required: true
+        default: false
+        type: boolean
+      cleanup_apply_reports:
+        description: "Delete apply reports under chatgpt_staging/apply_reports/"
+        required: true
+        default: false
+        type: boolean
+      request_id_filter:
+        description: "Optional request id or prefix to clean. Leave blank to clean all selected surfaces."
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chatgpt-staging-cleanup-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Clean selected ChatGPT staging artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILTER='${{ inputs.request_id_filter }}'
+          case "$FILTER" in
+            *[!A-Za-z0-9._-]* ) echo "Unsafe request_id_filter: $FILTER" >&2; exit 1 ;;
+          esac
+
+          removed=0
+          rm_path() {
+            local p="$1"
+            if [[ -z "$p" || "$p" == /tmp/* || "$p" == /* || "$p" == *..* ]]; then
+              echo "Refusing unsafe cleanup path: $p" >&2
+              exit 1
+            fi
+            if git ls-files --error-unmatch "$p" >/dev/null 2>&1; then
+              git rm -r -f "$p"
+              removed=$((removed + 1))
+            fi
+          }
+
+          match_filter() {
+            local name="$1"
+            if [[ -z "$FILTER" ]]; then
+              return 0
+            fi
+            [[ "$name" == "$FILTER" || "$name" == "$FILTER"* ]]
+          }
+
+          if [[ '${{ inputs.cleanup_requests }}' == 'true' ]]; then
+            for f in chatgpt_staging/requests/*.json; do
+              [[ -e "$f" ]] || continue
+              stem="$(basename "$f" .json)"
+              if match_filter "$stem"; then
+                rm_path "$f"
+              fi
+            done
+          fi
+
+          if [[ '${{ inputs.cleanup_in_payloads }}' == 'true' ]]; then
+            for d in chatgpt_staging/in/*; do
+              [[ -d "$d" ]] || continue
+              stem="$(basename "$d")"
+              if match_filter "$stem"; then
+                rm_path "$d"
+              fi
+            done
+          fi
+
+          if [[ '${{ inputs.cleanup_out_bundles }}' == 'true' ]]; then
+            for d in chatgpt_staging/out/*; do
+              [[ -d "$d" ]] || continue
+              stem="$(basename "$d")"
+              if match_filter "$stem"; then
+                rm_path "$d"
+              fi
+            done
+          fi
+
+          if [[ '${{ inputs.cleanup_apply_reports }}' == 'true' ]]; then
+            for f in chatgpt_staging/apply_reports/*.md; do
+              [[ -e "$f" ]] || continue
+              stem="$(basename "$f")"
+              if match_filter "$stem"; then
+                rm_path "$f"
+              fi
+            done
+          fi
+
+          echo "removed=$removed" >> "$GITHUB_ENV"
+
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Clean ChatGPT staging artifacts [skip validate-on-push]" || {
+            echo "No cleanup changes to commit"
+            exit 0
+          }
+          git push
