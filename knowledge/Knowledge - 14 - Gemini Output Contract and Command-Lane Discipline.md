@@ -1,82 +1,92 @@
 # Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline
 
-_Final response structure, decision-state discipline, singular-command rules, and endpoint-versus-local command-lane separation_
+_Gemini final structure, decision states, and command-lane separation_
 
-**Summary:** Final response structure, decision-state rules, singular-command behavior, grounding-support honesty, action-state honesty, and strict endpoint-versus-local command-lane separation.
+**Summary:** Use this page to keep Gemini responses honest about decision state, executed actions, grounding, and endpoint-versus-local commands.
 
-| Source class | Authoritative basis |
-| --- | --- |
-| Project sources | project_sources/PP-01_System_Prompt_v1_0_1.txt; project_sources/PP-02_Output_Schema_v1_0_0.txt; project_sources/PP-07_Agent_Guardrails_v1_0_0.txt; project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_05_Query_Planner_and_Syntax_Guard.md.txt; project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt |
-| Official external sources | Not required for this page |
-| Scope note | This page follows the current runtime discipline of exact output structure and command-lane separation rather than generic assistant-style responses. |
+---
 
-## Allowed decision states
+## Decision states
 
-The current runtime distinguishes four decision states:
+Allowed states:
+
 - Continue
 - Benign
 - Malicious
 - Unresolved due to evidence gaps
 
-## Continue-state structure
+Do not use a final state before reviewed evidence supports it.
 
-A continue response should preserve the exact section order used for ongoing analysis:
-- BLUF
-- FACTS AND SOURCES
-- ANALYSIS
-- SYNTAX VERIFICATION
-- SINGULAR TRIAGE COMMAND
-- ANALYST SCRATCHPAD
+---
 
-## The singular-command rule
+## Continue response structure
 
-One of the most important runtime behaviors is one-command pacing on continue states. The runtime should produce exactly one copy-paste-ready command or query unless a true multi-step exception is unavoidable and explicitly justified.
+Continue-state responses should preserve this order when the full structure is required:
 
-## Endpoint versus local lane separation
+1. BLUF
+2. FACTS AND SOURCES
+3. ANALYSIS
+4. SYNTAX VERIFICATION
+5. SINGULAR TRIAGE COMMAND
+6. ANALYST SCRATCHPAD
 
-This distinction is critical. The same inner collector invocation means different things depending on whether it is wrapped for Elastic endpoint response or written as a local PowerShell command. A strong runtime must preserve response-action wrappers only in endpoint context and plain PowerShell invocation in local context.
+---
 
-Native Elastic response actions should remain native when they are the chosen next step. They should not be translated into `execute --command` shell syntax merely for visual uniformity.
+## Singular-command rule
 
-## Grounding-support honesty
+For continue states, provide one copy-paste-ready command or query unless a multi-step exception is necessary and explicitly justified.
 
-Do not let output wording claim grounded completion unless the support is actually visible in the answer surface. A safe operator-facing answer should preserve the difference among:
-- public or enterprise web grounding
-- upload-based internal knowledge
-- live enterprise retrieval or connector-backed knowledge
-- bounded unknown or unsupported action
+---
 
-If the runtime says it searched, grounded, looked up, or checked something, the support for that claim should be visible in the answer or plainly unavailable.
+## Command lanes
+
+| Lane | Correct rendering |
+| --- | --- |
+| Elastic native response action | Native response-action syntax |
+| Elastic shell execution | `execute --command "powershell.exe ..." --comment "..."` |
+| Local workstation | Direct PowerShell command |
+| GitHub Actions | Workflow name and inputs |
+
+Do not wrap native Elastic response actions in shell syntax for visual consistency. Do not paste local commands into endpoint guidance without the response-action wrapper.
+
+---
+
+## Grounding honesty
+
+Gemini must distinguish:
+
+- public web grounding;
+- uploaded or attached files;
+- connector-backed retrieval;
+- unsupported or unavailable lookup.
+
+Do not claim a search, lookup, retrieval, validation, or handoff happened unless the action actually ran and produced usable support.
+
+---
 
 ## Action-state honesty
 
-The output contract should preserve the difference among:
-- requested action
-- planned action
-- executed action
-- returned result
-- bounded inability
+Keep these separate:
 
-This keeps the final answer honest and reduces fake handoff or fake progress language.
+- requested action;
+- planned action;
+- executed action;
+- returned result;
+- bounded inability.
 
-## Citation and support proof
-
-When the runtime relies on grounded or externally supported material, the supporting source or support evidence should be present where the contract expects it. The runtime should not imply that a claim is grounded merely because a search-capable tool exists in the environment.
-
-## Structured-output caution
-
-Exact output contracts should remain enforceable. Over-complex structured-output schemas can make the runtime less reliable, not more. Smaller exact contracts are often safer than very expressive but brittle structures.
+---
 
 ## Validation expectations
 
-After output-contract changes, the manual validation surface in Airtable `Validation Test Cases` should cover at least:
-- exact final structure
-- no scaffold leakage
-- one-command pacing
-- native response-action rendering
-- search and grounding honesty
-- citation/support-proof behavior
-- action-state truthfulness
-- upload-only internal-knowledge honesty when connectors are absent
+Output-contract validation should check:
+
+- exact final structure;
+- one-command pacing;
+- command-lane rendering;
+- no scaffold leakage;
+- grounding/support proof;
+- action-state truthfulness.
+
+---
 
 > Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
