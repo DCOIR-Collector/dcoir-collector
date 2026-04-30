@@ -1,21 +1,21 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-29T17:29:14Z
+- generated_at_utc: 2026-04-30T03:32:10Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
 ## dcoir-airtable-schema-cache
 
-- source_tree_hash: `d66d3275e1c42f3cac583f154cf1a67e9eeaf7f472e4ae047e05ea4a3623cd8a`
+- source_tree_hash: `1608502d6f9cc561287c19528fd6215993d6c078e5bf4b709d17c0ca4baa0d5b`
 - release_zip_name: `dcoir-airtable-schema-cache.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `6`
 
-- `SKILL.md` — `205d9206c1274e4447492d827e852d4f3fc3611ab63a9d791729d93ae96c14dc`
-- `agents/openai.yaml` — `8d8fbb54e73b3df302235b20e1287839ddc18eeecaf48d52af9f7ed9bffb35df`
-- `assets/icon.svg` — `850d5dabc559c7919996456a6a9b013f37221976467b25ddac8c5d534cc154fb`
-- `references/cache_contract.md` — `59e7f71376f3b10efca5f785f03fc56c6f52e05331d8b6531ead920822f3a6b0`
+- `SKILL.md` — `d8003b8c7eca41fdb868c0b027bc9725d274cd25b41be15b7630cda19c206eef`
+- `agents/openai.yaml` — `8773f54ca200a01daaea9059b42940eedf96e7d553e0611c3e7b4895111f663d`
+- `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
+- `references/cache_contract.md` — `4e1e47e04e9e89b9f200f7bc3f0bf1281e4e1e2f6794250ce407eff50e073baf`
 - `references/current_operational_tables.json` — `29e885dbe86db7d3e34dd1d6a35442a9e6927362bab2c5df493284bd58835bfc`
 - `scripts/schema_cache.py` — `ac88bb2cc30506ff26eb80e678355490fd460b5e7a85aadb03977490f021aaa4`
 
