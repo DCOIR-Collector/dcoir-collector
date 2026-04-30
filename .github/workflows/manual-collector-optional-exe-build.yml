@@ -50,6 +50,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Verify checkout and FailureGates EXE harness patch
+        shell: pwsh
+        run: |
+          $head = git rev-parse HEAD
+          Write-Host "CHECKED_OUT_COMMIT=$head"
+          $harnessPath = 'project_sources/collector/harness/run_DCOIR_Tests.ps1'
+          if (-not (Test-Path -LiteralPath $harnessPath)) {
+            throw "Harness source not found: $harnessPath"
+          }
+          $harnessText = Get-Content -LiteralPath $harnessPath -Raw
+          $hasPatch = $harnessText.Contains('Observed expected executable nonzero reject behavior for bind-reject gate.')
+          Write-Host "FAILUREGATES_EXE_PATTERN_RELAX_PRESENT=$hasPatch"
+          if ($env:EXE_VALIDATION_SUITE -eq 'FailureGates' -and -not $hasPatch) {
+            throw 'FailureGates EXE harness patch is missing from checked-out source.'
+          }
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -152,7 +168,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw "Optional EXE variant harness suite failed: $suite"
           }
-
 
       - name: Upload optional EXE variant artifacts
         if: always()
