@@ -1,7 +1,6 @@
 interface:
   display_name: DCOIR Plan Tracker
-  short_description: Plan, track, resume, and document DCOIR work with GitHub-backed
-    markdown and JSON state.
+  short_description: Keep DCOIR Plans and Work Items synced in Airtable, including resume, closeout, and active-task state.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

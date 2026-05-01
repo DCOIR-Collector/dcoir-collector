@@ -22,3 +22,27 @@ Use this workflow when dcoir-plan-tracker needs to render or prepare Airtable-re
 - Do not write directly from stale hard-coded table ids when live schema readback disagrees.
 - Do not treat GitHub CP/todo files as live queue authority.
 - Keep generated Airtable payloads secret-safe and operator-readable.
+
+## Parent-plan sync gate
+
+Run this gate before any closeout, pause, resume, active-task switch, checkpoint, or Work Item status change.
+
+1. Identify the Work Item row and read `canonical_parent_plan_id`.
+2. If a parent plan id exists, find the matching `Plans` row by `plan_id`.
+3. Compare parent plan fields against the actual task state:
+   - `plan_state`
+   - `active_task_id`
+   - `active_task_title`
+   - `exact_resume_goal`
+   - `next_recommended_action`
+   - `last_updated_text`
+4. If the Work Item is now active, set the parent plan to active and point the active task fields at that Work Item.
+5. If the Work Item is complete, move the parent plan to the next unfinished task, pause it with a clear next action, or mark it complete if no work remains.
+6. Create or update checkpoint/evidence only after the parent plan row and Work Item row agree.
+
+Never let a Session Checkpoint become the only source of truth for plan progress when a `Plans` row exists.
+
+## Drift repair rule
+
+If Airtable says the plan active task is older than the newest work/checkpoint/evidence, treat that as plan drift. Repair the `Plans` row before giving a final closeout or resume answer. If the correct repair is not clear, state the mismatch plainly and ask the operator to choose the next active task.
+

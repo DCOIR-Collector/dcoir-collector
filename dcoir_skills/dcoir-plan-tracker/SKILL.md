@@ -1,8 +1,8 @@
 ---
 name: dcoir-plan-tracker
-description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state and hierarchy-aware task decomposition.
+description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state. use when creating, resuming, pausing, closing, or updating a plan; when any work item changes status; when a work item points to a parent plan; when the user asks for plan state, active task, closeout, checkpoint, or durable next move; or when airtable plan/work-item fields appear stale or out of sync.
 ---
-<!-- skill-marker: updated-skill|20260430T214500Z|skill-pass-maintenance|source-update|dcoir-plan-tracker|SKILL.md -->
+<!-- skill-marker: updated-skill|20260501T150000Z|parent-plan-sync-gate|source-update|dcoir-plan-tracker|SKILL.md -->
 
 # DCOIR Plan Tracker
 
@@ -40,6 +40,8 @@ If authority is unclear or the control plane conflicts, stop and report the exac
 
 ## Purpose
 Use this skill to create, maintain, and resume durable execution plans for DCOIR work.
+
+This skill must be used whenever a DCOIR work item or task is created, resumed, reassigned, paused, blocked, validated, closed, reopened, or used as the current resume point, especially when the row has `canonical_parent_plan_id` or the user asks about "where we are", "state of the plan", "close it out", "resume", or "what remains".
 
 This skill owns:
 - hierarchical task decomposition
@@ -149,6 +151,30 @@ Use:
 There may be multiple active plans across the workspace.
 There must be only one active task per plan.
 
+## Mandatory parent-plan sync gate
+
+Before closing, pausing, marking done, marking blocked, changing active status, or creating a checkpoint for any DCOIR `Work Items` row, check whether the row has `canonical_parent_plan_id` or otherwise belongs to a current plan. If it does, update or verify the parent `Plans` row in the same Airtable pass.
+
+Parent `Plans` fields that must be verified or updated:
+- `plan_state`
+- `active_task_id`
+- `active_task_title`
+- `exact_resume_goal`
+- `resume_detail`
+- `next_recommended_action`
+- `last_updated_text`
+- `updated_at` when available
+
+Required behavior:
+1. If a work item becomes the active task, set the parent plan to `active` and update the parent plan active-task fields.
+2. If a work item is closed and another task remains, move the parent plan active-task fields and next action to the next real task.
+3. If the last task in a plan is closed, set the parent plan to `complete` only after evidence and operator-facing closeout are present.
+4. If plan fields still point at an older task after work advanced, treat that as state drift and repair the parent plan before reporting closeout.
+5. If the correct next task is unclear, do not guess. Mark the plan `paused` or keep it `active` with a clear `next_recommended_action` asking for operator selection.
+6. Do not rely on checkpoints alone as a substitute for updating the parent plan row.
+
+This gate applies even when the user asks to close a "task" or "work item" and does not explicitly mention the parent plan.
+
 ## Plan lifecycle
 Allowed plan states:
 - `draft`
@@ -168,10 +194,12 @@ Allowed task statuses:
 - `skipped`
 
 Every change to `in_progress`, `blocked`, or `done` must update:
+- the Airtable `Work Items` row
+- the parent Airtable `Plans` row when `canonical_parent_plan_id` or an active plan relationship exists
 - task `last_update`
-- `00_index.md`
-- `05_resume_state.md`
-- `plan_state.json`
+- `00_index.md` when local mirrors are in scope
+- `05_resume_state.md` when local mirrors are in scope
+- `plan_state.json` when local mirrors are in scope
 
 ## Execution table row schema
 Use this stable row model in `02_execution_table.md` and mirror it in `plan_state.json`:
@@ -247,12 +275,12 @@ Supported commands include:
 5. Update `plan_tracker_registry.json` and `plan_tracker_memory.md`.
 6. At the beginning of each new session that uses a plan, prefer Airtable-backed plan state first and then run `scripts/ensure_plan_state.py` only when a local plan cache is useful for deterministic rendering or local proof.
 7. Read `00_index.md`, `05_resume_state.md`, Airtable-backed plan state, and `plan_state.json` when available before resuming.
-8. Update Airtable durable state first and refresh markdown or local JSON mirrors as needed whenever the plan changes.
+8. Update Airtable durable state first and refresh markdown or local JSON mirrors as needed whenever the plan or any child Work Item changes.
 9. During startup recovery or re-anchor-related plan reads, keep Airtable retrieval silent and do not render Airtable UI unless the operator explicitly asked for it or explicitly approved it after being asked.
 10. During startup recovery or re-anchor-related plan reads, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
 11. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces Airtable-backed durable state, promotion candidates, what should remain local, the next flush trigger, one best next move, and any staged governed updates that should land in the same grouped push.
 12. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger, but do not rely on local JSON alone when continuity really matters.
-13. When the active plan becomes the live execution branch, update Airtable `Work Items` and the active Airtable `Queue Control` record in the same bounded Airtable pass.
+13. When the active plan becomes the live execution branch, update Airtable `Plans`, `Work Items`, and the active Airtable `Queue Control` record in the same bounded Airtable pass.
 14. Use the github connector directly for safe governed readable-text writes when available.
 15. Verify repo state after writes instead of trusting success messages alone.
 16. Emit user-visible attention signals only at milestone, blocked, and completion moments.
@@ -277,7 +305,8 @@ Known Airtable targets for this project:
 Prefer direct table-id writes against the known base instead of querying Airtable for discovery every time. Only fall back to table-name discovery if the direct table-id write fails.
 
 Airtable write posture:
-- when a plan is the live execution branch, keep `Queue Control` and queue-ranked `Work Items` aligned to that fact
+- when a Work Item status or branch state changes, verify or update its parent `Plans` row first when `canonical_parent_plan_id` is present
+- when a plan is the live execution branch, keep `Plans`, `Queue Control`, and queue-ranked `Work Items` aligned to that fact
 - upsert `Plans` first on material plan-state changes
 - batch `Work Items for task execution` writes when task structure or statuses materially change
 - create sparse `Session Checkpoints or DCOIR Lifecycle Ledger events` rows for blockers, flush reviews, milestones, before-GitHub-write checkpoints, and handoff moments
@@ -349,7 +378,9 @@ Use `scripts/init_plan.py` to generate consistent starter contents whenever dete
 ### On `mark_in_progress`
 Automatically:
 - clear any prior active task in that same plan
-- set new `active_task_id` and `active_task_title`
+- set new `active_task_id` and `active_task_title` in the parent Airtable `Plans` row
+- set parent `plan_state` to `active` unless a stronger operator-approved state applies
+- update parent `next_recommended_action`, `exact_resume_goal`, and `last_updated_text`
 - update `00_index.md`
 - update `02_execution_table.md`
 - update `05_resume_state.md`
@@ -360,11 +391,13 @@ Emit an attention signal only if this transition is a major milestone.
 
 ### On `mark_done`
 Automatically:
-- set task status to `done`
-- record completion note in `last_update`
-- clear active pointer if needed
+- set task status to `done` or Work Item status to `completed`
+- record completion note in `last_update` and the Work Item `Next Action` or notes field
+- verify or update the parent Airtable `Plans` row before reporting closeout
+- clear or move the parent active-task pointer
 - suggest the next eligible task
-- update markdown and json together
+- if no next task remains and closeout evidence exists, set parent `plan_state` to `complete`; otherwise leave it `active` or `paused` with a clear next action
+- update markdown and json together when local mirrors are in scope
 
 Emit an attention signal when the completed task is milestone-worthy or when a plan completes.
 
@@ -437,6 +470,8 @@ When using this skill:
 - do not skip memory-preflight for high-friction github-family work
 - do not skip the post-blocker re-check when a recovered lesson appears reusable
 - do not emit attention banners for every small task flip
+- do not leave parent `Plans` rows stale after child `Work Items` move
+- do not close a Work Item while its parent Plan still points at the closed task unless the Plan is intentionally complete
 - do not leave markdown and json out of sync
 - do not silently promote blocker lessons into canonical memory
 - do not allow more than one active task per plan
