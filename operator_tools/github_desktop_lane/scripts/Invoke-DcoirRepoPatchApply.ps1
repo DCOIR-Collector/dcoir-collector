@@ -14,7 +14,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ToolVersion = "2026-05-01.3"
+$ToolVersion = "2026-05-01.4"
 
 $gitModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Git\Dcoir.Git.psd1'
 $repoPatchModule = Join-Path $PSScriptRoot '..\modules\Dcoir.RepoPatch\Dcoir.RepoPatch.psd1'
@@ -24,7 +24,7 @@ Import-Module -Name (Resolve-Path -LiteralPath $repoPatchModule).Path -Force -Gl
 $cmdGetEnv = Get-Command -Name 'Get-DcoirGitSystemEnvValue' -ErrorAction Stop
 $cmdGit = Get-Command -Name 'Invoke-DcoirGitCommand' -ErrorAction Stop
 $cmdAddLine = Get-Command -Name 'Add-DcoirRepoPatchUtf8Line' -ErrorAction Stop
-$cmdNormalize = Get-Command -Name 'Normalize-DcoirRepoPatchRelativePath' -ErrorAction Stop
+$cmdNormalize = Get-Command -Name 'ConvertTo-DcoirRepoPatchRelativePath' -ErrorAction Stop
 $cmdResolveUnderRoot = Get-Command -Name 'Resolve-DcoirRepoPatchUnderRoot' -ErrorAction Stop
 $cmdHash = Get-Command -Name 'Get-DcoirRepoPatchFileSha256' -ErrorAction Stop
 $cmdAllowedRoot = Get-Command -Name 'Test-DcoirRepoPatchAllowedTargetRoot' -ErrorAction Stop
