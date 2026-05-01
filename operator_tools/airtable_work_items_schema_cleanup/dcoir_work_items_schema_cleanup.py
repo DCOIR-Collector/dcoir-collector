@@ -492,8 +492,12 @@ def generate_option_delete_script(schema: Dict[str, Any], table_id: str, records
     lines.append("")
     lines.append("for (let change of changes) {")
     lines.append("  let field = table.getField(change.fieldName);")
-    lines.append("  output.text(`Updating ${change.fieldName}; removing: ${change.remove.join(', ')}`);")
-    lines.append("  await field.updateOptionsAsync({ choices: change.choices });")
+    lines.append("  output.text(`Updating ${change.fieldName}`);")
+    lines.append("  output.text(`Removing: ${change.remove.join(', ')}`);")
+    lines.append("  await field.updateOptionsAsync(")
+    lines.append("    { choices: change.choices },")
+    lines.append("    { enableSelectFieldChoiceDeletion: true }")
+    lines.append("  );")
     lines.append("}")
     lines.append("output.markdown('**DCOIR option cleanup complete.**');")
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -585,6 +589,17 @@ def run_self_test() -> int:
     assert WORK_TYPE_MAP["verify"] == "validation"
     assert "Next Action" in FIELDS_TO_PREFIX_DELETE
     assert "Status" in CANONICAL_SELECTS
+    choices = canonical_choice_items("Status", [], OPTIONS_TO_DELETE["Status"])
+    assert "waiting" in [item["name"] for item in choices]
+    sample_output = Path(os.environ.get("DCOIR_DOWNLOADS_DIR", ".")) / "self_test_option_delete_script.js"
+    generate_option_delete_script({"tables": [{"id": DEFAULT_TABLE_ID, "fields": []}]}, DEFAULT_TABLE_ID, [], sample_output)
+    sample_text = sample_output.read_text(encoding="utf-8")
+    assert "enableSelectFieldChoiceDeletion: true" in sample_text
+    assert '"name": "waiting"' in sample_text or 'name: "waiting"' in sample_text
+    try:
+        sample_output.unlink()
+    except OSError:
+        pass
     print("PASS: self-test checks passed")
     return 0
 
@@ -637,7 +652,7 @@ def main(argv: List[str] | None = None) -> int:
         "attempt-field-delete",
     ])
     parser.add_argument("--base-id", default=os.environ.get("DCOIR_AIRTABLE_BASE_ID", DEFAULT_BASE_ID))
-    parser.add_argument("--table-id", default=os.environ.get("DCOIR_AIRTABLE_WORK_ITEMS_TABLE_ID", DEFAULT_TABLE_ID))
+    parser.add_argument("--table-id", default=os.environ.get("DCOIR_AIRTABLE_WORK_ITEMS_DEFAULT_TABLE_ID", DEFAULT_TABLE_ID))
     parser.add_argument("--confirm-field-delete", default="")
     parser.add_argument("--confirm-option-delete", default="")
     parser.add_argument("--delete-prefixed-fields", action="store_true")
@@ -665,7 +680,7 @@ def main(argv: List[str] | None = None) -> int:
         "downloads_dir": os.environ.get("DCOIR_DOWNLOADS_DIR", ""),
         "run_label": os.environ.get("DCOIR_TOOL_RUN_LABEL", ""),
         "base_id_env_present": bool(os.environ.get("DCOIR_AIRTABLE_BASE_ID")),
-        "table_id_env_present": bool(os.environ.get("DCOIR_AIRTABLE_WORK_ITEMS_TABLE_ID")),
+        "table_id_env_present": bool(os.environ.get("DCOIR_AIRTABLE_WORK_ITEMS_DEFAULT_TABLE_ID")),
         "token_env_present": bool(os.environ.get("DCOIR_AIRTABLE_TOKEN") or os.environ.get("AIRTABLE_TOKEN")),
     }
     report["warnings"] = []

@@ -127,3 +127,8 @@ work_items_cleanup.config.example.json
 ```
 
 Avoid adding one environment variable per table. Prefer a config file selected once, with general environment variables for token, base, output folder, and config path.
+
+
+## v6 generator note
+
+The generated Airtable Scripting Extension option cleanup script now includes `enableSelectFieldChoiceDeletion: true` when updating select-field choices. This is required by Airtable when choices are removed. The self-test checks that the generated script preserves all canonical Status choices, including `waiting`, and includes the deletion flag.
