@@ -284,7 +284,11 @@ def out_dir() -> Path:
     if p:
         d = Path(p)
     else:
-        d = Path(__file__).resolve().parent / "out"
+        user_profile = os.environ.get("USERPROFILE") or os.environ.get("HOME")
+        if user_profile:
+            d = Path(user_profile) / "Downloads" / "DCOIR"
+        else:
+            d = Path(__file__).resolve().parent / "out"
     d.mkdir(parents=True, exist_ok=True)
     return d
 

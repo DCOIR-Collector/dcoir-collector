@@ -2,41 +2,60 @@
 
 This local tool helps simplify the DCOIR Airtable `Work Items` table.
 
-It uses your local Airtable token from:
+It uses your local Airtable token from one of these environment variables:
 
 ```text
 DCOIR_AIRTABLE_TOKEN
-```
-
-or:
-
-```text
 AIRTABLE_TOKEN
 ```
 
 It uses base `appM4KSwnVf3G3OTK` and table `tblgsQAVWvh8K7gIR` by default.
 
-## Modes
+## Important safety rule
 
-| Mode | File | What it does |
-|---|---|---|
-| Dry run | `Run_DCOIR_WorkItemsSchemaCleanup_DryRun.cmd` | Reports planned changes only |
-| Apply options | `Run_DCOIR_WorkItemsSchemaCleanup_ApplyOptions.cmd` | Creates missing canonical select options by temporary scratch record |
-| Apply safe | `Run_DCOIR_WorkItemsSchemaCleanup_ApplySafe.cmd` | Normalizes record values and prefixes retired fields with `DELETE -` |
-| Verify | `Run_DCOIR_WorkItemsSchemaCleanup_Verify.cmd` | Confirms old values are no longer used |
-| Generate option delete script | `Run_DCOIR_WorkItemsSchemaCleanup_GenerateOptionDeleteScript.cmd` | Writes Airtable Scripting Extension JavaScript for option deletion |
-| Attempt API option delete | `Run_DCOIR_WorkItemsSchemaCleanup_AttemptApiOptionDelete_DANGEROUS.cmd` | Tries direct API option deletion; expected to fail on normal Airtable Web API |
-| Attempt field delete | `Run_DCOIR_WorkItemsSchemaCleanup_AttemptFieldDelete_DANGEROUS.cmd` | Tries direct API deletion of fields prefixed `DELETE -`; expected to fail on normal Airtable Web API |
+Start with dry run. Do not use dangerous modes unless the dry run and safe apply modes look correct.
 
-## Recommended order
+## Double-click files
 
-1. Run dry run.
-2. Run apply options.
-3. Run apply safe.
-4. Run verify.
-5. Run generate option delete script.
-6. Paste the generated JavaScript into Airtable Scripting Extension if option deletion is needed.
-7. Try dangerous API attempts only if you explicitly want to test whether your Airtable account/API currently supports them.
+| File | What it does |
+|---|---|
+| `Run_DCOIR_WorkItemsSchemaCleanup_SelfTest.cmd` | Checks the tool files locally; does not call Airtable |
+| `Run_DCOIR_WorkItemsSchemaCleanup_DryRun.cmd` | Reports planned changes only |
+| `Run_DCOIR_WorkItemsSchemaCleanup_ApplyOptions.cmd` | Creates missing simple select options |
+| `Run_DCOIR_WorkItemsSchemaCleanup_ApplySafe.cmd` | Normalizes record values and prefixes retired fields with `DELETE -` |
+| `Run_DCOIR_WorkItemsSchemaCleanup_Verify.cmd` | Checks cleanup state |
+| `Run_DCOIR_WorkItemsSchemaCleanup_GenerateOptionDeleteScript.cmd` | Writes Airtable Scripting Extension JavaScript for option deletion |
+| `Run_DCOIR_WorkItemsSchemaCleanup_AttemptApiOptionDelete_DANGEROUS.cmd` | Tries direct API option deletion; expected to fail on normal Airtable API |
+| `Run_DCOIR_WorkItemsSchemaCleanup_AttemptFieldDelete_DANGEROUS.cmd` | Tries direct API field deletion for `DELETE -` fields; expected to fail on normal Airtable API |
+
+## Logs
+
+Every `.cmd` launcher now pauses before closing and writes a timestamped log to:
+
+```text
+%USERPROFILE%\Downloads\DCOIR
+```
+
+If `DCOIR_DOWNLOADS_DIR` is set, it writes there instead.
+
+The log name looks like:
+
+```text
+work_items_schema_cleanup_dry-run_20260501T132500Z.log
+```
+
+JSON and Markdown reports are written to the same folder.
+
+## Recommended run order
+
+1. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_SelfTest.cmd`.
+2. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_DryRun.cmd`.
+3. Review the log and report in `Downloads\DCOIR`.
+4. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_ApplyOptions.cmd`.
+5. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_ApplySafe.cmd`.
+6. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_Verify.cmd`.
+7. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_GenerateOptionDeleteScript.cmd` if select-option cleanup is needed.
+8. Use dangerous API delete launchers only if you explicitly want to test whether Airtable supports those API delete calls.
 
 ## Canonical Status values
 
@@ -49,7 +68,7 @@ done
 dropped
 ```
 
-## Fields marked for deletion
+## Fields marked for deletion by safe apply
 
 The safe apply mode prefixes these fields with `DELETE -`:
 
@@ -76,19 +95,13 @@ review_after
 Last Confirmed Text
 ```
 
-## Logs and reports
+## Success markers
 
-The PowerShell wrapper tees terminal output to a timestamped log in `DCOIR_DOWNLOADS_DIR` when that environment variable exists. Otherwise it writes to this tool's local `out` folder.
-
-The Python tool also writes JSON and Markdown reports.
-
-## Safety
-
-The dangerous modes require explicit confirmation words in the wrapper:
+Look for these in the terminal and log:
 
 ```text
-DELETE_FIELDS
-DELETE_OPTIONS
+DCOIR_WORK_ITEMS_SCHEMA_CLEANUP_DONE
+DCOIR_WORK_ITEMS_SCHEMA_CLEANUP_WRAPPER_DONE
 ```
 
-The normal Web API is expected to reject direct field deletion and direct option deletion. Those modes exist only to test capability and capture proof.
+If the window shows an error, copy the text or upload the log. Do not include your Airtable token.
