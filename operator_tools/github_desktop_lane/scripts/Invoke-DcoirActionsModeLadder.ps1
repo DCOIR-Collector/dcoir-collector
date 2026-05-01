@@ -34,7 +34,7 @@ param(
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$ToolVersion = '2026-05-01.1'
+$ToolVersion = '2026-05-01.2'
 
 function Get-DcoirMachineEnv {
     param([Parameter(Mandatory=$true)][string]$Name)
@@ -52,6 +52,22 @@ function ConvertTo-SafeName {
     param([string]$Text)
     return (($Text -replace '[^A-Za-z0-9_.-]', '_').Trim('_'))
 }
+
+function Normalize-DcoirSuiteList {
+    param([string[]]$RawSuites)
+    $normalized = New-Object System.Collections.Generic.List[string]
+    foreach ($item in @($RawSuites)) {
+        if ([string]::IsNullOrWhiteSpace($item)) { continue }
+        foreach ($part in ($item -split ',')) {
+            $trimmed = $part.Trim()
+            if (-not [string]::IsNullOrWhiteSpace($trimmed)) { [void]$normalized.Add($trimmed) }
+        }
+    }
+    if ($normalized.Count -eq 0) { throw 'No suites were provided after normalization.' }
+    return [string[]]$normalized.ToArray()
+}
+
+$Suites = Normalize-DcoirSuiteList -RawSuites $Suites
 
 $repo = Get-DcoirMachineEnv -Name 'DCOIR_REPO_ROOT'
 $downloads = Get-DcoirMachineEnv -Name 'DCOIR_DOWNLOADS_DIR'
