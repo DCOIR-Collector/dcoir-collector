@@ -1,6 +1,6 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$script:DcoirPackagingVersion = '2026-05-01.1'
+$script:DcoirPackagingVersion = '2026-05-01.2'
 
 $moduleRoot = Split-Path -Parent $PSScriptRoot
 $commonPath = Join-Path $moduleRoot 'Dcoir.Common\Dcoir.Common.psd1'
@@ -17,9 +17,12 @@ function Invoke-DcoirChatGPTFriendlyZip {
     )
     $zipScript = Join-Path $RepoRoot 'operator_tools\github_desktop_lane\scripts\New-DcoirChatGPTFriendlyZip.ps1'
     if (-not (Test-Path -LiteralPath $zipScript -PathType Leaf)) { throw "ChatGPT-friendly ZIP helper not found: $zipScript" }
-    $args = @('-SourceFolder', $SourceFolder, '-OutputZip', $OutputZip)
-    if ($NormalizeTextEncoding) { $args += '-NormalizeTextEncoding' }
-    & $zipScript @args | Out-Null
+    $zipParams = @{
+        SourceFolder = $SourceFolder
+        OutputZip = $OutputZip
+    }
+    if ($NormalizeTextEncoding) { $zipParams.NormalizeTextEncoding = $true }
+    & $zipScript @zipParams | Out-Null
     if (-not (Test-Path -LiteralPath $OutputZip -PathType Leaf)) { throw "ZIP helper completed but ZIP not found: $OutputZip" }
     return $OutputZip
 }
