@@ -42,7 +42,7 @@ param(
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$Script:ToolVersion = '2026-05-01.4'
+$Script:ToolVersion = '2026-05-01.5'
 $Script:DispatchesStarted = 0
 $Script:DispatchesSucceeded = 0
 $Script:DispatchesBlocked = 0
@@ -197,7 +197,7 @@ function Get-DcoirRunJobs {
 }
 
 function Save-DcoirRunEvidence {
-    param([Parameter(Mandatory=$true)][Int64]$Id, [string]$Label, [hashtable]$Capture)
+    param([Parameter(Mandatory=$true)][Int64]$Id, [string]$Label, $Capture)
     Write-Phase -Name 'capture' -Message ("Capturing evidence for workflow run {0} ({1})" -f $Id, $Label)
     $safeLabel = (($Label -replace '[^A-Za-z0-9_.-]', '_').Trim('_'))
     $runDir = Join-Path $script:EvidenceDir ("run_{0}_{1}" -f $Id, $safeLabel)
@@ -222,7 +222,7 @@ function Save-DcoirRunEvidence {
 }
 
 function New-DcoirRunRecord {
-    param([string]$Label, [string]$WorkflowFile, [string]$RefName, [hashtable]$Inputs, [hashtable]$Capture)
+    param([string]$Label, [string]$WorkflowFile, [string]$RefName, $Inputs, $Capture)
     return [ordered]@{
         label = $Label; workflow = $WorkflowFile; ref = $RefName; inputs = $Inputs; capture = $Capture
         state = 'planned'; run_id = $null; url = $null; status = $null; conclusion = $null
@@ -245,7 +245,7 @@ function Assert-DcoirLiveDispatchAllowed {
 }
 
 function Start-DcoirWorkflowRun {
-    param([hashtable]$Record)
+    param($Record)
     if (-not $script:ManifestDryRun -and $script:DispatchesStarted -ge $script:MaxDispatchCount) {
         $script:DispatchesBlocked++
         throw ("Dispatch guard blocked additional workflow launch. dispatches_started={0}, max_dispatch_count={1}" -f $script:DispatchesStarted, $script:MaxDispatchCount)
@@ -271,6 +271,7 @@ function Start-DcoirWorkflowRun {
             $run = $candidates[0]
             $Record.run_id = [Int64]$run.id; $Record.url = [string]$run.html_url; $Record.status = [string]$run.status; $Record.conclusion = [string]$run.conclusion; $Record.created_at = [string]$run.created_at; $Record.updated_at = [string]$run.updated_at; $Record.state = 'active'
             $script:DispatchesSucceeded++
+            Save-DcoirJson -Path (Join-Path $script:RunOutputDir 'dispatch_ledger.json') -Object @{ dispatches_started = $script:DispatchesStarted; dispatches_succeeded = $script:DispatchesSucceeded; max_dispatch_count = $script:MaxDispatchCount; records = @($script:Records) }
             Write-Status ("Dispatched workflow run: label={0} workflow={1} run_id={2} status={3} url={4}" -f $Record.label, $workflowFile, $Record.run_id, $Record.status, $Record.url)
             return
         }
@@ -280,7 +281,7 @@ function Start-DcoirWorkflowRun {
 }
 
 function Update-DcoirRunRecordStatus {
-    param([hashtable]$Record)
+    param($Record)
     if (-not $Record.run_id) { return }
     $run = Get-DcoirRunById -Id ([Int64]$Record.run_id)
     $Record.status = [string]$run.status; $Record.conclusion = [string]$run.conclusion; $Record.url = [string]$run.html_url; $Record.updated_at = [string]$run.updated_at
@@ -303,7 +304,16 @@ function Wait-DcoirRunSet {
                 $planned = @($Records | Where-Object { $_.state -eq 'planned' } | Select-Object -First $slots)
                 foreach ($r in $planned) {
                     try { Start-DcoirWorkflowRun -Record $r }
-                    catch { $r.state = 'terminal'; $r.error = $_.Exception.Message; Write-Status "Dispatch failed for $($r.label): $($r.error)" }
+                    catch {
+                        $r.error = $_.Exception.Message
+                        if ($r.run_id) {
+                            $r.state = 'active'
+                            Write-Status "Dispatch tracking issue for $($r.label) after run_id=$($r.run_id): $($r.error)"
+                        } else {
+                            $r.state = 'terminal'
+                            Write-Status "Dispatch failed for $($r.label): $($r.error)"
+                        }
+                    }
                 }
             }
         }
@@ -451,7 +461,7 @@ if ($Mode -eq 'dispatch') {
 
 foreach ($rec in @($records | Where-Object { $_.run_id })) {
     try {
-        $run = Save-DcoirRunEvidence -Id ([Int64]$rec.run_id) -Label ([string]$rec.label) -Capture ([hashtable]$rec.capture)
+        $run = Save-DcoirRunEvidence -Id ([Int64]$rec.run_id) -Label ([string]$rec.label) -Capture $rec.capture
         $rec.status = [string]$run.status; $rec.conclusion = [string]$run.conclusion; $rec.url = [string]$run.html_url
         if ($run.status -eq 'completed') { $rec.state = 'terminal' }
     } catch { $rec.error = $_.Exception.Message; Write-Status "Evidence capture failed for $($rec.label): $($rec.error)" }

@@ -76,7 +76,7 @@ $manifest = Join-Path $repo 'operator_tools\github_desktop_lane\manifests\action
 & $script -ManifestJson $manifest
 ```
 
-Live dispatch must use a copied manifest in `DCOIR_DOWNLOADS_DIR`, not the repo sample. Live dispatch defaults to one workflow run only:
+Live dispatch must use a copied manifest in `DCOIR_DOWNLOADS_DIR`, not the repo sample. Live dispatch defaults to one workflow run only and preserves dispatched run state after GitHub returns a run ID:
 
 ```powershell
 $repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
@@ -106,3 +106,7 @@ Set `allow_multiple_live_dispatches=true` only after reviewing the plan and inte
 - Repo patch/apply: `manifests/repo_patch_apply.sample.json`
 - Actions orchestrator dispatch: `manifests/actions_workflow_orchestrator.dispatch.sample.json`
 - Actions orchestrator watch: `manifests/actions_workflow_orchestrator.watch.sample.json`
+
+### Set-and-forget live validation note
+
+For unattended live validation, use a manifest with `require_dispatch_confirmation=false`, `allow_multiple_live_dispatches=false`, and `max_dispatch_count=1` only after the manifest has been reviewed. The safer default remains `require_dispatch_confirmation=true` for first-run live testing.
