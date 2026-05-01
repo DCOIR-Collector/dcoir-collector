@@ -1,6 +1,6 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$script:DcoirRepoPatchVersion = '2026-05-01.1'
+$script:DcoirRepoPatchVersion = '2026-05-01.2'
 
 function Add-DcoirRepoPatchUtf8Line {
     [CmdletBinding()]
@@ -22,7 +22,7 @@ function Test-DcoirRepoPatchRelativePathSafe {
     return $true
 }
 
-function Normalize-DcoirRepoPatchRelativePath {
+function ConvertTo-DcoirRepoPatchRelativePath {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][string]$RelativePath)
     if (-not (Test-DcoirRepoPatchRelativePathSafe -RelativePath $RelativePath)) { throw "Unsafe relative path: $RelativePath" }
@@ -39,7 +39,7 @@ function Get-DcoirRepoPatchTrimmedRoot {
 function Resolve-DcoirRepoPatchUnderRoot {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][string]$Root, [Parameter(Mandatory=$true)][string]$RelativePath)
-    $rel = Normalize-DcoirRepoPatchRelativePath -RelativePath $RelativePath
+    $rel = ConvertTo-DcoirRepoPatchRelativePath -RelativePath $RelativePath
     $candidate = Join-Path $Root ($rel -replace '/', [System.IO.Path]::DirectorySeparatorChar)
     $rootFull = (Get-DcoirRepoPatchTrimmedRoot -Root $Root) + [System.IO.Path]::DirectorySeparatorChar
     $candidateFull = [System.IO.Path]::GetFullPath($candidate)
@@ -59,10 +59,10 @@ function Test-DcoirRepoPatchAllowedTargetRoot {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][string]$RelativePath, [Parameter(Mandatory=$true)][object[]]$AllowedRoots)
     if (-not $AllowedRoots -or $AllowedRoots.Count -eq 0) { throw 'Manifest must define allowed_target_roots.' }
-    $rel = (Normalize-DcoirRepoPatchRelativePath -RelativePath $RelativePath).ToLowerInvariant()
+    $rel = (ConvertTo-DcoirRepoPatchRelativePath -RelativePath $RelativePath).ToLowerInvariant()
     foreach ($root in $AllowedRoots) {
         if (-not $root) { continue }
-        $r = (Normalize-DcoirRepoPatchRelativePath -RelativePath ([string]$root)).ToLowerInvariant().TrimEnd('/')
+        $r = (ConvertTo-DcoirRepoPatchRelativePath -RelativePath ([string]$root)).ToLowerInvariant().TrimEnd('/')
         if ($rel -eq $r -or $rel.StartsWith($r + '/')) { return $true }
     }
     return $false
@@ -93,4 +93,4 @@ function Find-DcoirRepoPatchPayloadBase {
     return $BaseRoot
 }
 
-Export-ModuleMember -Function Add-DcoirRepoPatchUtf8Line,Test-DcoirRepoPatchRelativePathSafe,Normalize-DcoirRepoPatchRelativePath,Get-DcoirRepoPatchTrimmedRoot,Resolve-DcoirRepoPatchUnderRoot,Get-DcoirRepoPatchFileSha256,Test-DcoirRepoPatchAllowedTargetRoot,Find-DcoirRepoPatchPayloadBase
+Export-ModuleMember -Function Add-DcoirRepoPatchUtf8Line,Test-DcoirRepoPatchRelativePathSafe,ConvertTo-DcoirRepoPatchRelativePath,Get-DcoirRepoPatchTrimmedRoot,Resolve-DcoirRepoPatchUnderRoot,Get-DcoirRepoPatchFileSha256,Test-DcoirRepoPatchAllowedTargetRoot,Find-DcoirRepoPatchPayloadBase
