@@ -21,75 +21,40 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-if (-not $RepoRoot) { throw "DCOIR_REPO_ROOT is not set. Set it to your local dcoir-collector repo root or pass -RepoRoot." }
+$gitModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Git\Dcoir.Git.psd1'
+$snapshotModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Snapshot\Dcoir.Snapshot.psd1'
+Import-Module -Name (Resolve-Path -LiteralPath $gitModule).Path -Force -Global -ErrorAction Stop
+Import-Module -Name (Resolve-Path -LiteralPath $snapshotModule).Path -Force -Global -ErrorAction Stop
+
+$cmdGetEnv = Get-Command -Name 'Get-DcoirGitSystemEnvValue' -ErrorAction Stop
+$cmdGit = Get-Command -Name 'Invoke-DcoirGitCommand' -ErrorAction Stop
+$cmdAddLine = Get-Command -Name 'Add-DcoirSnapshotUtf8Line' -ErrorAction Stop
+$cmdSafeName = Get-Command -Name 'ConvertTo-DcoirSnapshotSafeName' -ErrorAction Stop
+$cmdScan = Get-Command -Name 'Get-DcoirTextSnapshotFiles' -ErrorAction Stop
+
+if (-not $RepoRoot) { $RepoRoot = & $cmdGetEnv -Name 'DCOIR_REPO_ROOT' -Required }
 if (-not (Test-Path -LiteralPath $RepoRoot -PathType Container)) { throw "Repo root not found: $RepoRoot" }
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
-if (-not $OutputDir) { $OutputDir = Join-Path $env:USERPROFILE "Downloads" }
+if (-not $OutputDir) { $OutputDir = & $cmdGetEnv -Name 'DCOIR_DOWNLOADS_DIR' -Required }
 if (-not (Test-Path -LiteralPath $OutputDir -PathType Container)) { New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null }
 $OutputDir = (Resolve-Path -LiteralPath $OutputDir).Path
 
 $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
-$safeName = ($SnapshotName -replace '[^A-Za-z0-9_.-]', '_')
+$safeName = & $cmdSafeName -Name $SnapshotName -Default 'dcoir_text_only_repo_snapshot'
 $tmpRoot = Join-Path ([System.IO.Path]::GetTempPath()) "${safeName}_$stamp"
 $stage = Join-Path $tmpRoot "snapshot"
 $zipPath = Join-Path $OutputDir "${safeName}_$stamp.zip"
 $logPath = Join-Path $OutputDir "${safeName}_$stamp.log.txt"
 $manifestPath = Join-Path $OutputDir "${safeName}_$stamp.manifest.json"
-$included = New-Object System.Collections.Generic.List[object]
-$skipped = New-Object System.Collections.Generic.List[object]
 
-function Write-Log { param([AllowEmptyString()][string]$Text) Write-Host $Text; $utf8NoBom = New-Object System.Text.UTF8Encoding($false); [System.IO.File]::AppendAllText($logPath, ($Text + [Environment]::NewLine), $utf8NoBom) }
-function Add-Skip {
-    param([string]$RelativePath, [string]$Reason, [Nullable[Int64]]$Size = $null)
-    $skipped.Add([pscustomobject]@{ path = $RelativePath; reason = $Reason; size_bytes = $Size }) | Out-Null
-    Write-Log "SKIP [$Reason]: $RelativePath"
+function Write-Log {
+    param([AllowEmptyString()][string]$Text)
+    Write-Host $Text
+    & $cmdAddLine -Path $logPath -Text $Text
 }
-function Test-UnderPath {
-    param([string]$Path, [string]$Root)
-    $fullPath = [System.IO.Path]::GetFullPath($Path)
-    $fullRoot = [System.IO.Path]::GetFullPath($Root).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
-    return $fullPath.StartsWith($fullRoot, [System.StringComparison]::OrdinalIgnoreCase)
-}
-function Get-RelativePathSafe {
-    param([string]$Path)
-    $repoUri = [System.Uri]::new(($RepoRoot.TrimEnd('\','/') + [System.IO.Path]::DirectorySeparatorChar))
-    $fileUri = [System.Uri]::new($Path)
-    return [System.Uri]::UnescapeDataString($repoUri.MakeRelativeUri($fileUri).ToString()).Replace('/', [System.IO.Path]::DirectorySeparatorChar)
-}
-function Test-LikelyBinary {
-    param([string]$Path)
-    $bufferSize = 8192
-    $stream = [System.IO.File]::Open($Path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite)
-    try {
-        $length = [Math]::Min($bufferSize, [int]$stream.Length)
-        if ($length -le 0) { return $false }
-        $buffer = New-Object byte[] $length
-        [void]$stream.Read($buffer, 0, $length)
-        for ($i = 0; $i -lt $length; $i++) { if ($buffer[$i] -eq 0) { return $true } }
-        return $false
-    }
-    finally { $stream.Dispose() }
-}
-function Invoke-GitStatusPorcelain {
-    $git = Get-Command git.exe -ErrorAction SilentlyContinue
-    if (-not $git) { return @("git.exe unavailable; clean-tree check skipped") }
-    $psi = [System.Diagnostics.ProcessStartInfo]::new()
-    $psi.FileName = $git.Source
-    $psi.Arguments = "status --porcelain"
-    $psi.WorkingDirectory = $RepoRoot
-    $psi.UseShellExecute = $false
-    $psi.RedirectStandardOutput = $true
-    $psi.RedirectStandardError = $true
-    $psi.CreateNoWindow = $true
-    $process = [System.Diagnostics.Process]::new()
-    $process.StartInfo = $psi
-    [void]$process.Start()
-    $stdout = $process.StandardOutput.ReadToEnd()
-    $stderr = $process.StandardError.ReadToEnd()
-    $process.WaitForExit()
-    if ($process.ExitCode -ne 0) { return @("git status failed: $stderr") }
-    if ([string]::IsNullOrWhiteSpace($stdout)) { return @() }
-    return @($stdout -replace "`r`n", "`n" -split "`n" | Where-Object { $_ })
+function Invoke-SnapshotGit {
+    param([Parameter(Mandatory=$true)][string[]]$Arguments, [switch]$AllowFailure, [switch]$Quiet)
+    return & $cmdGit -RepoRoot $RepoRoot -Arguments $Arguments -LogPath $logPath -AllowFailure:$AllowFailure -Quiet:$Quiet
 }
 
 try {
@@ -105,7 +70,8 @@ try {
     if (-not $NoGitCleanCheck) {
         Write-Log ""
         Write-Log "== GIT STATUS CHECK =="
-        $statusLines = @(Invoke-GitStatusPorcelain)
+        $statusResult = Invoke-SnapshotGit @('status','--porcelain') -AllowFailure -Quiet
+        $statusLines = @($statusResult.Lines)
         if ($statusLines.Count -gt 0) {
             foreach ($line in $statusLines) { Write-Log "GIT-STATUS: $line" }
             Write-Log "Git status output is logged for context only. Snapshot will continue because this tool is read-only."
@@ -113,29 +79,14 @@ try {
     }
     Write-Log ""
     Write-Log "== SCAN AND COPY TEXT FILES =="
-    $allFiles = Get-ChildItem -LiteralPath $RepoRoot -Recurse -Force -File
-    foreach ($file in $allFiles) {
-        $full = $file.FullName
-        if (-not (Test-UnderPath -Path $full -Root $RepoRoot)) { Add-Skip -RelativePath $full -Reason "outside_repo_root" -Size $file.Length; continue }
-        $rel = Get-RelativePathSafe -Path $full
-        $parts = $rel -split '[\\/]'
-        $dirParts = if ($parts.Count -gt 1) { $parts[0..($parts.Count - 2)] } else { @() }
-        $excludedDir = $null
-        foreach ($part in $dirParts) {
-            if ($ExcludeDirectoryNames -contains $part) { $excludedDir = $part; break }
-            if (-not $IncludeDotDirectories -and $part.StartsWith('.') -and $part -ne '.github') { $excludedDir = $part; break }
-        }
-        if ($excludedDir) { Add-Skip -RelativePath $rel -Reason "excluded_directory:$excludedDir" -Size $file.Length; continue }
-        $ext = $file.Extension.ToLowerInvariant()
-        if ($ExcludeExtensions -contains $ext) { Add-Skip -RelativePath $rel -Reason "excluded_extension:$ext" -Size $file.Length; continue }
-        if ($file.Length -gt $MaxFileBytes) { Add-Skip -RelativePath $rel -Reason "over_max_file_bytes" -Size $file.Length; continue }
-        if (Test-LikelyBinary -Path $full) { Add-Skip -RelativePath $rel -Reason "binary_sniff" -Size $file.Length; continue }
-        $dest = Join-Path $stage $rel
+    $scan = & $cmdScan -RepoRoot $RepoRoot -MaxFileBytes $MaxFileBytes -ExcludeDirectoryNames $ExcludeDirectoryNames -ExcludeExtensions $ExcludeExtensions -IncludeDotDirectories:$IncludeDotDirectories
+    foreach ($skip in @($scan.Skipped)) { Write-Log "SKIP [$($skip.reason)]: $($skip.path)" }
+    foreach ($item in @($scan.Included)) {
+        $dest = Join-Path $stage $item.path
         $parent = Split-Path -Parent $dest
         if ($parent) { New-Item -ItemType Directory -Force -Path $parent | Out-Null }
-        Copy-Item -LiteralPath $full -Destination $dest -Force
-        $included.Add([pscustomobject]@{ path = $rel; size_bytes = $file.Length; extension = $ext }) | Out-Null
-        Write-Log "INCLUDE: $rel"
+        Copy-Item -LiteralPath $item.full_name -Destination $dest -Force
+        Write-Log "INCLUDE: $($item.path)"
     }
     $friendlyZipScript = Join-Path $PSScriptRoot "New-DcoirChatGPTFriendlyZip.ps1"
     if (Test-Path -LiteralPath $friendlyZipScript -PathType Leaf) {
@@ -146,7 +97,7 @@ try {
     }
     $manifest = [ordered]@{
         tool = "New-DcoirTextOnlyRepoSnapshot.ps1"
-        tool_version = "2026-05-01.2"
+        tool_version = "2026-05-01.3"
         created_at = (Get-Date -Format o)
         repo_root = $RepoRoot
         output_zip = $zipPath
@@ -154,15 +105,15 @@ try {
         max_file_bytes = $MaxFileBytes
         include_dot_directories = [bool]$IncludeDotDirectories
         no_git_clean_check = [bool]$NoGitCleanCheck
-        counts = [ordered]@{ included_files = $included.Count; skipped_files = $skipped.Count }
-        included_files = @($included.ToArray())
-        skipped_files = @($skipped.ToArray())
+        counts = [ordered]@{ included_files = @($scan.Included).Count; skipped_files = @($scan.Skipped).Count }
+        included_files = @($scan.Included | Select-Object path,size_bytes,extension)
+        skipped_files = @($scan.Skipped)
     }
     $manifest | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $manifestPath -Encoding UTF8
     Write-Log ""
     Write-Log "== Snapshot complete =="
-    Write-Log "Included files: $($included.Count)"
-    Write-Log "Skipped files: $($skipped.Count)"
+    Write-Log "Included files: $(@($scan.Included).Count)"
+    Write-Log "Skipped files: $(@($scan.Skipped).Count)"
     Write-Log "ZIP: $zipPath"
     Write-Log "LOG: $logPath"
     Write-Log "MANIFEST: $manifestPath"
