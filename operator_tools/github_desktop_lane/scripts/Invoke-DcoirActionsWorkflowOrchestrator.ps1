@@ -14,6 +14,10 @@ Safety defaults:
   - Dispatch requires -ConfirmDispatch unless manifest require_dispatch_confirmation is false.
   - max_parallel throttles local dispatching; GitHub runner availability and workflow concurrency settings still control real execution order.
   - Outputs are evidence-only and can be packaged via New-DcoirChatGPTFriendlyZip.ps1 when present.
+
+Environment contract:
+  - DCOIR_REPO_ROOT and DCOIR_DOWNLOADS_DIR are read from Machine/System environment scope.
+  - Process-scoped placeholder values such as C:\path\to\dcoir-collector are ignored and rejected.
 #>
 [CmdletBinding()]
 param(
@@ -32,12 +36,51 @@ param(
     [switch]$CreateUploadZip,
     [switch]$ConfirmDispatch,
     [switch]$DryRun,
-    [string]$OutputBase = $env:DCOIR_DOWNLOADS_DIR
+    [string]$OutputBase
 )
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$Script:ToolVersion = '2026-05-01.1'
+$Script:ToolVersion = '2026-05-01.2'
+
+function Test-DcoirPlaceholderPath {
+    param([AllowNull()][string]$Value)
+    if ([string]::IsNullOrWhiteSpace($Value)) { return $false }
+    $v = $Value.Trim()
+    if ($v -match '^[A-Za-z]:\\path\\to(\\|$)') { return $true }
+    if ($v -match '^/path/to(/|$)') { return $true }
+    if ($v -match 'your[_ -]?folder[_ -]?name[_ -]?here') { return $true }
+    if ($v -match 'your[_ -]?repo') { return $true }
+    return $false
+}
+
+function Get-DcoirSystemEnvValue {
+    param(
+        [Parameter(Mandatory=$true)][string]$Name,
+        [switch]$Required,
+        [AllowNull()][string]$Default
+    )
+    $machine = [Environment]::GetEnvironmentVariable($Name, 'Machine')
+    if (Test-DcoirPlaceholderPath -Value $machine) {
+        throw "$Name is set to a placeholder path in Machine/System environment scope: $machine"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($machine)) { return $machine.Trim() }
+    if (-not [string]::IsNullOrWhiteSpace($Default)) { return $Default }
+    if ($Required) { throw "$Name is not set in Machine/System environment scope. Set it as a System environment variable, then open a new terminal." }
+    return $null
+}
+
+function Resolve-DcoirPathText {
+    param([AllowNull()][string]$Text)
+    if ($null -eq $Text) { return $null }
+    $repoRoot = Get-DcoirSystemEnvValue -Name 'DCOIR_REPO_ROOT' -Required
+    $downloads = Get-DcoirSystemEnvValue -Name 'DCOIR_DOWNLOADS_DIR' -Required
+    $expanded = $Text
+    $expanded = $expanded.Replace('%DCOIR_REPO_ROOT%', $repoRoot)
+    $expanded = $expanded.Replace('%DCOIR_DOWNLOADS_DIR%', $downloads)
+    $expanded = $expanded.Replace('%USERPROFILE%', [string]$env:USERPROFILE)
+    return [Environment]::ExpandEnvironmentVariables($expanded)
+}
 
 function ConvertTo-DcoirHashtable {
     param($InputObject)
@@ -65,16 +108,6 @@ function Get-DcoirConfigValue {
     if ($null -eq $Map) { return $Default }
     if ($Map.ContainsKey($Name)) { return $Map[$Name] }
     return $Default
-}
-
-function Expand-DcoirEnvText {
-    param([string]$Text)
-    if ($null -eq $Text) { return $null }
-    $expanded = $Text
-    $expanded = $expanded.Replace('%DCOIR_DOWNLOADS_DIR%', [string]$env:DCOIR_DOWNLOADS_DIR)
-    $expanded = $expanded.Replace('%DCOIR_REPO_ROOT%', [string]$env:DCOIR_REPO_ROOT)
-    $expanded = $expanded.Replace('%USERPROFILE%', [string]$env:USERPROFILE)
-    return [Environment]::ExpandEnvironmentVariables($expanded)
 }
 
 function Write-DcoirUtf8Text {
@@ -153,12 +186,9 @@ function Get-DcoirRunJobs {
 }
 
 function Save-DcoirRunEvidence {
-    param(
-        [Parameter(Mandatory=$true)][Int64]$Id,
-        [string]$Label,
-        [hashtable]$Capture
-    )
-    $runDir = Join-Path $script:EvidenceDir ("run_{0}_{1}" -f $Id, (($Label -replace '[^A-Za-z0-9_.-]', '_').Trim('_')))
+    param([Parameter(Mandatory=$true)][Int64]$Id, [string]$Label, [hashtable]$Capture)
+    $safeLabel = (($Label -replace '[^A-Za-z0-9_.-]', '_').Trim('_'))
+    $runDir = Join-Path $script:EvidenceDir ("run_{0}_{1}" -f $Id, $safeLabel)
     New-Item -ItemType Directory -Force -Path $runDir | Out-Null
     $run = Get-DcoirRunById -Id $Id
     Save-DcoirJson -Path (Join-Path $runDir 'run.json') -Object $run
@@ -180,11 +210,8 @@ function Save-DcoirRunEvidence {
     if ($wantArtifacts -or $script:DownloadArtifacts) {
         $artifactDir = Join-Path $runDir 'artifacts'
         New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
-        try {
-            Invoke-DcoirGhText -GhArgs @('run','download', [string]$Id, '-R', $script:Repo, '-D', $artifactDir) -DebugName "artifacts_$Id" | Out-Null
-        } catch {
-            Write-DcoirUtf8Text -Path (Join-Path $runDir 'artifacts.error.txt') -Text $_.Exception.Message
-        }
+        try { Invoke-DcoirGhText -GhArgs @('run','download', [string]$Id, '-R', $script:Repo, '-D', $artifactDir) -DebugName "artifacts_$Id" | Out-Null }
+        catch { Write-DcoirUtf8Text -Path (Join-Path $runDir 'artifacts.error.txt') -Text $_.Exception.Message }
     }
     return $run
 }
@@ -192,19 +219,9 @@ function Save-DcoirRunEvidence {
 function New-DcoirRunRecord {
     param([string]$Label, [string]$WorkflowFile, [string]$RefName, [hashtable]$Inputs, [hashtable]$Capture)
     return [ordered]@{
-        label = $Label
-        workflow = $WorkflowFile
-        ref = $RefName
-        inputs = $Inputs
-        capture = $Capture
-        state = 'planned'
-        run_id = $null
-        url = $null
-        status = $null
-        conclusion = $null
-        created_at = $null
-        updated_at = $null
-        error = $null
+        label = $Label; workflow = $WorkflowFile; ref = $RefName; inputs = $Inputs; capture = $Capture
+        state = 'planned'; run_id = $null; url = $null; status = $null; conclusion = $null
+        created_at = $null; updated_at = $null; error = $null
     }
 }
 
@@ -218,10 +235,7 @@ function Start-DcoirWorkflowRun {
     $args = @('workflow','run',$workflowFile,'-R',$script:Repo,'--ref',$refName)
     $inputs = $Record.inputs
     if ($inputs) {
-        foreach ($key in $inputs.Keys) {
-            $value = [string]$inputs[$key]
-            $args += @('-f', "$key=$value")
-        }
+        foreach ($key in $inputs.Keys) { $args += @('-f', ("{0}={1}" -f $key, [string]$inputs[$key])) }
     }
     Invoke-DcoirGhText -GhArgs $args -DebugName ('dispatch_' + ($Record.label -replace '[^A-Za-z0-9_.-]', '_')) | Out-Null
     for ($i = 1; $i -le $script:DispatchPollAttempts; $i++) {
@@ -230,13 +244,7 @@ function Start-DcoirWorkflowRun {
         $candidates = @($after | Where-Object { ($beforeIds -notcontains [Int64]$_.id) -and ([DateTime]$_.created_at).ToUniversalTime() -ge $dispatchStart } | Sort-Object { [DateTime]$_.created_at } -Descending)
         if ($candidates.Count -gt 0) {
             $run = $candidates[0]
-            $Record.run_id = [Int64]$run.id
-            $Record.url = [string]$run.html_url
-            $Record.status = [string]$run.status
-            $Record.conclusion = [string]$run.conclusion
-            $Record.created_at = [string]$run.created_at
-            $Record.updated_at = [string]$run.updated_at
-            $Record.state = 'active'
+            $Record.run_id = [Int64]$run.id; $Record.url = [string]$run.html_url; $Record.status = [string]$run.status; $Record.conclusion = [string]$run.conclusion; $Record.created_at = [string]$run.created_at; $Record.updated_at = [string]$run.updated_at; $Record.state = 'active'
             Write-Status "Dispatched $($Record.label): workflow=$workflowFile run_id=$($Record.run_id) status=$($Record.status)"
             return
         }
@@ -249,10 +257,7 @@ function Update-DcoirRunRecordStatus {
     param([hashtable]$Record)
     if (-not $Record.run_id) { return }
     $run = Get-DcoirRunById -Id ([Int64]$Record.run_id)
-    $Record.status = [string]$run.status
-    $Record.conclusion = [string]$run.conclusion
-    $Record.url = [string]$run.html_url
-    $Record.updated_at = [string]$run.updated_at
+    $Record.status = [string]$run.status; $Record.conclusion = [string]$run.conclusion; $Record.url = [string]$run.html_url; $Record.updated_at = [string]$run.updated_at
     if ($run.status -eq 'completed') { $Record.state = 'terminal' } else { $Record.state = 'active' }
 }
 
@@ -261,9 +266,7 @@ function Wait-DcoirRunSet {
     $deadline = (Get-Date).AddMinutes($script:TimeoutMinutes)
     while ($true) {
         if ((Get-Date) -gt $deadline) {
-            foreach ($r in $Records) {
-                if ($r.state -ne 'terminal') { $r.state = 'timed_out'; $r.error = 'Timeout waiting for workflow run completion.' }
-            }
+            foreach ($r in $Records) { if ($r.state -ne 'terminal') { $r.state = 'timed_out'; $r.error = 'Timeout waiting for workflow run completion.' } }
             return
         }
         if ($DispatchPlanned) {
@@ -312,7 +315,17 @@ function Add-DcoirWatchRecords {
     }
 }
 
-# Load manifest and resolve runtime settings.
+# Resolve system-scope environment variables early.
+$script:SystemRepoRoot = Get-DcoirSystemEnvValue -Name 'DCOIR_REPO_ROOT' -Required
+$script:SystemDownloadsDir = Get-DcoirSystemEnvValue -Name 'DCOIR_DOWNLOADS_DIR' -Required
+if (-not (Test-Path -LiteralPath $script:SystemRepoRoot -PathType Container)) { throw "DCOIR_REPO_ROOT Machine/System path does not exist: $script:SystemRepoRoot" }
+if (-not (Test-Path -LiteralPath $script:SystemDownloadsDir -PathType Container)) { throw "DCOIR_DOWNLOADS_DIR Machine/System path does not exist: $script:SystemDownloadsDir" }
+
+if ([string]::IsNullOrWhiteSpace($ManifestJson) -and $Mode -eq 'manifest') {
+    $ManifestJson = Join-Path $script:SystemRepoRoot 'operator_tools\github_desktop_lane\manifests\actions_workflow_orchestrator.dispatch.sample.json'
+}
+if ($ManifestJson) { $ManifestJson = Resolve-DcoirPathText -Text $ManifestJson }
+
 $manifest = @{}
 if ($ManifestJson) {
     if (-not (Test-Path -LiteralPath $ManifestJson -PathType Leaf)) { throw "ManifestJson not found: $ManifestJson" }
@@ -332,8 +345,8 @@ $manifestDryRun = [bool](Get-DcoirConfigValue -Map $manifest -Name 'dry_run' -De
 if ($DryRun) { $manifestDryRun = $true }
 $requireConfirmation = [bool](Get-DcoirConfigValue -Map $manifest -Name 'require_dispatch_confirmation' -Default $true)
 $outputCfg = Get-DcoirConfigValue -Map $manifest -Name 'output' -Default @{}
-$outputFolder = Expand-DcoirEnvText ([string](Get-DcoirConfigValue -Map $outputCfg -Name 'folder' -Default $OutputBase))
-if ([string]::IsNullOrWhiteSpace($outputFolder)) { $outputFolder = Join-Path $env:USERPROFILE 'Downloads' }
+$outputDefault = if (-not [string]::IsNullOrWhiteSpace($OutputBase)) { $OutputBase } else { $script:SystemDownloadsDir }
+$outputFolder = Resolve-DcoirPathText ([string](Get-DcoirConfigValue -Map $outputCfg -Name 'folder' -Default $outputDefault))
 if (-not (Test-Path -LiteralPath $outputFolder -PathType Container)) { New-Item -ItemType Directory -Force -Path $outputFolder | Out-Null }
 $runSetId = [string](Get-DcoirConfigValue -Map $manifest -Name 'run_set_id' -Default ("dcoir_actions_" + (Get-Date -Format 'yyyyMMdd_HHmmss')))
 $stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
@@ -348,6 +361,8 @@ $zipName = [string](Get-DcoirConfigValue -Map $outputCfg -Name 'zip_name' -Defau
 $zipPath = Join-Path $outputFolder $zipName
 
 Write-Status "DCOIR Actions Workflow Orchestrator v$script:ToolVersion"
+Write-Status "Machine DCOIR_REPO_ROOT=$script:SystemRepoRoot"
+Write-Status "Machine DCOIR_DOWNLOADS_DIR=$script:SystemDownloadsDir"
 Write-Status "Mode=$Mode Repo=$script:Repo Ref=$defaultRef MaxParallel=$script:MaxParallel DryRun=$manifestDryRun"
 Test-DcoirGhAvailable
 
@@ -384,54 +399,28 @@ if ($Mode -eq 'dispatch') {
     $ids = @(Get-DcoirConfigValue -Map $capCfg -Name 'run_ids' -Default $RunId)
     if (-not $ids -or $ids.Count -eq 0) { throw 'Capture mode requires run_ids or -RunId.' }
     Add-DcoirWatchRecords -Records $records -Workflows @() -Ids $ids -LimitCount $Limit -Branch $defaultRef
-} else {
-    throw "Unsupported mode: $Mode"
-}
+} else { throw "Unsupported mode: $Mode" }
 
-# Capture evidence for all real run IDs.
 foreach ($rec in @($records | Where-Object { $_.run_id })) {
     try {
         $run = Save-DcoirRunEvidence -Id ([Int64]$rec.run_id) -Label ([string]$rec.label) -Capture ([hashtable]$rec.capture)
-        $rec.status = [string]$run.status
-        $rec.conclusion = [string]$run.conclusion
-        $rec.url = [string]$run.html_url
+        $rec.status = [string]$run.status; $rec.conclusion = [string]$run.conclusion; $rec.url = [string]$run.html_url
         if ($run.status -eq 'completed') { $rec.state = 'terminal' }
-    } catch {
-        $rec.error = $_.Exception.Message
-        Write-Status "Evidence capture failed for $($rec.label): $($rec.error)"
-    }
+    } catch { $rec.error = $_.Exception.Message; Write-Status "Evidence capture failed for $($rec.label): $($rec.error)" }
 }
 
 $failed = @($records | Where-Object { $_.conclusion -and $_.conclusion -ne 'success' -and $_.conclusion -ne '' })
 $summary = [ordered]@{
-    tool = 'Invoke-DcoirActionsWorkflowOrchestrator.ps1'
-    tool_version = $script:ToolVersion
-    created_at = (Get-Date -Format o)
-    mode = $Mode
-    repo = $script:Repo
-    default_ref = $defaultRef
-    run_set_id = $runSetId
-    dry_run = $manifestDryRun
-    max_parallel = $script:MaxParallel
-    output_dir = $script:RunOutputDir
-    zip_path = $null
-    run_count = $records.Count
-    failed_or_non_success_count = $failed.Count
-    records = @($records)
+    tool = 'Invoke-DcoirActionsWorkflowOrchestrator.ps1'; tool_version = $script:ToolVersion; created_at = (Get-Date -Format o)
+    mode = $Mode; repo = $script:Repo; default_ref = $defaultRef; run_set_id = $runSetId; dry_run = $manifestDryRun; max_parallel = $script:MaxParallel
+    machine_repo_root = $script:SystemRepoRoot; machine_downloads_dir = $script:SystemDownloadsDir
+    output_dir = $script:RunOutputDir; zip_path = $null; run_count = $records.Count; failed_or_non_success_count = $failed.Count; records = @($records)
 }
 Save-DcoirJson -Path (Join-Path $script:RunOutputDir 'orchestrator_summary.json') -Object $summary
 $md = @()
-$md += "# DCOIR Actions Workflow Orchestrator Summary"
-$md += ""
-$md += "- Created: $($summary.created_at)"
-$md += "- Mode: $Mode"
-$md += "- Repo: $script:Repo"
-$md += "- Run set: $runSetId"
-$md += "- Dry run: $manifestDryRun"
-$md += "- Max parallel: $script:MaxParallel"
-$md += ""
-$md += "| Label | Workflow | Run ID | Status | Conclusion | URL |"
-$md += "|---|---|---:|---|---|---|"
+$md += '# DCOIR Actions Workflow Orchestrator Summary'; $md += ''
+$md += "- Created: $($summary.created_at)"; $md += "- Mode: $Mode"; $md += "- Repo: $script:Repo"; $md += "- Run set: $runSetId"; $md += "- Dry run: $manifestDryRun"; $md += "- Max parallel: $script:MaxParallel"; $md += "- Machine DCOIR_REPO_ROOT: $script:SystemRepoRoot"; $md += ''
+$md += '| Label | Workflow | Run ID | Status | Conclusion | URL |'; $md += '|---|---|---:|---|---|---|'
 foreach ($rec in $records) { $md += "| $($rec.label) | $($rec.workflow) | $($rec.run_id) | $($rec.status) | $($rec.conclusion) | $($rec.url) |" }
 Write-DcoirUtf8Text -Path (Join-Path $script:RunOutputDir 'orchestrator_summary.md') -Text ($md -join "`n")
 
