@@ -28,7 +28,7 @@ param(
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$Script:ToolVersion = '2026-05-01.2'
+$Script:ToolVersion = '2026-05-01.3'
 
 function Get-DcoirMachineEnv {
     param([Parameter(Mandatory=$true)][string]$Name)
@@ -54,10 +54,12 @@ function Invoke-DcoirOrchestratorStep {
     Write-DcoirStep $Label
     Write-DcoirStep "Manifest: $ManifestPath"
 
-    $orchestratorArgs = @('-ManifestJson', $ManifestPath)
-    if ($ConfirmDispatch) { $orchestratorArgs += '-ConfirmDispatch' }
+    if ($ConfirmDispatch) {
+        & $ScriptPath -ManifestJson $ManifestPath -ConfirmDispatch
+    } else {
+        & $ScriptPath -ManifestJson $ManifestPath
+    }
 
-    & $ScriptPath @orchestratorArgs
     $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { $LASTEXITCODE }
     if ($exitCode -ne 0) { throw "$Label failed with exit code $exitCode." }
 }
