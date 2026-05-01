@@ -5,96 +5,95 @@ param(
 )
 
 $ErrorActionPreference = "Continue"
-if (-not $RepoRoot) { throw "DCOIR_REPO_ROOT is not set." }
+$commonModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Common\Dcoir.Common.psd1'
+$gitModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Git\Dcoir.Git.psd1'
+Import-Module -Name $commonModule -Force -ErrorAction Stop
+Import-Module -Name $gitModule -Force -ErrorAction Stop
+
+if (-not $RepoRoot) { $RepoRoot = Get-DcoirSystemEnvValue -Name 'DCOIR_REPO_ROOT' -Required }
 if (-not (Test-Path -LiteralPath $RepoRoot -PathType Container)) { throw "Repo root not found: $RepoRoot" }
-if (-not $OutputDir) { $OutputDir = Join-Path $env:USERPROFILE "Downloads" }
+if (-not $OutputDir) { $OutputDir = Get-DcoirSystemEnvValue -Name 'DCOIR_DOWNLOADS_DIR' -Required }
 if (-not (Test-Path -LiteralPath $OutputDir -PathType Container)) { New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null }
 
+$RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
+$OutputDir = (Resolve-Path -LiteralPath $OutputDir).Path
 $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $log = Join-Path $OutputDir "dcoir_git_conflict_diagnostic_$stamp.txt"
-Set-Location $RepoRoot
 
-& {
-    "DCOIR Git Conflict Diagnostic"
-    "Timestamp: $(Get-Date -Format o)"
-    "Repo: $RepoRoot"
+function Write-DiagLine {
+    param([AllowEmptyString()][string]$Text)
+    Write-Host $Text
+    Add-DcoirUtf8Line -Path $log -Text $Text
+}
 
-    ""
-    "== CURRENT DIRECTORY =="
-    Get-Location
+function Invoke-DiagGit {
+    param([Parameter(Mandatory=$true)][string[]]$Arguments, [switch]$AllowFailure)
+    $result = Invoke-DcoirGitCommand -RepoRoot $RepoRoot -Arguments $Arguments -LogPath $log -AllowFailure:$AllowFailure
+    return $result
+}
 
-    ""
-    "== GIT VERSION =="
-    git --version
-
-    ""
-    "== BRANCH =="
-    git branch --show-current
-
-    ""
-    "== HEAD =="
-    git rev-parse --short HEAD
-    git log --oneline -5
-
-    ""
-    "== REMOTES =="
-    git remote -v
-
-    ""
-    "== FETCH ORIGIN =="
-    git fetch origin --prune
-
-    ""
-    "== STATUS SHORT WITH BRANCH =="
-    git status --short --branch
-
-    ""
-    "== STATUS FULL =="
-    git status
-
-    ""
-    "== BRANCH VERBOSE =="
-    git branch -vv
-
-    ""
-    "== AHEAD / BEHIND MAIN =="
-    $branch = git branch --show-current
-    if ($branch) { git rev-list --left-right --count "$branch...origin/main" }
-
-    ""
-    "== UNMERGED / CONFLICT FILES =="
-    git diff --name-only --diff-filter=U
-
-    ""
-    "== WORKING TREE DIFF SUMMARY =="
-    git diff --stat
-    git diff --name-status
-
-    ""
-    "== STAGED DIFF SUMMARY =="
-    git diff --cached --stat
-    git diff --cached --name-status
-
-    ""
-    "== UNTRACKED FILES =="
-    git ls-files --others --exclude-standard
-
-    ""
-    "== STASH LIST =="
-    git stash list
-
-    ""
-    "== REBASE / MERGE / CHERRY-PICK STATE =="
-    if (Test-Path ".git/MERGE_HEAD") { "MERGE_HEAD exists" } else { "No MERGE_HEAD" }
-    if (Test-Path ".git/rebase-merge") { "rebase-merge exists" } else { "No rebase-merge" }
-    if (Test-Path ".git/rebase-apply") { "rebase-apply exists" } else { "No rebase-apply" }
-    if (Test-Path ".git/CHERRY_PICK_HEAD") { "CHERRY_PICK_HEAD exists" } else { "No CHERRY_PICK_HEAD" }
-
-    ""
-    "== RECENT ALL-BRANCH GRAPH =="
-    git log --oneline --decorate --graph --all -20
-} 2>&1 | Tee-Object -FilePath $log | Out-Null
-
+Write-DiagLine "DCOIR Git Conflict Diagnostic"
+Write-DiagLine "Timestamp: $(Get-Date -Format o)"
+Write-DiagLine "Repo: $RepoRoot"
+Write-DiagLine ""
+Write-DiagLine "== CURRENT DIRECTORY =="
+Write-DiagLine (Get-Location).Path
+Write-DiagLine ""
+Write-DiagLine "== GIT VERSION =="
+Invoke-DiagGit @('--version') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== BRANCH =="
+Invoke-DiagGit @('branch','--show-current') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== HEAD =="
+Invoke-DiagGit @('rev-parse','--short','HEAD') -AllowFailure | Out-Null
+Invoke-DiagGit @('log','--oneline','-5') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== REMOTES =="
+Invoke-DiagGit @('remote','-v') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== FETCH ORIGIN =="
+Invoke-DiagGit @('fetch','origin','--prune') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== STATUS SHORT WITH BRANCH =="
+Invoke-DiagGit @('status','--short','--branch') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== STATUS FULL =="
+Invoke-DiagGit @('status') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== BRANCH VERBOSE =="
+Invoke-DiagGit @('branch','-vv') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== AHEAD / BEHIND MAIN =="
+$branchResult = Invoke-DcoirGitCommand -RepoRoot $RepoRoot -Arguments @('branch','--show-current') -LogPath $null -AllowFailure -Quiet
+$branch = (($branchResult.Lines | Select-Object -Last 1) -as [string]).Trim()
+if ($branch) { Invoke-DiagGit @('rev-list','--left-right','--count',"$branch...origin/main") -AllowFailure | Out-Null }
+Write-DiagLine ""
+Write-DiagLine "== UNMERGED / CONFLICT FILES =="
+Invoke-DiagGit @('diff','--name-only','--diff-filter=U') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== WORKING TREE DIFF SUMMARY =="
+Invoke-DiagGit @('diff','--stat') -AllowFailure | Out-Null
+Invoke-DiagGit @('diff','--name-status') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== STAGED DIFF SUMMARY =="
+Invoke-DiagGit @('diff','--cached','--stat') -AllowFailure | Out-Null
+Invoke-DiagGit @('diff','--cached','--name-status') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== UNTRACKED FILES =="
+Invoke-DiagGit @('ls-files','--others','--exclude-standard') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== STASH LIST =="
+Invoke-DiagGit @('stash','list') -AllowFailure | Out-Null
+Write-DiagLine ""
+Write-DiagLine "== REBASE / MERGE / CHERRY-PICK STATE =="
+foreach ($statePath in @('.git/MERGE_HEAD','.git/rebase-merge','.git/rebase-apply','.git/CHERRY_PICK_HEAD')) {
+    $full = Join-Path $RepoRoot $statePath
+    if (Test-Path $full) { Write-DiagLine "$statePath exists" } else { Write-DiagLine "No $statePath" }
+}
+Write-DiagLine ""
+Write-DiagLine "== RECENT ALL-BRANCH GRAPH =="
+Invoke-DiagGit @('log','--oneline','--decorate','--graph','--all','-20') -AllowFailure | Out-Null
 Write-Host ""
 Write-Host "Saved diagnostic log to:"
 Write-Host $log
