@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-01.5",
+  "catalog_version": "2026-05-01.6",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/",
     "registry_source": "airtable Operator Tools Registry",
@@ -61,8 +61,8 @@
       "tool_family": "upload_packaging",
       "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirChatGPTFriendlyZip.ps1",
       "output_pattern": "*.chatgpt.zip or caller-defined ZIP path",
-      "version_or_hash": "2026-05-01.1",
-      "notes": "Reusable ZIP helper for DCOIR diagnostics and upload bundles. Skips hidden/system metadata, avoids wrapper-root junk, adds diagnostic_index.md/captured_files.json/zip_manifest.json, and can normalize text outputs to UTF-8 in the staged ZIP copy."
+      "version_or_hash": "2026-05-01.2",
+      "notes": "Reusable ZIP helper for DCOIR diagnostics and upload bundles. Creates rootless ChatGPT-optimized ZIPs with forward-slash archive paths, priority triage entries first, diagnostic_index.md, captured_files.json, zip_manifest.json, hidden/system metadata filtering, optional UTF-8 normalization, and no wrapper-root junk."
     },
     {
       "tool_id": "DCOIR-ACTIONS-WORKFLOW-ORCHESTRATOR",

@@ -54,6 +54,18 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& { `$repo=[Environm
 | `scripts/New-DcoirChatGPTFriendlyZip.ps1` | Build rootless, metadata-clean, UTF-8-friendly ZIPs for ChatGPT upload and parsing, including diagnostic indexes and file manifests. |
 | `scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1` | Watch, capture, or dispatch 1..N GitHub Actions workflow runs from a manifest, monitor them, collect evidence, and produce a ChatGPT-friendly ZIP. |
 
+## ChatGPT-friendly ZIP launcher
+
+Use this shared helper when a diagnostic or snapshot tool needs to create an upload ZIP that is fast for ChatGPT to unzip, triage, and parse.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\New-DcoirChatGPTFriendlyZip.ps1" -SourceFolder "$env:DCOIR_DOWNLOADS_DIR\some_diagnostic_folder" -OutputZip "$env:DCOIR_DOWNLOADS_DIR\some_diagnostic_folder.chatgpt.zip" -NormalizeTextEncoding
+```
+
+The helper skips hidden/system metadata, avoids wrapper-root junk, writes archive entries with forward slashes, places `diagnostic_index.md`, `captured_files.json`, and `zip_manifest.json` first for fast triage, and can normalize staged text copies to UTF-8 without modifying original files.
+
+Other tools may dot-source this script and call `New-DcoirChatGPTFriendlyZip` directly.
+
 ## Actions workflow orchestrator launchers
 
 Dry-run dispatch using the bundled sample manifest:
@@ -98,12 +110,6 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\op
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\New-DcoirTextOnlyRepoSnapshot.ps1"
-```
-
-## ChatGPT-friendly ZIP launcher
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\New-DcoirChatGPTFriendlyZip.ps1" -SourceFolder "$env:DCOIR_DOWNLOADS_DIR\some_diagnostic_folder" -OutputZip "$env:DCOIR_DOWNLOADS_DIR\some_diagnostic_folder.chatgpt.zip" -NormalizeTextEncoding
 ```
 
 ## Repo patch/apply launcher

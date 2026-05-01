@@ -11,7 +11,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$Script:DcoirChatGPTFriendlyZipVersion = "2026-05-01.1"
+$Script:DcoirChatGPTFriendlyZipVersion = "2026-05-01.2"
 
 function Get-DcoirFileSha256 {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -27,7 +27,18 @@ function Get-DcoirRelativePath {
     $rootFull = [System.IO.Path]::GetFullPath($Root).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
     $pathFull = [System.IO.Path]::GetFullPath($Path)
     if (-not $pathFull.StartsWith($rootFull, [System.StringComparison]::OrdinalIgnoreCase)) { throw "Path escapes source root: $Path" }
-    return ($pathFull.Substring($rootFull.Length) -replace '\\', '/')
+    return ConvertTo-DcoirArchivePath -PathText ($pathFull.Substring($rootFull.Length))
+}
+
+function ConvertTo-DcoirArchivePath {
+    param([Parameter(Mandatory = $true)][string]$PathText)
+    $normalized = $PathText -replace '\\', '/'
+    while ($normalized.Contains('//')) { $normalized = $normalized.Replace('//', '/') }
+    $normalized = $normalized.TrimStart('/')
+    if ($normalized -match '(^|/)\.\.(/|$)') { throw "Unsafe archive path contains parent traversal: $PathText" }
+    if ($normalized -match '^[A-Za-z]:') { throw "Unsafe archive path is drive-qualified: $PathText" }
+    if ([string]::IsNullOrWhiteSpace($normalized)) { throw "Archive path resolved to empty string." }
+    return $normalized
 }
 
 function Get-DcoirEncodingGuess {
@@ -79,6 +90,51 @@ function Copy-DcoirFriendlyFile {
     return "copied:$guess"
 }
 
+function Add-DcoirZipEntry {
+    param(
+        [Parameter(Mandatory = $true)][System.IO.Compression.ZipArchive]$Archive,
+        [Parameter(Mandatory = $true)][string]$FilePath,
+        [Parameter(Mandatory = $true)][string]$ArchivePath
+    )
+    $entryName = ConvertTo-DcoirArchivePath -PathText $ArchivePath
+    if ($entryName.Contains('\')) { throw "Archive entry contains backslash after normalization: $entryName" }
+    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Archive, $FilePath, $entryName, [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
+}
+
+function New-DcoirRootlessZip {
+    param(
+        [Parameter(Mandatory = $true)][string]$StageFolder,
+        [Parameter(Mandatory = $true)][string]$OutputZip,
+        [string[]]$PriorityEntries = @("diagnostic_index.md", "captured_files.json", "zip_manifest.json")
+    )
+    if (Test-Path -LiteralPath $OutputZip) { Remove-Item -LiteralPath $OutputZip -Force }
+    Add-Type -AssemblyName System.IO.Compression
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $stream = [System.IO.File]::Open($OutputZip, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+    $archive = New-Object System.IO.Compression.ZipArchive($stream, [System.IO.Compression.ZipArchiveMode]::Create, $false)
+    try {
+        $added = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+        foreach ($entry in $PriorityEntries) {
+            $candidate = Join-Path $StageFolder ($entry -replace '/', [System.IO.Path]::DirectorySeparatorChar)
+            if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+                $archivePath = ConvertTo-DcoirArchivePath -PathText $entry
+                Add-DcoirZipEntry -Archive $archive -FilePath $candidate -ArchivePath $archivePath
+                [void]$added.Add($archivePath)
+            }
+        }
+        foreach ($file in @(Get-ChildItem -LiteralPath $StageFolder -Recurse -File -Force | Sort-Object FullName)) {
+            $rel = Get-DcoirRelativePath -Root $StageFolder -Path $file.FullName
+            if ($added.Contains($rel)) { continue }
+            Add-DcoirZipEntry -Archive $archive -FilePath $file.FullName -ArchivePath $rel
+            [void]$added.Add($rel)
+        }
+    }
+    finally {
+        $archive.Dispose()
+        $stream.Dispose()
+    }
+}
+
 function New-DcoirChatGPTFriendlyZip {
     [CmdletBinding()]
     param(
@@ -103,7 +159,7 @@ function New-DcoirChatGPTFriendlyZip {
     $skipped = New-Object System.Collections.Generic.List[object]
     try {
         New-Item -ItemType Directory -Force -Path $stage | Out-Null
-        foreach ($file in @(Get-ChildItem -LiteralPath $source -Recurse -File -Force)) {
+        foreach ($file in @(Get-ChildItem -LiteralPath $source -Recurse -File -Force | Sort-Object FullName)) {
             $rel = Get-DcoirRelativePath -Root $source -Path $file.FullName
             if ($rel.Length -gt $MaxArchivePathLength) {
                 $skipped.Add([pscustomobject]@{ path = $rel; reason = "archive_path_too_long"; size_bytes = $file.Length }) | Out-Null
@@ -124,6 +180,7 @@ function New-DcoirChatGPTFriendlyZip {
             }) | Out-Null
         }
         $createdAt = Get-Date -Format o
+        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
         $capturedJson = [ordered]@{
             tool = "New-DcoirChatGPTFriendlyZip.ps1"
             tool_version = $Script:DcoirChatGPTFriendlyZipVersion
@@ -131,18 +188,21 @@ function New-DcoirChatGPTFriendlyZip {
             source_folder = $source
             output_zip = $output
             normalize_text_encoding = [bool]$NormalizeTextEncoding
+            optimized_for_chatgpt_unpacking = $true
+            rootless = $true
+            archive_path_separator = "/"
+            priority_entries_first = @("diagnostic_index.md", "captured_files.json", "zip_manifest.json")
             captured_count = $captured.Count
             skipped_count = $skipped.Count
             captured_files = @($captured.ToArray())
             skipped_files = @($skipped.ToArray())
         }
-        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
         [System.IO.File]::WriteAllText((Join-Path $stage "captured_files.json"), ($capturedJson | ConvertTo-Json -Depth 8), $utf8NoBom)
         if (-not $NoIndex) {
             $index = @(
                 "# $IndexTitle", "", "Created: $createdAt", "Tool: New-DcoirChatGPTFriendlyZip.ps1 $Script:DcoirChatGPTFriendlyZipVersion",
                 "Source folder: $source", "Captured files: $($captured.Count)", "Skipped files: $($skipped.Count)",
-                "Normalize text encoding: $([bool]$NormalizeTextEncoding)", "", "## Important files", "- captured_files.json", "- zip_manifest.json"
+                "Normalize text encoding: $([bool]$NormalizeTextEncoding)", "Archive path separator: /", "Rootless ZIP: true", "", "## Fast triage files", "- diagnostic_index.md", "- captured_files.json", "- zip_manifest.json", "", "## Captured payload", "See captured_files.json for file list, sizes, hashes, and encoding guesses."
             )
             [System.IO.File]::WriteAllText((Join-Path $stage "diagnostic_index.md"), ($index -join "`n"), $utf8NoBom)
         }
@@ -154,20 +214,23 @@ function New-DcoirChatGPTFriendlyZip {
             created_at = $createdAt
             output_zip = $output
             rootless = $true
+            optimized_for_chatgpt_unpacking = $true
+            archive_path_separator = "/"
             hidden_system_files_skipped = $true
             max_archive_path_length = $MaxArchivePathLength
-            entries = $entries
+            priority_entries_first = @("diagnostic_index.md", "captured_files.json", "zip_manifest.json")
+            entries = @($entries | ForEach-Object { ConvertTo-DcoirArchivePath -PathText $_ })
         }
         [System.IO.File]::WriteAllText((Join-Path $stage "zip_manifest.json"), ($zipManifest | ConvertTo-Json -Depth 8), $utf8NoBom)
-        if (Test-Path -LiteralPath $output) { Remove-Item -LiteralPath $output -Force }
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::CreateFromDirectory($stage, $output, [System.IO.Compression.CompressionLevel]::Optimal, $false)
+        New-DcoirRootlessZip -StageFolder $stage -OutputZip $output
         return [pscustomobject]@{
             output_zip = $output
             source_folder = $source
             captured_count = $captured.Count
             skipped_count = $skipped.Count
             normalize_text_encoding = [bool]$NormalizeTextEncoding
+            optimized_for_chatgpt_unpacking = $true
+            archive_path_separator = "/"
         }
     }
     finally {
