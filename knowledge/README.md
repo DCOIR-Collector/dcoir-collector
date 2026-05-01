@@ -42,7 +42,3 @@ When the page list, attachment set, collector behavior, EXE behavior, Gemini age
 - `project_sources/gemini/bundle_source/00_START_HERE/Agent_Attachment_Map.md.txt`;
 - `project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json`;
 - GitHub Actions required-surface checks.
-
-## Duplication rule
-
-Runbooks own procedure. Reference pages own facts. FAQ answers stay shallow and should point to the owner page instead of becoming a parallel source of operational rules.
