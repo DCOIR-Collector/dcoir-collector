@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-01T12:04:21Z",
+  "generated_at_utc": "2026-05-01T12:54:18Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -776,22 +776,22 @@
     },
     "dcoir-plan-tracker": {
       "source_root": "dcoir-plan-tracker",
-      "source_tree_hash": "e3db29cbf1773fd6686b15ba7b60be35d8d0751c385110efec20cd254f2d7ff8",
+      "source_tree_hash": "b26b8115e44afce2fad6f386e4a93a8e676a1d144fe0e89f011b06b1deb03775",
       "release_zip_name": "dcoir-plan-tracker.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 18,
-      "total_bytes": 76899,
+      "file_count": 19,
+      "total_bytes": 82839,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "151ce259c65ae809a8012e626ee151fee3a4684e08caedd0ddd4685173c9846b",
-          "size_bytes": 22586
+          "sha256": "ce73817fc1fc0a05949af8b37d9cffe55f29f4c9ca84fece324c2cd725e2d9e9",
+          "size_bytes": 25888
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "4f04e832206bac1561be8ad13a4aa78acde17f278a69fb434fe73151ee258a9b",
-          "size_bytes": 314
+          "sha256": "fcd3c796028892af24f78cbc4639795ba84e7ecaa66303e2de19da01c17ba350",
+          "size_bytes": 324
         },
         {
           "path": "assets/icon.svg",
@@ -805,8 +805,8 @@
         },
         {
           "path": "references/airtable_plan_sync_workflow.md",
-          "sha256": "988c01b717d5350e594c309f9c9cb8c8d95b8e0cbcd4ecf988464116cea6d252",
-          "size_bytes": 1765
+          "sha256": "ca9654cc64b4fdd1ef07342026ec4d3d38019c3fa5310fc968074d278c98f990",
+          "size_bytes": 3059
         },
         {
           "path": "references/blocker_promotion_workflow.md",
@@ -872,6 +872,11 @@
           "path": "scripts/update_plan_state.py",
           "sha256": "9f4153aae4c87e077ee6fd815330f8cc1c4c95fa83baa98e3a527ae9a0ce7ac0",
           "size_bytes": 7811
+        },
+        {
+          "path": "scripts/validate_plan_sync_rules.py",
+          "sha256": "c9df43e96fbf093dbdd08992388fcebb07760b887c3f2554696539af99043ede",
+          "size_bytes": 1334
         }
       ]
     },

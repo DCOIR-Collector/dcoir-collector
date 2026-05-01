@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-01T12:04:21Z
+- generated_at_utc: 2026-05-01T12:54:18Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -254,17 +254,17 @@
 
 ## dcoir-plan-tracker
 
-- source_tree_hash: `e3db29cbf1773fd6686b15ba7b60be35d8d0751c385110efec20cd254f2d7ff8`
+- source_tree_hash: `b26b8115e44afce2fad6f386e4a93a8e676a1d144fe0e89f011b06b1deb03775`
 - release_zip_name: `dcoir-plan-tracker.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
-- file_count: `18`
+- file_count: `19`
 
-- `SKILL.md` — `151ce259c65ae809a8012e626ee151fee3a4684e08caedd0ddd4685173c9846b`
-- `agents/openai.yaml` — `4f04e832206bac1561be8ad13a4aa78acde17f278a69fb434fe73151ee258a9b`
+- `SKILL.md` — `ce73817fc1fc0a05949af8b37d9cffe55f29f4c9ca84fece324c2cd725e2d9e9`
+- `agents/openai.yaml` — `fcd3c796028892af24f78cbc4639795ba84e7ecaa66303e2de19da01c17ba350`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/airtable_plan_sync_workflow.md` — `988c01b717d5350e594c309f9c9cb8c8d95b8e0cbcd4ecf988464116cea6d252`
+- `references/airtable_plan_sync_workflow.md` — `ca9654cc64b4fdd1ef07342026ec4d3d38019c3fa5310fc968074d278c98f990`
 - `references/blocker_promotion_workflow.md` — `84fc60aa51f81824e2b74d90460075cb629d4ccffcac2268031467c4c15d268c`
 - `references/command_surface.md` — `c7ca094ae96db35d409e47a6e6a3e9b04d0e7533dd9cc4993209c83d96d69289`
 - `references/file_layout.md` — `766194cfe0ec510b6253797d400883698fd24334dd4e9dd5cacf79868edabdc5`
@@ -278,6 +278,7 @@
 - `scripts/plan_templates.py` — `253691229750ae20bb2f24b2578592114a11ea103b2171f8f12d344c8ed754d9`
 - `scripts/render_airtable_plan_bundle.py` — `35165f3572a669e8d46ba7f1ebe9047753872030b4a0b559f8142b32145cb152`
 - `scripts/update_plan_state.py` — `9f4153aae4c87e077ee6fd815330f8cc1c4c95fa83baa98e3a527ae9a0ce7ac0`
+- `scripts/validate_plan_sync_rules.py` — `c9df43e96fbf093dbdd08992388fcebb07760b887c3f2554696539af99043ede`
 
 ## dcoir-promotion-readiness-reviewer
 
