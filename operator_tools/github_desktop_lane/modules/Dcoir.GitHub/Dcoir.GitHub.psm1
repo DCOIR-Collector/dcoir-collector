@@ -1,11 +1,39 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$script:DcoirGitHubVersion = '2026-05-01.1'
+$script:DcoirGitHubVersion = '2026-05-01.2'
+$script:DcoirGitHubContext = $null
 
 $moduleRoot = Split-Path -Parent $PSScriptRoot
 $commonPath = Join-Path $moduleRoot 'Dcoir.Common\Dcoir.Common.psd1'
 if (-not (Test-Path -LiteralPath $commonPath -PathType Leaf)) { $commonPath = Join-Path $moduleRoot 'Dcoir.Common\Dcoir.Common.psm1' }
 Import-Module -Name $commonPath -Force -ErrorAction Stop
+
+function Set-DcoirGitHubContext {
+    [CmdletBinding()]
+    param([AllowNull()]$Context)
+    $script:DcoirGitHubContext = $Context
+}
+
+function Get-DcoirGitHubContextValue {
+    [CmdletBinding()]
+    param([Parameter(Mandatory=$true)][string]$Name, $Default = $null)
+    $value = Get-DcoirContextValue -Name $Name -Default $null
+    if ($null -ne $value -and -not [string]::IsNullOrWhiteSpace([string]$value)) { return $value }
+    $ctx = $script:DcoirGitHubContext
+    if ($null -eq $ctx) { return $Default }
+    if ($ctx -is [System.Collections.IDictionary] -and $ctx.Contains($Name)) { return $ctx[$Name] }
+    $prop = $ctx.PSObject.Properties[$Name]
+    if ($prop) { return $prop.Value }
+    return $Default
+}
+
+function Get-DcoirGitHubRepo {
+    [CmdletBinding()]
+    param()
+    $repo = [string](Get-DcoirGitHubContextValue -Name 'Repo' -Default '')
+    if ([string]::IsNullOrWhiteSpace($repo)) { throw 'DCOIR GitHub context value Repo is not set.' }
+    return $repo
+}
 
 function Invoke-DcoirGhText {
     [CmdletBinding()]
@@ -14,7 +42,7 @@ function Invoke-DcoirGhText {
     $exit = $LASTEXITCODE
     $raw = ($rawLines | Out-String).Trim()
     $safeName = ($DebugName -replace '[^A-Za-z0-9_.-]', '_')
-    $debugDir = [string](Get-DcoirContextValue -Name 'DebugDir' -Default '')
+    $debugDir = [string](Get-DcoirGitHubContextValue -Name 'DebugDir' -Default '')
     if (-not [string]::IsNullOrWhiteSpace($debugDir)) {
         $debugPath = Join-Path $debugDir ($safeName + '.txt')
         Write-DcoirUtf8Text -Path $debugPath -Text ("gh {0}`nEXIT={1}`n`n{2}" -f ($GhArgs -join ' '), $exit, $raw)
@@ -42,8 +70,7 @@ function Test-DcoirGhAvailable {
 function Get-DcoirWorkflowRuns {
     [CmdletBinding()]
     param([string]$WorkflowFile, [string]$Branch, [int]$PerPage = 10, [string]$Event)
-    $repo = [string](Get-DcoirContextValue -Name 'Repo' -Default '')
-    if ([string]::IsNullOrWhiteSpace($repo)) { throw 'DCOIR GitHub context value Repo is not set.' }
+    $repo = Get-DcoirGitHubRepo
     $wfEsc = [System.Uri]::EscapeDataString($WorkflowFile)
     $endpoint = "repos/$repo/actions/workflows/$wfEsc/runs?per_page=$PerPage"
     if ($Branch) { $endpoint += '&branch=' + [System.Uri]::EscapeDataString($Branch) }
@@ -55,18 +82,16 @@ function Get-DcoirWorkflowRuns {
 function Get-DcoirRunById {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][Int64]$Id)
-    $repo = [string](Get-DcoirContextValue -Name 'Repo' -Default '')
-    if ([string]::IsNullOrWhiteSpace($repo)) { throw 'DCOIR GitHub context value Repo is not set.' }
+    $repo = Get-DcoirGitHubRepo
     return Invoke-DcoirGhJson -GhArgs @('api', "repos/$repo/actions/runs/$Id") -DebugName "run_$Id"
 }
 
 function Get-DcoirRunJobs {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][Int64]$Id)
-    $repo = [string](Get-DcoirContextValue -Name 'Repo' -Default '')
-    if ([string]::IsNullOrWhiteSpace($repo)) { throw 'DCOIR GitHub context value Repo is not set.' }
+    $repo = Get-DcoirGitHubRepo
     $jobs = Invoke-DcoirGhJson -GhArgs @('api', "repos/$repo/actions/runs/$Id/jobs?per_page=100") -DebugName "jobs_$Id"
     return @($jobs.jobs)
 }
 
-Export-ModuleMember -Function Invoke-DcoirGhText,Invoke-DcoirGhJson,Test-DcoirGhAvailable,Get-DcoirWorkflowRuns,Get-DcoirRunById,Get-DcoirRunJobs
+Export-ModuleMember -Function Set-DcoirGitHubContext,Invoke-DcoirGhText,Invoke-DcoirGhJson,Test-DcoirGhAvailable,Get-DcoirWorkflowRuns,Get-DcoirRunById,Get-DcoirRunJobs
