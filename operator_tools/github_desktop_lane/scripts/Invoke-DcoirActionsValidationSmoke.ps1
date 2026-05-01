@@ -2,14 +2,8 @@
 DCOIR Actions Validation Smoke Runner.
 
 Purpose:
-  Set-and-forget wrapper around Invoke-DcoirActionsWorkflowOrchestrator.ps1.
-  Runs dry-run validation, watch validation, and one guarded live dispatch.
-
-Safety:
-  - Live dispatch writes a guarded manifest to DCOIR_DOWNLOADS_DIR.
-  - allow_multiple_live_dispatches=false
-  - max_dispatch_count=1
-  - Calls orchestrator with -ConfirmDispatch so no interactive prompt is required.
+  Set-and-forget harness around Invoke-DcoirActionsWorkflowOrchestrator.ps1.
+  The harness creates reviewed JSON manifests and executes the orchestrator.
 #>
 [CmdletBinding()]
 param(
@@ -28,21 +22,11 @@ param(
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$Script:ToolVersion = '2026-05-01.3'
+$Script:ToolVersion = '2026-05-01.4'
 
-function Get-DcoirMachineEnv {
-    param([Parameter(Mandatory=$true)][string]$Name)
-    $value = [Environment]::GetEnvironmentVariable($Name, 'Machine')
-    if ([string]::IsNullOrWhiteSpace($value)) {
-        throw "$Name is not set as a Windows System variable."
-    }
-    return $value.Trim()
-}
-
-function Write-DcoirStep {
-    param([Parameter(Mandatory=$true)][string]$Message)
-    Write-Host ("[{0}] {1}" -f (Get-Date -Format 'HH:mm:ss'), $Message)
-}
+$commonModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Common\Dcoir.Common.psm1'
+if (-not (Test-Path -LiteralPath $commonModule -PathType Leaf)) { throw "Dcoir.Common module not found: $commonModule" }
+Import-Module -Name $commonModule -Force -ErrorAction Stop
 
 function Invoke-DcoirOrchestratorStep {
     param(
@@ -51,8 +35,8 @@ function Invoke-DcoirOrchestratorStep {
         [Parameter(Mandatory=$true)][string]$ManifestPath,
         [switch]$ConfirmDispatch
     )
-    Write-DcoirStep $Label
-    Write-DcoirStep "Manifest: $ManifestPath"
+    Write-DcoirConsoleStep $Label
+    Write-DcoirConsoleStep "Manifest: $ManifestPath"
 
     if ($ConfirmDispatch) {
         & $ScriptPath -ManifestJson $ManifestPath -ConfirmDispatch
@@ -64,20 +48,18 @@ function Invoke-DcoirOrchestratorStep {
     if ($exitCode -ne 0) { throw "$Label failed with exit code $exitCode." }
 }
 
-$repo = Get-DcoirMachineEnv -Name 'DCOIR_REPO_ROOT'
-$downloads = Get-DcoirMachineEnv -Name 'DCOIR_DOWNLOADS_DIR'
+$repo = Get-DcoirSystemEnvValue -Name 'DCOIR_REPO_ROOT' -Required
+$downloads = Get-DcoirSystemEnvValue -Name 'DCOIR_DOWNLOADS_DIR' -Required
 
 $orchestrator = Join-Path $repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1'
-if (-not (Test-Path -LiteralPath $orchestrator -PathType Leaf)) {
-    throw "Orchestrator not found: $orchestrator"
-}
+if (-not (Test-Path -LiteralPath $orchestrator -PathType Leaf)) { throw "Orchestrator not found: $orchestrator" }
 
 $dryManifest = Join-Path $repo 'operator_tools\github_desktop_lane\manifests\actions_workflow_orchestrator.dispatch.sample.json'
 $watchManifest = Join-Path $repo 'operator_tools\github_desktop_lane\manifests\actions_workflow_orchestrator.watch.sample.json'
 $liveManifest = Join-Path $downloads 'dcoir_actions_live_dispatch_test.json'
 
-Write-DcoirStep "DCOIR Actions Validation Smoke Runner v$Script:ToolVersion"
-Write-DcoirStep "Mode=$Mode Workflow=$Workflow Suite=$Suite Ref=$Ref"
+Write-DcoirConsoleStep "DCOIR Actions Validation Smoke Runner v$Script:ToolVersion"
+Write-DcoirConsoleStep "Mode=$Mode Workflow=$Workflow Suite=$Suite Ref=$Ref"
 
 if ($Mode -eq 'Smoke' -or $Mode -eq 'DryWatchOnly') {
     Invoke-DcoirOrchestratorStep -Label '[1/3] Running dry-run validation...' -ScriptPath $orchestrator -ManifestPath $dryManifest
@@ -85,7 +67,7 @@ if ($Mode -eq 'Smoke' -or $Mode -eq 'DryWatchOnly') {
 }
 
 if ($Mode -eq 'Smoke' -or $Mode -eq 'LiveOnly') {
-    Write-DcoirStep '[3/3] Creating guarded live-dispatch manifest...'
+    Write-DcoirConsoleStep '[3/3] Creating guarded live-dispatch manifest...'
     $manifest = [ordered]@{
         run_set_id = 'dcoir-live-dispatch-test'
         mode = 'dispatch'
@@ -119,12 +101,12 @@ if ($Mode -eq 'Smoke' -or $Mode -eq 'LiveOnly') {
             }
         )
     }
-    $manifest | ConvertTo-Json -Depth 30 | Set-Content -LiteralPath $liveManifest -Encoding UTF8
-    Write-DcoirStep "Live manifest written: $liveManifest"
+    Save-DcoirJson -Path $liveManifest -Object $manifest
+    Write-DcoirConsoleStep "Live manifest written: $liveManifest"
     Invoke-DcoirOrchestratorStep -Label '[3/3] Running one guarded live dispatch...' -ScriptPath $orchestrator -ManifestPath $liveManifest -ConfirmDispatch
 }
 
-Write-DcoirStep 'Done. Upload these files if present:'
+Write-DcoirConsoleStep 'Done. Upload these files if present:'
 $expected = @(
     'dcoir_actions_workflow_orchestrator_sample.chatgpt.zip',
     'dcoir_actions_watch_sample.chatgpt.zip',

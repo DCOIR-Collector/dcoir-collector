@@ -21,6 +21,20 @@ GitHub Actions terminology used by this toolset:
 
 GitHub Actions allows multiple workflow runs by default, but a workflow or job may define a `concurrency` group. In a concurrency group, GitHub allows at most one running and one pending workflow run or job at a time. The orchestrator therefore uses `max_parallel` only as a local dispatch throttle; GitHub runner availability and workflow-level concurrency still decide actual execution order.
 
+## Reusable module architecture
+
+The Actions toolset is split into reusable modules under `modules/`:
+
+| Module | Purpose |
+|---|---|
+| `Dcoir.Common` | Paths, Machine/System environment validation, placeholder rejection, JSON, UTF-8 filesystem helpers, safe names, timestamps, and shared logging context. |
+| `Dcoir.GitHub` | GitHub CLI auth/availability, `gh` text/JSON wrappers, Actions run lookup, run details, and job lookup. |
+| `Dcoir.Packaging` | ChatGPT-friendly ZIP packaging wrapper. |
+| `Dcoir.Actions` | Manifest parsing, dispatch, monitor, fail-fast gates, parallel execution throttle, capture, cleanup, summaries, and exit codes. |
+| `DcoirActionsOrchestrator` | Compatibility facade preserving the stable public entrypoint. |
+
+Harnesses/wrappers should only create reviewed JSON configuration and execute the orchestrator. Shared functions used by two or more tools should move into the reusable module ecosystem.
+
 ## Environment variables
 
 DCOIR operator tools resolve local configuration from **Machine/System** environment variables:
@@ -45,6 +59,8 @@ The Actions orchestrator rejects placeholder paths such as `C:\path\to\dcoir-col
 | `scripts/Invoke-DcoirRepoPatchApply.ps1` | Apply an explicit repo-relative payload manifest with wrapper-root detection, target-root allow-listing, optional pre/post hashes, delete support, and UTF-8 verification logs. |
 | `scripts/New-DcoirChatGPTFriendlyZip.ps1` | Build rootless, metadata-clean, UTF-8-friendly ZIPs for ChatGPT upload and parsing, including diagnostic indexes and file manifests. |
 | `scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1` | Watch, capture, or dispatch GitHub Actions workflow runs from a manifest, monitor them, collect evidence, and produce a ChatGPT-friendly ZIP. |
+| `scripts/Invoke-DcoirActionsValidationSmoke.ps1` | Harness that creates guarded smoke manifests and executes the orchestrator. |
+| `scripts/Invoke-DcoirActionsModeLadder.ps1` | Harness that creates a fail-fast sequential ladder manifest and executes the orchestrator. |
 
 ## ChatGPT-friendly ZIP launcher
 

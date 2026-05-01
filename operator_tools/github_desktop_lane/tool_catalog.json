@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-01.10",
+  "catalog_version": "2026-05-01.11",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/",
     "registry_source": "airtable Operator Tools Registry",
@@ -11,8 +11,30 @@
       "DCOIR_REPO_ROOT",
       "DCOIR_DOWNLOADS_DIR"
     ],
-    "notes": "Operator tools should resolve DCOIR local configuration from Machine/System environment scope. Process-scope placeholders such as C:\\path\\to\\dcoir-collector are invalid and should be rejected."
+    "notes": "Operator tools should resolve DCOIR local configuration from Machine/System environment scope. Process-scope placeholders such as C:\\path\\to\\dcoir-collector are invalid and should be rejected. Shared environment/path helpers now live in modules/Dcoir.Common."
   },
+  "module_ecosystem": [
+    {
+      "module_id": "DCOIR-COMMON",
+      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Common/Dcoir.Common.psm1",
+      "role": "paths, logging, JSON, validation, filesystem, safe names, timestamps, shared context"
+    },
+    {
+      "module_id": "DCOIR-GITHUB",
+      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.GitHub/Dcoir.GitHub.psm1",
+      "role": "gh auth, GitHub Actions API wrappers, run/job lookup"
+    },
+    {
+      "module_id": "DCOIR-PACKAGING",
+      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Packaging/Dcoir.Packaging.psm1",
+      "role": "ChatGPT ZIP packaging wrapper and staging extension point"
+    },
+    {
+      "module_id": "DCOIR-ACTIONS",
+      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Actions/Dcoir.Actions.psm1",
+      "role": "manifest parsing, dispatch, monitor, fail-fast, capture, cleanup, summaries, exit codes"
+    }
+  ],
   "tools": [
     {
       "tool_id": "DCOIR-GIT-DIAGNOSTIC",
@@ -70,8 +92,8 @@
       "tool_family": "github_actions_orchestration",
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1",
       "output_pattern": "*_actions_*; *.chatgpt.zip; orchestrator_summary.json; orchestrator_summary.md",
-      "version_or_hash": "2026-05-01.5",
-      "notes": "Unified manifest-driven GitHub Actions tool. Modes: watch existing workflow runs, capture known run IDs, or dispatch 1..N workflow runs with per-run inputs. Live dispatch now has an explicit max_dispatch_count guard, defaults to one live dispatch, requires allow_multiple_live_dispatches=true for multi-run live batches, prints plan/phase details, records dispatch ledger evidence, preserves dispatched run state during monitoring, monitors runs, captures logs/jobs/artifacts, and packages evidence with the ChatGPT-friendly ZIP helper."
+      "version_or_hash": "2026-05-01.7",
+      "notes": "Stable public entrypoint backed by reusable modules: Dcoir.Common, Dcoir.GitHub, Dcoir.Packaging, and Dcoir.Actions. Owns manifest parsing, dispatch guardrails, monitoring, fail-fast gates, parallel workflow execution throttle, evidence capture, artifact download, ChatGPT-friendly ZIP packaging, cleanup_output_folder_after_zip, summaries, and exit codes."
     },
     {
       "tool_id": "DCOIR-ACTIONS-VALIDATION-SMOKE",
@@ -79,8 +101,8 @@
       "tool_family": "github_actions_orchestration",
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsValidationSmoke.ps1",
       "output_pattern": "dcoir_actions_workflow_orchestrator_sample.chatgpt.zip; dcoir_actions_watch_sample.chatgpt.zip; dcoir_actions_live_dispatch_test.chatgpt.zip",
-      "version_or_hash": "2026-05-01.3",
-      "notes": "Set-and-forget wrapper around the Actions Workflow Orchestrator. Runs dry-run validation, watch validation, and one guarded live dispatch with max_dispatch_count=1 and allow_multiple_live_dispatches=false. Emits clean operator-facing progress and upload file paths."
+      "version_or_hash": "2026-05-01.4",
+      "notes": "Harness-only wrapper. Imports Dcoir.Common for shared env/JSON/logging helpers, creates dry-run/watch/live guarded manifests, and executes the Actions Workflow Orchestrator."
     },
     {
       "tool_id": "DCOIR-ACTIONS-MODE-LADDER",
@@ -88,8 +110,8 @@
       "tool_family": "github_actions_orchestration",
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsModeLadder.ps1",
       "output_pattern": "dcoir_actions_ladder-*.chatgpt.zip; dcoir_actions_mode_ladder_result.json",
-      "version_or_hash": "2026-05-01.1",
-      "notes": "Fail-fast same-workflow mode/suite ladder runner. Runs modes from low to high, treats each passed mode as a gate, stops on the first failed/non-success run, keeps FullRegression last by default, and cleans expanded run folders after ZIP creation unless KeepOutputFolders is set."
+      "version_or_hash": "2026-05-01.4",
+      "notes": "Harness-only fail-fast same-workflow mode/suite ladder runner. Imports Dcoir.Common for shared env/JSON/safe-name helpers, creates a sequential ladder manifest, and executes the orchestrator."
     }
   ]
 }
