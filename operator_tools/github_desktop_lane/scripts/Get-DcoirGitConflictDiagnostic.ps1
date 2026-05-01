@@ -5,10 +5,12 @@ param(
 )
 
 $ErrorActionPreference = "Continue"
-$commonModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Common\Dcoir.Common.psd1'
-$gitModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Git\Dcoir.Git.psd1'
-Import-Module -Name $commonModule -Force -ErrorAction Stop
-Import-Module -Name $gitModule -Force -ErrorAction Stop
+$commonModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Common\Dcoir.Common.psm1'
+$gitModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Git\Dcoir.Git.psm1'
+$commonModule = (Resolve-Path -LiteralPath $commonModule).Path
+$gitModule = (Resolve-Path -LiteralPath $gitModule).Path
+Import-Module -Name $commonModule -Force -Global -ErrorAction Stop
+Import-Module -Name $gitModule -Force -Global -ErrorAction Stop
 
 $cmdGetEnv = Get-Command -Name 'Get-DcoirSystemEnvValue' -ErrorAction Stop
 $cmdAddLine = Get-Command -Name 'Add-DcoirUtf8Line' -ErrorAction Stop
