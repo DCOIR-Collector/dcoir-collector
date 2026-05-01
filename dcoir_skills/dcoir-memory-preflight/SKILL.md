@@ -2,7 +2,7 @@
 name: dcoir-memory-preflight
 description: consult canonical dcoir task memory, airtable governance tables, helper-memory rows, and dynamic skill-routing rows before high-friction work and after blocker recovery. use for dcoir session-start preflight, execution-lane choice, blocker learning, github desktop workflow friction, skill-routing checks, and cases where a specialist dcoir helper skill may apply.
 ---
-<!-- skill-marker: updated-skill|20260430T170000Z|dynamic-airtable-skill-routing|source-update|dcoir-memory-preflight|SKILL.md -->
+<!-- skill-marker: updated-skill|20260501T193500Z|queue-control-cross-check|source-update|dcoir-memory-preflight|SKILL.md -->
 
 # DCOIR Memory Preflight
 
@@ -264,3 +264,11 @@ For that lane:
 - consult Airtable table `Validation Test Cases` before proposing the test sequence
 - use the table to identify existing test IDs, commands or methods, pass criteria, fail criteria, and known partial/failing areas
 - avoid rebuilding the test plan from chat memory when the Airtable catalog already covers the branch
+
+## Queue Control cross-check addendum
+
+When current branch priority, next work, repo-write lane, or session-start bootstrap matters, read Airtable `Queue Control.active_plans` first and cross-check it with active `Plans` and queue-ranked `Work Items`.
+
+If Queue Control is empty or stale while an active plan exists, classify the condition as `queue-control-drift`. Recommend repair by `dcoir-plan-tracker` before unrelated work continues. Do not use older chat memory, stale checkpoints, GitHub todo text, or a guessed plan as a stronger authority than the Queue Control + Plans + Work Items set.
+
+Use this drift signal as a reusable blocker candidate when repeated sessions lose the current plan or jump to a different plan.

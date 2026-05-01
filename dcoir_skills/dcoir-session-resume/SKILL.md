@@ -2,7 +2,7 @@
 name: dcoir-session-resume
 description: resume the africom_soc_ir / dcoir workspace from the current airtable-first operational authority model and current queue state.
 ---
-<!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-session-resume|SKILL.md -->
+<!-- skill-marker: updated-skill|20260501T193500Z|queue-control-drift-gate|source-update|dcoir-session-resume|SKILL.md -->
 
 # DCOIR Session Resume
 
@@ -201,3 +201,15 @@ For those testing branches:
 - prefer the active rows relevant to the current build or artifact
 - surface that table as the starting testing plan before proposing new ad hoc test steps
 - preserve repo and control-plane authority for executable source, packaging, workflows, and governed readable docs
+
+## Queue Control drift gate addendum
+
+During startup, re-anchor, resume, or "where are we" checks, treat `Queue Control.active_plans` as the first live branch pointer. Cross-check it against active `Plans` and active/todo `Work Items`.
+
+Required behavior:
+1. If `Queue Control.active_plans` points to a current plan, use that plan as the starting branch unless the operator explicitly overrides it.
+2. If `Queue Control.active_plans` is empty but exactly one active plan exists, report Queue Control drift, use the active plan only as a bounded fallback, and tell `dcoir-plan-tracker` or the operator that Queue Control must be repaired.
+3. If `Queue Control.active_plans` conflicts with `Plans.active_task_id` or active Work Items, stop ordinary resume and report the exact mismatch instead of jumping to a different plan.
+4. Do not silently select an older plan from chat memory, GitHub history, or stale checkpoint text when Queue Control and active Plans disagree.
+
+Plain rule: empty or stale Queue Control while work is active is a broken state, not an ignorable blank.

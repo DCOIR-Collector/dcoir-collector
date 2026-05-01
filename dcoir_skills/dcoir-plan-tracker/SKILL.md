@@ -2,7 +2,7 @@
 name: dcoir-plan-tracker
 description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state. use when creating, resuming, pausing, closing, or updating a plan; when any work item changes status; when a work item points to a parent plan; when the user asks for plan state, active task, closeout, checkpoint, or durable next move; or when airtable plan/work-item fields appear stale or out of sync.
 ---
-<!-- skill-marker: updated-skill|20260501T150000Z|parent-plan-sync-gate|source-update|dcoir-plan-tracker|SKILL.md -->
+<!-- skill-marker: updated-skill|20260501T193500Z|queue-control-active-plan-enforcement|source-update|dcoir-plan-tracker|SKILL.md -->
 
 # DCOIR Plan Tracker
 
@@ -493,3 +493,16 @@ When a local plan folder is being used before a GitHub write:
 - do not claim a real local `plan_state.json` cache exists until the preflight proves it
 - if the expected local plan cache is missing `plan_state.json`, say that plainly and do not silently treat the missing interval as uninterrupted local-cache continuity
 - only initialize a new local plan-state cache automatically when the branch is actually creating a brand-new local plan cache folder
+
+## Queue Control active-plan enforcement addendum
+
+When setting, changing, closing, pausing, or resuming an active plan, update Airtable `Queue Control.active_plans` in the same bounded Airtable pass as the parent `Plans` row. Treat Queue Control as the live branch pointer, not as a task list.
+
+Required behavior:
+1. If a plan becomes the live branch, link that plan in the single active `Queue Control.active_plans` record.
+2. If a different plan becomes active, replace the stale link with the current active plan.
+3. If no active plan should remain, clear the link only after the parent plan and Work Items prove there is no current branch.
+4. If `Plans.plan_state` shows an active plan but `Queue Control.active_plans` is empty or points elsewhere, treat that as drift and repair it before reporting resume state or task closeout.
+5. Do not let checkpoints substitute for the Queue Control link.
+
+Regression rule: a valid DCOIR live branch has matching `Queue Control.active_plans`, active `Plans` state, and current Work Items order. If any one of these is missing, report and repair the drift before moving to unrelated work.
