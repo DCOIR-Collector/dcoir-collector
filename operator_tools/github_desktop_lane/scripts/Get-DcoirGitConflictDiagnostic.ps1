@@ -10,9 +10,9 @@ $gitModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Git\Dcoir.Git.psd1'
 Import-Module -Name $commonModule -Force -ErrorAction Stop
 Import-Module -Name $gitModule -Force -ErrorAction Stop
 
-if (-not $RepoRoot) { $RepoRoot = Get-DcoirSystemEnvValue -Name 'DCOIR_REPO_ROOT' -Required }
+if (-not $RepoRoot) { $RepoRoot = Dcoir.Common\Get-DcoirSystemEnvValue -Name 'DCOIR_REPO_ROOT' -Required }
 if (-not (Test-Path -LiteralPath $RepoRoot -PathType Container)) { throw "Repo root not found: $RepoRoot" }
-if (-not $OutputDir) { $OutputDir = Get-DcoirSystemEnvValue -Name 'DCOIR_DOWNLOADS_DIR' -Required }
+if (-not $OutputDir) { $OutputDir = Dcoir.Common\Get-DcoirSystemEnvValue -Name 'DCOIR_DOWNLOADS_DIR' -Required }
 if (-not (Test-Path -LiteralPath $OutputDir -PathType Container)) { New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null }
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
@@ -23,12 +23,12 @@ $log = Join-Path $OutputDir "dcoir_git_conflict_diagnostic_$stamp.txt"
 function Write-DiagLine {
     param([AllowEmptyString()][string]$Text)
     Write-Host $Text
-    Add-DcoirUtf8Line -Path $log -Text $Text
+    Dcoir.Common\Add-DcoirUtf8Line -Path $log -Text $Text
 }
 
 function Invoke-DiagGit {
     param([Parameter(Mandatory=$true)][string[]]$Arguments, [switch]$AllowFailure)
-    $result = Invoke-DcoirGitCommand -RepoRoot $RepoRoot -Arguments $Arguments -LogPath $log -AllowFailure:$AllowFailure
+    $result = Dcoir.Git\Invoke-DcoirGitCommand -RepoRoot $RepoRoot -Arguments $Arguments -LogPath $log -AllowFailure:$AllowFailure
     return $result
 }
 
@@ -65,7 +65,7 @@ Write-DiagLine "== BRANCH VERBOSE =="
 Invoke-DiagGit @('branch','-vv') -AllowFailure | Out-Null
 Write-DiagLine ""
 Write-DiagLine "== AHEAD / BEHIND MAIN =="
-$branchResult = Invoke-DcoirGitCommand -RepoRoot $RepoRoot -Arguments @('branch','--show-current') -LogPath $null -AllowFailure -Quiet
+$branchResult = Dcoir.Git\Invoke-DcoirGitCommand -RepoRoot $RepoRoot -Arguments @('branch','--show-current') -LogPath $null -AllowFailure -Quiet
 $branch = (($branchResult.Lines | Select-Object -Last 1) -as [string]).Trim()
 if ($branch) { Invoke-DiagGit @('rev-list','--left-right','--count',"$branch...origin/main") -AllowFailure | Out-Null }
 Write-DiagLine ""
