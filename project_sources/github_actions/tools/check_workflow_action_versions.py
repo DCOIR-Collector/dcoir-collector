@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail if DCOIR GitHub workflows use action versions below approved minimums.
+"""Fail if DCOIR GitHub workflows use unsupported or stale action versions.
 
 This intentionally stays simple and repo-local. Dependabot can propose newer
 versions, while this audit makes stale workflow action references visible in
@@ -14,7 +14,7 @@ from pathlib import Path
 WORKFLOW_DIR = Path(".github/workflows")
 
 # Minimum majors selected to avoid GitHub Actions Node.js 20 deprecation warnings
-# for the actions used in this repository.
+# and catch unsupported action tags for the actions used in this repository.
 MINIMUM_ACTION_MAJORS = {
     "actions/checkout": 6,
     "actions/setup-python": 6,
@@ -22,6 +22,16 @@ MINIMUM_ACTION_MAJORS = {
     "actions/download-artifact": 6,
     "actions/cache": 5,
     "actions/github-script": 8,
+    "github/codeql-action/init": 4,
+    "github/codeql-action/analyze": 4,
+    "github/codeql-action/upload-sarif": 4,
+}
+
+# Some actions do not have the guessed next major yet. Block known-bad future tags.
+MAXIMUM_ACTION_MAJORS = {
+    "github/codeql-action/init": 4,
+    "github/codeql-action/analyze": 4,
+    "github/codeql-action/upload-sarif": 4,
 }
 
 USES_RE = re.compile(r"^\s*uses:\s*([^\s#]+)", re.IGNORECASE)
@@ -48,8 +58,10 @@ def check_file(path: Path) -> list[str]:
             findings.append(f"{path}:{line_no}: action reference is not pinned with @version: {ref}")
             continue
         action, version = ref.rsplit("@", 1)
-        minimum_major = MINIMUM_ACTION_MAJORS.get(action.lower())
-        if minimum_major is None:
+        action_key = action.lower()
+        minimum_major = MINIMUM_ACTION_MAJORS.get(action_key)
+        maximum_major = MAXIMUM_ACTION_MAJORS.get(action_key)
+        if minimum_major is None and maximum_major is None:
             continue
         major_match = MAJOR_TAG_RE.match(version)
         if not major_match:
@@ -59,10 +71,15 @@ def check_file(path: Path) -> list[str]:
             )
             continue
         major = int(major_match.group(1))
-        if major < minimum_major:
+        if minimum_major is not None and major < minimum_major:
             findings.append(
                 f"{path}:{line_no}: {action}@{version} is below approved minimum "
                 f"v{minimum_major}; update to {action}@v{minimum_major} or newer"
+            )
+        if maximum_major is not None and major > maximum_major:
+            findings.append(
+                f"{path}:{line_no}: {action}@{version} is above current supported maximum "
+                f"v{maximum_major}; use {action}@v{maximum_major} until a newer major exists"
             )
     return findings
 
