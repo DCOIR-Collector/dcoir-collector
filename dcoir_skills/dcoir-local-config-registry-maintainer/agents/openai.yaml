@@ -1,0 +1,5 @@
+interface:
+  display_name: DCOIR Local Config Registry Maintainer
+  short_description: Maintain safe DCOIR Local Configuration Registry rows.
+  icon: ../assets/icon.svg
+  brand_color: '#2563EB'
