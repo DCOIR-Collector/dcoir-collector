@@ -13,9 +13,9 @@ $gitModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Git\Dcoir.Git.psd1'
 Import-Module -Name $commonModule -Force -ErrorAction Stop
 Import-Module -Name $gitModule -Force -ErrorAction Stop
 
-if (-not $RepoRoot) { $RepoRoot = Get-DcoirSystemEnvValue -Name 'DCOIR_REPO_ROOT' -Required }
+if (-not $RepoRoot) { $RepoRoot = Dcoir.Common\Get-DcoirSystemEnvValue -Name 'DCOIR_REPO_ROOT' -Required }
 if (-not (Test-Path -LiteralPath $RepoRoot -PathType Container)) { throw "Repo root not found: $RepoRoot" }
-if (-not $OutputDir) { $OutputDir = Get-DcoirSystemEnvValue -Name 'DCOIR_DOWNLOADS_DIR' -Required }
+if (-not $OutputDir) { $OutputDir = Dcoir.Common\Get-DcoirSystemEnvValue -Name 'DCOIR_DOWNLOADS_DIR' -Required }
 if (-not (Test-Path -LiteralPath $OutputDir -PathType Container)) { New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null }
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
@@ -26,12 +26,12 @@ $log = Join-Path $OutputDir "dcoir_safe_prepull_apply_$stamp.txt"
 function Write-PrePullLine {
     param([AllowEmptyString()][string]$Text)
     Write-Host $Text
-    Add-DcoirUtf8Line -Path $log -Text $Text
+    Dcoir.Common\Add-DcoirUtf8Line -Path $log -Text $Text
 }
 
 function Invoke-PrePullGit {
     param([Parameter(Mandatory=$true)][string[]]$Arguments, [switch]$AllowFailure)
-    return Invoke-DcoirGitCommand -RepoRoot $RepoRoot -Arguments $Arguments -LogPath $log -AllowFailure:$AllowFailure
+    return Dcoir.Git\Invoke-DcoirGitCommand -RepoRoot $RepoRoot -Arguments $Arguments -LogPath $log -AllowFailure:$AllowFailure
 }
 
 Write-PrePullLine "DCOIR Safe Pre-Pull Apply"
