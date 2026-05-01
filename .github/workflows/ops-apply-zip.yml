@@ -5,5 +5,5 @@ jobs:
   dry_run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: test -d ops/requests/apply_zip || mkdir -p ops/requests/apply_zip

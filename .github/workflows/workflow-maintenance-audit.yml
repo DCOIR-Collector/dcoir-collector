@@ -1,0 +1,33 @@
+name: Workflow maintenance audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * 1'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/**'
+      - '.github/dependabot.yml'
+      - 'project_sources/github_actions/tools/check_workflow_action_versions.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: workflow-maintenance-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  audit_workflow_actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Check workflow action versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/check_workflow_action_versions.py

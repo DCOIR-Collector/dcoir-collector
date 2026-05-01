@@ -5,5 +5,5 @@ jobs:
   dry_run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: python ops/tools/ops_request_guard.py ops/requests/dispatch_action.json
