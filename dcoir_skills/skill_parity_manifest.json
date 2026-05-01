@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-01T18:09:44Z",
+  "generated_at_utc": "2026-05-01T20:39:53Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -608,6 +608,42 @@
           "path": "scripts/render_live_test_remediation_memory.py",
           "sha256": "d22347729e574355a14f8cb6fdefe41687350fcc43240c17119a18fd967160f5",
           "size_bytes": 2805
+        }
+      ]
+    },
+    "dcoir-local-config-registry-maintainer": {
+      "source_root": "dcoir-local-config-registry-maintainer",
+      "source_tree_hash": "24d66aae0dad859c0450dda3a2ab72967cb917f0b28152d469718a086bd1f677",
+      "release_zip_name": "dcoir-local-config-registry-maintainer.zip",
+      "release_zip_hash": "",
+      "status": "verified",
+      "file_count": 5,
+      "total_bytes": 8139,
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "df092747f85d5033770aca4c72e2664a843594dc162a84df060536d94a683bb5",
+          "size_bytes": 4547
+        },
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "0dc4a80455a8656935055ae888655fe9b60127784b79576e2f35d27ca056095b",
+          "size_bytes": 194
+        },
+        {
+          "path": "assets/icon.svg",
+          "sha256": "3aaefde839a05a3c2afbc138aac4a658e50ab10713be77cb6b327cbb692b7c7a",
+          "size_bytes": 188
+        },
+        {
+          "path": "references/local_config_registry_contract.md",
+          "sha256": "0e7d6fef04b4f0473bc4e4e7d93746e5b42ff98d943d7736e4039135bb05345d",
+          "size_bytes": 2242
+        },
+        {
+          "path": "references/runtime_reference_patterns.md",
+          "sha256": "fa40ad14a48294f6b39d30b2b40f0d8a45953e046c7d0b58c512bd8271742d78",
+          "size_bytes": 968
         }
       ]
     },

@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-01T18:09:44Z
+- generated_at_utc: 2026-05-01T20:39:53Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -198,6 +198,20 @@
 - `references/remediation_rules.json` — `4481f3e6f10c52c4d5370a8e50f496728392b5d327520310b928179d25713074`
 - `scripts/plan_live_test_remediation.py` — `2c42dcc05eb1620527682ae4ee1b0fb086cb2870b15b30ff94d3994207505c43`
 - `scripts/render_live_test_remediation_memory.py` — `d22347729e574355a14f8cb6fdefe41687350fcc43240c17119a18fd967160f5`
+
+## dcoir-local-config-registry-maintainer
+
+- source_tree_hash: `24d66aae0dad859c0450dda3a2ab72967cb917f0b28152d469718a086bd1f677`
+- release_zip_name: `dcoir-local-config-registry-maintainer.zip`
+- release_zip_hash: `not-recorded`
+- status: `verified`
+- file_count: `5`
+
+- `SKILL.md` — `df092747f85d5033770aca4c72e2664a843594dc162a84df060536d94a683bb5`
+- `agents/openai.yaml` — `0dc4a80455a8656935055ae888655fe9b60127784b79576e2f35d27ca056095b`
+- `assets/icon.svg` — `3aaefde839a05a3c2afbc138aac4a658e50ab10713be77cb6b327cbb692b7c7a`
+- `references/local_config_registry_contract.md` — `0e7d6fef04b4f0473bc4e4e7d93746e5b42ff98d943d7736e4039135bb05345d`
+- `references/runtime_reference_patterns.md` — `fa40ad14a48294f6b39d30b2b40f0d8a45953e046c7d0b58c512bd8271742d78`
 
 ## dcoir-memory-preflight
 
