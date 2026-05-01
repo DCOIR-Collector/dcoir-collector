@@ -105,3 +105,7 @@ DCOIR_WORK_ITEMS_SCHEMA_CLEANUP_WRAPPER_DONE
 ```
 
 If the window shows an error, copy the text or upload the log. Do not include your Airtable token.
+
+## v3 wrapper note
+
+The wrapper suppresses Python deprecation warnings and does not treat harmless stderr text as failure. Success is based on the Python process exit code and generated report files.

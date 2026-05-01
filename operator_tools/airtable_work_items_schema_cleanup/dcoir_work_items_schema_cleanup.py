@@ -277,7 +277,7 @@ class Airtable:
         return {"records": out}
 
 def utc_stamp() -> str:
-    return dt.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    return dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
 def out_dir() -> Path:
     p = os.environ.get("DCOIR_DOWNLOADS_DIR")
@@ -506,7 +506,7 @@ def write_report(mode: str, report: Dict[str, Any]) -> Path:
     stamp = utc_stamp()
     jp = d / f"work_items_schema_cleanup_{mode}_{stamp}.json"
     mp = d / f"work_items_schema_cleanup_{mode}_{stamp}.md"
-    report["timestamp_utc"] = dt.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    report["timestamp_utc"] = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     jp.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
     lines = []
     lines.append(f"# Work Items schema cleanup - {mode}\n\n")

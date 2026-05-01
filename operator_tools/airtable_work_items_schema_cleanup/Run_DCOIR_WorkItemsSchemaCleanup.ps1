@@ -11,6 +11,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$env:PYTHONWARNINGS = 'ignore::DeprecationWarning'
 
 function Get-DcoirDownloadsDir {
     if (-not [string]::IsNullOrWhiteSpace($env:DCOIR_DOWNLOADS_DIR)) {
@@ -86,9 +87,13 @@ try {
     }
 
     Write-LogLine 'Python found. Checking version...'
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
     & $PythonExe @PythonPrefixArgs --version 2>&1 | Tee-Object -FilePath $script:LogPath -Append
-    if ($LASTEXITCODE -ne 0) {
-        throw "Python version check failed with exit code $LASTEXITCODE."
+    $VersionExitCode = $LASTEXITCODE
+    $ErrorActionPreference = $oldEap
+    if ($VersionExitCode -ne 0) {
+        throw "Python version check failed with exit code $VersionExitCode."
     }
 
     $ArgsList = @()
@@ -104,8 +109,11 @@ try {
 
     Write-LogLine ''
     Write-LogLine 'Running cleanup tool...' 'Cyan'
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
     & $PythonExe @ArgsList 2>&1 | Tee-Object -FilePath $script:LogPath -Append
     $ExitCode = $LASTEXITCODE
+    $ErrorActionPreference = $oldEap
     if ($ExitCode -ne 0) {
         throw "Cleanup tool failed with exit code $ExitCode. See log: $script:LogPath"
     }
