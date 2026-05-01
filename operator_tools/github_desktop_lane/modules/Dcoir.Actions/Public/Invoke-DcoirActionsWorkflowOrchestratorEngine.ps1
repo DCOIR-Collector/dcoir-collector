@@ -69,6 +69,7 @@ function Invoke-DcoirActionsWorkflowOrchestratorEngine {
         Records=$null
     }
     Set-DcoirToolContext -Context $script:Ctx
+    if (Get-Command Set-DcoirGitHubContext -ErrorAction SilentlyContinue) { Set-DcoirGitHubContext -Context $script:Ctx }
     if ($DryRun) { $script:Ctx.ManifestDryRun = $true }
     if ($script:Ctx.MaxParallel -lt 1) { $script:Ctx.MaxParallel = 1 }
     if ($script:Ctx.ManifestDryRun) { $script:Ctx.MaxDispatchCount = [int](Get-DcoirConfigValue -Map $manifest -Name 'max_dispatch_count' -Default 9999) }
