@@ -1,11 +1,40 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$script:DcoirGitVersion = '2026-05-01.1'
+$script:DcoirGitVersion = '2026-05-01.2'
 
-$moduleRoot = Split-Path -Parent $PSScriptRoot
-$commonPath = Join-Path $moduleRoot 'Dcoir.Common\Dcoir.Common.psd1'
-if (-not (Test-Path -LiteralPath $commonPath -PathType Leaf)) { $commonPath = Join-Path $moduleRoot 'Dcoir.Common\Dcoir.Common.psm1' }
-Import-Module -Name $commonPath -Force -ErrorAction Stop
+function Add-DcoirGitUtf8Line {
+    [CmdletBinding()]
+    param([Parameter(Mandatory=$true)][string]$Path, [AllowEmptyString()][string]$Text)
+    $parent = Split-Path -Parent $Path
+    if ($parent -and -not (Test-Path -LiteralPath $parent -PathType Container)) { New-Item -ItemType Directory -Force -Path $parent | Out-Null }
+    $enc = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::AppendAllText($Path, ([string]$Text) + [Environment]::NewLine, $enc)
+}
+
+function Test-DcoirGitPlaceholderPath {
+    [CmdletBinding()]
+    param([AllowNull()][string]$Value)
+    if ([string]::IsNullOrWhiteSpace($Value)) { return $false }
+    $v = $Value.Trim()
+    return ($v -match '^[A-Za-z]:\\path\\to(\\|$)' -or $v -match '^/path/to(/|$)' -or $v -match 'your[_ -]?folder[_ -]?name[_ -]?here' -or $v -match 'your[_ -]?repo')
+}
+
+function Get-DcoirGitSystemEnvValue {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)][string]$Name,
+        [switch]$Required,
+        [AllowNull()][string]$Default
+    )
+    $machine = [Environment]::GetEnvironmentVariable($Name, 'Machine')
+    if (Test-DcoirGitPlaceholderPath -Value $machine) {
+        throw "$Name is set to a placeholder path in Machine/System environment scope: $machine"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($machine)) { return $machine.Trim() }
+    if (-not [string]::IsNullOrWhiteSpace($Default)) { return $Default }
+    if ($Required) { throw "$Name is not set in Machine/System environment scope. Set it as a System environment variable, then open a new terminal." }
+    return $null
+}
 
 function ConvertTo-DcoirNativeArgumentString {
     [CmdletBinding()]
@@ -42,7 +71,7 @@ function Invoke-DcoirGitCommand {
     if (-not $Quiet) {
         $cmd = '>>> git ' + ($Arguments -join ' ')
         Write-Host $cmd
-        if (-not [string]::IsNullOrWhiteSpace($LogPath)) { Add-DcoirUtf8Line -Path $LogPath -Text $cmd }
+        if (-not [string]::IsNullOrWhiteSpace($LogPath)) { Add-DcoirGitUtf8Line -Path $LogPath -Text $cmd }
     }
     $argumentString = ($Arguments | ForEach-Object { ConvertTo-DcoirNativeArgumentString ([string]$_) }) -join ' '
     $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -67,7 +96,7 @@ function Invoke-DcoirGitCommand {
                 if ($line.Length -gt 0) {
                     $lines.Add([string]$line) | Out-Null
                     if (-not $Quiet) { Write-Host ([string]$line) }
-                    if (-not [string]::IsNullOrWhiteSpace($LogPath)) { Add-DcoirUtf8Line -Path $LogPath -Text ([string]$line) }
+                    if (-not [string]::IsNullOrWhiteSpace($LogPath)) { Add-DcoirGitUtf8Line -Path $LogPath -Text ([string]$line) }
                 }
             }
         }
@@ -126,7 +155,7 @@ function Assert-DcoirGitCleanTree {
     if ($dirty.Count -gt 0) {
         foreach ($line in $dirty) {
             Write-Host "DIRTY: $line"
-            if (-not [string]::IsNullOrWhiteSpace($LogPath)) { Add-DcoirUtf8Line -Path $LogPath -Text "DIRTY: $line" }
+            if (-not [string]::IsNullOrWhiteSpace($LogPath)) { Add-DcoirGitUtf8Line -Path $LogPath -Text "DIRTY: $line" }
         }
         throw $Message
     }
@@ -154,4 +183,4 @@ function Get-DcoirGitAheadBehind {
     return [pscustomobject]@{ Left = [int]$parts[0]; Right = [int]$parts[1]; Raw = $last }
 }
 
-Export-ModuleMember -Function ConvertTo-DcoirNativeArgumentString,Resolve-DcoirGitExe,Invoke-DcoirGitCommand,Invoke-DcoirGitLogged,Get-DcoirGitCurrentBranch,Assert-DcoirGitBranch,Get-DcoirGitStatusPorcelain,Assert-DcoirGitCleanTree,Invoke-DcoirGitFetch,Invoke-DcoirGitFastForwardPull,Get-DcoirGitAheadBehind
+Export-ModuleMember -Function Add-DcoirGitUtf8Line,Test-DcoirGitPlaceholderPath,Get-DcoirGitSystemEnvValue,ConvertTo-DcoirNativeArgumentString,Resolve-DcoirGitExe,Invoke-DcoirGitCommand,Invoke-DcoirGitLogged,Get-DcoirGitCurrentBranch,Assert-DcoirGitBranch,Get-DcoirGitStatusPorcelain,Assert-DcoirGitCleanTree,Invoke-DcoirGitFetch,Invoke-DcoirGitFastForwardPull,Get-DcoirGitAheadBehind
