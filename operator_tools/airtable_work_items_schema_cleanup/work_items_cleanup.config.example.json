@@ -1,0 +1,63 @@
+{
+  "base_id_env": "DCOIR_AIRTABLE_BASE_ID",
+  "table": {
+    "id": "tblgsQAVWvh8K7gIR",
+    "name": "Work Items",
+    "primary_field": "Work Item"
+  },
+  "keep_visible_fields": [
+    "Queue Rank",
+    "Status",
+    "Work Item",
+    "Item ID",
+    "canonical_parent_plan_id",
+    "Area",
+    "Priority",
+    "Work Type",
+    "Repo Path or Skill",
+    "Evidence / Notes",
+    "created_at",
+    "updated_at"
+  ],
+  "prefix_delete_fields": [
+    "Next Action",
+    "Branch State",
+    "pipeline_stage",
+    "canonical_item_type",
+    "retirement_action",
+    "Owner",
+    "Active",
+    "Resume First",
+    "Queue Control",
+    "GitHub Link",
+    "Due Date",
+    "Blocker",
+    "Decision Source",
+    "Priority Rationale",
+    "Supersedes Item IDs",
+    "Superseded By Item ID",
+    "source_table",
+    "source_record_id",
+    "review_after",
+    "Last Confirmed Text"
+  ],
+  "select_cleanup": {
+    "Status": {
+      "canonical_options": ["todo", "active", "blocked", "waiting", "done", "dropped"],
+      "map": {
+        "backlog": "todo",
+        "planned": "todo",
+        "queued": "todo",
+        "in_progress": "active",
+        "validating": "active",
+        "ready_for_validation": "active",
+        "ready_to_push": "active",
+        "waiting_on_operator": "waiting",
+        "failed": "blocked",
+        "passed": "done",
+        "completed": "done"
+      },
+      "recommended_default": "todo"
+    }
+  }
+}

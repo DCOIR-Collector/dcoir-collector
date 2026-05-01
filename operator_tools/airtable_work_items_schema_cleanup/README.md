@@ -114,3 +114,16 @@ If the window shows an error, upload the newest `.log`, `.json`, and `.md` from 
 ## v4 wrapper note
 
 The v4 wrapper adds numbered human-readable launchers, dated output folders, and explicit environment-variable source reporting. It also keeps the legacy wrapper cleanup as an operator-run step so file deletions are visible in GitHub Desktop.
+
+## Future generic cleanup mode
+
+This tool is currently tuned for the `Work Items` table. The next major patch should make the cleanup rules config-driven so the same tool can clean other Airtable tables.
+
+See:
+
+```text
+GENERIC_TABLE_CLEANUP_DESIGN.md
+work_items_cleanup.config.example.json
+```
+
+Avoid adding one environment variable per table. Prefer a config file selected once, with general environment variables for token, base, output folder, and config path.

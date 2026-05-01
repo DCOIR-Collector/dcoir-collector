@@ -112,6 +112,64 @@ CANONICAL_SELECTS = {
     "Priority": ["critical", "high", "medium", "low"],
 }
 
+CANONICAL_SELECT_COLORS = {
+    "Status": {
+        "todo": "greenLight2",
+        "active": "blueLight2",
+        "blocked": "redLight2",
+        "waiting": "yellowLight2",
+        "done": "greenLight2",
+        "dropped": "grayLight2",
+    },
+    "Area": {
+        "collector": "blueLight2",
+        "gemini": "grayLight2",
+        "github": "blueLight2",
+        "airtable": "purpleLight2",
+        "skills": "cyanLight2",
+        "docs": "redLight2",
+        "validation": "greenLight2",
+        "packaging": "yellowLight2",
+        "workflow": "cyanLight2",
+        "governance": "orangeLight2",
+        "other": "blueLight2",
+    },
+    "Work Type": {
+        "task": "blueLight2",
+        "bug": "cyanLight2",
+        "enhancement": "tealLight2",
+        "decision": "pinkLight2",
+        "validation": "yellowLight2",
+    },
+    "Priority": {
+        "critical": "redLight2",
+        "high": "orangeLight2",
+        "medium": "yellowLight2",
+        "low": "greenLight2",
+    },
+}
+
+def canonical_choice_items(field: str, current_choices: List[Dict[str, Any]], obsolete: List[str]) -> List[Dict[str, str]]:
+    """Return final choices while keeping every canonical option, even if schema readback is stale."""
+    current_by_name = {c.get("name"): c for c in current_choices if c.get("name")}
+    final_names: List[str] = []
+    for name in CANONICAL_SELECTS.get(field, []):
+        if name not in obsolete and name not in final_names:
+            final_names.append(name)
+    for c in current_choices:
+        name = c.get("name")
+        if name and name not in obsolete and name not in final_names:
+            final_names.append(name)
+    out: List[Dict[str, str]] = []
+    color_map = CANONICAL_SELECT_COLORS.get(field, {})
+    for name in final_names:
+        item: Dict[str, str] = {"name": name}
+        color = current_by_name.get(name, {}).get("color") or color_map.get(name)
+        if color:
+            item["color"] = color
+        out.append(item)
+    return out
+
 SELECT_FIELD_IDS = {
     "Status": FIELD_IDS["Status"],
     "Area": FIELD_IDS["Area"],
@@ -424,13 +482,7 @@ def generate_option_delete_script(schema: Dict[str, Any], table_id: str, records
         if blocked.get(field):
             continue
         choices = select_choices(schema, table_id, FIELD_IDS[field])
-        keep = [c for c in choices if c.get("name") not in obsolete]
-        js_choices = []
-        for c in keep:
-            item = {"name": c.get("name")}
-            if c.get("color"):
-                item["color"] = c.get("color")
-            js_choices.append(item)
+        js_choices = canonical_choice_items(field, choices, obsolete)
         lines.append("  {")
         lines.append(f"    fieldName: '{field}',")
         lines.append(f"    remove: {json.dumps(obsolete)},")
@@ -456,13 +508,7 @@ def attempt_api_option_delete(at: Airtable, base_id: str, table_id: str, schema:
             continue
         field_id = FIELD_IDS[field]
         choices = select_choices(schema, table_id, field_id)
-        keep = []
-        for c in choices:
-            if c.get("name") not in obsolete:
-                item = {"name": c.get("name")}
-                if c.get("color"):
-                    item["color"] = c.get("color")
-                keep.append(item)
+        keep = canonical_choice_items(field, choices, obsolete)
         body = {"options": {"choices": keep}, "enableSelectFieldChoiceDeletion": True}
         try:
             at.update_field(base_id, table_id, field_id, body)
