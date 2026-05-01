@@ -1,0 +1,86 @@
+name: Publish Knowledge to Wiki
+
+# DCOIR adaptation of the Nimble docs-to-wiki pattern.
+# Source folder: knowledge/
+# Destination repo: malwaredevil/dcoir-collector.wiki.git
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'knowledge/**'
+      - '.github/workflows/publish_knowledge_to_wiki.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-knowledge-to-wiki
+  cancel-in-progress: false
+
+env:
+  USER_TOKEN: ${{ secrets.DCOIR_WIKI_PUSH_TOKEN }}
+  USER_NAME: github-actions[bot]
+  USER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+  OWNER: ${{ github.repository_owner }}
+  REPOSITORY_NAME: ${{ github.event.repository.name }}
+
+jobs:
+  publish_knowledge_to_wiki:
+    name: Publish Knowledge to Wiki
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Knowledge source folder
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d knowledge
+          test -f knowledge/README.md
+          knowledge_count=$(find knowledge -maxdepth 1 -type f -name 'Knowledge - *.md' | wc -l | tr -d ' ')
+          if [ "$knowledge_count" -lt 17 ]; then
+            echo "Expected at least 17 maintained Knowledge pages, found $knowledge_count."
+            exit 1
+          fi
+
+      - name: Pull content from wiki
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${USER_TOKEN}" ]; then
+            echo "Missing repository secret DCOIR_WIKI_PUSH_TOKEN."
+            exit 1
+          fi
+
+          wiki_url="https://x-access-token:${USER_TOKEN}@github.com/${OWNER}/${REPOSITORY_NAME}.wiki.git"
+          git clone "$wiki_url" tmp_wiki
+          cd tmp_wiki
+          git config user.name "$USER_NAME"
+          git config user.email "$USER_EMAIL"
+
+      - name: Push Knowledge content to wiki
+        shell: bash
+        run: |
+          set -euo pipefail
+          wiki_url="https://x-access-token:${USER_TOKEN}@github.com/${OWNER}/${REPOSITORY_NAME}.wiki.git"
+
+          # Mirror the maintained knowledge folder into the wiki.
+          # README.md becomes Home.md so the wiki landing page is useful.
+          rsync -av --delete --exclude '.git' --exclude 'README.md' knowledge/ tmp_wiki/
+          cp knowledge/README.md tmp_wiki/Home.md
+          rm -f tmp_wiki/README.md
+
+          cd tmp_wiki
+          git add .
+          if git diff --cached --quiet; then
+            echo "No wiki content changes to publish."
+            exit 0
+          fi
+
+          git commit -m "Update Knowledge wiki content"
+          git push "$wiki_url" HEAD
