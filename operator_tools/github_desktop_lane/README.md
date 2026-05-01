@@ -25,16 +25,18 @@ GitHub Actions allows multiple workflow runs by default, but a workflow or job m
 
 The toolset is split into reusable modules under `modules/`:
 
-| Module | Purpose |
-|---|---|
-| `Dcoir.Common` | Paths, Machine/System environment validation, placeholder rejection, JSON, UTF-8 filesystem helpers, safe names, timestamps, and shared logging context. |
-| `Dcoir.Git` | Git executable discovery, native argument quoting, logged git process execution, branch checks, clean-tree checks, fetch, fast-forward pull, and ahead/behind analysis. |
-| `Dcoir.GitHub` | GitHub CLI auth/availability, `gh` text/JSON wrappers, Actions run lookup, run details, and job lookup. |
-| `Dcoir.Packaging` | ChatGPT-friendly ZIP packaging wrapper. |
-| `Dcoir.Actions` | Manifest parsing, dispatch, monitor, fail-fast gates, parallel execution throttle, capture, cleanup, summaries, and exit codes. |
-| `DcoirActionsOrchestrator` | Compatibility facade preserving the stable public entrypoint. |
+| Module | Purpose | Validation status |
+|---|---|---|
+| `Dcoir.Common` | Paths, Machine/System environment validation, placeholder rejection, JSON, UTF-8 filesystem helpers, safe names, timestamps, and shared logging context. | Shared baseline module. |
+| `Dcoir.Git` | Self-contained git-lane helpers: Machine/System env lookup, placeholder rejection, UTF-8 logging, git executable discovery, native argument quoting, logged git process execution, branch checks, clean-tree checks, fetch, fast-forward pull, and ahead/behind analysis. | Validated by git diagnostic, safe pre-pull, snapshot, and repo patch apply tools. |
+| `Dcoir.GitHub` | GitHub CLI auth/availability, `gh` text/JSON wrappers, Actions run lookup, run details, and job lookup. | Validated through Actions orchestrator gates. |
+| `Dcoir.Packaging` | ChatGPT-friendly ZIP packaging wrapper. | Validated through Actions and snapshot ZIP generation. |
+| `Dcoir.Actions` | Manifest parsing, dispatch, monitor, fail-fast gates, parallel execution throttle, capture, cleanup, summaries, and exit codes. | Preferred Actions orchestrator lane. |
+| `Dcoir.Snapshot` | Repo-relative path safety, safe names, path normalization, under-root checks, text-file filtering, binary sniffing, targeted staging, and UTF-8 logging. | Validated by text-only and targeted snapshot smoke tests. |
+| `Dcoir.RepoPatch` | Repo patch path safety, payload-root resolution, allowed target roots, hashing, and UTF-8 logging. | Validated by WhatIfOnly and real fixture apply smoke tests. |
+| `DcoirActionsOrchestrator` | Compatibility facade preserving the stable public entrypoint. | Preserves existing public entrypoint. |
 
-Harnesses/wrappers should only create reviewed JSON configuration and execute the orchestrator. Shared functions used by two or more tools should move into the reusable module ecosystem. Git-facing scripts should use `Dcoir.Git` instead of declaring their own process wrappers.
+Harnesses/wrappers should only create reviewed JSON configuration and execute the orchestrator or module-owned engine. Shared functions used by two or more tools should move into the reusable module ecosystem. Git-facing scripts should use `Dcoir.Git`; snapshot scripts should use `Dcoir.Snapshot`; repo patch/apply scripts should use `Dcoir.RepoPatch`. Temporary wrapper-side diagnostic shims are allowed only to isolate failures and must be replaced by module/tool fixes before promotion.
 
 ## Environment variables
 
@@ -47,21 +49,21 @@ DCOIR operator tools resolve local configuration from **Machine/System** environ
 
 `DCOIR_REPO_ROOT` should point to the local `dcoir-collector` repository root. `DCOIR_DOWNLOADS_DIR` should point to the folder where logs and ZIP outputs should be written.
 
-The Actions orchestrator rejects placeholder paths such as `C:\path\to\dcoir-collector` and does not trust process-scoped placeholder values from a polluted terminal session.
+Operator tools reject placeholder paths such as `C:\path\to\dcoir-collector` and should not trust process-scoped placeholder values from a polluted terminal session.
 
 ## Tools
 
-| Tool | Purpose |
-|---|---|
-| `scripts/Get-DcoirGitConflictDiagnostic.ps1` | Capture local git/GitHub Desktop conflict state to a timestamped log. |
-| `scripts/Invoke-DcoirSafePrePullApply.ps1` | Stash current local work, fast-forward pull, reapply the captured stash, and log the result. |
-| `scripts/New-DcoirTargetedSnapshot.ps1` | Build a targeted snapshot ZIP from a JSON manifest after safe repo freshness checks. |
-| `scripts/New-DcoirTextOnlyRepoSnapshot.ps1` | Build a read-only full-repo text snapshot ZIP for ChatGPT review while excluding binaries, generated/dependency folders, and oversized files. |
-| `scripts/Invoke-DcoirRepoPatchApply.ps1` | Apply an explicit repo-relative payload manifest with wrapper-root detection, target-root allow-listing, optional pre/post hashes, delete support, and UTF-8 verification logs. |
-| `scripts/New-DcoirChatGPTFriendlyZip.ps1` | Build rootless, metadata-clean, UTF-8-friendly ZIPs for ChatGPT upload and parsing, including diagnostic indexes and file manifests. |
-| `scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1` | Watch, capture, or dispatch GitHub Actions workflow runs from a manifest, monitor them, collect evidence, and produce a ChatGPT-friendly ZIP. |
-| `scripts/Invoke-DcoirActionsValidationSmoke.ps1` | Harness that creates guarded smoke manifests and executes the orchestrator. |
-| `scripts/Invoke-DcoirActionsModeLadder.ps1` | Harness that creates a fail-fast sequential ladder manifest and executes the orchestrator. |
+| Tool | Purpose | Backing modules |
+|---|---|---|
+| `scripts/Get-DcoirGitConflictDiagnostic.ps1` | Capture local git/GitHub Desktop conflict state to a timestamped log. | `Dcoir.Git` |
+| `scripts/Invoke-DcoirSafePrePullApply.ps1` | Stash current local work, fast-forward pull, reapply only a newly-created captured stash, and log the result. | `Dcoir.Git` |
+| `scripts/New-DcoirTargetedSnapshot.ps1` | Build a targeted snapshot ZIP from a JSON manifest after safe repo freshness checks. | `Dcoir.Git`, `Dcoir.Snapshot`, ZIP helper |
+| `scripts/New-DcoirTextOnlyRepoSnapshot.ps1` | Build a read-only full-repo text snapshot ZIP for ChatGPT review while excluding binaries, generated/dependency folders, and oversized files. | `Dcoir.Git`, `Dcoir.Snapshot`, ZIP helper |
+| `scripts/Invoke-DcoirRepoPatchApply.ps1` | Apply an explicit repo-relative payload manifest with wrapper-root detection, target-root allow-listing, optional pre/post hashes, delete support, and UTF-8 verification logs. | `Dcoir.Git`, `Dcoir.RepoPatch` |
+| `scripts/New-DcoirChatGPTFriendlyZip.ps1` | Build rootless, metadata-clean, UTF-8-friendly ZIPs for ChatGPT upload and parsing, including diagnostic indexes and file manifests. | ZIP helper |
+| `scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1` | Watch, capture, or dispatch GitHub Actions workflow runs from a manifest, monitor them, collect evidence, and produce a ChatGPT-friendly ZIP. | `Dcoir.Actions`, `Dcoir.GitHub`, `Dcoir.Packaging`, `Dcoir.Common` |
+| `scripts/Invoke-DcoirActionsValidationSmoke.ps1` | Harness that creates guarded smoke manifests and executes the orchestrator. | `Dcoir.Common`, Actions orchestrator |
+| `scripts/Invoke-DcoirActionsModeLadder.ps1` | Harness that creates a fail-fast sequential ladder manifest and executes the orchestrator. | `Dcoir.Common`, Actions orchestrator |
 
 ## ChatGPT-friendly ZIP launcher
 
