@@ -5,15 +5,12 @@ param(
 )
 
 $ErrorActionPreference = "Continue"
-$commonModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Common\Dcoir.Common.psm1'
-$gitModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Git\Dcoir.Git.psm1'
-$commonModule = (Resolve-Path -LiteralPath $commonModule).Path
+$gitModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Git\Dcoir.Git.psd1'
 $gitModule = (Resolve-Path -LiteralPath $gitModule).Path
-Import-Module -Name $commonModule -Force -Global -ErrorAction Stop
 Import-Module -Name $gitModule -Force -Global -ErrorAction Stop
 
-$cmdGetEnv = Get-Command -Name 'Get-DcoirSystemEnvValue' -ErrorAction Stop
-$cmdAddLine = Get-Command -Name 'Add-DcoirUtf8Line' -ErrorAction Stop
+$cmdGetEnv = Get-Command -Name 'Get-DcoirGitSystemEnvValue' -ErrorAction Stop
+$cmdAddLine = Get-Command -Name 'Add-DcoirGitUtf8Line' -ErrorAction Stop
 $cmdGit = Get-Command -Name 'Invoke-DcoirGitCommand' -ErrorAction Stop
 
 if (-not $RepoRoot) { $RepoRoot = & $cmdGetEnv -Name 'DCOIR_REPO_ROOT' -Required }
