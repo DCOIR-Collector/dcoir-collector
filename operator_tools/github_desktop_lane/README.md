@@ -23,17 +23,18 @@ GitHub Actions allows multiple workflow runs by default, but a workflow or job m
 
 ## Reusable module architecture
 
-The Actions toolset is split into reusable modules under `modules/`:
+The toolset is split into reusable modules under `modules/`:
 
 | Module | Purpose |
 |---|---|
 | `Dcoir.Common` | Paths, Machine/System environment validation, placeholder rejection, JSON, UTF-8 filesystem helpers, safe names, timestamps, and shared logging context. |
+| `Dcoir.Git` | Git executable discovery, native argument quoting, logged git process execution, branch checks, clean-tree checks, fetch, fast-forward pull, and ahead/behind analysis. |
 | `Dcoir.GitHub` | GitHub CLI auth/availability, `gh` text/JSON wrappers, Actions run lookup, run details, and job lookup. |
 | `Dcoir.Packaging` | ChatGPT-friendly ZIP packaging wrapper. |
 | `Dcoir.Actions` | Manifest parsing, dispatch, monitor, fail-fast gates, parallel execution throttle, capture, cleanup, summaries, and exit codes. |
 | `DcoirActionsOrchestrator` | Compatibility facade preserving the stable public entrypoint. |
 
-Harnesses/wrappers should only create reviewed JSON configuration and execute the orchestrator. Shared functions used by two or more tools should move into the reusable module ecosystem.
+Harnesses/wrappers should only create reviewed JSON configuration and execute the orchestrator. Shared functions used by two or more tools should move into the reusable module ecosystem. Git-facing scripts should use `Dcoir.Git` instead of declaring their own process wrappers.
 
 ## Environment variables
 
