@@ -3,7 +3,7 @@
 
 Local operator tool for the AFRICOM_SOC_IR / DCOIR Airtable Work Items table.
 Reads Airtable token from DCOIR_AIRTABLE_TOKEN or AIRTABLE_TOKEN.
-Writes reports to DCOIR_DOWNLOADS_DIR when set, otherwise ./out.
+Writes reports to DCOIR_DOWNLOADS_DIR when set by the wrapper or caller. The wrapper normally points this at a dated tool folder under the operator output root.
 """
 from __future__ import annotations
 
@@ -501,11 +501,17 @@ def attempt_field_delete(at: Airtable, base_id: str, table_id: str, schema: Dict
             results.append({"field_id": fid, "field_name": name, "status": "failed_expected_for_web_api", "error": str(exc)})
     return {"targets": [{"field_id": fid, "field_name": name} for fid, name in unique_targets], "results": results}
 
+def report_label(mode: str) -> str:
+    raw = os.environ.get("DCOIR_TOOL_RUN_LABEL") or mode
+    safe = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in raw)
+    return safe.strip("_") or mode
+
 def write_report(mode: str, report: Dict[str, Any]) -> Path:
     d = out_dir()
     stamp = utc_stamp()
-    jp = d / f"work_items_schema_cleanup_{mode}_{stamp}.json"
-    mp = d / f"work_items_schema_cleanup_{mode}_{stamp}.md"
+    label = report_label(mode)
+    jp = d / f"work_items_schema_cleanup_{label}_{stamp}.json"
+    mp = d / f"work_items_schema_cleanup_{label}_{stamp}.md"
     report["timestamp_utc"] = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     jp.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
     lines = []
@@ -609,6 +615,13 @@ def main(argv: List[str] | None = None) -> int:
     report["mode"] = args.mode
     report["base_id"] = args.base_id
     report["table_id"] = args.table_id
+    report["environment_sources"] = {
+        "downloads_dir": os.environ.get("DCOIR_DOWNLOADS_DIR", ""),
+        "run_label": os.environ.get("DCOIR_TOOL_RUN_LABEL", ""),
+        "base_id_env_present": bool(os.environ.get("DCOIR_AIRTABLE_BASE_ID")),
+        "table_id_env_present": bool(os.environ.get("DCOIR_AIRTABLE_WORK_ITEMS_TABLE_ID")),
+        "token_env_present": bool(os.environ.get("DCOIR_AIRTABLE_TOKEN") or os.environ.get("AIRTABLE_TOKEN")),
+    }
     report["warnings"] = []
     report["actions"] = []
 

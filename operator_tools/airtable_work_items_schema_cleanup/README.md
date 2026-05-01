@@ -2,60 +2,65 @@
 
 This local tool helps simplify the DCOIR Airtable `Work Items` table.
 
-It uses your local Airtable token from one of these environment variables:
+It uses environment variables first wherever possible.
+
+## Environment variables
+
+| Variable | Purpose |
+|---|---|
+| `DCOIR_AIRTABLE_TOKEN` | Preferred Airtable token |
+| `AIRTABLE_TOKEN` | Backup Airtable token name |
+| `DCOIR_AIRTABLE_BASE_ID` | Preferred Airtable base ID |
+| `DCOIR_AIRTABLE_WORK_ITEMS_TABLE_ID` | Preferred Work Items table ID |
+| `DCOIR_DOWNLOADS_DIR` | Preferred output root |
+
+If `DCOIR_DOWNLOADS_DIR` is set, output goes under:
 
 ```text
-DCOIR_AIRTABLE_TOKEN
-AIRTABLE_TOKEN
+%DCOIR_DOWNLOADS_DIR%\DCOIR_WorkItemsSchemaCleanup\YYYYMMDD\
 ```
 
-It uses base `appM4KSwnVf3G3OTK` and table `tblgsQAVWvh8K7gIR` by default.
+If it is not set, output falls back to:
 
-## Important safety rule
+```text
+%USERPROFILE%\Downloads\DCOIR_WorkItemsSchemaCleanup\YYYYMMDD\
+```
 
-Start with dry run. Do not use dangerous modes unless the dry run and safe apply modes look correct.
+The terminal and log show which source was used for base ID, table ID, and output folder.
 
 ## Double-click files
 
-| File | What it does |
-|---|---|
-| `Run_DCOIR_WorkItemsSchemaCleanup_SelfTest.cmd` | Checks the tool files locally; does not call Airtable |
-| `Run_DCOIR_WorkItemsSchemaCleanup_DryRun.cmd` | Reports planned changes only |
-| `Run_DCOIR_WorkItemsSchemaCleanup_ApplyOptions.cmd` | Creates missing simple select options |
-| `Run_DCOIR_WorkItemsSchemaCleanup_ApplySafe.cmd` | Normalizes record values and prefixes retired fields with `DELETE -` |
-| `Run_DCOIR_WorkItemsSchemaCleanup_Verify.cmd` | Checks cleanup state |
-| `Run_DCOIR_WorkItemsSchemaCleanup_GenerateOptionDeleteScript.cmd` | Writes Airtable Scripting Extension JavaScript for option deletion |
-| `Run_DCOIR_WorkItemsSchemaCleanup_AttemptApiOptionDelete_DANGEROUS.cmd` | Tries direct API option deletion; expected to fail on normal Airtable API |
-| `Run_DCOIR_WorkItemsSchemaCleanup_AttemptFieldDelete_DANGEROUS.cmd` | Tries direct API field deletion for `DELETE -` fields; expected to fail on normal Airtable API |
+Run these in order:
 
-## Logs
+| Order | File | What it does |
+|---:|---|---|
+| 0 | `00_Remove_Legacy_Wrapper_Filenames.cmd` | Optional: removes old long `.cmd` filenames after the numbered wrappers are installed |
+| 1 | `01_Dry_Run.cmd` | Reports planned changes only |
+| 2 | `02_Apply_Options.cmd` | Creates missing simple select options |
+| 3 | `03_Apply_Safe_Cleanup.cmd` | Normalizes record values and prefixes retired fields with `DELETE -` |
+| 4 | `04_Verify.cmd` | Checks cleanup state |
+| 5 | `05_Generate_Option_Delete_Script.cmd` | Writes Airtable Scripting Extension JavaScript for option deletion |
+| 90 | `90_Self_Test.cmd` | Checks the tool files locally; does not call Airtable |
+| 91 | `91_Attempt_Api_Option_Delete_DANGEROUS.cmd` | Tries direct API option deletion; expected to fail on normal Airtable API |
+| 92 | `92_Attempt_Field_Delete_DANGEROUS.cmd` | Tries direct API field deletion for `DELETE -` fields; expected to fail on normal Airtable API |
 
-Every `.cmd` launcher now pauses before closing and writes a timestamped log to:
+## Logs and reports
 
-```text
-%USERPROFILE%\Downloads\DCOIR
-```
+Every launcher pauses before closing and writes a timestamped log.
 
-If `DCOIR_DOWNLOADS_DIR` is set, it writes there instead.
-
-The log name looks like:
+Expected folder pattern:
 
 ```text
-work_items_schema_cleanup_dry-run_20260501T132500Z.log
+DCOIR_WorkItemsSchemaCleanup\YYYYMMDD\
 ```
 
-JSON and Markdown reports are written to the same folder.
+Expected file names look like:
 
-## Recommended run order
-
-1. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_SelfTest.cmd`.
-2. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_DryRun.cmd`.
-3. Review the log and report in `Downloads\DCOIR`.
-4. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_ApplyOptions.cmd`.
-5. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_ApplySafe.cmd`.
-6. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_Verify.cmd`.
-7. Double-click `Run_DCOIR_WorkItemsSchemaCleanup_GenerateOptionDeleteScript.cmd` if select-option cleanup is needed.
-8. Use dangerous API delete launchers only if you explicitly want to test whether Airtable supports those API delete calls.
+```text
+work_items_schema_cleanup_01_dry_run_20260501T132500Z.log
+work_items_schema_cleanup_01_dry_run_20260501T132500Z.json
+work_items_schema_cleanup_01_dry_run_20260501T132500Z.md
+```
 
 ## Canonical Status values
 
@@ -104,8 +109,8 @@ DCOIR_WORK_ITEMS_SCHEMA_CLEANUP_DONE
 DCOIR_WORK_ITEMS_SCHEMA_CLEANUP_WRAPPER_DONE
 ```
 
-If the window shows an error, copy the text or upload the log. Do not include your Airtable token.
+If the window shows an error, upload the newest `.log`, `.json`, and `.md` from the tool output folder. Do not include your Airtable token.
 
-## v3 wrapper note
+## v4 wrapper note
 
-The wrapper suppresses Python deprecation warnings and does not treat harmless stderr text as failure. Success is based on the Python process exit code and generated report files.
+The v4 wrapper adds numbered human-readable launchers, dated output folders, and explicit environment-variable source reporting. It also keeps the legacy wrapper cleanup as an operator-run step so file deletions are visible in GitHub Desktop.
