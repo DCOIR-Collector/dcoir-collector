@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-01.9",
+  "catalog_version": "2026-05-01.10",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/",
     "registry_source": "airtable Operator Tools Registry",
@@ -79,8 +79,17 @@
       "tool_family": "github_actions_orchestration",
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsValidationSmoke.ps1",
       "output_pattern": "dcoir_actions_workflow_orchestrator_sample.chatgpt.zip; dcoir_actions_watch_sample.chatgpt.zip; dcoir_actions_live_dispatch_test.chatgpt.zip",
-      "version_or_hash": "2026-05-01.1",
+      "version_or_hash": "2026-05-01.3",
       "notes": "Set-and-forget wrapper around the Actions Workflow Orchestrator. Runs dry-run validation, watch validation, and one guarded live dispatch with max_dispatch_count=1 and allow_multiple_live_dispatches=false. Emits clean operator-facing progress and upload file paths."
+    },
+    {
+      "tool_id": "DCOIR-ACTIONS-MODE-LADDER",
+      "tool_name": "DCOIR Actions Mode Ladder Runner",
+      "tool_family": "github_actions_orchestration",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsModeLadder.ps1",
+      "output_pattern": "dcoir_actions_ladder-*.chatgpt.zip; dcoir_actions_mode_ladder_result.json",
+      "version_or_hash": "2026-05-01.1",
+      "notes": "Fail-fast same-workflow mode/suite ladder runner. Runs modes from low to high, treats each passed mode as a gate, stops on the first failed/non-success run, keeps FullRegression last by default, and cleans expanded run folders after ZIP creation unless KeepOutputFolders is set."
     }
   ]
 }
