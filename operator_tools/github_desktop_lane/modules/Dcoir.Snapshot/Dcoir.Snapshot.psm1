@@ -1,6 +1,6 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$script:DcoirSnapshotVersion = '2026-05-01.1'
+$script:DcoirSnapshotVersion = '2026-05-01.2'
 
 function Add-DcoirSnapshotUtf8Line {
     [CmdletBinding()]
@@ -20,6 +20,13 @@ function ConvertTo-DcoirSnapshotSafeName {
     return $safe
 }
 
+function Get-DcoirSnapshotTrimmedRoot {
+    [CmdletBinding()]
+    param([Parameter(Mandatory=$true)][string]$Root)
+    $trimChars = [char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+    return ([System.IO.Path]::GetFullPath($Root)).TrimEnd($trimChars)
+}
+
 function Assert-DcoirRepoRelativePath {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][string]$RelativePath)
@@ -33,14 +40,15 @@ function Test-DcoirPathUnderRoot {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][string]$Path, [Parameter(Mandatory=$true)][string]$Root)
     $fullPath = [System.IO.Path]::GetFullPath($Path)
-    $fullRoot = [System.IO.Path]::GetFullPath($Root).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+    $fullRoot = (Get-DcoirSnapshotTrimmedRoot -Root $Root) + [System.IO.Path]::DirectorySeparatorChar
     return $fullPath.StartsWith($fullRoot, [System.StringComparison]::OrdinalIgnoreCase)
 }
 
 function Get-DcoirRepoRelativePath {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][string]$Path, [Parameter(Mandatory=$true)][string]$RepoRoot)
-    $repoUri = [System.Uri]::new(($RepoRoot.TrimEnd('\\','/') + [System.IO.Path]::DirectorySeparatorChar))
+    $trimmedRoot = Get-DcoirSnapshotTrimmedRoot -Root $RepoRoot
+    $repoUri = [System.Uri]::new(($trimmedRoot + [System.IO.Path]::DirectorySeparatorChar))
     $fileUri = [System.Uri]::new($Path)
     return [System.Uri]::UnescapeDataString($repoUri.MakeRelativeUri($fileUri).ToString()).Replace('/', [System.IO.Path]::DirectorySeparatorChar)
 }
@@ -118,4 +126,4 @@ function Get-DcoirTextSnapshotFiles {
     return [pscustomobject]@{ Included = @($included.ToArray()); Skipped = @($skipped.ToArray()) }
 }
 
-Export-ModuleMember -Function Add-DcoirSnapshotUtf8Line,ConvertTo-DcoirSnapshotSafeName,Assert-DcoirRepoRelativePath,Test-DcoirPathUnderRoot,Get-DcoirRepoRelativePath,Test-DcoirLikelyBinaryFile,Copy-DcoirSnapshotRepoPath,Get-DcoirTextSnapshotFiles
+Export-ModuleMember -Function Add-DcoirSnapshotUtf8Line,ConvertTo-DcoirSnapshotSafeName,Get-DcoirSnapshotTrimmedRoot,Assert-DcoirRepoRelativePath,Test-DcoirPathUnderRoot,Get-DcoirRepoRelativePath,Test-DcoirLikelyBinaryFile,Copy-DcoirSnapshotRepoPath,Get-DcoirTextSnapshotFiles
