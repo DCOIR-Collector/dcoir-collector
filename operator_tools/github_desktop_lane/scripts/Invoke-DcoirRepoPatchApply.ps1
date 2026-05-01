@@ -14,13 +14,27 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ToolVersion = "2026-05-01.2"
+$ToolVersion = "2026-05-01.3"
 
-if (-not $RepoRoot) { throw "DCOIR_REPO_ROOT is not set. Set it to your local dcoir-collector repo root or pass -RepoRoot." }
+$gitModule = Join-Path $PSScriptRoot '..\modules\Dcoir.Git\Dcoir.Git.psd1'
+$repoPatchModule = Join-Path $PSScriptRoot '..\modules\Dcoir.RepoPatch\Dcoir.RepoPatch.psd1'
+Import-Module -Name (Resolve-Path -LiteralPath $gitModule).Path -Force -Global -ErrorAction Stop
+Import-Module -Name (Resolve-Path -LiteralPath $repoPatchModule).Path -Force -Global -ErrorAction Stop
+
+$cmdGetEnv = Get-Command -Name 'Get-DcoirGitSystemEnvValue' -ErrorAction Stop
+$cmdGit = Get-Command -Name 'Invoke-DcoirGitCommand' -ErrorAction Stop
+$cmdAddLine = Get-Command -Name 'Add-DcoirRepoPatchUtf8Line' -ErrorAction Stop
+$cmdNormalize = Get-Command -Name 'Normalize-DcoirRepoPatchRelativePath' -ErrorAction Stop
+$cmdResolveUnderRoot = Get-Command -Name 'Resolve-DcoirRepoPatchUnderRoot' -ErrorAction Stop
+$cmdHash = Get-Command -Name 'Get-DcoirRepoPatchFileSha256' -ErrorAction Stop
+$cmdAllowedRoot = Get-Command -Name 'Test-DcoirRepoPatchAllowedTargetRoot' -ErrorAction Stop
+$cmdPayloadBase = Get-Command -Name 'Find-DcoirRepoPatchPayloadBase' -ErrorAction Stop
+
+if (-not $RepoRoot) { $RepoRoot = & $cmdGetEnv -Name 'DCOIR_REPO_ROOT' -Required }
 if (-not (Test-Path -LiteralPath $RepoRoot -PathType Container)) { throw "Repo root not found: $RepoRoot" }
 if (-not (Test-Path -LiteralPath $ManifestJson -PathType Leaf)) { throw "Manifest not found: $ManifestJson" }
 if (-not (Test-Path -LiteralPath $PayloadRoot -PathType Container)) { throw "Payload root not found: $PayloadRoot" }
-if (-not $OutputDir) { $OutputDir = Join-Path $env:USERPROFILE "Downloads" }
+if (-not $OutputDir) { $OutputDir = & $cmdGetEnv -Name 'DCOIR_DOWNLOADS_DIR' -Required }
 if (-not (Test-Path -LiteralPath $OutputDir -PathType Container)) { New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null }
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
@@ -38,138 +52,37 @@ $Warnings = New-Object System.Collections.Generic.List[string]
 function Write-Log {
     param([AllowEmptyString()][string]$Text)
     Write-Host $Text
-    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-    [System.IO.File]::AppendAllText($logPath, ($Text + [Environment]::NewLine), $utf8NoBom)
+    & $cmdAddLine -Path $logPath -Text $Text
 }
 
-function ConvertTo-NativeArgumentString {
-    param([AllowEmptyString()][string]$Argument)
-    if ($null -eq $Argument) { return '""' }
-    if ($Argument.Length -eq 0) { return '""' }
-    if ($Argument -notmatch '[\s"]') { return $Argument }
-    $escaped = $Argument -replace '(\\*)"', '$1$1\"'
-    $escaped = $escaped -replace '(\\+)$', '$1$1'
-    return '"' + $escaped + '"'
-}
-
-function Invoke-GitLogged {
-    param([Parameter(Mandatory = $true)][string[]]$Arguments)
-    Write-Log ""
-    Write-Log (">>> git " + ($Arguments -join " "))
-    $argumentString = ($Arguments | ForEach-Object { ConvertTo-NativeArgumentString ([string]$_) }) -join ' '
-    $psi = New-Object System.Diagnostics.ProcessStartInfo
-    $psi.FileName = "git.exe"
-    $psi.Arguments = $argumentString
-    $psi.WorkingDirectory = $RepoRoot
-    $psi.UseShellExecute = $false
-    $psi.RedirectStandardOutput = $true
-    $psi.RedirectStandardError = $true
-    $psi.CreateNoWindow = $true
-    $process = New-Object System.Diagnostics.Process
-    $process.StartInfo = $psi
-    [void]$process.Start()
-    $stdout = $process.StandardOutput.ReadToEnd()
-    $stderr = $process.StandardError.ReadToEnd()
-    $process.WaitForExit()
-    $exitCode = $process.ExitCode
-    $lines = New-Object System.Collections.Generic.List[string]
-    foreach ($text in @($stdout, $stderr)) {
-        if ($null -ne $text -and $text.Length -gt 0) {
-            $normalized = $text -replace "`r`n", "`n"
-            foreach ($line in ($normalized -split "`n")) {
-                if ($line.Length -gt 0) {
-                    $lines.Add([string]$line) | Out-Null
-                    Write-Log ([string]$line)
-                }
-            }
-        }
-    }
-    if ($exitCode -ne 0) { throw "git $($Arguments -join ' ') failed with exit code $exitCode" }
-    return @($lines.ToArray())
-}
-
-function Test-RelativePathSafe {
-    param([string]$RelativePath)
-    if ([string]::IsNullOrWhiteSpace($RelativePath)) { return $false }
-    if ($RelativePath -match '^[A-Za-z]:') { return $false }
-    if ($RelativePath.StartsWith('\\')) { return $false }
-    if ($RelativePath.StartsWith('/')) { return $false }
-    if ($RelativePath -match '(^|[\\/])\.\.([\\/]|$)') { return $false }
-    return $true
+function Invoke-RepoPatchGit {
+    param([Parameter(Mandatory = $true)][string[]]$Arguments, [switch]$AllowFailure, [switch]$Quiet)
+    return & $cmdGit -RepoRoot $RepoRoot -Arguments $Arguments -LogPath $logPath -AllowFailure:$AllowFailure -Quiet:$Quiet
 }
 
 function Normalize-RelativePath {
     param([string]$RelativePath)
-    if (-not (Test-RelativePathSafe -RelativePath $RelativePath)) { throw "Unsafe relative path: $RelativePath" }
-    return ($RelativePath -replace '\\', '/').TrimStart('/')
+    return & $cmdNormalize -RelativePath $RelativePath
 }
 
 function Resolve-UnderRoot {
-    param(
-        [string]$Root,
-        [string]$RelativePath
-    )
-    $rel = Normalize-RelativePath -RelativePath $RelativePath
-    $candidate = Join-Path $Root ($rel -replace '/', [System.IO.Path]::DirectorySeparatorChar)
-    $rootFull = [System.IO.Path]::GetFullPath($Root).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
-    $candidateFull = [System.IO.Path]::GetFullPath($candidate)
-    if (-not $candidateFull.StartsWith($rootFull, [System.StringComparison]::OrdinalIgnoreCase)) {
-        throw "Path escapes root: $RelativePath"
-    }
-    return $candidateFull
+    param([string]$Root, [string]$RelativePath)
+    return & $cmdResolveUnderRoot -Root $Root -RelativePath $RelativePath
 }
 
 function Get-FileSha256 {
     param([string]$Path)
-    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $null }
-    $sha = Get-FileHash -Algorithm SHA256 -LiteralPath $Path
-    return $sha.Hash.ToLowerInvariant()
+    return & $cmdHash -Path $Path
 }
 
 function Test-AllowedTargetRoot {
-    param(
-        [string]$RelativePath,
-        [object[]]$AllowedRoots
-    )
-    if (-not $AllowedRoots -or $AllowedRoots.Count -eq 0) { throw "Manifest must define allowed_target_roots." }
-    $rel = (Normalize-RelativePath -RelativePath $RelativePath).ToLowerInvariant()
-    foreach ($root in $AllowedRoots) {
-        if (-not $root) { continue }
-        $r = (Normalize-RelativePath -RelativePath ([string]$root)).ToLowerInvariant().TrimEnd('/')
-        if ($rel -eq $r -or $rel.StartsWith($r + '/')) { return $true }
-    }
-    return $false
+    param([string]$RelativePath, [object[]]$AllowedRoots)
+    return & $cmdAllowedRoot -RelativePath $RelativePath -AllowedRoots $AllowedRoots
 }
 
 function Find-PayloadBase {
-    param(
-        [string]$BaseRoot,
-        [object[]]$CopyMap,
-        [string]$Policy
-    )
-    $policyValue = "auto"
-    if ($Policy) { $policyValue = ([string]$Policy).ToLowerInvariant() }
-    if ($policyValue -eq "none") { return $BaseRoot }
-    if ($policyValue -ne "auto" -and $policyValue -ne "single-child") { throw "Unsupported payload_root_policy: $Policy" }
-
-    $roots = New-Object System.Collections.Generic.List[string]
-    $roots.Add($BaseRoot) | Out-Null
-    $children = @(Get-ChildItem -LiteralPath $BaseRoot -Directory -Force -ErrorAction SilentlyContinue)
-    if ($children.Count -eq 1) { $roots.Add($children[0].FullName) | Out-Null }
-
-    foreach ($root in $roots) {
-        $allFound = $true
-        foreach ($item in $CopyMap) {
-            $sourcePath = [string]$item.source
-            if (-not $sourcePath) { continue }
-            $candidate = Resolve-UnderRoot -Root $root -RelativePath $sourcePath
-            if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { $allFound = $false; break }
-        }
-        if ($allFound) { return $root }
-    }
-
-    if ($policyValue -eq "single-child" -and $children.Count -eq 1) { return $children[0].FullName }
-    return $BaseRoot
+    param([string]$BaseRoot, [object[]]$CopyMap, [string]$Policy)
+    return & $cmdPayloadBase -BaseRoot $BaseRoot -CopyMap $CopyMap -Policy $Policy
 }
 
 function Write-ResultJson {
@@ -208,8 +121,8 @@ try {
 
     Write-Log ""
     Write-Log "== BRANCH CHECK =="
-    $branchOutput = @(Invoke-GitLogged @('branch', '--show-current'))
-    $currentBranch = ($branchOutput | Select-Object -Last 1).Trim()
+    $branchResult = Invoke-RepoPatchGit @('branch', '--show-current')
+    $currentBranch = ($branchResult.Lines | Select-Object -Last 1).Trim()
     $expectedBranch = $Branch
     if ($manifest.expected_branch) { $expectedBranch = [string]$manifest.expected_branch }
     Write-Log "Current branch: $currentBranch"
@@ -219,9 +132,9 @@ try {
     if (-not $SkipFetch) {
         Write-Log ""
         Write-Log "== FETCH AND FAST-FORWARD CHECK =="
-        Invoke-GitLogged @('fetch', $Remote, '--prune') | Out-Null
-        $behindAhead = @(Invoke-GitLogged @('rev-list', '--left-right', '--count', "HEAD...$Remote/$expectedBranch"))
-        $counts = ($behindAhead | Select-Object -Last 1).Trim() -split '\s+'
+        Invoke-RepoPatchGit @('fetch', $Remote, '--prune') | Out-Null
+        $behindAheadResult = Invoke-RepoPatchGit @('rev-list', '--left-right', '--count', "HEAD...$Remote/$expectedBranch")
+        $counts = ($behindAheadResult.Lines | Select-Object -Last 1).Trim() -split '\s+'
         if ($counts.Count -ge 2) {
             $behind = [int]$counts[1]
             if ($behind -gt 0) { throw "Local branch is behind $Remote/$expectedBranch. Pull with the safe pre-pull tool before applying." }
@@ -230,14 +143,13 @@ try {
 
     Write-Log ""
     Write-Log "== DIRTY TREE CHECK =="
-    $dirty = @(Invoke-GitLogged @('status', '--porcelain'))
+    $dirtyResult = Invoke-RepoPatchGit @('status', '--porcelain') -Quiet
+    $dirty = @($dirtyResult.Lines)
     if ($dirty.Count -gt 0) {
         foreach ($line in $dirty) { Write-Log "DIRTY: $line" }
         $manifestAllowsDirty = $false
         if ($manifest.allow_dirty_tree) { $manifestAllowsDirty = [bool]$manifest.allow_dirty_tree }
-        if (-not $AllowDirtyTree -and -not $manifestAllowsDirty) {
-            throw "Working tree is not clean. Commit, stash, or rerun with an explicit dirty-tree allowance only if the dirty paths are expected."
-        }
+        if (-not $AllowDirtyTree -and -not $manifestAllowsDirty) { throw "Working tree is not clean. Commit, stash, or rerun with an explicit dirty-tree allowance only if the dirty paths are expected." }
         $Warnings.Add("dirty_tree_allowed") | Out-Null
     } else { Write-Log "Working tree appears clean." }
 
@@ -259,9 +171,7 @@ try {
                 $expected = ([string]$check.sha256).ToLowerInvariant()
                 Write-Log "PRECHECK: $path $actual"
                 if ($actual -ne $expected) { throw "Precheck hash mismatch for $path. Expected $expected actual $actual" }
-            } else {
-                Write-Log "PRECHECK OBSERVED: $path $actual"
-            }
+            } else { Write-Log "PRECHECK OBSERVED: $path $actual" }
         }
     } else { Write-Log "No precheck hashes declared." }
 
@@ -306,9 +216,7 @@ try {
             $deleteFull = Resolve-UnderRoot -Root $RepoRoot -RelativePath $deleteRel
             $existed = Test-Path -LiteralPath $deleteFull
             Write-Log "DELETE: $deleteRel existed=$existed"
-            if ($existed -and -not $WhatIfOnly) {
-                Invoke-GitLogged @('rm', '-r', '--', $deleteRel) | Out-Null
-            }
+            if ($existed -and -not $WhatIfOnly) { Invoke-RepoPatchGit @('rm', '-r', '--', $deleteRel) | Out-Null }
             $AppliedDeletes.Add([pscustomobject]@{ path = $deleteRel; existed = [bool]$existed }) | Out-Null
         }
     } else { Write-Log "No delete paths declared." }
@@ -346,8 +254,8 @@ try {
 
     Write-Log ""
     Write-Log "== FINAL GIT STATUS =="
-    $finalStatus = @(Invoke-GitLogged @('status', '--short'))
-    foreach ($line in $finalStatus) { Write-Log "STATUS: $line" }
+    $finalStatusResult = Invoke-RepoPatchGit @('status', '--short')
+    foreach ($line in @($finalStatusResult.Lines)) { Write-Log "STATUS: $line" }
     Write-ResultJson -Status "success" -Message "Apply completed. Review changes in GitHub Desktop before commit."
     Write-Log ""
     Write-Log "RESULT_JSON: $resultPath"
