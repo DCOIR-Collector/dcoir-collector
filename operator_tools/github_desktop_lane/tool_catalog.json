@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-01.4",
+  "catalog_version": "2026-05-01.5",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/",
     "registry_source": "airtable Operator Tools Registry",
@@ -70,8 +70,8 @@
       "tool_family": "github_actions_orchestration",
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1",
       "output_pattern": "*_actions_*; *.chatgpt.zip; orchestrator_summary.json; orchestrator_summary.md",
-      "version_or_hash": "2026-05-01.2",
-      "notes": "Unified manifest-driven GitHub Actions tool. Modes: watch existing workflow runs, capture known run IDs, or dispatch 1..N workflow runs with per-run inputs. Resolves DCOIR_REPO_ROOT and DCOIR_DOWNLOADS_DIR from Machine/System environment scope, rejects placeholder paths, uses dry_run by default for dispatch, requires explicit -ConfirmDispatch for live dispatch, monitors runs, captures logs/jobs/artifacts, and packages evidence with the ChatGPT-friendly ZIP helper."
+      "version_or_hash": "2026-05-01.3",
+      "notes": "Unified manifest-driven GitHub Actions tool. Modes: watch existing workflow runs, capture known run IDs, or dispatch 1..N workflow runs with per-run inputs. Resolves DCOIR_REPO_ROOT and DCOIR_DOWNLOADS_DIR from Machine/System environment scope, rejects placeholder paths, uses dry_run by default for dispatch, requires explicit -ConfirmDispatch for live dispatch, monitors runs, captures logs/jobs/artifacts, packages evidence with the ChatGPT-friendly ZIP helper, and safely formats gh command failures without PowerShell variable-colon parse errors."
     }
   ]
 }

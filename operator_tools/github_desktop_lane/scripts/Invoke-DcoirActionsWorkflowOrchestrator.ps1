@@ -41,7 +41,7 @@ param(
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$Script:ToolVersion = '2026-05-01.2'
+$Script:ToolVersion = '2026-05-01.3'
 
 function Test-DcoirPlaceholderPath {
     param([AllowNull()][string]$Value)
@@ -148,7 +148,7 @@ function Invoke-DcoirGhText {
         $debugPath = Join-Path $script:DebugDir ($safeName + '.txt')
         Write-DcoirUtf8Text -Path $debugPath -Text ("gh {0}`nEXIT={1}`n`n{2}" -f ($GhArgs -join ' '), $exit, $raw)
     }
-    if ($exit -ne 0) { throw "gh command failed exit=$exit: gh $($GhArgs -join ' ')" }
+    if ($exit -ne 0) { throw ("gh command failed exit={0}: gh {1}" -f $exit, ($GhArgs -join ' ')) }
     return $raw
 }
 
