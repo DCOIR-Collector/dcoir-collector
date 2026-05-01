@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-01T11:59:55Z",
+  "generated_at_utc": "2026-05-01T12:04:21Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -419,12 +419,12 @@
     },
     "dcoir-github-desktop-lane-advisor": {
       "source_root": "dcoir-github-desktop-lane-advisor",
-      "source_tree_hash": "c7607f2d0bf4c4f0fe598caa917cc5e1fdc041fda01fb7a2283356a0894b8dea",
+      "source_tree_hash": "7412cfa9b0e952212a7d2f156eaccf319358d273ef4f7947424f48036edef172",
       "release_zip_name": "dcoir-github-desktop-lane-advisor.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 5,
-      "total_bytes": 11297,
+      "total_bytes": 12538,
       "files": [
         {
           "path": "SKILL.md",
@@ -443,13 +443,13 @@
         },
         {
           "path": "references/github_desktop_lane_tool_families.md",
-          "sha256": "0d07053bac4a0463232fbb505f9e5c7e4353d97313b457bae090d76782634d20",
-          "size_bytes": 651
+          "sha256": "9dae96323f427bf618eab60c827f75dcef281f259d8ef94493fd2d2e4d75a831",
+          "size_bytes": 1210
         },
         {
           "path": "references/operator_tools_registry_contract.md",
-          "sha256": "71e50155b138885ecb8876514b4d18b08127d7ca73780f28ad92688304107536",
-          "size_bytes": 865
+          "sha256": "c3dc1fc8fb36011afb378a6faa899704bc8aeefd93a940a623a9a9caf60862e7",
+          "size_bytes": 1547
         }
       ]
     },

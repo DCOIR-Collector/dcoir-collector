@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-01T11:59:55Z
+- generated_at_utc: 2026-05-01T12:04:21Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -135,7 +135,7 @@
 
 ## dcoir-github-desktop-lane-advisor
 
-- source_tree_hash: `c7607f2d0bf4c4f0fe598caa917cc5e1fdc041fda01fb7a2283356a0894b8dea`
+- source_tree_hash: `7412cfa9b0e952212a7d2f156eaccf319358d273ef4f7947424f48036edef172`
 - release_zip_name: `dcoir-github-desktop-lane-advisor.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
@@ -144,8 +144,8 @@
 - `SKILL.md` — `88b547b1e2ce060aa7ddb912165c5637dbc83ed5e2d35f1814d9f4fbcf3c8fa7`
 - `agents/openai.yaml` — `f6a164c2ff6f59dce5416f27afb6eba51f5b8cf01c2bf1ac98d661f1ef2f8472`
 - `assets/icon.svg` — `8936b24f674a1250d999e2c2b5901374fb4240426f32bd1ae340c352a90d617d`
-- `references/github_desktop_lane_tool_families.md` — `0d07053bac4a0463232fbb505f9e5c7e4353d97313b457bae090d76782634d20`
-- `references/operator_tools_registry_contract.md` — `71e50155b138885ecb8876514b4d18b08127d7ca73780f28ad92688304107536`
+- `references/github_desktop_lane_tool_families.md` — `9dae96323f427bf618eab60c827f75dcef281f259d8ef94493fd2d2e4d75a831`
+- `references/operator_tools_registry_contract.md` — `c3dc1fc8fb36011afb378a6faa899704bc8aeefd93a940a623a9a9caf60862e7`
 
 ## dcoir-knowledge-doc-maintainer
 
