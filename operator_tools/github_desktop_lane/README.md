@@ -9,6 +9,12 @@ Reusable operator-side helper tools for AFRICOM_SOC_IR / DCOIR manual GitHub Des
 - The DCOIR GitHub Desktop Lane Advisor skill selects tools and generates launcher commands.
 - The operator runs these scripts locally in PowerShell and uploads logs or ZIP outputs.
 
+## Operator guide
+
+Use [`docs/OPERATOR_GUIDE.md`](docs/OPERATOR_GUIDE.md) as the wiki/operator runbook for this tool lane. It covers tool selection, normal run flow, CAP logging expectations, GitHub Desktop bundle application, safety stop conditions, evidence to preserve, and the maintainer checklist.
+
+Keep this README as the landing page, `tool_catalog.json` as the machine-readable repo catalog, `modules/README.md` as the module role index, and Airtable `Operator Tools Registry` as the live discovery/routing index.
+
 ## Safety defaults
 
 These tools favor read-only diagnostics, fast-forward-only pulls, explicit manifests, local logs, and stop-on-unsafe-state behavior. Do not use destructive git commands such as `git reset --hard`, `git clean`, or `git stash pop` unless a purpose-specific recovery plan calls for them.
