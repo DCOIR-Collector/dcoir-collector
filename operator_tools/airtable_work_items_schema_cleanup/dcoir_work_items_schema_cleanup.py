@@ -32,63 +32,24 @@ FIELD_IDS = {
     "Work Item": "fld62VxHtbRTZhPdX",
     "Item ID": "fldTneAArfh5yJOXi",
     "Repo Path or Skill": "fldZ922sf04D4WbvE",
-    "GitHub Link": "fldfq7rvP6vA0AAGF",
     "Evidence / Notes": "fldZ966uvUvaZ77dS",
-    "Blocker": "fldTlQrbx8uJ9mvrQ",
-    "Next Action": "fld28gLP0rXdRQNdq",
-    "Due Date": "fldTUAhmt9LWwjBAt",
-    "Active": "fldlF2k4ImBt4NkHc",
-    "Queue Control": "fldy67yDzHiwu7Cfq",
     "Queue Rank": "fld3vWpcC6OfYEber",
-    "Resume First": "fldwbZAHBQFfGMlBv",
-    "Supersedes Item IDs": "fld5cJr4T7mxs7TIn",
-    "Superseded By Item ID": "fldQNXeZTpxeib1kJ",
-    "Priority Rationale": "fldcsf5ymFwePtkVj",
-    "Decision Source": "fldSRxMPHr9jHEjsn",
-    "Last Confirmed Text": "fldUVyj1B7LhRIFAI",
     "created_at": "fld9Dw9YYk8DjOden",
     "updated_at": "fldD1rwuVsNketueT",
-    "review_after": "flddEfCAHEQLwD0n7",
     "canonical_parent_plan_id": "fldbZhaIrAX2cbHrE",
-    "source_table": "fldunDrubjhN0zchO",
-    "source_record_id": "fldBO42BHGdbibmCN",
     "Area": "fldd0urjdszMBR1LU",
     "Work Type": "fldGa1GseWf6ro78L",
     "Status": "fldvGbvwTx84mxtwO",
     "Priority": "fld4XJowALSopxpnV",
-    "Branch State": "fldTFpFZ4vQ8RXRWu",
     "Authority Scope": "fldQ5YKb9EuM8nqph",
     "GitHub Promotion Need": "fldATbftmJ4UQ8Flk",
     "retention_class": "fldX9vydvQqreL4cF",
-    "canonical_item_type": "fld58RqZOYyXAeTbe",
-    "pipeline_stage": "fldYmzraKwmpUVhcL",
-    "retirement_action": "fldEBKJkv1tx9H22s",
-    "Owner": "flds3pqDPg3riy0UM",
 }
 
-# Fields the operator approved for retirement by reversible prefix first.
-FIELDS_TO_PREFIX_DELETE = [
-    "Next Action",
-    "Branch State",
-    "pipeline_stage",
-    "canonical_item_type",
-    "retirement_action",
-    "Owner",
-    "Active",
-    "Resume First",
-    "Queue Control",
-    "GitHub Link",
-    "Due Date",
-    "Blocker",
-    "Decision Source",
-    "Priority Rationale",
-    "Supersedes Item IDs",
-    "Superseded By Item ID",
-    "source_table",
-    "source_record_id",
-    "review_after",
-    "Last Confirmed Text",
-]
+# Current Work Items cleanup state: retired fields have already been removed.
+# Keep this empty so current runs do not expect, prefix, or report deleted fields.
+FIELDS_TO_PREFIX_DELETE: List[str] = []
+
 
 KEEP_VISIBLE_FIELDS = [
     "Queue Rank",
@@ -587,7 +548,7 @@ def run_self_test() -> int:
     assert STATUS_MAP["ready_to_push"] == "active"
     assert AREA_MAP["git_hub"] == "github"
     assert WORK_TYPE_MAP["verify"] == "validation"
-    assert "Next Action" in FIELDS_TO_PREFIX_DELETE
+    assert FIELDS_TO_PREFIX_DELETE == []
     assert "Status" in CANONICAL_SELECTS
     choices = canonical_choice_items("Status", [], OPTIONS_TO_DELETE["Status"])
     assert "waiting" in [item["name"] for item in choices]
@@ -635,7 +596,7 @@ def build_common_report(schema: Dict[str, Any], table_id: str, records: List[Dic
                 "Work Type": "task",
             },
             "default_note": "Airtable field defaults are usually set in the UI. This tool reports recommended defaults but does not set defaults by API.",
-            "final_manual_delete_after_verify": ["Delete fields prefixed DELETE - if API field deletion attempt is unsupported", "Delete obsolete select options in UI or run generated Scripting Extension code"],
+            "final_manual_followup_after_verify": ["No field-deletion follow-up is expected for the current Work Items cleanup when verify reports zero prefix targets, zero missing options, and zero obsolete option usage."],
         },
     }
 

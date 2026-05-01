@@ -1,6 +1,8 @@
 # DCOIR Work Items Schema Cleanup Tool
 
-This local tool helps simplify the DCOIR Airtable `Work Items` table.
+This local tool verifies and maintains the simplified DCOIR Airtable `Work Items` table.
+
+The original cleanup is complete. Current runs should no longer expect retired `DELETE -` fields.
 
 It uses environment variables first wherever possible.
 
@@ -11,8 +13,10 @@ It uses environment variables first wherever possible.
 | `DCOIR_AIRTABLE_TOKEN` | Preferred Airtable token |
 | `AIRTABLE_TOKEN` | Backup Airtable token name |
 | `DCOIR_AIRTABLE_BASE_ID` | Preferred Airtable base ID |
-| `DCOIR_AIRTABLE_WORK_ITEMS_TABLE_ID` | Preferred Work Items table ID |
 | `DCOIR_DOWNLOADS_DIR` | Preferred output root |
+| `DCOIR_AIRTABLE_WORK_ITEMS_DEFAULT_TABLE_ID` | Optional compatibility override for the Work Items table ID |
+
+Do not create one environment variable per table. Future generic cleanup should use a config file selected once.
 
 If `DCOIR_DOWNLOADS_DIR` is set, output goes under:
 
@@ -30,19 +34,18 @@ The terminal and log show which source was used for base ID, table ID, and outpu
 
 ## Double-click files
 
-Run these in order:
+Run these in order when checking the current table state:
 
 | Order | File | What it does |
 |---:|---|---|
-| 0 | `00_Remove_Legacy_Wrapper_Filenames.cmd` | Optional: removes old long `.cmd` filenames after the numbered wrappers are installed |
-| 1 | `01_Dry_Run.cmd` | Reports planned changes only |
-| 2 | `02_Apply_Options.cmd` | Creates missing simple select options |
-| 3 | `03_Apply_Safe_Cleanup.cmd` | Normalizes record values and prefixes retired fields with `DELETE -` |
-| 4 | `04_Verify.cmd` | Checks cleanup state |
-| 5 | `05_Generate_Option_Delete_Script.cmd` | Writes Airtable Scripting Extension JavaScript for option deletion |
+| 1 | `01_Dry_Run.cmd` | Reports current cleanup state only |
+| 2 | `02_Apply_Options.cmd` | Creates missing canonical select options if any are missing |
+| 3 | `03_Apply_Safe_Cleanup.cmd` | Normalizes record values; no retired Work Items fields are currently expected |
+| 4 | `04_Verify.cmd` | Confirms the table is clean |
+| 5 | `05_Generate_Option_Delete_Script.cmd` | Writes Airtable Scripting Extension JavaScript if obsolete select options are detected |
 | 90 | `90_Self_Test.cmd` | Checks the tool files locally; does not call Airtable |
 | 91 | `91_Attempt_Api_Option_Delete_DANGEROUS.cmd` | Tries direct API option deletion; expected to fail on normal Airtable API |
-| 92 | `92_Attempt_Field_Delete_DANGEROUS.cmd` | Tries direct API field deletion for `DELETE -` fields; expected to fail on normal Airtable API |
+| 92 | `92_Attempt_Field_Delete_DANGEROUS.cmd` | Legacy diagnostic only; current Work Items cleanup should not need field deletion |
 
 ## Logs and reports
 
@@ -73,31 +76,33 @@ done
 dropped
 ```
 
-## Fields marked for deletion by safe apply
-
-The safe apply mode prefixes these fields with `DELETE -`:
+## Current expected Work Items fields
 
 ```text
-Next Action
-Branch State
-pipeline_stage
-canonical_item_type
-retirement_action
-Owner
-Active
-Resume First
-Queue Control
-GitHub Link
-Due Date
-Blocker
-Decision Source
-Priority Rationale
-Supersedes Item IDs
-Superseded By Item ID
-source_table
-source_record_id
-review_after
-Last Confirmed Text
+Queue Rank
+Status
+Work Item
+Item ID
+canonical_parent_plan_id
+Area
+Priority
+Work Type
+Repo Path or Skill
+Evidence / Notes
+created_at
+updated_at
+```
+
+## Completed cleanup state
+
+The retired Work Items fields and the old `Queue Control.active_work_items` link have been removed. Current verify reports should show:
+
+```text
+fields_to_prefix_delete: 0
+records_needing_value_normalization: 0
+missing_canonical_select_options: {}
+obsolete_option_usage: {}
+warnings: []
 ```
 
 ## Success markers
@@ -111,13 +116,9 @@ DCOIR_WORK_ITEMS_SCHEMA_CLEANUP_WRAPPER_DONE
 
 If the window shows an error, upload the newest `.log`, `.json`, and `.md` from the tool output folder. Do not include your Airtable token.
 
-## v4 wrapper note
-
-The v4 wrapper adds numbered human-readable launchers, dated output folders, and explicit environment-variable source reporting. It also keeps the legacy wrapper cleanup as an operator-run step so file deletions are visible in GitHub Desktop.
-
 ## Future generic cleanup mode
 
-This tool is currently tuned for the `Work Items` table. The next major patch should make the cleanup rules config-driven so the same tool can clean other Airtable tables.
+This tool is currently tuned for the `Work Items` table. The next major patch should make cleanup rules config-driven so the same tool can clean other Airtable tables.
 
 See:
 
@@ -128,7 +129,6 @@ work_items_cleanup.config.example.json
 
 Avoid adding one environment variable per table. Prefer a config file selected once, with general environment variables for token, base, output folder, and config path.
 
+## v7 cleanup-state note
 
-## v6 generator note
-
-The generated Airtable Scripting Extension option cleanup script now includes `enableSelectFieldChoiceDeletion: true` when updating select-field choices. This is required by Airtable when choices are removed. The self-test checks that the generated script preserves all canonical Status choices, including `waiting`, and includes the deletion flag.
+The v7 patch updates the tool and docs after final manual field deletion. The tool no longer expects deleted Work Items fields and the example config carries an empty `prefix_delete_fields` list for the current table.

@@ -53,3 +53,8 @@ A future `00_Select_Table_And_Config.cmd` can:
 4. have the numbered launchers reuse that selected config
 
 This avoids hard-coding one table per script while keeping the operator flow simple.
+
+
+## Current Work Items cleanup state
+
+The Work Items-specific cleanup has already removed retired fields and old select options. For the current `work_items_cleanup.config.example.json`, `prefix_delete_fields` should remain empty. Future table cleanups may still use the generic `prefix_delete_fields` concept when a new table has approved field-retirement targets.
