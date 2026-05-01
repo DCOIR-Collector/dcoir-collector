@@ -34,14 +34,6 @@ DCOIR operator tools resolve local configuration from **Machine/System** environ
 
 The Actions orchestrator rejects placeholder paths such as `C:\path\to\dcoir-collector` and does not trust process-scoped placeholder values from a polluted terminal session.
 
-## System-scope launcher pattern
-
-Use this launcher pattern when a terminal may have stale or placeholder process variables:
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& { `$repo=[Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine'); if ([string]::IsNullOrWhiteSpace(`$repo)) { throw 'DCOIR_REPO_ROOT is not set as a Machine/System environment variable.' }; & (Join-Path `$repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1') }"
-```
-
 ## Tools
 
 | Tool | Purpose |
@@ -52,7 +44,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& { `$repo=[Environm
 | `scripts/New-DcoirTextOnlyRepoSnapshot.ps1` | Build a read-only full-repo text snapshot ZIP for ChatGPT review while excluding binaries, generated/dependency folders, and oversized files. |
 | `scripts/Invoke-DcoirRepoPatchApply.ps1` | Apply an explicit repo-relative payload manifest with wrapper-root detection, target-root allow-listing, optional pre/post hashes, delete support, and UTF-8 verification logs. |
 | `scripts/New-DcoirChatGPTFriendlyZip.ps1` | Build rootless, metadata-clean, UTF-8-friendly ZIPs for ChatGPT upload and parsing, including diagnostic indexes and file manifests. |
-| `scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1` | Watch, capture, or dispatch 1..N GitHub Actions workflow runs from a manifest, monitor them, collect evidence, and produce a ChatGPT-friendly ZIP. |
+| `scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1` | Watch, capture, or dispatch GitHub Actions workflow runs from a manifest, monitor them, collect evidence, and produce a ChatGPT-friendly ZIP. |
 
 ## ChatGPT-friendly ZIP launcher
 
@@ -64,59 +56,49 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\op
 
 The helper skips hidden/system metadata, avoids wrapper-root junk, writes archive entries with forward slashes, places `diagnostic_index.md`, `captured_files.json`, and `zip_manifest.json` first for fast triage, and can normalize staged text copies to UTF-8 without modifying original files.
 
-Other tools may dot-source this script and call `New-DcoirChatGPTFriendlyZip` directly.
-
 ## Actions workflow orchestrator launchers
 
 Dry-run dispatch using the bundled sample manifest:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& { `$repo=[Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine'); if ([string]::IsNullOrWhiteSpace(`$repo)) { throw 'DCOIR_REPO_ROOT is not set as a Machine/System environment variable.' }; `$script=Join-Path `$repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1'; `$manifest=Join-Path `$repo 'operator_tools\github_desktop_lane\manifests\actions_workflow_orchestrator.dispatch.sample.json'; & `$script -ManifestJson `$manifest }"
+$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
+$script = Join-Path $repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1'
+$manifest = Join-Path $repo 'operator_tools\github_desktop_lane\manifests\actions_workflow_orchestrator.dispatch.sample.json'
+& $script -ManifestJson $manifest
 ```
 
 Watch latest runs without dispatching:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& { `$repo=[Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine'); if ([string]::IsNullOrWhiteSpace(`$repo)) { throw 'DCOIR_REPO_ROOT is not set as a Machine/System environment variable.' }; `$script=Join-Path `$repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1'; `$manifest=Join-Path `$repo 'operator_tools\github_desktop_lane\manifests\actions_workflow_orchestrator.watch.sample.json'; & `$script -ManifestJson `$manifest }"
+$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
+$script = Join-Path $repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1'
+$manifest = Join-Path $repo 'operator_tools\github_desktop_lane\manifests\actions_workflow_orchestrator.watch.sample.json'
+& $script -ManifestJson $manifest
 ```
 
-Live dispatch after reviewing the generated plan and setting `dry_run` to `false` in a copied manifest:
+Live dispatch must use a copied manifest in `DCOIR_DOWNLOADS_DIR`, not the repo sample. Live dispatch defaults to one workflow run only:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& { `$repo=[Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine'); `$downloads=[Environment]::GetEnvironmentVariable('DCOIR_DOWNLOADS_DIR','Machine'); if ([string]::IsNullOrWhiteSpace(`$repo)) { throw 'DCOIR_REPO_ROOT is not set as a Machine/System environment variable.' }; if ([string]::IsNullOrWhiteSpace(`$downloads)) { throw 'DCOIR_DOWNLOADS_DIR is not set as a Machine/System environment variable.' }; `$script=Join-Path `$repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1'; `$manifest=Join-Path `$downloads 'my_actions_manifest.json'; & `$script -ManifestJson `$manifest -ConfirmDispatch }"
+$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
+$downloads = [Environment]::GetEnvironmentVariable('DCOIR_DOWNLOADS_DIR','Machine')
+$script = Join-Path $repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsWorkflowOrchestrator.ps1'
+$manifest = Join-Path $downloads 'dcoir_actions_live_dispatch_test.json'
+& $script -ManifestJson $manifest -ConfirmDispatch
 ```
 
-The orchestrator can also be run without `-ManifestJson`; in `manifest` mode it defaults to the bundled dry-run dispatch sample under the Machine/System `DCOIR_REPO_ROOT`.
+Live-dispatch manifest safety fields:
 
-## Git diagnostic launcher
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\Get-DcoirGitConflictDiagnostic.ps1"
+```json
+{
+  "dry_run": false,
+  "require_dispatch_confirmation": true,
+  "allow_multiple_live_dispatches": false,
+  "max_dispatch_count": 1,
+  "max_parallel": 1
+}
 ```
 
-## Safe pre-pull launcher
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\Invoke-DcoirSafePrePullApply.ps1"
-```
-
-## Targeted snapshot launcher
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\New-DcoirTargetedSnapshot.ps1" -ManifestJson "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\manifests\docs_impl_snapshot.sample.json"
-```
-
-## Text-only repo snapshot launcher
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\New-DcoirTextOnlyRepoSnapshot.ps1"
-```
-
-## Repo patch/apply launcher
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:DCOIR_REPO_ROOT\operator_tools\github_desktop_lane\scripts\Invoke-DcoirRepoPatchApply.ps1" -ManifestJson "$env:USERPROFILE\Downloads\dcoir_apply_manifest.json" -PayloadRoot "$env:USERPROFILE\Downloads\dcoir_payload"
-```
+Set `allow_multiple_live_dispatches=true` only after reviewing the plan and intentionally approving a batch of multiple workflow runs.
 
 ## Manifest examples
 
