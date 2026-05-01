@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-01.11",
+  "catalog_version": "2026-05-01.12",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/",
     "registry_source": "airtable Operator Tools Registry",
@@ -18,6 +18,11 @@
       "module_id": "DCOIR-COMMON",
       "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Common/Dcoir.Common.psm1",
       "role": "paths, logging, JSON, validation, filesystem, safe names, timestamps, shared context"
+    },
+    {
+      "module_id": "DCOIR-GIT",
+      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Git/Dcoir.Git.psm1",
+      "role": "git executable discovery, native argument quoting, logged git process execution, branch checks, clean-tree checks, fetch, fast-forward pull, ahead/behind analysis"
     },
     {
       "module_id": "DCOIR-GITHUB",
@@ -41,14 +46,18 @@
       "tool_name": "DCOIR Git Conflict Diagnostic",
       "tool_family": "git_diagnostics",
       "repo_path": "operator_tools/github_desktop_lane/scripts/Get-DcoirGitConflictDiagnostic.ps1",
-      "output_pattern": "dcoir_git_conflict_diagnostic_*.txt"
+      "output_pattern": "dcoir_git_conflict_diagnostic_*.txt",
+      "version_or_hash": "2026-05-01.3",
+      "notes": "Imports Dcoir.Common and Dcoir.Git for shared environment, UTF-8 logging, native git invocation, branch/status, diff, stash, and graph diagnostics."
     },
     {
       "tool_id": "DCOIR-SAFE-PREPULL-APPLY",
       "tool_name": "DCOIR Safe Pre-Pull Apply",
       "tool_family": "repo_recovery",
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirSafePrePullApply.ps1",
-      "output_pattern": "dcoir_safe_prepull_apply_*.txt"
+      "output_pattern": "dcoir_safe_prepull_apply_*.txt",
+      "version_or_hash": "2026-05-01.3",
+      "notes": "Imports Dcoir.Common and Dcoir.Git for shared environment, UTF-8 logging, stash, fetch, fast-forward pull, stash reapply, and conflict-safe stop behavior."
     },
     {
       "tool_id": "DCOIR-TARGETED-SNAPSHOT",
@@ -57,7 +66,7 @@
       "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirTargetedSnapshot.ps1",
       "output_pattern": "*_snapshot_*.zip",
       "version_or_hash": "2026-05-01.2",
-      "notes": "Uses System.Diagnostics.Process for git calls so native stderr/progress is logged without becoming a PowerShell error. Directory copies recurse. Missing requested paths are hard failures."
+      "notes": "Uses System.Diagnostics.Process for git calls so native stderr/progress is logged without becoming a PowerShell error. Directory copies recurse. Missing requested paths are hard failures. Candidate for next Dcoir.Git and Dcoir.Packaging modularization pass."
     },
     {
       "tool_id": "DCOIR-TEXT-ONLY-REPO-SNAPSHOT",
@@ -66,7 +75,7 @@
       "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirTextOnlyRepoSnapshot.ps1",
       "output_pattern": "dcoir_text_only_repo_snapshot_*.zip; dcoir_text_only_repo_snapshot_*.log.txt; dcoir_text_only_repo_snapshot_*.manifest.json",
       "version_or_hash": "2026-05-01.2",
-      "notes": "Read-only full-repo text snapshot for ChatGPT review. Defaults to DCOIR_REPO_ROOT and DCOIR_DOWNLOADS_DIR, excludes common binary extensions and generated/dependency directories, binary-sniffs remaining files, and preserves repo-relative paths."
+      "notes": "Read-only full-repo text snapshot for ChatGPT review. Defaults to DCOIR_REPO_ROOT and DCOIR_DOWNLOADS_DIR, excludes common binary extensions and generated/dependency directories, binary-sniffs remaining files, and preserves repo-relative paths. Candidate for next Dcoir.Git and Dcoir.Packaging modularization pass."
     },
     {
       "tool_id": "DCOIR-REPO-PATCH-APPLY",
@@ -75,7 +84,7 @@
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirRepoPatchApply.ps1",
       "output_pattern": "dcoir_repo_patch_apply_*.log.txt; dcoir_repo_patch_apply_*.result.json",
       "version_or_hash": "2026-05-01.2",
-      "notes": "Manifest-driven repo patch/apply helper for ChatGPT-provided payloads. Supports payload root detection, wrapper-root stripping, explicit repo-relative copy maps, git rm deletion lists, allowed target roots, pre/post hash checks, PowerShell 5.1 compatibility, logs, and result JSON. Writes UTF-8 logs as of 2026-05-01.2."
+      "notes": "Manifest-driven repo patch/apply helper for ChatGPT-provided payloads. Supports payload root detection, wrapper-root stripping, explicit repo-relative copy maps, git rm deletion lists, allowed target roots, pre/post hash checks, PowerShell 5.1 compatibility, logs, and result JSON. Candidate for next Dcoir.Git, Dcoir.RepoPatch, and Dcoir.Packaging modularization pass."
     },
     {
       "tool_id": "DCOIR-CHATGPT-FRIENDLY-ZIP",
