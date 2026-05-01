@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-04-30T22:14:50Z
+- generated_at_utc: 2026-05-01T11:59:55Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -135,13 +135,13 @@
 
 ## dcoir-github-desktop-lane-advisor
 
-- source_tree_hash: `57efca422bd81c9af4d795b77889aa2f1c12b8c3c34a9b9fd5b695c7c5145eb3`
+- source_tree_hash: `c7607f2d0bf4c4f0fe598caa917cc5e1fdc041fda01fb7a2283356a0894b8dea`
 - release_zip_name: `dcoir-github-desktop-lane-advisor.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `5`
 
-- `SKILL.md` — `91f75fafc4d9e496f20b6143229f5991beabbe588f59fde73cfcc8f648fbd1c1`
+- `SKILL.md` — `88b547b1e2ce060aa7ddb912165c5637dbc83ed5e2d35f1814d9f4fbcf3c8fa7`
 - `agents/openai.yaml` — `f6a164c2ff6f59dce5416f27afb6eba51f5b8cf01c2bf1ac98d661f1ef2f8472`
 - `assets/icon.svg` — `8936b24f674a1250d999e2c2b5901374fb4240426f32bd1ae340c352a90d617d`
 - `references/github_desktop_lane_tool_families.md` — `0d07053bac4a0463232fbb505f9e5c7e4353d97313b457bae090d76782634d20`
