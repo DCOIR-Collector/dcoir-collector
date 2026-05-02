@@ -24,7 +24,7 @@ on:
         default: false
         type: boolean
       cleanup_failure_reports:
-        description: "Delete committed failure reports under chatgpt_staging/failure_reports/ if any were intentionally retained"
+        description: "Delete committed failure reports under chatgpt_staging/failure_reports/"
         required: true
         default: false
         type: boolean
@@ -33,6 +33,9 @@ on:
         required: false
         default: ""
         type: string
+  push:
+    paths:
+      - "chatgpt_staging/cleanup_requests/*.json"
 
 permissions:
   contents: write
@@ -50,11 +53,86 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Clean selected ChatGPT staging artifacts
+      - name: Resolve cleanup plan
+        id: plan
         shell: bash
         run: |
           set -euo pipefail
-          FILTER='${{ inputs.request_id_filter }}'
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            FILTER='${{ inputs.request_id_filter }}'
+            case "$FILTER" in
+              *[!A-Za-z0-9._-]* ) echo "Unsafe request_id_filter: $FILTER" >&2; exit 1 ;;
+            esac
+            {
+              echo "cleanup_requests=${{ inputs.cleanup_requests }}"
+              echo "cleanup_in_payloads=${{ inputs.cleanup_in_payloads }}"
+              echo "cleanup_out_bundles=${{ inputs.cleanup_out_bundles }}"
+              echo "cleanup_apply_reports=${{ inputs.cleanup_apply_reports }}"
+              echo "cleanup_failure_reports=${{ inputs.cleanup_failure_reports }}"
+              echo "request_id_filter=$FILTER"
+              echo "cleanup_marker_path="
+              echo "delete_marker_after_success=false"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          MARKER=""
+          while IFS= read -r p; do
+            if [[ "$p" == chatgpt_staging/cleanup_requests/*.json && -f "$p" ]]; then
+              MARKER="$p"
+              break
+            fi
+          done < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")
+
+          if [[ -z "$MARKER" ]]; then
+            echo "No cleanup request marker found in triggering commit; exiting successfully."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ "$MARKER" == *..* || "$MARKER" == /* ]]; then
+            echo "Unsafe cleanup marker path: $MARKER" >&2
+            exit 1
+          fi
+
+          python - "$MARKER" "$GITHUB_OUTPUT" <<'PY'
+          import json, pathlib, re, sys
+          marker = pathlib.Path(sys.argv[1])
+          output = pathlib.Path(sys.argv[2])
+          data = json.loads(marker.read_text(encoding="utf-8"))
+          request_id = str(data.get("request_id", "")).strip()
+          if not request_id or not re.fullmatch(r"[A-Za-z0-9._-]+", request_id):
+              raise SystemExit(f"Unsafe or missing request_id in cleanup marker: {request_id!r}")
+          def b(name, default=False):
+              value = data.get(name, default)
+              if isinstance(value, bool):
+                  return "true" if value else "false"
+              if isinstance(value, str) and value.lower() in {"true", "false"}:
+                  return value.lower()
+              raise SystemExit(f"Cleanup marker field {name} must be boolean")
+          lines = {
+              "skip": "false",
+              "cleanup_requests": b("cleanup_requests", True),
+              "cleanup_in_payloads": b("cleanup_in_payloads", True),
+              "cleanup_out_bundles": b("cleanup_out_bundles", False),
+              "cleanup_apply_reports": b("cleanup_apply_reports", False),
+              "cleanup_failure_reports": b("cleanup_failure_reports", False),
+              "delete_marker_after_success": b("delete_marker_after_success", True),
+              "request_id_filter": request_id,
+              "cleanup_marker_path": str(marker),
+          }
+          with output.open("a", encoding="utf-8") as fh:
+              for key, value in lines.items():
+                  fh.write(f"{key}={value}\n")
+          PY
+
+      - name: Clean selected ChatGPT staging artifacts
+        if: steps.plan.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILTER='${{ steps.plan.outputs.request_id_filter }}'
+          CLEANUP_MARKER='${{ steps.plan.outputs.cleanup_marker_path }}'
+          DELETE_MARKER='${{ steps.plan.outputs.delete_marker_after_success }}'
           case "$FILTER" in
             *[!A-Za-z0-9._-]* ) echo "Unsafe request_id_filter: $FILTER" >&2; exit 1 ;;
           esac
@@ -68,6 +146,7 @@ jobs:
               chatgpt_staging/out/.gitkeep|\
               chatgpt_staging/apply_reports/.gitkeep|\
               chatgpt_staging/failure_reports/.gitkeep|\
+              chatgpt_staging/cleanup_requests/.gitkeep|\
               chatgpt_staging/testdata/source/.gitkeep|\
               */.gitkeep)
                 return 0
@@ -102,7 +181,7 @@ jobs:
             [[ "$name" == "$FILTER" || "$name" == "$FILTER"* ]]
           }
 
-          if [[ '${{ inputs.cleanup_requests }}' == 'true' ]]; then
+          if [[ '${{ steps.plan.outputs.cleanup_requests }}' == 'true' ]]; then
             for f in chatgpt_staging/requests/*.json; do
               [[ -e "$f" ]] || continue
               is_scaffold_path "$f" && continue
@@ -113,7 +192,7 @@ jobs:
             done
           fi
 
-          if [[ '${{ inputs.cleanup_in_payloads }}' == 'true' ]]; then
+          if [[ '${{ steps.plan.outputs.cleanup_in_payloads }}' == 'true' ]]; then
             for d in chatgpt_staging/in/*; do
               [[ -d "$d" ]] || continue
               is_scaffold_path "$d" && continue
@@ -124,7 +203,7 @@ jobs:
             done
           fi
 
-          if [[ '${{ inputs.cleanup_out_bundles }}' == 'true' ]]; then
+          if [[ '${{ steps.plan.outputs.cleanup_out_bundles }}' == 'true' ]]; then
             for d in chatgpt_staging/out/*; do
               [[ -d "$d" ]] || continue
               is_scaffold_path "$d" && continue
@@ -135,7 +214,7 @@ jobs:
             done
           fi
 
-          if [[ '${{ inputs.cleanup_apply_reports }}' == 'true' ]]; then
+          if [[ '${{ steps.plan.outputs.cleanup_apply_reports }}' == 'true' ]]; then
             for f in chatgpt_staging/apply_reports/*.md; do
               [[ -e "$f" ]] || continue
               is_scaffold_path "$f" && continue
@@ -146,7 +225,7 @@ jobs:
             done
           fi
 
-          if [[ '${{ inputs.cleanup_failure_reports }}' == 'true' ]]; then
+          if [[ '${{ steps.plan.outputs.cleanup_failure_reports }}' == 'true' ]]; then
             for d in chatgpt_staging/failure_reports/*; do
               [[ -d "$d" ]] || continue
               is_scaffold_path "$d" && continue
@@ -157,9 +236,14 @@ jobs:
             done
           fi
 
+          if [[ "$DELETE_MARKER" == 'true' && -n "$CLEANUP_MARKER" ]]; then
+            rm_path "$CLEANUP_MARKER"
+          fi
+
           echo "removed=$removed" >> "$GITHUB_ENV"
 
       - name: Commit cleanup
+        if: steps.plan.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail

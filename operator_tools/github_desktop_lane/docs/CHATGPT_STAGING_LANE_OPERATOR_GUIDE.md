@@ -1,8 +1,14 @@
 # ChatGPT Staging Lane Operator Guide
 
-This guide explains when to use the ChatGPT GitHub Staging Lane, when not to use it, and what evidence to preserve.
+This guide explains when to use the ChatGPT GitHub Staging Lane, when not to use it, what files to look for, and how cleanup works.
 
 Use this lane only when normal ChatGPT/GitHub connector edits or readback are too small, fragile, or awkward for the current task.
+
+## Action order
+
+1. ChatGPT initiates the request, payload, cleanup marker, or verification.
+2. GitHub Actions performs bounded automation.
+3. ChatGPT verifies GitHub readback and updates Airtable plan/work/evidence state.
 
 ## When to use this lane
 
@@ -26,6 +32,20 @@ Confirm:
 4. No payload contains secrets, tokens, credentials, or local-only values.
 5. Workflow paths are not included unless the operator explicitly approved a workflow-repair branch.
 6. There is a defined validation/evidence target.
+7. `chatgpt_staging/README.md` and `chatgpt_staging/SCENARIO_MATRIX.md` have been considered for scenario handling.
+
+## Folder map
+
+```text
+chatgpt_staging/
+  requests/           # stage-out request JSON files ChatGPT creates
+  in/                 # apply-in payload folders ChatGPT creates
+  out/                # stage-out bundles GitHub creates and preserves until cleanup marker
+  apply_reports/      # apply-in reports GitHub creates after success
+  failure_reports/    # minimal failure locators GitHub creates after apply-in failure
+  cleanup_requests/   # cleanup marker JSON files ChatGPT creates after retrieval/evidence review
+  work/               # transient GitHub Actions work area; never committed
+```
 
 ## Stage-out request checklist
 
@@ -43,6 +63,8 @@ Expected evidence:
 - generated manifest Markdown
 - staged ZIP when available
 - text chunks with path, blob SHA, SHA256, and line spans
+
+Do not create a cleanup marker for `out/<request_id>/` until ChatGPT has retrieved whatever it needs.
 
 ## Apply-in payload checklist
 
@@ -63,6 +85,57 @@ Review before use:
 - whether workflow mutation is being attempted
 - whether cleanup is expected after success
 
+## Failure report handling
+
+When apply-in fails, look first in:
+
+```text
+chatgpt_staging/failure_reports/<request_id>/
+```
+
+Expected files:
+
+```text
+failure_summary.md
+artifact_locator.json
+cleanup_hint.json
+```
+
+The failure locator is intentionally small and committed so a new ChatGPT session can find it. Detailed diagnostics should be in the GitHub Actions artifact named in `artifact_locator.json`.
+
+Before retrying:
+
+1. Read `failure_summary.md`.
+2. Read `artifact_locator.json` and inspect the GitHub Actions run or artifact when needed.
+3. Decide whether to regenerate the payload, use a new request id, or stop.
+4. Create a cleanup marker only after evidence is no longer needed.
+
+## Cleanup marker handling
+
+ChatGPT may create:
+
+```text
+chatgpt_staging/cleanup_requests/<request_id>.json
+```
+
+Recommended marker shape:
+
+```json
+{
+  "schema": "dcoir.chatgpt_staging.cleanup_request.v1",
+  "request_id": "request-id",
+  "cleanup_requests": true,
+  "cleanup_in_payloads": true,
+  "cleanup_out_bundles": true,
+  "cleanup_apply_reports": false,
+  "cleanup_failure_reports": false,
+  "delete_marker_after_success": true,
+  "reason": "ChatGPT retrieved needed evidence and requested scoped cleanup."
+}
+```
+
+GitHub cleanup should delete only scoped staging artifacts and preserve `.gitkeep` files. Malformed markers must fail closed.
+
 ## Hash and stale-write expectations
 
 For existing files, include either `expected_blob_sha` or `expected_current_sha256` whenever possible.
@@ -71,76 +144,17 @@ For high-value new content, include `expected_new_sha256`.
 
 If a hash check fails, stop. Do not bypass the check unless the operator explicitly confirms that the source changed and provides a new reviewed payload.
 
-## Cleanup expectations
-
-After success, the consumed base64 payload should be removed when `delete_payload_after_success` is enabled.
-
-The repo should not retain:
-
-- extracted work folders
-- stale ZIP payloads
-- stale base64 payloads
-- unrelated staging outputs
-- temporary logs not selected as validation evidence
-- committed failure report folders unless intentionally retained for a bounded validation branch
-
-Scaffold `.gitkeep` files should remain.
-
-## Failed apply-in evidence
-
-A failed apply-in should fail closed and avoid committing partial target changes.
-
-The workflow captures failure evidence into a GitHub Actions artifact named:
-
-```text
-chatgpt-apply-in-failure-<run_id>
-```
-
-Expected artifact contents may include:
-
-- `failure_summary.md`
-- `apply_manifest.json` when the ZIP decoded far enough to expose it
-- `payload_b64.sha256`
-- `payload_zip.sha256`
-- `applied_paths_before_failure.txt` when available
-
-The failure artifact is retained for seven days by default and is not committed to the repo.
-
-If a failed run needs diagnosis, download the Actions artifact and upload it to ChatGPT. Do not rerun with relaxed checks unless the operator explicitly approves a new reviewed payload or manifest.
-
-## Cleanup workflow use
-
-Use `chatgpt-staging-cleanup` only for intentional housekeeping. It does not need to run after every staging event, but it is good housekeeping after batches or failed experiments.
-
-Cleanup inputs are separated so you can delete only the intended surfaces:
-
-- consumed request JSON files
-- inbound payload folders
-- outbound bundles
-- apply reports
-- intentionally committed failure reports, if any
-
-Use `request_id_filter` when cleaning one request or request-prefix family. Leave apply reports and output bundles unchecked when they are still needed as validation evidence.
-
-## Stop conditions
-
-Stop and ask for guidance if:
-
-- allowed roots are broad or ambiguous
-- a payload includes `.github/` or workflow files
-- a payload includes secrets or local config values
-- source hash checks fail
-- cleanup proposes deleting scaffold or unrelated files
-- output artifacts are too large or unclear to review
-- the workflow behavior differs from the safety contract
-
 ## Completion evidence
 
-Before closing staging-lane work, preserve:
+Before closing staging-lane work, preserve or record:
 
-- GitHub run or commit readback
-- staging manifest or apply report
-- failure artifact if failure handling was tested
+- GitHub commit or run readback
+- stage-out manifest or apply report
+- failure locator and artifact reference when failure occurred
 - cleanup proof where relevant
 - validation evidence in Airtable
 - notes about what was not tested
+
+## Stop conditions
+
+Stop and ask for guidance if allowed roots are broad or ambiguous, a payload includes workflow files without approval, a payload includes secrets or local config values, source hash checks fail, cleanup proposes deleting scaffold or unrelated files, output artifacts are too large or unclear to review, or workflow behavior differs from the safety contract.

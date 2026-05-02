@@ -1,14 +1,39 @@
 # ChatGPT GitHub Staging Lane Safety Contract
 
-Status: production-safety contract draft for `PLAN-20260501-chatgpt-github-staging-lane` / `T2`.
+Status: production-safety contract for `PLAN-20260501-chatgpt-github-staging-lane`.
 
 This folder supports the ChatGPT GitHub staging lane: a controlled path for large-file readback, stage-out bundles, and reviewed apply-in bundles when normal connector edits are too small, fragile, or cumbersome.
 
-This lane is not production-ready merely because a smoke test passes. Production readiness requires the contract below, matching workflow behavior, operator instructions, and captured validation evidence.
+This lane is not production-ready merely because a smoke test passes. Production readiness requires this contract, matching workflow behavior, operator instructions, scenario validation, and Airtable evidence.
+
+## New-session entrypoint
+
+When a new ChatGPT session sees staging-lane, cleanup, failure-report, large-file readback, or batch-apply work, it must:
+
+1. Read Airtable Queue Control, active Plan, and Work Item first.
+2. Consult `dcoir-memory-preflight` routing/memory rows for staging-lane guidance.
+3. Read this file and `chatgpt_staging/SCENARIO_MATRIX.md` from GitHub when repo-source work is in scope.
+4. Check `chatgpt_staging/failure_reports/` before retrying a failed request id.
+5. Check `chatgpt_staging/cleanup_requests/` before assuming cleanup was requested.
+6. Record validation evidence before claiming production readiness.
+
+## Durable folders
+
+```text
+chatgpt_staging/
+  requests/           # ChatGPT-created stage-out request JSON files
+  in/                 # ChatGPT-created apply-in payload folders
+  out/                # GitHub-created stage-out bundles retained until cleanup marker
+  apply_reports/      # GitHub-created apply reports
+  failure_reports/    # GitHub-created minimal failure locators
+  cleanup_requests/   # ChatGPT-created cleanup marker JSON files
+  work/               # transient GitHub Actions work area; never committed
+  testdata/           # validation fixtures
+```
 
 ## Current proven capability
 
-The current lane has already proven the basic mechanics in test scope:
+The lane has proven these mechanics in test scope:
 
 - stage-out can create a readback bundle from repo files.
 - apply-in can apply a staged bundle.
@@ -20,10 +45,11 @@ These are capability proofs, not permission to use the lane broadly.
 
 ## Authority and ownership
 
-- Airtable remains live queue authority for whether this lane is active and what task owns current work.
+- ChatGPT initiates requests, payloads, cleanup markers, and verification.
+- GitHub Actions performs bounded automation.
+- Airtable remains live queue authority and validation state authority.
 - GitHub remains governed source/readback for workflow files, staging-lane code, operator instructions, and promoted history.
-- The staging lane must never replace normal review, GitHub Desktop inspection, validation evidence, or operator approval.
-- A committed/pushed state is not considered complete until GitHub readback and Airtable validation/closeout records are updated.
+- A committed/pushed state is not complete until GitHub readback and Airtable validation/closeout records are updated.
 
 ## Production safety principles
 
@@ -34,15 +60,13 @@ These are capability proofs, not permission to use the lane broadly.
 5. No workflow mutation by default. `.github/` and especially `.github/workflows/` changes require an explicit workflow-repair branch and operator approval.
 6. No stale overwrites. Apply-in must use current-source hash checks or blob SHA checks for existing files whenever overwriting tracked content.
 7. No repo bloat. Payloads, ZIPs, extracted work folders, generated logs, and output bundles must be cleaned or explicitly retained as validation evidence.
-8. Evidence before readiness. The lane cannot be called production-ready until blocked-path, hash-mismatch, cleanup, and happy-path validation all pass.
+8. Evidence before readiness. The lane cannot be called production-ready until blocked-path, hash-mismatch, cleanup, failure, and happy-path validation all pass.
 
 ## Allowed-root policy
 
 Allowed roots must be supplied per request or per apply manifest. The list below defines classes, not blanket permission.
 
 ### Validation-only roots
-
-Use only for smoke tests and fixtures:
 
 - `chatgpt_staging/testdata/`
 
@@ -69,8 +93,9 @@ These are infrastructure/control surfaces and should not be regular apply target
 - `chatgpt_staging/work/`
 - `chatgpt_staging/apply_reports/`
 - `chatgpt_staging/failure_reports/`
+- `chatgpt_staging/cleanup_requests/`
 
-A workflow may read or clean these surfaces when explicitly designed for that purpose. An arbitrary apply-in payload must not write into `out/`, `work/`, `apply_reports/`, or `failure_reports/`.
+A workflow may read or clean these surfaces when explicitly designed for that purpose. An arbitrary apply-in payload must not write into `out/`, `work/`, `apply_reports/`, `failure_reports/`, or `cleanup_requests/`.
 
 ### Workflow roots
 
@@ -81,143 +106,71 @@ Default: blocked.
 
 Exception: a bounded workflow-repair branch may permit these paths only when the operator explicitly approves that branch and the manifest names the exact files involved.
 
-## Blocked paths and content
-
-Reject any payload or request that targets or includes:
-
-- `.git/` or Git internals
-- parent path segments such as `../`
-- absolute paths such as `/tmp/file` or `C:\temp\file`
-- `.env`, token, credential, key, certificate, or secret-bearing files
-- generated dependency folders such as `node_modules/`, `.venv/`, `dist/`, `build/`, `bin/`, or `obj/`
-- binary executables or archives unless the task is explicitly a bounded binary/artifact packaging task
-- `.github/` unless an explicit workflow-repair exception exists
-- stale staging artifacts not tied to the current request id
-
 ## Stage-out contract
 
-A stage-out request must include:
+A stage-out request must include a safe `request_id`, explicit `allowed_roots`, exact paths and/or bounded search terms, bounded match counts, and a ZIP-first readback mode with text chunks as fallback.
 
-- a safe `request_id`
-- an explicit `allowed_roots` list
-- exact paths and/or bounded search terms
-- a bounded maximum match count when search terms are used
-- a mode that preserves a ZIP-first readback with text chunks as fallback
+Stage-out output must include a manifest JSON, a human-readable manifest, ZIP copy when available, blob SHA/SHA256 metadata, and enough evidence for ChatGPT to reason about source freshness without guessing.
 
-Stage-out output must include:
-
-- a manifest JSON with path, byte count, line count, blob SHA, SHA256, and chunk references
-- a human-readable manifest summary
-- a ZIP copy when available
-- enough evidence for ChatGPT to reason about source freshness without guessing
+Stage-out must retain `out/<request_id>/` until ChatGPT confirms retrieval and creates a cleanup marker.
 
 ## Apply-in contract
 
-An apply-in payload must contain:
+An apply-in payload must contain `apply_manifest.json`, a safe `request_id`, non-empty `allowed_roots`, an explicit `files` list, repo-relative target paths, payload-relative source paths, and current-source verification when overwriting tracked files.
 
-- `apply_manifest.json`
-- a safe `request_id`
-- a non-empty `allowed_roots` list
-- an explicit `files` list
-- each file's repo-relative target path
-- each file's payload-relative source path
-- current-source verification when overwriting existing tracked files
-
-When overwriting existing files, at least one of these should be present:
+When overwriting existing files, include at least one of:
 
 - `expected_blob_sha`
 - `expected_current_sha256`
 
-When writing new payload content, `expected_new_sha256` should be present for high-value files.
+When writing high-value new content, include `expected_new_sha256`.
 
-Apply-in must fail closed when:
+Apply-in must fail closed when no files apply, target paths are outside allowed roots, source paths are unsafe or missing, hash checks fail, new-content hash checks fail, or workflow paths are requested without an explicit workflow exception.
 
-- no files are applied
-- a target is outside allowed roots
-- a source path is unsafe or missing
-- a current-source hash check fails
-- a new-content hash check fails
-- a workflow path is requested without an explicit workflow exception
+## Failure locator contract
 
-## Cleanup and quarantine contract
+On apply-in failure, GitHub should create a minimal committed failure locator:
 
-Successful apply-in:
+```text
+chatgpt_staging/failure_reports/<request_id>/
+  failure_summary.md
+  artifact_locator.json
+  cleanup_hint.json
+```
 
-- should delete the consumed `payload.zip.b64` when configured to do so
-- should not commit `chatgpt_staging/work/`
-- should not leave extracted ZIP content in the repo
-- should leave only intentional target changes and explicitly retained validation reports
+The locator is intentionally small and safe for repo readback. Detailed diagnostics belong in the GitHub Actions artifact named by `artifact_locator.json`.
 
-Failed apply-in:
+Before retrying a failed request id, ChatGPT must read the failure locator and decide whether to regenerate payload, use a new request id, or create a cleanup marker.
 
-- must not commit partial target changes
-- uploads failure evidence as a GitHub Actions artifact named `chatgpt-apply-in-failure-<run_id>` with seven-day retention
-- should include request id, payload path, run id, commit SHA, captured timestamp, available manifest copy, and payload hashes when available
-- must not commit `chatgpt_staging/failure_reports/` by default
-- must not silently delete failure evidence before it is captured
+## Cleanup marker contract
 
-Failure evidence model:
+ChatGPT creates cleanup markers only after it has retrieved needed output or read failure evidence:
 
-- `chatgpt_staging/failure_reports/` is a local workflow workspace and optional cleanup-compatible scaffold, not a normal committed evidence store.
-- Failure evidence should normally live in the GitHub Actions artifact for the failed run.
-- If a failure report is intentionally committed for a bounded validation branch, the cleanup workflow can remove request-id-scoped committed failure report folders later while preserving `.gitkeep` scaffolding.
+```text
+chatgpt_staging/cleanup_requests/<request_id>.json
+```
 
-Cleanup workflow behavior:
+The cleanup workflow deletes only scoped staging artifacts selected by the marker and then deletes the marker after success. It must preserve `.gitkeep` scaffold files and fail closed on malformed markers.
 
-- must preserve scaffold `.gitkeep` files
-- must reject unsafe cleanup filters or paths
-- should support request-id filtering
-- should distinguish consumed requests, inbound payloads, outbound bundles, apply reports, and intentionally retained failure reports
+## Scenario matrix
 
-## Trigger isolation contract
-
-Production use should prefer intentional `workflow_dispatch` runs.
-
-Push-triggered runs are allowed only if all of these remain true:
-
-- the push path is narrowly scoped to staging request or payload files
-- the workflow resolves exactly one current request/payload
-- the request id is safe
-- the workflow exits safely when no matching payload exists
-- the workflow cannot be triggered by unrelated repo changes
-
-Workflow changes themselves are blocked through this lane unless a workflow-repair branch is explicitly approved.
+The action-order scenario matrix lives in `chatgpt_staging/SCENARIO_MATRIX.md` and is part of this contract.
 
 ## Validation gates before production-ready
 
-The lane is not production-ready until evidence exists for all gates below:
+The lane is not production-ready until evidence exists for:
 
-1. Happy-path stage-out readback succeeds for a bounded allowed root.
-2. Happy-path apply-in succeeds for a bounded allowed root.
-3. Base64 ZIP apply-in succeeds with payload deletion after success.
-4. Blocked-path validation rejects `.git/`, parent traversal, absolute paths, and disallowed roots.
-5. Workflow path mutation is rejected unless an explicit workflow exception is enabled.
-6. Stale-write protection fails closed on an expected hash mismatch.
-7. Cleanup preserves scaffold files and removes selected consumed artifacts.
-8. Failed-payload behavior preserves diagnostic evidence as an Actions artifact without committing partial target changes.
-9. Repo readback confirms no stale ZIP, base64 payload, extracted work folder, committed failure report, or generated junk remains.
-10. Airtable Validation Evidence records the test result and remaining limitations.
+1. Happy-path stage-out readback for a bounded allowed root.
+2. Happy-path apply-in for a bounded allowed root.
+3. Base64 ZIP apply-in with payload deletion after success.
+4. Blocked-path rejection for `.git/`, parent traversal, absolute paths, and disallowed roots.
+5. Workflow path rejection unless an explicit workflow exception is enabled.
+6. Stale-write/hash mismatch failure closed with a failure locator and no target commit.
+7. Cleanup marker removes only scoped artifacts and preserves scaffolds.
+8. Malformed cleanup marker fails closed.
+9. Stage-out bundle remains until ChatGPT retrieval and cleanup marker.
+10. Airtable Validation Evidence records results and limitations.
 
 ## Stop conditions
 
-Stop and ask for operator guidance if:
-
-- a request or manifest needs a broad repo root
-- a workflow file must be changed
-- a payload contains secrets or suspected secrets
-- source hash checks fail
-- cleanup would delete scaffold or unrelated files
-- generated artifacts are too large or unclear to review
-- GitHub Actions behavior differs from the contract
-
-## Current next work
-
-T1 is complete after this contract was accepted and committed.
-
-T2 adds cleanup and failed-payload evidence handling. Next implementation tasks should use this contract to complete:
-
-- source-hash and stale-write protections
-- workflow trigger isolation and workflow-mutation boundaries
-- repo-bloat mitigation
-- operator instructions
-- final validation evidence
+Stop and ask for operator guidance if a request needs a broad repo root, a workflow file must be changed outside an approved branch, a payload contains secrets, source hash checks fail, cleanup would delete unrelated files, generated artifacts are too large or unclear to review, or GitHub Actions behavior differs from this contract.
