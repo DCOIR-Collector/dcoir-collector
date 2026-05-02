@@ -4,6 +4,17 @@ Status: active matrix for `PLAN-20260501-chatgpt-github-staging-lane`.
 
 Action order is ChatGPT first, GitHub second, Airtable/skill state third. ChatGPT initiates and verifies. GitHub performs bounded automation. Airtable and helper skills preserve durable state and routing.
 
+## Retention and repo-bloat scenarios
+
+| Scenario | ChatGPT action | GitHub action | Airtable / skill state |
+|---|---|---|---|
+| Stage-out output has been retrieved | Read needed bundle/files and record evidence, then create cleanup marker with `cleanup_out_bundles=true` and `cleanup_status_reports=true`. | Cleanup removes scoped `out/<request_id>` and consumed reports while preserving scaffolds. | Evidence or Work Item note records retrieval before cleanup. |
+| Stage-out output has not been retrieved | Do not create cleanup marker for out bundle yet. | Preserve `out/<request_id>` and report. | Work Item remains waiting for readback/retrieval. |
+| Apply-in succeeded | Verify target commit/readback and apply report, then clean retained apply/status reports when no longer needed. | Apply-in already deletes inbound payload after success; cleanup can remove reports later. | Work Item advances only after readback. |
+| Apply-in failed | Read `workflow_report.md` and artifacts if needed; record retry/stop decision before cleanup. | Preserve failure/status evidence until cleanup marker. | Work Item stays waiting/blocked until diagnosis is recorded. |
+| Cleanup completed | Read cleanup `workflow_report.md`; verify removed and retained paths. Create later cleanup marker if the cleanup report itself is no longer needed. | Cleanup report remains as proof of what was removed. | Evidence records cleanup if material. |
+| Validation evidence required | Decide what must be retained and record that reason in Airtable before cleanup. | Preserve intentionally retained files until later explicit cleanup. | Validation Evidence or Work Item notes explain retention. |
+| Stale or abandoned artifacts found | Prefer scoped cleanup marker by request id. Avoid broad cleanup unless operator approves. | Cleanup removes only selected surfaces and preserves `.gitkeep`. | Work Item note records housekeeping action. |
 
 ## Trigger isolation scenarios
 

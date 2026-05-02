@@ -10,7 +10,7 @@ When a session sees staging-lane, cleanup, failure-report, workflow-report, larg
 
 1. Read Airtable Queue Control, active Plan, and Work Item.
 2. Consult the Airtable `SKILLROUTE-CHATGPT-STAGING-LANE` and `DECISION-CHATGPT-STAGING-LANE-DEFAULTS` rows.
-3. Read this file and `chatgpt_staging/SCENARIO_MATRIX.md` from GitHub when repo-source behavior is in scope.
+3. Read this file, `chatgpt_staging/SCENARIO_MATRIX.md`, and `chatgpt_staging/RETENTION_POLICY.md` from GitHub when repo-source behavior is in scope.
 4. Check `chatgpt_staging/status_reports/` before asking the operator for screenshots, copied logs, or uploaded logs.
 5. Check `chatgpt_staging/failure_reports/` before retrying an old request id.
 6. Check `chatgpt_staging/cleanup_requests/` before assuming cleanup was requested or completed.
@@ -25,7 +25,7 @@ When a session sees staging-lane, cleanup, failure-report, workflow-report, larg
 5. No workflow mutation by default. `.github/` and especially `.github/workflows/` changes require an explicit workflow-repair branch and operator approval.
 6. No stale overwrites. Apply-in must use current-source hash checks or blob SHA checks for existing files whenever overwriting tracked content.
 7. No repo bloat. Payloads, ZIPs, extracted work folders, generated logs, output bundles, status reports, and failure reports must be cleaned or explicitly retained as validation evidence.
-8. Evidence before readiness. The lane cannot be called production-ready until blocked-path, hash-mismatch, cleanup, workflow-report, and happy-path validation all pass.
+8. Evidence before readiness. The lane cannot be called production-ready until blocked-path, hash-mismatch, cleanup, workflow-report, retention, and happy-path validation all pass.
 
 ## Apply-in hash and stale-write policy
 
@@ -41,7 +41,6 @@ For every file entry:
 - A manifest-level `allow_missing_current_hash: true` may bypass the current-hash requirement for existing tracked files only as an explicit exception. If used, the workflow report must make the override visible.
 
 ChatGPT should prefer stage-out manifest data when preparing apply-in payloads, because stage-out records blob SHA and sha256 values for the current repo state.
-
 
 ## Trigger isolation and schema policy
 
@@ -78,6 +77,22 @@ Example apply manifest fields:
   "files": []
 }
 ```
+
+## Retention and repo-bloat policy
+
+Use `chatgpt_staging/RETENTION_POLICY.md` as the durable retention source.
+
+Default posture:
+
+- keep stage-out bundles only until ChatGPT retrieves the needed files or records evidence
+- delete inbound apply payloads after successful apply/commit/push unless explicit validation evidence requires temporary retention
+- keep status reports only until ChatGPT reads them and records any needed Airtable evidence
+- keep failure evidence until the failure is diagnosed and retry/stop decision is recorded
+- keep GitHub Actions artifacts for short-lived diagnostics only; current workflow retention is 7 days where configured
+- never delete `.gitkeep` scaffolds
+- use cleanup markers for scoped cleanup; do not perform broad/manual deletion casually
+
+A cleanup run may leave its own final `chatgpt-staging-cleanup/.../workflow_report.md` as proof of what was removed. That report should be cleaned by a later cleanup marker after ChatGPT reads and records it.
 
 ## Folder roles
 

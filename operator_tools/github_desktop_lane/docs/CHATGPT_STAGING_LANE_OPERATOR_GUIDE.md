@@ -39,7 +39,6 @@ For apply-in bundles:
 
 This means stale or under-specified bundles should fail before changing repo files.
 
-
 ## Trigger isolation rule
 
 The staging workflows keep automatic push triggers, but only for the staging transfer paths on `main`:
@@ -49,6 +48,20 @@ The staging workflows keep automatic push triggers, but only for the staging tra
 - `chatgpt_staging/cleanup_requests/*.json`
 
 Workflow-generated commits use `[skip ci]` to avoid unnecessary recursive push runs. Request, apply, and cleanup inputs also require explicit schema fields. Workflow file mutation remains blocked by default; apply manifests that touch `.github/workflows/` require `allow_workflow_changes: true` and `workflow_change_reason`.
+
+## Retention rule
+
+Staging artifacts are temporary unless Airtable evidence or the active Work Item says otherwise.
+
+ChatGPT should clean staging artifacts after it has consumed them:
+
+- output bundles after ChatGPT retrieves needed files
+- inbound payloads after successful apply or after failed-payload diagnosis
+- status reports after ChatGPT reads them and records evidence
+- failure reports after the retry/stop decision is recorded
+- apply reports after commit/readback evidence is recorded
+
+The cleanup workflow may leave one cleanup `workflow_report.md` as proof of what it removed. ChatGPT can remove that report with a later cleanup marker after reading it.
 
 ## Cleanup expectation
 
