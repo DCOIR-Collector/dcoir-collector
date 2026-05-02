@@ -1,0 +1,97 @@
+name: chatgpt-workflow-run-reporter
+
+on:
+  workflow_run:
+    workflows:
+      - validate-on-push
+      - Dependency Review
+      - Dependabot auto-merge
+      - scheduled-health-check
+      - collector-documentation-quality
+      - refresh-skill-parity-surfaces
+      - Workflow maintenance audit
+      - manual-gemini-bundle-build
+      - manual-collector-runtime-package-build
+      - manual-collector-optional-exe-build
+      - manual-test-framework-validate
+      - manual-full-validation
+      - Ops apply zip request
+      - Ops dispatch request
+      - Ops file delete request
+      - Ops restructure map request
+      - Publish Knowledge to Wiki
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      note:
+        description: "Optional operator note for manual reporter smoke checks"
+        required: false
+        default: "manual reporter smoke check"
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: chatgpt-workflow-run-reporter-${{ github.event.workflow_run.id || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  report-workflow-run:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.name != 'chatgpt-workflow-run-reporter' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Write ChatGPT-readable workflow report
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            mkdir -p chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-run-reporter/manual-${GITHUB_RUN_ID}
+            cat > chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-run-reporter/manual-${GITHUB_RUN_ID}/workflow_report.md <<REPORT
+          # ChatGPT workflow report
+
+          ## Result
+
+          - workflow: chatgpt-workflow-run-reporter
+          - report_scope: repo-workflows
+          - result: success
+          - conclusion: success
+          - source_event: workflow_dispatch
+          - workflow_run_id: ${GITHUB_RUN_ID}
+          - reporter_run_id: ${GITHUB_RUN_ID}
+          - reporter_sha: ${GITHUB_SHA}
+          - report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          ## Troubleshooting context
+
+          Manual reporter smoke check: ${{ inputs.note }}
+
+          ## Next ChatGPT action
+
+          Verify this report by GitHub readback, then allow retention cleanup to remove it after the configured success-report retention window.
+          REPORT
+          else
+            python .github/scripts/write_workflow_report.py workflow-run --event-json "$GITHUB_EVENT_PATH"
+          fi
+
+      - name: Commit workflow report
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add chatgpt_staging/status_reports/repo-workflows
+          git commit -m "Record ChatGPT workflow run report [skip ci]" || exit 0
+          git push

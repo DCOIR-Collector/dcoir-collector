@@ -1,0 +1,106 @@
+name: chatgpt-report-retention-cleanup
+
+on:
+  schedule:
+    - cron: '37 3 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Preview cleanup without deleting reports"
+        required: true
+        default: true
+        type: boolean
+      success_days:
+        description: "Delete success reports at or above this age in days"
+        required: true
+        default: 7
+        type: number
+      failure_days:
+        description: "Delete failure reports at or above this age in days"
+        required: true
+        default: 30
+        type: number
+      cleanup_days:
+        description: "Delete cleanup reports at or above this age in days"
+        required: true
+        default: 7
+        type: number
+      workflow_filter:
+        description: "Optional path/name filter; leave blank for all reports"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chatgpt-report-retention-cleanup-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup-reports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Build retention cleanup plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          DRY_RUN="false"
+          SUCCESS_DAYS="7"
+          FAILURE_DAYS="30"
+          CLEANUP_DAYS="7"
+          WORKFLOW_FILTER=""
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            DRY_RUN="${{ inputs.dry_run }}"
+            SUCCESS_DAYS="${{ inputs.success_days }}"
+            FAILURE_DAYS="${{ inputs.failure_days }}"
+            CLEANUP_DAYS="${{ inputs.cleanup_days }}"
+            WORKFLOW_FILTER="${{ inputs.workflow_filter }}"
+          fi
+          mkdir -p .github/tmp
+          ARGS=(cleanup --success-days "$SUCCESS_DAYS" --failure-days "$FAILURE_DAYS" --cleanup-days "$CLEANUP_DAYS" --workflow-filter "$WORKFLOW_FILTER" --removed-paths-file .github/tmp/chatgpt_report_cleanup_removed.txt --report-id "retention-cleanup-${GITHUB_RUN_ID}")
+          if [[ "$DRY_RUN" == "true" ]]; then
+            ARGS+=(--dry-run)
+          fi
+          python .github/scripts/write_workflow_report.py "${ARGS[@]}"
+
+      - name: Remove expired reports from cleanup plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -s .github/tmp/chatgpt_report_cleanup_removed.txt ]]; then
+            while IFS= read -r path; do
+              [[ -n "$path" ]] || continue
+              case "$path" in
+                chatgpt_staging/status_reports/*/workflow_report.md|chatgpt_staging/status_reports/*/*/workflow_report.md|chatgpt_staging/status_reports/*/*/*/workflow_report.md)
+                  git rm -f "$path" || true
+                  ;;
+                *)
+                  echo "Refusing to remove unexpected path: $path" >&2
+                  exit 1
+                  ;;
+              esac
+            done < .github/tmp/chatgpt_report_cleanup_removed.txt
+          fi
+
+      - name: Commit retention cleanup report and deletions
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add chatgpt_staging/status_reports/retention-cleanup || true
+          git add -u chatgpt_staging/status_reports || true
+          git commit -m "Clean ChatGPT workflow reports by retention policy [skip ci]" || exit 0
+          git push
