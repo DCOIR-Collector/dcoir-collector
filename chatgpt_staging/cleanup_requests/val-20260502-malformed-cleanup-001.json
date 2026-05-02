@@ -1,6 +1,0 @@
-{
-  "request_id": "val-20260502-malformed-cleanup-001",
-  "cleanup_status_reports": true,
-  "delete_marker_after_success": true,
-  "reason": "Malformed validation marker intentionally missing schema; cleanup must fail closed."
-}
