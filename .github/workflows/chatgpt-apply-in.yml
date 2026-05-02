@@ -80,12 +80,16 @@ jobs:
 
           REQUEST_ID="$(basename "$(dirname "$PAYLOAD")")"
           WORK_DIR="chatgpt_staging/work/$REQUEST_ID"
+          REPORT_DIR="chatgpt_staging/status_reports/chatgpt-apply-in/$REQUEST_ID"
+          REPORT_PATH="$REPORT_DIR/workflow_report.md"
           echo "REQUEST_ID=$REQUEST_ID" >> "$GITHUB_ENV"
           echo "PAYLOAD=$PAYLOAD" >> "$GITHUB_ENV"
           echo "WORK_DIR=$WORK_DIR" >> "$GITHUB_ENV"
+          echo "REPORT_DIR=$REPORT_DIR" >> "$GITHUB_ENV"
+          echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
 
-          rm -rf "$WORK_DIR"
-          mkdir -p "$WORK_DIR/extract"
+          rm -rf "$WORK_DIR" "$REPORT_DIR"
+          mkdir -p "$WORK_DIR/extract" "$REPORT_DIR"
 
           base64 -d "$PAYLOAD" > "$WORK_DIR/payload.zip"
           unzip -q "$WORK_DIR/payload.zip" -d "$WORK_DIR/extract"
@@ -112,6 +116,7 @@ jobs:
               "chatgpt_staging/apply_reports/",
               "chatgpt_staging/failure_reports/",
               "chatgpt_staging/cleanup_requests/",
+              "chatgpt_staging/status_reports/",
           ]
           allow_workflows = bool(manifest.get("allow_workflow_changes", False))
 
@@ -175,6 +180,44 @@ jobs:
           pathlib.Path("chatgpt_staging/work/applied_paths.txt").write_text("\n".join(applied) + "\n", encoding="utf-8")
           PY
 
+      - name: Write apply-in success report
+        if: steps.payload.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$REPORT_DIR"
+          {
+            echo "# ChatGPT workflow report"
+            echo
+            echo "## Result"
+            echo
+            echo "- workflow: chatgpt-apply-in"
+            echo "- result: success"
+            echo "- phase: bundle-applied-before-commit"
+            echo "- request_id: $REQUEST_ID"
+            echo "- payload_path: $PAYLOAD"
+            echo "- github_run_id: $GITHUB_RUN_ID"
+            echo "- github_sha: $GITHUB_SHA"
+            echo "- github_ref: $GITHUB_REF"
+            echo "- report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo "## Applied paths"
+            echo
+            if [[ -f chatgpt_staging/work/applied_paths.txt ]]; then
+              sed 's/^/- /' chatgpt_staging/work/applied_paths.txt
+            else
+              echo "- No applied_paths.txt was found."
+            fi
+            echo
+            echo "## Cleanup guidance"
+            echo
+            echo "After ChatGPT verifies the commit/readback and no longer needs this report, create a cleanup marker for request id '$REQUEST_ID' with cleanup_status_reports=true."
+            echo
+            echo "## Next ChatGPT action"
+            echo
+            echo "Verify the committed target changes and apply report. If readback is good, update Airtable and clean this status report when safe."
+          } > "$REPORT_PATH"
+
       - name: Commit applied changes
         if: steps.payload.outputs.skip != 'true' && (github.event_name == 'push' || inputs.commit_changes)
         shell: bash
@@ -188,14 +231,14 @@ jobs:
               [[ -n "$p" ]] && git add -- "$p"
             done < chatgpt_staging/work/applied_paths.txt
           fi
-          git add chatgpt_staging/apply_reports || true
+          git add chatgpt_staging/apply_reports "$REPORT_DIR" || true
           if [[ "${{ github.event_name }}" == "push" || "${{ inputs.delete_payload_after_success }}" == "true" ]]; then
             git rm -f "$PAYLOAD" || true
           fi
-          git commit -m "Apply ChatGPT staging bundle [skip validate-on-push]" || exit 0
+          git commit -m "Apply ChatGPT staging bundle and report [skip validate-on-push]" || exit 0
           git push
 
-      - name: Capture and commit apply-in failure locator
+      - name: Capture apply-in failure report
         if: failure() && steps.payload.outputs.skip != 'true'
         shell: bash
         run: |
@@ -209,62 +252,61 @@ jobs:
             *[!A-Za-z0-9._-]*|'') REQUEST_ID="unsafe_or_unknown" ;;
           esac
           WORK_DIR="${WORK_DIR:-chatgpt_staging/work/$REQUEST_ID}"
-          FAIL_DIR="chatgpt_staging/failure_reports/$REQUEST_ID"
+          REPORT_DIR="chatgpt_staging/status_reports/chatgpt-apply-in/$REQUEST_ID"
+          REPORT_PATH="$REPORT_DIR/workflow_report.md"
           ART_DIR="$RUNNER_TEMP/chatgpt_apply_in_failure/$REQUEST_ID"
           ARTIFACT_NAME="chatgpt-apply-in-failure-${GITHUB_RUN_ID}"
-          rm -rf "$FAIL_DIR" "$ART_DIR"
-          mkdir -p "$FAIL_DIR" "$ART_DIR"
+          rm -rf "$REPORT_DIR" "$ART_DIR"
+          mkdir -p "$REPORT_DIR" "$ART_DIR"
 
           {
-            echo "# ChatGPT apply-in failure locator"
+            echo "# ChatGPT workflow report"
             echo
+            echo "## Result"
+            echo
+            echo "- workflow: chatgpt-apply-in"
+            echo "- result: failure"
+            echo "- phase: apply-in"
             echo "- request_id: $REQUEST_ID"
             echo "- payload_path: $PAYLOAD"
             echo "- github_run_id: $GITHUB_RUN_ID"
             echo "- github_ref: $GITHUB_REF"
             echo "- github_sha: $GITHUB_SHA"
             echo "- artifact_name: $ARTIFACT_NAME"
-            echo "- captured_at_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "- artifact_retention_days: 7"
+            echo "- report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             echo
-            echo "Detailed diagnostics are stored in the GitHub Actions artifact named above."
-            echo "Before retrying this request id, ChatGPT should read this locator, inspect the artifact or run log, and then create a cleanup request marker when it is safe to remove the locator."
-          } > "$FAIL_DIR/failure_summary.md"
+            echo "## Troubleshooting context"
+            echo
+            echo "The apply-in workflow failed. Common causes are decode errors, missing apply_manifest.json, unsafe paths, missing sources, hash mismatches, or git commit/push failure."
+            echo
+            if [[ -f "$WORK_DIR/extract/apply_manifest.json" ]]; then
+              echo "### Manifest excerpt"
+              echo
+              echo '```json'
+              python -c "import pathlib; p=pathlib.Path('$WORK_DIR/extract/apply_manifest.json'); print(p.read_text(encoding='utf-8', errors='replace')[:4000])" || true
+              echo '```'
+            fi
+            if [[ -f chatgpt_staging/work/applied_paths.txt ]]; then
+              echo
+              echo "### Applied paths before failure"
+              sed 's/^/- /' chatgpt_staging/work/applied_paths.txt
+            fi
+            echo
+            echo "## Artifact pointer"
+            echo
+            echo "Detailed diagnostics, hashes, and any copied manifest are uploaded as GitHub Actions artifact '$ARTIFACT_NAME' for run $GITHUB_RUN_ID when available."
+            echo
+            echo "## Cleanup guidance"
+            echo
+            echo "After ChatGPT reads this report and retrieves any needed artifact/log details, create a cleanup marker for request id '$REQUEST_ID' with cleanup_status_reports=true and cleanup_in_payloads=true."
+            echo
+            echo "## Next ChatGPT action"
+            echo
+            echo "Read this report, inspect the artifact or run log if needed, decide whether to regenerate the payload or repair the workflow, then update Airtable."
+          } > "$REPORT_PATH"
 
-          python - "$FAIL_DIR/artifact_locator.json" "$REQUEST_ID" "$PAYLOAD" "$ARTIFACT_NAME" "$GITHUB_RUN_ID" "$GITHUB_SHA" "$GITHUB_REF" <<'PY'
-          import json, pathlib, sys
-          out, request_id, payload, artifact_name, run_id, sha, ref = sys.argv[1:]
-          pathlib.Path(out).write_text(json.dumps({
-              "schema": "dcoir.chatgpt_staging.failure_locator.v1",
-              "request_id": request_id,
-              "payload_path": payload,
-              "artifact_name": artifact_name,
-              "github_run_id": run_id,
-              "github_sha": sha,
-              "github_ref": ref,
-              "artifact_retention_days": 7,
-              "detail_location": "GitHub Actions artifact and run logs",
-              "safe_retry_rule": "Read this locator and diagnose the failure before creating a new payload for the same request id. Use a cleanup request marker to remove this locator after retry evidence is no longer needed."
-          }, indent=2) + "\n", encoding="utf-8")
-          PY
-
-          python - "$FAIL_DIR/cleanup_hint.json" "$REQUEST_ID" <<'PY'
-          import json, pathlib, sys
-          out, request_id = sys.argv[1:]
-          pathlib.Path(out).write_text(json.dumps({
-              "schema": "dcoir.chatgpt_staging.cleanup_hint.v1",
-              "request_id": request_id,
-              "recommended_cleanup_marker": f"chatgpt_staging/cleanup_requests/{request_id}.json",
-              "recommended_after": "after ChatGPT has inspected the failure locator, retrieved any needed artifact/log evidence, and decided whether to retry",
-              "cleanup_failure_reports": True,
-              "cleanup_in_payloads": True,
-              "cleanup_apply_reports": False,
-              "cleanup_out_bundles": False
-          }, indent=2) + "\n", encoding="utf-8")
-          PY
-
-          cp "$FAIL_DIR/failure_summary.md" "$ART_DIR/failure_summary.md"
-          cp "$FAIL_DIR/artifact_locator.json" "$ART_DIR/artifact_locator.json"
-          cp "$FAIL_DIR/cleanup_hint.json" "$ART_DIR/cleanup_hint.json"
+          cp "$REPORT_PATH" "$ART_DIR/workflow_report.md"
           if [[ -f "$PAYLOAD" ]]; then
             sha256sum "$PAYLOAD" > "$ART_DIR/payload_b64.sha256"
           fi
@@ -281,8 +323,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git restore --staged . || true
-          git add "$FAIL_DIR"
-          git commit -m "Record ChatGPT apply-in failure locator [skip validate-on-push]" || true
+          git add "$REPORT_DIR"
+          git commit -m "Record ChatGPT apply-in workflow report [skip validate-on-push]" || true
           git push || true
           echo "FAIL_ARTIFACT_DIR=$ART_DIR" >> "$GITHUB_ENV"
 

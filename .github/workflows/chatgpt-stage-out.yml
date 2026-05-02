@@ -84,8 +84,10 @@ jobs:
 
           OUT_DIR="chatgpt_staging/out/$REQUEST_ID"
           WORK_DIR="chatgpt_staging/work/$REQUEST_ID"
-          rm -rf "$OUT_DIR" "$WORK_DIR"
-          mkdir -p "$OUT_DIR/files" "$OUT_DIR/chunks" "$WORK_DIR"
+          REPORT_DIR="chatgpt_staging/status_reports/chatgpt-stage-out/$REQUEST_ID"
+          REPORT_PATH="$REPORT_DIR/workflow_report.md"
+          rm -rf "$OUT_DIR" "$WORK_DIR" "$REPORT_DIR"
+          mkdir -p "$OUT_DIR/files" "$OUT_DIR/chunks" "$WORK_DIR" "$REPORT_DIR"
 
           python - "$REQUEST_PATH" "$OUT_DIR" <<'PY'
           import hashlib, json, pathlib, shutil, subprocess, zipfile, sys
@@ -181,8 +183,40 @@ jobs:
           (out_dir / "manifest.md").write_text("\n".join(md) + "\n", encoding="utf-8")
           PY
 
+          {
+            echo "# ChatGPT workflow report"
+            echo
+            echo "## Result"
+            echo
+            echo "- workflow: chatgpt-stage-out"
+            echo "- result: success"
+            echo "- phase: bundle-created"
+            echo "- request_id: $REQUEST_ID"
+            echo "- request_path: $REQUEST_PATH"
+            echo "- output_dir: $OUT_DIR"
+            echo "- github_run_id: $GITHUB_RUN_ID"
+            echo "- github_sha: $GITHUB_SHA"
+            echo "- github_ref: $GITHUB_REF"
+            echo "- report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo "## Output"
+            echo
+            find "$OUT_DIR" -maxdepth 3 -type f | sort | sed 's/^/- /'
+            echo
+            echo "## Cleanup guidance"
+            echo
+            echo "After ChatGPT retrieves the needed output, create a cleanup marker for request id '$REQUEST_ID' with cleanup_out_bundles=true and cleanup_status_reports=true."
+            echo
+            echo "## Next ChatGPT action"
+            echo
+            echo "Read manifest.md/manifest.json and staged_files.zip or chunks under $OUT_DIR. Record evidence, then request cleanup when safe."
+          } > "$REPORT_PATH"
+
           echo "OUT_DIR=$OUT_DIR" >> "$GITHUB_ENV"
           echo "REQUEST_PATH=$REQUEST_PATH" >> "$GITHUB_ENV"
+          echo "REQUEST_ID=$REQUEST_ID" >> "$GITHUB_ENV"
+          echo "REPORT_DIR=$REPORT_DIR" >> "$GITHUB_ENV"
+          echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
 
       - name: Upload stage-out artifact copy
         if: steps.request.outputs.skip != 'true'
@@ -192,14 +226,63 @@ jobs:
           path: ${{ env.OUT_DIR }}/**
           retention-days: 7
 
-      - name: Commit stage-out bundle and clean request
+      - name: Commit stage-out bundle, report, and clean request
         if: steps.request.outputs.skip != 'true' && (github.event_name == 'push' || inputs.commit_outputs)
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$OUT_DIR"
+          git add "$OUT_DIR" "$REPORT_DIR"
           git rm -f "$REQUEST_PATH" || true
-          git commit -m "Stage ChatGPT readback bundle and clean request [skip validate-on-push]" || exit 0
+          git commit -m "Stage ChatGPT readback bundle and report [skip validate-on-push]" || exit 0
           git push
+
+      - name: Capture stage-out failure report
+        if: failure() && steps.request.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST_PATH='${{ steps.request.outputs.request_path }}'
+          REQUEST_ID="unknown"
+          if [[ -f "$REQUEST_PATH" ]]; then
+            REQUEST_ID="$(python -c 'import json,sys; print(json.load(open(sys.argv[1])).get("request_id", "unknown"))' "$REQUEST_PATH" || echo unknown)"
+          fi
+          case "$REQUEST_ID" in
+            *[!A-Za-z0-9._-]*|'') REQUEST_ID="unsafe_or_unknown" ;;
+          esac
+          REPORT_DIR="chatgpt_staging/status_reports/chatgpt-stage-out/$REQUEST_ID"
+          REPORT_PATH="$REPORT_DIR/workflow_report.md"
+          mkdir -p "$REPORT_DIR"
+          {
+            echo "# ChatGPT workflow report"
+            echo
+            echo "## Result"
+            echo
+            echo "- workflow: chatgpt-stage-out"
+            echo "- result: failure"
+            echo "- phase: stage-out"
+            echo "- request_id: $REQUEST_ID"
+            echo "- request_path: $REQUEST_PATH"
+            echo "- github_run_id: $GITHUB_RUN_ID"
+            echo "- github_sha: $GITHUB_SHA"
+            echo "- github_ref: $GITHUB_REF"
+            echo "- report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo "## Troubleshooting notes"
+            echo
+            echo "The stage-out workflow failed before producing a trusted output bundle. Inspect the GitHub Actions run logs for full details."
+            echo
+            echo "## Cleanup guidance"
+            echo
+            echo "Do not retry with the same request id until ChatGPT reads this report. Create a cleanup marker with cleanup_status_reports=true when this report is no longer needed."
+            echo
+            echo "## Next ChatGPT action"
+            echo
+            echo "Read this report, inspect the run log if needed, update Airtable with the failure phase, then repair or regenerate the request."
+          } > "$REPORT_PATH"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$REPORT_DIR"
+          git commit -m "Record ChatGPT stage-out failure report [skip validate-on-push]" || true
+          git push || true
