@@ -1,4 +1,3 @@
-# T7 apply-in create-only validation marker
+# T7 override visibility validation marker
 
-This file was created by the ChatGPT staging-lane apply-in validation run.
-It is temporary validation material and may be removed after evidence is recorded.
+This temporary file was intentionally updated through allow_missing_current_hash=true to verify that stale-write override warnings are visible.
