@@ -1,0 +1,15 @@
+{
+  "schema": "dcoir.chatgpt_staging.stage_out_request.v1",
+  "request_id": "val-20260502-stageout-docs-001",
+  "allowed_roots": [
+    "chatgpt_staging"
+  ],
+  "exact_paths": [
+    "chatgpt_staging/README.md",
+    "chatgpt_staging/RETENTION_POLICY.md",
+    "chatgpt_staging/SCENARIO_MATRIX.md"
+  ],
+  "mode": "zip_first_with_chunks_fallback",
+  "include_files_copy": true,
+  "chunk_lines": 120
+}
