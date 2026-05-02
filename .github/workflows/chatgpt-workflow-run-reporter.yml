@@ -53,6 +53,21 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Fetch source workflow logs for failed runs
+        if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          set +e
+          mkdir -p .github/tmp
+          gh run view "$SOURCE_RUN_ID" --repo "$REPO" --log > .github/tmp/source_workflow.log 2> .github/tmp/source_workflow_log_fetch_error.txt
+          rc=$?
+          echo "LOG_FETCH_EXIT_CODE=$rc" >> "$GITHUB_ENV"
+          exit 0
+
       - name: Write ChatGPT-readable workflow report
         shell: bash
         run: |
@@ -83,7 +98,12 @@ jobs:
           Verify this report by GitHub readback, then allow retention cleanup to remove it after the configured success-report retention window.
           REPORT
           else
-            python .github/scripts/write_workflow_report.py workflow-run --event-json "$GITHUB_EVENT_PATH"
+            python .github/scripts/write_workflow_report.py workflow-run \
+              --event-json "$GITHUB_EVENT_PATH" \
+              --log-file .github/tmp/source_workflow.log \
+              --log-error-file .github/tmp/source_workflow_log_fetch_error.txt \
+              --max-log-lines 300 \
+              --max-log-chars 40000
           fi
 
       - name: Commit workflow report

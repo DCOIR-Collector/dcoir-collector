@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Create standardized ChatGPT-readable GitHub workflow reports and retention cleanup plans.
 
-This script has two modes:
+Modes:
 - workflow-run: read a GitHub workflow_run event payload and write one workflow_report.md.
 - cleanup: scan committed workflow_report.md files and create an age/status-based cleanup plan.
 
-The script intentionally uses only the Python standard library.
+Design rule: failure reports must include bounded diagnostic excerpts when log data is available,
+so ChatGPT can troubleshoot without operator screenshots, pasted logs, or uploaded logs.
 """
 from __future__ import annotations
 
@@ -15,7 +16,6 @@ import json
 import os
 import re
 import subprocess
-import sys
 from pathlib import Path
 from typing import Iterable
 
@@ -41,6 +41,29 @@ def safe_segment(value: object, default: str = "unknown") -> str:
 def read_json(path: Path) -> dict:
     with path.open("r", encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def read_text_if_present(path: Path | None, limit_chars: int = 60000) -> str:
+    if path is None or not path.is_file():
+        return ""
+    text = path.read_text(encoding="utf-8", errors="replace")
+    if len(text) > limit_chars:
+        return text[-limit_chars:]
+    return text
+
+
+def bounded_lines(text: str, max_lines: int, max_chars: int) -> list[str]:
+    if not text:
+        return []
+    lines = text.splitlines()
+    selected = lines[-max_lines:] if len(lines) > max_lines else lines
+    joined = "\n".join(selected)
+    if len(joined) > max_chars:
+        joined = joined[-max_chars:]
+        selected = ["[truncated to final bounded excerpt]"] + joined.splitlines()
+    if len(lines) > max_lines:
+        selected = [f"[truncated: showing final {len(selected)} of {len(lines)} log lines]"] + selected
+    return selected
 
 
 def git_commit_epoch(path: Path) -> int | None:
@@ -70,6 +93,10 @@ def parse_report_result(path: Path) -> str:
     if "- result: cancelled" in text or "- conclusion: cancelled" in text:
         return "failure"
     if "- result: timed_out" in text or "- conclusion: timed_out" in text:
+        return "failure"
+    if "- result: action_required" in text or "- conclusion: action_required" in text:
+        return "failure"
+    if "- result: startup_failure" in text or "- conclusion: startup_failure" in text:
         return "failure"
     if "- result: success" in text or "- conclusion: success" in text:
         return "success"
@@ -117,6 +144,10 @@ def make_workflow_report(args: argparse.Namespace) -> int:
     head_branch = str(run.get("head_branch") or "")
     head_sha = str(run.get("head_sha") or "")
     html_url = str(run.get("html_url") or "")
+    run_attempt = str(run.get("run_attempt") or "")
+    run_number = str(run.get("run_number") or "")
+    created_at = str(run.get("created_at") or "")
+    updated_at = str(run.get("updated_at") or "")
     actor = ((run.get("actor") or {}).get("login") or "unknown") if isinstance(run.get("actor"), dict) else "unknown"
     repository = ((run.get("repository") or {}).get("full_name") or os.environ.get("GITHUB_REPOSITORY", "unknown")) if isinstance(run.get("repository"), dict) else os.environ.get("GITHUB_REPOSITORY", "unknown")
 
@@ -124,8 +155,19 @@ def make_workflow_report(args: argparse.Namespace) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     report_path = out_dir / "workflow_report.md"
 
-    result = "success" if conclusion == "success" else "failure" if conclusion in {"failure", "cancelled", "timed_out", "action_required", "startup_failure"} else conclusion
-    action_hint = "No repair needed; review changed paths/artifacts if this workflow protects a code or docs surface." if result == "success" else "Inspect this report, then use the GitHub run URL/artifacts/logs to diagnose the failed workflow before asking the operator for screenshots or pasted logs."
+    failure_conclusions = {"failure", "cancelled", "timed_out", "action_required", "startup_failure"}
+    result = "success" if conclusion == "success" else "failure" if conclusion in failure_conclusions else conclusion
+    action_hint = (
+        "No repair needed; review changed paths/artifacts if this workflow protects a code, docs, packaging, or operational surface."
+        if result == "success"
+        else "Use the embedded bounded log excerpt first. If it is not enough, open workflow_run_url for full GitHub Actions logs/artifacts before asking the operator for screenshots or pasted logs."
+    )
+
+    log_file = Path(args.log_file) if args.log_file else None
+    log_error_file = Path(args.log_error_file) if args.log_error_file else None
+    log_text = read_text_if_present(log_file, limit_chars=args.max_log_chars * 2)
+    log_fetch_error = read_text_if_present(log_error_file, limit_chars=12000)
+    log_excerpt = bounded_lines(log_text, args.max_log_lines, args.max_log_chars)
 
     lines = [
         "# ChatGPT workflow report",
@@ -133,16 +175,20 @@ def make_workflow_report(args: argparse.Namespace) -> int:
         "## Result",
         "",
         f"- workflow: {workflow_name}",
-        f"- report_scope: repo-workflows",
+        "- report_scope: repo-workflows",
         f"- result: {result}",
         f"- conclusion: {conclusion}",
         f"- source_event: {event_name}",
         f"- workflow_run_id: {run_id}",
+        f"- workflow_run_number: {run_number}",
+        f"- workflow_run_attempt: {run_attempt}",
         f"- workflow_run_url: {html_url}",
         f"- repository: {repository}",
         f"- head_branch: {head_branch}",
         f"- head_sha: {head_sha}",
         f"- actor: {actor}",
+        f"- source_created_at: {created_at}",
+        f"- source_updated_at: {updated_at}",
         f"- reporter_run_id: {os.environ.get('GITHUB_RUN_ID', 'unknown')}",
         f"- reporter_sha: {os.environ.get('GITHUB_SHA', 'unknown')}",
         f"- report_created_utc: {iso(utc_now())}",
@@ -150,7 +196,32 @@ def make_workflow_report(args: argparse.Namespace) -> int:
         "## Troubleshooting context",
         "",
         "This report was generated by the central ChatGPT workflow-run reporter after the source workflow completed.",
-        "Use the workflow_run_url for full GitHub Actions logs and artifacts when this summary is not enough.",
+    ]
+    if result != "success":
+        lines += [
+            "The report includes bounded log context when GitHub log retrieval succeeded. Use the workflow_run_url for full logs/artifacts when deeper detail is required.",
+            "",
+            "### Bounded source workflow log excerpt",
+            "",
+        ]
+        if log_excerpt:
+            lines.append("```text")
+            lines.extend(log_excerpt)
+            lines.append("```")
+        else:
+            lines.append("No source workflow log excerpt was available to embed.")
+        if log_fetch_error:
+            lines += [
+                "",
+                "### Log retrieval notes",
+                "",
+                "```text",
+                *bounded_lines(log_fetch_error, 80, 12000),
+                "```",
+            ]
+    else:
+        lines.append("The source workflow completed successfully; no failure log excerpt is embedded by default.")
+    lines += [
         "",
         "## Next ChatGPT action",
         "",
@@ -262,6 +333,10 @@ def main(argv: list[str] | None = None) -> int:
     wr.add_argument("--event-json")
     wr.add_argument("--workflow-name")
     wr.add_argument("--run-id")
+    wr.add_argument("--log-file", default="")
+    wr.add_argument("--log-error-file", default="")
+    wr.add_argument("--max-log-lines", type=int, default=300)
+    wr.add_argument("--max-log-chars", type=int, default=40000)
     wr.set_defaults(func=make_workflow_report)
 
     cl = sub.add_parser("cleanup")
