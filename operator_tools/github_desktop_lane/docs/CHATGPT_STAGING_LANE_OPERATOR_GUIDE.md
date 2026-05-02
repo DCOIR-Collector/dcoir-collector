@@ -82,8 +82,45 @@ The repo should not retain:
 - stale base64 payloads
 - unrelated staging outputs
 - temporary logs not selected as validation evidence
+- committed failure report folders unless intentionally retained for a bounded validation branch
 
 Scaffold `.gitkeep` files should remain.
+
+## Failed apply-in evidence
+
+A failed apply-in should fail closed and avoid committing partial target changes.
+
+The workflow captures failure evidence into a GitHub Actions artifact named:
+
+```text
+chatgpt-apply-in-failure-<run_id>
+```
+
+Expected artifact contents may include:
+
+- `failure_summary.md`
+- `apply_manifest.json` when the ZIP decoded far enough to expose it
+- `payload_b64.sha256`
+- `payload_zip.sha256`
+- `applied_paths_before_failure.txt` when available
+
+The failure artifact is retained for seven days by default and is not committed to the repo.
+
+If a failed run needs diagnosis, download the Actions artifact and upload it to ChatGPT. Do not rerun with relaxed checks unless the operator explicitly approves a new reviewed payload or manifest.
+
+## Cleanup workflow use
+
+Use `chatgpt-staging-cleanup` only for intentional housekeeping. It does not need to run after every staging event, but it is good housekeeping after batches or failed experiments.
+
+Cleanup inputs are separated so you can delete only the intended surfaces:
+
+- consumed request JSON files
+- inbound payload folders
+- outbound bundles
+- apply reports
+- intentionally committed failure reports, if any
+
+Use `request_id_filter` when cleaning one request or request-prefix family. Leave apply reports and output bundles unchecked when they are still needed as validation evidence.
 
 ## Stop conditions
 
@@ -103,6 +140,7 @@ Before closing staging-lane work, preserve:
 
 - GitHub run or commit readback
 - staging manifest or apply report
+- failure artifact if failure handling was tested
 - cleanup proof where relevant
 - validation evidence in Airtable
 - notes about what was not tested

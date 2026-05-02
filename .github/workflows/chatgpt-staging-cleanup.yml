@@ -23,6 +23,11 @@ on:
         required: true
         default: false
         type: boolean
+      cleanup_failure_reports:
+        description: "Delete committed failure reports under chatgpt_staging/failure_reports/ if any were intentionally retained"
+        required: true
+        default: false
+        type: boolean
       request_id_filter:
         description: "Optional request id or prefix to clean. Leave blank to clean all selected surfaces."
         required: false
@@ -62,6 +67,7 @@ jobs:
               chatgpt_staging/in/.gitkeep|\
               chatgpt_staging/out/.gitkeep|\
               chatgpt_staging/apply_reports/.gitkeep|\
+              chatgpt_staging/failure_reports/.gitkeep|\
               chatgpt_staging/testdata/source/.gitkeep|\
               */.gitkeep)
                 return 0
@@ -136,6 +142,17 @@ jobs:
               stem="$(basename "$f")"
               if match_filter "$stem"; then
                 rm_path "$f"
+              fi
+            done
+          fi
+
+          if [[ '${{ inputs.cleanup_failure_reports }}' == 'true' ]]; then
+            for d in chatgpt_staging/failure_reports/*; do
+              [[ -d "$d" ]] || continue
+              is_scaffold_path "$d" && continue
+              stem="$(basename "$d")"
+              if match_filter "$stem"; then
+                rm_path "$d"
               fi
             done
           fi

@@ -1,6 +1,6 @@
 # ChatGPT GitHub Staging Lane Safety Contract
 
-Status: production-safety contract draft for `PLAN-20260501-chatgpt-github-staging-lane` / `T1`.
+Status: production-safety contract draft for `PLAN-20260501-chatgpt-github-staging-lane` / `T2`.
 
 This folder supports the ChatGPT GitHub staging lane: a controlled path for large-file readback, stage-out bundles, and reviewed apply-in bundles when normal connector edits are too small, fragile, or cumbersome.
 
@@ -68,8 +68,9 @@ These are infrastructure/control surfaces and should not be regular apply target
 - `chatgpt_staging/out/`
 - `chatgpt_staging/work/`
 - `chatgpt_staging/apply_reports/`
+- `chatgpt_staging/failure_reports/`
 
-A workflow may read or clean these surfaces when explicitly designed for that purpose. An arbitrary apply-in payload must not write into `out/`, `work/`, or `apply_reports/`.
+A workflow may read or clean these surfaces when explicitly designed for that purpose. An arbitrary apply-in payload must not write into `out/`, `work/`, `apply_reports/`, or `failure_reports/`.
 
 ### Workflow roots
 
@@ -150,16 +151,23 @@ Successful apply-in:
 Failed apply-in:
 
 - must not commit partial target changes
-- should preserve enough failure evidence to diagnose the issue
-- should quarantine failed request material by request id only when the workflow explicitly implements quarantine
+- uploads failure evidence as a GitHub Actions artifact named `chatgpt-apply-in-failure-<run_id>` with seven-day retention
+- should include request id, payload path, run id, commit SHA, captured timestamp, available manifest copy, and payload hashes when available
+- must not commit `chatgpt_staging/failure_reports/` by default
 - must not silently delete failure evidence before it is captured
+
+Failure evidence model:
+
+- `chatgpt_staging/failure_reports/` is a local workflow workspace and optional cleanup-compatible scaffold, not a normal committed evidence store.
+- Failure evidence should normally live in the GitHub Actions artifact for the failed run.
+- If a failure report is intentionally committed for a bounded validation branch, the cleanup workflow can remove request-id-scoped committed failure report folders later while preserving `.gitkeep` scaffolding.
 
 Cleanup workflow behavior:
 
 - must preserve scaffold `.gitkeep` files
 - must reject unsafe cleanup filters or paths
 - should support request-id filtering
-- should distinguish consumed requests, inbound payloads, outbound bundles, and apply reports
+- should distinguish consumed requests, inbound payloads, outbound bundles, apply reports, and intentionally retained failure reports
 
 ## Trigger isolation contract
 
@@ -186,8 +194,8 @@ The lane is not production-ready until evidence exists for all gates below:
 5. Workflow path mutation is rejected unless an explicit workflow exception is enabled.
 6. Stale-write protection fails closed on an expected hash mismatch.
 7. Cleanup preserves scaffold files and removes selected consumed artifacts.
-8. Failed-payload behavior preserves diagnostic evidence without committing partial target changes.
-9. Repo readback confirms no stale ZIP, base64 payload, extracted work folder, or generated junk remains.
+8. Failed-payload behavior preserves diagnostic evidence as an Actions artifact without committing partial target changes.
+9. Repo readback confirms no stale ZIP, base64 payload, extracted work folder, committed failure report, or generated junk remains.
 10. Airtable Validation Evidence records the test result and remaining limitations.
 
 ## Stop conditions
@@ -204,11 +212,10 @@ Stop and ask for operator guidance if:
 
 ## Current next work
 
-T1 is satisfied when this contract is reviewed and accepted as the governing production-safety contract.
+T1 is complete after this contract was accepted and committed.
 
-Next implementation tasks should use this contract to complete:
+T2 adds cleanup and failed-payload evidence handling. Next implementation tasks should use this contract to complete:
 
-- cleanup and failed-payload quarantine behavior
 - source-hash and stale-write protections
 - workflow trigger isolation and workflow-mutation boundaries
 - repo-bloat mitigation

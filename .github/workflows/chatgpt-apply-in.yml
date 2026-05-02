@@ -80,6 +80,10 @@ jobs:
 
           REQUEST_ID="$(basename "$(dirname "$PAYLOAD")")"
           WORK_DIR="chatgpt_staging/work/$REQUEST_ID"
+          echo "REQUEST_ID=$REQUEST_ID" >> "$GITHUB_ENV"
+          echo "PAYLOAD=$PAYLOAD" >> "$GITHUB_ENV"
+          echo "WORK_DIR=$WORK_DIR" >> "$GITHUB_ENV"
+
           rm -rf "$WORK_DIR"
           mkdir -p "$WORK_DIR/extract"
 
@@ -101,7 +105,7 @@ jobs:
           if not allowed_roots:
               raise SystemExit("allowed_roots is required")
 
-          blocked_prefixes = [".git/", "chatgpt_staging/out/", "chatgpt_staging/work/", "chatgpt_staging/apply_reports/"]
+          blocked_prefixes = [".git/", "chatgpt_staging/out/", "chatgpt_staging/work/", "chatgpt_staging/apply_reports/", "chatgpt_staging/failure_reports/"]
           allow_workflows = bool(manifest.get("allow_workflow_changes", False))
 
           def safe_rel(path: str) -> bool:
@@ -163,8 +167,57 @@ jobs:
           pathlib.Path("chatgpt_staging/work/applied_paths.txt").write_text("\n".join(applied) + "\n", encoding="utf-8")
           PY
 
-          echo "REQUEST_ID=$REQUEST_ID" >> "$GITHUB_ENV"
-          echo "PAYLOAD=$PAYLOAD" >> "$GITHUB_ENV"
+      - name: Capture apply-in failure evidence
+        if: failure() && steps.payload.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          PAYLOAD="${PAYLOAD:-${{ steps.payload.outputs.payload_path }}}"
+          REQUEST_ID="${REQUEST_ID:-unknown}"
+          if [[ "$PAYLOAD" == chatgpt_staging/in/*/payload.zip.b64 ]]; then
+            REQUEST_ID="$(basename "$(dirname "$PAYLOAD")")"
+          fi
+          case "$REQUEST_ID" in
+            *[!A-Za-z0-9._-]*|'') REQUEST_ID="unsafe_or_unknown" ;;
+          esac
+          WORK_DIR="${WORK_DIR:-chatgpt_staging/work/$REQUEST_ID}"
+          FAIL_DIR="chatgpt_staging/failure_reports/$REQUEST_ID"
+          rm -rf "$FAIL_DIR"
+          mkdir -p "$FAIL_DIR"
+
+          {
+            echo "# ChatGPT apply-in failure evidence"
+            echo
+            echo "- request_id: $REQUEST_ID"
+            echo "- payload_path: $PAYLOAD"
+            echo "- github_run_id: $GITHUB_RUN_ID"
+            echo "- github_sha: $GITHUB_SHA"
+            echo "- github_ref: $GITHUB_REF"
+            echo "- captured_at_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo "This evidence is uploaded as a GitHub Actions artifact and is not committed to the repository."
+          } > "$FAIL_DIR/failure_summary.md"
+
+          if [[ -f "$PAYLOAD" ]]; then
+            sha256sum "$PAYLOAD" > "$FAIL_DIR/payload_b64.sha256"
+          fi
+          if [[ -f "$WORK_DIR/payload.zip" ]]; then
+            sha256sum "$WORK_DIR/payload.zip" > "$FAIL_DIR/payload_zip.sha256"
+          fi
+          if [[ -f "$WORK_DIR/extract/apply_manifest.json" ]]; then
+            cp "$WORK_DIR/extract/apply_manifest.json" "$FAIL_DIR/apply_manifest.json"
+          fi
+          if [[ -f "chatgpt_staging/work/applied_paths.txt" ]]; then
+            cp "chatgpt_staging/work/applied_paths.txt" "$FAIL_DIR/applied_paths_before_failure.txt"
+          fi
+
+      - name: Upload apply-in failure evidence
+        if: failure() && steps.payload.outputs.skip != 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: chatgpt-apply-in-failure-${{ github.run_id }}
+          path: chatgpt_staging/failure_reports/**
+          retention-days: 7
 
       - name: Commit applied changes
         if: steps.payload.outputs.skip != 'true' && (github.event_name == 'push' || inputs.commit_changes)
