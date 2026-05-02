@@ -11,10 +11,11 @@ When a session sees staging-lane, cleanup, failure-report, workflow-report, larg
 1. Read Airtable Queue Control, active Plan, and Work Item.
 2. Consult the Airtable `SKILLROUTE-CHATGPT-STAGING-LANE` and `DECISION-CHATGPT-STAGING-LANE-DEFAULTS` rows.
 3. Read this file, `chatgpt_staging/SCENARIO_MATRIX.md`, and `chatgpt_staging/RETENTION_POLICY.md` from GitHub when repo-source behavior is in scope.
-4. Check `chatgpt_staging/status_reports/` before asking the operator for screenshots, copied logs, or uploaded logs.
-5. Check `chatgpt_staging/failure_reports/` before retrying an old request id.
-6. Check `chatgpt_staging/cleanup_requests/` before assuming cleanup was requested or completed.
-7. Never claim cleanup, retry safety, or production readiness without GitHub readback and Airtable evidence.
+4. Read `operator_tools/github_desktop_lane/docs/CHATGPT_STAGING_LANE_OPERATOR_GUIDE.md` before giving operator-facing CAP or troubleshooting instructions.
+5. Check `chatgpt_staging/status_reports/` before asking the operator for screenshots, copied logs, uploaded logs, or a commit SHA.
+6. Check `chatgpt_staging/failure_reports/` before retrying an old request id.
+7. Check `chatgpt_staging/cleanup_requests/` before assuming cleanup was requested or completed.
+8. Never claim cleanup, retry safety, or production readiness without GitHub readback and Airtable evidence.
 
 ## Production safety principles
 
@@ -25,7 +26,17 @@ When a session sees staging-lane, cleanup, failure-report, workflow-report, larg
 5. No workflow mutation by default. `.github/` and especially `.github/workflows/` changes require an explicit workflow-repair branch and operator approval.
 6. No stale overwrites. Apply-in must use current-source hash checks or blob SHA checks for existing files whenever overwriting tracked content.
 7. No repo bloat. Payloads, ZIPs, extracted work folders, generated logs, output bundles, status reports, and failure reports must be cleaned or explicitly retained as validation evidence.
-8. Evidence before readiness. The lane cannot be called production-ready until blocked-path, hash-mismatch, cleanup, workflow-report, retention, and happy-path validation all pass.
+8. Evidence before readiness. The lane cannot be called production-ready until blocked-path, hash-mismatch, cleanup, workflow-report, retention, operator-instruction, and happy-path validation all pass.
+
+## Operator-facing rule
+
+When talking to the operator, keep staging-lane instructions plain:
+
+- explain what the bundle/request/payload is for
+- give one suggested commit summary
+- after CAP, use GitHub readback and workflow reports before asking for logs or a SHA
+- recommend the next step after status updates
+- use the operator guide for CAP wording and troubleshooting expectations
 
 ## Apply-in hash and stale-write policy
 

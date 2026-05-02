@@ -1,78 +1,147 @@
 # ChatGPT Staging Lane Operator Guide
 
-Use this lane only when normal ChatGPT/GitHub connector edits or readback are too small, fragile, or awkward for the current task.
+Use this guide when ChatGPT says the normal GitHub connector is too small, fragile, or awkward and it gives you a staging-lane bundle, request, payload, or cleanup marker.
 
-## Operator promise
+## What this lane is for
 
-When the staging workflows produce `chatgpt_staging/status_reports/`, ChatGPT should read those reports before asking you for screenshots, pasted logs, uploaded logs, or a commit SHA.
+The staging lane is a safer transfer area inside the repository. ChatGPT prepares a bounded request or payload, GitHub Actions processes it, and ChatGPT verifies the result from GitHub readback.
 
-## Where ChatGPT looks first
+Use it for:
+
+- large or awkward repo readback
+- multi-file apply-in bundles
+- workflow troubleshooting where ChatGPT needs a readable report
+- cleanup of temporary staging artifacts
+
+Do not use it for normal small edits when the GitHub connector or a simple GitHub Desktop bundle is enough.
+
+## The simple operator workflow
+
+1. ChatGPT gives you a ZIP bundle and a suggested commit summary.
+2. You apply the ZIP to the local repo, review the changed files, commit, and push.
+3. You say only:
+
+```text
+cap
+```
+
+4. ChatGPT verifies GitHub readback.
+5. If a workflow ran, ChatGPT checks the workflow report before asking you for logs.
+6. If temporary staging files are no longer needed, ChatGPT creates or recommends a cleanup marker.
+
+## What ChatGPT should do
+
+ChatGPT should:
+
+- tell you what the bundle is for before CAP
+- keep affected files narrow
+- give a suggested commit summary
+- verify the commit by GitHub readback after you say `cap`
+- check `workflow_report.md` before asking for screenshots, pasted logs, uploaded logs, or a commit SHA
+- update Airtable plan/work state after readback
+- recommend the next step after status updates
+- clean consumed staging artifacts when safe
+
+## What you usually do
+
+Most of the time, your job is only:
+
+```text
+Apply the ZIP, review the changed files, commit, push, then say cap.
+```
+
+You should not normally need to:
+
+- find a commit SHA manually
+- upload GitHub Actions logs
+- paste terminal output
+- screenshot failures
+- decide which staging folders to delete
+
+If ChatGPT truly needs a SHA or local diagnostic output, it should give you a copy/paste command or tool.
+
+## Where ChatGPT looks first after a workflow run
 
 ```text
 chatgpt_staging/status_reports/<workflow-name>/<request-id-or-run-id>/workflow_report.md
 ```
 
-Each workflow result should have one committed Markdown report. Do not expect paired JSON and Markdown reports unless a future design explicitly justifies a second artifact.
+Each workflow result should create one Markdown report. Do not expect paired JSON and Markdown reports.
 
-## What reports contain
+The report should tell ChatGPT:
 
-A good report includes:
+- whether the workflow succeeded or failed
+- which workflow ran
+- which request or payload was involved
+- which files changed, were removed, or were retained
+- why a failure happened, when known
+- where a larger artifact/log is, when one is needed
+- what ChatGPT should do next
+- how to clean the report after reading it
 
-- workflow name and result
-- run id, ref, triggering SHA, and request id when available
-- request, payload, output, or cleanup marker path
-- changed, applied, removed, retained, or skipped paths
-- failure phase and bounded troubleshooting context
-- stale-write/hash details when relevant
-- artifact name/run id when full raw logs or bulky diagnostics are needed
-- cleanup guidance and next ChatGPT action
+## If something fails
 
-## Hash and stale-write rule
+Say:
 
-For apply-in bundles:
+```text
+cap
+```
 
-- Existing tracked files require `expected_blob_sha` or `expected_current_sha256`.
-- New files require `create_only: true` and `expected_new_sha256`.
-- `create_only` fails if the target already exists.
-- Existing untracked files are not overwritten.
-- Any `allow_missing_current_hash: true` override should be visible in the workflow report.
+or ask:
 
-This means stale or under-specified bundles should fail before changing repo files.
+```text
+Check the latest workflow report.
+```
 
-## Trigger isolation rule
+ChatGPT should inspect the committed report under `chatgpt_staging/status_reports/` first. If the report points to a GitHub Actions artifact or run log, ChatGPT should use that pointer before asking you for manual logs.
 
-The staging workflows keep automatic push triggers, but only for the staging transfer paths on `main`:
+## Cleanup expectations
 
-- `chatgpt_staging/requests/*.json`
-- `chatgpt_staging/in/*/payload.zip.b64`
-- `chatgpt_staging/cleanup_requests/*.json`
-
-Workflow-generated commits use `[skip ci]` to avoid unnecessary recursive push runs. Request, apply, and cleanup inputs also require explicit schema fields. Workflow file mutation remains blocked by default; apply manifests that touch `.github/workflows/` require `allow_workflow_changes: true` and `workflow_change_reason`.
-
-## Retention rule
-
-Staging artifacts are temporary unless Airtable evidence or the active Work Item says otherwise.
+Staging files are temporary unless Airtable evidence or the active Work Item says to keep them.
 
 ChatGPT should clean staging artifacts after it has consumed them:
 
 - output bundles after ChatGPT retrieves needed files
-- inbound payloads after successful apply or after failed-payload diagnosis
+- inbound payloads after successful apply or failed-payload diagnosis
 - status reports after ChatGPT reads them and records evidence
 - failure reports after the retry/stop decision is recorded
 - apply reports after commit/readback evidence is recorded
 
-The cleanup workflow may leave one cleanup `workflow_report.md` as proof of what it removed. ChatGPT can remove that report with a later cleanup marker after reading it.
-
-## Cleanup expectation
-
-After ChatGPT reads and records the needed evidence, ChatGPT may create a cleanup marker under:
+Cleanup is done with a scoped marker under:
 
 ```text
 chatgpt_staging/cleanup_requests/<request_id>.json
 ```
 
-That marker can remove scoped status reports, output bundles, inbound payloads, apply reports, or failure reports while preserving `.gitkeep` scaffolds.
+The cleanup workflow may leave one final cleanup `workflow_report.md` as proof of what it removed. ChatGPT can remove that report later after reading it.
 
-## Operator action
+## Safety rules in plain English
 
-For staging-lane workflow troubleshooting, normally say `cap` after you commit/push a bundle or ask ChatGPT to inspect the latest workflow reports. ChatGPT should use connector readback and status reports before asking you for logs.
+- Stage-out requests must stay narrow.
+- Apply-in bundles must include current-file proof before overwriting tracked files.
+- New files must be marked create-only and include a new-content hash.
+- Workflow files are blocked by default unless the repair is explicit and approved.
+- Cleanup must stay inside `chatgpt_staging/`.
+- `.gitkeep` scaffold files should never be deleted.
+- ChatGPT should not claim production readiness until validation evidence exists.
+
+## Useful phrases to say
+
+| Situation | Say this |
+|---|---|
+| You applied and pushed the bundle | `cap` |
+| You want ChatGPT to inspect workflow output | `Check the latest workflow report.` |
+| You want ChatGPT to continue the plan | `Proceed.` |
+| You want a status and recommendation | `Where are we and what do you recommend next?` |
+| You do not know how to get a SHA/log | `Give me the command or tool for that.` |
+
+## Quick glossary
+
+| Term | Meaning |
+|---|---|
+| CAP | Your signal that you committed and pushed the bundle. |
+| stage-out | GitHub packages repo files for ChatGPT to read. |
+| apply-in | GitHub applies a ChatGPT-prepared payload to the repo. |
+| cleanup marker | A small JSON file ChatGPT creates to ask GitHub to clean staging artifacts. |
+| workflow report | A ChatGPT-readable Markdown report written by a staging workflow. |
+| retention policy | The rule for what staging artifacts stay temporarily and what gets cleaned. |
