@@ -19,46 +19,51 @@ When a configured workflow completes, `chatgpt-workflow-run-reporter` writes one
 chatgpt_staging/status_reports/repo-workflows/<workflow-name>/<workflow-run-id>/workflow_report.md
 ```
 
-The existing staging-lane workflows still write their native workflow reports under their existing paths. They do not need to be duplicated by the central reporter.
+The existing staging-lane workflows still write their native workflow reports under their existing paths. They do not need to be duplicated by the central reporter until they are migrated to the shared report writer without losing staging-specific context.
+
+## Validation harness
+
+The dedicated validation harness is separate from `workflow-maintenance-audit.yml` because it validates the reporting system itself, not workflow action-version hygiene.
+
+```text
+.github/workflows/chatgpt-workflow-reporting-validation.yml
+```
+
+Run it manually with:
+
+- `scenario=success` to validate a normal success report path.
+- `scenario=failure` to deliberately fail with recognizable debug markers so the central reporter must embed bounded failure logs in `workflow_report.md`.
+
+The failure scenario is intentionally safe and should not modify repository source files. It is expected to fail so the reporter can prove that ChatGPT can diagnose failures without operator screenshots, pasted logs, or uploaded logs.
 
 ## Report contents
 
-Each repo-wide report must include enough context for ChatGPT to decide whether the run succeeded, whether a repair is needed, and where to inspect deeper logs if necessary.
+Each repo-wide report should include enough context for ChatGPT to decide whether the run succeeded, whether a repair is needed, and where to inspect deeper logs if necessary.
 
 Required fields include:
 
 - source workflow name
 - result and GitHub conclusion
 - source event
-- workflow run ID, run number, attempt, and URL
+- workflow run ID and URL
 - branch, SHA, repository, actor
-- source created/updated timestamps
 - reporter run ID and SHA
 - report timestamp
 - troubleshooting context
 - next ChatGPT action
 - cleanup guidance
 
+Failure reports must include bounded diagnostic log excerpts when GitHub log retrieval succeeds. Metadata-only failure reports are not sufficient.
+
 ## Success behavior
 
 A success report means the source workflow completed successfully. ChatGPT should still inspect the report when the workflow protects a code, docs, packaging, validation, or operational surface, because a successful workflow may indicate that related workflow/reporting logic should be kept aligned with changed code.
-
-Success reports do not embed full logs by default. They include run metadata and the source workflow URL.
 
 ## Failure behavior
 
 A failure report is the first place ChatGPT should look before asking the operator for screenshots, pasted logs, uploaded logs, or a commit SHA.
 
-For failed source workflows, the central reporter attempts to fetch the source workflow logs with GitHub CLI and embeds a bounded log excerpt directly in `workflow_report.md`.
-
-The bounded excerpt is intentionally limited so reports remain safe for repo storage and scheduled cleanup:
-
-- default maximum: final 300 log lines
-- default maximum: final 40,000 characters
-
-If that excerpt is not enough, ChatGPT should use the workflow run URL in the report to inspect GitHub Actions logs and artifacts.
-
-If log retrieval fails, the report must say so and include the log-retrieval error when available.
+The Markdown report should include a bounded log excerpt. If the excerpt is not enough, ChatGPT should use the workflow run URL in the report to inspect GitHub Actions logs and artifacts.
 
 ## Reporter coverage
 
@@ -96,12 +101,6 @@ The cleanup workflow writes its own report under:
 ```text
 chatgpt_staging/status_reports/retention-cleanup/<run-id>/workflow_report.md
 ```
-
-## Scheduled cleaner viability
-
-The scheduled cleaner is viable because reports are bounded Markdown files under predictable folders. It should not be used as the only durable evidence store. Durable validation or repair decisions belong in Airtable Validation Evidence, Work Items, Plans, or relevant governance rows.
-
-The cleaner must stay scoped to `chatgpt_staging/status_reports/` and must preserve the newest report per workflow by default.
 
 ## Safety rules
 

@@ -1,0 +1,94 @@
+name: chatgpt-workflow-reporting-validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: "Validation scenario to run"
+        required: true
+        default: success
+        type: choice
+        options:
+          - success
+          - failure
+      debug_marker:
+        description: "Marker text to include in logs for ChatGPT report readback"
+        required: true
+        default: CHATGPT_REPORTING_VALIDATION_MARKER
+        type: string
+      upload_artifact:
+        description: "Upload a small validation artifact"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+env:
+  CHATGPT_VALIDATION_SCENARIO: ${{ github.event.inputs.scenario }}
+  CHATGPT_VALIDATION_MARKER: ${{ github.event.inputs.debug_marker }}
+
+concurrency:
+  group: chatgpt-workflow-reporting-validation-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  validate-reporting-path:
+    name: Validate ChatGPT workflow reporting path
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emit validation context
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p validation_artifacts
+          {
+            echo "scenario=${CHATGPT_VALIDATION_SCENARIO}"
+            echo "marker=${CHATGPT_VALIDATION_MARKER}"
+            echo "run_id=${GITHUB_RUN_ID}"
+            echo "run_attempt=${GITHUB_RUN_ATTEMPT}"
+            echo "sha=${GITHUB_SHA}"
+            echo "ref=${GITHUB_REF}"
+          } | tee validation_artifacts/chatgpt_reporting_validation_context.txt
+
+      - name: Success scenario
+        if: ${{ github.event.inputs.scenario == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "${CHATGPT_VALIDATION_MARKER}: success scenario reached"
+          echo "This run is expected to complete successfully and produce a success report via the central reporter."
+
+      - name: Deliberate failure scenario with bounded debug signal
+        if: ${{ github.event.inputs.scenario == 'failure' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "${CHATGPT_VALIDATION_MARKER}: expected deliberate failure begins"
+          echo "CHATGPT_EXPECTED_FAILURE_CLASS=repo-wide-workflow-reporting-validation"
+          echo "CHATGPT_EXPECTED_FAILURE_REASON=Intentional failure used to verify that workflow_report.md embeds bounded debug logs."
+          echo "CHATGPT_EXPECTED_NEXT_ACTION=Confirm central reporter captured this marker and failure reason without operator screenshots or pasted logs."
+          echo "::error title=Intentional ChatGPT reporting validation failure::This failure is expected and should appear in the central workflow_report.md debug excerpt."
+          exit 42
+
+      - name: Write post-scenario artifact note
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "ChatGPT workflow reporting validation artifact"
+            echo "scenario=${CHATGPT_VALIDATION_SCENARIO}"
+            echo "marker=${CHATGPT_VALIDATION_MARKER}"
+            echo "result is determined by the workflow conclusion"
+          } > validation_artifacts/chatgpt_reporting_validation_artifact.txt
+
+      - name: Upload validation artifact
+        if: ${{ always() && github.event.inputs.upload_artifact == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: chatgpt-workflow-reporting-validation-${{ github.event.inputs.scenario }}
+          path: validation_artifacts/**
+          if-no-files-found: warn
+          retention-days: 7

@@ -20,6 +20,7 @@ on:
       - Ops file delete request
       - Ops restructure map request
       - Publish Knowledge to Wiki
+      - chatgpt-workflow-reporting-validation
     types:
       - completed
   workflow_dispatch:
