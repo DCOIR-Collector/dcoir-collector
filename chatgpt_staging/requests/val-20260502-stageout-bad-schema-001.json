@@ -1,6 +1,0 @@
-{
-  "schema": "dcoir.chatgpt_staging.stage_out_request.WRONG",
-  "request_id": "val-20260502-stageout-bad-schema-001",
-  "allowed_roots": ["chatgpt_staging"],
-  "exact_paths": ["chatgpt_staging/README.md"]
-}
