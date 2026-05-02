@@ -27,6 +27,21 @@ When a session sees staging-lane, cleanup, failure-report, workflow-report, larg
 7. No repo bloat. Payloads, ZIPs, extracted work folders, generated logs, output bundles, status reports, and failure reports must be cleaned or explicitly retained as validation evidence.
 8. Evidence before readiness. The lane cannot be called production-ready until blocked-path, hash-mismatch, cleanup, workflow-report, and happy-path validation all pass.
 
+## Apply-in hash and stale-write policy
+
+Apply-in must fail closed unless the manifest proves it is acting on the intended source state.
+
+For every file entry:
+
+- Existing tracked files require `expected_blob_sha` or `expected_current_sha256`.
+- New files require `create_only: true` and `expected_new_sha256`.
+- `create_only: true` fails if the target path already exists.
+- Existing untracked files must not be overwritten.
+- `expected_new_sha256` must match the incoming file content whenever provided, and it is mandatory for new files.
+- A manifest-level `allow_missing_current_hash: true` may bypass the current-hash requirement for existing tracked files only as an explicit exception. If used, the workflow report must make the override visible.
+
+ChatGPT should prefer stage-out manifest data when preparing apply-in payloads, because stage-out records blob SHA and sha256 values for the current repo state.
+
 ## Folder roles
 
 ```text
@@ -57,7 +72,7 @@ A useful report includes:
 - request path, payload path, output path, or cleanup marker path when relevant
 - changed, applied, removed, retained, or skipped paths
 - failure phase and bounded troubleshooting context
-- hash mismatch, unsafe path, malformed marker, or validation details when relevant
+- hash mismatch, unsafe path, malformed marker, stale-write, create_only, or validation details when relevant
 - artifact pointer only when large raw diagnostics are needed
 - cleanup guidance and next ChatGPT action
 

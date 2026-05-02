@@ -23,8 +23,21 @@ A good report includes:
 - request, payload, output, or cleanup marker path
 - changed, applied, removed, retained, or skipped paths
 - failure phase and bounded troubleshooting context
+- stale-write/hash details when relevant
 - artifact name/run id when full raw logs or bulky diagnostics are needed
 - cleanup guidance and next ChatGPT action
+
+## Hash and stale-write rule
+
+For apply-in bundles:
+
+- Existing tracked files require `expected_blob_sha` or `expected_current_sha256`.
+- New files require `create_only: true` and `expected_new_sha256`.
+- `create_only` fails if the target already exists.
+- Existing untracked files are not overwritten.
+- Any `allow_missing_current_hash: true` override should be visible in the workflow report.
+
+This means stale or under-specified bundles should fail before changing repo files.
 
 ## Cleanup expectation
 

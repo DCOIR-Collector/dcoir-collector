@@ -4,6 +4,19 @@ Status: active matrix for `PLAN-20260501-chatgpt-github-staging-lane`.
 
 Action order is ChatGPT first, GitHub second, Airtable/skill state third. ChatGPT initiates and verifies. GitHub performs bounded automation. Airtable and helper skills preserve durable state and routing.
 
+## Hash and stale-write scenarios
+
+| Scenario | ChatGPT action | GitHub action | Airtable / skill state |
+|---|---|---|---|
+| Existing tracked file update | Use stage-out data or direct GitHub readback to include `expected_blob_sha` or `expected_current_sha256` in the apply manifest. | Apply-in verifies the expected current state before copying content. | Work Item can advance only after readback confirms the expected file changed. |
+| Existing tracked file missing current hash | Regenerate payload with current hash data unless an explicit operator-approved override is intended. | Fail closed and write `workflow_report.md`; commit no target changes. | Validation case `VAL-20260502-STAGING-HASH-REQUIRED-FOR-EXISTING` should pass. |
+| Current hash mismatch | Treat as stale payload; regenerate from current repo state or stop. | Fail closed and report expected vs actual hash where available. | Evidence feeds T3 stale-write validation. |
+| New file create-only success | Use `create_only: true` and `expected_new_sha256` for the new path. | Succeeds only if target does not exist and incoming content hash matches. | Evidence confirms new-file creation did not overwrite anything. |
+| New file missing create-only or new hash | Regenerate manifest with `create_only: true` and `expected_new_sha256`. | Fail closed and report the missing requirement. | Validation case `VAL-20260502-STAGING-HASH-CREATE-ONLY-NEW` should cover this. |
+| Create-only target already exists | Read report and decide whether to convert to tracked update with current hash or choose a new path. | Fail closed; do not overwrite existing file. | Work Item remains waiting until retry decision. |
+| Existing untracked target | Stop and choose a safer path or manually resolve untracked state. | Fail closed; do not overwrite untracked content. | Airtable notes unresolved repo state if material. |
+| Explicit missing-current-hash override | Use only with a visible reason and operator-approved risk tradeoff. | May apply, but workflow report lists the override warning. | Validation case `VAL-20260502-STAGING-HASH-OVERRIDE-VISIBLE` proves override is visible. |
+
 ## Workflow report scenarios
 
 Scope: ChatGPT-readable workflow success/failure reports and cleanup after ChatGPT reads them.
@@ -12,27 +25,15 @@ Scope: ChatGPT-readable workflow success/failure reports and cleanup after ChatG
 |---|---|---|---|
 | Workflow starts normally | Wait for expected status report, or use GitHub readback if the report does not appear. | Initialize a report target using workflow name plus request id or run id. | Active Work Item remains active or waiting. |
 | Workflow succeeds | Read `workflow_report.md`; verify result, changed paths, run id, commit/readback clues, and cleanup hint. Create cleanup marker when no longer needed. | Commit one compact Markdown report under `status_reports/<workflow>/<id>/workflow_report.md`. | Validation Evidence can record success based on report plus GitHub readback. |
-| Workflow fails before meaningful work begins | Read failure report if present; otherwise inspect GitHub run metadata/log pointer. | Commit failure report if workflow reached reporting step; include failure phase as startup/preflight. | Work Item becomes waiting or blocked with failure class. |
-| Workflow fails after request or payload is resolved | Read report to identify request id, payload path, failure phase, and next action. | Commit report with request or payload context and optional artifact locator. Do not delete input evidence prematurely. | Work Item notes include request id and failure phase. |
 | Workflow fails due to validation or hash mismatch | Decide whether to regenerate request/payload from current source or stop. | Fail closed, write mismatch details in the report, commit no unsafe target changes. | Feeds T3 hash/stale-write validation evidence. |
-| Workflow fails after partial local work but before commit/push | Confirm from report that no target commit landed; inspect artifact pointer if needed. | Commit failure report only; do not commit partial target changes. Upload detailed artifact if available. | Work Item stays blocked/waiting until retry decision. |
-| Workflow succeeds but no changes were needed | Read report and confirm clean/no-op outcome. Create cleanup marker if report is no longer needed. | Commit no target changes if appropriate; write report stating no-op/skipped and why. | Evidence records no-op result if material. |
-| Workflow succeeds and creates output needed by ChatGPT | Read report first, then retrieve named output bundle/files. Only after retrieval, create cleanup marker. | Preserve output and status report until cleanup marker appears. | Work Item remains waiting until retrieval/readback. |
-| Workflow succeeds and cleanup happened inside the same run | Read report and confirm what cleanup was performed and what remains. | Report lists deleted paths, retained paths, scaffold preservation, and cleanup marker handling. | Evidence can record cleanup success if readback confirms. |
-| Status report creation fails but workflow action succeeds | Use GitHub commit/readback to verify work; flag report failure as separate issue. | Avoid failing the primary task solely because report commit failed unless reporting is mandatory for that workflow. | Work Item gets warning; follow-up if repeated. |
-| Status report creation fails and workflow action fails | Use GitHub run/log pointer if available; mark blocked if no readable evidence exists. | Best-effort raw logs/artifacts remain in GitHub Actions. | Work Item blocked; may require operator or workflow repair. |
 | Cleanup marker for status report is created | Create cleanup marker only after reading/recording report evidence. | Cleanup removes scoped status report and marker; preserves `.gitkeep` scaffolds. | Evidence records cleanup if material. |
-| Cleanup marker malformed | Fix or replace marker. | Fail closed and delete nothing. Write cleanup failure report if possible. | Work Item blocked/waiting if cleanup matters. |
-| New session resumes after workflow run | Check active Airtable Work Item, then inspect `status_reports/` before asking operator for screenshots/log uploads. | Existing reports remain until cleanup marker removes them. | SKILLROUTE/decision rows point new sessions to reports. |
-| Multiple reports exist | Read newest relevant report by workflow/request/run id; avoid deleting unrelated reports. | Reports are namespaced by workflow and request/run id. | Airtable notes identify which report was consumed. |
-| Retry after failure | Read old failure report first, then create a new request/payload/run. Cleanup old report only after retry plan is clear. | Preserve old report until cleanup marker removes it; new run writes separate report. | Failure chain remains traceable until resolved. |
 
 ## Stage-out scenarios
 
 | Scenario | ChatGPT action | GitHub action | Airtable / skill state |
 |---|---|---|---|
-| Stage-out needed | Create `chatgpt_staging/requests/<request_id>.json` with explicit allowed roots and exact paths or bounded search terms. | Detect request, create `out/<request_id>/`, write status report, commit output, and delete consumed request JSON after success. | Work Item remains active/waiting until ChatGPT retrieves output and records evidence. |
-| Stage-out succeeds and bundle is needed | Retrieve `manifest.json`, `manifest.md`, `staged_files.zip`, chunks, or copied files as needed. After retrieval, create cleanup marker when safe. | Preserve `out/<request_id>/` and status report until cleanup marker appears. | Record readback/evidence before cleanup. |
+| Stage-out needed | Create `chatgpt_staging/requests/<request_id>.json` with explicit allowed roots and exact paths or bounded search terms. | Detect request, create `out/<request_id>`, write status report, commit output, and delete consumed request JSON after success. | Work Item remains active/waiting until ChatGPT retrieves output and records evidence. |
+| Stage-out succeeds and bundle is needed | Retrieve `manifest.json`, `manifest.md`, `staged_files.zip`, chunks, or copied files as needed. After retrieval, create cleanup marker when safe. | Preserve `out/<request_id>` and status report until cleanup marker appears. | Record readback/evidence before cleanup. |
 | Stage-out fails before output | Inspect `status_reports/chatgpt-stage-out/<request_id>/workflow_report.md` and run logs if needed. | Commit small failure report if possible; do not perform unsafe cleanup. | Mark Work Item blocked or waiting with failure class. |
 
 ## Apply-in scenarios
