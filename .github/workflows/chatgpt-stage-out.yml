@@ -14,6 +14,8 @@ on:
         default: true
         type: boolean
   push:
+    branches:
+      - main
     paths:
       - "chatgpt_staging/requests/*.json"
 
@@ -95,6 +97,9 @@ jobs:
           request_path = pathlib.Path(sys.argv[1])
           out_dir = pathlib.Path(sys.argv[2])
           req = json.loads(request_path.read_text(encoding="utf-8"))
+          schema = req.get("schema")
+          if schema != "dcoir.chatgpt_staging.stage_out_request.v1":
+              raise SystemExit(f"stage-out request schema must be dcoir.chatgpt_staging.stage_out_request.v1, got {schema!r}")
           allowed_roots = req.get("allowed_roots") or []
           paths = req.get("exact_paths") or []
           search_terms = req.get("search_terms") or []
@@ -235,7 +240,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$OUT_DIR" "$REPORT_DIR"
           git rm -f "$REQUEST_PATH" || true
-          git commit -m "Stage ChatGPT readback bundle and report [skip validate-on-push]" || exit 0
+          git commit -m "Stage ChatGPT readback bundle and report [skip ci]" || exit 0
           git push
 
       - name: Capture stage-out failure report
@@ -271,7 +276,7 @@ jobs:
             echo
             echo "## Troubleshooting notes"
             echo
-            echo "The stage-out workflow failed before producing a trusted output bundle. Inspect the GitHub Actions run logs for full details."
+            echo "The stage-out workflow failed before producing a trusted output bundle. Common causes include malformed JSON, missing or wrong schema, unsafe request_id, missing allowed_roots, disallowed paths, or no selected files. Inspect the GitHub Actions run logs for full details."
             echo
             echo "## Cleanup guidance"
             echo
@@ -284,5 +289,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$REPORT_DIR"
-          git commit -m "Record ChatGPT stage-out failure report [skip validate-on-push]" || true
+          git commit -m "Record ChatGPT stage-out failure report [skip ci]" || true
           git push || true

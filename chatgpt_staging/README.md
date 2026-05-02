@@ -42,6 +42,43 @@ For every file entry:
 
 ChatGPT should prefer stage-out manifest data when preparing apply-in payloads, because stage-out records blob SHA and sha256 values for the current repo state.
 
+
+## Trigger isolation and schema policy
+
+The staging workflows keep narrow `push` triggers so ChatGPT can initiate work by committing a request, payload, or cleanup marker. To reduce accidental or recursive runs:
+
+- push triggers are limited to `main` and only these paths:
+  - `chatgpt_staging/requests/*.json` for stage-out
+  - `chatgpt_staging/in/*/payload.zip.b64` for apply-in
+  - `chatgpt_staging/cleanup_requests/*.json` for cleanup
+- workflow-generated commits use GitHub-recognized `[skip ci]` so cleanup/output/report commits do not retrigger push workflows unnecessarily
+- stage-out request files require `schema: dcoir.chatgpt_staging.stage_out_request.v1`
+- apply manifests require `schema: dcoir.chatgpt_staging.apply_manifest.v1`
+- cleanup markers require `schema: dcoir.chatgpt_staging.cleanup_request.v1`
+- `.github/workflows/` targets require `allow_workflow_changes: true` and `workflow_change_reason` in the apply manifest
+
+Example stage-out request:
+
+```json
+{
+  "schema": "dcoir.chatgpt_staging.stage_out_request.v1",
+  "request_id": "example-request",
+  "allowed_roots": ["chatgpt_staging"],
+  "exact_paths": ["chatgpt_staging/README.md"]
+}
+```
+
+Example apply manifest fields:
+
+```json
+{
+  "schema": "dcoir.chatgpt_staging.apply_manifest.v1",
+  "request_id": "example-apply",
+  "allowed_roots": ["chatgpt_staging"],
+  "files": []
+}
+```
+
 ## Folder roles
 
 ```text

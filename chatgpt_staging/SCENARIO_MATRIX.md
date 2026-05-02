@@ -4,6 +4,18 @@ Status: active matrix for `PLAN-20260501-chatgpt-github-staging-lane`.
 
 Action order is ChatGPT first, GitHub second, Airtable/skill state third. ChatGPT initiates and verifies. GitHub performs bounded automation. Airtable and helper skills preserve durable state and routing.
 
+
+## Trigger isolation scenarios
+
+| Scenario | ChatGPT action | GitHub action | Airtable / skill state |
+|---|---|---|---|
+| ChatGPT initiates stage-out by request file | Commit a request under `chatgpt_staging/requests/` with schema `dcoir.chatgpt_staging.stage_out_request.v1`. | Run only on `main` push or manual dispatch; reject missing/wrong schema; write workflow report. | Work Item remains active/waiting until output is read. |
+| ChatGPT initiates apply-in by payload | Commit `chatgpt_staging/in/<request_id>/payload.zip.b64` with an apply manifest using schema `dcoir.chatgpt_staging.apply_manifest.v1`. | Run only on `main` push or manual dispatch; reject missing/wrong schema; enforce path/hash/workflow mutation rules. | Work Item advances only after readback. |
+| ChatGPT initiates cleanup by marker | Commit `chatgpt_staging/cleanup_requests/<request_id>.json` with schema `dcoir.chatgpt_staging.cleanup_request.v1`. | Run only on `main` push or manual dispatch; reject missing/wrong schema and malformed booleans. | Cleanup evidence is recorded if material. |
+| Workflow-generated commit touches trigger path by deletion | No action needed unless report/readback shows a loop. | Commit uses `[skip ci]` so push workflows are skipped. | Work Item records loop prevention if validated. |
+| Manifest attempts workflow mutation | Only do this on an operator-approved workflow-repair branch or explicitly approved staging-lane workflow repair. | `.github/workflows/` targets require `allow_workflow_changes=true` and non-empty `workflow_change_reason`; otherwise fail closed. | Skill/decision rows should treat workflow mutation as a high-friction branch. |
+| Wrong schema or absent schema | Regenerate the request/manifest/marker with the correct schema. | Fail closed and write/retain workflow report where possible. | Work Item remains waiting/blocked with trigger/schema failure class. |
+
 ## Hash and stale-write scenarios
 
 | Scenario | ChatGPT action | GitHub action | Airtable / skill state |

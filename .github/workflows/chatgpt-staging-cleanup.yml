@@ -39,6 +39,8 @@ on:
         default: ""
         type: string
   push:
+    branches:
+      - main
     paths:
       - "chatgpt_staging/cleanup_requests/*.json"
 
@@ -105,6 +107,9 @@ jobs:
           marker = pathlib.Path(sys.argv[1])
           output = pathlib.Path(sys.argv[2])
           data = json.loads(marker.read_text(encoding="utf-8"))
+          schema = data.get("schema")
+          if schema != "dcoir.chatgpt_staging.cleanup_request.v1":
+              raise SystemExit(f"cleanup marker schema must be dcoir.chatgpt_staging.cleanup_request.v1, got {schema!r}")
           request_id = str(data.get("request_id", "")).strip()
           if not request_id or not re.fullmatch(r"[A-Za-z0-9._-]+", request_id):
               raise SystemExit(f"Unsafe or missing request_id in cleanup marker: {request_id!r}")
@@ -296,7 +301,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$REPORT_DIR" || true
-          git commit -m "Clean ChatGPT staging artifacts and report [skip validate-on-push]" || {
+          git commit -m "Clean ChatGPT staging artifacts and report [skip ci]" || {
             echo "No cleanup changes to commit"
             exit 0
           }
@@ -331,7 +336,7 @@ jobs:
             echo
             echo "## Troubleshooting notes"
             echo
-            echo "Cleanup failed or failed closed. Inspect the GitHub Actions run log for malformed marker details or unsafe path validation errors."
+            echo "Cleanup failed or failed closed. Inspect the GitHub Actions run log for malformed marker details, wrong/missing schema, invalid boolean fields, request_id validation, or unsafe path validation errors."
             echo
             echo "## Next ChatGPT action"
             echo
@@ -340,5 +345,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$REPORT_DIR"
-          git commit -m "Record ChatGPT cleanup failure report [skip validate-on-push]" || true
+          git commit -m "Record ChatGPT cleanup failure report [skip ci]" || true
           git push || true

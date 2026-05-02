@@ -19,6 +19,8 @@ on:
         default: true
         type: boolean
   push:
+    branches:
+      - main
     paths:
       - "chatgpt_staging/in/*/payload.zip.b64"
 
@@ -105,6 +107,9 @@ jobs:
           manifest_path = pathlib.Path(sys.argv[1])
           extract_root = pathlib.Path(sys.argv[2])
           manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          schema = manifest.get("schema")
+          if schema != "dcoir.chatgpt_staging.apply_manifest.v1":
+              raise SystemExit(f"apply_manifest schema must be dcoir.chatgpt_staging.apply_manifest.v1, got {schema!r}")
           allowed_roots = manifest.get("allowed_roots") or []
           if not allowed_roots:
               raise SystemExit("allowed_roots is required")
@@ -120,6 +125,9 @@ jobs:
               "chatgpt_staging/status_reports/",
           ]
           allow_workflows = bool(manifest.get("allow_workflow_changes", False))
+          workflow_change_reason = str(manifest.get("workflow_change_reason", "")).strip()
+          if allow_workflows and not workflow_change_reason:
+              raise SystemExit("allow_workflow_changes=true requires workflow_change_reason")
 
           def safe_rel(path: str) -> bool:
               p = pathlib.PurePosixPath(path)
@@ -278,7 +286,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "push" || "${{ inputs.delete_payload_after_success }}" == "true" ]]; then
             git rm -f "$PAYLOAD" || true
           fi
-          git commit -m "Apply ChatGPT staging bundle and report [skip validate-on-push]" || exit 0
+          git commit -m "Apply ChatGPT staging bundle and report [skip ci]" || exit 0
           git push
 
       - name: Capture apply-in failure report
@@ -321,9 +329,9 @@ jobs:
             echo
             echo "## Troubleshooting context"
             echo
-            echo "The apply-in workflow failed. Common causes are decode errors, missing apply_manifest.json, unsafe paths, missing sources, stale-write hash failures, create_only violations, hash mismatches, or git commit/push failure."
+            echo "The apply-in workflow failed. Common causes are decode errors, missing apply_manifest.json, unsafe paths, missing sources, stale-write hash failures, create_only violations, hash mismatches, missing apply_manifest schema, missing workflow_change_reason for workflow edits, or git commit/push failure."
             echo
-            echo "Hash policy: existing tracked files require expected_blob_sha or expected_current_sha256 unless manifest allow_missing_current_hash=true is explicitly set; new files require create_only=true and expected_new_sha256."
+            echo "Hash policy: existing tracked files require expected_blob_sha or expected_current_sha256 unless manifest allow_missing_current_hash=true is explicitly set; new files require create_only=true and expected_new_sha256. Workflow mutation policy: .github/workflows targets require allow_workflow_changes=true and workflow_change_reason."
             echo
             if [[ -f "$WORK_DIR/extract/apply_manifest.json" ]]; then
               echo "### Manifest excerpt"
@@ -361,7 +369,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git restore --staged . || true
           git add "$REPORT_DIR"
-          git commit -m "Record ChatGPT apply-in workflow report [skip validate-on-push]" || true
+          git commit -m "Record ChatGPT apply-in workflow report [skip ci]" || true
           git push || true
           echo "FAIL_ARTIFACT_DIR=$ART_DIR" >> "$GITHUB_ENV"
 

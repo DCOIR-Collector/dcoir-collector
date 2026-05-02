@@ -39,6 +39,17 @@ For apply-in bundles:
 
 This means stale or under-specified bundles should fail before changing repo files.
 
+
+## Trigger isolation rule
+
+The staging workflows keep automatic push triggers, but only for the staging transfer paths on `main`:
+
+- `chatgpt_staging/requests/*.json`
+- `chatgpt_staging/in/*/payload.zip.b64`
+- `chatgpt_staging/cleanup_requests/*.json`
+
+Workflow-generated commits use `[skip ci]` to avoid unnecessary recursive push runs. Request, apply, and cleanup inputs also require explicit schema fields. Workflow file mutation remains blocked by default; apply manifests that touch `.github/workflows/` require `allow_workflow_changes: true` and `workflow_change_reason`.
+
 ## Cleanup expectation
 
 After ChatGPT reads and records the needed evidence, ChatGPT may create a cleanup marker under:
