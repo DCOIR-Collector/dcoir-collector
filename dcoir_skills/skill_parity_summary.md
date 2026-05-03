@@ -1,21 +1,21 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-01T20:39:53Z
+- generated_at_utc: 2026-05-03T10:56:42Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
 ## dcoir-airtable-schema-cache
 
-- source_tree_hash: `1608502d6f9cc561287c19528fd6215993d6c078e5bf4b709d17c0ca4baa0d5b`
+- source_tree_hash: `8ef8f2b1e21aa2364fb61d1993a0be05ea2315209fbbb443a27cd4b05efcfab1`
 - release_zip_name: `dcoir-airtable-schema-cache.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `6`
 
-- `SKILL.md` — `d8003b8c7eca41fdb868c0b027bc9725d274cd25b41be15b7630cda19c206eef`
+- `SKILL.md` — `dc0c81bc02b40fe272fa12f529079d04b4101a4a94c5f1bcc4eb7904f22a0302`
 - `agents/openai.yaml` — `8773f54ca200a01daaea9059b42940eedf96e7d553e0611c3e7b4895111f663d`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
-- `references/cache_contract.md` — `4e1e47e04e9e89b9f200f7bc3f0bf1281e4e1e2f6794250ce407eff50e073baf`
+- `references/cache_contract.md` — `1806bee02f68a33136a6989bb67f522fa5e7eeb39783f4bde1e26a41d150119d`
 - `references/current_operational_tables.json` — `29e885dbe86db7d3e34dd1d6a35442a9e6927362bab2c5df493284bd58835bfc`
 - `scripts/schema_cache.py` — `ac88bb2cc30506ff26eb80e678355490fd460b5e7a85aadb03977490f021aaa4`
 
@@ -85,13 +85,13 @@
 
 ## dcoir-collector-qa
 
-- source_tree_hash: `08ef85448ac8ef30ef64d31381cfb71252a5c6cdf1d25bc2ae8586b3bc251575`
+- source_tree_hash: `f403b2df64b6d8833306166e1bab1a84c8c21680fa6e80ca3ca8003d57e7770c`
 - release_zip_name: `dcoir-collector-qa.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `17`
 
-- `SKILL.md` — `27fe9cad00b10509a2c74bbb3170ce49f1cee5d5b98e1067b1a1e68773de36a0`
+- `SKILL.md` — `85122dd6eb44d0785a67ed5d04d88b29561d7edd4a91accc7f195400930ee3a0`
 - `agents/openai.yaml` — `2a698c55cadeef63081bf86a6e32dfd3df04f9d486bcb6c972e7a29d38df2244`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_memory_workflow.md` — `42296034c7f70e1b174b19d06aeea8b363dbca3a6751eb826c985cc78750db93`
@@ -111,13 +111,13 @@
 
 ## dcoir-decision-policy
 
-- source_tree_hash: `46bfb7fcd263d18ed2709ca9d47601e736908dcb3a18e474c05a584c60423052`
+- source_tree_hash: `0a59bf105b068521dcf50a8c0301d5fe51aaf2c20a57e5be4a650775008bf0e1`
 - release_zip_name: `dcoir-decision-policy.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `15`
 
-- `SKILL.md` — `45b31c42c79cc726551caf12e64f1e1aca6621f9e32a93a7fcd669e6fd57bfc6`
+- `SKILL.md` — `f6dcee7482b34080f9f8ee48e5d35b17218b05a9df06af8930ca36e9972dd684`
 - `agents/openai.yaml` — `bfb29d585a419b31ba1e1f5992865c6e2df8fb910b5ed12cb45d1903a2fec515`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_memory_workflow.md` — `eba025446db7dbdd5c2b9cb5829e96b69e6a76033368add7f3a2f470defb18cd`
@@ -183,13 +183,13 @@
 
 ## dcoir-live-test-remediation-planner
 
-- source_tree_hash: `cb770c32cbc6a6a7298e750531cdb6bb3b14c9dab7fd48f2e6028a5e70e22147`
+- source_tree_hash: `1bfae69f9f44136db8dfc09caae32754d1fb72699e7cd57f0d5b2b087517fbcb`
 - release_zip_name: `dcoir-live-test-remediation-planner.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `9`
 
-- `SKILL.md` — `a76e1882b71543704f38440cec77125440d6bc0097e24f85cf5ef1c113616a6b`
+- `SKILL.md` — `0a298530b50072be49609498cef96902b0c52b03393f4a5aa411704ea27161d5`
 - `agents/openai.yaml` — `c5449782a0cff34fe10f3d892fdd5d076a19eb4237efa93d3673ada8e23fca9d`
 - `assets/icon.svg` — `72343cc4b66256ae7de8474c7cad14e711ad84a94c473732a44f96a56124c42d`
 - `references/airtable_memory_workflow.md` — `3623ffff2de7aa317c73cb99298bc5f80faa32e4069f7cbb39df16754288e269`
@@ -215,13 +215,13 @@
 
 ## dcoir-memory-preflight
 
-- source_tree_hash: `9048fb9435c93e4629ee92c8d6f25fa469c92bcc86b9d2979b38e34809c9aade`
+- source_tree_hash: `13bc6355941682d7d0614f2c4a0a76448eb8283ff972159f1d3f8647c6ce8086`
 - release_zip_name: `dcoir-memory-preflight.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `9`
 
-- `SKILL.md` — `beacdfd7dddb02c7df1e87a541283570abf7ed08cea08cc75af5a86a070b2b80`
+- `SKILL.md` — `435050db20c974a28bfd4806c7480f76dcdd39e29571a29c8d27eb222d19945e`
 - `agents/openai.yaml` — `e5e97e75c7076793addee2bc5976c54960ffc469b7b0b8a80f6d923de04325e9`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_memory_workflow.md` — `0e4d8f47e30512f630bb3a1b5c0d6310ff195847bae3f3dbd03d27c32b065cee`
@@ -268,13 +268,13 @@
 
 ## dcoir-plan-tracker
 
-- source_tree_hash: `f547e18fbabe0453e90c5c2fbbb4847ca2fe505fbb56b2ef6342e0446a139f0b`
+- source_tree_hash: `94ce4d8665483bffac9b9d024328069bd9c5f2ba4f2f76c6f77426bc5aa47054`
 - release_zip_name: `dcoir-plan-tracker.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `20`
 
-- `SKILL.md` — `f0f641d09e4a31b78102131803a5e86fd640a6cbd4ee9b5234b7c6b7d7ec3a6a`
+- `SKILL.md` — `41b2210aaf48af97690295dd13c4e2688503431efbd617ccbcb7fd63e3c036de`
 - `agents/openai.yaml` — `fcd3c796028892af24f78cbc4639795ba84e7ecaa66303e2de19da01c17ba350`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
@@ -328,13 +328,13 @@
 
 ## dcoir-readme-maintainer
 
-- source_tree_hash: `c4bc0a77f35bef6d5586c4902b35b685923c3a4c5bf3198f1d3dbf1dfbe43f9e`
+- source_tree_hash: `4be50f3afe7f0da240008c22567215b09c6a6c4776f62c587b3faec9de6f5318`
 - release_zip_name: `dcoir-readme-maintainer.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `7`
 
-- `SKILL.md` — `9afd14c8e491d821d5fd0874c9bd822e43e0299710762c568ee04c0397005c55`
+- `SKILL.md` — `d1020c3dda4a7b80b4a4b9c726bc9df1c573ea94e140565eccff3449680085b9`
 - `agents/openai.yaml` — `1c8c3a76d8a03914bac0a505ecadf767a59f00f5e971549f8941ca742683cc4f`
 - `assets/icon.svg` — `49315dda7125ec5fc77ef5f2b96126d8b2121c6e72944b4702972e90f321d3ee`
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
@@ -375,27 +375,27 @@
 
 ## dcoir-session-resume
 
-- source_tree_hash: `686e9e0e355f9a1d016ac13238497610aac463db0ee1d382a68adf01719a175c`
+- source_tree_hash: `3d5dbddeb5ff65128a81f5e3201cacc1d36a54571599bf117fcb37a085c76ec4`
 - release_zip_name: `dcoir-session-resume.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `5`
 
-- `SKILL.md` — `666ed8c86218fc9983e4c654a7e17102424dbcc0d51375b3116dc63e36b7b356`
+- `SKILL.md` — `6b8546711771857a3abfcf150c160d7bdd85581149d0885b04c1bd4bd604c91e`
 - `agents/openai.yaml` — `9ea1a2256720b1f1ed9aee5dae12a6b9532e22e466123822ca024784899f3bad`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/resume_output_contract.md` — `9607835d325a0029e3d411c775468c2a636e37362a2e94e56d03f36ede7b79fc`
+- `references/resume_output_contract.md` — `77bc8726b80be50713c9140c669745d5c75f1cf415a563cca07de294cb971fe4`
 
 ## dcoir-session-tracker
 
-- source_tree_hash: `76d95a031a358a5d81430827d47b6d4e300fbc9e74564c96a58727cb8cadf9fc`
+- source_tree_hash: `5456fbefbe8dde545f652e94551b8a1c3798bf508c7da5e870439ad43d9b0aa0`
 - release_zip_name: `dcoir-session-tracker.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `17`
 
-- `SKILL.md` — `59c10dea8f7fa309820a5965acdba718d766b9adcdf5680e2fc733397d5cf354`
+- `SKILL.md` — `f7d74f2c1144568ee1b6c571a31b5d2d034c5555f8f6e5785c9e1758541d303f`
 - `agents/openai.yaml` — `41265ce0f6539ad3c298612b28286c15e8934f3fec132d4968488df3ed83183d`
 - `assets/icon.svg` — `fbb6c7314886573cd56c3f86884a65afe3b5f4ce4bf1ee6baeeeb1fa50aea7a4`
 - `references/airtable_checkpoint_workflow.md` — `208bf70a5adf444e3a96351a9601290839bf2eda65462dc5e3435e2e9ec269b3`
@@ -408,20 +408,20 @@
 - `references/session_buffer_workflow.md` — `d6aa11179907b210bc0be692fd1be2cbf6d99592da8fa60d86c4a561a970e73a`
 - `references/session_closeout_workflow.md` — `ff5c4b242930f60863049b312735412379deb9262579bceb9ac05f50c56b7260`
 - `references/session_state_schema.md` — `305cdaa417804f399bf816f67d460624e3ad1ba2343f04ff80e72f239a953d97`
-- `references/startup_airtable_recovery_workflow.md` — `27edcd170ace07c7eb45daf19e0687042294373c3191a02753913c6caeb5df79`
+- `references/startup_airtable_recovery_workflow.md` — `dba105a510b3bd4fed611300329e470960984495b112abfb4b86d016079774f8`
 - `scripts/render_airtable_session_bundle.py` — `c692142dd1af43853e4a16dd1f295a9b16e21d3b41e9904a6366279295506084`
 - `scripts/render_session_state.py` — `07d830ccf1879b58fdd2e4b530639adb686d6d4a8c331e7593a7d6f625d77306`
 - `scripts/session_state_store.py` — `99c84ec85457daab61145993daf1d78fc60a599b870e7ee0b941967048283526`
 
 ## dcoir-skill-regression-auditor
 
-- source_tree_hash: `8d7d291c2dc7f0808e4dd739ede820e8d50520aa85a90504652b2f1980943fbc`
+- source_tree_hash: `ff659c5f10c1717d520ddd9b13ff6001e42231faed527ff038f4f5654173803d`
 - release_zip_name: `dcoir-skill-regression-auditor.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `12`
 
-- `SKILL.md` — `c1b0b73aa5dfa9c42af24e3295361579b778865587a7f10e8b6a7e83f3788c60`
+- `SKILL.md` — `25e8d9ec150c8c0eafb702f8245aa0d2585bb7d465380464bb0bee15e6eed57e`
 - `agents/openai.yaml` — `6e8d2a6587b4c296cd16d473a2e707950e2450b5de83f266b64bb2cc0bfc8115`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_memory_workflow.md` — `376e99321bdbe7146b628aa37b97009823114005d9fbe4f31a3a5cccdfed4a79`
@@ -436,13 +436,13 @@
 
 ## dcoir-source-authority-auditor
 
-- source_tree_hash: `678fb12fbda40da595936c2061f68d983aa4984657534d176bc1a9662c8f700e`
+- source_tree_hash: `dcd316ea6b084c52bc20dfb62f7c62db3b237e2d23ab182b92d4109ff7e6a116`
 - release_zip_name: `dcoir-source-authority-auditor.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `7`
 
-- `SKILL.md` — `dc04e38e278e94a18f7dbd7d01827c4e3ee489af5e85c1328b020a195f354706`
+- `SKILL.md` — `53d7355a81d89407bc18d311c90cff2a5dcedb2f667d82af2d1f46f9e473da5a`
 - `agents/openai.yaml` — `12e5e0a6a338d7b011a8cfa1667fd5e30ca06b269a944ff7d0e5530859470bb1`
 - `assets/icon.svg` — `8936b24f674a1250d999e2c2b5901374fb4240426f32bd1ae340c352a90d617d`
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
@@ -482,13 +482,13 @@
 
 ## dcoir-validation-orchestrator
 
-- source_tree_hash: `ff4ef702b1f308351231ce661a11b3659bf0032b80f59978b341fc50acc7373a`
+- source_tree_hash: `bae7d48e52a45584cc92fb357c42997d2560def53462f294d89e82ff2e547e55`
 - release_zip_name: `dcoir-validation-orchestrator.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `8`
 
-- `SKILL.md` — `b800f83c1be1bf93e1da2d2c9892f206a33ef43f014312ee8945ef5380054d98`
+- `SKILL.md` — `3fc09034789dd020345f8ca11f122b07468edb333c9ae860a3759c9e030dc225`
 - `agents/openai.yaml` — `9c801934d5a815de97d98008fe55f643ade3c7768acb616e372c6e9a6fc9e235`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_memory_workflow.md` — `54c5099637578dd497c6245128569f48ec53caae90072acd0a16cf5a1b96b0f9`
