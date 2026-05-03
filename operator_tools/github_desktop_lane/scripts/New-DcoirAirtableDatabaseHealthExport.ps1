@@ -9,7 +9,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$Script:DcoirAirtableExporterVersion = '2026-05-03.2'
+$Script:DcoirAirtableExporterVersion = '2026-05-03.4'
 
 function ConvertTo-DcoirLocalSafeName {
     [CmdletBinding()]
@@ -112,7 +112,6 @@ $transcriptPath = Join-Path $outRoot 'terminal_transcript.txt'
 $zipPath = Join-Path $downloadsDir ("{0}_{1}.chatgpt.zip" -f $safePrefix, $stamp)
 $transcriptStarted = $false
 $success = $false
-$errorObject = $null
 $resultObject = $null
 
 try {
@@ -124,9 +123,16 @@ try {
         Add-DcoirLocalLine -Path $script:RunLogPath -Text ("Transcript start failed: {0}" -f $_.Exception.Message)
     }
 
-    Write-DcoirRunStatus "Starting DCOIR Airtable database health export."
+    Write-DcoirRunStatus 'Starting DCOIR Airtable database health export.'
     Write-DcoirRunStatus "Output folder: $outRoot"
     Write-DcoirRunStatus "Output ZIP target: $zipPath"
+
+    $environmentPresence = @(
+        Get-DcoirMachineEnvPresence -Name 'DCOIR_REPO_ROOT'
+        Get-DcoirMachineEnvPresence -Name 'DCOIR_DOWNLOADS_DIR'
+        Get-DcoirMachineEnvPresence -Name 'DCOIR_AIRTABLE_TOKEN'
+        Get-DcoirMachineEnvPresence -Name 'DCOIR_AIRTABLE_BASE_ID'
+    )
 
     $context = [ordered]@{
         tool = 'New-DcoirAirtableDatabaseHealthExport.ps1'
@@ -156,13 +162,7 @@ try {
             TableListProvided = -not [string]::IsNullOrWhiteSpace($TableList)
             NoZip = [bool]$NoZip
         }
-        environment_presence = @(
-            Get-DcoirMachineEnvPresence -Name 'DCOIR_REPO_ROOT'
-            Get-DcoirMachineEnvPresence -Name 'DCOIR_DOWNLOADS_DIR'
-            Get-DcoirMachineEnvPresence -Name 'DCOIR_AIRTABLE_API_TOKEN'
-            Get-DcoirMachineEnvPresence -Name 'DCOIR_AIRTABLE_BASE_ID'
-            Get-DcoirMachineEnvPresence -Name 'DCOIR_AIRTABLE_TABLES'
-        )
+        environment_presence = $environmentPresence
         secrets_policy = 'Only environment variable presence is logged. Secret values and base identifier values are not written by this context capture.'
     }
     Write-DcoirLocalJson -Path (Join-Path $outRoot 'command_context.json') -Object $context
@@ -173,7 +173,7 @@ try {
 
     $repoRoot = Get-DcoirAirtableSystemEnvValue -Name 'DCOIR_REPO_ROOT' -Required
     $configuredDownloadsDir = Get-DcoirAirtableSystemEnvValue -Name 'DCOIR_DOWNLOADS_DIR' -Required
-    $apiToken = Get-DcoirAirtableSystemEnvValue -Name 'DCOIR_AIRTABLE_API_TOKEN' -Required
+    $apiToken = Get-DcoirAirtableSystemEnvValue -Name 'DCOIR_AIRTABLE_TOKEN' -Required
     $baseId = Get-DcoirAirtableSystemEnvValue -Name 'DCOIR_AIRTABLE_BASE_ID' -Required
 
     Write-DcoirRunStatus 'Required Machine/System environment variables are present.'
@@ -181,18 +181,16 @@ try {
         Write-DcoirRunStatus "Initial diagnostic folder was created under fallback downloads path before DCOIR_DOWNLOADS_DIR validation: $downloadsDir"
     }
 
-    $tablesEnv = Get-DcoirAirtableSystemEnvValue -Name 'DCOIR_AIRTABLE_TABLES' -Default $null
-    $rawTableList = if (-not [string]::IsNullOrWhiteSpace($TableList)) { $TableList } else { $tablesEnv }
     $requestedTables = @()
-    if (-not [string]::IsNullOrWhiteSpace($rawTableList)) {
-        $requestedTables = @($rawTableList -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    if (-not [string]::IsNullOrWhiteSpace($TableList)) {
+        $requestedTables = @($TableList -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
     }
 
     $headers = New-DcoirAirtableAuthHeader -ApiToken $apiToken
     Write-DcoirRunStatus 'Fetching Airtable base schema.'
     $schema = Get-DcoirAirtableBaseSchema -BaseId $baseId -Headers $headers
     $selectedTables = @(Select-DcoirAirtableTables -Schema $schema -RequestedTables $requestedTables)
-    if ($selectedTables.Count -eq 0) { throw 'No Airtable tables selected. Check DCOIR_AIRTABLE_TABLES or -TableList.' }
+    if ($selectedTables.Count -eq 0) { throw 'No Airtable tables selected. Check -TableList.' }
     Write-DcoirRunStatus ("Selected {0} Airtable table(s)." -f $selectedTables.Count)
 
     $schemaFolder = Join-Path $outRoot 'schema'
@@ -237,7 +235,7 @@ try {
         module_version = Get-DcoirAirtableVersion
         created_at = (Get-Date -Format o)
         base_id_source = 'DCOIR_AIRTABLE_BASE_ID Machine/System environment variable; value not exported'
-        token_source = 'DCOIR_AIRTABLE_API_TOKEN Machine/System environment variable; value not exported'
+        token_source = 'DCOIR_AIRTABLE_TOKEN Machine/System environment variable; value not exported'
         output_folder = $outRoot
         schema_only = [bool]$SchemaOnly
         redacted_likely_secrets = [bool]$RedactLikelySecrets
@@ -267,7 +265,6 @@ try {
     Write-DcoirRunStatus 'Airtable export completed successfully.'
 }
 catch {
-    $errorObject = $_
     $resultObject = [ordered]@{
         success = $false
         output_folder = $outRoot
@@ -289,13 +286,7 @@ catch {
             script_path = $MyInvocation.MyCommand.Path
             current_directory = (Get-Location).Path
         }
-        environment_presence = @(
-            Get-DcoirMachineEnvPresence -Name 'DCOIR_REPO_ROOT'
-            Get-DcoirMachineEnvPresence -Name 'DCOIR_DOWNLOADS_DIR'
-            Get-DcoirMachineEnvPresence -Name 'DCOIR_AIRTABLE_API_TOKEN'
-            Get-DcoirMachineEnvPresence -Name 'DCOIR_AIRTABLE_BASE_ID'
-            Get-DcoirMachineEnvPresence -Name 'DCOIR_AIRTABLE_TABLES'
-        )
+        environment_presence = $environmentPresence
         secrets_policy = 'No secret values are logged. Only presence/absence is captured.'
     })
     $errMd = @(

@@ -1,12 +1,12 @@
 {
-  "catalog_addendum_version": "2026-05-03.2",
+  "catalog_addendum_version": "2026-05-03.4",
   "intended_merge_target": "operator_tools/github_desktop_lane/tool_catalog.json",
   "module_ecosystem_additions": [
     {
       "module_id": "DCOIR-AIRTABLE",
       "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Airtable/Dcoir.Airtable.psm1",
       "role": "Airtable API helpers for schema export, record export, table selection, likely-secret field protection/redaction, configuration validation, and database-health export support",
-      "validated_status": "JSON/package validation only; exported functions now use approved PowerShell verbs; requires local PowerShell smoke test"
+      "validated_status": "JSON/package validation only; requires local PowerShell schema-only smoke test"
     }
   ],
   "tools_additions": [
@@ -16,19 +16,19 @@
       "tool_family": "airtable_database_health",
       "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirAirtableDatabaseHealthExport.ps1",
       "output_pattern": "dcoir_airtable_health_export_*.chatgpt.zip; dcoir_airtable_health_export_* folder",
-      "version_or_hash": "2026-05-03.2",
-      "notes": "Reusable read-only Airtable schema and record export tool. Uses Dcoir.Airtable and existing ChatGPT-friendly ZIP helper. Requires DCOIR_AIRTABLE_API_TOKEN and DCOIR_AIRTABLE_BASE_ID in Machine/System environment scope. Optional DCOIR_AIRTABLE_TABLES limits tables. The launcher creates a timestamped diagnostic folder, transcript, run log, machine-readable context, and ChatGPT-friendly ZIP even when early configuration validation fails. First smoke should use -SchemaOnly -RedactLikelySecrets -MaxRecordsPerTable 10."
+      "version_or_hash": "2026-05-03.4",
+      "notes": "Reusable read-only Airtable schema and record export tool. Uses Dcoir.Airtable and existing ChatGPT-friendly ZIP helper. Requires DCOIR_AIRTABLE_TOKEN and DCOIR_AIRTABLE_BASE_ID in Machine/System environment scope. Use -TableList to limit tables. The launcher creates a timestamped diagnostic folder, transcript, run log, machine-readable context, and ChatGPT-friendly ZIP even when early configuration validation fails. First smoke should use -SchemaOnly -RedactLikelySecrets -MaxRecordsPerTable 10."
     }
   ],
   "environment_contract_additions": {
     "required_variables": [
-      "DCOIR_AIRTABLE_API_TOKEN",
+      "DCOIR_AIRTABLE_TOKEN",
       "DCOIR_AIRTABLE_BASE_ID"
     ],
-    "optional_variables": [
-      "DCOIR_AIRTABLE_TABLES"
+    "optional_parameters": [
+      "-TableList"
     ],
-    "notes": "Never store the API token value in Airtable, repo files, logs, or bundles. Use Local Configuration Registry rows for variable names and safe references only. Exporter diagnostics log environment variable presence/absence only."
+    "notes": "Never store the Airtable token value in Airtable, repo files, logs, or bundles. Use Local Configuration Registry rows for variable names and safe references only. Exporter diagnostics log environment variable presence/absence only."
   },
   "related_docs": [
     "operator_tools/github_desktop_lane/docs/AIRTABLE_DATABASE_HEALTH_EXPORT.md",

@@ -9,11 +9,11 @@
     "required_machine_scope": [
       "DCOIR_REPO_ROOT",
       "DCOIR_DOWNLOADS_DIR",
-      "DCOIR_AIRTABLE_API_TOKEN",
+      "DCOIR_AIRTABLE_TOKEN",
       "DCOIR_AIRTABLE_BASE_ID"
     ],
-    "optional_machine_scope": [
-      "DCOIR_AIRTABLE_TABLES"
+    "optional_parameters": [
+      "-TableList"
     ]
   },
   "outputs": [
