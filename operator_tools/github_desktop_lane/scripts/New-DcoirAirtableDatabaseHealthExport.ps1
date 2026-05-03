@@ -1,15 +1,20 @@
 [CmdletBinding()]
 param(
     [switch]$SchemaOnly,
+    [ValidateSet('Auto','SchemaOnly','BoundedRecords','FullRecords')][string]$ExportMode = 'Auto',
+    [switch]$FullRecordDump,
+    [switch]$SkipRecords,
     [switch]$RedactLikelySecrets,
     [int]$MaxRecordsPerTable = 0,
+    [string]$MetadataScope = 'BaseSchema,Tables,Fields,Views',
+    [switch]$ProbeUnsupportedMetadata,
     [string]$OutputNamePrefix = 'dcoir_airtable_health_export',
     [string]$TableList,
     [switch]$NoZip
 )
 
 $ErrorActionPreference = 'Stop'
-$Script:DcoirAirtableExporterVersion = '2026-05-03.4'
+$Script:DcoirAirtableExporterVersion = '2026-05-03.5'
 
 function ConvertTo-DcoirLocalSafeName {
     [CmdletBinding()]
@@ -97,6 +102,57 @@ function New-DcoirFailureZip {
     }
 }
 
+function Resolve-DcoirAirtableExportOptions {
+    [CmdletBinding()]
+    param(
+        [bool]$SchemaOnlyFlag,
+        [string]$RequestedExportMode,
+        [bool]$FullRecordDumpFlag,
+        [bool]$SkipRecordsFlag,
+        [int]$RequestedMaxRecordsPerTable,
+        [AllowNull()][string]$RequestedMetadataScope
+    )
+
+    $mode = $RequestedExportMode
+    if ($SchemaOnlyFlag -or $SkipRecordsFlag) { $mode = 'SchemaOnly' }
+    elseif ($FullRecordDumpFlag) { $mode = 'FullRecords' }
+    elseif ($mode -eq 'Auto') {
+        if ($RequestedMaxRecordsPerTable -gt 0) { $mode = 'BoundedRecords' } else { $mode = 'FullRecords' }
+    }
+
+    $effectiveMax = 0
+    if ($mode -eq 'BoundedRecords') {
+        if ($RequestedMaxRecordsPerTable -gt 0) { $effectiveMax = $RequestedMaxRecordsPerTable } else { $effectiveMax = 25 }
+    }
+    elseif ($mode -eq 'FullRecords') { $effectiveMax = 0 }
+
+    $metadata = @{}
+    $tokens = @()
+    if ([string]::IsNullOrWhiteSpace($RequestedMetadataScope)) {
+        $tokens = @('BaseSchema','Tables','Fields','Views')
+    }
+    else {
+        $tokens = @($RequestedMetadataScope -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    }
+    foreach ($token in $tokens) { $metadata[$token.ToLowerInvariant()] = $true }
+    if ($metadata.ContainsKey('all')) {
+        foreach ($token in @('baseschema','tables','fields','views')) { $metadata[$token] = $true }
+    }
+
+    return [pscustomobject]@{
+        export_mode = $mode
+        include_records = ($mode -ne 'SchemaOnly')
+        effective_max_records_per_table = $effectiveMax
+        full_record_dump = ($mode -eq 'FullRecords')
+        bounded_record_dump = ($mode -eq 'BoundedRecords')
+        include_base_schema_file = ($metadata.ContainsKey('baseschema') -or $metadata.ContainsKey('tables') -or $metadata.ContainsKey('fields') -or $metadata.ContainsKey('views'))
+        include_schema_summary = ($metadata.ContainsKey('tables') -or $metadata.ContainsKey('fields') -or $metadata.ContainsKey('views'))
+        include_table_schema_files = ($metadata.ContainsKey('tables') -or $metadata.ContainsKey('fields') -or $metadata.ContainsKey('views'))
+        metadata_scope_requested = @($tokens)
+        metadata_scope_effective = @($metadata.Keys | Sort-Object)
+    }
+}
+
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $toolRoot = Split-Path -Parent $scriptRoot
 $modulePath = Join-Path $toolRoot 'modules\Dcoir.Airtable\Dcoir.Airtable.psm1'
@@ -113,6 +169,7 @@ $zipPath = Join-Path $downloadsDir ("{0}_{1}.chatgpt.zip" -f $safePrefix, $stamp
 $transcriptStarted = $false
 $success = $false
 $resultObject = $null
+$resolvedOptions = Resolve-DcoirAirtableExportOptions -SchemaOnlyFlag ([bool]$SchemaOnly) -RequestedExportMode $ExportMode -FullRecordDumpFlag ([bool]$FullRecordDump) -SkipRecordsFlag ([bool]$SkipRecords) -RequestedMaxRecordsPerTable $MaxRecordsPerTable -RequestedMetadataScope $MetadataScope
 
 try {
     try {
@@ -126,6 +183,7 @@ try {
     Write-DcoirRunStatus 'Starting DCOIR Airtable database health export.'
     Write-DcoirRunStatus "Output folder: $outRoot"
     Write-DcoirRunStatus "Output ZIP target: $zipPath"
+    Write-DcoirRunStatus ("Resolved export mode: {0}; effective max records per table: {1}" -f $resolvedOptions.export_mode, $resolvedOptions.effective_max_records_per_table)
 
     $environmentPresence = @(
         Get-DcoirMachineEnvPresence -Name 'DCOIR_REPO_ROOT'
@@ -156,12 +214,18 @@ try {
         }
         parameters = [ordered]@{
             SchemaOnly = [bool]$SchemaOnly
+            ExportMode = $ExportMode
+            FullRecordDump = [bool]$FullRecordDump
+            SkipRecords = [bool]$SkipRecords
             RedactLikelySecrets = [bool]$RedactLikelySecrets
             MaxRecordsPerTable = $MaxRecordsPerTable
+            MetadataScope = $MetadataScope
+            ProbeUnsupportedMetadata = [bool]$ProbeUnsupportedMetadata
             OutputNamePrefix = $OutputNamePrefix
             TableListProvided = -not [string]::IsNullOrWhiteSpace($TableList)
             NoZip = [bool]$NoZip
         }
+        resolved_options = $resolvedOptions
         environment_presence = $environmentPresence
         secrets_policy = 'Only environment variable presence is logged. Secret values and base identifier values are not written by this context capture.'
     }
@@ -195,27 +259,46 @@ try {
 
     $schemaFolder = Join-Path $outRoot 'schema'
     $recordsFolder = Join-Path $outRoot 'records'
+    $metadataFolder = Join-Path $outRoot 'metadata'
     New-Item -ItemType Directory -Force -Path $schemaFolder | Out-Null
-    if (-not $SchemaOnly) { New-Item -ItemType Directory -Force -Path $recordsFolder | Out-Null }
+    New-Item -ItemType Directory -Force -Path $metadataFolder | Out-Null
+    if ($resolvedOptions.include_records) { New-Item -ItemType Directory -Force -Path $recordsFolder | Out-Null }
 
-    Write-DcoirAirtableJson -Path (Join-Path $schemaFolder 'schema.base_tables.json') -Object $schema
-    Write-DcoirAirtableJson -Path (Join-Path $schemaFolder 'schema.summary.json') -Object (Get-DcoirAirtableSchemaSummary -Tables $selectedTables)
+    if ($resolvedOptions.include_base_schema_file) { Write-DcoirAirtableJson -Path (Join-Path $schemaFolder 'schema.base_tables.json') -Object $schema }
+    if ($resolvedOptions.include_schema_summary) { Write-DcoirAirtableJson -Path (Join-Path $schemaFolder 'schema.summary.json') -Object (Get-DcoirAirtableSchemaSummary -Tables $selectedTables) }
+
+    $unsupportedMetadata = [ordered]@{
+        created_at = (Get-Date -Format o)
+        probe_requested = [bool]$ProbeUnsupportedMetadata
+        note = 'This exporter currently captures Airtable Web API-accessible base schema, table metadata, field metadata/options, view metadata, and records. Automations, extensions/apps, interface designer objects, scripting extension code, and certain workspace/base admin surfaces are not exported unless a supported Airtable API endpoint and token scope are added.'
+        unsupported_or_not_yet_implemented = @('automations','extensions_or_apps','interfaces','scripting_extension_code','workspace_admin_inventory')
+        current_supported_metadata = @('base tables schema','table id/name/description/primaryFieldId','field id/name/type/description/options','view id/name/type','record id/createdTime/fields')
+    }
+    Write-DcoirLocalJson -Path (Join-Path $metadataFolder 'metadata_coverage.json') -Object $unsupportedMetadata
 
     $tableExports = New-Object System.Collections.Generic.List[object]
     foreach ($table in $selectedTables) {
         Write-DcoirRunStatus ("Exporting table schema: {0} ({1})" -f $table.name, $table.id)
         $safeTable = ConvertTo-DcoirAirtableSafeName -Text ("{0}_{1}" -f $table.name, $table.id)
-        Write-DcoirAirtableJson -Path (Join-Path $schemaFolder ("table.{0}.schema.json" -f $safeTable)) -Object $table
+        $schemaFile = $null
+        if ($resolvedOptions.include_table_schema_files) {
+            $schemaFile = "schema/table.$safeTable.schema.json"
+            Write-DcoirAirtableJson -Path (Join-Path $schemaFolder ("table.{0}.schema.json" -f $safeTable)) -Object $table
+        }
         $recordCount = $null
-        if (-not $SchemaOnly) {
+        $recordsFile = $null
+        if ($resolvedOptions.include_records) {
             Write-DcoirRunStatus ("Exporting records: {0}" -f $table.name)
-            $records = @(Get-DcoirAirtableRecords -BaseId $baseId -Table $table -Headers $headers -MaxRecords $MaxRecordsPerTable -RedactLikelySecrets:$RedactLikelySecrets)
+            $records = @(Get-DcoirAirtableRecords -BaseId $baseId -Table $table -Headers $headers -MaxRecords $resolvedOptions.effective_max_records_per_table -RedactLikelySecrets:$RedactLikelySecrets)
             $recordCount = $records.Count
+            $recordsFile = "records/table.$safeTable.records.json"
             Write-DcoirAirtableJson -Path (Join-Path $recordsFolder ("table.{0}.records.json" -f $safeTable)) -Object ([ordered]@{
                 table_id = $table.id
                 table_name = $table.name
+                export_mode = $resolvedOptions.export_mode
                 record_count_exported = $records.Count
-                max_records_per_table = $MaxRecordsPerTable
+                max_records_per_table = $resolvedOptions.effective_max_records_per_table
+                full_record_dump = [bool]$resolvedOptions.full_record_dump
                 redacted_likely_secrets = [bool]$RedactLikelySecrets
                 records = $records
             })
@@ -223,8 +306,8 @@ try {
         $tableExports.Add([pscustomobject]@{
             table_id = $table.id
             table_name = $table.name
-            schema_file = "schema/table.$safeTable.schema.json"
-            records_file = if ($SchemaOnly) { $null } else { "records/table.$safeTable.records.json" }
+            schema_file = $schemaFile
+            records_file = $recordsFile
             record_count_exported = $recordCount
         }) | Out-Null
     }
@@ -237,11 +320,16 @@ try {
         base_id_source = 'DCOIR_AIRTABLE_BASE_ID Machine/System environment variable; value not exported'
         token_source = 'DCOIR_AIRTABLE_TOKEN Machine/System environment variable; value not exported'
         output_folder = $outRoot
-        schema_only = [bool]$SchemaOnly
+        schema_only = ($resolvedOptions.export_mode -eq 'SchemaOnly')
+        export_mode = $resolvedOptions.export_mode
+        full_record_dump = [bool]$resolvedOptions.full_record_dump
+        include_records = [bool]$resolvedOptions.include_records
         redacted_likely_secrets = [bool]$RedactLikelySecrets
-        max_records_per_table = $MaxRecordsPerTable
+        max_records_per_table = $resolvedOptions.effective_max_records_per_table
         requested_tables = $requestedTables
         selected_table_count = $selectedTables.Count
+        metadata_scope_requested = $resolvedOptions.metadata_scope_requested
+        metadata_scope_effective = $resolvedOptions.metadata_scope_effective
         selected_tables = @($tableExports.ToArray())
         safety = [ordered]@{
             read_only_airtable = $true
@@ -257,10 +345,12 @@ try {
         success = $true
         output_folder = $outRoot
         output_zip = if ($NoZip) { $null } else { $zipPath }
-        schema_only = [bool]$SchemaOnly
+        schema_only = ($resolvedOptions.export_mode -eq 'SchemaOnly')
+        export_mode = $resolvedOptions.export_mode
+        full_record_dump = [bool]$resolvedOptions.full_record_dump
         redacted_likely_secrets = [bool]$RedactLikelySecrets
         selected_table_count = $selectedTables.Count
-        max_records_per_table = $MaxRecordsPerTable
+        max_records_per_table = $resolvedOptions.effective_max_records_per_table
     }
     Write-DcoirRunStatus 'Airtable export completed successfully.'
 }
@@ -333,6 +423,7 @@ finally {
         '- terminal_transcript.txt',
         '- error_report.md / error_report.json when present',
         '- export_manifest.json when export succeeded',
+        '- metadata/metadata_coverage.json',
         '- schema/schema.summary.json when schema export succeeded',
         '',
         '## Operator note',
