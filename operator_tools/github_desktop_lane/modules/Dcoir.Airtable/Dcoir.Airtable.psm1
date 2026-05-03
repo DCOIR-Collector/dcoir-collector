@@ -1,11 +1,22 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$script:DcoirAirtableVersion = '2026-05-03.1'
+$script:DcoirAirtableVersion = '2026-05-03.2'
 
 function Get-DcoirAirtableVersion {
     [CmdletBinding()]
     param()
     return $script:DcoirAirtableVersion
+}
+
+function Test-DcoirAirtablePlaceholderValue {
+    [CmdletBinding()]
+    param([AllowNull()][string]$Value)
+    if ([string]::IsNullOrWhiteSpace($Value)) { return $false }
+    $v = $Value.Trim()
+    return ($v -match '^(your|changeme|placeholder|pat_here|token_here|base_here|app_here)$' -or
+            $v -match '^[A-Za-z]:\\path\\to(\\|$)' -or
+            $v -match '^/path/to(/|$)' -or
+            $v -match 'your[_ -]?repo')
 }
 
 function Get-DcoirAirtableSystemEnvValue {
@@ -16,6 +27,9 @@ function Get-DcoirAirtableSystemEnvValue {
         [AllowNull()][string]$Default
     )
     $machine = [Environment]::GetEnvironmentVariable($Name, 'Machine')
+    if (Test-DcoirAirtablePlaceholderValue -Value $machine) {
+        throw "$Name is set to a placeholder value in Machine/System environment scope. Replace it with a real value, then open a new PowerShell window."
+    }
     if (-not [string]::IsNullOrWhiteSpace($machine)) { return $machine.Trim() }
     if (-not [string]::IsNullOrWhiteSpace($Default)) { return $Default }
     if ($Required) { throw "$Name is not set in Machine/System environment scope. Set it as a System environment variable, then open a new PowerShell window." }
@@ -26,7 +40,7 @@ function New-DcoirAirtableAuthHeader {
     [CmdletBinding()]
     param([Parameter(Mandatory=$true)][string]$ApiToken)
     if ([string]::IsNullOrWhiteSpace($ApiToken)) { throw 'Airtable API token is empty.' }
-    if ($ApiToken -match '^(your|changeme|placeholder|pat_here|token_here)') { throw 'Airtable API token looks like a placeholder.' }
+    if (Test-DcoirAirtablePlaceholderValue -Value $ApiToken) { throw 'Airtable API token looks like a placeholder.' }
     return @{ Authorization = "Bearer $ApiToken" }
 }
 
@@ -85,11 +99,10 @@ function Test-DcoirAirtableSensitiveFieldName {
     return ($Name -match '(?i)(token|secret|password|passwd|api[_ -]?key|apikey|credential|private[_ -]?key|pat|bearer|authorization|auth[_ -]?header)')
 }
 
-function Redact-DcoirAirtableRecord {
+function Protect-DcoirAirtableRecordFields {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]$Record,
-        [Parameter(Mandatory=$true)]$Table,
         [switch]$RedactLikelySecrets
     )
     if (-not $RedactLikelySecrets) { return $Record }
@@ -126,7 +139,7 @@ function Get-DcoirAirtableRecords {
         if (-not [string]::IsNullOrWhiteSpace($offset)) { $uri += '&offset=' + [System.Uri]::EscapeDataString($offset) }
         $result = Invoke-DcoirAirtableApi -Uri $uri -Headers $Headers
         foreach ($record in @($result.records)) {
-            $records.Add((Redact-DcoirAirtableRecord -Record $record -Table $Table -RedactLikelySecrets:$RedactLikelySecrets)) | Out-Null
+            $records.Add((Protect-DcoirAirtableRecordFields -Record $record -RedactLikelySecrets:$RedactLikelySecrets)) | Out-Null
             if ($MaxRecords -gt 0 -and $records.Count -ge $MaxRecords) { break }
         }
         if ($MaxRecords -gt 0 -and $records.Count -ge $MaxRecords) { break }
@@ -164,7 +177,7 @@ function Get-DcoirAirtableSchemaSummary {
     return @($summary.ToArray())
 }
 
-function Save-DcoirAirtableJson {
+function Write-DcoirAirtableJson {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)][string]$Path,
@@ -177,7 +190,7 @@ function Save-DcoirAirtableJson {
     [System.IO.File]::WriteAllText($Path, ($Object | ConvertTo-Json -Depth $Depth), $enc)
 }
 
-function Save-DcoirAirtableText {
+function Write-DcoirAirtableText {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)][string]$Path,
@@ -189,4 +202,4 @@ function Save-DcoirAirtableText {
     [System.IO.File]::WriteAllText($Path, [string]$Text, $enc)
 }
 
-Export-ModuleMember -Function Get-DcoirAirtableVersion,Get-DcoirAirtableSystemEnvValue,New-DcoirAirtableAuthHeader,Invoke-DcoirAirtableApi,Get-DcoirAirtableBaseSchema,Select-DcoirAirtableTables,ConvertTo-DcoirAirtableSafeName,Test-DcoirAirtableSensitiveFieldName,Redact-DcoirAirtableRecord,Get-DcoirAirtableRecords,Get-DcoirAirtableSchemaSummary,Save-DcoirAirtableJson,Save-DcoirAirtableText
+Export-ModuleMember -Function Get-DcoirAirtableVersion,Test-DcoirAirtablePlaceholderValue,Get-DcoirAirtableSystemEnvValue,New-DcoirAirtableAuthHeader,Invoke-DcoirAirtableApi,Get-DcoirAirtableBaseSchema,Select-DcoirAirtableTables,ConvertTo-DcoirAirtableSafeName,Test-DcoirAirtableSensitiveFieldName,Protect-DcoirAirtableRecordFields,Get-DcoirAirtableRecords,Get-DcoirAirtableSchemaSummary,Write-DcoirAirtableJson,Write-DcoirAirtableText

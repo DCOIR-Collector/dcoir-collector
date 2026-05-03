@@ -31,13 +31,32 @@ Never paste token values into ChatGPT, Airtable notes, repo files, logs, or bund
 
 ## First-run smoke test
 
+This launcher shows progress in the terminal and also produces a verbose diagnostic folder and `.chatgpt.zip` in `DCOIR_DOWNLOADS_DIR`. The tool now creates those diagnostics even when early configuration checks fail, such as a missing Airtable token.
+
 ```powershell
 $repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
 $script = Join-Path $repo 'operator_tools\github_desktop_lane\scripts\New-DcoirAirtableDatabaseHealthExport.ps1'
-& $script -SchemaOnly -RedactLikelySecrets -MaxRecordsPerTable 10
+& $script -SchemaOnly -RedactLikelySecrets -MaxRecordsPerTable 10 2>&1 | Tee-Object -Variable dcoirAirtableRun
 ```
 
-Upload the resulting `.chatgpt.zip` from `DCOIR_DOWNLOADS_DIR`.
+Upload the resulting `.chatgpt.zip` from `DCOIR_DOWNLOADS_DIR`. If no ZIP exists, upload the newest `dcoir_airtable_health_export_<timestamp>` folder.
+
+### Expected failure behavior
+
+If a required System environment variable is missing, the command should still create:
+
+```text
+dcoir_airtable_health_export_<timestamp>/
+  diagnostic_index.md
+  command_context.json
+  run.log.txt
+  terminal_transcript.txt
+  run_summary.json
+  error_report.md
+  error_report.json
+```
+
+A ChatGPT-friendly ZIP should also be created next to the folder when the ZIP helper exists. The diagnostic files log environment variable presence/absence only; they do not log secret values.
 
 ## Full bounded record export
 
@@ -54,6 +73,10 @@ Use `-MaxRecordsPerTable 0` only when you intentionally want all records from se
 ```text
 dcoir_airtable_health_export_<timestamp>/
   diagnostic_index.md
+  command_context.json
+  run.log.txt
+  terminal_transcript.txt
+  run_summary.json
   export_manifest.json
   schema/
     schema.summary.json
@@ -63,12 +86,14 @@ dcoir_airtable_health_export_<timestamp>/
     table.<safe_table_name>_<table_id>.records.json
 ```
 
-A ChatGPT-friendly ZIP is created next to the output folder unless `-NoZip` is passed.
+A ChatGPT-friendly ZIP is created next to the output folder unless `-NoZip` is passed. On failure, the same ZIP path is used for an uploadable diagnostic package.
 
 ## Safety contract
 
 - Read only from Airtable.
 - Do not write the API token value to output.
+- Always create a timestamped diagnostic folder and uploadable ZIP on failure when possible.
+- Capture terminal context with `Start-Transcript`, `run.log.txt`, and machine-readable error JSON.
 - Prefer `-RedactLikelySecrets` for record exports.
 - Treat exported record data as operational data; upload only to approved DCOIR ChatGPT workspace.
 - Cleanup recommendations require Delete Queue and dependency-safe processing.
