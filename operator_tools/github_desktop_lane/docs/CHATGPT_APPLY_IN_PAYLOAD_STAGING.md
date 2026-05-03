@@ -28,6 +28,12 @@ That means the workflow lane was structurally sound enough to find the payload a
 operator_tools/github_desktop_lane/scripts/New-DcoirApplyInPayload.ps1
 ```
 
+## Logging requirement
+
+This tool imports `operator_tools/github_desktop_lane/modules/Dcoir.Logging/Dcoir.Logging.psm1` and writes a single uploadable log file on success or failure.
+
+The log path is returned in JSON output as `log_path`. Upload that file instead of relying on screenshots.
+
 ## Input contract
 
 The input ZIP must contain `apply_manifest.json` at archive root.
@@ -41,7 +47,8 @@ The helper:
 - rejects payload text containing `ERROR TRUNCATED`;
 - decodes the written base64 back to a temporary ZIP;
 - verifies SHA256 round-trip equality;
-- verifies the decoded ZIP still contains `apply_manifest.json`.
+- verifies the decoded ZIP still contains `apply_manifest.json`;
+- logs resolved paths, phases, hashes, error type, stack trace, and next action.
 
 ## Launcher
 
@@ -67,7 +74,9 @@ Do not stage long base64 payloads through chat or connector inline writes. Gener
 
 ## Failure triage
 
-If `chatgpt-apply-in` fails, inspect:
+If local staging fails, upload the returned `log_path` file.
+
+If `chatgpt-apply-in` fails after push, inspect:
 
 ```text
 chatgpt_staging/status_reports/chatgpt-apply-in/<request_id>/workflow_report.md
