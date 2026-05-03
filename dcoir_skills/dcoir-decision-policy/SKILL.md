@@ -2,6 +2,7 @@
 name: dcoir-decision-policy
 description: apply the operator default decision matrix for africom_soc_ir / dcoir project work, including branch choice, blocker recovery, grouped delivery posture, and governance decision surfacing.
 ---
+<!-- skill-marker: updated-skill|20260503T165000Z|blocked-action-recovery-ladder|source-update|dcoir-decision-policy|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-decision-policy|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-decision-policy|SKILL.md -->
 
