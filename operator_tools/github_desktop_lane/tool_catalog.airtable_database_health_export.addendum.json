@@ -1,0 +1,37 @@
+{
+  "catalog_addendum_version": "2026-05-03.1",
+  "intended_merge_target": "operator_tools/github_desktop_lane/tool_catalog.json",
+  "module_ecosystem_additions": [
+    {
+      "module_id": "DCOIR-AIRTABLE",
+      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Airtable/Dcoir.Airtable.psm1",
+      "role": "Airtable API helpers for schema export, record export, table selection, likely-secret redaction, and database-health export support",
+      "validated_status": "JSON/package validation only; requires local PowerShell smoke test"
+    }
+  ],
+  "tools_additions": [
+    {
+      "tool_id": "DCOIR-AIRTABLE-DB-HEALTH-EXPORT",
+      "tool_name": "DCOIR Airtable Database Health Export",
+      "tool_family": "airtable_database_health",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirAirtableDatabaseHealthExport.ps1",
+      "output_pattern": "dcoir_airtable_health_export_*.chatgpt.zip; dcoir_airtable_health_export_* folder",
+      "version_or_hash": "2026-05-03.1",
+      "notes": "Reusable read-only Airtable schema and record export tool. Uses Dcoir.Airtable and existing ChatGPT-friendly ZIP helper. Requires DCOIR_AIRTABLE_API_TOKEN and DCOIR_AIRTABLE_BASE_ID in Machine/System environment scope. Optional DCOIR_AIRTABLE_TABLES limits tables. First smoke should use -SchemaOnly -RedactLikelySecrets -MaxRecordsPerTable 10."
+    }
+  ],
+  "environment_contract_additions": {
+    "required_variables": [
+      "DCOIR_AIRTABLE_API_TOKEN",
+      "DCOIR_AIRTABLE_BASE_ID"
+    ],
+    "optional_variables": [
+      "DCOIR_AIRTABLE_TABLES"
+    ],
+    "notes": "Never store the API token value in Airtable, repo files, logs, or bundles. Use Local Configuration Registry rows for variable names and safe references only."
+  },
+  "related_docs": [
+    "operator_tools/github_desktop_lane/docs/AIRTABLE_DATABASE_HEALTH_EXPORT.md",
+    "operator_tools/github_desktop_lane/docs/OPERATOR_TOOL_ENGINEERING_CONTRACTS.md"
+  ]
+}
