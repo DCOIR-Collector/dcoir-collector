@@ -1,0 +1,69 @@
+# ChatGPT Exec Lane Operator Guide
+
+## What this is
+
+The ChatGPT exec lane is a GitHub Actions lane that runs a command after the operator has reviewed and approved the exact command text in chat. It is designed to act like a virtual operator runner while preserving the source tools unchanged.
+
+## What it does not do
+
+- It does not store secret values in the repository.
+- It does not require a maintained command allowlist.
+- It does not modify source tools for GitHub Actions.
+- It does not keep request files after the run when cleanup is enabled.
+
+## One-time GitHub setup
+
+Add repository secrets for the DCOIR variables that the runner should be able to use.
+
+1. Open the GitHub repository.
+2. Click **Settings**.
+3. In the left menu, click **Secrets and variables**.
+4. Click **Actions**.
+5. Click **New repository secret**.
+6. Add the needed names exactly, for example:
+   - `DCOIR_AIRTABLE_TOKEN`
+   - `DCOIR_AIRTABLE_BASE_ID`
+   - `DCOIR_GITHUB_FG_TOKEN`
+   - `DCOIR_GITHUB_CL_TOKEN`
+   - `DCOIR_OPENAI_API_KEY`
+   - `DCOIR_OPENAI_PROJECT_ID`
+7. Paste each value only into GitHub's secret value field. Do not commit values into files.
+
+Optional GitHub Environment protection means putting secrets in a named environment and requiring a reviewer before jobs using that environment can start. This bundle does not require that protection by default because the operator approval happens before the request is staged.
+
+## Normal execution flow
+
+1. ChatGPT drafts the exact command.
+2. Operator reviews and approves the command in chat.
+3. ChatGPT stages a request JSON under `chatgpt_staging/exec_requests/`.
+4. GitHub Actions runs the command on a Windows runner.
+5. The workflow writes a status report under `chatgpt_staging/status_reports/chatgpt-exec/`.
+6. The workflow uploads a short-retention artifact containing logs and outputs.
+7. ChatGPT reads the status report and downloads the artifact if needed.
+8. ChatGPT records Airtable evidence and cleans the status report when safe.
+
+## Request sample
+
+Use `operator_tools/github_desktop_lane/manifests/chatgpt_exec_request.sample.json` as the starting shape.
+
+## Environment bridge
+
+The workflow receives secrets as process environment variables. The reusable harness writes them into Machine-scope environment variables in the Windows runner before invoking the command. That lets existing tools keep using the same Machine-scope environment lookup that they use locally.
+
+## Output expectations
+
+Commands should write upload-worthy files under:
+
+```powershell
+[Environment]::GetEnvironmentVariable('DCOIR_DOWNLOADS_DIR','Machine')
+```
+
+The harness automatically includes those files in the GitHub Actions artifact.
+
+## Failure handling
+
+If the command fails, the workflow still writes a status report and uploads sanitized diagnostics. ChatGPT should inspect:
+
+- `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`
+- GitHub Actions artifact `chatgpt-exec-<request_id>`
+- the Actions run log only if the report/artifact are insufficient

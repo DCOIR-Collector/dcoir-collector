@@ -1,0 +1,107 @@
+name: chatgpt-exec
+
+on:
+  workflow_dispatch:
+    inputs:
+      request_path:
+        description: "Repo-relative exec request JSON under chatgpt_staging/exec_requests/"
+        required: true
+        default: "chatgpt_staging/exec_requests/request.json"
+        type: string
+  push:
+    branches:
+      - main
+    paths:
+      - "chatgpt_staging/exec_requests/*.json"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: chatgpt-exec-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  exec:
+    runs-on: windows-latest
+    env:
+      DCOIR_AIRTABLE_TOKEN: ${{ secrets.DCOIR_AIRTABLE_TOKEN }}
+      DCOIR_AIRTABLE_BASE_ID: ${{ secrets.DCOIR_AIRTABLE_BASE_ID }}
+      DCOIR_GITHUB_FG_TOKEN: ${{ secrets.DCOIR_GITHUB_FG_TOKEN }}
+      DCOIR_GITHUB_CL_TOKEN: ${{ secrets.DCOIR_GITHUB_CL_TOKEN }}
+      DCOIR_OPENAI_API_KEY: ${{ secrets.DCOIR_OPENAI_API_KEY }}
+      DCOIR_OPENAI_PROJECT_ID: ${{ secrets.DCOIR_OPENAI_PROJECT_ID }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Resolve exec request path
+        id: request
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
+            $requestPath = '${{ inputs.request_path }}'
+          } else {
+            $changed = git diff-tree --no-commit-id --name-only -r $env:GITHUB_SHA
+            $requestPath = ($changed | Where-Object { $_ -like 'chatgpt_staging/exec_requests/*.json' } | Select-Object -First 1)
+          }
+          if ([string]::IsNullOrWhiteSpace($requestPath)) {
+            "skip=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+            exit 0
+          }
+          if ($requestPath -notmatch '^chatgpt_staging/exec_requests/[A-Za-z0-9._-]+\.json$') {
+            throw "Exec request path must match chatgpt_staging/exec_requests/<request_id>.json. Got: $requestPath"
+          }
+          if (-not (Test-Path -LiteralPath $requestPath -PathType Leaf)) {
+            throw "Exec request file not found: $requestPath"
+          }
+          "skip=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "request_path=$requestPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Run approved command request
+        if: steps.request.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $outRoot = Join-Path $env:RUNNER_TEMP 'dcoir_chatgpt_exec'
+          $resultJson = Join-Path $env:RUNNER_TEMP 'dcoir_chatgpt_exec_result.json'
+          & .\operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsExecHarness.ps1 `
+            -RequestPath '${{ steps.request.outputs.request_path }}' `
+            -RepoRoot $env:GITHUB_WORKSPACE `
+            -OutputRoot $outRoot `
+            -JsonResultPath $resultJson
+
+      - name: Commit exec status report and cleanup request
+        if: steps.request.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ($env:DCOIR_EXEC_REPORT_PATH -and (Test-Path -LiteralPath $env:DCOIR_EXEC_REPORT_PATH -PathType Leaf)) {
+            git add -- $env:DCOIR_EXEC_REPORT_PATH
+          }
+          if ($env:DCOIR_EXEC_CLEANUP_REQUEST_AFTER_RUN -ne 'False' -and $env:DCOIR_EXEC_CLEANUP_REQUEST_AFTER_RUN -ne 'false') {
+            git rm -f '${{ steps.request.outputs.request_path }}' 2>$null
+          }
+          git commit -m "Record ChatGPT exec workflow report [skip ci]" || exit 0
+          git push
+
+      - name: Upload exec artifact
+        if: steps.request.outputs.skip != 'true' && env.DCOIR_EXEC_ARTIFACT_DIR != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.DCOIR_EXEC_ARTIFACT_NAME }}
+          path: ${{ env.DCOIR_EXEC_ARTIFACT_DIR }}/**
+          retention-days: ${{ env.DCOIR_EXEC_ARTIFACT_RETENTION_DAYS }}
+          if-no-files-found: warn
+
+      - name: Fail workflow if approved command failed
+        if: steps.request.outputs.skip != 'true' && env.DCOIR_EXEC_EXIT_CODE != '0'
+        shell: pwsh
+        run: |
+          Write-Error "Approved command failed. See chatgpt_staging/status_reports/chatgpt-exec/$env:DCOIR_EXEC_REQUEST_ID/workflow_report.md and artifact $env:DCOIR_EXEC_ARTIFACT_NAME."
