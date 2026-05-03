@@ -44,6 +44,7 @@ concurrency:
 
 jobs:
   cleanup-reports:
+    name: Cleanup ChatGPT workflow reports
     runs-on: ubuntu-latest
     steps:
       - name: Check Stuttgart midnight gate
@@ -51,14 +52,17 @@ jobs:
         shell: python
         run: |
           import datetime as dt
+          import os
           from zoneinfo import ZoneInfo
 
           event_name = "${{ github.event_name }}"
           now = dt.datetime.now(dt.timezone.utc).astimezone(ZoneInfo("Europe/Berlin"))
           should_run = event_name != "schedule" or now.hour == 0
-          with open("${{ github_output }}", "a", encoding="utf-8") as fh:
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
               fh.write(f"should_run={str(should_run).lower()}\n")
               fh.write(f"local_time={now.isoformat()}\n")
+
           print(f"Europe/Berlin local time: {now.isoformat()}")
           print(f"should_run={should_run}")
 
