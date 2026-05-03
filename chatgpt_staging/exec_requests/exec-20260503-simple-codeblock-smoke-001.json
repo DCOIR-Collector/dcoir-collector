@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260503-simple-codeblock-smoke-001",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-03T20:05:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 300,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "approved_command_preview": "$out = [Environment]::GetEnvironmentVariable('DCOIR_DOWNLOADS_DIR','Machine')\n$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')\n\n$result = [ordered]@{\n  success = $true\n  test_name = 'simple_codeblock_exec_smoke'\n  repo_root_present = -not [string]::IsNullOrWhiteSpace($repo)\n  downloads_dir_present = -not [string]::IsNullOrWhiteSpace($out)\n  powershell_version = $PSVersionTable.PSVersion.ToString()\n  runner_time_utc = (Get-Date).ToUniversalTime().ToString('o')\n}\n\n$result | ConvertTo-Json -Depth 4 | Out-File -FilePath (Join-Path $out 'simple_codeblock_exec_smoke.json') -Encoding utf8\n$result | ConvertTo-Json -Depth 4",
+  "command": "$out = [Environment]::GetEnvironmentVariable('DCOIR_DOWNLOADS_DIR','Machine')\n$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')\n\n$result = [ordered]@{\n  success = $true\n  test_name = 'simple_codeblock_exec_smoke'\n  repo_root_present = -not [string]::IsNullOrWhiteSpace($repo)\n  downloads_dir_present = -not [string]::IsNullOrWhiteSpace($out)\n  powershell_version = $PSVersionTable.PSVersion.ToString()\n  runner_time_utc = (Get-Date).ToUniversalTime().ToString('o')\n}\n\n$result | ConvertTo-Json -Depth 4 | Out-File -FilePath (Join-Path $out 'simple_codeblock_exec_smoke.json') -Encoding utf8\n$result | ConvertTo-Json -Depth 4"
+}
