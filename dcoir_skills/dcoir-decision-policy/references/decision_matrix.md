@@ -81,3 +81,16 @@ Otherwise proceed.
 | A mid-campaign milestone produces no operator action and no branching decision | Keep working instead of stopping to summarize progress only |
 | A repo-update zip, installable skill zip, blocker, or true decision point is ready | Surface it immediately with the smallest complete operator-facing handoff |
 
+## I. Blocked repo-update recovery ladder
+
+Use this ladder when a GitHub/API/connector repo update is blocked, partially blocked, or unverified.
+
+| Situation | Default action |
+| --- | --- |
+| Direct GitHub connector write is available and safe | Use the direct connector write first because it minimizes operator burden and gives immediate readback |
+| Direct write fails due to stale SHA, path mismatch, transient API behavior, or a simple argument mistake | Retry once with corrected bounded inputs or use the nearest equivalent connector operation; do not loop indefinitely |
+| Direct write is blocked by connector safety, write shape limits, unsupported multi-file operation, or unreliable verification | Switch to the staged ChatGPT apply-in/GitHub Actions lane when the repo workflow supports the requested path and validation/report readback can verify the result |
+| Staged apply-in is unavailable, unsafe for the target path, blocked, or unverified | Produce a GitHub Desktop/manual repo-update bundle with only affected repo-relative files and no wrapper/meta files, plus the suggested commit summary in chat/Airtable only |
+| Any automation lane succeeds | Verify by GitHub readback, workflow report, logs, or file fetch before closing the Work Item |
+| Any lane fails after bounded recovery | Preserve the returned log/report/error evidence, update Airtable, and surface the next smallest operator action rather than accepting the block as final |
+
