@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-01.13",
+  "catalog_version": "2026-05-03.5",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/",
     "registry_source": "airtable Operator Tools Registry",
@@ -11,7 +11,7 @@
       "DCOIR_REPO_ROOT",
       "DCOIR_DOWNLOADS_DIR"
     ],
-    "notes": "Operator tools should resolve DCOIR local configuration from Machine/System environment scope. Process-scope placeholders such as C:\\path\\to\\dcoir-collector are invalid and should be rejected. Shared environment/path helpers live in modules/Dcoir.Common and git-lane self-contained helpers live in modules/Dcoir.Git."
+    "notes": "Operator tools should resolve DCOIR local configuration from Machine/System environment scope. Process-scope placeholders such as C:\\path\\to\\dcoir-collector are invalid and should be rejected. Shared environment/path helpers live in modules/Dcoir.Common and git-lane self-contained helpers live in modules/Dcoir.Git. Tool-specific variables must use Local Configuration Registry canonical names; Airtable tools use DCOIR_AIRTABLE_TOKEN and DCOIR_AIRTABLE_BASE_ID."
   },
   "module_ecosystem": [
     {
@@ -52,6 +52,12 @@
       "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.RepoPatch/Dcoir.RepoPatch.psm1",
       "role": "repo patch path safety, payload-root resolution, allowed target roots, hashing, and UTF-8 logging",
       "validated_status": "validated by WhatIfOnly and real fixture apply smoke tests"
+    },
+    {
+      "module_id": "DCOIR-AIRTABLE",
+      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Airtable/Dcoir.Airtable.psm1",
+      "role": "Airtable API helpers for schema export, record export, table selection, likely-secret field protection/redaction, configuration validation, and database-health export support",
+      "validated_status": "JSON/package validation and GitHub readback verified after canonical-token repair; requires local PowerShell schema-only smoke test before active promotion"
     }
   ],
   "tools": [
@@ -135,6 +141,15 @@
       "output_pattern": "dcoir_actions_ladder-*.chatgpt.zip; dcoir_actions_mode_ladder_result.json",
       "version_or_hash": "2026-05-01.4",
       "notes": "Harness-only fail-fast same-workflow mode/suite ladder runner. Imports Dcoir.Common for shared env/JSON/safe-name helpers, creates a sequential ladder manifest, and executes the orchestrator."
+    },
+    {
+      "tool_id": "DCOIR-AIRTABLE-DB-HEALTH-EXPORT",
+      "tool_name": "DCOIR Airtable Database Health Export",
+      "tool_family": "airtable_database_health",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirAirtableDatabaseHealthExport.ps1",
+      "output_pattern": "dcoir_airtable_health_export_*.chatgpt.zip; dcoir_airtable_health_export_* folder",
+      "version_or_hash": "2026-05-03.4",
+      "notes": "Read-only Airtable schema and selected-record export tool. Uses Dcoir.Airtable and the existing ChatGPT-friendly ZIP helper. Requires DCOIR_AIRTABLE_TOKEN and DCOIR_AIRTABLE_BASE_ID in Machine/System environment scope; use -TableList for optional table limiting instead of inventing table-list environment variables. Creates timestamped diagnostics, transcript, run log, machine-readable context, and uploadable ZIP even when early configuration validation fails. First smoke should use -SchemaOnly -RedactLikelySecrets -MaxRecordsPerTable 10."
     }
   ]
 }
