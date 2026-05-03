@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-03.6",
+  "catalog_version": "2026-05-03.7",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/",
     "registry_source": "airtable Operator Tools Registry",
@@ -38,7 +38,7 @@
     {
       "module_id": "DCOIR-ACTIONS",
       "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Actions/Dcoir.Actions.psm1",
-      "role": "manifest parsing, dispatch, monitor, fail-fast, capture, cleanup, summaries, exit codes",
+      "role": "manifest parsing, dispatch, monitor, fail-fast gates, parallel execution throttle, capture, cleanup, summaries, exit codes",
       "validated_status": "validated as preferred Actions orchestrator lane"
     },
     {
@@ -56,7 +56,7 @@
     {
       "module_id": "DCOIR-AIRTABLE",
       "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Airtable/Dcoir.Airtable.psm1",
-      "role": "Airtable API helpers for schema export, full or bounded record export, table selection, likely-secret field protection/redaction, configuration validation, and database-health export support",
+      "role": "Airtable API helpers for schema export, full or bounded record export, table selection, optional likely-secret field protection/redaction, configuration validation, and database-health export support",
       "validated_status": "validated through schema-only, bounded live, and full-record export runs; latest module version 2026-05-03.5 fixes record pagination, URL construction, missing offset handling, and repo_path redaction precision"
     }
   ],
@@ -148,19 +148,24 @@
       "tool_family": "airtable_database_health",
       "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirAirtableDatabaseHealthExport.ps1",
       "output_pattern": "dcoir_airtable_health_export_*.chatgpt.zip; dcoir_airtable_health_export_* folder",
-      "version_or_hash": "2026-05-03.5 script + 2026-05-03.5 module; commits 1918ff57fc3ecc0da36c34da17d30f2cb0c28382 and 0ba54d64ea3d72c7c71491bdb7cae521b86c7c1c",
+      "version_or_hash": "2026-05-03.5 script + 2026-05-03.5 module; commits 1918ff57fc3ecc0da36c34da17d30f2cb0c28382, 0ba54d64ea3d72c7c71491bdb7cae521b86c7c1c, and 16747b8581f466b264986ff19cb642073c578f02",
+      "notes": "Read-only Airtable schema, metadata, and record export tool. Requires DCOIR_AIRTABLE_TOKEN and DCOIR_AIRTABLE_BASE_ID in Machine/System environment scope. Uses Dcoir.Airtable and the ChatGPT-friendly ZIP helper. Captures base schema, table metadata, field metadata/options, view metadata, records, manifests, command context, transcripts, and metadata coverage notes. Keep environment token/base values non-disclosed. Automations, extensions/apps, interfaces, scripting extension code, and workspace admin inventory are explicitly marked unsupported unless a future Airtable API endpoint and token scope are added. First diagnostic can use -ExportMode SchemaOnly -ProbeUnsupportedMetadata; full DCOIR snapshot should use -ExportMode FullRecords -FullRecordDump -MetadataScope All -ProbeUnsupportedMetadata. Use -RedactLikelySecrets only when explicitly requested.",
       "parameters": {
-        "ExportMode": ["Auto", "SchemaOnly", "BoundedRecords", "FullRecords"],
+        "ExportMode": [
+          "Auto",
+          "SchemaOnly",
+          "BoundedRecords",
+          "FullRecords"
+        ],
         "FullRecordDump": "switch for explicit unbounded records",
         "SkipRecords": "switch for schema/metadata-only collection",
-        "RedactLikelySecrets": "switch; recommended default for uploads",
+        "RedactLikelySecrets": "optional switch for explicitly requested redacted samples or unknown/non-DCOIR Airtable bases; not the DCOIR full-export default",
         "MaxRecordsPerTable": "integer cap; 0 means unbounded in FullRecords mode",
         "MetadataScope": "comma-separated BaseSchema,Tables,Fields,Views or All",
         "ProbeUnsupportedMetadata": "writes metadata coverage/unsupported-surface notes",
         "TableList": "optional comma-separated table names or table IDs"
       },
-      "validated_status": "validated by 2026-05-03 schema-only smoke, bounded live export, and full-record export artifacts. Latest full export produced 24 table schemas, 24 record files, and 1132 records with secret redaction enabled.",
-      "notes": "Read-only Airtable schema, metadata, and record export tool. Requires DCOIR_AIRTABLE_TOKEN and DCOIR_AIRTABLE_BASE_ID in Machine/System environment scope. Uses Dcoir.Airtable and the ChatGPT-friendly ZIP helper. Captures base schema, table metadata, field metadata/options, view metadata, records, manifests, command context, transcripts, and metadata coverage notes. Automations, extensions/apps, interfaces, scripting extension code, and workspace admin inventory are explicitly marked unsupported unless a future Airtable API endpoint and token scope are added. First diagnostic can use -ExportMode SchemaOnly -RedactLikelySecrets; full snapshot should use -ExportMode FullRecords -FullRecordDump -MetadataScope All -RedactLikelySecrets -ProbeUnsupportedMetadata."
+      "validated_status": "validated by 2026-05-03 schema-only smoke, bounded live export, and full-record export artifacts. Latest unredacted full export produced 24 table schemas, 24 record files, and 1134 records. Operator policy update: DCOIR Airtable contents are scrubbed upstream; future DCOIR full exports should run unredacted unless operator requests a redacted sample."
     }
   ]
 }
