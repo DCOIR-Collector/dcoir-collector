@@ -1,6 +1,6 @@
 # ChatGPT Exec Lane
 
-Status: initial active execution lane for reviewed operator-approved commands in GitHub Actions.
+Status: active execution lane for reviewed operator-approved commands in GitHub Actions.
 
 ## Purpose
 
@@ -12,7 +12,7 @@ This lane lets ChatGPT stage a reviewed command request for GitHub Actions to ex
 chatgpt_staging/exec_requests/<request_id>.json
 ```
 
-A request file triggers `.github/workflows/chatgpt-exec.yml` on push to `main`.
+A request file triggers `.github/workflows/chatgpt-exec.yml` on push to `main` when the request is introduced or restaged by a non-`[skip ci]` commit.
 
 ## Request contract
 
@@ -27,6 +27,7 @@ Required fields:
 Recommended fields:
 
 - `approved_at_utc`
+- `restaged_at_utc` when a request has to be nudged by a follow-up non-`[skip ci]` commit
 - `shell`: `powershell_5`, `pwsh`, or `cmd`
 - `timeout_seconds`
 - `artifact_retention_days`
@@ -51,6 +52,38 @@ The workflow generates these runner-local values automatically:
 - `DCOIR_CONFIG_DIR`
 
 Operator workstation path values should not be used for those generated runner-local variables in GitHub Actions.
+
+## Normal execution flow
+
+1. ChatGPT drafts the exact command.
+2. Operator approves the command in chat.
+3. ChatGPT stages an exec request under `chatgpt_staging/exec_requests/` or stages an apply-in payload that creates that request.
+4. `chatgpt-exec` runs the command on a Windows runner.
+5. The workflow commits a status report under `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`.
+6. The workflow uploads a short-retention artifact named `chatgpt-exec-<request_id>`.
+7. ChatGPT reads the report, retrieves the artifact if needed, records Airtable evidence, and then cleans status reports when safe.
+
+## Apply-in to exec handoff lane
+
+Use this lane when direct creation of an exec request is blocked or when a request should be staged through the governed apply-in bundle path.
+
+Observed validated procedure from `exec-20260503-airtable-schema-hashfix-002`:
+
+1. Build an apply-in ZIP payload whose `apply_manifest.json` creates exactly one file under `chatgpt_staging/exec_requests/<request_id>.json`.
+2. Stage the base64 ZIP at `chatgpt_staging/in/<apply_request_id>/payload.zip.b64`.
+3. Let `chatgpt-apply-in` apply the bundle. Verify its report at `chatgpt_staging/status_reports/chatgpt-apply-in/<apply_request_id>/workflow_report.md`.
+4. Verify the requested exec JSON now exists under `chatgpt_staging/exec_requests/`.
+5. Important: `chatgpt-apply-in` commits reports with `[skip ci]`. A request created by that commit may not trigger `chatgpt-exec` automatically.
+6. If the exec report does not appear after the bounded wait rule, restage the created exec request with a small non-`[skip ci]` update, such as adding or refreshing `restaged_at_utc`, using the same already-approved command content.
+7. Verify `chatgpt-exec` report at `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`.
+8. Treat the first missing report after restage as pending, not failed, until the bounded polling window expires.
+
+Validated source-basis examples:
+
+- apply-in request: `apply-20260503-exec-hashfix-validation-001`
+- exec request: `exec-20260503-airtable-schema-hashfix-002`
+- non-`[skip ci]` restage commit: `5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e`
+- exec report run id: `25287957928`
 
 ## Verification wait rule
 
