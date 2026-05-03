@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-03T16:20:41Z
+- generated_at_utc: 2026-05-03T16:51:16Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -111,7 +111,7 @@
 
 ## dcoir-decision-policy
 
-- source_tree_hash: `0a59bf105b068521dcf50a8c0301d5fe51aaf2c20a57e5be4a650775008bf0e1`
+- source_tree_hash: `b4ae460802701bd7e47b4e2f808f04498ef26d1a6ae76c8704f0282bd2054c0a`
 - release_zip_name: `dcoir-decision-policy.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
@@ -124,7 +124,7 @@
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
 - `references/airtable_preference_workflow.md` — `51e4394f8baa5a17bd6e7e621b41f9b414dd867624f21df0488fceef1aed9788`
 - `references/decision_learning_log.json` — `6a0a56d4e48c1c8e12bd9c24887471069e6b9459cd98ea32a8b9ab1df3073242`
-- `references/decision_matrix.md` — `c790ec64601adf4103e04ca4574a77ebe399d26156cf0aa9188f9087261f1ac1`
+- `references/decision_matrix.md` — `32ec576dd3f70b97f289308a667dc1ba6fd16642834efcdaf64449cd8fc2eb80`
 - `references/hard_stop_conditions.md` — `51e9acf4633133e0ed0ff4da85f86f2ce454bdbfc11d3db4cb7ea30a550fe5a5`
 - `references/operator_intent_learning.md` — `83682843960a428a1d90b1f340fb7d2b478e91c7ee9ab5ffc9974d03fdecef2e`
 - `references/operator_intent_matrix.md` — `bb711ba549fb50eb56abe17f684827bc8edac4f211281722ae545e7694412f20`
