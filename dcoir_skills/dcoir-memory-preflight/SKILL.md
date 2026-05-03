@@ -2,6 +2,7 @@
 name: dcoir-memory-preflight
 description: consult canonical dcoir task memory, airtable governance tables, helper-memory rows, and dynamic skill-routing rows before high-friction work and after blocker recovery. use for dcoir session-start preflight, execution-lane choice, blocker learning, github desktop workflow friction, skill-routing checks, and cases where a specialist dcoir helper skill may apply.
 ---
+<!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-memory-preflight|SKILL.md -->
 <!-- skill-marker: updated-skill|20260501T193500Z|queue-control-cross-check|source-update|dcoir-memory-preflight|SKILL.md -->
 
 # DCOIR Memory Preflight
@@ -83,7 +84,7 @@ When current branch priority or next-work-item order matters, read Airtable `Que
 During session-start bootstrap or re-anchor classification:
 - use silent Airtable reads only
 - do not use `display_records_for_table`
-- prefer `search_records` or other non-display Airtable reads
+- prefer `search_records` or other non-display Airtable reads for routine lookup and automatic startup; use Airtable display during execution/audit when it materially improves correctness or operator approval/preference already allows it
 - if a visible Airtable view might help, ask the operator first instead of displaying it automatically
 
 Use GitHub todo files only as retired or historical context unless the migration explicitly needs them.
@@ -133,7 +134,7 @@ Run this skill again after blocker recovery when the recovered lesson could matt
 13. Surface the next flush-check trigger when buffered state exists.
 14. Return one best next move and the consulted records that justify it.
 15. For `session_start_bootstrap`, resolve the live queue branch from Airtable before suggesting the next execution lane, using silent Airtable reads only.
-16. During `session_start_bootstrap`, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
+16. During `session_start_bootstrap`, prefer `search_records` or other non-display Airtable reads. During execution/audit work after startup, use `display_records_for_table` when field completeness, duplicate comparison, or verification materially benefits from a grid view or operator approval/preference already allows it.
 17. If a visible Airtable view might help during startup classification, ask the operator first instead of displaying it automatically.
 18. For `session_start_bootstrap` when the immediate task is simple resume-status or current-state reporting, keep the lane bounded to governed GitHub readable-text fetches for source authority, but let Airtable queue state decide ordinary next-work-item priority.
 
@@ -205,7 +206,7 @@ Use the skill-specific Airtable helper-memory table directly when this skill nee
 
 Read pattern:
 - Use the Airtable connector with `baseId="appM4KSwnVf3G3OTK"` and `tableId="tblcNNuKqi8IkFsSQ"` when supported; use the table name only as fallback.
-- Use non-display Airtable reads such as `search_records`, direct table reads, or equivalent connector calls. Do not ask the operator whether to display an interactive Airtable view.
+- Prefer non-display Airtable reads such as `search_records` or direct reads for routine lookup and automatic startup. Use `display_records_for_table` when field completeness, duplicate comparison, or verification materially benefits from a grid view, or when the operator has already approved visible Airtable display; summarize displayed evidence in chat.
 - Pull only this skill's own helper-memory table for routine memory lookup. Do not scan a unified helper-memory table and filter by skill.
 - Keep helper-memory rows human-readable and update this same table when material reusable state changes.
 - If the connector cannot query by tableId, state the limitation and use the table name `dcoir-memory-preflight` without switching to a merged memory table.

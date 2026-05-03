@@ -1,37 +1,42 @@
-AFRICOM_SOC_IR Project Instructions v22 Airtable Schema Aligned
+AFRICOM_SOC_IR Project Instructions
 
 Purpose
-Treat AFRICOM_SOC_IR as the current DCOIR workspace for the collector, prompt-pack, Gemini design, governed logs, Airtable operational state, helper-skill maintenance, and supporting assets. Airtable cutover and skill cutover are complete. This is the live operational model, not a migration plan.
+Treat AFRICOM_SOC_IR as the live DCOIR workspace for collector engineering, prompt-pack and Gemini design, governed logs, Airtable operational state, reusable operator tools, helper-skill maintenance, and supporting assets. Airtable is the live operational authority for state and workflow control. GitHub remains governed source, readback, packaging, tool-code, helper-skill source, and promoted history.
 
 Authority and startup
 - Project Instructions are the first bootstrap anchor.
-- Read CP-00_DCOIR_Airtable_First_Bootstrap_v4.txt second when present. CP-00 is a pointer only, not a source repository.
-- Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST is active startup/load-sequence authority.
-- Airtable is live authority for queue order, branch priority, resume-first state, active execution order, Plans, Work Items, Session Checkpoints, Idea Inbox, Operator Preferences, Validation Test Cases, Validation Evidence, Delete Queue, DCOIR Lifecycle Ledger, Admin Registry, Repo Surface Registry, Local Configuration Registry, and helper-skill durable memory where a table exists.
-- GitHub repo malwaredevil/dcoir-collector remains governed source/readback, helper-skill source parity target, source-code truth, packaging source, and promoted history.
-- Use GitHub only when the task explicitly requires repo source/readback, source-role resolution, source-code validation, packaging, promoted-history comparison, or explicit repo readback.
+- Read CP-00_DCOIR_Airtable_First_Bootstrap.txt second when present. CP-00 is a pointer only, not a source repository.
+- Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST is the active startup/load-sequence authority.
+- Airtable is live authority for queue order, branch priority, resume-first state, active execution order, Plans, Work Items, Session Checkpoints, Idea Inbox, Operator Preferences, Validation Test Cases, Validation Evidence, Delete Queue, DCOIR Lifecycle Ledger, Admin Registry, Repo Surface Registry, Local Configuration Registry, Operator Tools Registry, and helper-skill durable memory where a table exists.
+- GitHub repo malwaredevil/dcoir-collector is governed source/readback, helper-skill source parity target, source-code truth, packaging source, reusable tool-code source, and promoted history.
+- Use GitHub only when the task requires repo source/readback, source-role resolution, source-code validation, packaging, promoted-history comparison, GitHub Desktop bundle generation, or explicit repo readback.
 - Do not fetch GitHub CP-01/CP-02 during normal startup when CONTROL-STARTUP-AIRTABLE-FIRST is present/current.
 - If Project Instructions, CP-00, Airtable Governance Control Plane, or live Airtable state conflict on startup/live queue behavior, stop and report the exact conflict. If GitHub CP/current-state files conflict with Airtable live state, prefer Airtable and report GitHub as promoted-history drift unless doing source-authority comparison.
 
 Current Airtable schema rules
 - Use live Airtable schema readback before assuming a table exists.
+- Invoke dcoir-airtable-schema-cache during startup/re-anchor as a schema-readiness accelerator, but do not treat the cache as write/delete/migration authority.
 - Do not require Plan Tasks, Plan Checkpoints, Skill State Registry, Schema Registry, Tracking Registry, Repo File Coverage Detail, or Retained Repo Manifest unless live schema readback proves the table exists for the current task.
 - Use Work Items for executable task rows. Use Plans for multi-step parent scope. Use Session Checkpoints for resume continuity.
 - Use Admin Registry and helper-specific memory tables for skill-state and schema-governance housekeeping unless a dedicated current table exists.
+- Use dcoir-memory-preflight SKILLROUTE-* rows as the dynamic helper-skill routing catalog. Do not hardcode the installed-skill list into Project Instructions or helper skills.
+- Use Operator Tools Registry for reusable operator-side tool discovery. GitHub operator_tools/ remains source of truth for reusable tool code.
 - Use Repo Surface Registry for repo-surface classification and keep/delete/source-role evidence.
 - Use DCOIR Lifecycle Ledger as readback/history, not live work authority.
 - Use Delete Queue for Airtable deletion requests and dependency-safe deletion processing.
-- Use Local Configuration Registry only for configuration names and safe reference guidance; never store secrets or token values there.
+- Use Local Configuration Registry only for configuration names and safe reference guidance. Never store secrets or token values there.
 
 Session-start bootstrap
 On the first substantive AFRICOM_SOC_IR/DCOIR turn of each new session unless outside scope or blocked:
 1. Use Project Instructions.
-2. Read CP-00_DCOIR_Airtable_First_Bootstrap_v4.txt when present.
+2. Read CP-00_DCOIR_Airtable_First_Bootstrap.txt when present.
 3. Read Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST.
 4. Invoke dcoir-session-resume.
 5. Invoke dcoir-memory-preflight.
-6. Silently read Airtable Queue Control, Work Items, active Plans, Session Checkpoints, Operator Preferences, Admin Registry skill-state rows, relevant helper-memory tables, and any task-specific current tables such as Delete Queue, Validation Evidence, or DCOIR Lifecycle Ledger.
-7. Read GitHub only when the task requires repo source/readback, source-code validation, package generation, promoted-history comparison, or explicit repo readback.
+6. Invoke dcoir-airtable-schema-cache to refresh or validate the local schema cache before broad Airtable reads.
+7. During automatic startup/re-anchor, prefer compact non-display Airtable reads for Queue Control, Work Items, active Plans, Session Checkpoints, Operator Preferences, Admin Registry skill-state rows, relevant helper-memory tables, SKILLROUTE-* rows when skill routing may apply, Operator Tools Registry when reusable local tools may apply, and task-specific current tables such as Delete Queue, Validation Evidence, or DCOIR Lifecycle Ledger. During execution, audit, cleanup, duplicate comparison, or verification, Airtable embedded table display is allowed when it materially improves correctness or when the operator has approved it; summarize displayed evidence in chat.
+8. Read GitHub only when the task requires repo source/readback, source-code validation, package generation, promoted-history comparison, GitHub Desktop bundle generation, or explicit repo readback.
+
 Do not wait for resume/preflight. Do not let CP-00, Project attachments, GitHub todo files, or older CP narrative override Airtable live authority.
 
 Idea and plan lifecycle
@@ -44,11 +49,16 @@ Idea and plan lifecycle
 Delete Queue rule
 Use Delete Queue for Airtable record deletion. Do not delete records just because they look stale. Check dependency order first. Queue child/dependent records before parent records when relationships require it. Process only approved pending queue rows according to current Delete Queue fields. Verify absence and preserve verification notes or ledger history.
 
-Helper-skill boundary
-DCOIR helper skills are Project-side authoring, QA, packaging, workflow, and maintenance aids. Use the relevant dcoir-* helper skill when a Project task clearly matches it. When a helper skill changes materially, deliver affected skill package, verify marker/readback, rerun relevant regression, refresh governed source if durable workflow changed, and update Admin Registry skill-state rows or helper-specific memory tables as needed. Treat skill editor as primary truth for installed-skill verification.
+Helper-skill and reusable-tool boundary
+DCOIR helper skills are project-side authoring, QA, packaging, workflow, routing, and maintenance aids. Use the relevant dcoir-* helper skill when a project task clearly matches it. dcoir-memory-preflight should consult Airtable SKILLROUTE-* rows for dynamic skill routing. When a helper skill changes materially, deliver the affected skill package, verify marker/readback, rerun relevant regression, refresh governed source if durable workflow changed, and update Admin Registry skill-state rows or helper-specific memory tables as needed. Treat the skill editor as primary truth for installed-skill verification.
+
+Reusable operator tools are code-owned in GitHub under operator_tools/ and discovered through Operator Tools Registry. Do not recreate one-off local scripts before checking the registry and the GitHub Desktop lane advisor when local git, GitHub Desktop, or tooling friction appears.
 
 Manual delivery preference
 Deliver only affected skills and affected repo-relative files unless asked for more. If multiple skills are affected, deliver one outer ZIP containing only affected per-skill ZIPs named after live skills, no subfolders. GitHub Desktop repo-update bundles contain only affected repo-relative folders/files with no wrapper root and include suggested commit Summary unless overridden.
+
+Project attachment filename rule
+Project attachments use stable filenames. When updating these project-space attachments, return the same filenames so Project Instructions can remain stable.
 
 Resume behavior
 When asked to resume/report state, summarize: stable baseline, Airtable startup authority, governed GitHub source/readback role, retained supporting assets, governance state, validated status, Airtable queue authority, active Airtable plan/work branch, refresh watchlist, and one next move.

@@ -2,6 +2,7 @@
 name: dcoir-live-test-remediation-planner
 description: turn dcoir live-test findings into ranked remediation plans with impacted files, helper-skill refreshes, regression requirements, delivery posture, and stop conditions.
 ---
+<!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-live-test-remediation-planner|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-live-test-remediation-planner|SKILL.md -->
 
 # DCOIR Live Test Remediation Planner
@@ -64,7 +65,7 @@ Use the skill-specific Airtable helper-memory table directly when this skill nee
 
 Read pattern:
 - Use the Airtable connector with `baseId="appM4KSwnVf3G3OTK"` and `tableId="tbltsNeLytMKgmJft"` when supported; use the table name only as fallback.
-- Use non-display Airtable reads such as `search_records`, direct table reads, or equivalent connector calls. Do not ask the operator whether to display an interactive Airtable view.
+- Prefer non-display Airtable reads such as `search_records` or direct reads for routine lookup and automatic startup. Use `display_records_for_table` when field completeness, duplicate comparison, or verification materially benefits from a grid view, or when the operator has already approved visible Airtable display; summarize displayed evidence in chat.
 - Pull only this skill's own helper-memory table for routine memory lookup. Do not scan a unified helper-memory table and filter by skill.
 - Keep helper-memory rows human-readable and update this same table when material reusable state changes.
 - If the connector cannot query by tableId, state the limitation and use the table name `dcoir-live-test-remediation-planner` without switching to a merged memory table.

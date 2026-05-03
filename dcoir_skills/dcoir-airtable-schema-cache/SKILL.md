@@ -2,7 +2,7 @@
 name: dcoir-airtable-schema-cache
 description: cache, normalize, inspect, compare, and refresh africom_soc_ir / dcoir airtable schema readback during startup, re-anchor, resume, and schema-sensitive Airtable work. use when dcoir work needs table ids, field ids, field types, select options, linked-record details, schema freshness checks, reduced airtable roundtrips, or a bounded schema snapshot before using airtable connectors, helper-memory tables, delete queue, lifecycle ledger, plans, work items, admin registry, repo surface registry, validation evidence, or local configuration registry.
 ---
-
+<!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-airtable-schema-cache|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T203000Z|startup-reanchor-schema-cache|source-update|dcoir-airtable-schema-cache|SKILL.md -->
 
 # DCOIR Airtable Schema Cache
@@ -68,7 +68,7 @@ Startup output should be brief:
 - retired table assumptions detected, if any
 - live-readback-required warning for writes, deletes, or migrations
 
-Do not display Airtable UI during startup or re-anchor. Use silent schema readback and compact text output only.
+During automatic startup/re-anchor, keep schema readback compact and non-display by default. During execution, audit, cleanup, duplicate comparison, or verification, Airtable display views may be used when they materially improve correctness or when the operator has already approved visible Airtable display; summarize displayed evidence in chat.
 
 ## Workflow
 1. During startup or re-anchor, run schema readiness automatically when the Project Instructions or CP-00 sequence invokes this skill. During normal task work, decide whether a cache helps when schema lookup, table/field mapping, or repeated Airtable access is slowing the task or creating uncertainty.

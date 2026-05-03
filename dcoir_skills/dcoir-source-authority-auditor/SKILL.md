@@ -2,6 +2,7 @@
 name: dcoir-source-authority-auditor
 description: audit whether a requested dcoir task is grounded in current authoritative source sets and stop on unsafe authority drift.
 ---
+<!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-source-authority-auditor|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-source-authority-auditor|SKILL.md -->
 
 # DCOIR Source Authority Auditor
@@ -40,7 +41,7 @@ This skill verifies the control plane, checks current-versus-historical file han
 ## Three-division Airtable authority surfaces
 When a source-authority audit touches current-state boundaries, repo cleanup, skill-source governance, startup behavior, or migration from GitHub-readable state into Airtable, include Airtable `Governance Control Plane`, `Repo Surface Registry`, `Repo Surface Registry supporting evidence`, `Repo Surface Registry retained-state evidence`, Queue Control, Work Items, active Plans, and Work Items for task execution before any GitHub CP fallback.
 
-Use silent Airtable reads only unless the operator explicitly asks for visible tables.
+Prefer compact non-display Airtable reads during automatic startup/re-anchor and routine lookup. During execution, audit, cleanup, duplicate comparison, or verification, use Airtable display views when they materially improve correctness or when the operator has already approved visible Airtable display; summarize displayed evidence in chat.
 
 Table roles:
 - `Governance Control Plane`: durable Airtable governance reference for the GitHub / Airtable / ChatGPT Project authority split
@@ -99,7 +100,7 @@ Use the skill-specific Airtable helper-memory table directly when this skill nee
 
 Read pattern:
 - Use the Airtable connector with `baseId="appM4KSwnVf3G3OTK"` and `tableId="tblggXJoCuDK6cHg5"` when supported; use the table name only as fallback.
-- Use non-display Airtable reads such as `search_records`, direct table reads, or equivalent connector calls. Do not ask the operator whether to display an interactive Airtable view.
+- Prefer non-display Airtable reads such as `search_records` or direct reads for routine lookup and automatic startup. Use `display_records_for_table` when field completeness, duplicate comparison, or verification materially benefits from a grid view, or when the operator has already approved visible Airtable display; summarize displayed evidence in chat.
 - Pull only this skill's own helper-memory table for routine memory lookup. Do not scan a unified helper-memory table and filter by skill.
 - Keep helper-memory rows human-readable and update this same table when material reusable state changes.
 - If the connector cannot query by tableId, state the limitation and use the table name `dcoir-source-authority-auditor` without switching to a merged memory table.

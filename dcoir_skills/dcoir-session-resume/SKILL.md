@@ -2,6 +2,7 @@
 name: dcoir-session-resume
 description: resume the africom_soc_ir / dcoir workspace from the current airtable-first operational authority model and current queue state.
 ---
+<!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-session-resume|SKILL.md -->
 <!-- skill-marker: updated-skill|20260501T193500Z|queue-control-drift-gate|source-update|dcoir-session-resume|SKILL.md -->
 
 # DCOIR Session Resume
@@ -53,7 +54,7 @@ For that readback:
 - prefer active implemented preferences scoped to `DCOIR workspace` or `both`
 - surface only the few operator preferences that materially affect response style, workflow branching, or execution posture for the current session
 - treat those surfaced preferences as current session defaults unless the operator overrides them in the live branch
-- do not render Airtable UI just to prove the preference read happened
+- do not render Airtable UI just to prove the preference read happened; use display only when it materially improves execution, audit, duplicate comparison, or verification
 - do not use `display_records_for_table` during startup or re-anchor preference reads; prefer silent Airtable reads such as `search_records` or equivalent non-display retrieval
 - if a visible Airtable view would help, ask the operator first instead of showing it automatically
 - when no relevant active operator preference is found, say that plainly and continue with the normal startup chain
@@ -96,7 +97,7 @@ Default fast path order:
 
 For this resume-status fast path:
 - prefer governed GitHub readable-text fetches only
-- keep Airtable reads silent by default and do not render Airtable UI during resume-status or startup work
+- keep Airtable reads compact/non-display by default during resume-status or automatic startup work; use Airtable display during execution/audit when it materially improves correctness or operator approval/preference already allows it
 - do not use `display_records_for_table` during resume-status or startup work; prefer `search_records` or other non-display Airtable reads
 - if a visible Airtable view might materially help, ask the operator first instead of displaying it automatically
 - do not consider repo clone, archive download, raw web fetch, container execution, or local script execution before trying the governed GitHub connector path
@@ -161,9 +162,9 @@ Use the first available bootstrap anchor in this order:
 - Do not evaluate alternate acquisition lanes before trying the governed GitHub connector path for resume-only status work.
 - Do not broaden a simple resume-status request into clone, container, archive-download, raw-web, or local-script work unless the primary governed readable-text lane actually fails or cannot resolve the drift gate.
 - Do not skip the Airtable leftover recovery steps just because the governed resume summary already looks stable; carry-forward state must still be checked.
-- Do not render Airtable UI during startup or re-anchor unless the operator explicitly asked for it or explicitly approved it after being asked.
+- During automatic startup/re-anchor, keep Airtable reads compact and non-display by default. During execution, audit, cleanup, duplicate comparison, or verification, Airtable display views may be used when they materially improve correctness or when the operator has already approved visible Airtable display; summarize displayed evidence in chat.
 - Do not use `display_records_for_table` during startup or re-anchor.
-- Treat “ask before showing Airtable” as the only override path for visible Airtable displays during startup or re-anchor.
+- Treat automatic startup/re-anchor as compact and non-display by default. Treat operator approval/preference and materially useful execution/audit verification as valid override paths for visible Airtable display.
 
 ## Output contract
 Return sections in this exact order:

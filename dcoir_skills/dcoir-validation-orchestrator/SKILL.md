@@ -2,6 +2,7 @@
 name: dcoir-validation-orchestrator
 description: build explicit validation plans for dcoir changes and workflows with deep regression as default for testable changes.
 ---
+<!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-validation-orchestrator|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-validation-orchestrator|SKILL.md -->
 
 # DCOIR Validation Orchestrator
@@ -65,7 +66,7 @@ Use the skill-specific Airtable helper-memory table directly when this skill nee
 
 Read pattern:
 - Use the Airtable connector with `baseId="appM4KSwnVf3G3OTK"` and `tableId="tbls9O1B0Rs8YvTAj"` when supported; use the table name only as fallback.
-- Use non-display Airtable reads such as `search_records`, direct table reads, or equivalent connector calls. Do not ask the operator whether to display an interactive Airtable view.
+- Prefer non-display Airtable reads such as `search_records` or direct reads for routine lookup and automatic startup. Use `display_records_for_table` when field completeness, duplicate comparison, or verification materially benefits from a grid view, or when the operator has already approved visible Airtable display; summarize displayed evidence in chat.
 - Pull only this skill's own helper-memory table for routine memory lookup. Do not scan a unified helper-memory table and filter by skill.
 - Keep helper-memory rows human-readable and update this same table when material reusable state changes.
 - If the connector cannot query by tableId, state the limitation and use the table name `dcoir-validation-orchestrator` without switching to a merged memory table.

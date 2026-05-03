@@ -65,4 +65,4 @@ If the operator has already given a direct next-step instruction, keep this sect
 - During startup bootstrap and resume-status work, read Airtable silently by default.
 - Do not use `display_records_for_table` during startup bootstrap or re-anchor.
 - Prefer `search_records` or other non-display Airtable reads for Queue Control, active Plans, active Work Items, and Operator Preferences.
-- If a visible Airtable view might help, ask the operator first and display Airtable only after explicit permission.
+- If a visible Airtable view materially improves execution, audit, duplicate comparison, or verification, use it when operator approval/preference already allows display; otherwise ask before displaying.

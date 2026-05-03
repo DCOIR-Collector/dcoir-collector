@@ -29,5 +29,5 @@ Recover Airtable-backed leftovers before fresh execution starts so session conti
 ## Airtable display posture
 - Automatic startup recovery must stay silent by default.
 - Do not use `display_records_for_table` during automatic startup recovery.
-- Prefer `search_records` or other non-display Airtable reads during automatic startup recovery.
+- Prefer `search_records` or other non-display Airtable reads during automatic startup recovery; use Airtable display during execution/audit when it materially improves correctness or operator approval/preference already allows it.
 - If a visible Airtable view might help, ask the operator first and show Airtable only after explicit approval.

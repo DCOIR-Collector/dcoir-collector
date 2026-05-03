@@ -2,6 +2,7 @@
 name: dcoir-session-tracker
 description: maintain session-local dcoir tracker state with airtable-first durable checkpoints, idea capture, promotion candidates, and safe handoff exports.
 ---
+<!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-session-tracker|SKILL.md -->
 <!-- skill-marker: updated-skill|20260430T214500Z|skill-pass-maintenance|source-update|dcoir-session-tracker|SKILL.md -->
 
 # DCOIR Session Tracker
@@ -335,9 +336,9 @@ Rules:
 - do not create or refresh GitHub-backed helper-state snapshots for `dcoir-session-tracker`
 
 ## Truth rules
-- during automatic startup recovery, do not render Airtable UI unless the operator explicitly asked for it or explicitly approved it after being asked
+- during automatic startup recovery, keep Airtable retrieval compact and non-display by default; during execution/audit work, use Airtable display when it materially improves field-completeness comparison, duplicate review, or verification, or when operator approval/preference already allows it
 - during automatic startup recovery, do not use `display_records_for_table`
-- prefer `search_records` or other non-display Airtable reads during automatic startup recovery
+- prefer `search_records` or other non-display Airtable reads for routine lookup and automatic startup; use Airtable display during execution/audit when it materially improves correctness or operator approval/preference already allows it during automatic startup recovery; use Airtable display during execution/audit when it materially improves correctness or operator approval/preference already allows it
 - do not claim cross-session memory unless the state was exported and later re-imported, or the contents were promoted into governed Project files
 - do not treat an imported markdown artifact as control-plane authority
 - do not let session notes overwrite CP, DOC, LOG, PP, ST, or RB authority rules

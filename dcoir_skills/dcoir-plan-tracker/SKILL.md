@@ -2,6 +2,7 @@
 name: dcoir-plan-tracker
 description: plan, track, resume, and document multi-step africom_soc_ir / dcoir work with airtable-first durable execution state. use when creating, resuming, pausing, closing, or updating a plan; when any work item changes status; when a work item points to a parent plan; when the user asks for plan state, active task, closeout, checkpoint, or durable next move; or when airtable plan/work-item fields appear stale or out of sync.
 ---
+<!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-plan-tracker|SKILL.md -->
 <!-- skill-marker: updated-skill|20260501T193500Z|queue-control-active-plan-enforcement|source-update|dcoir-plan-tracker|SKILL.md -->
 
 # DCOIR Plan Tracker
@@ -131,7 +132,7 @@ Startup recovery workflow:
 2. If multiple open plans exist, prefer the most recently updated plan unless the control plane or session-tracker leftover scan points to a different plan explicitly.
 3. Read matching `Work Items for task execution` rows and the newest relevant `Session Checkpoints or DCOIR Lifecycle Ledger events` rows for the candidate plan.
 4. Surface the active task, blockers, buffered promotion candidates, and best next move from Airtable-backed plan state before trusting a missing or stale local `plan_state.json` cache.
-5. During automatic startup plan recovery, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
+5. During automatic startup plan recovery, prefer `search_records` or other non-display Airtable reads. During execution/audit work after startup, use `display_records_for_table` when field completeness, duplicate comparison, or verification materially benefits from a grid view or operator approval/preference already allows it.
 6. If a visible Airtable view might help, ask the operator first instead of displaying it automatically.
 7. If no open Airtable-backed plan state exists, say so plainly and do not force plan recovery unnecessarily.
 
@@ -276,8 +277,8 @@ Supported commands include:
 6. At the beginning of each new session that uses a plan, prefer Airtable-backed plan state first and then run `scripts/ensure_plan_state.py` only when a local plan cache is useful for deterministic rendering or local proof.
 7. Read `00_index.md`, `05_resume_state.md`, Airtable-backed plan state, and `plan_state.json` when available before resuming.
 8. Update Airtable durable state first and refresh markdown or local JSON mirrors as needed whenever the plan or any child Work Item changes.
-9. During startup recovery or re-anchor-related plan reads, keep Airtable retrieval silent and do not render Airtable UI unless the operator explicitly asked for it or explicitly approved it after being asked.
-10. During startup recovery or re-anchor-related plan reads, do not use `display_records_for_table`; prefer `search_records` or other non-display Airtable reads.
+9. During startup recovery or re-anchor-related plan reads, keep Airtable retrieval compact and non-display by default. During execution/audit work, use Airtable display when it materially improves field-completeness comparison, duplicate review, or verification, or when operator approval/preference already allows it.
+10. During startup recovery or re-anchor-related plan reads, prefer `search_records` or other non-display Airtable reads. During execution/audit work after startup, use `display_records_for_table` when field completeness, duplicate comparison, or verification materially benefits from a grid view or operator approval/preference already allows it.
 11. Before any GitHub write that depends on buffered plan state, run a bounded flush/manicure check that surfaces Airtable-backed durable state, promotion candidates, what should remain local, the next flush trigger, one best next move, and any staged governed updates that should land in the same grouped push.
 12. Decide whether tracker state should be written immediately or buffered until the next flush-check trigger, but do not rely on local JSON alone when continuity really matters.
 13. When the active plan becomes the live execution branch, update Airtable `Plans`, `Work Items`, and the active Airtable `Queue Control` record in the same bounded Airtable pass.
@@ -462,9 +463,9 @@ When using this skill:
 - prefer one best next move over broad option lists
 
 ## Hard rules
-- during automatic startup plan recovery, do not render Airtable UI unless the operator explicitly asked for it or explicitly approved it after being asked
+- during automatic startup plan recovery, keep Airtable retrieval compact and non-display by default; during execution/audit work, use Airtable display when it materially improves field-completeness comparison, duplicate review, or verification, or when operator approval/preference already allows it
 - during automatic startup plan recovery, do not use `display_records_for_table`
-- prefer `search_records` or other non-display Airtable reads during automatic startup plan recovery
+- prefer `search_records` or other non-display Airtable reads for routine lookup and automatic startup; use Airtable display during execution/audit when it materially improves correctness or operator approval/preference already allows it during automatic startup plan recovery; use Airtable display during execution/audit when it materially improves correctness or operator approval/preference already allows it
 - do not treat plan state as control-plane authority
 - do not skip decision-policy when branch choice is unresolved
 - do not skip memory-preflight for high-friction github-family work
