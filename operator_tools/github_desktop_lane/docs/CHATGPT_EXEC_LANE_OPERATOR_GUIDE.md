@@ -54,14 +54,17 @@ Validated procedure:
 3. Let `chatgpt-apply-in` run and verify its report under `chatgpt_staging/status_reports/chatgpt-apply-in/<apply_request_id>/workflow_report.md`.
 4. Read back the new exec request file.
 5. Watch for `[skip ci]`: apply-in report commits use `[skip ci]`, so the newly created exec request may not trigger `chatgpt-exec` from that commit.
-6. If no exec report appears after the normal wait window, restage the same already-approved exec request with a small non-`[skip ci]` update such as `restaged_at_utc`.
-7. Verify the exec report under `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`.
-8. Record evidence and clean status reports only after readback.
+6. If no exec report appears after the normal wait window, use the GitHub connector `update_file` action on the already-created exec request JSON. Make a tiny metadata-only change such as adding or refreshing `restaged_at_utc`, preserve the exact already-approved command fields, and use a commit message without `[skip ci]`.
+7. This GitHub connector `update_file` restage is the validated step that kicked off `chatgpt-exec`; do not assume apply-in alone was enough unless the exec report appears without restage.
+8. Verify the exec report under `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`.
+9. Record evidence and clean status reports only after readback.
 
 Known validated example:
 
 - apply-in request id: `apply-20260503-exec-hashfix-validation-001`
 - exec request id: `exec-20260503-airtable-schema-hashfix-002`
+- GitHub connector action that triggered exec: `update_file` on `chatgpt_staging/exec_requests/exec-20260503-airtable-schema-hashfix-002.json`
+- metadata-only field used: `restaged_at_utc`
 - restage commit: `5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e`
 - exec run id: `25287957928`
 
