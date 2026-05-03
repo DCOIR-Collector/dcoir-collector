@@ -1,6 +1,6 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$script:DcoirAirtableVersion = '2026-05-03.3'
+$script:DcoirAirtableVersion = '2026-05-03.4'
 
 function Get-DcoirAirtableVersion {
     [CmdletBinding()]
@@ -147,7 +147,11 @@ function Get-DcoirAirtableRecords {
             if ($MaxRecords -gt 0 -and $records.Count -ge $MaxRecords) { break }
         }
         if ($MaxRecords -gt 0 -and $records.Count -ge $MaxRecords) { break }
-        $offset = $result.offset
+        $nextOffset = $null
+        if ($null -ne $result -and $null -ne $result.PSObject.Properties['offset']) {
+            $nextOffset = [string]$result.offset
+        }
+        $offset = $nextOffset
     } while (-not [string]::IsNullOrWhiteSpace($offset))
     return @($records.ToArray())
 }
