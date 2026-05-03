@@ -2,6 +2,7 @@
 name: dcoir-github-desktop-lane-advisor
 description: advise and maintain reusable africom_soc_ir / dcoir operator-side github desktop lane tools. use when the operator has a local git/github desktop problem, needs a targeted or text-only repo snapshot, needs a reusable powershell helper, asks which local helper tool to run, wants a tool captured instead of one-off chat code, needs github actions orchestrator launcher guidance, or needs operator_tools/github_desktop_lane repo files and airtable operator tools registry kept aligned.
 ---
+<!-- skill-marker: updated-skill|20260503T165000Z|blocked-action-recovery-ladder|source-update|dcoir-github-desktop-lane-advisor|SKILL.md -->
 <!-- skill-marker: updated-skill|20260501T115800Z|operator-tools-module-split|source-update|dcoir-github-desktop-lane-advisor|SKILL.md -->
 # DCOIR GitHub Desktop Lane Advisor
 
@@ -40,7 +41,16 @@ Before recommending or creating a tool, read:
 - `Admin Registry` if skill-state or installed-skill awareness matters.
 - `dcoir-memory-preflight` only when a blocker signature or reusable lesson needs cross-skill routing.
 
-Use non-display reads by default. Do not show Airtable grids unless the operator asks.
+Use non-display reads by default. Show Airtable grids only when the operator asks, when verification materially benefits from a grid, or when visible Airtable display is already approved by current project guidance.
+
+## Blocked-action recovery ladder
+When a direct GitHub/API/connector repo update is blocked, partially blocked, or unverified, do not accept the block and move on. Use this bounded ladder:
+1. Direct connector write first when safe and supported.
+2. Retry once with corrected bounded inputs, or use the nearest equivalent connector operation, when the failure is a stale SHA, path mismatch, transient API issue, or simple argument mistake.
+3. Switch to the staged ChatGPT apply-in/GitHub Actions lane when direct write is blocked by connector safety, write-shape limits, unsupported multi-file changes, or unreliable verification, and when the workflow supports the target path.
+4. Switch to a GitHub Desktop/manual repo-update bundle when staged apply-in is unavailable, unsafe, blocked, or unverified.
+5. For manual repo-update bundles, include only affected repo-relative files with no wrapper root and no meta/instruction files. Put suggested commit summaries in chat/Airtable only.
+6. Preserve failure logs/reports and update Airtable whenever a lane fails. Verify success by GitHub readback, workflow report, logs, or file fetch before closing the task.
 
 ## Module-first and harness limits
 Shared behavior belongs in modules/tools, not wrapper workarounds.
@@ -87,7 +97,7 @@ When creating or updating a durable tool:
 4. Add or update `operator_tools/github_desktop_lane/tool_catalog.json`.
 5. Add or update README usage.
 6. Add or update the Airtable `Operator Tools Registry` row.
-7. Provide a GitHub Desktop bundle unless an approved direct GitHub write lane is active.
+7. Choose the delivery lane using the blocked-action recovery ladder: direct connector write, then staged apply-in if supported, then GitHub Desktop/manual bundle if automation is blocked or unverified.
 8. Ask the operator to run the tool locally only after the repo update is applied.
 9. Record validation evidence before promotion.
 
@@ -131,6 +141,13 @@ For tool recommendations, respond with:
 4. PowerShell launcher
 5. Expected upload/output
 6. Stop conditions
+
+For blocked GitHub/repo update recovery, respond with:
+1. Failed lane and evidence
+2. Bounded retry or alternate lane chosen
+3. Next lane in the ladder
+4. Verification evidence required
+5. Airtable state updated
 
 For new tool candidates, respond with:
 1. Reusable pattern
