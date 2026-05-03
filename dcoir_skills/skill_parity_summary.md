@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-03T10:56:42Z
+- generated_at_utc: 2026-05-03T16:18:32Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -201,13 +201,13 @@
 
 ## dcoir-local-config-registry-maintainer
 
-- source_tree_hash: `24d66aae0dad859c0450dda3a2ab72967cb917f0b28152d469718a086bd1f677`
+- source_tree_hash: `81a99295761aacf2eadc5e40ff69bacce23b11c23b50edfb52e4eeb7f56bfe7f`
 - release_zip_name: `dcoir-local-config-registry-maintainer.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `5`
 
-- `SKILL.md` — `df092747f85d5033770aca4c72e2664a843594dc162a84df060536d94a683bb5`
+- `SKILL.md` — `0e80732134b9e9d6d3044aef603026c4deaec1b5db688ca53612757062f937c4`
 - `agents/openai.yaml` — `0dc4a80455a8656935055ae888655fe9b60127784b79576e2f35d27ca056095b`
 - `assets/icon.svg` — `3aaefde839a05a3c2afbc138aac4a658e50ab10713be77cb6b327cbb692b7c7a`
 - `references/local_config_registry_contract.md` — `0e7d6fef04b4f0473bc4e4e7d93746e5b42ff98d943d7736e4039135bb05345d`
