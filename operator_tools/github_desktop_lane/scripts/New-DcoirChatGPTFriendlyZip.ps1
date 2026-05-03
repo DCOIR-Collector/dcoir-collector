@@ -11,12 +11,27 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$Script:DcoirChatGPTFriendlyZipVersion = "2026-05-01.2"
+$Script:DcoirChatGPTFriendlyZipVersion = "2026-05-03.1"
 
 function Get-DcoirFileSha256 {
     param([Parameter(Mandatory = $true)][string]$Path)
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $null }
-    return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
+
+    $getFileHash = Get-Command -Name Get-FileHash -ErrorAction SilentlyContinue
+    if ($getFileHash) {
+        return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
+    }
+
+    $stream = [System.IO.File]::OpenRead($Path)
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $hash = $sha.ComputeHash($stream)
+        return ([BitConverter]::ToString($hash) -replace '-', '').ToLowerInvariant()
+    }
+    finally {
+        $sha.Dispose()
+        $stream.Dispose()
+    }
 }
 
 function Get-DcoirRelativePath {
