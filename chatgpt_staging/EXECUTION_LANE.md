@@ -74,14 +74,17 @@ Observed validated procedure from `exec-20260503-airtable-schema-hashfix-002`:
 3. Let `chatgpt-apply-in` apply the bundle. Verify its report at `chatgpt_staging/status_reports/chatgpt-apply-in/<apply_request_id>/workflow_report.md`.
 4. Verify the requested exec JSON now exists under `chatgpt_staging/exec_requests/`.
 5. Important: `chatgpt-apply-in` commits reports with `[skip ci]`. A request created by that commit may not trigger `chatgpt-exec` automatically.
-6. If the exec report does not appear after the bounded wait rule, restage the created exec request with a small non-`[skip ci]` update, such as adding or refreshing `restaged_at_utc`, using the same already-approved command content.
-7. Verify `chatgpt-exec` report at `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`.
-8. Treat the first missing report after restage as pending, not failed, until the bounded polling window expires.
+6. If the exec report does not appear after the bounded wait rule, use the GitHub connector `update_file` action on the already-created exec request JSON. Make a tiny metadata-only change such as adding or refreshing `restaged_at_utc`, preserve the exact already-approved `command` and `approved_command_preview`, and use a commit message that does not contain `[skip ci]`.
+7. This metadata-only GitHub connector `update_file` restage is the step that kicked off `chatgpt-exec` in the validated lane. Do not describe the lane as apply-in alone unless the exec report appears without the restage.
+8. Verify `chatgpt-exec` report at `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`.
+9. Treat the first missing report after restage as pending, not failed, until the bounded polling window expires.
 
 Validated source-basis examples:
 
 - apply-in request: `apply-20260503-exec-hashfix-validation-001`
 - exec request: `exec-20260503-airtable-schema-hashfix-002`
+- GitHub connector action that triggered exec after apply-in: `update_file` on `chatgpt_staging/exec_requests/exec-20260503-airtable-schema-hashfix-002.json`
+- metadata-only field used: `restaged_at_utc`
 - non-`[skip ci]` restage commit: `5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e`
 - exec report run id: `25287957928`
 
