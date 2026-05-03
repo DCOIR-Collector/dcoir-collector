@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-03T16:53:08Z",
+  "generated_at_utc": "2026-05-03T17:17:33Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -1143,17 +1143,17 @@
     },
     "dcoir-session-resume": {
       "source_root": "dcoir-session-resume",
-      "source_tree_hash": "3d5dbddeb5ff65128a81f5e3201cacc1d36a54571599bf117fcb37a085c76ec4",
+      "source_tree_hash": "98019349a4b47f7456a49f5a86cecfb7f5c2b3d72320775fea38aa3143487964",
       "release_zip_name": "dcoir-session-resume.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 5,
-      "total_bytes": 28336,
+      "total_bytes": 16029,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "6b8546711771857a3abfcf150c160d7bdd85581149d0885b04c1bd4bd604c91e",
-          "size_bytes": 19269
+          "sha256": "e93aed3dbc687dec048c1111094918089a5cf8095b20c99b929f22e48b359e4d",
+          "size_bytes": 6962
         },
         {
           "path": "agents/openai.yaml",
