@@ -3,6 +3,7 @@
   "request_id": "exec-20260503-airtable-schema-hashfix-002",
   "operator_approved": true,
   "approved_at_utc": "2026-05-03T19:25:00Z",
+  "restaged_at_utc": "2026-05-03T19:32:00Z",
   "shell": "powershell_5",
   "timeout_seconds": 1800,
   "artifact_retention_days": 3,
