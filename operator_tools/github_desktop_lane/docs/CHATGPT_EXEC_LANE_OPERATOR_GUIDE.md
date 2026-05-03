@@ -27,9 +27,10 @@ Add repository secrets for the DCOIR variables that the runner should be able to
    - `DCOIR_GITHUB_CL_TOKEN`
    - `DCOIR_OPENAI_API_KEY`
    - `DCOIR_OPENAI_PROJECT_ID`
+   - `OPENAI_API_KEY`
 7. Paste each value only into GitHub's secret value field. Do not commit values into files.
 
-Optional GitHub Environment protection means putting secrets in a named environment and requiring a reviewer before jobs using that environment can start. This bundle does not require that protection by default because the operator approval happens before the request is staged.
+Optional GitHub Environment protection means putting secrets in a named environment and requiring a reviewer before jobs using that environment can start. This lane does not require that protection by default because the operator approval happens before the request is staged.
 
 ## Normal execution flow
 
@@ -50,6 +51,8 @@ Use `operator_tools/github_desktop_lane/manifests/chatgpt_exec_request.sample.js
 
 The workflow receives secrets as process environment variables. The reusable harness writes them into Machine-scope environment variables in the Windows runner before invoking the command. That lets existing tools keep using the same Machine-scope environment lookup that they use locally.
 
+The workflow generates runner-local values for `DCOIR_REPO_ROOT`, `DCOIR_DOWNLOADS_DIR`, and `DCOIR_CONFIG_DIR`. Do not use local workstation path values for those inside GitHub Actions.
+
 ## Output expectations
 
 Commands should write upload-worthy files under:
@@ -60,10 +63,36 @@ Commands should write upload-worthy files under:
 
 The harness automatically includes those files in the GitHub Actions artifact.
 
+## Verification wait rule
+
+After ChatGPT stages an exec request, an immediate missing workflow report means "not visible yet," not failure.
+
+Default behavior:
+
+1. Confirm the request commit/file exists.
+2. Wait roughly 60-90 seconds before the first no-report conclusion when the runtime allows it.
+3. Poll for the workflow report and workflow-generated commit for a bounded window, normally up to about 3-5 minutes.
+4. If no report appears, tell the operator the request has not produced a report yet and ask whether to continue checking or inspect Actions manually.
+5. Do not call the request failed unless a failure report, failed workflow run, or job log supports that conclusion.
+
 ## Failure handling
 
-If the command fails, the workflow still writes a status report and uploads sanitized diagnostics. ChatGPT should inspect:
+If the workflow starts and reaches the harness/reporting path, command failures should still produce a status report and sanitized artifact. ChatGPT should inspect:
 
 - `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`
 - GitHub Actions artifact `chatgpt-exec-<request_id>`
 - the Actions run log only if the report/artifact are insufficient
+
+A status report might not appear if the workflow never starts, the push trigger does not fire, Actions are disabled, the workflow YAML is invalid before the job starts, checkout fails before the harness runs, commit permissions fail, or GitHub is delayed. In those cases, use the Actions tab or manually dispatch `chatgpt-exec` with the same `request_path`.
+
+## Run metadata
+
+Workflow reports include run metadata after the report is committed:
+
+- `github_run_id`
+- `github_run_attempt`
+- `github_sha`
+- `github_ref`
+- `workflow_run_url`
+
+Use this metadata to retrieve artifacts and job logs when the committed report is not enough.
