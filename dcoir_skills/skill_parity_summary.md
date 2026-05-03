@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-03T17:17:33Z
+- generated_at_utc: 2026-05-03T17:17:51Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -215,13 +215,13 @@
 
 ## dcoir-memory-preflight
 
-- source_tree_hash: `13bc6355941682d7d0614f2c4a0a76448eb8283ff972159f1d3f8647c6ce8086`
+- source_tree_hash: `4617141ef248e29edf56c3b3b553ba2068600f6713fbc5181e0e62e0ed27961a`
 - release_zip_name: `dcoir-memory-preflight.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `9`
 
-- `SKILL.md` — `435050db20c974a28bfd4806c7480f76dcdd39e29571a29c8d27eb222d19945e`
+- `SKILL.md` — `68950c25247eee0a766cb5a23b011d3b4e5fcf3c22c91b8c99086dbbb30cf1d6`
 - `agents/openai.yaml` — `e5e97e75c7076793addee2bc5976c54960ffc469b7b0b8a80f6d923de04325e9`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_memory_workflow.md` — `0e4d8f47e30512f630bb3a1b5c0d6310ff195847bae3f3dbd03d27c32b065cee`
