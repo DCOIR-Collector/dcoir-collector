@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-03T16:52:04Z
+- generated_at_utc: 2026-05-03T16:53:08Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -111,13 +111,13 @@
 
 ## dcoir-decision-policy
 
-- source_tree_hash: `b4ae460802701bd7e47b4e2f808f04498ef26d1a6ae76c8704f0282bd2054c0a`
+- source_tree_hash: `106c4ae708f75b558bc23bb3289f747e88175982024d7e798754830d000d9e34`
 - release_zip_name: `dcoir-decision-policy.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `15`
 
-- `SKILL.md` — `f6dcee7482b34080f9f8ee48e5d35b17218b05a9df06af8930ca36e9972dd684`
+- `SKILL.md` — `b61822893e701db470a8f0609e7921489720acb46310f33e8f8ec271e409d6b1`
 - `agents/openai.yaml` — `bfb29d585a419b31ba1e1f5992865c6e2df8fb910b5ed12cb45d1903a2fec515`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_memory_workflow.md` — `eba025446db7dbdd5c2b9cb5829e96b69e6a76033368add7f3a2f470defb18cd`
