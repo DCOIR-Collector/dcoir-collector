@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-03T16:18:32Z",
+  "generated_at_utc": "2026-05-03T16:20:41Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -613,12 +613,12 @@
     },
     "dcoir-local-config-registry-maintainer": {
       "source_root": "dcoir-local-config-registry-maintainer",
-      "source_tree_hash": "81a99295761aacf2eadc5e40ff69bacce23b11c23b50edfb52e4eeb7f56bfe7f",
+      "source_tree_hash": "bff4d7b862834ed8dfb0cfbce13b9453d75191b7b045ebcaf89d5c85271ba18e",
       "release_zip_name": "dcoir-local-config-registry-maintainer.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 5,
-      "total_bytes": 10915,
+      "total_bytes": 14328,
       "files": [
         {
           "path": "SKILL.md",
@@ -637,8 +637,8 @@
         },
         {
           "path": "references/local_config_registry_contract.md",
-          "sha256": "0e7d6fef04b4f0473bc4e4e7d93746e5b42ff98d943d7736e4039135bb05345d",
-          "size_bytes": 2242
+          "sha256": "f677acaa0d9944cad53257542d86eb7b4f3531bf24fa963af5565759fe3c500c",
+          "size_bytes": 5655
         },
         {
           "path": "references/runtime_reference_patterns.md",
