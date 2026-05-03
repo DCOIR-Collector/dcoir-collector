@@ -1,6 +1,6 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$script:DcoirAirtableVersion = '2026-05-03.2'
+$script:DcoirAirtableVersion = '2026-05-03.3'
 
 function Get-DcoirAirtableVersion {
     [CmdletBinding()]
@@ -134,8 +134,12 @@ function Get-DcoirAirtableRecords {
     $records = New-Object System.Collections.Generic.List[object]
     $offset = $null
     do {
-        $encodedTable = [System.Uri]::EscapeDataString($Table.name)
-        $uri = "https://api.airtable.com/v0/$BaseId/$encodedTable?pageSize=100"
+        $tableIdentifier = $null
+        if ($null -ne $Table.PSObject.Properties['id']) { $tableIdentifier = [string]$Table.id }
+        if ([string]::IsNullOrWhiteSpace($tableIdentifier)) { $tableIdentifier = [string]$Table.name }
+        if ([string]::IsNullOrWhiteSpace($tableIdentifier)) { throw 'Airtable table is missing both id and name.' }
+        $encodedTable = [System.Uri]::EscapeDataString($tableIdentifier)
+        $uri = ('https://api.airtable.com/v0/{0}/{1}?pageSize=100' -f $BaseId, $encodedTable)
         if (-not [string]::IsNullOrWhiteSpace($offset)) { $uri += '&offset=' + [System.Uri]::EscapeDataString($offset) }
         $result = Invoke-DcoirAirtableApi -Uri $uri -Headers $Headers
         foreach ($record in @($result.records)) {
