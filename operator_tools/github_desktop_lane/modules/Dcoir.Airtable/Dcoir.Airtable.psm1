@@ -1,6 +1,6 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$script:DcoirAirtableVersion = '2026-05-03.4'
+$script:DcoirAirtableVersion = '2026-05-03.5'
 
 function Get-DcoirAirtableVersion {
     [CmdletBinding()]
@@ -96,7 +96,20 @@ function Test-DcoirAirtableSensitiveFieldName {
     [CmdletBinding()]
     param([AllowNull()][string]$Name)
     if ([string]::IsNullOrWhiteSpace($Name)) { return $false }
-    return ($Name -match '(?i)(token|secret|password|passwd|api[_ -]?key|apikey|credential|private[_ -]?key|pat|bearer|authorization|auth[_ -]?header)')
+    $normalized = ($Name -replace '[^A-Za-z0-9]+', '_').Trim('_').ToLowerInvariant()
+    $tokens = @($normalized -split '_' | Where-Object { $_ })
+    if ($tokens -contains 'token') { return $true }
+    if ($tokens -contains 'secret') { return $true }
+    if ($tokens -contains 'password') { return $true }
+    if ($tokens -contains 'passwd') { return $true }
+    if ($tokens -contains 'credential' -or $tokens -contains 'credentials') { return $true }
+    if ($tokens -contains 'bearer') { return $true }
+    if ($tokens -contains 'authorization') { return $true }
+    if ($tokens -contains 'apikey' -or $normalized -match '(^|_)api(_)?key($|_)') { return $true }
+    if ($normalized -match '(^|_)private(_)?key($|_)') { return $true }
+    if ($tokens -contains 'pat') { return $true }
+    if ($normalized -match '(^|_)auth(_)?header($|_)') { return $true }
+    return $false
 }
 
 function Protect-DcoirAirtableRecordFields {
