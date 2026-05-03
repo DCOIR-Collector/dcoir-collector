@@ -340,9 +340,9 @@ def main(argv: list[str] | None = None) -> int:
     wr.set_defaults(func=make_workflow_report)
 
     cl = sub.add_parser("cleanup")
-    cl.add_argument("--success-days", type=int, default=7)
-    cl.add_argument("--failure-days", type=int, default=30)
-    cl.add_argument("--cleanup-days", type=int, default=7)
+    cl.add_argument("--success-days", type=int, default=1)
+    cl.add_argument("--failure-days", type=int, default=7)
+    cl.add_argument("--cleanup-days", type=int, default=2)
     cl.add_argument("--workflow-filter", default="")
     cl.add_argument("--report-id", default="")
     cl.add_argument("--removed-paths-file", default=".github/tmp/chatgpt_report_cleanup_removed.txt")

@@ -88,13 +88,15 @@ This workflow supports:
 - workflow/path filtering
 - latest-report preservation per workflow
 
+Scheduled cleanup is intended to run once per night at midnight Stuttgart local time. Because GitHub cron uses UTC and Stuttgart observes CET/CEST, the workflow is scheduled at both UTC hours that can correspond to local midnight and then gates execution to `Europe/Berlin` hour `00`.
+
 Default retention:
 
 | Report type | Default retention |
 |---|---:|
-| success reports | 7 days |
-| cleanup reports | 7 days |
-| failure reports | 30 days |
+| success reports | 1 day |
+| cleanup reports | 2 days |
+| failure reports | 7 days |
 
 The cleanup workflow writes its own report under:
 
@@ -113,6 +115,6 @@ chatgpt_staging/status_reports/retention-cleanup/<run-id>/workflow_report.md
 
 ## Operator rule
 
-If you want cleanup on demand, manually run `chatgpt-report-retention-cleanup` from GitHub Actions. Use dry-run first when unsure.
+If you want cleanup on demand, manually run `chatgpt-report-retention-cleanup` from GitHub Actions. Use dry-run only when you want a preview. Normal manual cleanup should use `dry_run=false`.
 
 If ChatGPT asks for workflow logs, remind it to check `chatgpt_staging/status_reports/` first.
