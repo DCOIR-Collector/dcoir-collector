@@ -43,6 +43,28 @@ Optional GitHub Environment protection means putting secrets in a named environm
 7. ChatGPT reads the status report and downloads the artifact if needed.
 8. ChatGPT records Airtable evidence and cleans the status report when safe.
 
+## Apply-in to exec handoff
+
+Use this when direct exec request staging is blocked or when the request should be staged as a governed apply-in bundle.
+
+Validated procedure:
+
+1. Build a ChatGPT apply-in ZIP with an `apply_manifest.json` that creates exactly one reviewed request file under `chatgpt_staging/exec_requests/<request_id>.json`.
+2. Stage the payload as `chatgpt_staging/in/<apply_request_id>/payload.zip.b64`.
+3. Let `chatgpt-apply-in` run and verify its report under `chatgpt_staging/status_reports/chatgpt-apply-in/<apply_request_id>/workflow_report.md`.
+4. Read back the new exec request file.
+5. Watch for `[skip ci]`: apply-in report commits use `[skip ci]`, so the newly created exec request may not trigger `chatgpt-exec` from that commit.
+6. If no exec report appears after the normal wait window, restage the same already-approved exec request with a small non-`[skip ci]` update such as `restaged_at_utc`.
+7. Verify the exec report under `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`.
+8. Record evidence and clean status reports only after readback.
+
+Known validated example:
+
+- apply-in request id: `apply-20260503-exec-hashfix-validation-001`
+- exec request id: `exec-20260503-airtable-schema-hashfix-002`
+- restage commit: `5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e`
+- exec run id: `25287957928`
+
 ## Request sample
 
 Use `operator_tools/github_desktop_lane/manifests/chatgpt_exec_request.sample.json` as the starting shape.
