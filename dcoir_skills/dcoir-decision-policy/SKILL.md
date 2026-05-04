@@ -2,6 +2,8 @@
 name: dcoir-decision-policy
 description: apply the operator default decision matrix for africom_soc_ir / dcoir project work, including branch choice, blocker recovery, grouped delivery posture, and governance decision surfacing.
 ---
+
+<!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-decision-policy|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T112000Z|plan-tracker-retirement-session-airtable|in-session-update|dcoir-decision-policy|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T165000Z|blocked-action-recovery-ladder|source-update|dcoir-decision-policy|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-decision-policy|SKILL.md -->
@@ -299,6 +301,11 @@ Rules:
 - if the GitHub connector cannot safely complete the write, say that plainly and reduce the operator burden to the smallest bounded manual GitHub action or surface the markdown content for later commit
 
 When rendering memory content locally, use `scripts/render_decision_policy_memory.py`.
+
+## Airtable local cache contract
+This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## Output contract
 When acting under this skill:

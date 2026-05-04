@@ -2,6 +2,8 @@
 name: dcoir-github-desktop-lane-advisor
 description: advise and maintain reusable africom_soc_ir / dcoir operator-side github desktop lane tools. use when the operator has a local git/github desktop problem, needs a targeted or text-only repo snapshot, needs a reusable powershell helper, asks which local helper tool to run, wants a tool captured instead of one-off chat code, needs github actions orchestrator launcher guidance, or needs operator_tools/github_desktop_lane repo files and airtable operator tools registry kept aligned.
 ---
+
+<!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-github-desktop-lane-advisor|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T165000Z|blocked-action-recovery-ladder|source-update|dcoir-github-desktop-lane-advisor|SKILL.md -->
 <!-- skill-marker: updated-skill|20260501T115800Z|operator-tools-module-split|source-update|dcoir-github-desktop-lane-advisor|SKILL.md -->
 # DCOIR GitHub Desktop Lane Advisor
@@ -42,6 +44,7 @@ Before recommending or creating a tool, read:
 - `dcoir-memory-preflight` only when a blocker signature or reusable lesson needs cross-skill routing.
 
 Use non-display reads by default. Show Airtable grids only when the operator asks, when verification materially benefits from a grid, or when visible Airtable display is already approved by current project guidance.
+
 
 ## Blocked-action recovery ladder
 When a direct GitHub/API/connector repo update is blocked, partially blocked, or unverified, do not accept the block and move on. Use this bounded ladder:
@@ -132,6 +135,11 @@ operator_tools/github_desktop_lane/
     actions_workflow_orchestrator.dispatch.sample.json
     actions_workflow_orchestrator.watch.sample.json
 ```
+
+## Airtable local cache contract
+This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## Output contract
 For tool recommendations, respond with:

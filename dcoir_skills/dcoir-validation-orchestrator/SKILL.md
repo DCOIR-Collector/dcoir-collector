@@ -2,6 +2,8 @@
 name: dcoir-validation-orchestrator
 description: build explicit validation plans for dcoir changes and workflows with deep regression as default for testable changes.
 ---
+
+<!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-validation-orchestrator|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-validation-orchestrator|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-validation-orchestrator|SKILL.md -->
 
@@ -102,6 +104,11 @@ When rendering memory content locally, prefer Airtable memory rows; use migrated
 - When session-memory-enabled or buffer-capable skills are in scope, include pre-push flush and post-push cleanup checks instead of assuming that state will promote itself.
 - When a bounded multi-skill batch is being prepared for manual GitHub/Desktop application, include grouped installability, package-cleanliness, and no-wrapper-root delivery checks instead of validating each changed skill in isolation only.
 - Keep the canonical Airtable memory table human-readable and continuously updated after material validation-state changes when Airtable access is available.
+
+## Airtable local cache contract
+This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## References
 - `references/validation_scenario_library.md`

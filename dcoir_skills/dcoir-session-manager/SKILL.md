@@ -2,6 +2,8 @@
 name: dcoir-session-manager
 description: manage africom_soc_ir / dcoir Airtable-first session startup, re-anchor, resume, checkpointing, closeout, handoff, and continuity. Use on the first substantive DCOIR turn, explicit resume or re-anchor requests, active queue recovery, session closeout, handoff export, idea capture/promotion, active plan/work item selection, and cases where dcoir-session-resume or dcoir-session-tracker behavior would previously have applied.
 ---
+
+<!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-session-manager|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T163500Z|core-strengthening|source-update|dcoir-session-manager|SKILL.md -->
 
 # DCOIR Session Manager
@@ -88,3 +90,8 @@ When a helper skill is created, merged, retired, or strengthened:
 - Do not narrate tool-by-tool intent.
 - Stop only for operator decisions, blockers, conflicts, approval gates, or completed checkpoints.
 - When a governed action changes Airtable or GitHub, report the result, evidence, and any remaining gate.
+
+## Airtable local cache contract
+This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.

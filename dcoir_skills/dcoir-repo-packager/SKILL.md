@@ -2,6 +2,8 @@
 name: dcoir-repo-packager
 description: build strict dcoir repo-layout zips, github-primary bootstrap bundles, and github desktop manual repo-update bundles from current authoritative project files.
 ---
+
+<!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-repo-packager|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-repo-packager|SKILL.md -->
 
 # DCOIR Repo Packager
@@ -138,6 +140,11 @@ After the script runs:
 - For update mode, describe it as a GitHub-primary bootstrap bundle and remind the user to follow Airtable `Release Artifacts` / delivery instructions.
 - For GitHub Desktop manual repo-update mode, describe it as a patch-style GitHub Desktop bundle containing only the affected repo-relative paths with no wrapper root, and include the suggested commit summary in the response.
 - Treat settings content and supporting assets as separate bootstrap-bundle classes.
+
+## Airtable local cache contract
+This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## References
 Use these bundled references when needed:

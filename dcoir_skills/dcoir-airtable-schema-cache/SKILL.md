@@ -2,6 +2,8 @@
 name: dcoir-airtable-schema-cache
 description: cache, normalize, inspect, compare, and refresh africom_soc_ir / dcoir airtable schema readback during startup, re-anchor, resume, and schema-sensitive Airtable work. use when dcoir work needs table ids, field ids, field types, select options, linked-record details, schema freshness checks, reduced airtable roundtrips, or a bounded schema snapshot before using airtable connectors, helper-memory tables, delete queue, lifecycle ledger, plans, work items, admin registry, repo surface registry, validation evidence, or local configuration registry.
 ---
+
+<!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-airtable-schema-cache|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-airtable-schema-cache|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T203000Z|startup-reanchor-schema-cache|source-update|dcoir-airtable-schema-cache|SKILL.md -->
 
@@ -105,6 +107,15 @@ Compare two caches:
 ```bash
 python scripts/schema_cache.py diff --old /mnt/data/schema_old.json --new /mnt/data/schema_new.json
 ```
+
+## Airtable local cache contract
+This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
+
+## Operational table row-cache relationship
+This skill's primary cache remains the Airtable schema cache created by `scripts/schema_cache.py`. It does not replace the row caches owned by the other skills. During re-anchor, this skill validates table/field identity needed by other skills before their designated row caches are trusted. When caching Admin Registry context for schema governance, use `references/airtable_cache_contract.md` and keep it separate from the schema cache.
+
 
 ## Output contract
 Return:

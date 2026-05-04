@@ -2,6 +2,8 @@
 name: dcoir-memory-preflight
 description: consult canonical dcoir task memory, airtable governance tables, helper-memory rows, and dynamic skill-routing rows before high-friction work and after blocker recovery. use for dcoir session-start preflight, re-anchor helper-chain checks, execution-lane choice, blocker learning, github desktop workflow friction, skill-routing checks, and cases where a specialist dcoir helper skill may apply.
 ---
+
+<!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-memory-preflight|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T163500Z|session-manager-strengthening|source-update|dcoir-memory-preflight|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T111000Z|plan-tracker-retirement-direct-airtable|in-session-update|dcoir-memory-preflight|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T173000Z|reanchor-helper-invocation-rule|source-update|dcoir-memory-preflight|SKILL.md -->
@@ -122,6 +124,11 @@ Use Delete Queue for Airtable record/row deletion after dependency checks and ap
 - For Work Item or active-task changes, require verification against the parent Plan and Queue Control before moving to unrelated work.
 - For recovered blocker or continuity lessons, stage the carry-forward through `dcoir-session-manager`, Session Checkpoints, Idea Inbox, Work Item notes, or another active Airtable authority surface.
 - Treat stale GitHub plan-tracker memory as promoted-history/source-basis only, not live task authority.
+
+## Airtable local cache contract
+This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## Output contract
 Return these sections when acting as a preflight:
