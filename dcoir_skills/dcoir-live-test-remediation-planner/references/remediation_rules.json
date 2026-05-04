@@ -93,7 +93,7 @@
         "project_sources/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt",
         "project_sources/PP-10_Gemini_Enterprise_Agent_Designer_Bounded_Design_Artifact_v0_1_1.txt",
         "supporting_assets/supporting_knowledge_docs.zip",
-        "dcoir-large-file-intake-manager"
+        "dcoir-artifact-intake-router"
       ],
       "deep_regression": [
         "re-test large-file fallback path",
@@ -101,7 +101,7 @@
         "re-test bounded guidance when full upload is impossible"
       ],
       "packaging": "full_refresh_project_upload",
-      "reason": "Large-file handling failures can dead-end the workflow on realistic operator inputs."
+      "reason": "Large-file handling failures can dead-end the workflow on realistic operator inputs. Artifact intake router now owns bounded large-file fallback routing after T6 preservation."
     },
     {
       "id": "bounded-confidence",

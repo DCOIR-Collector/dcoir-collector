@@ -2,6 +2,8 @@
 name: dcoir-live-test-remediation-planner
 description: turn dcoir live-test findings into ranked remediation plans with impacted files, helper-skill refreshes, regression requirements, delivery posture, and stop conditions.
 ---
+<!-- skill-marker: updated-skill|20260504T091000Z|large-file-fallback-route-target-updated|in-session-update|dcoir-live-test-remediation-planner|SKILL.md -->
+
 <!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-live-test-remediation-planner|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-live-test-remediation-planner|SKILL.md -->
 
