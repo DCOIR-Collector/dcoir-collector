@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-04T15:57:18Z",
+  "generated_at_utc": "2026-05-04T16:29:11Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -53,12 +53,12 @@
     },
     "dcoir-decision-policy": {
       "source_root": "dcoir-decision-policy",
-      "source_tree_hash": "ff812a545d3d8435546a91fb871b1c6a5adc931b4d25f1783004ca6548af50fe",
+      "source_tree_hash": "5b5fc427090a9d055155e5501a1f3989bd1badad7e6a711fa6a2ebd9ec4f69dd",
       "release_zip_name": "dcoir-decision-policy.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 15,
-      "total_bytes": 70812,
+      "total_bytes": 74441,
       "files": [
         {
           "path": "SKILL.md",
@@ -102,8 +102,8 @@
         },
         {
           "path": "references/hard_stop_conditions.md",
-          "sha256": "51e9acf4633133e0ed0ff4da85f86f2ce454bdbfc11d3db4cb7ea30a550fe5a5",
-          "size_bytes": 1488
+          "sha256": "cf2e91a03ea5067de8765ac92b6c5a6eea2cce791befb1f00e9ab815fead05a6",
+          "size_bytes": 5117
         },
         {
           "path": "references/operator_intent_learning.md",
@@ -334,72 +334,6 @@
           "path": "assets/icon.svg",
           "sha256": "2e8158af44a1016257017868c524268175eeee2dfaf36c4ec9dcad3cbbacc9bf",
           "size_bytes": 350
-        }
-      ]
-    },
-    "dcoir-source-authority-auditor": {
-      "source_root": "dcoir-source-authority-auditor",
-      "source_tree_hash": "f3f56b384188827824064ba31cf2cd4c4f32f739b31520c27e3c034b65d304c0",
-      "release_zip_name": "dcoir-source-authority-auditor.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 11,
-      "total_bytes": 54974,
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "81a1de5459cd839c52bcdaa541add1f906fc404694ec415267c44d3ba3815cf5",
-          "size_bytes": 14365
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "12e5e0a6a338d7b011a8cfa1667fd5e30ca06b269a944ff7d0e5530859470bb1",
-          "size_bytes": 343
-        },
-        {
-          "path": "assets/icon.svg",
-          "sha256": "8936b24f674a1250d999e2c2b5901374fb4240426f32bd1ae340c352a90d617d",
-          "size_bytes": 1738
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/audit_rules.md",
-          "sha256": "c5735bb379d78210c6ea88f706ead1ed42b8b70133b70d05ec1e4f020f580c5b",
-          "size_bytes": 1955
-        },
-        {
-          "path": "references/drift_taxonomy.md",
-          "sha256": "4aa64b24b6c72c8dfa3c81f062a442b2f35c63391e07d260c5a8e9999c1e3d23",
-          "size_bytes": 1445
-        },
-        {
-          "path": "references/project_discovery_contract.json",
-          "sha256": "43ff953355a8df1c17973cc2e438a13ec5ef8a2d34243bbdffb7917f003576e4",
-          "size_bytes": 7336
-        },
-        {
-          "path": "references/repair_prompt_contract.md",
-          "sha256": "a12dbc641f60da869db679b95109772ce5e4af7c24dc837dbe21034bc13033ba",
-          "size_bytes": 502
-        },
-        {
-          "path": "references/report_template.md",
-          "sha256": "7ce720c8eafc1d4d6b8a2e43fffd1bb967d9fd53d602b3395d6feaf07063b659",
-          "size_bytes": 447
-        },
-        {
-          "path": "scripts/audit_source_authority.py",
-          "sha256": "2ab6631c5dc47c239e719ec3fa573fbe6057196e9fc2a5b7a7e7c14c4b3c3d39",
-          "size_bytes": 16345
-        },
-        {
-          "path": "scripts/authority_drift_report.py",
-          "sha256": "4a8b9cbff188a04febd20d6a112b29970de6d881a20a03e1082d70b64370f863",
-          "size_bytes": 6057
         }
       ]
     },
