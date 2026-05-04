@@ -2,6 +2,7 @@
 name: dcoir-decision-policy
 description: apply the operator default decision matrix for africom_soc_ir / dcoir project work, including branch choice, blocker recovery, grouped delivery posture, and governance decision surfacing.
 ---
+<!-- skill-marker: updated-skill|20260504T112000Z|plan-tracker-retirement-session-airtable|in-session-update|dcoir-decision-policy|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T165000Z|blocked-action-recovery-ladder|source-update|dcoir-decision-policy|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-decision-policy|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-decision-policy|SKILL.md -->
@@ -123,7 +124,18 @@ Use it again after a blocker or failed attempt is successfully overcome whenever
 - helper-skill or process-document guidance
 
 Do not silently persist the recovered lesson.
-Stage a bounded promotion-ready candidate and let `dcoir-plan-tracker` or `dcoir-session-tracker` hold the details until the next suitable flush point.
+Stage a bounded promotion-ready candidate in `dcoir-session-tracker`, Session Checkpoints, Work Item notes, or the active Airtable branch record until the next suitable flush point. Do not route promotion capture to `dcoir-plan-tracker`; that skill is retired.
+
+
+## Plan-tracker retirement handling
+`dcoir-plan-tracker` is retired as a standalone decision, state-capture, or promotion companion. Do not invoke it for ordinary DCOIR plan/work-item activity. Preserve only this direct Airtable/session discipline:
+- Branch and task authority comes from Airtable `Queue Control`, active `Plans`, active/todo `Work Items`, `Session Checkpoints`, and Work Item notes.
+- When a Work Item changes status, verify or update the parent Plan and Queue Control in the same bounded Airtable pass when possible.
+- When choosing the next task, read Airtable live state rather than relying on chat memory, stale checkpoints, or GitHub todo text.
+- Use `dcoir-session-resume` for resume/re-anchor and Queue Control drift gates.
+- Use `dcoir-memory-preflight` for routing, preflight, and post-blocker classification.
+- Use `dcoir-session-tracker`, Session Checkpoints, Work Item notes, or the active Airtable branch record for blocker/carry-forward/promotion candidates.
+- Treat legacy GitHub plan-tracker memory as promoted-history/source-basis only, not live task authority.
 
 ## Session-local write-buffer defaults
 Relevant DCOIR helper-skill workflows may accumulate session-local buffer content during the chat and flush it into GitHub in grouped updates at the next suitable write point instead of writing every small change immediately.

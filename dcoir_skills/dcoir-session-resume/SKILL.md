@@ -2,6 +2,7 @@
 name: dcoir-session-resume
 description: resume the africom_soc_ir / dcoir workspace from the current airtable-first operational authority model and current queue state. use on the first substantive dcoir turn, explicit re-anchor/resume/current-state requests, queue recovery, startup authority checks, and live plan/work item selection.
 ---
+<!-- skill-marker: updated-skill|20260504T110000Z|plan-tracker-retirement-preservation|in-session-update|dcoir-session-resume|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T173000Z|reanchor-helper-invocation-rule|source-update|dcoir-session-resume|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-session-resume|SKILL.md -->
 <!-- skill-marker: updated-skill|20260501T193500Z|queue-control-drift-gate|source-update|dcoir-session-resume|SKILL.md -->
@@ -20,8 +21,7 @@ On the first substantive DCOIR turn of a new session, and on explicit re-anchor/
 5. `dcoir-memory-preflight` for task-family classification, SKILLROUTE lookup, reusable memory, blocker/lane guidance, and anti-pattern checks.
 6. `dcoir-airtable-schema-cache` for schema readiness before broad Airtable reads, writes, deletes, migration checks, or schema-sensitive work.
 7. `dcoir-session-tracker` for durable leftover scan, idea/promote candidates, and session carry-forward state.
-8. `dcoir-plan-tracker` when open/active Airtable-backed plan state exists, a Work Item points to a parent plan, or Queue Control needs repair.
-9. Additional DCOIR helper checks selected by active lane context and `SKILLROUTE-*` rows. Do not load every full helper-skill body just to prove awareness.
+8. Additional DCOIR helper checks selected by active lane context and `SKILLROUTE-*` rows. Do not load every full helper-skill body just to prove awareness.
 
 Plain rule: a DCOIR re-anchor is not complete until the required helper chain has run or a specific blocker/conflict is reported.
 
@@ -41,9 +41,21 @@ During startup, re-anchor, resume, and “where are we” checks:
 - Treat `Queue Control.active_plans` as the first live branch pointer.
 - Cross-check Queue Control against active Plans and active/todo Work Items.
 - If Queue Control points to a current plan, use that branch unless the operator explicitly overrides it.
-- If Queue Control is empty while exactly one active plan exists, report drift and proceed only as a bounded fallback while requesting/performing Queue Control repair through plan-tracker.
+- If Queue Control is empty while exactly one active plan exists, report drift and proceed only as a bounded fallback while repairing or requesting repair of Queue Control directly through Airtable live authority.
 - If Queue Control conflicts with active Plans or active Work Items, stop ordinary resume and report the exact mismatch.
 - Do not pick an older plan from chat memory, stale checkpoint text, or GitHub todo history when Queue Control and active Plans disagree.
+
+
+## Airtable plan-state discipline
+`dcoir-plan-tracker` is retired as a required companion skill. Preserve only the small live-state checklist here; do not invoke a standalone plan-tracker skill for ordinary queue or Work Item transitions.
+
+Use Airtable itself as the plan execution authority:
+- Treat `Queue Control`, `Plans`, and `Work Items` as the live branch and task state.
+- When a Work Item status changes, check whether it has `canonical_parent_plan_id` or otherwise belongs to the active plan, then update or verify the parent `Plans` row in the same bounded Airtable pass when possible.
+- When the active task changes, update or verify `Queue Control.active_plans`, the active `Plans` fields, and the new active Work Item together.
+- When closing a task, choose the next Work Item from Airtable queue state rather than chat memory, old checkpoints, or GitHub todo text.
+- If Queue Control, Plans, and Work Items disagree, stop ordinary resume and report the exact drift before moving to unrelated work.
+- Preserve concise evidence in the Work Item notes or Session Checkpoints when a transition is material.
 
 ## Airtable display behavior
 During automatic startup/re-anchor, use compact non-display Airtable reads by default. During execution, audit, cleanup, duplicate comparison, or verification, Airtable display views may be used when they materially improve correctness or when operator approval/preference already allows visible Airtable display. Always summarize displayed evidence in chat.
@@ -75,7 +87,7 @@ For status/resume replies, return:
 For execution continuation, keep the chat short: state the selected Work Item, any blocker/conflict, and the next action being executed.
 
 ## Hard rules
-- Do not skip `dcoir-memory-preflight`, `dcoir-airtable-schema-cache`, session-tracker, and conditional plan-tracker during startup/re-anchor.
+- Do not skip `dcoir-memory-preflight`, `dcoir-airtable-schema-cache`, and session-tracker during startup/re-anchor.
 - Do not treat old GitHub todo/current-state files as live queue authority.
 - Do not assume retired Airtable tables exist unless live schema readback proves they exist.
 - Do not use a schema cache as write/delete authority.
