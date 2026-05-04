@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-04T09:16:35Z
+- generated_at_utc: 2026-05-04T10:00:59Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -50,22 +50,6 @@
 - `references/attention_modes.md` — `75b927c6671c703b70a03be24dad018457bac93000a8254c70c6fdaad77ba66e`
 - `references/banner_message_templates.md` — `b7fe5b731f94275deaa2b127f6e561ca1abcf3bd178bd03254c2bbf871bb0a74`
 - `scripts/render_attention_signal.py` — `98becd6f9642fc1e4bd9aecda4e72abb230c5c4719b4cf004ef7a65286673d44`
-
-## dcoir-authority-drift-reporter
-
-- source_tree_hash: `79e7dee753df82cd2815d892caa44788b1efba4a95694cdbeace593399dcc762`
-- release_zip_name: `dcoir-authority-drift-reporter.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `7`
-
-- `SKILL.md` — `174f9b1931703961a1c927bae1514f295dcd8d7e279f57ffaf8728028fcb4393`
-- `agents/openai.yaml` — `698b7e1707380f6444ba96d0bce2d6260a416791c3e1d69bdd21a767fe924bf4`
-- `assets/icon.svg` — `7fbf187a9d38a8a699f93d3f220438d8097ef6000994e414444636828b0880a0`
-- `references/drift_taxonomy.md` — `4aa64b24b6c72c8dfa3c81f062a442b2f35c63391e07d260c5a8e9999c1e3d23`
-- `references/repair_prompt_contract.md` — `a12dbc641f60da869db679b95109772ce5e4af7c24dc837dbe21034bc13033ba`
-- `references/report_template.md` — `7ce720c8eafc1d4d6b8a2e43fffd1bb967d9fd53d602b3395d6feaf07063b659`
-- `scripts/authority_drift_report.py` — `4a8b9cbff188a04febd20d6a112b29970de6d881a20a03e1082d70b64370f863`
 
 ## dcoir-change-impact-analyzer
 
@@ -166,21 +150,6 @@
 - `references/reinventory_prompt_template.md` — `521834073167201cb2656a71c6c4407f44ee15a931f4348ebcd832e3378d3df5`
 - `scripts/build_knowledge_docs.py` — `b82bf51c4dd463955fb021782a16fb0d785e0a963fbff4dd64fd917c4da28d2e`
 - `scripts/scan_project.py` — `910b00c6807239d6aacb357e58684c37520e03c203bbaab5c60c5f3ef9828309`
-
-## dcoir-large-file-intake-manager
-
-- source_tree_hash: `20ec596c0c863af7c596cfae66fee8bf2d05d5623f3d5c7db35fc570f57d40b2`
-- release_zip_name: `dcoir-large-file-intake-manager.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `6`
-
-- `SKILL.md` — `75c753251d74785d6922d2c52391e08b969f8865a99e22748184d65771efb66e`
-- `agents/openai.yaml` — `0a05b58f4e89d1aa71b52db2aadec2b26ac25877e4282b0024c41ea1d8d9c571`
-- `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
-- `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/large_file_intake_playbooks.md` — `edcec83f4106be337118250cf1dd60adc6888855f05f58731a61809f68fca9b6`
-- `scripts/plan_large_file_intake.py` — `af69335ec77a201caf055de5dbb990fe450c1943c9f82e91987505fec9c0891a`
 
 ## dcoir-live-test-remediation-planner
 
