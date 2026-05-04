@@ -93,7 +93,48 @@ jobs:
           rm -rf "$WORK_DIR" "$REPORT_DIR"
           mkdir -p "$WORK_DIR/extract" "$REPORT_DIR"
 
-          base64 -d "$PAYLOAD" > "$WORK_DIR/payload.zip"
+          python - "$PAYLOAD" "$WORK_DIR/payload.zip" <<'PY'
+          import base64
+          import binascii
+          import pathlib
+          import re
+          import sys
+
+          payload_path = pathlib.Path(sys.argv[1])
+          output_path = pathlib.Path(sys.argv[2])
+          raw = payload_path.read_text(encoding="utf-8", errors="replace")
+          header_lines = [line.strip() for line in raw.splitlines()[:10]]
+          part_mode = any(line == "# dcoir-payload-b64-parts-v1" for line in header_lines)
+
+          if part_mode:
+              part_dir = payload_path.parent / "payload.zip.b64.parts"
+              parts = sorted(part_dir.glob("*.b64"))
+              if not parts:
+                  raise SystemExit(f"Payload declares parts mode but no .b64 parts were found under {part_dir}")
+              text = "".join(part.read_text(encoding="utf-8", errors="replace") for part in parts)
+              source_label = f"{len(parts)} part files from {part_dir}"
+          else:
+              text = raw
+              source_label = str(payload_path)
+
+          cleaned = "".join(text.split())
+          bad_chars = sorted(set(re.sub(r"[A-Za-z0-9+/=]", "", cleaned)))
+          if bad_chars:
+              shown = " ".join(repr(ch) for ch in bad_chars[:20])
+              raise SystemExit(f"Invalid base64 characters in {source_label}: {shown}")
+          if len(cleaned) % 4:
+              raise SystemExit(
+                  f"Invalid base64 length in {source_label}: {len(cleaned)} characters leaves remainder {len(cleaned) % 4}; payload may be truncated"
+              )
+          try:
+              blob = base64.b64decode(cleaned, validate=True)
+          except binascii.Error as exc:
+              raise SystemExit(f"Invalid base64 payload in {source_label}: {exc}") from exc
+          if not blob.startswith(b"PK"):
+              raise SystemExit(f"Decoded payload from {source_label} is not a ZIP file; first bytes={blob[:8]!r}")
+          output_path.write_bytes(blob)
+          print(f"Decoded base64 payload from {source_label}: {len(cleaned)} chars -> {len(blob)} bytes")
+          PY
           unzip -q "$WORK_DIR/payload.zip" -d "$WORK_DIR/extract"
 
           if [[ ! -f "$WORK_DIR/extract/apply_manifest.json" ]]; then
@@ -331,7 +372,7 @@ jobs:
             echo
             echo "The apply-in workflow failed. Common causes are decode errors, missing apply_manifest.json, unsafe paths, missing sources, stale-write hash failures, create_only violations, hash mismatches, missing apply_manifest schema, missing workflow_change_reason for workflow edits, or git commit/push failure."
             echo
-            echo "Hash policy: existing tracked files require expected_blob_sha or expected_current_sha256 unless manifest allow_missing_current_hash=true is explicitly set; new files require create_only=true and expected_new_sha256. Workflow mutation policy: .github/workflows targets require allow_workflow_changes=true and workflow_change_reason."
+            echo "Hash policy: existing tracked files require expected_blob_sha or expected_current_sha256 unless manifest allow_missing_current_hash=true is explicitly set; new files require create_only=true and expected_new_sha256. Workflow mutation policy: .github/workflows targets require allow_workflow_changes=true and workflow_change_reason. Payload policy: payload.zip.b64 may contain base64 directly, or it may contain only '# dcoir-payload-b64-parts-v1' with sorted chunks under sibling payload.zip.b64.parts/*.b64."
             echo
             if [[ -f "$WORK_DIR/extract/apply_manifest.json" ]]; then
               echo "### Manifest excerpt"
