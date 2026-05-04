@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-04T10:10:40Z
+- generated_at_utc: 2026-05-04T14:23:39Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -35,22 +35,6 @@
 - `references/large_file_intake_playbooks.md` — `edcec83f4106be337118250cf1dd60adc6888855f05f58731a61809f68fca9b6`
 - `scripts/build_artifact_manifest.py` — `70be7e6420a340a1baa9f70e58e911a9ef1f89b890091161eff94e506c2edba8`
 
-## dcoir-attention-signaler
-
-- source_tree_hash: `82926cdd1be509cc12af80ba092726eef8bef56a005bdfc97a8fb7c609f89ff2`
-- release_zip_name: `dcoir-attention-signaler.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `7`
-
-- `SKILL.md` — `cca900409f13966de8b8f53d1086e7345bb7f0b0b9db42270ea876c666329d73`
-- `agents/openai.yaml` — `12d39993833e9467bf07bb61e2916dae021bc75d433a13d61e65616c802eeb83`
-- `assets/icon.svg` — `d80a4c3e0fd2efa7af88433a53b25a92c78a644175c6669dd78fee50fb53acf6`
-- `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/attention_modes.md` — `75b927c6671c703b70a03be24dad018457bac93000a8254c70c6fdaad77ba66e`
-- `references/banner_message_templates.md` — `b7fe5b731f94275deaa2b127f6e561ca1abcf3bd178bd03254c2bbf871bb0a74`
-- `scripts/render_attention_signal.py` — `98becd6f9642fc1e4bd9aecda4e72abb230c5c4719b4cf004ef7a65286673d44`
-
 ## dcoir-change-impact-analyzer
 
 - source_tree_hash: `f1c68c20c4ada9f821b62a81d27cf5d209682f93d4d703ac24dd4d22c4fc12a7`
@@ -68,41 +52,15 @@
 - `references/project_discovery_contract.json` — `9382fa5bf80f529c8e350d6d6d90ec7c0ed020ac98ca45984d5a2f43b4371e3c`
 - `scripts/analyze_change_impact.py` — `8c0b3d9ccf8df4f00b8832a136b880187ec0d7c4f58b985c627f8bec01f7bb4e`
 
-## dcoir-collector-qa
-
-- source_tree_hash: `f403b2df64b6d8833306166e1bab1a84c8c21680fa6e80ca3ca8003d57e7770c`
-- release_zip_name: `dcoir-collector-qa.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `17`
-
-- `SKILL.md` — `85122dd6eb44d0785a67ed5d04d88b29561d7edd4a91accc7f195400930ee3a0`
-- `agents/openai.yaml` — `2a698c55cadeef63081bf86a6e32dfd3df04f9d486bcb6c972e7a29d38df2244`
-- `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
-- `references/airtable_memory_workflow.md` — `42296034c7f70e1b174b19d06aeea8b363dbca3a6751eb826c985cc78750db93`
-- `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/execution_modes.md` — `89bda4edd498ac887fa98bab682d2c0b68c716028f719d5312bcdf9d9f267413`
-- `references/known_failure_lane.md` — `4ba95fd7f62538ecf8d3fa931d2383a03ea2b8fba55b42d34e86b3b53dd82401`
-- `references/maintenance_contract.md` — `b8f3f0c4a404a40663b6b2fbbf816eb919de4014d394cd96061d4cf878f633fd`
-- `references/project_discovery_contract.json` — `43ff953355a8df1c17973cc2e438a13ec5ef8a2d34243bbdffb7917f003576e4`
-- `references/repair_mode.md` — `765e820f58fc0a9d5f36290ba2162ed3d07f721b6ff788b6a66e7bf169064577`
-- `references/report_template.md` — `b1e0a1f4ee15196c8eb4cf3eaa268b7d5f0d54c58b0fd02600e71d5917487044`
-- `references/sample_manual_results.json` — `c8f001c8b21f618d2f6026db2b538316aa5e563aa203866891aaf04ebe405526`
-- `references/test_buckets.md` — `42448da69da52cc85e1298f76d1d2b181fadaa86210c3b3f727fd9682d2bb5b3`
-- `scripts/collector_static_audit.py` — `479f5ff231727f6b84089b2e53fe599f39ac75cfe36d21bd5e4e790d1be04489`
-- `scripts/render_collector_qa_memory.py` — `5bb8c3af916b98e704e63bb2dbb952c4fd86b4e9560d1f6d6b2c566708cc6d48`
-- `scripts/render_collector_qa_report.py` — `3602216472f7051025b1264bb800f00d9168378415749b7b6c70d943fe71879c`
-- `scripts/render_repair_plan.py` — `1d0eaac2b3ecfab1c6eaa71f62634b3d785976b340df013a972d338cd977948c`
-
 ## dcoir-decision-policy
 
-- source_tree_hash: `106c4ae708f75b558bc23bb3289f747e88175982024d7e798754830d000d9e34`
+- source_tree_hash: `ff812a545d3d8435546a91fb871b1c6a5adc931b4d25f1783004ca6548af50fe`
 - release_zip_name: `dcoir-decision-policy.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `15`
 
-- `SKILL.md` — `b61822893e701db470a8f0609e7921489720acb46310f33e8f8ec271e409d6b1`
+- `SKILL.md` — `0eb53438ee186ab81af2d0418648633e1fd3ba55aed14e919f6e5babc2a1b396`
 - `agents/openai.yaml` — `bfb29d585a419b31ba1e1f5992865c6e2df8fb910b5ed12cb45d1903a2fec515`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_memory_workflow.md` — `eba025446db7dbdd5c2b9cb5829e96b69e6a76033368add7f3a2f470defb18cd`
@@ -151,24 +109,6 @@
 - `scripts/build_knowledge_docs.py` — `b82bf51c4dd463955fb021782a16fb0d785e0a963fbff4dd64fd917c4da28d2e`
 - `scripts/scan_project.py` — `910b00c6807239d6aacb357e58684c37520e03c203bbaab5c60c5f3ef9828309`
 
-## dcoir-live-test-remediation-planner
-
-- source_tree_hash: `44e8fd81e66ea27399119e2f16aa67a581d9bc1eee25764109d8df270ca0eb52`
-- release_zip_name: `dcoir-live-test-remediation-planner.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `9`
-
-- `SKILL.md` — `a8ad1808994d6fd34194cb178a69f1812346100fc3b3e24cf4abae72f19f2a5c`
-- `agents/openai.yaml` — `c5449782a0cff34fe10f3d892fdd5d076a19eb4237efa93d3673ada8e23fca9d`
-- `assets/icon.svg` — `72343cc4b66256ae7de8474c7cad14e711ad84a94c473732a44f96a56124c42d`
-- `references/airtable_memory_workflow.md` — `3623ffff2de7aa317c73cb99298bc5f80faa32e4069f7cbb39df16754288e269`
-- `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/remediation_model.md` — `d403af23279dc4c663ee4baf31a4bd8dc31d472c1b6ddcbf21beb25e47b93140`
-- `references/remediation_rules.json` — `6f7eea2cfd8ce05e929abc7ee3ff3b45d8a98dbf9cbb9630aafddd9b8a08ffb5`
-- `scripts/plan_live_test_remediation.py` — `2c42dcc05eb1620527682ae4ee1b0fb086cb2870b15b30ff94d3994207505c43`
-- `scripts/render_live_test_remediation_memory.py` — `d22347729e574355a14f8cb6fdefe41687350fcc43240c17119a18fd967160f5`
-
 ## dcoir-local-config-registry-maintainer
 
 - source_tree_hash: `bff4d7b862834ed8dfb0cfbce13b9453d75191b7b045ebcaf89d5c85271ba18e`
@@ -185,13 +125,13 @@
 
 ## dcoir-memory-preflight
 
-- source_tree_hash: `4617141ef248e29edf56c3b3b553ba2068600f6713fbc5181e0e62e0ed27961a`
+- source_tree_hash: `bf746c9743e12e0d3ce7830956c46434700b73a3a703868bc6dd7681ff071047`
 - release_zip_name: `dcoir-memory-preflight.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `9`
 
-- `SKILL.md` — `68950c25247eee0a766cb5a23b011d3b4e5fcf3c22c91b8c99086dbbb30cf1d6`
+- `SKILL.md` — `ab0b2b55ad32d8dfc47348d26051f8c9a2a7ee9d9a3dd71e412060ecdc503cf6`
 - `agents/openai.yaml` — `e5e97e75c7076793addee2bc5976c54960ffc469b7b0b8a80f6d923de04325e9`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_memory_workflow.md` — `0e4d8f47e30512f630bb3a1b5c0d6310ff195847bae3f3dbd03d27c32b065cee`
@@ -236,50 +176,6 @@
 - `scripts/render_skill_parity_summary.py` — `d4825fae8e617672fb78b4bbf4df7b4dae4271a0e8e0a70e970b937e591d4d8b`
 - `scripts/verify_skill_parity.py` — `4ced96dbc4572d8223744bfe04690edf40127d21ea73d7a2972d2524477e08b8`
 
-## dcoir-plan-tracker
-
-- source_tree_hash: `94ce4d8665483bffac9b9d024328069bd9c5f2ba4f2f76c6f77426bc5aa47054`
-- release_zip_name: `dcoir-plan-tracker.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `20`
-
-- `SKILL.md` — `41b2210aaf48af97690295dd13c4e2688503431efbd617ccbcb7fd63e3c036de`
-- `agents/openai.yaml` — `fcd3c796028892af24f78cbc4639795ba84e7ecaa66303e2de19da01c17ba350`
-- `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
-- `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/airtable_plan_sync_workflow.md` — `ca9654cc64b4fdd1ef07342026ec4d3d38019c3fa5310fc968074d278c98f990`
-- `references/blocker_promotion_workflow.md` — `84fc60aa51f81824e2b74d90460075cb629d4ccffcac2268031467c4c15d268c`
-- `references/command_surface.md` — `c7ca094ae96db35d409e47a6e6a3e9b04d0e7533dd9cc4993209c83d96d69289`
-- `references/file_layout.md` — `766194cfe0ec510b6253797d400883698fd24334dd4e9dd5cacf79868edabdc5`
-- `references/github_write_workflow.md` — `992e26beb44f549fcfe1d971ae441064818813624c7a931683dc91ef2b050534`
-- `references/local_plan_state_workflow.md` — `9644432e46f29bab09df54ea83a62b32980932f580209325cb6d11efdac4ffd4`
-- `references/queue_control_sync_rules.md` — `bedc9527452574a7b049518b84900053eb21f2f4ea7978561afd991a5e883314`
-- `references/session_buffer_workflow.md` — `205f34eac269120ca60851c02f92a76b21e1f2f1c56fb0f28cda42702fb3bd46`
-- `references/startup_active_plan_recovery_workflow.md` — `13d772795dcfa0f06203bc8c84a85e60b55bfee733e0456011498f5384fc798f`
-- `scripts/add_task.py` — `4df2dafcec8e56b1ac596adc43e180ddb616e2481460676546c2aef1cd2c8fa5`
-- `scripts/ensure_plan_state.py` — `f941683ac440f7699ae91e9c7325372dfbe95610b6d67949c346c058aa408071`
-- `scripts/init_plan.py` — `79e00ae49309c69582b5ef18e799b6694b52494f6d048a29320cbe17f3b71611`
-- `scripts/plan_templates.py` — `253691229750ae20bb2f24b2578592114a11ea103b2171f8f12d344c8ed754d9`
-- `scripts/render_airtable_plan_bundle.py` — `35165f3572a669e8d46ba7f1ebe9047753872030b4a0b559f8142b32145cb152`
-- `scripts/update_plan_state.py` — `9f4153aae4c87e077ee6fd815330f8cc1c4c95fa83baa98e3a527ae9a0ce7ac0`
-- `scripts/validate_plan_sync_rules.py` — `c9df43e96fbf093dbdd08992388fcebb07760b887c3f2554696539af99043ede`
-
-## dcoir-promotion-readiness-reviewer
-
-- source_tree_hash: `f3ac8a5f2c364c85d48b7f5f9cdbbd2aef40b8827e5dcc80d35d1db5f2d21041`
-- release_zip_name: `dcoir-promotion-readiness-reviewer.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `6`
-
-- `SKILL.md` — `3063c0f9533b9d75f2a51d49e5441b76afd712664963c01869f5631fda5eef5d`
-- `agents/openai.yaml` — `5dbaa66152a850493e588564c05d65e6ff0be35497f38280810549facf52fd83`
-- `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
-- `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/readiness_rules.md` — `781ed5623655413a5a20593dd2465986574f143c211084ca70819826cfff867c`
-- `scripts/review_promotion_readiness.py` — `1d3f8e22fe2f8b87387dcbeade3e20e174914729327d2fd723c15fc0268bf202`
-
 ## dcoir-prompt-pack-assembler
 
 - source_tree_hash: `18df1663905b19bd3660d7ede27f983135cc3258789c6f6d0d91c276eaf3bfe0`
@@ -295,37 +191,6 @@
 - `references/assembly_rules.md` — `990edbec5a5d71f109872a5e95e2f039e3e437fdb7dfdb2f9850134e5366d798`
 - `references/output_contract.md` — `881d20e6f99b3b2c25d9b9c18d9dffada96b95d227517eb2c6722514ee441a19`
 - `scripts/assemble_dcoir_prompt_pack.py` — `94a23ffa06eb09ef0e1f4d5b06a572204df41442384235b11ffabef3c3641e2c`
-
-## dcoir-readme-maintainer
-
-- source_tree_hash: `4be50f3afe7f0da240008c22567215b09c6a6c4776f62c587b3faec9de6f5318`
-- release_zip_name: `dcoir-readme-maintainer.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `7`
-
-- `SKILL.md` — `d1020c3dda4a7b80b4a4b9c726bc9df1c573ea94e140565eccff3449680085b9`
-- `agents/openai.yaml` — `1c8c3a76d8a03914bac0a505ecadf767a59f00f5e971549f8941ca742683cc4f`
-- `assets/icon.svg` — `49315dda7125ec5fc77ef5f2b96126d8b2121c6e72944b4702972e90f321d3ee`
-- `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/readme_patterns.md` — `df93e94cf52051064ee499bbed7358a008de5b4d80423938c6d674cc65561424`
-- `references/scope_boundary.md` — `6bc71f055c1697ffec9c3fc7dff478cbf1473824e93359f1363e339086106aa9`
-- `scripts/scan_readme_coverage.py` — `66e7559093c23da943b3cf96bd59370e36331e9ca68c9422442f38b356631427`
-
-## dcoir-release-scope-builder
-
-- source_tree_hash: `dd05cfa9fafb74cd84da1631a8db62c75c7bd42b7f9b22e062e42f2e0395a0d6`
-- release_zip_name: `dcoir-release-scope-builder.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `6`
-
-- `SKILL.md` — `e9138ce6b52ce7f167bdc36340e565b41158faa0bf7fd3a6f7205580474eaa05`
-- `agents/openai.yaml` — `c72f1c584a2ac73799cd12d2ed89762fb85bc74e2b4d72419314c8f1c3d78e68`
-- `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
-- `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/release_instruction_templates.md` — `aae3a753291afd3d409a9dad490d44e3dfe2a28f39da1daf283330f43bca08b3`
-- `scripts/build_release_scope.py` — `019cbb964a9462d39b43ebe1eb571489ba2c8b13b3a9d1dbbe2e898bc4d1888f`
 
 ## dcoir-repo-packager
 
@@ -345,13 +210,13 @@
 
 ## dcoir-session-resume
 
-- source_tree_hash: `98019349a4b47f7456a49f5a86cecfb7f5c2b3d72320775fea38aa3143487964`
+- source_tree_hash: `4f4f8784833aa828851490f9ec9550112236c6c687029bf2c92e1209055e1981`
 - release_zip_name: `dcoir-session-resume.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `5`
 
-- `SKILL.md` — `e93aed3dbc687dec048c1111094918089a5cf8095b20c99b929f22e48b359e4d`
+- `SKILL.md` — `422997c2d0c9bfbef560ac430777f56f5133b7565c99f1c31ea3b5b9b56fd6d6`
 - `agents/openai.yaml` — `9ea1a2256720b1f1ed9aee5dae12a6b9532e22e466123822ca024784899f3bad`
 - `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
@@ -382,27 +247,6 @@
 - `scripts/render_airtable_session_bundle.py` — `c692142dd1af43853e4a16dd1f295a9b16e21d3b41e9904a6366279295506084`
 - `scripts/render_session_state.py` — `07d830ccf1879b58fdd2e4b530639adb686d6d4a8c331e7593a7d6f625d77306`
 - `scripts/session_state_store.py` — `99c84ec85457daab61145993daf1d78fc60a599b870e7ee0b941967048283526`
-
-## dcoir-skill-regression-auditor
-
-- source_tree_hash: `ff659c5f10c1717d520ddd9b13ff6001e42231faed527ff038f4f5654173803d`
-- release_zip_name: `dcoir-skill-regression-auditor.zip`
-- release_zip_hash: `not-recorded`
-- status: `verified`
-- file_count: `12`
-
-- `SKILL.md` — `25e8d9ec150c8c0eafb702f8245aa0d2585bb7d465380464bb0bee15e6eed57e`
-- `agents/openai.yaml` — `6e8d2a6587b4c296cd16d473a2e707950e2450b5de83f266b64bb2cc0bfc8115`
-- `assets/icon.svg` — `e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b`
-- `references/airtable_memory_workflow.md` — `376e99321bdbe7146b628aa37b97009823114005d9fbe4f31a3a5cccdfed4a79`
-- `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
-- `references/package_hygiene_workflow.md` — `f55fa890c393dceb1b2437049730a084aec808c512c97e2789ea383bd1cd49ed`
-- `references/regression_fixture_catalog.md` — `b0ba6d8400007f71a966a1cc8527cebf5096f4c37693370226256c17bef400a6`
-- `references/session_buffer_workflow.md` — `e6da883adde158b3c38bfe36b22afa15d572bf8fe24728a6094aa66621425a78`
-- `references/skill_test_harness_definitions.md` — `4bb2249ff58e410eba1e81aa6ee413754d1ee47b0777037cbc0edfdcd39ae989`
-- `scripts/clean_skill_runtime_residue.py` — `9fcc8553e8ccbb7c7fe3c744e9f6c55471c47ca078299ea5bbf744dd7efe7f1c`
-- `scripts/plan_skill_regression.py` — `8511e4e46ef7d49c729588265b686b3d487edce2f769e93cf6711aff0b6b9d6d`
-- `scripts/render_skill_regression_memory.py` — `976695e1523a1898220d67b3f6aa7982c9f1b29436ddba82088272a51b3fc6c9`
 
 ## dcoir-source-authority-auditor
 
