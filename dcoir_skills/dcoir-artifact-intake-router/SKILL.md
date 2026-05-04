@@ -1,7 +1,8 @@
 ---
 name: dcoir-artifact-intake-router
-description: classify and route uploaded africom_soc_ir / dcoir artifacts using bounded manifest-first inspection before expensive extraction or reading; use for archives, github actions artifacts, repo bundles, skill packages, collector output, prompt-pack files, evidence bundles, or unknown mixed uploads.
+description: classify and route uploaded africom_soc_ir / dcoir artifacts using bounded manifest-first inspection before expensive extraction or reading; use for archives, github actions artifacts, repo bundles, skill packages, collector output, prompt-pack files, evidence bundles, unknown mixed uploads, too-large uploads, missing evidence files, partial uploads, or cases needing metadata-first targeted excerpts.
 ---
+<!-- skill-marker: updated-skill|20260504T093500Z|large-file-fallback-preserved|in-session-update|dcoir-artifact-intake-router|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-artifact-intake-router|SKILL.md -->
 
 # DCOIR Artifact Intake Router
@@ -49,6 +50,18 @@ Always start with the cheapest safe manifest:
 
 Only inspect deeper after producing a narrow read plan.
 
+## Large-file and partial-input fallback
+Use this skill directly, not `dcoir-large-file-intake-manager`, when an AFRICOM_SOC_IR / DCOIR upload is too large, missing, partial, or only available through excerpts. This skill owns the manifest-first and metadata-first intake decision before downstream routing.
+
+Fallback rules:
+- State the intake limitation plainly.
+- Prefer metadata-first triage, existing summaries, highest-value targeted excerpts, and the next best adjacent artifact over broad file dumps.
+- Ask for one decision-relevant slice next, not a long shopping list.
+- Keep conclusions bounded to the reviewed scope.
+- Keep the request aligned to the DCOIR review order: baseline -> enrichment -> retrieved artifact -> final synthesis.
+- Use `references/large_file_intake_playbooks.md` for specific too-large, missing-file, and partial-upload request patterns.
+- Do not route to a separate large-file helper unless a future control-plane rule explicitly restores that split.
+
 ## Artifact classes
 Classify the upload into one primary class and optional secondary classes:
 
@@ -83,14 +96,14 @@ After classification, route to the most specific helper:
 - GitHub Actions artifact, test logs, validation outputs: route to `dcoir-validation-orchestrator`, `dcoir-skill-regression-auditor`, or `dcoir-collector-qa` depending on content.
 - Skill package or skill source: route to `skill-creator`, then `dcoir-skill-regression-auditor`, then `dcoir-parity-verifier` when parity/source follow-through is needed.
 - Repo snapshot or repo-update bundle: route to `dcoir-source-authority-auditor`, `dcoir-change-impact-analyzer`, or `dcoir-repo-packager` depending on whether the task is review, impact, or packaging.
-- Collector output or endpoint artifacts: route to `dcoir-collector-qa`, `dcoir-operator-workflow-hardener`, or `dcoir-large-file-intake-manager`.
+- Collector output or endpoint artifacts: stay in this skill for manifest-first or partial-input intake, then route to `dcoir-collector-qa` or `dcoir-operator-workflow-hardener` depending on whether the next work is QA or operator workflow hardening.
 - Gemini/prompt-pack files: route to `dcoir-prompt-pack-assembler`, `dcoir-validation-orchestrator`, or `dcoir-live-test-remediation-planner`.
-- Triage/evidence bundles: route to `dcoir-triage-to-collector-escalation-designer` or `dcoir-large-file-intake-manager`.
+- Triage/evidence bundles: stay in this skill for manifest-first or partial-input intake, then route to `dcoir-triage-to-collector-escalation-designer` when the next work is escalation design.
 - Unknown mixed archive: stay in this skill until classification is safe, then route.
 
 ## Stop conditions
 Stop and report clearly when any of these are true:
-- archive is too large or too deep to inspect safely within the current environment
+- archive is too large or too deep to inspect safely within the current environment and no metadata-first or targeted-excerpt path is available
 - manifest indicates multiple unrelated artifact classes and no safe primary route can be inferred
 - archive appears to contain secrets, credentials, private keys, tokens, or highly sensitive unrelated material
 - expected DCOIR project context is missing
@@ -134,3 +147,7 @@ Example:
 ```bash
 python scripts/build_artifact_manifest.py /mnt/data/upload.zip --output /mnt/data/artifact_manifest.json --max-rows 250
 ```
+## References
+- `references/large_file_intake_playbooks.md` for too-large, missing-file, and partial-upload request patterns.
+- `references/github_actions_artifact_playbook.md` for GitHub Actions artifact handling.
+

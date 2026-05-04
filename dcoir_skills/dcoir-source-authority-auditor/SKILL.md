@@ -1,7 +1,8 @@
 ---
 name: dcoir-source-authority-auditor
-description: audit whether a requested dcoir task is grounded in current authoritative source sets and stop on unsafe authority drift.
+description: audit whether a requested dcoir task is grounded in current authoritative source sets, stop on unsafe authority drift, and emit paste-ready authority drift reports. use for africom_soc_ir / dcoir authority checks, source-control confusion, stale workflow assumptions, airtable/github drift, missing authority surfaces, helper-memory drift, or repair-report handoff.
 ---
+<!-- skill-marker: updated-skill|20260504T094500Z|authority-drift-reporter-preserved|in-session-update|dcoir-source-authority-auditor|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-source-authority-auditor|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T171500Z|airtable-operational-schema-alignment|source-update|dcoir-source-authority-auditor|SKILL.md -->
 
@@ -56,6 +57,27 @@ Audit posture:
 - Treat `Repo File Classification Detail` as supporting evidence for cleanup or classification, not as a hard-stop authority surface.
 - If a three-division table contradicts a stale GitHub todo or retired helper-memory claim, prefer Airtable for live governance and report the stale GitHub surface as historical or promoted history unless the GitHub control plane explicitly says otherwise.
 
+
+## Authority drift report mode
+Use this skill directly, not `dcoir-authority-drift-reporter`, when the task needs a paste-ready authority drift report in addition to an audit outcome. This skill owns both the audit gate and the report handoff for source-authority confusion.
+
+Report-mode triggers:
+- repeated Airtable/GitHub/Project attachment roundtrips without a clear source-of-truth decision
+- stale references to completed cutovers, retired cleanup lanes, or detached GitHub todo authority
+- assumptions that retired or absent Airtable tables exist without live schema readback
+- conflict between Project Instructions, CP-00, Airtable Governance Control Plane, live Airtable state, helper skill instructions, GitHub source files, or chat-state assumptions
+- a helper skill hard-stops, times out, loops, contradicts itself, or uses old authority language
+- a later session needs a concise, paste-ready repair prompt
+
+Report-mode rules:
+- Detect and report drift; do not silently repair governed files from report mode alone.
+- Prefer precise evidence over broad speculation.
+- Classify drift with `references/drift_taxonomy.md`.
+- Use `references/report_template.md` for report format.
+- Use `references/repair_prompt_contract.md` for paste-ready repair prompt standards.
+- Run `scripts/authority_drift_report.py` when deterministic Markdown and JSON output will help.
+- Never include secrets, token values, or hidden credentials in reports.
+
 ## Workflow
 
 1. Resolve the current manifest and change log from the current Airtable-first governance posture plus governed GitHub source/readback surface.
@@ -74,7 +96,8 @@ Audit posture:
 7. Check whether the task is trying to rely on retired GitHub todo files as though they were still authoritative for live queue priority.
 8. Treat missing authoritative readable sources as a hard-stop conflict, but treat missing supporting assets as a bounded-state note unless the current task explicitly depends on those assets as authority. Treat missing Airtable queue-authority records as a bounded-state note when the control plane is still otherwise intact.
 9. Run `scripts/audit_source_authority.py` when a deterministic audit will help.
-10. Emit one of these outcomes:
+10. For report-mode tasks, run `scripts/authority_drift_report.py` or emit the same structured report fields in chat.
+11. Emit one of these outcomes:
    - `clear_to_proceed`
    - `proceed_bounded`
    - `hard_stop_conflict`
@@ -87,7 +110,34 @@ Return:
 - exact conflict or drift if any
 - affected active surfaces when drift is found
 - smallest remediation set when a conflict is clear enough to name it
+- drift family and severity when in report mode
+- expected authority and observed conflicting source or missing source when in report mode
+- recommended repair lane when in report mode
+- paste-ready repair prompt when in report mode
+- whether a skill update, Project attachment update, Airtable data update, GitHub source update, or operator decision is needed
 - best next move
+
+
+## Authority drift report command
+Create a deterministic report from CLI fields:
+
+```bash
+python scripts/authority_drift_report.py create \
+  --task "schema alignment review" \
+  --symptom "skill referenced Skill State Registry but live schema did not contain it" \
+  --source "dcoir-source-authority-auditor/SKILL.md" \
+  --source "Airtable list_tables_for_base" \
+  --expected-authority "live Airtable schema readback and Admin Registry skill-state rows" \
+  --observed-drift "old dedicated Skill State Registry assumption" \
+  --recommended-fix "patch skill instructions to use Admin Registry unless live schema proves dedicated registry exists" \
+  --output-dir /mnt/data/dcoir_authority_drift
+```
+
+Create a deterministic report from JSON:
+
+```bash
+python scripts/authority_drift_report.py create --input-json /mnt/data/drift_input.json --output-dir /mnt/data/dcoir_authority_drift
+```
 
 ## Fast Airtable helper-memory read contract
 
@@ -120,3 +170,10 @@ Read pattern:
 - Treat Project space as bootstrap/runtime anchor, not as a duplicate readable text repository.
 - Detect and report drift; do not silently rewrite governed files from this skill.
 - Do not hard-stop only because a supporting asset is absent unless the current task explicitly depends on that asset as authority.
+
+
+## Report-mode references
+- `references/drift_taxonomy.md` for authority-drift classification.
+- `references/report_template.md` for paste-ready report structure.
+- `references/repair_prompt_contract.md` for repair-prompt standards.
+- `scripts/authority_drift_report.py` for deterministic Markdown/JSON report generation.
