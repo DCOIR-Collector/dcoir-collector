@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-03T17:17:51Z
+- generated_at_utc: 2026-05-04T08:56:14Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -21,17 +21,18 @@
 
 ## dcoir-artifact-intake-router
 
-- source_tree_hash: `113bca491148052b1f113e6e20fe7601ca7c23eeba250de7a00e0f9b7970b460`
+- source_tree_hash: `ec40e8f438cb44e796fdb2e6639e43ca0bc895d668381fe8da782f8e9bffe7f4`
 - release_zip_name: `dcoir-artifact-intake-router.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
-- file_count: `6`
+- file_count: `7`
 
-- `SKILL.md` — `e928a25953b97a2e7915fa48f4c13d5db29f7f3163be7f3c21d78ff61e464cf0`
+- `SKILL.md` — `efe9e5ab330098d0e96350a292820550f555fbdef8c653a93b7e92e5f9133e4f`
 - `agents/openai.yaml` — `7b66fd0a2c3c31244abf6bd532b8f6eae45d271e4aa7322c5ec792d28623d1b6`
 - `assets/icon.svg` — `0cdb7990dea3ad89ead04743eeac2dc58c119fb0b8b4a01499a21237f155bc1a`
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
 - `references/github_actions_artifact_playbook.md` — `c73640c0de62cfa8e31c9867de0a3325ad7a8fabb8291c6931ceb61aeef51fe1`
+- `references/large_file_intake_playbooks.md` — `edcec83f4106be337118250cf1dd60adc6888855f05f58731a61809f68fca9b6`
 - `scripts/build_artifact_manifest.py` — `70be7e6420a340a1baa9f70e58e911a9ef1f89b890091161eff94e506c2edba8`
 
 ## dcoir-attention-signaler
@@ -436,19 +437,23 @@
 
 ## dcoir-source-authority-auditor
 
-- source_tree_hash: `dcd316ea6b084c52bc20dfb62f7c62db3b237e2d23ab182b92d4109ff7e6a116`
+- source_tree_hash: `f3f56b384188827824064ba31cf2cd4c4f32f739b31520c27e3c034b65d304c0`
 - release_zip_name: `dcoir-source-authority-auditor.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
-- file_count: `7`
+- file_count: `11`
 
-- `SKILL.md` — `53d7355a81d89407bc18d311c90cff2a5dcedb2f667d82af2d1f46f9e473da5a`
+- `SKILL.md` — `81a1de5459cd839c52bcdaa541add1f906fc404694ec415267c44d3ba3815cf5`
 - `agents/openai.yaml` — `12e5e0a6a338d7b011a8cfa1667fd5e30ca06b269a944ff7d0e5530859470bb1`
 - `assets/icon.svg` — `8936b24f674a1250d999e2c2b5901374fb4240426f32bd1ae340c352a90d617d`
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
 - `references/audit_rules.md` — `c5735bb379d78210c6ea88f706ead1ed42b8b70133b70d05ec1e4f020f580c5b`
+- `references/drift_taxonomy.md` — `4aa64b24b6c72c8dfa3c81f062a442b2f35c63391e07d260c5a8e9999c1e3d23`
 - `references/project_discovery_contract.json` — `43ff953355a8df1c17973cc2e438a13ec5ef8a2d34243bbdffb7917f003576e4`
+- `references/repair_prompt_contract.md` — `a12dbc641f60da869db679b95109772ce5e4af7c24dc837dbe21034bc13033ba`
+- `references/report_template.md` — `7ce720c8eafc1d4d6b8a2e43fffd1bb967d9fd53d602b3395d6feaf07063b659`
 - `scripts/audit_source_authority.py` — `2ab6631c5dc47c239e719ec3fa573fbe6057196e9fc2a5b7a7e7c14c4b3c3d39`
+- `scripts/authority_drift_report.py` — `4a8b9cbff188a04febd20d6a112b29970de6d881a20a03e1082d70b64370f863`
 
 ## dcoir-structural-rename-coordinator
 
