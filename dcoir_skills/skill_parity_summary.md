@@ -1,6 +1,6 @@
 # DCOIR Skill Parity Summary
 
-- generated_at_utc: 2026-05-04T08:56:14Z
+- generated_at_utc: 2026-05-04T09:16:35Z
 - baseline_origin: repo_source
 - canonical machine-readable source: `dcoir_skills/skill_parity_manifest.json`
 
@@ -184,19 +184,19 @@
 
 ## dcoir-live-test-remediation-planner
 
-- source_tree_hash: `1bfae69f9f44136db8dfc09caae32754d1fb72699e7cd57f0d5b2b087517fbcb`
+- source_tree_hash: `44e8fd81e66ea27399119e2f16aa67a581d9bc1eee25764109d8df270ca0eb52`
 - release_zip_name: `dcoir-live-test-remediation-planner.zip`
 - release_zip_hash: `not-recorded`
 - status: `verified`
 - file_count: `9`
 
-- `SKILL.md` — `0a298530b50072be49609498cef96902b0c52b03393f4a5aa411704ea27161d5`
+- `SKILL.md` — `a8ad1808994d6fd34194cb178a69f1812346100fc3b3e24cf4abae72f19f2a5c`
 - `agents/openai.yaml` — `c5449782a0cff34fe10f3d892fdd5d076a19eb4237efa93d3673ada8e23fca9d`
 - `assets/icon.svg` — `72343cc4b66256ae7de8474c7cad14e711ad84a94c473732a44f96a56124c42d`
 - `references/airtable_memory_workflow.md` — `3623ffff2de7aa317c73cb99298bc5f80faa32e4069f7cbb39df16754288e269`
 - `references/airtable_operational_schema_contract.md` — `1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e`
 - `references/remediation_model.md` — `d403af23279dc4c663ee4baf31a4bd8dc31d472c1b6ddcbf21beb25e47b93140`
-- `references/remediation_rules.json` — `4481f3e6f10c52c4d5370a8e50f496728392b5d327520310b928179d25713074`
+- `references/remediation_rules.json` — `6f7eea2cfd8ce05e929abc7ee3ff3b45d8a98dbf9cbb9630aafddd9b8a08ffb5`
 - `scripts/plan_live_test_remediation.py` — `2c42dcc05eb1620527682ae4ee1b0fb086cb2870b15b30ff94d3994207505c43`
 - `scripts/render_live_test_remediation_memory.py` — `d22347729e574355a14f8cb6fdefe41687350fcc43240c17119a18fd967160f5`
 
