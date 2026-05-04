@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-04T14:23:39Z",
+  "generated_at_utc": "2026-05-04T15:57:18Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -48,103 +48,6 @@
           "path": "scripts/schema_cache.py",
           "sha256": "ac88bb2cc30506ff26eb80e678355490fd460b5e7a85aadb03977490f021aaa4",
           "size_bytes": 6438
-        }
-      ]
-    },
-    "dcoir-artifact-intake-router": {
-      "source_root": "dcoir-artifact-intake-router",
-      "source_tree_hash": "ec40e8f438cb44e796fdb2e6639e43ca0bc895d668381fe8da782f8e9bffe7f4",
-      "release_zip_name": "dcoir-artifact-intake-router.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 7,
-      "total_bytes": 24880,
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "efe9e5ab330098d0e96350a292820550f555fbdef8c653a93b7e92e5f9133e4f",
-          "size_bytes": 10743
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "7b66fd0a2c3c31244abf6bd532b8f6eae45d271e4aa7322c5ec792d28623d1b6",
-          "size_bytes": 339
-        },
-        {
-          "path": "assets/icon.svg",
-          "sha256": "0cdb7990dea3ad89ead04743eeac2dc58c119fb0b8b4a01499a21237f155bc1a",
-          "size_bytes": 843
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/github_actions_artifact_playbook.md",
-          "sha256": "c73640c0de62cfa8e31c9867de0a3325ad7a8fabb8291c6931ceb61aeef51fe1",
-          "size_bytes": 907
-        },
-        {
-          "path": "references/large_file_intake_playbooks.md",
-          "sha256": "edcec83f4106be337118250cf1dd60adc6888855f05f58731a61809f68fca9b6",
-          "size_bytes": 1131
-        },
-        {
-          "path": "scripts/build_artifact_manifest.py",
-          "sha256": "70be7e6420a340a1baa9f70e58e911a9ef1f89b890091161eff94e506c2edba8",
-          "size_bytes": 6476
-        }
-      ]
-    },
-    "dcoir-change-impact-analyzer": {
-      "source_root": "dcoir-change-impact-analyzer",
-      "source_tree_hash": "f1c68c20c4ada9f821b62a81d27cf5d209682f93d4d703ac24dd4d22c4fc12a7",
-      "release_zip_name": "dcoir-change-impact-analyzer.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 8,
-      "total_bytes": 58911,
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "571054d4b7c8ce80a248ea8b38e3f29a4706927d470f683f43f4ef6ce8c2479e",
-          "size_bytes": 9131
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "b9c75a7ea2283256c80391439322f2fe67fa225b4819977792d897a29ebfb1c5",
-          "size_bytes": 326
-        },
-        {
-          "path": "assets/icon.svg",
-          "sha256": "72343cc4b66256ae7de8474c7cad14e711ad84a94c473732a44f96a56124c42d",
-          "size_bytes": 786
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/impact_model.md",
-          "sha256": "837f173ac8a7120270f5b29f7ba2aa3292b339eda5e5c5bc4a44bddc4c1137f7",
-          "size_bytes": 2268
-        },
-        {
-          "path": "references/impact_rules.json",
-          "sha256": "8168be794ba3ceb602c8962de0df63681de4c2ba260bff1987e4b65be9a6f380",
-          "size_bytes": 19381
-        },
-        {
-          "path": "references/project_discovery_contract.json",
-          "sha256": "9382fa5bf80f529c8e350d6d6d90ec7c0ed020ac98ca45984d5a2f43b4371e3c",
-          "size_bytes": 7443
-        },
-        {
-          "path": "scripts/analyze_change_impact.py",
-          "sha256": "8c0b3d9ccf8df4f00b8832a136b880187ec0d7c4f58b985c627f8bec01f7bb4e",
-          "size_bytes": 15135
         }
       ]
     },
@@ -270,67 +173,6 @@
         }
       ]
     },
-    "dcoir-knowledge-doc-maintainer": {
-      "source_root": "dcoir-knowledge-doc-maintainer",
-      "source_tree_hash": "20759b0e07b8d5607584802b09a7ac04661e020f59f0f55118e5d994b99004d5",
-      "release_zip_name": "dcoir-knowledge-doc-maintainer.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 10,
-      "total_bytes": 46982,
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "568f7a85fa6cfc9d5c8904e9409ebc85e92fb8a595085b41447c9f6312f78beb",
-          "size_bytes": 10096
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "79247344cf9e85b45c89852254e11bcf797fdf7d5b5fe55b78a579847e0fb9f3",
-          "size_bytes": 329
-        },
-        {
-          "path": "assets/icon.svg",
-          "sha256": "49315dda7125ec5fc77ef5f2b96126d8b2121c6e72944b4702972e90f321d3ee",
-          "size_bytes": 1210
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/initial_doc_set.md",
-          "sha256": "d3475ccb84bd10554f8c8876b907e0e76c616a43136bf9705a8e64319b396706",
-          "size_bytes": 654
-        },
-        {
-          "path": "references/operator_workflow.md",
-          "sha256": "28944c52fea3618106a04a020ee5d483acae8e9f80424bbe38c0af21d6af01e5",
-          "size_bytes": 1940
-        },
-        {
-          "path": "references/project_discovery_contract.json",
-          "sha256": "43ff953355a8df1c17973cc2e438a13ec5ef8a2d34243bbdffb7917f003576e4",
-          "size_bytes": 7336
-        },
-        {
-          "path": "references/reinventory_prompt_template.md",
-          "sha256": "521834073167201cb2656a71c6c4407f44ee15a931f4348ebcd832e3378d3df5",
-          "size_bytes": 720
-        },
-        {
-          "path": "scripts/build_knowledge_docs.py",
-          "sha256": "b82bf51c4dd463955fb021782a16fb0d785e0a963fbff4dd64fd917c4da28d2e",
-          "size_bytes": 3856
-        },
-        {
-          "path": "scripts/scan_project.py",
-          "sha256": "910b00c6807239d6aacb357e58684c37520e03c203bbaab5c60c5f3ef9828309",
-          "size_bytes": 16400
-        }
-      ]
-    },
     "dcoir-local-config-registry-maintainer": {
       "source_root": "dcoir-local-config-registry-maintainer",
       "source_tree_hash": "bff4d7b862834ed8dfb0cfbce13b9453d75191b7b045ebcaf89d5c85271ba18e",
@@ -423,159 +265,6 @@
         }
       ]
     },
-    "dcoir-operator-workflow-hardener": {
-      "source_root": "dcoir-operator-workflow-hardener",
-      "source_tree_hash": "d603b8e7fb2963033a3c53077b3fdadcaa8140e446f54dbcb3168464ed57ccdd",
-      "release_zip_name": "dcoir-operator-workflow-hardener.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 7,
-      "total_bytes": 21869,
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "5f469e3e9146180e0cd4dbdad627d9cb0f4b922431d2b523a21057f4d89d140f",
-          "size_bytes": 8513
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "807b838e7e4e8ba062d0221bd6c2bf2bcb3ae93f2149cdf5a549de00adeb38bc",
-          "size_bytes": 361
-        },
-        {
-          "path": "assets/icon.svg",
-          "sha256": "fbb6c7314886573cd56c3f86884a65afe3b5f4ce4bf1ee6baeeeb1fa50aea7a4",
-          "size_bytes": 2922
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/output_contract.md",
-          "sha256": "a950cf95f92fefe8aa7362003955405200c4abcedaa36cda1e0881d9f18ae5cf",
-          "size_bytes": 934
-        },
-        {
-          "path": "references/workflow_phases.md",
-          "sha256": "c5e5b64d0cd888ac79c5a48413c6df42fef472f183cf0c392a46b11f7fc907fb",
-          "size_bytes": 2399
-        },
-        {
-          "path": "scripts/parse_dcoir_collector_output.py",
-          "sha256": "917d7899c977f3844e206aa6128f45f35ad59ed61d224f9caddeb8930f928169",
-          "size_bytes": 2299
-        }
-      ]
-    },
-    "dcoir-parity-verifier": {
-      "source_root": "dcoir-parity-verifier",
-      "source_tree_hash": "66efbed92d2e7215c2126ca13d7ed8df796c8535b44a20295df960a59f23ed9a",
-      "release_zip_name": "dcoir-parity-verifier.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 10,
-      "total_bytes": 30249,
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "867cf5454c18a5b7c05a9fe035471a0c098825f4a6e63927d553b4c9200dc7c1",
-          "size_bytes": 7546
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "d49ba72907dbbc18425fddf556c933573bbcd4f2dab58920bf76782255533b5d",
-          "size_bytes": 294
-        },
-        {
-          "path": "assets/icon.svg",
-          "sha256": "8936b24f674a1250d999e2c2b5901374fb4240426f32bd1ae340c352a90d617d",
-          "size_bytes": 1738
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/hash_policy.md",
-          "sha256": "0847e9ff25a300a99987bdd72bf24da3dda04e93a564c9659af05fccc45e2d05",
-          "size_bytes": 781
-        },
-        {
-          "path": "references/manifest_schema.md",
-          "sha256": "bd056ebafd1ac82e0df76ffa025d8fb90d0f11efe1be550bf11a8285d03d3ea7",
-          "size_bytes": 1435
-        },
-        {
-          "path": "references/verification_workflow.md",
-          "sha256": "1e1be67d7d13621e8849b90e8e383b52a8a58825593c93b213c48019af389558",
-          "size_bytes": 1077
-        },
-        {
-          "path": "scripts/build_skill_parity_manifest.py",
-          "sha256": "d3ce7cfe4f5c568dd2b29760ebff8ec2e0bdb4a7067bb9eb73f195a54adbd8c3",
-          "size_bytes": 4839
-        },
-        {
-          "path": "scripts/render_skill_parity_summary.py",
-          "sha256": "d4825fae8e617672fb78b4bbf4df7b4dae4271a0e8e0a70e970b937e591d4d8b",
-          "size_bytes": 1535
-        },
-        {
-          "path": "scripts/verify_skill_parity.py",
-          "sha256": "4ced96dbc4572d8223744bfe04690edf40127d21ea73d7a2972d2524477e08b8",
-          "size_bytes": 6563
-        }
-      ]
-    },
-    "dcoir-prompt-pack-assembler": {
-      "source_root": "dcoir-prompt-pack-assembler",
-      "source_tree_hash": "18df1663905b19bd3660d7ede27f983135cc3258789c6f6d0d91c276eaf3bfe0",
-      "release_zip_name": "dcoir-prompt-pack-assembler.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 7,
-      "total_bytes": 16594,
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "4441f45f2eac6853b5e734e2afd8ffc19cb9388bc9526e8f1d75f39a24bb5718",
-          "size_bytes": 4072
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "3413d35b7ac9b8f1cf59d9e381f3cd5e251103f66d014fe6cf228c1d0c611b1b",
-          "size_bytes": 999
-        },
-        {
-          "path": "assets/icon.svg",
-          "sha256": "e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b",
-          "size_bytes": 420
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/assembly_rules.md",
-          "sha256": "990edbec5a5d71f109872a5e95e2f039e3e437fdb7dfdb2f9850134e5366d798",
-          "size_bytes": 645
-        },
-        {
-          "path": "references/output_contract.md",
-          "sha256": "881d20e6f99b3b2c25d9b9c18d9dffada96b95d227517eb2c6722514ee441a19",
-          "size_bytes": 224
-        },
-        {
-          "path": "scripts/assemble_dcoir_prompt_pack.py",
-          "sha256": "94a23ffa06eb09ef0e1f4d5b06a572204df41442384235b11ffabef3c3641e2c",
-          "size_bytes": 5793
-        }
-      ]
-    },
     "dcoir-repo-packager": {
       "source_root": "dcoir-repo-packager",
       "source_tree_hash": "ac2ca14e878bffb8ab97b32732c20d26b9e771751b019a68f7b3c0023be9fce6",
@@ -622,135 +311,29 @@
         }
       ]
     },
-    "dcoir-session-resume": {
-      "source_root": "dcoir-session-resume",
-      "source_tree_hash": "4f4f8784833aa828851490f9ec9550112236c6c687029bf2c92e1209055e1981",
-      "release_zip_name": "dcoir-session-resume.zip",
+    "dcoir-session-manager": {
+      "source_root": "dcoir-session-manager",
+      "source_tree_hash": "6052caf7000d2ebd555703bafe6661fef0219352a961f0c9c402e71f018e850d",
+      "release_zip_name": "dcoir-session-manager.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 5,
-      "total_bytes": 17143,
+      "file_count": 3,
+      "total_bytes": 5638,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "422997c2d0c9bfbef560ac430777f56f5133b7565c99f1c31ea3b5b9b56fd6d6",
-          "size_bytes": 8076
+          "sha256": "384a25b652c79194cc99c641c5e615e0f0402a58d5cbb73003b9c129de1cb69f",
+          "size_bytes": 5091
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "9ea1a2256720b1f1ed9aee5dae12a6b9532e22e466123822ca024784899f3bad",
-          "size_bytes": 317
+          "sha256": "ad930349e87c0ae22337d07acbe0e990eaa267b37276eec0831971e635a20fe9",
+          "size_bytes": 197
         },
         {
           "path": "assets/icon.svg",
-          "sha256": "e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b",
-          "size_bytes": 420
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/resume_output_contract.md",
-          "sha256": "77bc8726b80be50713c9140c669745d5c75f1cf415a563cca07de294cb971fe4",
-          "size_bytes": 3889
-        }
-      ]
-    },
-    "dcoir-session-tracker": {
-      "source_root": "dcoir-session-tracker",
-      "source_tree_hash": "5456fbefbe8dde545f652e94551b8a1c3798bf508c7da5e870439ad43d9b0aa0",
-      "release_zip_name": "dcoir-session-tracker.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 17,
-      "total_bytes": 105860,
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "f7d74f2c1144568ee1b6c571a31b5d2d034c5555f8f6e5785c9e1758541d303f",
-          "size_bytes": 29903
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "41265ce0f6539ad3c298612b28286c15e8934f3fec132d4968488df3ed83183d",
-          "size_bytes": 1039
-        },
-        {
-          "path": "assets/icon.svg",
-          "sha256": "fbb6c7314886573cd56c3f86884a65afe3b5f4ce4bf1ee6baeeeb1fa50aea7a4",
-          "size_bytes": 2922
-        },
-        {
-          "path": "references/airtable_checkpoint_workflow.md",
-          "sha256": "208bf70a5adf444e3a96351a9601290839bf2eda65462dc5e3435e2e9ec269b3",
-          "size_bytes": 1374
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/classification_rules.md",
-          "sha256": "d43fc30fdcdb34e3f414dad2f8e2cbead6f6a688b0b0455bdf3c08ed8b0cf449",
-          "size_bytes": 2063
-        },
-        {
-          "path": "references/import_merge_rules.md",
-          "sha256": "65c03146ea3dab08958a79464dae68dcbd8c038ba89ab4a7f3b0fd070921a77d",
-          "size_bytes": 1177
-        },
-        {
-          "path": "references/local_session_state_workflow.md",
-          "sha256": "52acabe178b45cd4407b01c864f491a730a52a9d5bf3668801dff436996ef017",
-          "size_bytes": 1521
-        },
-        {
-          "path": "references/promotion_handoff.md",
-          "sha256": "c480386eaee3cdfaa4af295fd33bfc46c10f276f2cc7222a853d585bd9fdcbfc",
-          "size_bytes": 2147
-        },
-        {
-          "path": "references/sample_cases.md",
-          "sha256": "4b2272dd99b9e9c9d8fc35ec642c1055b2bd957bbd92ec003ccec24967eeaa1e",
-          "size_bytes": 2334
-        },
-        {
-          "path": "references/session_buffer_workflow.md",
-          "sha256": "d6aa11179907b210bc0be692fd1be2cbf6d99592da8fa60d86c4a561a970e73a",
-          "size_bytes": 2805
-        },
-        {
-          "path": "references/session_closeout_workflow.md",
-          "sha256": "ff5c4b242930f60863049b312735412379deb9262579bceb9ac05f50c56b7260",
-          "size_bytes": 2903
-        },
-        {
-          "path": "references/session_state_schema.md",
-          "sha256": "305cdaa417804f399bf816f67d460624e3ad1ba2343f04ff80e72f239a953d97",
-          "size_bytes": 3246
-        },
-        {
-          "path": "references/startup_airtable_recovery_workflow.md",
-          "sha256": "dba105a510b3bd4fed611300329e470960984495b112abfb4b86d016079774f8",
-          "size_bytes": 1949
-        },
-        {
-          "path": "scripts/render_airtable_session_bundle.py",
-          "sha256": "c692142dd1af43853e4a16dd1f295a9b16e21d3b41e9904a6366279295506084",
-          "size_bytes": 8015
-        },
-        {
-          "path": "scripts/render_session_state.py",
-          "sha256": "07d830ccf1879b58fdd2e4b530639adb686d6d4a8c331e7593a7d6f625d77306",
-          "size_bytes": 5682
-        },
-        {
-          "path": "scripts/session_state_store.py",
-          "sha256": "99c84ec85457daab61145993daf1d78fc60a599b870e7ee0b941967048283526",
-          "size_bytes": 32339
+          "sha256": "2e8158af44a1016257017868c524268175eeee2dfaf36c4ec9dcad3cbbacc9bf",
+          "size_bytes": 350
         }
       ]
     },
@@ -820,88 +403,6 @@
         }
       ]
     },
-    "dcoir-structural-rename-coordinator": {
-      "source_root": "dcoir-structural-rename-coordinator",
-      "source_tree_hash": "2c4f25f7d4ad1b881a57f93d6e587762d7eff60bb5522c5dccdbd21a2a161ee9",
-      "release_zip_name": "dcoir-structural-rename-coordinator.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 6,
-      "total_bytes": 16146,
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "37de6481509860a2d7155005644b7c9b50610d21895f5164ad1d200e2b593e9e",
-          "size_bytes": 4575
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "54644e78741224765c49e03695f1782ae411d055a5ce841da656a4527e378ecb",
-          "size_bytes": 321
-        },
-        {
-          "path": "assets/icon.svg",
-          "sha256": "51a6923974188748638a424aa59b42b6afad2d910f910a1d43bb13ee10f3ce26",
-          "size_bytes": 2182
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/rename_rules.md",
-          "sha256": "0684d4b63c7018345a39b83e3bdb8a725a6534000f8935063a1ea4ad01a85683",
-          "size_bytes": 828
-        },
-        {
-          "path": "scripts/map_rename_impact.py",
-          "sha256": "34e406e3532c4e2a9ec60b9148aecb56aaefe5075392ba8773360b5147b23e30",
-          "size_bytes": 3799
-        }
-      ]
-    },
-    "dcoir-triage-to-collector-escalation-designer": {
-      "source_root": "dcoir-triage-to-collector-escalation-designer",
-      "source_tree_hash": "f5e6e29a705f328763d51a829c71d372d8e80eff2049d4c29f654ef8db285b7f",
-      "release_zip_name": "dcoir-triage-to-collector-escalation-designer.zip",
-      "release_zip_hash": "",
-      "status": "verified",
-      "file_count": 6,
-      "total_bytes": 12129,
-      "files": [
-        {
-          "path": "SKILL.md",
-          "sha256": "1fd1126b8a231e8a4c9ab9e0f8f1fbb13f50deb960909213cc70f6654b9442a2",
-          "size_bytes": 3109
-        },
-        {
-          "path": "agents/openai.yaml",
-          "sha256": "9c153fd54d5cbdb301448deab57451e7eed05bfdb05b94a751ec361045d42aa2",
-          "size_bytes": 310
-        },
-        {
-          "path": "assets/icon.svg",
-          "sha256": "51a6923974188748638a424aa59b42b6afad2d910f910a1d43bb13ee10f3ce26",
-          "size_bytes": 2182
-        },
-        {
-          "path": "references/airtable_operational_schema_contract.md",
-          "sha256": "1c068d46770f93370da5ce84127bef48fe5415fdac7d94bc24a6b5a6f649002e",
-          "size_bytes": 4441
-        },
-        {
-          "path": "references/gemini_field_mapping_routing_guidance.md",
-          "sha256": "30a0a782f3b2d8c297d89410adcfc9191a5e788a607e9385a98588910190dad9",
-          "size_bytes": 492
-        },
-        {
-          "path": "scripts/emit_escalation_contract.py",
-          "sha256": "752ed44539d48ee614ea4efc84998d4177699489270c7832aaafcaae246c4e8d",
-          "size_bytes": 1595
-        }
-      ]
-    },
     "dcoir-validation-orchestrator": {
       "source_root": "dcoir-validation-orchestrator",
       "source_tree_hash": "bae7d48e52a45584cc92fb357c42997d2560def53462f294d89e82ff2e547e55",
@@ -953,5 +454,10 @@
         }
       ]
     }
+  },
+  "contract": {
+    "path": "dcoir_skills/project_discovery_contract.json",
+    "sha256": "96221ff172daf4b51bd11c2b185431325e917288c70c1f44462590906e804d96",
+    "size_bytes": 7763
   }
 }
