@@ -3,6 +3,8 @@ name: dcoir-decision-policy
 description: apply the operator default decision matrix for africom_soc_ir / dcoir project work, including branch choice, blocker recovery, grouped delivery posture, and governance decision surfacing.
 ---
 
+<!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-decision-policy|SKILL.md -->
+
 <!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-decision-policy|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T112000Z|plan-tracker-retirement-session-airtable|in-session-update|dcoir-decision-policy|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T165000Z|blocked-action-recovery-ladder|source-update|dcoir-decision-policy|SKILL.md -->
@@ -48,8 +50,7 @@ This skill does not create authority, promote files, or overrule the control pla
 ## Scope boundary
 This skill owns default branching, operator-preference application, proceed-versus-ask-versus-stop behavior, buffer-versus-flush choices, cadence choices when multiple reasonable paths exist, and whether remaining similar work should stay incremental or become one bounded coordinated campaign.
 
-It does not choose the formal release or packaging class for an already-identified change. Use `dcoir-release-scope-builder` for that narrower question.
-It does not decide whether a built change is ready to promote, package as live, or treat as operator-ready. Use `dcoir-promotion-readiness-reviewer` for that later judgment.
+It does not build packages or declare live readiness by itself. Use `dcoir-repo-packager` for package construction and `dcoir-validation-orchestrator` for validation gates, readiness evidence, and post-patch regression planning.
 It does not silently persist reusable lessons into canonical task memory.
 
 ## Core workflow
@@ -69,7 +70,7 @@ It does not silently persist reusable lessons into canonical task memory.
 14. If the remaining similar skill or workflow scope is already known and the operator has approved a coordinated pass, prefer one bounded campaign over a trickle of one-off pushes when regression can still stay explicit and operator-understandable.
 15. When the operator has approved a coordinated campaign and does not want routine intermediate status-only pauses, continue executing until there is a real operator action, blocker, materially changed evidence state, or a decision that genuinely requires operator input.
 16. Validate what was changed or generated.
-17. If a helper skill was created or updated, route the result through `dcoir-skill-regression-auditor` before treating it as ready.
+17. If a helper skill was created or updated, require marker/readback verification and route validation planning through `dcoir-validation-orchestrator` before treating it as ready.
 18. For manual skill-install update flows, require marker-based installed-skill verification in the edited file set before treating the installed copy as safe for GitHub source sync, GitHub Desktop repo-update bundle generation, parity closure, or readiness claims.
 19. Use the skill editor as primary truth for that installed-skill verification when it is available. Treat assistant-side readback as secondary and potentially delayed.
 20. When editor confirmation and assistant-side readback disagree, keep the state bounded and wait for expected marker confirmation in the edited installed file set or explicit operator editor confirmation before continuing into GitHub sync or parity closure.
@@ -126,18 +127,17 @@ Use it again after a blocker or failed attempt is successfully overcome whenever
 - helper-skill or process-document guidance
 
 Do not silently persist the recovered lesson.
-Stage a bounded promotion-ready candidate in `dcoir-session-tracker`, Session Checkpoints, Work Item notes, or the active Airtable branch record until the next suitable flush point. Do not route promotion capture to `dcoir-plan-tracker`; that skill is retired.
+Stage a bounded promotion-ready candidate through `dcoir-session-manager`, Session Checkpoints, Work Item notes, or the active Airtable branch record until the next suitable flush point. Do not route promotion capture to retired planning helpers.
 
 
-## Plan-tracker retirement handling
-`dcoir-plan-tracker` is retired as a standalone decision, state-capture, or promotion companion. Do not invoke it for ordinary DCOIR plan/work-item activity. Preserve only this direct Airtable/session discipline:
+## Retired planning-helper handling
+Do not invoke retired planning/session helper skills for ordinary DCOIR plan or work-item activity. Preserve only this direct Airtable/session discipline:
 - Branch and task authority comes from Airtable `Queue Control`, active `Plans`, active/todo `Work Items`, `Session Checkpoints`, and Work Item notes.
 - When a Work Item changes status, verify or update the parent Plan and Queue Control in the same bounded Airtable pass when possible.
 - When choosing the next task, read Airtable live state rather than relying on chat memory, stale checkpoints, or GitHub todo text.
-- Use `dcoir-session-resume` for resume/re-anchor and Queue Control drift gates.
+- Use `dcoir-session-manager` for resume/re-anchor, checkpointing, closeout, promotion capture, and Queue Control drift gates.
 - Use `dcoir-memory-preflight` for routing, preflight, and post-blocker classification.
-- Use `dcoir-session-tracker`, Session Checkpoints, Work Item notes, or the active Airtable branch record for blocker/carry-forward/promotion candidates.
-- Treat legacy GitHub plan-tracker memory as promoted-history/source-basis only, not live task authority.
+- Treat legacy helper memory as promoted-history/source-basis only, not live task authority.
 
 ## Session-local write-buffer defaults
 Relevant DCOIR helper-skill workflows may accumulate session-local buffer content during the chat and flush it into GitHub in grouped updates at the next suitable write point instead of writing every small change immediately.
@@ -214,7 +214,7 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - before GitHub-family execution work, grouped repo edits, or packaging actions likely to have validated procedures, invoke `dcoir-memory-preflight` to consult canonical task memory first
 - when multiple related existing-file changes, deletions, or structural repo edits belong together, prefer one bounded multi-file git-object transaction over one-file-at-a-time updates
 - apply already-approved operator preferences that affect bundle shape, file count, update friction, campaign scope, or operator update handling
-- if the task requires choosing the formal release or packaging class for an already-identified change, use `dcoir-release-scope-builder`
+- if the task requires package construction, route to `dcoir-repo-packager`; if it requires readiness gates, route to `dcoir-validation-orchestrator`
 - once the packaging class is known, prefer one zip bundle when more than one downloadable file would otherwise be handed back, unless a platform constraint or the operator explicitly requires separate files
 - when more than one updated skill package is being handed back, prefer one outer zip with top-level per-skill zip files named after the live skill names unless the operator explicitly requests another shape
 - when the operator wants fewer manual GitHub/Desktop and skill-install cycles, prefer holding compatible skill repairs into a meaningful bounded batch instead of surfacing one-skill-at-a-time manual update steps
@@ -228,7 +228,7 @@ When a newly stated preference conflicts with an existing approved durable rule,
 - prefer deterministic references and scripts for fragile or repeated operations
 - test the real flow against the current workspace before claiming a skill works
 - when repairing a skill, reproduce the failure first, patch it, and rerun the same test
-- after every helper-skill create or update, pass the result through `dcoir-skill-regression-auditor`
+- after every helper-skill create or update, require marker/readback verification and route validation planning through `dcoir-validation-orchestrator`
 - when checking a skill library, work one skill at a time unless the operator explicitly wants a batch summary or a bounded coordinated patch cycle
 
 ### 4. Validation and testing
@@ -303,9 +303,11 @@ Rules:
 When rendering memory content locally, use `scripts/render_decision_policy_memory.py`.
 
 ## Airtable local cache contract
-This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+Routine cache scope is intentionally narrow: cache only the high-call tables named as routine in the contract; use live Airtable reads for conditional tables.
 
-On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
+This skill is Airtable-backed only for the high-call routine tables named in `references/airtable_cache_contract.md`. Read that contract before relying on cached helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate only the routine caches named in the contract. If a routine cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. Tables listed as conditional/live-read are not routine caches; read them from live Airtable only when the active task requires them. After this skill writes to a routine cached table, refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## Output contract
 When acting under this skill:

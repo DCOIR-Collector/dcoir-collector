@@ -3,6 +3,8 @@ name: dcoir-airtable-schema-cache
 description: cache, normalize, inspect, compare, and refresh africom_soc_ir / dcoir airtable schema readback during startup, re-anchor, resume, and schema-sensitive Airtable work. use when dcoir work needs table ids, field ids, field types, select options, linked-record details, schema freshness checks, reduced airtable roundtrips, or a bounded schema snapshot before using airtable connectors, helper-memory tables, delete queue, lifecycle ledger, plans, work items, admin registry, repo surface registry, validation evidence, or local configuration registry.
 ---
 
+<!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-airtable-schema-cache|SKILL.md -->
+
 <!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-airtable-schema-cache|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-airtable-schema-cache|SKILL.md -->
 <!-- skill-marker: updated-skill|20260429T203000Z|startup-reanchor-schema-cache|source-update|dcoir-airtable-schema-cache|SKILL.md -->
@@ -16,7 +18,7 @@ Use this skill only inside AFRICOM_SOC_IR / DCOIR work. The current authority mo
 Use this skill to reduce repeated Airtable schema-discovery roundtrips while preserving the project's hard rule: live schema readback is required before assuming a table, field, select option, or dependency path exists.
 
 This skill now has two roles:
-- startup/re-anchor schema readiness: refresh or validate a local schema cache immediately after `dcoir-session-resume` and `dcoir-memory-preflight` during DCOIR startup or re-anchor.
+- startup/re-anchor schema readiness: refresh or validate a local schema cache immediately after `dcoir-session-manager` and `dcoir-memory-preflight` during DCOIR startup or re-anchor.
 - task-time schema assistance: provide fast table/field lookup, field-type checks, select-option checks, linked-record awareness, and drift warnings during normal Airtable work.
 
 This skill produces and consumes a local JSON schema cache. Treat the cache as a speed aid and decision aid, not as write authority.
@@ -54,7 +56,7 @@ Known operational tables to verify when relevant:
 - helper-specific `dcoir-*` memory tables where present
 
 ## Startup and re-anchor invocation
-Invoke this skill during the first substantive AFRICOM_SOC_IR / DCOIR turn of a session and during explicit re-anchor/resume requests, after `dcoir-session-resume` and `dcoir-memory-preflight` and before broad Airtable table reads.
+Invoke this skill during the first substantive AFRICOM_SOC_IR / DCOIR turn of a session and during explicit re-anchor/resume requests, after `dcoir-session-manager` and `dcoir-memory-preflight` and before broad Airtable table reads.
 
 Startup intent:
 1. Perform live Airtable schema readback or validate that a just-built cache is fresh enough for non-destructive lookup.
@@ -109,9 +111,11 @@ python scripts/schema_cache.py diff --old /mnt/data/schema_old.json --new /mnt/d
 ```
 
 ## Airtable local cache contract
-This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+Routine cache scope is intentionally narrow: cache only the high-call tables named as routine in the contract; use live Airtable reads for conditional tables.
 
-On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
+This skill is Airtable-backed only for the high-call routine tables named in `references/airtable_cache_contract.md`. Read that contract before relying on cached helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate only the routine caches named in the contract. If a routine cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. Tables listed as conditional/live-read are not routine caches; read them from live Airtable only when the active task requires them. After this skill writes to a routine cached table, refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## Operational table row-cache relationship
 This skill's primary cache remains the Airtable schema cache created by `scripts/schema_cache.py`. It does not replace the row caches owned by the other skills. During re-anchor, this skill validates table/field identity needed by other skills before their designated row caches are trusted. When caching Admin Registry context for schema governance, use `references/airtable_cache_contract.md` and keep it separate from the schema cache.

@@ -19,6 +19,6 @@ Before queueing or processing deletions, verify current fields for approval and 
 
 ## Startup readiness contract
 
-During DCOIR startup or re-anchor, this skill should be invoked after `dcoir-session-resume` and `dcoir-memory-preflight`. Its job is to refresh or validate a local schema cache, confirm current operational tables, and make table/field metadata available before other skills perform repeated Airtable reads. The cache remains advisory and must not replace live schema readback for writes, deletes, migrations, linked-record changes, or any destructive action.
+During DCOIR startup or re-anchor, this skill should be invoked after `dcoir-session-manager` and `dcoir-memory-preflight`. Its job is to refresh or validate a local schema cache, confirm current operational tables, and make table/field metadata available before other skills perform repeated Airtable reads. The cache remains advisory and must not replace live schema readback for writes, deletes, migrations, linked-record changes, or any destructive action.
 
 Startup reports must stay compact and non-display by default. During execution, audit, cleanup, duplicate comparison, or verification, Airtable display views may be used when they materially improve correctness or when the operator has already approved visible Airtable display; summarize displayed evidence in chat.

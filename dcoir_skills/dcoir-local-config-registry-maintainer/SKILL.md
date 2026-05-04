@@ -3,6 +3,8 @@ name: dcoir-local-config-registry-maintainer
 description: maintain africom_soc_ir / dcoir Local Configuration Registry rows in Airtable. Use when local/system environment variable names, safe reference guidance, config row deduplication, missing runtime references, secret-handling flags, config defaults, generated code/codeblocks needing environment variables, session/re-anchor variable-name awareness, or Delete Queue cleanup for Local Configuration Registry records are involved.
 ---
 
+<!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-local-config-registry-maintainer|SKILL.md -->
+
 <!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-local-config-registry-maintainer|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T163500Z|session-variable-name-strengthening|source-update|dcoir-local-config-registry-maintainer|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T161500Z|explicit-safety-control-contract|source-update|dcoir-local-config-registry-maintainer|SKILL.md -->
@@ -99,9 +101,11 @@ For generated code/codeblocks that need local/system configuration:
 - include comments that name the required variable but never include the secret value.
 
 ## Airtable local cache contract
-This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+Routine cache scope is intentionally narrow: cache only the high-call tables named as routine in the contract; use live Airtable reads for conditional tables.
 
-On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
+This skill is Airtable-backed only for the high-call routine tables named in `references/airtable_cache_contract.md`. Read that contract before relying on cached helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate only the routine caches named in the contract. If a routine cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. Tables listed as conditional/live-read are not routine caches; read them from live Airtable only when the active task requires them. After this skill writes to a routine cached table, refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## Output contract
 Return a compact table with:

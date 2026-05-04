@@ -3,6 +3,8 @@ name: dcoir-memory-preflight
 description: consult canonical dcoir task memory, airtable governance tables, helper-memory rows, and dynamic skill-routing rows before high-friction work and after blocker recovery. use for dcoir session-start preflight, re-anchor helper-chain checks, execution-lane choice, blocker learning, github desktop workflow friction, skill-routing checks, and cases where a specialist dcoir helper skill may apply.
 ---
 
+<!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-memory-preflight|SKILL.md -->
+
 <!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-memory-preflight|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T163500Z|session-manager-strengthening|source-update|dcoir-memory-preflight|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T111000Z|plan-tracker-retirement-direct-airtable|in-session-update|dcoir-memory-preflight|SKILL.md -->
@@ -76,8 +78,8 @@ When skill routing may apply:
 4. When a skill is added, removed, renamed, or materially repurposed, update the `SKILLROUTE-*` row set in Airtable rather than repackaging this skill just to refresh the catalog.
 5. If a route points at a retired skill, do not invoke it. Use the replacement surface named in the route/registry when present and queue a route cleanup patch.
 
-## Current retired-route replacements
-Treat these replacements as compatibility guards only; prefer live `SKILLROUTE-*` rows when available.
+## Retired-route drift signatures
+Treat these exact names only as stale route signatures that require cleanup; never invoke them. Prefer live `SKILLROUTE-*` rows when available.
 - `dcoir-session-resume` -> `dcoir-session-manager`
 - `dcoir-session-tracker` -> `dcoir-session-manager`
 - `dcoir-plan-tracker` -> direct Airtable Queue Control, Plans, and Work Items discipline
@@ -93,7 +95,7 @@ For GitHub/repo/tooling/validation task families, consult canonical task-memory 
 Treat compiled indexes as routing aids, not sources of truth. Treat canonical procedure records as higher trust than chat recollection, but never stronger than the current control plane.
 
 ## Queue Control cross-check
-If Queue Control is empty or stale while an active plan exists, classify the condition as `queue-control-drift` and repair or request repair through direct Airtable live-state handling before unrelated work continues. Do not route this to `dcoir-plan-tracker`; that skill is retired. Do not let old chat memory, stale checkpoints, or GitHub todo text override Queue Control + Plans + Work Items.
+If Queue Control is empty or stale while an active plan exists, classify the condition as `queue-control-drift` and repair or request repair through direct Airtable live-state handling before unrelated work continues. Do not route this to a retired planning helper. Do not let old chat memory, stale checkpoints, or GitHub todo text override Queue Control + Plans + Work Items.
 
 ## Re-anchor helper-chain posture
 When invoked during startup or re-anchor, explicitly verify or report:
@@ -112,23 +114,25 @@ Classify recovered lessons as one of:
 - `reusable_failure_signature_candidate`
 - `reusable_helper_skill_or_process_doc_candidate`
 
-Stage promotion-ready candidates in `dcoir-session-manager` closeout flow, Session Checkpoints, Idea Inbox, Work Item notes, or the active Airtable branch record instead of silently writing into canonical memory. Do not route promotion capture to `dcoir-plan-tracker`; that skill is retired.
+Stage promotion-ready candidates in `dcoir-session-manager` closeout flow, Session Checkpoints, Idea Inbox, Work Item notes, or the active Airtable branch record instead of silently writing into canonical memory. Do not route promotion capture to retired planning helpers.
 
 ## Deletion routing limits
 Use Delete Queue for Airtable record/row deletion after dependency checks and approval. Do not use Delete Queue for whole-table/schema deletion. For table deletion, preserve/merge needed data first, have the operator manually delete the table, then verify absence through live schema readback and record evidence.
 
-## Plan-tracker retirement handling
-`dcoir-plan-tracker` is retired as a specialist routing target. Preserve only direct Airtable live-state discipline here:
+## Retired planning-helper handling
+Retired planning helpers are no longer specialist routing targets. Preserve only direct Airtable live-state discipline here:
 - Use `Queue Control`, `Plans`, and `Work Items` as the live branch/task authority.
 - For queue-control drift, repair or request repair directly in Airtable rather than routing to a standalone plan-tracker skill.
 - For Work Item or active-task changes, require verification against the parent Plan and Queue Control before moving to unrelated work.
 - For recovered blocker or continuity lessons, stage the carry-forward through `dcoir-session-manager`, Session Checkpoints, Idea Inbox, Work Item notes, or another active Airtable authority surface.
-- Treat stale GitHub plan-tracker memory as promoted-history/source-basis only, not live task authority.
+- Treat stale GitHub planning-helper memory as promoted-history/source-basis only, not live task authority.
 
 ## Airtable local cache contract
-This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+Routine cache scope is intentionally narrow: cache only the high-call tables named as routine in the contract; use live Airtable reads for conditional tables.
 
-On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
+This skill is Airtable-backed only for the high-call routine tables named in `references/airtable_cache_contract.md`. Read that contract before relying on cached helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate only the routine caches named in the contract. If a routine cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. Tables listed as conditional/live-read are not routine caches; read them from live Airtable only when the active task requires them. After this skill writes to a routine cached table, refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## Output contract
 Return these sections when acting as a preflight:

@@ -1,14 +1,16 @@
 ---
 name: dcoir-session-manager
-description: manage africom_soc_ir / dcoir Airtable-first session startup, re-anchor, resume, checkpointing, closeout, handoff, and continuity. Use on the first substantive DCOIR turn, explicit resume or re-anchor requests, active queue recovery, session closeout, handoff export, idea capture/promotion, active plan/work item selection, and cases where dcoir-session-resume or dcoir-session-tracker behavior would previously have applied.
+description: manage africom_soc_ir / dcoir Airtable-first session startup, re-anchor, resume, checkpointing, closeout, handoff, and continuity. Use on the first substantive DCOIR turn, explicit resume or re-anchor requests, active queue recovery, session closeout, handoff export, idea capture/promotion, active plan/work item selection, and former resume/tracker helper behavior now consolidated into this skill.
 ---
+
+<!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-session-manager|SKILL.md -->
 
 <!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-session-manager|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T163500Z|core-strengthening|source-update|dcoir-session-manager|SKILL.md -->
 
 # DCOIR Session Manager
 
-Use this skill as the consolidated replacement for `dcoir-session-resume` and `dcoir-session-tracker`.
+Use this skill as the consolidated Airtable-first session startup, resume, checkpoint, and closeout authority.
 
 ## Authority order
 1. Project Instructions are the first anchor.
@@ -28,7 +30,7 @@ On the first substantive DCOIR turn, or when the operator asks to resume, re-anc
 5. Include Local Configuration Registry in the compact read set when the session involves generated code, operator-side tools, workflow scripts, GitHub Actions, environment variable names, or local/system configuration names.
 6. Select the active executable Work Item or Plan branch from Airtable, not from stale chat, GitHub CP files, or older todo files.
 7. Report conflicts instead of guessing when Project Instructions, CP-00, Airtable Governance Control Plane, or live Airtable queue state disagree.
-8. Treat any live route to retired `dcoir-session-resume` or `dcoir-session-tracker` as route drift. Repair the route to `dcoir-session-manager` or report the cleanup gate before continuing if it affects startup behavior.
+8. Treat any live route to a retired session resume/tracker helper as route drift. Repair the route to `dcoir-session-manager` or report the cleanup gate before continuing if it affects startup behavior.
 
 ## Resume response shape
 When asked to resume or report state, summarize only:
@@ -92,6 +94,8 @@ When a helper skill is created, merged, retired, or strengthened:
 - When a governed action changes Airtable or GitHub, report the result, evidence, and any remaining gate.
 
 ## Airtable local cache contract
-This skill is Airtable-backed and must maintain local cache files when file access is available. Read `references/airtable_cache_contract.md` before relying on helper-memory, routing, preference, validation, packaging, or configuration-name state.
+Routine cache scope is intentionally narrow: cache only the high-call tables named as routine in the contract; use live Airtable reads for conditional tables.
 
-On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate the cache for this skill's designated Airtable table set. If the cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. After this skill writes to its designated Airtable table(s), refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
+This skill is Airtable-backed only for the high-call routine tables named in `references/airtable_cache_contract.md`. Read that contract before relying on cached helper-memory, routing, preference, validation, packaging, or configuration-name state.
+
+On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate only the routine caches named in the contract. If a routine cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. Tables listed as conditional/live-read are not routine caches; read them from live Airtable only when the active task requires them. After this skill writes to a routine cached table, refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.

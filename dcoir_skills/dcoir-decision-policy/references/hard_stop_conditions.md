@@ -15,7 +15,7 @@ Stop and ask or report conflict when any of these are true:
 
 ## Source-authority and drift gate
 
-This section preserves the hard-stop and authority-drift behavior formerly handled by `dcoir-source-authority-auditor`. Use it from `dcoir-decision-policy` whenever source authority, live-state alignment, or cleanup safety could materially affect the outcome.
+This section preserves the hard-stop and authority-drift behavior formerly handled by a retired source-authority helper. Use it from `dcoir-decision-policy` whenever source authority, live-state alignment, or cleanup safety could materially affect the outcome.
 
 ### Audit outcomes
 
