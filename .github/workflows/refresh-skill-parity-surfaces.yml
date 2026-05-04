@@ -24,6 +24,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -47,6 +48,7 @@ jobs:
       - name: Commit parity refresh if changed
         shell: bash
         run: |
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           if git diff --quiet -- dcoir_skills/skill_parity_manifest.json dcoir_skills/skill_parity_summary.md; then
@@ -55,4 +57,13 @@ jobs:
           fi
           git add dcoir_skills/skill_parity_manifest.json dcoir_skills/skill_parity_summary.md
           git commit -m 'Refresh dcoir skill parity surfaces'
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "git push failed on attempt ${attempt}; rebasing onto origin/${GITHUB_REF_NAME} before retry"
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase "origin/${GITHUB_REF_NAME}"
+            sleep $((attempt * 5))
+          done
           git push
