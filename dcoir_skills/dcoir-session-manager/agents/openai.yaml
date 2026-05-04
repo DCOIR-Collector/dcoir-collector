@@ -1,0 +1,5 @@
+interface:
+  display_name: DCOIR Session Manager
+  short_description: Airtable-first DCOIR session startup, resume, closeout, and handoff manager.
+  icon: assets/icon.svg
+  accent_color: '#2563eb'
