@@ -25,7 +25,6 @@ Current governed helper-skill source set
 - `dcoir-collector-qa`
 - `dcoir-decision-policy`
 - `dcoir-knowledge-doc-maintainer`
-- `dcoir-large-file-intake-manager`
 - `dcoir-live-test-remediation-planner`
 - `dcoir-memory-preflight`
 - `dcoir-operator-workflow-hardener`
