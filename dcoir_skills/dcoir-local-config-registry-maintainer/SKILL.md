@@ -1,8 +1,9 @@
 ---
 name: dcoir-local-config-registry-maintainer
-description: maintain africom_soc_ir / dcoir Local Configuration Registry rows in Airtable. Use when local/system environment variable names, safe reference guidance, config row deduplication, missing runtime references, secret-handling flags, config defaults, generated code/codeblocks needing environment variables, or Delete Queue cleanup for Local Configuration Registry records are involved.
+description: maintain africom_soc_ir / dcoir Local Configuration Registry rows in Airtable. Use when local/system environment variable names, safe reference guidance, config row deduplication, missing runtime references, secret-handling flags, config defaults, generated code/codeblocks needing environment variables, session/re-anchor variable-name awareness, or Delete Queue cleanup for Local Configuration Registry records are involved.
 ---
 
+<!-- skill-marker: updated-skill|20260504T163500Z|session-variable-name-strengthening|source-update|dcoir-local-config-registry-maintainer|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T161500Z|explicit-safety-control-contract|source-update|dcoir-local-config-registry-maintainer|SKILL.md -->
 <!-- skill-marker: updated-skill|20260501T224500Z|local-config-registry-maintainer|new-skill|dcoir-local-config-registry-maintainer|SKILL.md -->
 
@@ -14,6 +15,8 @@ Use this skill only inside AFRICOM_SOC_IR / DCOIR work. Airtable is operational 
 ## Purpose
 Use this skill to keep Airtable `Local Configuration Registry` clean, safe, and useful for operator-side tools and generated code/codeblocks. The table stores configuration names and safe reference guidance only. It must never store token values, API key values, secret values, project id values, or other credential material.
 
+This skill also maintains session-visible variable-name awareness. It should help future code generation choose already-governed variable names, detect missing registry rows for names introduced by workflows or tools, and keep safe runtime reference examples current without exposing values.
+
 ## Hard rules
 - Store environment variable names and safe reference expressions only.
 - Never store, ask for, print, log, or package actual values for API keys, tokens, secrets, project identifiers, passwords, credentials, or local-sensitive values.
@@ -22,7 +25,8 @@ Use this skill to keep Airtable `Local Configuration Registry` clean, safe, and 
 - For sensitive rows, set `sensitive_value=true`, `safe_to_display=false`, and add a note that the value is intentionally not stored and must never be printed/logged/packaged.
 - Remember that Airtable unchecked checkboxes may render visually blank. In output, explicitly report false checkbox values such as `safe_to_display=false`; do not let a visually blank checkbox look like an unexamined field.
 - Treat `Local Configuration Registry` as one active canonical row per `config_name`.
-- If duplicates exist, choose one canonical row, mark duplicates `retired`, and queue duplicate deletion through `Delete Queue`; do not directly delete unless the operator explicitly authorizes immediate deletion and dependency order is safe.
+- If duplicates exist, choose one canonical row, mark duplicates `retired`, and queue duplicate row deletion through `Delete Queue`; do not directly delete rows unless the operator explicitly authorizes immediate deletion and dependency order is safe.
+- Do not use Delete Queue for whole-table/schema deletion. Delete Queue is row/record deletion only.
 - Use live Airtable schema readback before writes or Delete Queue staging.
 - Fill missing reference fields whenever the schema contains them.
 - Set `safe_to_display=false` for sensitive values such as tokens and API keys.
@@ -45,6 +49,17 @@ Consult `references/local_config_registry_contract.md` when maintaining rows. Us
 - `status`
 - `last_confirmed_at`
 - `notes`
+
+## Session variable-name awareness
+Use this mode during re-anchor, code generation, workflow repair, local tool guidance, and operator-side script design when variable names matter.
+
+1. Read Local Configuration Registry rows relevant to the task before inventing names.
+2. If a variable name appears in Project Instructions, Operator Tools Registry, GitHub workflow logs, code, scripts, generated commands, or operator guidance, check whether a registry row already exists.
+3. If the name is useful and safe to retain, create or update a row with name, purpose, references, safety flags, and status. Do not store values.
+4. If a name is only hypothetical, use `status=planned` and `confirmed_present=false` unless the operator confirms it exists.
+5. If code requires a variable that has no active registry row, either create the row or clearly report the missing row as a blocker before presenting final runnable code.
+6. Prefer existing active names over inventing synonyms.
+7. When generating code, read values at runtime from environment variables and fail fast with the missing variable name only.
 
 ## Maintenance workflow
 1. Read live schema for `Local Configuration Registry` and `Delete Queue` before schema-sensitive work.
@@ -79,7 +94,8 @@ For generated code/codeblocks that need local/system configuration:
 - use Local Configuration Registry rows before inventing variable names;
 - read values at runtime from the registered environment references;
 - fail fast with the variable name when a required variable is missing;
-- do not print actual values for rows where `safe_to_display=false` or `sensitive_value=true`.
+- do not print actual values for rows where `safe_to_display=false` or `sensitive_value=true`;
+- include comments that name the required variable but never include the secret value.
 
 ## Output contract
 Return a compact table with:
@@ -88,7 +104,7 @@ Return a compact table with:
 - explicit safety-control values, including false checkbox values such as `safe_to_display=false`;
 - missing-field and defect checks performed;
 - duplicates retired;
-- Delete Queue rows created;
+- Delete Queue rows created for rows/records only;
 - fields still missing or blocked;
 - any safety concerns.
 

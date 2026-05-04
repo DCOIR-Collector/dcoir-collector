@@ -2,6 +2,7 @@
 name: dcoir-memory-preflight
 description: consult canonical dcoir task memory, airtable governance tables, helper-memory rows, and dynamic skill-routing rows before high-friction work and after blocker recovery. use for dcoir session-start preflight, re-anchor helper-chain checks, execution-lane choice, blocker learning, github desktop workflow friction, skill-routing checks, and cases where a specialist dcoir helper skill may apply.
 ---
+<!-- skill-marker: updated-skill|20260504T163500Z|session-manager-strengthening|source-update|dcoir-memory-preflight|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T111000Z|plan-tracker-retirement-direct-airtable|in-session-update|dcoir-memory-preflight|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T173000Z|reanchor-helper-invocation-rule|source-update|dcoir-memory-preflight|SKILL.md -->
 <!-- skill-marker: updated-skill|20260503T111500Z|airtable-display-allowed-when-useful|source-update|dcoir-memory-preflight|SKILL.md -->
@@ -15,15 +16,20 @@ Use only inside AFRICOM_SOC_IR / DCOIR. This skill is a pre-execution and post-b
 ## Invocation modes
 
 ### 0. session-start bootstrap and re-anchor mode
-Run immediately after `dcoir-session-resume` on the first substantive DCOIR turn and during explicit DCOIR re-anchor requests.
+Run as the required preflight step in the `dcoir-session-manager` startup/re-anchor chain on the first substantive DCOIR turn and during explicit DCOIR re-anchor requests.
 
-This is one required step in the re-anchor helper chain. It must be followed by `dcoir-airtable-schema-cache` schema readiness before broad Airtable reads or schema-sensitive work, then by session recovery, direct Airtable plan-state reconciliation, and additional helper checks selected from active lane context and `SKILLROUTE-*` rows.
+The current helper chain is:
+1. `dcoir-session-manager` establishes Project Instructions, CP-00 pointer, Governance Control Plane, and active session branch posture.
+2. `dcoir-memory-preflight` classifies the work family, consults durable routing memory, and checks `SKILLROUTE-*` rows.
+3. `dcoir-airtable-schema-cache` validates schema readiness before broad Airtable reads or schema-sensitive writes.
+4. Active lane helpers are selected from Airtable state, live installed skills, and `SKILLROUTE-*` rows.
 
 Use this mode to:
 - classify the immediate work family;
 - consult relevant canonical memory before execution starts;
 - resolve branch priority from Airtable Queue Control, active Plans, and Work Items;
 - search dynamic `SKILLROUTE-*` rows for specialist helper routing;
+- identify stale routes for retired skills and route them to current replacements;
 - surface the best bounded lane, anti-patterns, preconditions, and required verification;
 - report the re-anchor helper-chain posture.
 
@@ -41,7 +47,7 @@ Run this skill before execution when the task involves:
 - skill maintenance, repair, regression, or packaging;
 - GitHub Desktop/manual bundle preparation;
 - repeated local tool, connector, or Actions workflow friction;
-- artifact intake, validation orchestration, source authority review, or Airtable schema-sensitive work;
+- artifact intake, validation orchestration, authority review, or Airtable schema-sensitive work;
 - any task where a specialist DCOIR helper skill may apply.
 
 Run this skill again after blocker recovery when the recovered lesson could matter beyond the current one-off fix.
@@ -54,6 +60,7 @@ When branch priority, startup posture, or next work matters:
 4. Consult Operator Preferences when workflow branching or display behavior matters.
 5. Consult Admin Registry and helper-memory tables when skill-state, installed-skill awareness, or routing matters.
 6. Consult Repo Surface Registry before repo cleanup, source-role changes, or keep/delete claims.
+7. Consult Local Configuration Registry when generated code, operator-side tools, workflow scripts, or environment variable names are in scope.
 
 During automatic startup/re-anchor, use compact non-display Airtable reads. During execution/audit/verification, Airtable display views may be used when they materially improve correctness or when operator approval/preference already allows it.
 
@@ -65,6 +72,15 @@ When skill routing may apply:
 2. Use matching rows to decide whether to invoke, recommend, or pair a specialist skill.
 3. If no row exists, say so and continue with the best bounded lane.
 4. When a skill is added, removed, renamed, or materially repurposed, update the `SKILLROUTE-*` row set in Airtable rather than repackaging this skill just to refresh the catalog.
+5. If a route points at a retired skill, do not invoke it. Use the replacement surface named in the route/registry when present and queue a route cleanup patch.
+
+## Current retired-route replacements
+Treat these replacements as compatibility guards only; prefer live `SKILLROUTE-*` rows when available.
+- `dcoir-session-resume` -> `dcoir-session-manager`
+- `dcoir-session-tracker` -> `dcoir-session-manager`
+- `dcoir-plan-tracker` -> direct Airtable Queue Control, Plans, and Work Items discipline
+- `dcoir-source-authority-auditor` -> `dcoir-decision-policy`
+- `dcoir-parity-verifier` -> GitHub `refresh-skill-parity-surfaces` workflow and `tools/skill_parity/`
 
 ## Canonical memory use
 For GitHub/repo/tooling/validation task families, consult canonical task-memory only when relevant:
@@ -79,10 +95,11 @@ If Queue Control is empty or stale while an active plan exists, classify the con
 
 ## Re-anchor helper-chain posture
 When invoked during startup or re-anchor, explicitly verify or report:
-- `dcoir-session-resume` has run or is the immediately preceding step;
+- `dcoir-session-manager` has run or is the immediately preceding step;
 - this preflight has run;
 - `dcoir-airtable-schema-cache` is next before broad Airtable reads or schema-sensitive work;
-- session-tracker remains part of the chain for durable leftovers and checkpoints; direct Airtable plan-state reconciliation replaces conditional plan-tracker use;
+- durable leftovers, ideas, and checkpoint state are carried through `dcoir-session-manager`, Session Checkpoints, Idea Inbox, Plans, Work Items, and Queue Control;
+- direct Airtable plan-state reconciliation replaces conditional plan-tracker use;
 - any further helper checks are selected by active lane context and `SKILLROUTE-*` rows, not by loading every full helper skill body.
 
 ## Post-blocker classification
@@ -93,15 +110,17 @@ Classify recovered lessons as one of:
 - `reusable_failure_signature_candidate`
 - `reusable_helper_skill_or_process_doc_candidate`
 
-Stage promotion-ready candidates in session-tracker, Session Checkpoints, Work Item notes, or the active Airtable branch record instead of silently writing into canonical memory. Do not route promotion capture to `dcoir-plan-tracker`; that skill is retired.
+Stage promotion-ready candidates in `dcoir-session-manager` closeout flow, Session Checkpoints, Idea Inbox, Work Item notes, or the active Airtable branch record instead of silently writing into canonical memory. Do not route promotion capture to `dcoir-plan-tracker`; that skill is retired.
 
+## Deletion routing limits
+Use Delete Queue for Airtable record/row deletion after dependency checks and approval. Do not use Delete Queue for whole-table/schema deletion. For table deletion, preserve/merge needed data first, have the operator manually delete the table, then verify absence through live schema readback and record evidence.
 
 ## Plan-tracker retirement handling
 `dcoir-plan-tracker` is retired as a specialist routing target. Preserve only direct Airtable live-state discipline here:
 - Use `Queue Control`, `Plans`, and `Work Items` as the live branch/task authority.
 - For queue-control drift, repair or request repair directly in Airtable rather than routing to a standalone plan-tracker skill.
 - For Work Item or active-task changes, require verification against the parent Plan and Queue Control before moving to unrelated work.
-- For recovered blocker or continuity lessons, stage the carry-forward in session-tracker, Session Checkpoints, Work Item notes, or another active Airtable authority surface.
+- For recovered blocker or continuity lessons, stage the carry-forward through `dcoir-session-manager`, Session Checkpoints, Idea Inbox, Work Item notes, or another active Airtable authority surface.
 - Treat stale GitHub plan-tracker memory as promoted-history/source-basis only, not live task authority.
 
 ## Output contract
