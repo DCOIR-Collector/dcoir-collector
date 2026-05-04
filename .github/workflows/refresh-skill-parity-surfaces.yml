@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'dcoir_skills/**'
+      - 'tools/skill_parity/**'
       - '!dcoir_skills/skill_parity_manifest.json'
       - '!dcoir_skills/skill_parity_summary.md'
 
@@ -32,14 +33,14 @@ jobs:
       - name: Regenerate skill parity surfaces
         shell: bash
         run: |
-          python dcoir_skills/dcoir-parity-verifier/scripts/build_skill_parity_manifest.py \
+          python tools/skill_parity/build_skill_parity_manifest.py \
             --skills-root dcoir_skills \
             --output dcoir_skills/skill_parity_manifest.json \
             --skill-prefix dcoir- \
             --baseline-origin repo_source \
             --contract dcoir_skills/project_discovery_contract.json \
             --project 'AFRICOM_SOC_IR / DCOIR'
-          python dcoir_skills/dcoir-parity-verifier/scripts/render_skill_parity_summary.py \
+          python tools/skill_parity/render_skill_parity_summary.py \
             --manifest dcoir_skills/skill_parity_manifest.json \
             --output dcoir_skills/skill_parity_summary.md
 
