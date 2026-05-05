@@ -34,7 +34,7 @@ $planRecord = @{
   fields = [ordered]@{
     plan_id = $planKey
     plan_title = 'DCOIR Airtable Cleanup and Restructuring Plan'
-    plan_state = 'planning'
+    plan_state = 'draft'
     retention_class = 'operational'
     active_task_id = 'CLEANUP-WBS-00'
     active_task_title = 'Planning framework and plan-scoped scaffold initialization'
@@ -170,7 +170,7 @@ $scaffoldRecords = @(
       status = 'active_scaffold'
       purpose = 'Uses GitHub Actions chatgpt-exec for autonomous seed/readback evidence.'
       created_surface = 'GitHub Actions'
-      created_locator = 'chatgpt_staging/exec_requests/exec-20260505-cleanup-plan-wbs-seed-003.json and chatgpt_staging/exec_scripts/cleanup_plan_wbs_seed_003.ps1'
+      created_locator = 'chatgpt_staging/exec_requests/exec-20260505-cleanup-plan-wbs-seed-004.json and chatgpt_staging/exec_scripts/cleanup_plan_wbs_seed_003.ps1'
       final_disposition = 'pending'
       review_after = $reviewAfter
       notes = 'Track and disposition this workflow/script scaffold at plan conclusion.'
@@ -182,7 +182,7 @@ Invoke-DcoirAirtableUpsert -TableId 'tblvtcId7PiFKvfKO' -MergeFieldName 'scaffol
 $downloads = [Environment]::GetEnvironmentVariable('DCOIR_DOWNLOADS_DIR','Machine')
 if (-not [string]::IsNullOrWhiteSpace($downloads)) {
   $summary = [ordered]@{
-    request_id = 'exec-20260505-cleanup-plan-wbs-seed-003'
+    request_id = 'exec-20260505-cleanup-plan-wbs-seed-004'
     plan_key = $planKey
     plan_table = 'tblBcp5FyMIfOm7Xe'
     wbs_table = 'tblRxTmpW0VunQlUK'
