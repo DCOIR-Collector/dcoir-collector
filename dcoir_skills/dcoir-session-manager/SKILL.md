@@ -1,7 +1,9 @@
 ---
 name: dcoir-session-manager
-description: manage africom_soc_ir / dcoir Airtable-first session startup, re-anchor, resume, checkpointing, closeout, handoff, and continuity. Use on the first substantive DCOIR turn, explicit resume or re-anchor requests, active queue recovery, session closeout, handoff export, idea capture/promotion, active plan/work item selection, and former resume/tracker helper behavior now consolidated into this skill.
+description: manage africom_soc_ir / dcoir Airtable-first session startup, re-anchor, resume, automatic periodic/checkpoint-trigger continuity, closeout checkpointing, handoff, and active branch recovery. Use on first substantive DCOIR turns, resume/re-anchor/startup recovery, closeout/handoff, checkpoint/capture/remember requests, blocker or task/lane transitions, idea promotion, active plan/work selection, and former resume/tracker behavior now consolidated here.
 ---
+
+<!-- skill-marker: updated-skill|20260505T071500Z|automatic-checkpoint-closeout-restoration|in-session-update|dcoir-session-manager|SKILL.md -->
 
 <!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-session-manager|SKILL.md -->
 
@@ -48,22 +50,34 @@ When asked to resume or report state, summarize only:
 ## Session continuity and closeout
 Use Airtable durable surfaces for session carry-forward:
 
-- Use Session Checkpoints for resume notes, closeout summaries, active state, blockers, and next move.
+- Use Session Checkpoints for resume notes, periodic checkpoints, closeout summaries, active state, blockers, starter prompts, and next move.
 - Use Idea Inbox for unapproved ideas, rough improvements, deferred decisions, and promotion candidates.
 - Use Work Items for executable task rows.
 - Use Plans for multi-step parent scope.
 - Use Queue Control only after an executable Work Item or Plan state exists.
 - Use DCOIR Lifecycle Ledger for material promotion, migration, retirement, deletion, closeout, or cleanup history.
 
-At closeout, preserve enough detail for the next re-anchor to continue without relying on chat memory:
-1. active plan/work item,
-2. completed changes and verification evidence,
-3. blockers and unresolved conflicts,
-4. pending operator actions,
-5. next executable step,
-6. source/readback artifacts that must be rechecked,
-7. skill install/removal state that changed this session,
-8. parity/schema refreshes that still need to be run.
+## Automatic checkpoint and closeout enforcement
+This skill owns all behavior formerly split across `dcoir-session-resume` and `dcoir-session-tracker`. Do not treat checkpointing or closeout as a chat-only summary when Airtable write access is available and the operator has not forbidden writes.
+
+Automatically create or prepare a Session Checkpoint when any trigger occurs:
+1. a substantive startup, resume, or re-anchor establishes or changes active branch state;
+2. a major milestone is reached or a bounded task completes;
+3. the active task, active plan, execution lane, or source-authority branch changes;
+4. a blocker appears, changes, is resolved, or creates a reusable lesson;
+5. before GitHub writes, GitHub Desktop bundles, skill package delivery, or workflow execution when current session state matters;
+6. the operator says remember, capture, checkpoint, park this, carry this forward, do not forget, close out, handoff, resume later, or equivalent language;
+7. before starter-prompt generation, handoff, session closeout, or moving work to another session;
+8. session-local cache/checkpoint state is missing, stale, reinitialized, or uncertain;
+9. every long or multi-step DCOIR session after one or two bounded tasks, even without an explicit closeout request.
+
+Checkpoint payloads must preserve: active plan/work item or branch; session mode; completed work; pending work; decisions and operator preferences; blockers/conflicts; artifacts delivered or needing verification; skill/source/parity/cache changes; lane used; validation/evidence status; next recommended move; and starter prompt when closing or handing off.
+
+At closeout, create the Session Checkpoint automatically before or with the closeout response. If Airtable is unavailable or the operator forbids writes, emit a checkpoint-ready payload in chat and state that it is not durable. If the operator asks to close out after a checkpoint-worthy session and no checkpoint has been created, stop the closeout summary until the checkpoint is created or the operator explicitly says not to write one.
+
+After any Session Checkpoint write, refresh the session-manager local cache for Session Checkpoints when file access exists, then verify the written record by Airtable readback or clearly state the verification gap.
+
+See `references/session_checkpoint_and_closeout_workflow.md` for the compact payload template and trigger checklist.
 
 ## Idea capture and promotion
 Do not silently promote rough ideas into execution state.
