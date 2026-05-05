@@ -1,7 +1,9 @@
 ---
 name: dcoir-validation-orchestrator
-description: build explicit validation plans for dcoir changes and workflows with deep regression as default for testable changes.
+description: build explicit validation plans, task-time validation gates, regression gates, evidence thresholds, readiness claims, post-change verification, install/readback checks, and live/readback validation for dcoir changes, skill updates, packages, airtable cleanup, github workflows, and operational workflows. use before declaring readiness, after patches, when evidence is incomplete, or when validation planning/execution applies.
 ---
+<!-- skill-marker: updated-skill|20260505T090000Z|task-time-validation-gate-strengthening|in-session-update|dcoir-validation-orchestrator|SKILL.md -->
+
 
 <!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-validation-orchestrator|SKILL.md -->
 
@@ -37,6 +39,26 @@ Before proceeding, verify that the current task is actually inside the AFRICOM_S
 If the current AFRICOM_SOC_IR / DCOIR project context is not present, do not proceed.
 
 Use this skill to turn a DCOIR change, workflow, campaign, or inventory-derived gap area into an explicit validation plan.
+
+
+## Task-time validation gate
+Use this skill at task time, not only when the operator explicitly asks for a validation plan, whenever DCOIR work will make or imply a readiness, correctness, installability, package-validity, regression, evidence, or verification claim.
+
+Frequent-fire rule: if a DCOIR response will say that something is valid, installed, ready, verified, complete, safe to use, regression-covered, package-clean, schema-safe, or successfully changed, run a compact validation gate first. Prefer a small validation gate over unsupported readiness language.
+
+Hard triggers:
+- after any helper-skill patch, package, marker/readback check, install confirmation, or source/parity update;
+- before claiming live readiness, package validity, installability, no-wrapper-root compliance, affected-file-only compliance, Airtable write success, GitHub readback success, workflow success, or schema-cleanup success;
+- before or after GitHub workflow/chatgpt-exec execution, GitHub Desktop/manual bundle use, reusable operator-tool use, or local execution guidance when evidence will be required;
+- when a task touches validation evidence, validation test cases, regression gates, acceptance criteria, evidence thresholds, or readiness status;
+- when a blocker/failure is recovered and the recovery should become a repeatable test, guardrail, or evidence requirement;
+- when the operator reports an install/package/readback problem, malformed ZIP, missing marker, stale skill readback, or incomplete verification.
+
+Compact validation gate output should identify: validation target; phase (`pre-live`, `post-patch`, `failed-run`, `routine`, `install-readback`, or `evidence-gap`); evidence available; evidence missing; minimum tests/checks; companion skills; whether Airtable Validation Evidence/Test Cases or helper-memory should be updated; and the safest readiness statement allowed.
+
+Do not claim readiness from inspection alone when execution, generated output, installed-skill readback, package inspection, Airtable readback, GitHub readback, or workflow logs can reasonably be checked. If full validation is blocked, state the bounded validation actually performed and the remaining evidence gap.
+
+Read `references/task_time_validation_gate.md` for compact trigger/output rules.
 
 ## Core workflow
 1. Resolve the current control plane first.
@@ -107,6 +129,10 @@ When rendering memory content locally, prefer Airtable memory rows; use migrated
 - When a bounded multi-skill batch is being prepared for manual GitHub/Desktop application, include grouped installability, package-cleanliness, and no-wrapper-root delivery checks instead of validating each changed skill in isolation only.
 - Keep the canonical Airtable memory table human-readable and continuously updated after material validation-state changes when Airtable access is available.
 
+
+- After operator confirmation of a skill install, verify installed `SKILL.md` marker readback and any added reference/resource files before proceeding to the next skill or task.
+- Treat malformed ZIP/package reports, missing markers, stale readback, and unsupported readiness claims as validation triggers, not as chat-only notes.
+
 ## Airtable local cache contract
 Routine cache scope is intentionally narrow: cache only the high-call tables named as routine in the contract; use live Airtable reads for conditional tables.
 
@@ -116,6 +142,7 @@ On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refres
 
 ## References
 - `references/validation_scenario_library.md`
+- `references/task_time_validation_gate.md`
 - `references/airtable_memory_workflow.md`
 - `../project_discovery_contract.json` when current repository or helper-memory naming assumptions matter
 
