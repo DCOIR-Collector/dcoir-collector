@@ -1,8 +1,9 @@
 ---
 name: dcoir-memory-preflight
-description: consult canonical dcoir task memory, airtable governance tables, helper-memory rows, and dynamic skill-routing rows before high-friction work and after blocker recovery. use for dcoir session-start preflight, re-anchor helper-chain checks, execution-lane choice, blocker learning, github desktop workflow friction, skill-routing checks, and cases where a specialist dcoir helper skill may apply.
+description: consult canonical dcoir task memory, airtable governance tables, helper-memory rows, and dynamic skill-routing rows before dcoir task execution and after blocker recovery. use for session-start preflight, re-anchor helper-chain checks, task-time skill applicability checks, execution-lane choice, blocker learning, github/github desktop/tooling friction, skill-routing checks, airtable authority/schema-sensitive work, and cases where any specialist dcoir helper skill may apply.
 ---
 
+<!-- skill-marker: updated-skill|20260505T073000Z|task-time-routing-strengthening|in-session-update|dcoir-memory-preflight|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-memory-preflight|SKILL.md -->
 
 <!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-memory-preflight|SKILL.md -->
@@ -43,8 +44,22 @@ Run before choosing an execution lane when the task family is likely to have reu
 ### 2. post-blocker mode
 Run after a blocker or failed attempt is recovered when the lesson could improve a repeatable workflow, reusable procedure, limitation note, failure signature, helper skill, or process document.
 
+
+### 3. compact task-time routing mode
+Run as a lightweight applicability check before DCOIR execution whenever it is plausible that any current DCOIR helper skill, Airtable authority surface, local config registry, operator tool, validation gate, or execution lane matters.
+
+Use compact task-time routing mode to answer only:
+1. Which task family is this?
+2. Which SKILLROUTE rows, operator preferences, helper-memory rows, or active work records are relevant?
+3. Which skill(s) must fire now before execution?
+4. Which lane is safest/effective: in-session Airtable, GitHub connector/workflow, GitHub Desktop, reusable operator tool, manual review, validation-only, or no-execution planning?
+5. What preconditions, anti-patterns, and verification apply?
+6. Should `dcoir-session-manager` create/prepare a checkpoint because the task changes branch/lane/state, crosses a milestone, resolves a blocker, or approaches closeout?
+
+Do not load every full helper skill body by default. Select specialists from live SKILLROUTE rows, installed skill descriptions, Admin Registry skill_state rows, Operator Preferences, active Plans/Work Items, and task context.
+
 ## Mandatory triggers
-Run this skill before execution when the task involves:
+Run this skill before execution, not only at startup, when the task involves:
 - GitHub readable-text create/update/delete work;
 - grouped repo edits or packaging;
 - control-plane, startup, queue, or authority changes;
@@ -52,7 +67,10 @@ Run this skill before execution when the task involves:
 - GitHub Desktop/manual bundle preparation;
 - repeated local tool, connector, or Actions workflow friction;
 - artifact intake, validation orchestration, authority review, or Airtable schema-sensitive work;
-- any task where a specialist DCOIR helper skill may apply.
+- any task where a specialist DCOIR helper skill may apply;
+- any DCOIR task where the assistant is about to answer from memory without checking whether a current skill, SKILLROUTE row, operator preference, helper-memory row, active plan/work item, local configuration name, validation gate, or execution lane should influence the result.
+
+Frequent-fire rule: if unsure whether another DCOIR skill applies, run compact task-time routing mode first. Prefer a short routing check over skipping a relevant skill.
 
 Run this skill again after blocker recovery when the recovered lesson could matter beyond the current one-off fix.
 
@@ -77,6 +95,20 @@ When skill routing may apply:
 3. If no row exists, say so and continue with the best bounded lane.
 4. When a skill is added, removed, renamed, or materially repurposed, update the `SKILLROUTE-*` row set in Airtable rather than repackaging this skill just to refresh the catalog.
 5. If a route points at a retired skill, do not invoke it. Use the replacement surface named in the route/registry when present and queue a route cleanup patch.
+
+
+## Task-time route matrix
+During compact task-time routing, default to these pairings unless live SKILLROUTE rows or task evidence say otherwise:
+- session continuity, starter prompts, checkpoint/closeout, branch transition, remember/capture language -> `dcoir-session-manager`.
+- Airtable schema, table/field id, select options, linked records, cleanup/migration/delete planning -> `dcoir-airtable-schema-cache` plus live Airtable readback.
+- source authority, branch choice, approval gates, operator preference, proceed/ask/stop, drift, grouping/campaign decisions -> `dcoir-decision-policy`.
+- generated code, workflow commands, env vars, secret-safe references, local config names -> `dcoir-local-config-registry-maintainer`.
+- local Git, GitHub Desktop, speed lane, reusable PowerShell helpers, operator_tools, repo snapshots -> `dcoir-github-desktop-lane-advisor`.
+- repo-layout zips, skill packages, GitHub Desktop bundles, bootstrap bundles, affected-file artifacts -> `dcoir-repo-packager`.
+- validation plans, regression gates, readiness claims, evidence thresholds, post-change verification -> `dcoir-validation-orchestrator`.
+- skill creation/update/packaging/troubleshooting -> `skill-creator` plus relevant DCOIR skill(s).
+
+If more than one pairing applies, invoke the most safety-critical skill first: session-manager for continuity, schema-cache for Airtable structure, decision-policy for gates/authority, then lane/package/validation specialists.
 
 ## Retired-route drift signatures
 Treat these exact names only as stale route signatures that require cleanup; never invoke them. Prefer live `SKILLROUTE-*` rows when available.
@@ -135,7 +167,7 @@ This skill is Airtable-backed only for the high-call routine tables named in `re
 On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate only the routine caches named in the contract. If a routine cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. Tables listed as conditional/live-read are not routine caches; read them from live Airtable only when the active task requires them. After this skill writes to a routine cached table, refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## Output contract
-Return these sections when acting as a preflight:
+Return these sections when acting as a full preflight:
 1. Invocation mode.
 2. Task family or recovered-lesson family.
 3. Memory and `SKILLROUTE-*` rows consulted.
@@ -145,6 +177,8 @@ Return these sections when acting as a preflight:
 7. Buffered promotion candidate.
 8. Re-anchor helper-chain posture when invoked during startup/re-anchor.
 9. Best next move.
+
+For compact task-time routing, return only: invocation mode, task family, consulted routing surfaces, skills to invoke now, lane, hard stops/preconditions, required verification, checkpoint need, best next move.
 
 ## Hard rules
 - Do not execute the main change by default; route and preflight first.

@@ -1,7 +1,9 @@
 ---
 name: dcoir-local-config-registry-maintainer
-description: maintain africom_soc_ir / dcoir Local Configuration Registry rows in Airtable. Use when local/system environment variable names, safe reference guidance, config row deduplication, missing runtime references, secret-handling flags, config defaults, generated code/codeblocks needing environment variables, session/re-anchor variable-name awareness, or Delete Queue cleanup for Local Configuration Registry records are involved.
+description: maintain africom_soc_ir / dcoir Local Configuration Registry rows in Airtable. Use for DCOIR task-time local/system environment variable names, generated code/codeblocks, scripts, GitHub Actions/workflows, operator tools, runtime references, secret-safe config guidance, config row deduplication, missing runtime references, safety flags, session/re-anchor variable-name awareness, and Delete Queue cleanup for Local Configuration Registry records.
 ---
+
+<!-- skill-marker: updated-skill|20260505T081500Z|task-time-config-gate-strengthening|in-session-update|dcoir-local-config-registry-maintainer|SKILL.md -->
 
 <!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-local-config-registry-maintainer|SKILL.md -->
 
@@ -19,6 +21,25 @@ Use this skill only inside AFRICOM_SOC_IR / DCOIR work. Airtable is operational 
 Use this skill to keep Airtable `Local Configuration Registry` clean, safe, and useful for operator-side tools and generated code/codeblocks. The table stores configuration names and safe reference guidance only. It must never store token values, API key values, secret values, project id values, or other credential material.
 
 This skill also maintains session-visible variable-name awareness. It should help future code generation choose already-governed variable names, detect missing registry rows for names introduced by workflows or tools, and keep safe runtime reference examples current without exposing values.
+
+## Task-time config gate
+Use this skill at task time before producing or modifying DCOIR code, commands, scripts, workflow files, operator-tool guidance, GitHub Actions requests, local execution instructions, or Airtable rows that name runtime/local configuration.
+
+Frequent-fire rule: if a DCOIR response includes or depends on an environment variable, system variable, local path, repo path, token/API-key variable name, project identifier variable, webhook variable, config default, runtime reference, or generated code that reads configuration, run a compact config gate first. Prefer a small registry check over inventing names or emitting runnable code with ungoverned variables.
+
+Hard triggers:
+- before creating or revising code/codeblocks, scripts, GitHub workflow snippets, chatgpt-exec requests, operator_tools, launcher commands, PowerShell/Bash/Python examples, or local setup instructions that reference configuration;
+- before recommending a new environment variable, local config name, repo path variable, token/API-key variable, project identifier variable, or runtime default;
+- when a connector/workflow/tool failure may be caused by a missing or misnamed local configuration reference;
+- when a task mentions secrets, tokens, API keys, credentials, env vars, local paths, runtime references, `os.environ`, `$env:`, `%VAR%`, `${VAR}`, or similar syntax;
+- during skill maintenance when SKILL.md, references, scripts, or package instructions introduce config names;
+- before cleanup/dedupe/delete handling for Local Configuration Registry rows.
+
+Compact config gate output should identify: config names involved; existing canonical registry row status if known; missing row or duplicate risk; `sensitive_value`, `safe_to_display`, `confirmed_present`, `config_kind`, and `status` posture; approved runtime reference patterns to use; whether live schema/readback is required; blocked writes or Delete Queue needs; and safest next action.
+
+If a required configuration name has no active canonical registry row, do not present final runnable code as complete. Either create/update the registry row when approved and safe, or clearly label the missing row as a blocker and provide a registry-ready proposal.
+
+Read `references/task_time_config_gate.md` for the compact trigger checklist and output template.
 
 ## Hard rules
 - Store environment variable names and safe reference expressions only.
@@ -54,7 +75,7 @@ Consult `references/local_config_registry_contract.md` when maintaining rows. Us
 - `notes`
 
 ## Session variable-name awareness
-Use this mode during re-anchor, code generation, workflow repair, local tool guidance, and operator-side script design when variable names matter.
+Use this mode during re-anchor and at task time for code generation, workflow repair, local tool guidance, operator-side script design, GitHub Actions/chatgpt-exec planning, and any response where variable names matter.
 
 1. Read Local Configuration Registry rows relevant to the task before inventing names.
 2. If a variable name appears in Project Instructions, Operator Tools Registry, GitHub workflow logs, code, scripts, generated commands, or operator guidance, check whether a registry row already exists.
@@ -108,7 +129,9 @@ This skill is Airtable-backed only for the high-call routine tables named in `re
 On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate only the routine caches named in the contract. If a routine cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. Tables listed as conditional/live-read are not routine caches; read them from live Airtable only when the active task requires them. After this skill writes to a routine cached table, refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## Output contract
-Return a compact table with:
+For compact task-time config gates, return only: config names involved; registry status; safety flags; runtime references to use; missing/duplicate risk; write/delete gate; safest next action.
+
+For full maintenance, return a compact table with:
 - canonical rows updated;
 - explicit secret-value storage posture (`not_stored_by_design` for tokens/API keys/secrets/project identifiers);
 - explicit safety-control values, including false checkbox values such as `safe_to_display=false`;

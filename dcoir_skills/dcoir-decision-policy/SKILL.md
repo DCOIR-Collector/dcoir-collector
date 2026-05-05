@@ -3,6 +3,8 @@ name: dcoir-decision-policy
 description: apply the operator default decision matrix for africom_soc_ir / dcoir project work, including branch choice, blocker recovery, grouped delivery posture, and governance decision surfacing.
 ---
 
+<!-- skill-marker: updated-skill|20260505T080000Z|task-time-decision-gate-strengthening|in-session-update|dcoir-decision-policy|SKILL.md -->
+
 <!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-decision-policy|SKILL.md -->
 
 <!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-decision-policy|SKILL.md -->
@@ -52,6 +54,33 @@ This skill owns default branching, operator-preference application, proceed-vers
 
 It does not build packages or declare live readiness by itself. Use `dcoir-repo-packager` for package construction and `dcoir-validation-orchestrator` for validation gates, readiness evidence, and post-patch regression planning.
 It does not silently persist reusable lessons into canonical task memory.
+
+
+## Task-time decision gate and frequent triggers
+Use this skill at task time, not only during startup, whenever a DCOIR request has any material choice, approval gate, authority question, persistence decision, execution-lane choice, or stop/proceed risk.
+
+Run a compact decision gate before execution when any of these are present:
+- multiple plausible lanes or tools could satisfy the request;
+- Airtable vs GitHub source authority, queue authority, repo source role, or promoted-history drift could matter;
+- the task may create, update, delete, queue, merge, package, validate, or persist anything;
+- the task touches Delete Queue, cleanup, migration, schema changes, source-role changes, helper-skill updates, repo updates, workflow execution, validation readiness, or release/package scope;
+- the operator states a preference, correction, frustration, cadence rule, or process principle that may become durable;
+- the session has buffered changes, unflushed learning, install/readback uncertainty, or a handoff/closeout decision;
+- the task could continue autonomously but may need a bounded campaign-vs-trickle, proceed-vs-ask, or stop-vs-fallback decision.
+
+Compact decision gate output may be brief, but it must decide:
+1. current authority basis;
+2. autonomy zone: green, yellow, or red;
+3. chosen lane and why it beats the nearest alternative;
+4. approval gate or hard stop, if any;
+5. persistence posture: session-local, Airtable, GitHub, package, or none;
+6. required companion skills to invoke now;
+7. validation/checkpoint requirement;
+8. one best next move.
+
+If the result is green and no safety/authority/release-scope issue exists, proceed without asking. If yellow, proceed with bounded assumptions. If red, stop and report the exact blocker and smallest remediation.
+
+For any potentially durable operator preference, apply it for the current chat immediately when safe, but persist only after explicit operator approval or when the operator has already clearly approved that specific persistence action.
 
 ## Core workflow
 1. Resolve the current control plane first.
@@ -337,3 +366,4 @@ Read these when needed:
 - `references/policy_update_candidate_template.md`
 - `references/airtable_memory_workflow.md`
 - `references/session_buffer_workflow.md`
+- `references/task_time_decision_gate.md`

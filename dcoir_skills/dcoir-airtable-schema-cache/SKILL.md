@@ -1,7 +1,9 @@
 ---
 name: dcoir-airtable-schema-cache
-description: cache, normalize, inspect, compare, and refresh africom_soc_ir / dcoir airtable schema readback during startup, re-anchor, resume, and schema-sensitive Airtable work. use when dcoir work needs table ids, field ids, field types, select options, linked-record details, schema freshness checks, reduced airtable roundtrips, or a bounded schema snapshot before using airtable connectors, helper-memory tables, delete queue, lifecycle ledger, plans, work items, admin registry, repo surface registry, validation evidence, or local configuration registry.
+description: cache, normalize, inspect, compare, and refresh africom_soc_ir / dcoir airtable schema readback during startup, re-anchor, resume, task-time Airtable work, and schema-sensitive cleanup. use immediately when dcoir work mentions Airtable tables, fields, ids, select options, linked records, filters, searches, Delete Queue, cleanup, migration, merge/dedupe, taxonomy, naming/id standards, scripts using Airtable fields, or any write/delete/readback that depends on current schema.
 ---
+
+<!-- skill-marker: updated-skill|20260505T074500Z|task-time-schema-gate-strengthening|in-session-update|dcoir-airtable-schema-cache|SKILL.md -->
 
 <!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-airtable-schema-cache|SKILL.md -->
 
@@ -22,6 +24,26 @@ This skill now has two roles:
 - task-time schema assistance: provide fast table/field lookup, field-type checks, select-option checks, linked-record awareness, and drift warnings during normal Airtable work.
 
 This skill produces and consumes a local JSON schema cache. Treat the cache as a speed aid and decision aid, not as write authority.
+
+## Task-time schema gate
+Use this skill before DCOIR Airtable work whenever table, field, select-option, linked-record, filter/sort, formula/id, naming/taxonomy, searchability, merge/dedupe, cleanup, migration, Delete Queue, validation evidence, registry, or helper-memory schema assumptions could affect correctness.
+
+Frequent-fire rule: if a task will read, search, display, create, update, queue, delete, migrate, merge, deduplicate, validate, or script against Airtable data and the current live schema was not checked in this turn for the relevant surface, run a compact schema gate first. Prefer a small schema check over relying on memory.
+
+The compact schema gate should identify:
+- target table(s) and table id(s) when known;
+- needed field ids, field types, select choices, linked-record targets, formula fields, and primary fields;
+- whether cached schema is fresh enough for read-only lookup;
+- whether fresh live schema readback is mandatory before the next action;
+- any missing/renamed/retired table or field assumption;
+- safest next Airtable operation or stop condition.
+
+Hard triggers:
+- before Airtable writes, deletes, schema changes, migrations, cleanup passes, merge/dedupe plans, Delete Queue work, or dependency-sensitive actions;
+- before building code, formulas, filters, sorting, validators, or workflows that depend on Airtable field names/ids/types/options;
+- when a connector/API call fails because a table/field/filter/select option might be wrong;
+- when dcoir-memory-preflight routes a task to Airtable/schema/cache handling;
+- when a future session asks about table-by-table cleanup, controlled vocabularies, naming/id conventions, or searchability.
 
 ## Hard authority rules
 - Never use a cache as the sole basis for writes, deletes, schema migrations, field-type changes, linked-record changes, or dependency-sensitive Delete Queue processing.
@@ -75,7 +97,7 @@ Startup output should be brief:
 During automatic startup/re-anchor, keep schema readback compact and non-display by default. During execution, audit, cleanup, duplicate comparison, or verification, Airtable display views may be used when they materially improve correctness or when the operator has already approved visible Airtable display; summarize displayed evidence in chat.
 
 ## Workflow
-1. During startup or re-anchor, run schema readiness automatically when the Project Instructions or CP-00 sequence invokes this skill. During normal task work, decide whether a cache helps when schema lookup, table/field mapping, or repeated Airtable access is slowing the task or creating uncertainty.
+1. During startup or re-anchor, run schema readiness automatically when the Project Instructions or CP-00 sequence invokes this skill. During normal task work, run the compact schema gate whenever Airtable schema assumptions could materially affect correctness; then decide whether cache lookup, targeted live schema readback, or full live schema refresh is needed.
 2. Call Airtable live schema readback when no current cache exists, the cache is stale, a write/delete/migration is planned, or the task is schema-sensitive.
 3. Write the live schema JSON to a temporary file such as `/mnt/data/dcoir_airtable_schema_raw.json`.
 4. Run `scripts/schema_cache.py build --schema-json /mnt/data/dcoir_airtable_schema_raw.json --output /mnt/data/dcoir_airtable_schema_cache.json`.
@@ -130,7 +152,9 @@ Return:
 - missing/retired table assumptions, if any
 - stale-cache or live-readback-required warnings
 - safest next Airtable operation
+- whether another DCOIR skill should be invoked before execution
 
 ## References
 Read `references/cache_contract.md` for the full cache contract.
 Read `references/current_operational_tables.json` for the current operational table expectation set.
+Read `references/task_time_schema_gate.md` for compact task-time trigger and output rules.
