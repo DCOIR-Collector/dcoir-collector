@@ -18,6 +18,18 @@ Before execution, run compact gates:
 4. `dcoir-validation-orchestrator`: verify workflow report and GitHub readback before claiming parity success.
 5. `dcoir-session-manager`: checkpoint before/after material workflow execution or at closeout.
 
+## Batch-size rule
+
+For core skill source parity sync payloads, keep ZIP sizes manageable and reduce connector/workflow friction:
+
+- update a maximum of 4 skills per apply-in payload;
+- use a minimum batch size of 2 skills when more than one skill remains;
+- do not fall below 2 skills unless only 1 skill remains naturally after prior successful batches;
+- if a planned or retry batch would contain fewer than 2 skills while more skills remain, stop and ask the operator for direction;
+- if drift, uncertainty, repeated rediscovery, or lane confusion appears, stop and ask for help instead of improvising.
+
+Recommended for the remaining seven skills: first payload = 4 skills, second payload = 3 skills. If the four-skill batch fails from size or validation, retry 2+2, then continue with the remaining 3 as 2+1 only if the 1 is the final natural remainder; otherwise stop and ask.
+
 ## Build payload
 
 Create one ZIP containing:
@@ -78,11 +90,12 @@ chatgpt_staging/status_reports/chatgpt-apply-in/<request_id>/workflow_report.md
 
 ## Fallback batching
 
-If the full eight-skill payload fails because of size, connector limits, or workflow validation:
+If a maximum-size four-skill payload fails because of size, connector limits, or workflow validation:
 
-1. Retry with four skills.
-2. Then remaining four skills.
-3. If still blocked, retry one skill at a time.
+1. Retry as two-skill payloads.
+2. Continue in two-to-four skill batches whenever possible.
+3. A one-skill payload is allowed only as a final natural remainder after successful prior batches, or if the operator explicitly approves a one-skill retry/test.
+4. If troubleshooting starts to become process rediscovery, stop and ask for help.
 
 A one-skill test already succeeded for `dcoir-session-manager` under request id:
 
