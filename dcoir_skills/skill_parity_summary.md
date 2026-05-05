@@ -1,20 +1,20 @@
 # DCOIR Skill Parity Summary
 
 - Project: AFRICOM_SOC_IR / DCOIR
-- Generated at UTC: 2026-05-04T18:22:26Z
+- Generated at UTC: 2026-05-05T10:52:56Z
 - Baseline origin: repo_source
 - Skill count: 8
 
 | Skill | Status | Files | Bytes | Source tree hash |
 |---|---:|---:|---:|---|
-| `dcoir-airtable-schema-cache` | verified | 7 | 23113 | `8631cd145e0f1e2a645e56b03438e23b3b5c0a426329c36c75aeb203f984f959` |
-| `dcoir-decision-policy` | verified | 16 | 79502 | `cec89aa99d0e9a4be3061379a4feaecf006560312d7adbda497133ffaafd23af` |
-| `dcoir-github-desktop-lane-advisor` | verified | 6 | 19560 | `872c45edf19d206cd79f7fbdcfa4adfcc6dd6420ae73485ca41374ea3c837f02` |
-| `dcoir-local-config-registry-maintainer` | verified | 6 | 21270 | `c4967727d9349cab64605cefb5bb47adfcef95daf7ed31a2c470f8b95a223027` |
-| `dcoir-memory-preflight` | verified | 10 | 27812 | `d0af7cc9cfe4b731db17b1a8e36741856145a223d8d31aa0a16216d284ffb5b4` |
-| `dcoir-repo-packager` | verified | 8 | 40464 | `136d669410b3f3d32669209807a950a31f92998c69aa164a85adc59a90b978c1` |
-| `dcoir-session-manager` | verified | 4 | 13454 | `529b5c09eea6f60557fecfbbc683e7008eb52ace692c4cb956b0a9065547a593` |
-| `dcoir-validation-orchestrator` | verified | 9 | 31118 | `6f74f18418ab392d4e32524351a60d6ed5d717a91133260f2dad87e60847ebd7` |
+| `dcoir-airtable-schema-cache` | verified | 8 | 27230 | `fde48b376e5cffeb8aebd67f135fea41db69b58c4e0e7bf850b9846558977e4e` |
+| `dcoir-decision-policy` | verified | 17 | 83607 | `e28d90f18324acbbd7f03757b4c0cf79449ea40c978a4a6c762a43b4ddeeed17` |
+| `dcoir-github-desktop-lane-advisor` | verified | 7 | 23503 | `d777db78060d8b5b5b7981333a883a66ddebae8c6b72a56bab00b0b93e354371` |
+| `dcoir-local-config-registry-maintainer` | verified | 7 | 28966 | `e60484931e4ea989c26369c2bae067d1cd97b65d82e27b254b643f5d1a2a8618` |
+| `dcoir-memory-preflight` | verified | 11 | 32954 | `872abe3853e151ede482643909a2277981fe1e3e8674d4ebcff2ed70a2bc67ca` |
+| `dcoir-repo-packager` | verified | 9 | 44307 | `cd430416cf478ed92bc9b52847e0c88eb4c074e14eb82f75ca8659395079bfba` |
+| `dcoir-session-manager` | verified | 5 | 18246 | `1179a6bee3e768149d1ade4b2bc5ce93f66bc62bd5bd6ca741dd11d1792be66f` |
+| `dcoir-validation-orchestrator` | verified | 10 | 36850 | `ac34aa555e215331bf5e17f8f20ee790dedb6ef829170e6b4c7cc05fff877d01` |
 
 ## Notes
 
