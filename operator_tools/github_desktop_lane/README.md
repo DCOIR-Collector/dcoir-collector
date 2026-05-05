@@ -7,7 +7,26 @@ Reusable operator-side helper tools for AFRICOM_SOC_IR / DCOIR manual GitHub Des
 - GitHub repo is source of truth for tool code.
 - Airtable `Operator Tools Registry` is the live discovery index.
 - The DCOIR GitHub Desktop Lane Advisor skill selects tools and generates launcher commands.
-- The operator runs these scripts locally in PowerShell and uploads logs or ZIP outputs.
+- The operator runs these scripts locally in PowerShell and uploads logs or ZIP outputs when a local lane is required.
+- ChatGPT connector apply-in work uses the repo-side single-payload contract under `chatgpt_staging/in/README.md`.
+
+## ChatGPT apply-in single-payload rule
+
+For `chatgpt-apply-in`, use exactly one file:
+
+```text
+chatgpt_staging/in/<request_id>/payload.zip.b64
+```
+
+Do not use `payload.zip.b64.parts/`, `part-*.b64`, chunk manifests, or any chunk marker. If a payload is too large, reduce the batch size and rebuild one smaller `payload.zip.b64`.
+
+Preferred builder/validator:
+
+```text
+tools/chatgpt_apply_in/build_payload_zip_b64.py
+```
+
+That helper builds one ZIP with root `apply_manifest.json` and `files/`, encodes it to `payload.zip.b64`, and validates ZIP open, manifest shape, request id, no truncation marker, no chunk artifacts, and base64 round trip.
 
 ## Operator guide
 
@@ -37,10 +56,10 @@ The toolset is split into reusable modules under `modules/`:
 | `Dcoir.Git` | Self-contained git-lane helpers: Machine/System env lookup, placeholder rejection, UTF-8 logging, git executable discovery, native argument quoting, logged git process execution, branch checks, clean-tree checks, fetch, fast-forward pull, and ahead/behind analysis. | Validated by git diagnostic, safe pre-pull, snapshot, and repo patch apply tools. |
 | `Dcoir.GitHub` | GitHub CLI auth/availability, `gh` text/JSON wrappers, Actions run lookup, run details, and job lookup. | Validated through Actions orchestrator gates. |
 | `Dcoir.Packaging` | ChatGPT-friendly ZIP packaging wrapper. | Validated through Actions and snapshot ZIP generation. |
-| `Dcoir.Actions` | Manifest parsing, dispatch, monitor, fail-fast gates, parallel execution throttle, capture, cleanup, summaries, and exit codes. | Preferred Actions orchestrator lane. |
+| `Dcoir.Actions` | Manifest parsing, dispatch, monitor, fail-fast gates, parallel workflow execution throttle, capture, cleanup, summaries, and exit codes. | Preferred Actions orchestrator lane. |
 | `Dcoir.Snapshot` | Repo-relative path safety, safe names, path normalization, under-root checks, text-file filtering, binary sniffing, targeted staging, and UTF-8 logging. | Validated by text-only and targeted snapshot smoke tests. |
 | `Dcoir.RepoPatch` | Repo patch path safety, payload-root resolution, allowed target roots, hashing, and UTF-8 logging. | Validated by WhatIfOnly and real fixture apply smoke tests. |
-| `Dcoir.Airtable` | Airtable API helpers for base schema, metadata, full or bounded record export, table selection, redaction, and database-health export support. | Validated by schema-only, bounded live, and full-record export runs on 2026-05-03. |
+| `Dcoir.Airtable` | Airtable API helpers for base schema, table/field/view metadata, full or bounded record export, table selection, redaction, and database-health export support. | Validated by schema-only, bounded live, and full-record export runs on 2026-05-03. |
 | `DcoirActionsOrchestrator` | Compatibility facade preserving the stable public entrypoint. | Preserves existing public entrypoint. |
 
 Harnesses/wrappers should only create reviewed JSON configuration and execute the orchestrator or module-owned engine. Shared functions used by two or more tools should move into the reusable module ecosystem. Git-facing scripts should use `Dcoir.Git`; snapshot scripts should use `Dcoir.Snapshot`; repo patch/apply scripts should use `Dcoir.RepoPatch`; Airtable database inventory scripts should use `Dcoir.Airtable`. Temporary wrapper-side diagnostic shims are allowed only to isolate failures and must be replaced by module/tool fixes before promotion.
@@ -69,6 +88,7 @@ Operator tools reject placeholder paths such as `C:\path\to\dcoir-collector` and
 
 | Tool | Purpose | Backing modules |
 |---|---|---|
+| `tools/chatgpt_apply_in/build_payload_zip_b64.py` | Build and validate one single-file `chatgpt-apply-in` `payload.zip.b64`; no chunks/parts supported. | Python stdlib |
 | `scripts/Get-DcoirGitConflictDiagnostic.ps1` | Capture local git/GitHub Desktop conflict state to a timestamped log. | `Dcoir.Git` |
 | `scripts/Invoke-DcoirSafePrePullApply.ps1` | Stash current local work, fast-forward pull, reapply only a newly-created captured stash, and log the result. | `Dcoir.Git` |
 | `scripts/New-DcoirTargetedSnapshot.ps1` | Build a targeted snapshot ZIP from a JSON manifest after safe repo freshness checks. | `Dcoir.Git`, `Dcoir.Snapshot`, ZIP helper |
