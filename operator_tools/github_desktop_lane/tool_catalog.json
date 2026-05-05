@@ -1,7 +1,7 @@
 {
-  "catalog_version": "2026-05-03.7",
+  "catalog_version": "2026-05-05.1",
   "authority": {
-    "code_source": "github repo operator_tools/github_desktop_lane/",
+    "code_source": "github repo operator_tools/github_desktop_lane/ and tools/chatgpt_apply_in/",
     "registry_source": "airtable Operator Tools Registry",
     "advisor_skill": "dcoir-github-desktop-lane-advisor"
   },
@@ -33,7 +33,7 @@
     {
       "module_id": "DCOIR-PACKAGING",
       "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Packaging/Dcoir.Packaging.psm1",
-      "role": "ChatGPT ZIP packaging wrapper and staging extension point"
+      "role": "ChatGPT-friendly ZIP packaging wrapper and staging extension point"
     },
     {
       "module_id": "DCOIR-ACTIONS",
@@ -61,6 +61,15 @@
     }
   ],
   "tools": [
+    {
+      "tool_id": "DCOIR-CHATGPT-APPLY-IN-SINGLE-PAYLOAD-BUILDER",
+      "tool_name": "DCOIR ChatGPT Apply-In Single Payload Builder",
+      "tool_family": "github_actions_orchestration",
+      "repo_path": "tools/chatgpt_apply_in/build_payload_zip_b64.py",
+      "output_pattern": "payload.zip; payload.zip.b64; payload_report.json",
+      "version_or_hash": "2026-05-05.1",
+      "notes": "Preferred builder/validator for chatgpt-apply-in staging. Builds one ZIP with root apply_manifest.json and files/, base64 encodes it as exactly payload.zip.b64, validates ZIP open, manifest, files/, safe request id, no truncation marker, no parts/chunks, and base64 round trip. This tool intentionally does not support payload.zip.b64.parts, part files, chunk manifests, or chunk markers. If connector limits are hit, reduce the batch size and rebuild a smaller single payload.zip.b64."
+    },
     {
       "tool_id": "DCOIR-GIT-DIAGNOSTIC",
       "tool_name": "DCOIR Git Conflict Diagnostic",
