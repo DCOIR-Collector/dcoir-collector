@@ -12,9 +12,9 @@
 - command_sha256: e95fd30242b6947d964b37955de2d9746d835c6f3ec1bd8b3ed4caeb3a798061
 - artifact_name: chatgpt-exec-exec-20260505-cleanup-wbs-all-decompose-002
 - artifact_retention_days: 3
-- started_utc: 2026-05-05T14:00:59Z
-- finished_utc: 2026-05-05T14:01:06Z
-- report_created_utc: 2026-05-05T14:01:06Z
+- started_utc: 2026-05-05T14:02:20Z
+- finished_utc: 2026-05-05T14:02:28Z
+- report_created_utc: 2026-05-05T14:02:28Z
 
 ## Approved command preview
 
@@ -59,8 +59,8 @@ Read this report and download the artifact if needed; record evidence and clean 
 
 ## GitHub Actions run
 
-- github_run_id: 25380976172
+- github_run_id: 25381074588
 - github_run_attempt: 1
-- github_sha: d8b34f5b10e881f22e3357f9556bf7a740b6dbf3
+- github_sha: f3719217c1120a5e9766b31c64832e89824f5097
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25380976172
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25381074588
