@@ -1,8 +1,9 @@
 ---
 name: dcoir-github-desktop-lane-advisor
-description: advise and maintain reusable africom_soc_ir / dcoir operator-side github desktop lane tools. use when the operator has a local git/github desktop problem, needs a targeted or text-only repo snapshot, needs a reusable powershell helper, asks which local helper tool to run, wants a tool captured instead of one-off chat code, needs github actions orchestrator launcher guidance, or needs operator_tools/github_desktop_lane repo files and airtable operator tools registry kept aligned.
+description: advise and maintain reusable africom_soc_ir / dcoir operator-side github desktop lane tools. use for local git or github desktop friction, speed-lane/manual bundle decisions, repo snapshots, reusable powershell helpers, operator_tools registry/catalog lookup, github actions orchestrator launcher guidance, blocked repo-update lane recovery, local execution guidance, tool capture instead of one-off chat code, and keeping operator_tools/github_desktop_lane repo files and airtable operator tools registry aligned.
 ---
 
+<!-- skill-marker: updated-skill|20260505T083000Z|task-time-github-desktop-lane-gate|in-session-update|dcoir-github-desktop-lane-advisor|SKILL.md -->
 <!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-github-desktop-lane-advisor|SKILL.md -->
 
 <!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-github-desktop-lane-advisor|SKILL.md -->
@@ -17,6 +18,23 @@ Use this skill only inside AFRICOM_SOC_IR / DCOIR work. Treat Airtable as live o
 Select, explain, and maintain reusable operator-side helper tools for the GitHub Desktop/manual repo-update lane.
 
 The skill does not passively monitor a folder and does not execute local PowerShell tools on the operator workstation. It inspects the current Airtable registry and repo catalog when invoked, recommends the right tool, generates launcher commands, and helps create or update durable tools when a reusable pattern appears.
+
+## Task-time GitHub Desktop lane gate
+Use this skill at task time, not only during startup, whenever a DCOIR request touches local Git, GitHub Desktop, manual repo-update bundles, speed-lane execution, operator_tools, reusable PowerShell helpers, repo snapshots, patch/apply packages, GitHub Actions launchers, local execution guidance, or repeated local-tool friction.
+
+Frequent-fire rule: if the operator is expected to run something locally, inspect a repo locally, apply a bundle with GitHub Desktop, capture a snapshot, launch a workflow from the workstation, or use/create a reusable operator-side tool, run a compact GitHub Desktop lane gate before giving final instructions.
+
+The compact gate must decide:
+1. whether this is an in-session connector/workflow task, GitHub Actions task, GitHub Desktop/manual bundle task, reusable operator-tool task, local diagnostic task, or manual-review task;
+2. which Operator Tools Registry row or repo catalog entry should be consulted before inventing new commands;
+3. whether an existing tool fits, a new tool candidate is justified, or no local tool should be used;
+4. safety preconditions and destructive-command restrictions;
+5. expected local output/log/ZIP the operator should upload;
+6. required companion skills: memory-preflight, decision-policy, local-config-registry-maintainer, repo-packager, validation-orchestrator, or session-manager;
+7. verification/readback path and checkpoint need.
+
+Do not create one-off local scripts or ad hoc PowerShell when an active reusable tool or module pattern exists. Do not recommend local destructive git commands (`reset --hard`, `clean`, forced overwrite, stash pop, deletion) without explicit operator intent, safety explanation, and a verified recovery path.
+
 
 ## Authority model
 - Airtable `Operator Tools Registry` is the live discovery index for reusable local helper tools.
@@ -37,7 +55,7 @@ When a task involves local GitHub Desktop friction, local git state, snapshots, 
 Do not hard-code every future tool into this skill. Read the registry and repo catalog dynamically.
 
 ## Required Airtable and repo reads
-Before recommending or creating a tool, read:
+Before recommending, creating, updating, or giving launcher commands for a tool, read or verify the relevant surfaces:
 - `Operator Tools Registry` for matching active tools.
 - `operator_tools/github_desktop_lane/tool_catalog.json` for repo-side catalog details when GitHub readback is needed.
 - `operator_tools/github_desktop_lane/README.md` when operator instructions or module architecture matter.
@@ -146,6 +164,8 @@ This skill is Airtable-backed only for the high-call routine tables named in `re
 On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate only the routine caches named in the contract. If a routine cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. Tables listed as conditional/live-read are not routine caches; read them from live Airtable only when the active task requires them. After this skill writes to a routine cached table, refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
 
 ## Output contract
+For compact task-time GitHub Desktop lane gates, respond with only: lane classification, consulted tool surfaces, selected tool or no-tool decision, safety preconditions, local launcher/output if applicable, companion skills, verification path, checkpoint need, and best next move.
+
 For tool recommendations, respond with:
 1. Selected tool
 2. Why this tool

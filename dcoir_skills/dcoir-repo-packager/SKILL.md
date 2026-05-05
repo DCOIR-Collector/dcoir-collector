@@ -3,6 +3,8 @@ name: dcoir-repo-packager
 description: build strict dcoir repo-layout zips, github-primary bootstrap bundles, and github desktop manual repo-update bundles from current authoritative project files.
 ---
 
+<!-- skill-marker: updated-skill|20260505T084500Z|task-time-packaging-gate-strengthening|in-session-update|dcoir-repo-packager|SKILL.md -->
+
 <!-- skill-marker: updated-skill|20260504T181500Z|cache-scope-narrowing-stale-reference-scrub|source-update|dcoir-repo-packager|SKILL.md -->
 
 <!-- skill-marker: updated-skill|20260504T171500Z|airtable-local-cache-contract|source-update|dcoir-repo-packager|SKILL.md -->
@@ -73,6 +75,24 @@ Also stop if any of these are true:
 - Do not reintroduce duplicate readable governed text files into a Project bootstrap bundle.
 - Do not add extra wrapper roots or extra top-level helper files to a GitHub Desktop manual repo-update bundle.
 
+## Task-time packaging gate
+Use this skill at task time before producing, validating, or handing off any DCOIR package, ZIP, bundle, affected-file artifact, GitHub Desktop manual update payload, bootstrap/update bundle, skill package, or repo-layout delivery.
+
+Frequent-fire rule: if a DCOIR response will include a downloadable artifact, zip, bundle, file tree, affected-path list, installable skill package, GitHub Desktop manual update instructions, or packaging/readback claim, run a compact packaging gate first. Prefer a small package-shape check over producing an artifact with ambiguous layout.
+
+Hard triggers:
+- before creating or revising repo-layout ZIPs, GitHub-primary bootstrap/update bundles, GitHub Desktop manual repo-update bundles, skill ZIPs, outer multi-skill ZIPs, affected-file artifacts, or delivery packages;
+- before deciding whether files belong in an artifact, whether a wrapper root is allowed, or whether a commit summary belongs in chat/Airtable versus the ZIP;
+- before claiming package validity, installability, marker/readback readiness, no-wrapper-root compliance, affected-file-only compliance, or repo-relative path safety;
+- when a connector/workflow update is blocked and the fallback is a manual bundle or local operator package;
+- when the operator cannot upload/download/execute and needs in-session update packages or exact package contents.
+
+Compact packaging gate output should identify: package mode; authority/source basis; included paths or package classes; excluded paths/classes; wrapper-root rule; artifact filename(s); validation/readback required; companion skills to invoke; and safest next action.
+
+Do not use this skill to decide source authority, promote files, or validate readiness claims alone. Pair with `dcoir-decision-policy` for authority/approval gates, `dcoir-github-desktop-lane-advisor` for local lane/tool choice, `dcoir-validation-orchestrator` for validation evidence, and `dcoir-session-manager` for checkpoint-worthy deliveries.
+
+Read `references/task_time_packaging_gate.md` for the compact trigger checklist and output template.
+
 ## Packaging modes
 
 1. **Repo mode**
@@ -134,6 +154,8 @@ python scripts/create_dcoir_bundle.py --source-dir /mnt/data --output-dir /mnt/d
 ```
 
 ## Output handling
+For compact task-time packaging gates, return only: package mode, authority/source basis, included paths/classes, excluded paths/classes, wrapper-root rule, artifact filename(s), validation/readback required, companion skills, safest next action.
+
 After the script runs:
 - Read the generated `packager_report.json`.
 - If `success` is false, explain the failure plainly and do not present the ZIP as valid.
