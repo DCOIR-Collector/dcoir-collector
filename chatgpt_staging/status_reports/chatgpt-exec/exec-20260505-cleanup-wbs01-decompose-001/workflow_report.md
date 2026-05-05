@@ -12,14 +12,14 @@
 - command_sha256: 4cc919e2d1885c6591e0ed079efa328cdd4c3289291c3655bee9a969204140d3
 - artifact_name: chatgpt-exec-exec-20260505-cleanup-wbs01-decompose-001
 - artifact_retention_days: 3
-- started_utc: 2026-05-05T13:49:20Z
-- finished_utc: 2026-05-05T13:49:22Z
-- report_created_utc: 2026-05-05T13:49:22Z
+- started_utc: 2026-05-05T13:50:14Z
+- finished_utc: 2026-05-05T13:50:16Z
+- report_created_utc: 2026-05-05T13:50:16Z
 
 ## Approved command preview
 
 ```text
-Run WBS 01 decomposition seed script. Planning/scaffold rows only; no cleanup execution.
+Run WBS 01 decomposition seed script. Planning scaffold rows only.
 ```
 
 ## Executed command
@@ -59,8 +59,8 @@ Read this report and download the artifact if needed; record evidence and clean 
 
 ## GitHub Actions run
 
-- github_run_id: 25380365721
+- github_run_id: 25380414596
 - github_run_attempt: 1
-- github_sha: 0d758169f12afbbb0524c704d49d25c02f93c043
+- github_sha: e8159fafc4b4bc91ef5dc1dff55a69f0488abe82
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25380365721
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25380414596
