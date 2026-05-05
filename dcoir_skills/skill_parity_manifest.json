@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-05T10:52:56Z",
+  "generated_at_utc": "2026-05-05T10:59:20Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -12,12 +12,12 @@
   "skills": {
     "dcoir-airtable-schema-cache": {
       "source_root": "dcoir-airtable-schema-cache",
-      "source_tree_hash": "fde48b376e5cffeb8aebd67f135fea41db69b58c4e0e7bf850b9846558977e4e",
+      "source_tree_hash": "b65a7aa83e23aa182951c735490cd5a7689da3da2fe00a6fade2c68359f31037",
       "release_zip_name": "dcoir-airtable-schema-cache.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 8,
-      "total_bytes": 27230,
+      "total_bytes": 26594,
       "files": [
         {
           "path": "SKILL.md",
@@ -36,13 +36,13 @@
         },
         {
           "path": "references/airtable_cache_contract.md",
-          "sha256": "697e0a16457d50f0c0621f99228269d202c9b16cd39eafd9f805501c7357c664",
-          "size_bytes": 3796
+          "sha256": "8b91cc92a2df526ae44771e70ae64e9ae0f922350b93b20e2b28428876daaa2c",
+          "size_bytes": 3582
         },
         {
           "path": "references/cache_contract.md",
-          "sha256": "88bb4e70f29748d1ea3a33e92c30280638f4e51f1a8361faea62747d1a9fb665",
-          "size_bytes": 2343
+          "sha256": "b7fbac8626a1b4c9ba9c242d62aa5308f871f74be3ff7132b31d97edcdb255b2",
+          "size_bytes": 1921
         },
         {
           "path": "references/current_operational_tables.json",
@@ -63,12 +63,12 @@
     },
     "dcoir-decision-policy": {
       "source_root": "dcoir-decision-policy",
-      "source_tree_hash": "e28d90f18324acbbd7f03757b4c0cf79449ea40c978a4a6c762a43b4ddeeed17",
+      "source_tree_hash": "8243ffc5723dc94538c0e9e68a443a5ef6b0c43378e62b12fde0a957902aa91e",
       "release_zip_name": "dcoir-decision-policy.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 17,
-      "total_bytes": 83607,
+      "total_bytes": 83603,
       "files": [
         {
           "path": "SKILL.md",
@@ -77,8 +77,8 @@
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "115f5ef45136de9f89ccf964ea9f9e13489b9751b628152aaf3ff1d1f256fa81",
-          "size_bytes": 359
+          "sha256": "bfb29d585a419b31ba1e1f5992865c6e2df8fb910b5ed12cb45d1903a2fec515",
+          "size_bytes": 355
         },
         {
           "path": "assets/icon.svg",
@@ -205,12 +205,12 @@
     },
     "dcoir-local-config-registry-maintainer": {
       "source_root": "dcoir-local-config-registry-maintainer",
-      "source_tree_hash": "e60484931e4ea989c26369c2bae067d1cd97b65d82e27b254b643f5d1a2a8618",
+      "source_tree_hash": "35197f27e57a0786d560c3587c23df391394a51fdea1f7ebd1430bdb5aed1c93",
       "release_zip_name": "dcoir-local-config-registry-maintainer.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 7,
-      "total_bytes": 28966,
+      "total_bytes": 26078,
       "files": [
         {
           "path": "SKILL.md",
@@ -219,13 +219,13 @@
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "8f14de86a48b40bc814c1982b6fca65a625c5739662be9b147c68c8a54cd2f60",
-          "size_bytes": 348
+          "sha256": "0dc4a80455a8656935055ae888655fe9b60127784b79576e2f35d27ca056095b",
+          "size_bytes": 194
         },
         {
           "path": "assets/icon.svg",
-          "sha256": "fbb6c7314886573cd56c3f86884a65afe3b5f4ce4bf1ee6baeeeb1fa50aea7a4",
-          "size_bytes": 2922
+          "sha256": "3aaefde839a05a3c2afbc138aac4a658e50ab10713be77cb6b327cbb692b7c7a",
+          "size_bytes": 188
         },
         {
           "path": "references/airtable_cache_contract.md",
@@ -373,12 +373,12 @@
     },
     "dcoir-session-manager": {
       "source_root": "dcoir-session-manager",
-      "source_tree_hash": "1179a6bee3e768149d1ade4b2bc5ce93f66bc62bd5bd6ca741dd11d1792be66f",
+      "source_tree_hash": "3438456cdc0aa55b3953685bbd1f80e85c1dbe292bdc3e70752c3f50091a141c",
       "release_zip_name": "dcoir-session-manager.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 5,
-      "total_bytes": 18246,
+      "total_bytes": 17779,
       "files": [
         {
           "path": "SKILL.md",
@@ -387,8 +387,8 @@
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "1d4338fca9b72d72392b867f6d4ad973c62853850b9169ec43edc9ce03890c2d",
-          "size_bytes": 295
+          "sha256": "ad930349e87c0ae22337d07acbe0e990eaa267b37276eec0831971e635a20fe9",
+          "size_bytes": 197
         },
         {
           "path": "assets/icon.svg",
@@ -397,8 +397,8 @@
         },
         {
           "path": "references/airtable_cache_contract.md",
-          "sha256": "06184cc1e2d129bb3758214c2c3379b632cdee53a110b65937550e11a7905208",
-          "size_bytes": 5269
+          "sha256": "ed0e1ae4d19b58fa9645aa953a99c8fe4b02f6093fe02b5815bb9704b034cb6a",
+          "size_bytes": 4900
         },
         {
           "path": "references/session_checkpoint_and_closeout_workflow.md",
@@ -409,12 +409,12 @@
     },
     "dcoir-validation-orchestrator": {
       "source_root": "dcoir-validation-orchestrator",
-      "source_tree_hash": "ac34aa555e215331bf5e17f8f20ee790dedb6ef829170e6b4c7cc05fff877d01",
+      "source_tree_hash": "edbf3feee460c9de224c624807a756983249c821180b8b640ff472ac70df132c",
       "release_zip_name": "dcoir-validation-orchestrator.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 10,
-      "total_bytes": 36850,
+      "total_bytes": 36484,
       "files": [
         {
           "path": "SKILL.md",
@@ -428,8 +428,8 @@
         },
         {
           "path": "assets/icon.svg",
-          "sha256": "72343cc4b66256ae7de8474c7cad14e711ad84a94c473732a44f96a56124c42d",
-          "size_bytes": 786
+          "sha256": "e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b",
+          "size_bytes": 420
         },
         {
           "path": "references/airtable_cache_contract.md",
