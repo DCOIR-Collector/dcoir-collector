@@ -12,9 +12,9 @@
 - command_sha256: 4bcea5d7cb878c08ba5a5d941c72affe9e5241683e8482589a31155b2f1a53c7
 - artifact_name: chatgpt-exec-exec-20260505-wbs01-lifecycle-inventory-001
 - artifact_retention_days: 3
-- started_utc: 2026-05-05T15:46:04Z
-- finished_utc: 2026-05-05T15:46:06Z
-- report_created_utc: 2026-05-05T15:46:06Z
+- started_utc: 2026-05-05T15:46:43Z
+- finished_utc: 2026-05-05T15:46:45Z
+- report_created_utc: 2026-05-05T15:46:45Z
 
 ## Approved command preview
 
@@ -55,39 +55,39 @@ Write-Output ('Generated WBS01 lifecycle/review inventory at ' + $outDir)
 ## Standard output preview
 
 ```text
-[2026-05-05 15:46:05] Starting DCOIR Airtable database health export.
-[2026-05-05 15:46:05] Output folder: D:\a\_temp\dcoir_chatgpt_exec\exec-20260505-wbs01-lifecycle-inventory-001\downloads\dcoir_airtable_health_export_20260505_154605
-[2026-05-05 15:46:05] Output ZIP target: D:\a\_temp\dcoir_chatgpt_exec\exec-20260505-wbs01-lifecycle-inventory-001\downloads\dcoir_airtable_health_export_20260505_154605.chatgpt.zip
-[2026-05-05 15:46:05] Resolved export mode: SchemaOnly; effective max records per table: 0
-[2026-05-05 15:46:05] Imported Dcoir.Airtable module version 2026-05-03.5.
-[2026-05-05 15:46:05] Required Machine/System environment variables are present.
-[2026-05-05 15:46:05] Fetching Airtable base schema.
-[2026-05-05 15:46:06] Selected 21 Airtable table(s).
-[2026-05-05 15:46:06] Exporting table schema: Work Items (tblgsQAVWvh8K7gIR)
-[2026-05-05 15:46:06] Exporting table schema: Session Checkpoints (tblTe75HKZOJaPDGn)
-[2026-05-05 15:46:06] Exporting table schema: Idea Inbox (tblWwBxwrjZF6JR3r)
-[2026-05-05 15:46:06] Exporting table schema: Plans (tblBcp5FyMIfOm7Xe)
-[2026-05-05 15:46:06] Exporting table schema: Operator Preferences (tblnxZ3eLPT3W38wl)
-[2026-05-05 15:46:06] Exporting table schema: Validation Test Cases (tblRnMpQUomIGyFVL)
-[2026-05-05 15:46:06] Exporting table schema: Queue Control (tblf13aCslg6rJBah)
-[2026-05-05 15:46:06] Exporting table schema: Gemini Research Reference (tblfZnARJxcMJ0yHW)
-[2026-05-05 15:46:06] Exporting table schema: Governance Control Plane (tblDfSl29psxRnes1)
-[2026-05-05 15:46:06] Exporting table schema: Repo Surface Registry (tblzBiXp7kwTXM0ru)
-[2026-05-05 15:46:06] Exporting table schema: dcoir-memory-preflight (tblcNNuKqi8IkFsSQ)
-[2026-05-05 15:46:06] Exporting table schema: dcoir-decision-policy (tblKHVXq16Xd5I31m)
-[2026-05-05 15:46:06] Exporting table schema: dcoir-validation-orchestrator (tbls9O1B0Rs8YvTAj)
-[2026-05-05 15:46:06] Exporting table schema: Delete Queue (tbl1lMz5N6n7zShO0)
-[2026-05-05 15:46:06] Exporting table schema: Validation Evidence (tblrPFQH2uZEYBYE9)
-[2026-05-05 15:46:06] Exporting table schema: Admin Registry (tblFaJW1V2DPc9css)
-[2026-05-05 15:46:06] Exporting table schema: DCOIR Lifecycle Ledger (tblNsjkGUUIdRpHuE)
-[2026-05-05 15:46:06] Exporting table schema: Local Configuration Registry (tblcJxCoYGpEda0FM)
-[2026-05-05 15:46:06] Exporting table schema: Operator Tools Registry (tblF1SCJBHRFUhpzi)
-[2026-05-05 15:46:06] Exporting table schema: DCOIR Cleanup WBS (tblRxTmpW0VunQlUK)
-[2026-05-05 15:46:06] Exporting table schema: DCOIR Cleanup Scaffold Registry (tblvtcId7PiFKvfKO)
-[2026-05-05 15:46:06] Airtable export completed successfully.
+[2026-05-05 15:46:43] Starting DCOIR Airtable database health export.
+[2026-05-05 15:46:43] Output folder: D:\a\_temp\dcoir_chatgpt_exec\exec-20260505-wbs01-lifecycle-inventory-001\downloads\dcoir_airtable_health_export_20260505_154643
+[2026-05-05 15:46:43] Output ZIP target: D:\a\_temp\dcoir_chatgpt_exec\exec-20260505-wbs01-lifecycle-inventory-001\downloads\dcoir_airtable_health_export_20260505_154643.chatgpt.zip
+[2026-05-05 15:46:43] Resolved export mode: SchemaOnly; effective max records per table: 0
+[2026-05-05 15:46:43] Imported Dcoir.Airtable module version 2026-05-03.5.
+[2026-05-05 15:46:43] Required Machine/System environment variables are present.
+[2026-05-05 15:46:43] Fetching Airtable base schema.
+[2026-05-05 15:46:44] Selected 21 Airtable table(s).
+[2026-05-05 15:46:44] Exporting table schema: Work Items (tblgsQAVWvh8K7gIR)
+[2026-05-05 15:46:44] Exporting table schema: Session Checkpoints (tblTe75HKZOJaPDGn)
+[2026-05-05 15:46:44] Exporting table schema: Idea Inbox (tblWwBxwrjZF6JR3r)
+[2026-05-05 15:46:44] Exporting table schema: Plans (tblBcp5FyMIfOm7Xe)
+[2026-05-05 15:46:44] Exporting table schema: Operator Preferences (tblnxZ3eLPT3W38wl)
+[2026-05-05 15:46:44] Exporting table schema: Validation Test Cases (tblRnMpQUomIGyFVL)
+[2026-05-05 15:46:44] Exporting table schema: Queue Control (tblf13aCslg6rJBah)
+[2026-05-05 15:46:44] Exporting table schema: Gemini Research Reference (tblfZnARJxcMJ0yHW)
+[2026-05-05 15:46:44] Exporting table schema: Governance Control Plane (tblDfSl29psxRnes1)
+[2026-05-05 15:46:44] Exporting table schema: Repo Surface Registry (tblzBiXp7kwTXM0ru)
+[2026-05-05 15:46:44] Exporting table schema: dcoir-memory-preflight (tblcNNuKqi8IkFsSQ)
+[2026-05-05 15:46:44] Exporting table schema: dcoir-decision-policy (tblKHVXq16Xd5I31m)
+[2026-05-05 15:46:44] Exporting table schema: dcoir-validation-orchestrator (tbls9O1B0Rs8YvTAj)
+[2026-05-05 15:46:44] Exporting table schema: Delete Queue (tbl1lMz5N6n7zShO0)
+[2026-05-05 15:46:44] Exporting table schema: Validation Evidence (tblrPFQH2uZEYBYE9)
+[2026-05-05 15:46:45] Exporting table schema: Admin Registry (tblFaJW1V2DPc9css)
+[2026-05-05 15:46:45] Exporting table schema: DCOIR Lifecycle Ledger (tblNsjkGUUIdRpHuE)
+[2026-05-05 15:46:45] Exporting table schema: Local Configuration Registry (tblcJxCoYGpEda0FM)
+[2026-05-05 15:46:45] Exporting table schema: Operator Tools Registry (tblF1SCJBHRFUhpzi)
+[2026-05-05 15:46:45] Exporting table schema: DCOIR Cleanup WBS (tblRxTmpW0VunQlUK)
+[2026-05-05 15:46:45] Exporting table schema: DCOIR Cleanup Scaffold Registry (tblvtcId7PiFKvfKO)
+[2026-05-05 15:46:45] Airtable export completed successfully.
 {
     "success":  true,
-    "output_folder":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260505-wbs01-lifecycle-inventory-001\\downloads\\dcoir_airtable_health_export_20260505_154605",
+    "output_folder":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260505-wbs01-lifecycle-inventory-001\\downloads\\dcoir_airtable_health_export_20260505_154643",
     "output_zip":  null,
     "schema_only":  true,
     "export_mode":  "SchemaOnly",
@@ -95,7 +95,7 @@ Write-Output ('Generated WBS01 lifecycle/review inventory at ' + $outDir)
     "redacted_likely_secrets":  false,
     "selected_table_count":  21,
     "max_records_per_table":  0,
-    "finished_at":  "2026-05-05T15:46:06.5038401+00:00"
+    "finished_at":  "2026-05-05T15:46:45.0456470+00:00"
 }
 Generated WBS01 lifecycle/review inventory at D:\a\_temp\dcoir_chatgpt_exec\exec-20260505-wbs01-lifecycle-inventory-001\downloads\wbs01_lifecycle_inventory_20260505
 
@@ -121,8 +121,8 @@ Read this report and download the artifact if needed; record evidence and clean 
 
 ## GitHub Actions run
 
-- github_run_id: 25386661674
+- github_run_id: 25386704475
 - github_run_attempt: 1
-- github_sha: 603da7956a7e970df85ddc8c9d4128646d091502
+- github_sha: 09f229131b8d8cb658f8129192d0cc421f3fd886
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25386661674
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25386704475
