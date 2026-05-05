@@ -4,9 +4,9 @@
 
 `New-DcoirApplyInPayload.ps1` prepares a local ChatGPT apply-in ZIP payload for the `chatgpt-apply-in` GitHub Actions workflow.
 
-Use this helper instead of pasting or connector-writing long base64 payloads into `chatgpt_staging/in/.../payload.zip.b64`.
+This helper remains the preferred local validation path when the operator is using GitHub Desktop or local git. Connector staging of `chatgpt_staging/in/<request_id>/payload.zip.b64` is also allowed when the operator explicitly authorizes it and ChatGPT can validate the ZIP/base64 round trip before writing.
 
-## Why this exists
+## Background
 
 A live test on 2026-05-03 staged `chatgpt_staging/in/airtable-export-policy-20260503/payload.zip.b64` through a long inline write. The `chatgpt-apply-in` workflow run `25280175341` failed in the `Decode ZIP payload and apply bundle` step with:
 
@@ -20,7 +20,7 @@ Readback showed the staged payload contained a literal truncation marker:
 ERROR TRUNCATED
 ```
 
-That means the workflow lane was structurally sound enough to find the payload and start decoding, but the staged payload file was corrupted before the workflow executed.
+That failure means the payload file was corrupted before the workflow executed. It is a historical caution, not a standing ban on connector staging. Current practice is: validate locally/in-session, stage through the safest available lane, and verify workflow/readback after push.
 
 ## Tool
 
@@ -68,9 +68,9 @@ chatgpt_staging/in/<request_id>/payload_staging_report.json
 
 Pushing `payload.zip.b64` under `chatgpt_staging/in/<request_id>/` triggers the `chatgpt-apply-in` workflow. You may also use workflow dispatch with the same repo-relative payload path.
 
-## Safety rule
+## Connector staging rule
 
-Do not stage long base64 payloads through chat or connector inline writes. Generate and validate the base64 locally with this helper, then commit/push the generated files from GitHub Desktop or local git.
+When the operator authorizes connector staging, ChatGPT may create or update `chatgpt_staging/in/<request_id>/payload.zip.b64` directly through the connector after validating: ZIP opens; `apply_manifest.json` exists at archive root; base64 round trip matches the source ZIP SHA256; request id is safe; and staged content does not contain truncation markers. If the full payload is too large or fails, retry with smaller bounded payloads such as half the skill set or a one-skill test payload.
 
 ## Failure triage
 
