@@ -1,0 +1,4 @@
+DCOIR chatgpt-apply-in pass test
+request_id=apply-20260505-chatgpt-in-pass-001
+expected_result=success
+payload_shape=single payload.zip.b64
