@@ -1,0 +1,84 @@
+name: chatgpt-apply-in-invalid-staging-cleanup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "chatgpt_staging/in/*/payload.zip.b64.parts/**"
+      - "chatgpt_staging/in/*/part-*.b64"
+      - "chatgpt_staging/in/*/*.part*"
+      - "chatgpt_staging/in/*/chunk_manifest.json"
+      - "chatgpt_staging/in/*/*chunk*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chatgpt-apply-in-invalid-staging-cleanup-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup-invalid-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Remove unsupported chatgpt-apply-in staging artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed_paths < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")
+          invalid_paths=()
+          for p in "${changed_paths[@]}"; do
+            case "$p" in
+              chatgpt_staging/in/*/payload.zip.b64.parts/*|chatgpt_staging/in/*/part-*.b64|chatgpt_staging/in/*/*.part*|chatgpt_staging/in/*/chunk_manifest.json|chatgpt_staging/in/*/*chunk*)
+                invalid_paths+=("$p")
+                ;;
+            esac
+          done
+
+          if [[ ${#invalid_paths[@]} -eq 0 ]]; then
+            echo "No unsupported chatgpt-apply-in staging artifacts found."
+            exit 0
+          fi
+
+          report_dir="chatgpt_staging/status_reports/chatgpt-apply-in-invalid-staging"
+          report_path="$report_dir/${GITHUB_SHA}.md"
+          mkdir -p "$report_dir"
+          {
+            echo "# ChatGPT apply-in invalid staging cleanup"
+            echo
+            echo "## Result"
+            echo
+            echo "- workflow: chatgpt-apply-in-invalid-staging-cleanup"
+            echo "- result: cleaned"
+            echo "- github_sha: $GITHUB_SHA"
+            echo "- github_run_id: $GITHUB_RUN_ID"
+            echo "- report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo "## Unsupported artifacts removed"
+            for p in "${invalid_paths[@]}"; do
+              echo "- $p"
+            done
+            echo
+            echo "## Required staging shape"
+            echo
+            echo '```text'
+            echo "chatgpt_staging/in/<request_id>/payload.zip.b64"
+            echo '```'
+            echo
+            echo "Use one ZIP with apply_manifest.json and files/ at archive root, then base64 encode it once as payload.zip.b64. If connector limits are hit, reduce the batch size and rebuild one smaller payload.zip.b64."
+          } > "$report_path"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for p in "${invalid_paths[@]}"; do
+            git rm -f --ignore-unmatch -- "$p" || true
+          done
+          git add "$report_path"
+          git commit -m "Clean unsupported ChatGPT apply-in staging artifacts [skip ci]" || exit 0
+          git push
