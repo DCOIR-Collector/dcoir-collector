@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260505-wbs-evidence-repair-001",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-05T19:39:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "command": "& (Join-Path $env:GITHUB_WORKSPACE 'chatgpt_staging\\exec_scripts\\cleanup_wbs_evidence_repair_001.ps1')"
+}
