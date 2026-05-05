@@ -12,9 +12,9 @@
 - command_sha256: 858c527e881c02f615cc15a22d238abf1b6bacd54833cb2c854e11b937fcae55
 - artifact_name: chatgpt-exec-exec-20260505-cleanup-plan-wbs-seed-003
 - artifact_retention_days: 3
-- started_utc: 2026-05-05T13:37:54Z
-- finished_utc: 2026-05-05T13:37:58Z
-- report_created_utc: 2026-05-05T13:37:58Z
+- started_utc: 2026-05-05T13:39:33Z
+- finished_utc: 2026-05-05T13:39:33Z
+- report_created_utc: 2026-05-05T13:39:34Z
 
 ## Approved command preview
 
@@ -66,8 +66,8 @@ Read this report, inspect the artifact and run log if needed, repair the command
 
 ## GitHub Actions run
 
-- github_run_id: 25379770883
+- github_run_id: 25379858223
 - github_run_attempt: 1
-- github_sha: fd30e78fa6f948085e14430210fc8067dbeeb463
+- github_sha: 43030d3a488656aab7bb7a13befc13cc2ccf6655
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25379770883
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25379858223
