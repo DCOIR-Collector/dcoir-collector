@@ -1,1 +1,12 @@
-PLACEHOLDER
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260505-cleanup-plan-scaffold-seed-001",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-05T13:26:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "approved_command_preview": "Run bounded Airtable evidence export for Plans, DCOIR Cleanup WBS, and DCOIR Cleanup Scaffold Registry. No cleanup execution.",
+  "command": "$ErrorActionPreference = 'Stop'\n$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')\n$script = Join-Path $repo 'operator_tools\\github_desktop_lane\\scripts\\New-DcoirAirtableDatabaseHealthExport.ps1'\n& $script -ExportMode BoundedRecords -MaxRecordsPerTable 100 -MetadataScope 'All' -ProbeUnsupportedMetadata -TableList 'Plans,DCOIR Cleanup WBS,DCOIR Cleanup Scaffold Registry'\nWrite-Host 'DCOIR cleanup scaffold evidence export completed.'"
+}
