@@ -12,14 +12,14 @@
 - command_sha256: 858c527e881c02f615cc15a22d238abf1b6bacd54833cb2c854e11b937fcae55
 - artifact_name: chatgpt-exec-exec-20260505-cleanup-plan-wbs-seed-004
 - artifact_retention_days: 3
-- started_utc: 2026-05-05T13:44:19Z
-- finished_utc: 2026-05-05T13:44:25Z
-- report_created_utc: 2026-05-05T13:44:25Z
+- started_utc: 2026-05-05T13:45:27Z
+- finished_utc: 2026-05-05T13:45:29Z
+- report_created_utc: 2026-05-05T13:45:29Z
 
 ## Approved command preview
 
 ```text
-Run corrected staged cleanup plan WBS seed script. No cleanup execution, no deletes, no merges, no Delete Queue processing.
+Run corrected staged cleanup plan WBS seed script for plan scaffold records only.
 ```
 
 ## Executed command
@@ -59,8 +59,8 @@ Read this report and download the artifact if needed; record evidence and clean 
 
 ## GitHub Actions run
 
-- github_run_id: 25380104389
+- github_run_id: 25380162973
 - github_run_attempt: 1
-- github_sha: 78613ed6d98e5ea4b7a81d1e6bcd69970f4dcd26
+- github_sha: c0d0bf16649ee3f8dc7012471e1ccb71d68455e4
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25380104389
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25380162973
