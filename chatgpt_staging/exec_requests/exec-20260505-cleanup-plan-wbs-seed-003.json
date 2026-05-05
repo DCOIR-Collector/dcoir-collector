@@ -1,0 +1,13 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260505-cleanup-plan-wbs-seed-003",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-05T13:50:00Z",
+  "restaged_at_utc": "2026-05-05T13:58:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "approved_command_preview": "Run staged cleanup plan WBS seed script. No cleanup execution, no deletes, no merges, no Delete Queue processing.",
+  "command": "$ErrorActionPreference = 'Stop'\n$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')\n$script = Join-Path $repo 'chatgpt_staging\\exec_scripts\\cleanup_plan_wbs_seed_003.ps1'\nif (-not (Test-Path -LiteralPath $script -PathType Leaf)) { throw \"Missing staged seed script: $script\" }\n& $script"
+}
