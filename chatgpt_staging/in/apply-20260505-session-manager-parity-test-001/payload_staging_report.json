@@ -1,0 +1,19 @@
+{
+  "request_id": "apply-20260505-session-manager-parity-test-001",
+  "payload_zip_sha256": "9ce6dc40a70b90d67b5d7c8bb33c9cd5ecb1865af90a242af0564c41beea0710",
+  "payload_zip_size_bytes": 5806,
+  "payload_b64_size_chars": 7744,
+  "target_file_count": 2,
+  "allowed_roots": [
+    "dcoir_skills"
+  ],
+  "validation": [
+    "base64 round-trip OK",
+    "ZIP opens OK",
+    "apply_manifest.json at archive root"
+  ],
+  "targets": [
+    "dcoir_skills/dcoir-session-manager/SKILL.md",
+    "dcoir_skills/dcoir-session-manager/references/session_checkpoint_and_closeout_workflow.md"
+  ]
+}
