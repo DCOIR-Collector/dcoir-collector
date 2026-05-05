@@ -12,9 +12,9 @@
 - command_sha256: 3cd9119a56c1670cbd3ad53887ea4587ce83c4099f50bf6b46df450bf3b33d4c
 - artifact_name: chatgpt-exec-exec-20260505-wbs02-review-order-001
 - artifact_retention_days: 3
-- started_utc: 2026-05-05T16:27:58Z
-- finished_utc: 2026-05-05T16:27:59Z
-- report_created_utc: 2026-05-05T16:27:59Z
+- started_utc: 2026-05-05T16:30:45Z
+- finished_utc: 2026-05-05T16:30:46Z
+- report_created_utc: 2026-05-05T16:30:46Z
 
 ## Approved command preview
 
@@ -113,8 +113,8 @@ Read this report and download the artifact if needed; record evidence and clean 
 
 ## GitHub Actions run
 
-- github_run_id: 25388779188
+- github_run_id: 25388958562
 - github_run_attempt: 1
-- github_sha: d18a7910383dfc416507bf9ad3824946d1c857a6
+- github_sha: bbb2b0e903e7d214336301c785d123f1a0fd42b9
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25388779188
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25388958562
