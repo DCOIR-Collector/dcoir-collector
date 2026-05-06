@@ -1,12 +1,14 @@
-$base = [Environment]::GetEnvironmentVariable('DCOIR_AIRTABLE_BASE_ID','Machine')
-$token = [Environment]::GetEnvironmentVariable('DCOIR_AIRTABLE_TOKEN','Machine')
+$ErrorActionPreference = 'Stop'
 $repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
 if ([string]::IsNullOrWhiteSpace($repo)) { $repo = (Get-Location).Path }
-if ([string]::IsNullOrWhiteSpace($base)) { throw 'missing base id' }
-if ([string]::IsNullOrWhiteSpace($token)) { throw 'missing token' }
-$csv = Join-Path $repo 'chatgpt_staging/exec_payloads/wbs09_scope.csv'
-if (-not (Test-Path -LiteralPath $csv -PathType Leaf)) { throw 'missing csv payload' }
-$rows = Import-Csv -LiteralPath $csv
-$headers = @{ Authorization = "Bearer $token"; 'Content-Type' = 'application/json' }
-$meta = Invoke-RestMethod -Method Get -Uri "https://api.airtable.com/v0/meta/bases/$base/tables" -Headers $headers
-Write-Host "payload rows: $($rows.Count); tables: $($meta.tables.Count)"
+$target = Join-Path $repo 'operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsExecHarness.ps1'
+$text = Get-Content -LiteralPath $target -Raw -Encoding UTF8
+$old = "-CommandSanitized ''"
+$new = "-CommandSanitized '[harness failed before command resolution]'"
+if ($text -notlike "*$old*") {
+  if ($text -like "*$new*") { Write-Host 'already patched'; exit 0 }
+  throw 'pattern not found'
+}
+$text.Replace($old, $new) | Set-Content -LiteralPath $target -Encoding UTF8
+git add -- 'operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsExecHarness.ps1'
+Write-Host 'staged harness patch'
