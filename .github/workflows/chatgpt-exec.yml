@@ -32,7 +32,6 @@ jobs:
       DCOIR_GITHUB_CL_TOKEN: ${{ secrets.DCOIR_GITHUB_CL_TOKEN }}
       DCOIR_OPENAI_API_KEY: ${{ secrets.DCOIR_OPENAI_API_KEY }}
       DCOIR_OPENAI_PROJECT_ID: ${{ secrets.DCOIR_OPENAI_PROJECT_ID }}
-      DCOIR_SUPABASE_POSTGRES_URL: ${{ secrets.DCOIR_SUPABASE_POSTGRES_URL }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - name: Checkout repository
@@ -76,7 +75,7 @@ jobs:
             -RepoRoot $env:GITHUB_WORKSPACE `
             -OutputRoot $outRoot `
             -JsonResultPath $resultJson `
-            -SecretEnvNames @('DCOIR_AIRTABLE_TOKEN','DCOIR_AIRTABLE_BASE_ID','DCOIR_GITHUB_FG_TOKEN','DCOIR_GITHUB_CL_TOKEN','DCOIR_OPENAI_API_KEY','DCOIR_OPENAI_PROJECT_ID','DCOIR_SUPABASE_POSTGRES_URL','OPENAI_API_KEY')
+            -SecretEnvNames @('DCOIR_AIRTABLE_TOKEN','DCOIR_AIRTABLE_BASE_ID','DCOIR_GITHUB_FG_TOKEN','DCOIR_GITHUB_CL_TOKEN','DCOIR_OPENAI_API_KEY','DCOIR_OPENAI_PROJECT_ID','OPENAI_API_KEY')
 
       - name: Commit exec status report and cleanup request
         if: steps.request.outputs.skip != 'true'
