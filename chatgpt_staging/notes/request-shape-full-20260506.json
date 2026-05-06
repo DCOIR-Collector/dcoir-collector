@@ -1,0 +1,9 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "wbs09-meta-smoke",
+  "operator_approved": true,
+  "approved_command_preview": "Run approved repo script by path.",
+  "script_path": "chatgpt_staging/exec_scripts/probe_exec_write_20260506.ps1",
+  "shell": "powershell_5",
+  "cleanup_request_after_run": true
+}
