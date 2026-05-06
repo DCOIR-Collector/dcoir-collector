@@ -1,0 +1,126 @@
+# ChatGPT workflow report
+
+## Result
+
+- workflow: chatgpt-report-retention-cleanup
+- report_scope: retention-cleanup
+- result: success
+- mode: delete
+- success_retention_days: 1
+- failure_retention_days: 7
+- cleanup_retention_days: 2
+- keep_latest_per_workflow: true
+- workflow_filter: 
+- candidate_count: 36
+- retained_count: 64
+- github_run_id: 25464159404
+- github_sha: 875adf32bcc09c88ecd2a2a480237404f3e4b135
+- report_created_utc: 2026-05-06T22:15:06Z
+
+## Reports selected for cleanup
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6c-retired-skill-source-cleanup-003/workflow_report.md` | result=success | age_days=2.4 | reason=age 2.4d >= 2d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6g-readme-retired-skill-cleanup-005/workflow_report.md` | result=success | age_days=2.5 | reason=age 2.5d >= 2d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6l-wave-c-source-cleanup-001/workflow_report.md` | result=success | age_days=2.3 | reason=age 2.3d >= 2d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260505-chatgpt-in-pass-001/workflow_report.md` | result=success | age_days=1.4 | reason=age 1.4d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260505-core-skill-parity-sync-001/workflow_report.md` | result=success | age_days=1.5 | reason=age 1.5d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260505-core-skill-parity-sync-002/workflow_report.md` | result=success | age_days=1.5 | reason=age 1.5d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260505-core-skill-parity-sync-003/workflow_report.md` | result=success | age_days=1.5 | reason=age 1.5d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260505-session-manager-parity-test-001/workflow_report.md` | result=success | age_days=1.5 | reason=age 1.5d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260505-skill-parity-refresh-001/workflow_report.md` | result=success | age_days=1.5 | reason=age 1.5d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs01-authority-map-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs01-closeout-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs01-controlled-vocab-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs01-enforcement-inventory-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs01-evidence-gaps-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs01-free-text-inventory-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs01-id-field-inventory-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs01-lifecycle-inventory-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs01-link-map-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs02-closeout-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs02-dependency-risk-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs02-inputs-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs02-purpose-relevance-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs02-review-order-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs02-template-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs03-closeout-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs03-free-text-fields-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs03-note-format-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs03-risky-free-text-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs03-structured-fields-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs03-text-to-structure-001/workflow_report.md` | result=success | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs04-dedupe-signatures-005/workflow_report.md` | result=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs04-id-components-002/workflow_report.md` | result=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs04-slug-sources-003/workflow_report.md` | result=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs04-uniqueness-suffix-004/workflow_report.md` | result=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/25372966235/workflow_report.md` | result=success | age_days=1.5 | reason=age 1.5d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/25373702215/workflow_report.md` | result=success | age_days=1.4 | reason=age 1.4d >= 1d
+
+## Reports retained or skipped
+- `chatgpt_staging/status_reports/chatgpt-apply-in/airtable-export-policy-20260503/workflow_report.md` | result=failure | age_days=3.4 | reason=age 3.4d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6-skill-preservation-001/workflow_report.md` | result=failure | age_days=2.6 | reason=age 2.6d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6c-retired-skill-source-cleanup-001/workflow_report.md` | result=failure | age_days=2.4 | reason=age 2.4d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6c-retired-skill-source-cleanup-002/workflow_report.md` | result=failure | age_days=2.4 | reason=age 2.4d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6d-session-manager-source-create-001/workflow_report.md` | result=failure | age_days=2.3 | reason=age 2.3d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6d-session-manager-source-create-002/workflow_report.md` | result=failure | age_days=2.3 | reason=age 2.3d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6e-source-authority-delete-001/workflow_report.md` | result=failure | age_days=2.3 | reason=age 2.3d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6g-apply-in-delete-support-001/workflow_report.md` | result=failure | age_days=2.5 | reason=age 2.5d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6g-readme-retired-skill-cleanup-004/workflow_report.md` | result=failure | age_days=2.5 | reason=age 2.5d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6g-retired-skill-file-cleanup-002/workflow_report.md` | result=failure | age_days=2.5 | reason=age 2.5d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6g-retired-skill-source-cleanup-001/workflow_report.md` | result=failure | age_days=2.5 | reason=age 2.5d < 7d
+- `chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260505-chatgpt-in-fail-001/workflow_report.md` | result=failure | age_days=1.4 | reason=age 1.4d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/dlt_import_20260506_1300/workflow_report.md` | result=failure | age_days=0.3 | reason=age 0.3d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-cleanup-plan-scaffold-seed-001/workflow_report.md` | result=success | age_days=1.4 | reason=age 1.4d < 2d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-cleanup-plan-wbs-seed-002/workflow_report.md` | result=failure | age_days=1.4 | reason=age 1.4d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-cleanup-plan-wbs-seed-003/workflow_report.md` | result=failure | age_days=1.4 | reason=age 1.4d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-cleanup-plan-wbs-seed-004/workflow_report.md` | result=success | age_days=1.4 | reason=age 1.4d < 2d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-cleanup-wbs-all-decompose-002/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d < 2d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-cleanup-wbs01-decompose-001/workflow_report.md` | result=success | age_days=1.4 | reason=age 1.4d < 2d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-cleanup-wbs01-discovery-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d < 2d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-cleanup-wbs01-inventory-report-001/workflow_report.md` | result=success | age_days=1.3 | reason=age 1.3d < 2d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs-evidence-repair-002/workflow_report.md` | result=success | age_days=0.8 | reason=age 0.8d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260505-wbs04-id-inventory-001/workflow_report.md` | result=failure | age_days=1.1 | reason=age 1.1d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-api-key-readonly-001/workflow_report.md` | result=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-cleanup-plan-readback-001/workflow_report.md` | result=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-cleanup-plan-readback-002/workflow_report.md` | result=failure | age_days=0.4 | reason=age 0.4d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-cleanup-plan-readback-003/workflow_report.md` | result=success | age_days=0.4 | reason=age 0.4d < 2d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-full-preservation-002/workflow_report.md` | result=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-governance-read-001/workflow_report.md` | result=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-insert-delete-smoke-001/workflow_report.md` | result=failure | age_days=0.2 | reason=age 0.2d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-insert-only-001/workflow_report.md` | result=failure | age_days=0.2 | reason=age 0.2d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-insert-only-002/workflow_report.md` | result=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-insert-smoke-001/workflow_report.md` | result=failure | age_days=0.2 | reason=age 0.2d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-return-row-001/workflow_report.md` | result=failure | age_days=0.2 | reason=age 0.2d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-return-row-002/workflow_report.md` | result=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-supabase-pivot-state-001/workflow_report.md` | result=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-temp-record-cleanup-001/workflow_report.md` | result=failure | age_days=0.2 | reason=age 0.2d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-airtable-token-diagnostic-001/workflow_report.md` | result=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-chatgpt-exec-smoke-001/workflow_report.md` | result=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-data-transform-scope-002/workflow_report.md` | result=failure | age_days=0.8 | reason=age 0.8d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-preservation-scaffold-discovery-001/workflow_report.md` | result=failure | age_days=0.4 | reason=age 0.4d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-reanchor-records-api-001/workflow_report.md` | result=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-reanchor-records-api-002/workflow_report.md` | result=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-reanchor-records-api-004/workflow_report.md` | result=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-records-api-list-variants-003/workflow_report.md` | result=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-session-closeout-001/workflow_report.md` | result=failure | age_days=0.6 | reason=age 0.6d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-session-closeout-records-api-001/workflow_report.md` | result=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260506-test-noop-001/workflow_report.md` | result=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/probe-safe-script-ref-20260506-2/workflow_report.md` | result=success | age_days=0.7 | reason=age 0.7d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/probe-safe-script-ref-20260506-4/workflow_report.md` | result=success | age_days=0.7 | reason=age 0.7d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/probe-safe-script-ref-20260506-5/workflow_report.md` | result=success | age_days=0.6 | reason=age 0.6d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/wbs09-env-smoke/workflow_report.md` | result=success | age_days=0.7 | reason=age 0.7d < 1d
+- `chatgpt_staging/status_reports/chatgpt-exec/wbs09-payload-smoke/workflow_report.md` | result=success | age_days=0.7 | reason=age 0.7d < 1d
+- `chatgpt_staging/status_reports/chatgpt-staging-cleanup/cleanup_failure_25259970239/workflow_report.md` | result=failure | age_days=4.1 | reason=age 4.1d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/25437298673/workflow_report.md` | result=success | age_days=0.4 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-reporting-validation/25261773354/workflow_report.md` | result=failure | age_days=4.1 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/manual-collector-runtime-package-build/25440024974/workflow_report.md` | result=success | age_days=0.3 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/manual-gemini-bundle-build/25440050845/workflow_report.md` | result=success | age_days=0.3 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/refresh-skill-parity-surfaces/25328669934/workflow_report.md` | result=failure | age_days=2.3 | reason=age 2.3d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/refresh-skill-parity-surfaces/25328933475/workflow_report.md` | result=failure | age_days=2.3 | reason=age 2.3d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/refresh-skill-parity-surfaces/25372390589/workflow_report.md` | result=success | age_days=1.5 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/scheduled-health-check/25306279467/workflow_report.md` | result=success | age_days=2.6 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/retention-cleanup/retention-cleanup-25346594991/workflow_report.md` | result=success | age_days=2.0 | reason=age 2.0d < 2d
+- `chatgpt_staging/status_reports/retention-cleanup/retention-cleanup-25405397266/workflow_report.md` | result=success | age_days=1.0 | reason=age 1.0d < 2d
+
+## Next ChatGPT action
+
+Read this cleanup report, verify scoped deletion/readback when cleanup was not a dry run, then record Airtable evidence if material.
