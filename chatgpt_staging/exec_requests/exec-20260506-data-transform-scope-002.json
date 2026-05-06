@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260506-data-transform-scope-002",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-06T04:00:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "approved_command_preview": "$repo = if ($env:GITHUB_WORKSPACE) { $env:GITHUB_WORKSPACE } else { [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine') }\n$script = Join-Path $repo 'chatgpt_staging\\exec_scripts\\cleanup_data_transform_scope_001.ps1'\n& $script",
+  "command": "$repo = if ($env:GITHUB_WORKSPACE) { $env:GITHUB_WORKSPACE } else { [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine') }\n$script = Join-Path $repo 'chatgpt_staging\\exec_scripts\\cleanup_data_transform_scope_001.ps1'\n& $script"
+}
