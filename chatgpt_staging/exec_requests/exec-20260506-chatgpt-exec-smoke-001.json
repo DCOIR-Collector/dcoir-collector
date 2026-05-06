@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260506-chatgpt-exec-smoke-001",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-06T00:00:00Z",
+  "approved_command_preview": "Harmless chatgpt-exec smoke test after restoring workflow allowlist. Print static status, PowerShell version, repo path presence, and current UTC time. Do not print secrets.",
+  "command": "$ErrorActionPreference = 'Stop'\nWrite-Output 'DCOIR_CHATGPT_EXEC_SMOKE=started'\nWrite-Output ('PSVersion=' + $PSVersionTable.PSVersion.ToString())\nWrite-Output ('RepoRootExists=' + (Test-Path -LiteralPath $env:GITHUB_WORKSPACE -PathType Container))\nWrite-Output ('UtcNow=' + (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'))\nWrite-Output 'DCOIR_CHATGPT_EXEC_SMOKE=success'",
+  "shell": "powershell_5",
+  "timeout_seconds": 120,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true
+}
