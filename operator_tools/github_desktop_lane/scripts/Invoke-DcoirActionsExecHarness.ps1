@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)][string]$RequestPath,
     [string]$RepoRoot = (Get-Location).Path,
@@ -82,7 +82,7 @@ catch {
     $errorText | Out-File -FilePath (Join-Path $artifactDir 'harness_error.sanitized.txt') -Encoding utf8
 
     $reportPath = Join-Path $RepoRoot (Join-Path 'chatgpt_staging/status_reports/chatgpt-exec' (Join-Path $safeId 'workflow_report.md'))
-    Write-DcoirActionsExecReport -ReportPath $reportPath -RequestId $safeId -Result 'failure' -Shell 'unknown' -ExitCode 1 -TimedOut $false -CommandSha256 'unavailable' -ApprovedPreview 'Harness failed before approved command execution.' -CommandSanitized '' -ErrorText $errorText -ArtifactRetentionDays 3
+    Write-DcoirActionsExecReport -ReportPath $reportPath -RequestId $safeId -Result 'failure' -Shell 'unknown' -ExitCode 1 -TimedOut $false -CommandSha256 'unavailable' -ApprovedPreview 'Harness failed before approved command execution.' -CommandSanitized '[harness failed before command resolution]' -ErrorText $errorText -ArtifactRetentionDays 3
 
     if ($JsonResultPath) {
         [ordered]@{
@@ -108,3 +108,4 @@ catch {
     Write-GithubEnvValue -Name 'DCOIR_EXEC_CLEANUP_REQUEST_AFTER_RUN' -Value 'false'
     exit 0
 }
+
