@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260506-airtable-token-diagnostic-001",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-06T00:00:00Z",
+  "approved_command_preview": "Read-only Airtable token diagnostic via chatgpt-exec. Test DCOIR_AIRTABLE_BASE_ID and DCOIR_AIRTABLE_TOKEN against known table IDs using Records API with maxRecords=1. Print only sanitized HTTP status and table labels, no secrets.",
+  "command": "$ErrorActionPreference = 'Stop'\nWrite-Output 'DCOIR_AIRTABLE_TOKEN_DIAG=started'\nif ([string]::IsNullOrWhiteSpace($env:DCOIR_AIRTABLE_BASE_ID)) { throw 'Missing DCOIR_AIRTABLE_BASE_ID' }\nif ([string]::IsNullOrWhiteSpace($env:DCOIR_AIRTABLE_TOKEN)) { throw 'Missing DCOIR_AIRTABLE_TOKEN' }\n$baseId = $env:DCOIR_AIRTABLE_BASE_ID\n$headers = @{ Authorization = ('Bearer ' + $env:DCOIR_AIRTABLE_TOKEN); 'Content-Type' = 'application/json' }\n$tests = @(\n  @{label='Session Checkpoints'; id='tblTe75HKZOJaPDGn'},\n  @{label='DCOIR Cleanup WBS'; id='tblRxTmpW0VunQlUK'},\n  @{label='Validation Evidence'; id='tblrPFQH2uZEYBYE9'},\n  @{label='Local Configuration Registry'; id='tblcJxCoYGpEda0FM'}\n)\nforeach ($t in $tests) {\n  $url = \"https://api.airtable.com/v0/$baseId/$($t.id)?maxRecords=1\"\n  try {\n    $r = Invoke-RestMethod -Method Get -Uri $url -Headers $headers\n    $count = 0\n    if ($null -ne $r.records) { $count = $r.records.Count }\n    Write-Output (\"TABLE_TEST label={0}; table_id={1}; result=success; records_returned={2}\" -f $t.label, $t.id, $count)\n  } catch {\n    $status = 'unknown'\n    try { $status = [int]$_.Exception.Response.StatusCode } catch {}\n    $body = ''\n    try {\n      $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())\n      $body = $reader.ReadToEnd()\n    } catch {}\n    if ($body.Length -gt 300) { $body = $body.Substring(0,300) }\n    $body = $body -replace $env:DCOIR_AIRTABLE_TOKEN, '[REDACTED_TOKEN]'\n    Write-Output (\"TABLE_TEST label={0}; table_id={1}; result=failure; http_status={2}; body={3}\" -f $t.label, $t.id, $status, $body)\n  }\n}\nWrite-Output 'DCOIR_AIRTABLE_TOKEN_DIAG=complete'",
+  "shell": "powershell_5",
+  "timeout_seconds": 180,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true
+}
