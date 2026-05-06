@@ -20,8 +20,40 @@ function Write-GithubEnvValue {
     "$Name=$Value" | Out-File -FilePath $GithubEnvPath -Encoding utf8 -Append
 }
 
+function Resolve-DcoirExecRequestPath {
+    param([Parameter(Mandatory=$true)][string]$OriginalRequestPath)
+
+    $raw = Get-Content -LiteralPath $OriginalRequestPath -Raw -Encoding UTF8
+    $json = $raw | ConvertFrom-Json
+    $hasCommand = ($json.PSObject.Properties.Name -contains 'command') -and -not [string]::IsNullOrWhiteSpace([string]$json.command)
+    $hasScriptPath = ($json.PSObject.Properties.Name -contains 'script_path') -and -not [string]::IsNullOrWhiteSpace([string]$json.script_path)
+    if ($hasCommand -or -not $hasScriptPath) { return $OriginalRequestPath }
+
+    $scriptPath = [string]$json.script_path
+    if ($scriptPath -notmatch '^chatgpt_staging/exec_scripts/[A-Za-z0-9._/-]+\.ps1$') {
+        throw "script_path must point to chatgpt_staging/exec_scripts/<name>.ps1. Got: $scriptPath"
+    }
+    $fullScriptPath = Join-Path $RepoRoot ($scriptPath -replace '/', '\')
+    if (-not (Test-Path -LiteralPath $fullScriptPath -PathType Leaf)) {
+        throw "script_path file not found: $scriptPath"
+    }
+
+    $json | Add-Member -NotePropertyName command -NotePropertyValue ("& '" + $fullScriptPath.Replace("'", "''") + "'") -Force
+    if (-not ($json.PSObject.Properties.Name -contains 'approved_command_preview') -or [string]::IsNullOrWhiteSpace([string]$json.approved_command_preview)) {
+        $json | Add-Member -NotePropertyName approved_command_preview -NotePropertyValue "Run approved repo script: $scriptPath" -Force
+    }
+
+    $safeName = New-DcoirActionsExecSafeName -Value ([string]$json.request_id)
+    $patchedDir = Join-Path $OutputRoot (Join-Path $safeName 'config')
+    New-Item -ItemType Directory -Force -Path $patchedDir | Out-Null
+    $patchedPath = Join-Path $patchedDir 'script_path_request.expanded.json'
+    $json | ConvertTo-Json -Depth 20 | Out-File -FilePath $patchedPath -Encoding utf8
+    return $patchedPath
+}
+
 try {
-    $result = Invoke-DcoirActionsExecRequest -RequestPath $RequestPath -RepoRoot $RepoRoot -OutputRoot $OutputRoot -SecretEnvNames $SecretEnvNames
+    $effectiveRequestPath = Resolve-DcoirExecRequestPath -OriginalRequestPath $RequestPath
+    $result = Invoke-DcoirActionsExecRequest -RequestPath $effectiveRequestPath -RepoRoot $RepoRoot -OutputRoot $OutputRoot -SecretEnvNames $SecretEnvNames
     if ($JsonResultPath) { $result | ConvertTo-Json -Depth 8 | Out-File -FilePath $JsonResultPath -Encoding utf8 }
     Write-GithubEnvValue -Name 'DCOIR_EXEC_REQUEST_ID' -Value ([string]$result.request_id)
     Write-GithubEnvValue -Name 'DCOIR_EXEC_RESULT' -Value ([string]$result.result)
