@@ -1,0 +1,10 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260506-test-noop-001",
+  "operator_approved": true,
+  "approved_command_preview": "No-op request shape smoke test.",
+  "command": "Write-Host 'noop ok'",
+  "shell": "powershell_5",
+  "timeout_seconds": 60,
+  "cleanup_request_after_run": true
+}
