@@ -12,9 +12,9 @@
 - command_sha256: c0bb71dfda2522a5a6a95eb265f72016921868c9ea4b469d7f010e542740497e
 - artifact_name: chatgpt-exec-exec-20260506-dlt-airtable-to-supabase-001
 - artifact_retention_days: 30
-- started_utc: 2026-05-06T13:05:33Z
-- finished_utc: 2026-05-06T13:06:16Z
-- report_created_utc: 2026-05-06T13:06:16Z
+- started_utc: 2026-05-06T13:07:22Z
+- finished_utc: 2026-05-06T13:08:08Z
+- report_created_utc: 2026-05-06T13:08:08Z
 
 ## Approved command preview
 
@@ -40,7 +40,7 @@ Requirement already satisfied: pip in C:\hostedtoolcache\windows\Python\3.12.10\
 Collecting pip
   Downloading pip-26.1.1-py3-none-any.whl.metadata (4.6 kB)
 Downloading pip-26.1.1-py3-none-any.whl (1.8 MB)
-   ---------------------------------------- 1.8/1.8 MB 50.0 MB/s  0:00:00
+   ---------------------------------------- 1.8/1.8 MB 14.1 MB/s  0:00:00
 Installing collected packages: pip
   Attempting uninstall: pip
     Found existing installation: pip 26.1
@@ -126,8 +126,8 @@ Read this report and download the artifact if needed; record evidence and clean 
 
 ## GitHub Actions run
 
-- github_run_id: 25437037507
+- github_run_id: 25437130073
 - github_run_attempt: 1
-- github_sha: 2b3c5b1769e5ff97feb968888b2bf25eb2b31f74
+- github_sha: ee626bfa3352fe21654bf5c10ededf2227142e56
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25437037507
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25437130073
