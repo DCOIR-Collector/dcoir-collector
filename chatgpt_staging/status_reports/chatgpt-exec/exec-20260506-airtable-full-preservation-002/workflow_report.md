@@ -12,9 +12,9 @@
 - command_sha256: 97faa89118b1acad3a5cd4ea5c279894828657d88cccb44a89c791c55ae317b3
 - artifact_name: chatgpt-exec-exec-20260506-airtable-full-preservation-002
 - artifact_retention_days: 30
-- started_utc: 2026-05-06T10:58:29Z
-- finished_utc: 2026-05-06T10:58:41Z
-- report_created_utc: 2026-05-06T10:58:41Z
+- started_utc: 2026-05-06T10:59:50Z
+- finished_utc: 2026-05-06T11:00:01Z
+- report_created_utc: 2026-05-06T11:00:01Z
 
 ## Approved command preview
 
@@ -62,56 +62,56 @@ if (Test-Path -LiteralPath $coverage -PathType Leaf) { Write-Output ('PRESERVATI
 
 ```text
 Runtime patched Dcoir.Airtable record listing to remove pageSize and use offset-only pagination.
-[2026-05-06 10:58:29] Starting DCOIR Airtable database health export.
-[2026-05-06 10:58:29] Output folder: D:\a\_temp\dcoir_chatgpt_exec\exec-20260506-airtable-full-preservation-002\downloads\dcoir_airtable_full_preservation_20260506_20260506_105829
-[2026-05-06 10:58:29] Output ZIP target: D:\a\_temp\dcoir_chatgpt_exec\exec-20260506-airtable-full-preservation-002\downloads\dcoir_airtable_full_preservation_20260506_20260506_105829.chatgpt.zip
-[2026-05-06 10:58:29] Resolved export mode: FullRecords; effective max records per table: 0
-[2026-05-06 10:58:29] Imported Dcoir.Airtable module version 2026-05-03.5.
-[2026-05-06 10:58:29] Required Machine/System environment variables are present.
-[2026-05-06 10:58:29] Fetching Airtable base schema.
-[2026-05-06 10:58:32] Selected 21 Airtable table(s).
-[2026-05-06 10:58:32] Exporting table schema: Work Items (tblgsQAVWvh8K7gIR)
-[2026-05-06 10:58:32] Exporting records: Work Items
-[2026-05-06 10:58:32] Exporting table schema: Session Checkpoints (tblTe75HKZOJaPDGn)
-[2026-05-06 10:58:32] Exporting records: Session Checkpoints
-[2026-05-06 10:58:33] Exporting table schema: Idea Inbox (tblWwBxwrjZF6JR3r)
-[2026-05-06 10:58:33] Exporting records: Idea Inbox
-[2026-05-06 10:58:33] Exporting table schema: Plans (tblBcp5FyMIfOm7Xe)
-[2026-05-06 10:58:33] Exporting records: Plans
-[2026-05-06 10:58:33] Exporting table schema: Operator Preferences (tblnxZ3eLPT3W38wl)
-[2026-05-06 10:58:33] Exporting records: Operator Preferences
-[2026-05-06 10:58:34] Exporting table schema: Validation Test Cases (tblRnMpQUomIGyFVL)
-[2026-05-06 10:58:34] Exporting records: Validation Test Cases
-[2026-05-06 10:58:35] Exporting table schema: Queue Control (tblf13aCslg6rJBah)
-[2026-05-06 10:58:35] Exporting records: Queue Control
-[2026-05-06 10:58:35] Exporting table schema: Gemini Research Reference (tblfZnARJxcMJ0yHW)
-[2026-05-06 10:58:35] Exporting records: Gemini Research Reference
-[2026-05-06 10:58:35] Exporting table schema: Governance Control Plane (tblDfSl29psxRnes1)
-[2026-05-06 10:58:35] Exporting records: Governance Control Plane
-[2026-05-06 10:58:35] Exporting table schema: Repo Surface Registry (tblzBiXp7kwTXM0ru)
-[2026-05-06 10:58:35] Exporting records: Repo Surface Registry
-[2026-05-06 10:58:36] Exporting table schema: dcoir-memory-preflight (tblcNNuKqi8IkFsSQ)
-[2026-05-06 10:58:36] Exporting records: dcoir-memory-preflight
-[2026-05-06 10:58:36] Exporting table schema: dcoir-decision-policy (tblKHVXq16Xd5I31m)
-[2026-05-06 10:58:36] Exporting records: dcoir-decision-policy
-[2026-05-06 10:58:36] Exporting table schema: dcoir-validation-orchestrator (tbls9O1B0Rs8YvTAj)
-[2026-05-06 10:58:36] Exporting records: dcoir-validation-orchestrator
-[2026-05-06 10:58:36] Exporting table schema: Delete Queue (tbl1lMz5N6n7zShO0)
-[2026-05-06 10:58:36] Exporting records: Delete Queue
-[2026-05-06 10:58:36] Exporting table schema: Validation Evidence (tblrPFQH2uZEYBYE9)
-[2026-05-06 10:58:36] Exporting records: Validation Evidence
-[2026-05-06 10:58:37] Exporting table schema: Admin Registry (tblFaJW1V2DPc9css)
-[2026-05-06 10:58:37] Exporting records: Admin Registry
-[2026-05-06 10:58:37] Exporting table schema: DCOIR Lifecycle Ledger (tblNsjkGUUIdRpHuE)
-[2026-05-06 10:58:37] Exporting records: DCOIR Lifecycle Ledger
-[2026-05-06 10:58:38] Exporting table schema: Local Configuration Registry (tblcJxCoYGpEda0FM)
-[2026-05-06 10:58:38] Exporting records: Local Configuration Registry
-[2026-05-06 10:58:38] Exporting table schema: Operator Tools Registry (tblF1SCJBHRFUhpzi)
-[2026-05-06 10:58:38] Exporting records: Operator Tools Registry
-[2026-05-06 10:58:38] Exporting table schema: DCOIR Cleanup WBS (tblRxTmpW0VunQlUK)
-[2026-05-06 10:58:38] Exporting records: DCOIR Cleanup WBS
-[2026-05-06 10:58:39] Exporting table schema: DCOIR Cleanup Scaffold Registry (tblvtcId7PiFKvfKO)
-[2026-05-06 10:58:39] Exporting records: DCOIR Cleanup Scaffold Registry
+[2026-05-06 10:59:51] Starting DCOIR Airtable database health export.
+[2026-05-06 10:59:51] Output folder: D:\a\_temp\dcoir_chatgpt_exec\exec-20260506-airtable-full-preservation-002\downloads\dcoir_airtable_full_preservation_20260506_20260506_105951
+[2026-05-06 10:59:51] Output ZIP target: D:\a\_temp\dcoir_chatgpt_exec\exec-20260506-airtable-full-preservation-002\downloads\dcoir_airtable_full_preservation_20260506_20260506_105951.chatgpt.zip
+[2026-05-06 10:59:51] Resolved export mode: FullRecords; effective max records per table: 0
+[2026-05-06 10:59:51] Imported Dcoir.Airtable module version 2026-05-03.5.
+[2026-05-06 10:59:51] Required Machine/System environment variables are present.
+[2026-05-06 10:59:51] Fetching Airtable base schema.
+[2026-05-06 10:59:52] Selected 21 Airtable table(s).
+[2026-05-06 10:59:52] Exporting table schema: Work Items (tblgsQAVWvh8K7gIR)
+[2026-05-06 10:59:52] Exporting records: Work Items
+[2026-05-06 10:59:52] Exporting table schema: Session Checkpoints (tblTe75HKZOJaPDGn)
+[2026-05-06 10:59:52] Exporting records: Session Checkpoints
+[2026-05-06 10:59:53] Exporting table schema: Idea Inbox (tblWwBxwrjZF6JR3r)
+[2026-05-06 10:59:53] Exporting records: Idea Inbox
+[2026-05-06 10:59:53] Exporting table schema: Plans (tblBcp5FyMIfOm7Xe)
+[2026-05-06 10:59:53] Exporting records: Plans
+[2026-05-06 10:59:53] Exporting table schema: Operator Preferences (tblnxZ3eLPT3W38wl)
+[2026-05-06 10:59:53] Exporting records: Operator Preferences
+[2026-05-06 10:59:54] Exporting table schema: Validation Test Cases (tblRnMpQUomIGyFVL)
+[2026-05-06 10:59:54] Exporting records: Validation Test Cases
+[2026-05-06 10:59:54] Exporting table schema: Queue Control (tblf13aCslg6rJBah)
+[2026-05-06 10:59:54] Exporting records: Queue Control
+[2026-05-06 10:59:54] Exporting table schema: Gemini Research Reference (tblfZnARJxcMJ0yHW)
+[2026-05-06 10:59:54] Exporting records: Gemini Research Reference
+[2026-05-06 10:59:55] Exporting table schema: Governance Control Plane (tblDfSl29psxRnes1)
+[2026-05-06 10:59:55] Exporting records: Governance Control Plane
+[2026-05-06 10:59:55] Exporting table schema: Repo Surface Registry (tblzBiXp7kwTXM0ru)
+[2026-05-06 10:59:55] Exporting records: Repo Surface Registry
+[2026-05-06 10:59:56] Exporting table schema: dcoir-memory-preflight (tblcNNuKqi8IkFsSQ)
+[2026-05-06 10:59:56] Exporting records: dcoir-memory-preflight
+[2026-05-06 10:59:56] Exporting table schema: dcoir-decision-policy (tblKHVXq16Xd5I31m)
+[2026-05-06 10:59:56] Exporting records: dcoir-decision-policy
+[2026-05-06 10:59:56] Exporting table schema: dcoir-validation-orchestrator (tbls9O1B0Rs8YvTAj)
+[2026-05-06 10:59:56] Exporting records: dcoir-validation-orchestrator
+[2026-05-06 10:59:56] Exporting table schema: Delete Queue (tbl1lMz5N6n7zShO0)
+[2026-05-06 10:59:56] Exporting records: Delete Queue
+[2026-05-06 10:59:56] Exporting table schema: Validation Evidence (tblrPFQH2uZEYBYE9)
+[2026-05-06 10:59:56] Exporting records: Validation Evidence
+[2026-05-06 10:59:56] Exporting table schema: Admin Registry (tblFaJW1V2DPc9css)
+[2026-05-06 10:59:56] Exporting records: Admin Registry
+[2026-05-06 10:59:57] Exporting table schema: DCOIR Lifecycle Ledger (tblNsjkGUUIdRpHuE)
+[2026-05-06 10:59:57] Exporting records: DCOIR Lifecycle Ledger
+[2026-05-06 10:59:58] Exporting table schema: Local Configuration Registry (tblcJxCoYGpEda0FM)
+[2026-05-06 10:59:58] Exporting records: Local Configuration Registry
+[2026-05-06 10:59:58] Exporting table schema: Operator Tools Registry (tblF1SCJBHRFUhpzi)
+[2026-05-06 10:59:58] Exporting records: Operator Tools Registry
+[2026-05-06 10:59:58] Exporting table schema: DCOIR Cleanup WBS (tblRxTmpW0VunQlUK)
+[2026-05-06 10:59:58] Exporting records: DCOIR Cleanup WBS
+[2026-05-06 10:59:59] Exporting table schema: DCOIR Cleanup Scaffold Registry (tblvtcId7PiFKvfKO)
+[2026-05-06 10:59:59] Exporting records: DCOIR Cleanup Scaffold Registry
 [
 [truncated in workflow report; see artifact]
 ```
@@ -136,8 +136,8 @@ Read this report and download the artifact if needed; record evidence and clean 
 
 ## GitHub Actions run
 
-- github_run_id: 25431196522
+- github_run_id: 25431266771
 - github_run_attempt: 1
-- github_sha: 2633544207225e085bade3b376eaf5f0645708e7
+- github_sha: f6d964eb0d845506bcf54c5f0c639f0af4adebcd
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25431196522
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25431266771
