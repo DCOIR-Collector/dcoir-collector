@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260506-airtable-return-row-001",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-06T00:00:00Z",
+  "approved_command_preview": "Run approved repo script chatgpt_staging/exec_scripts/airtable_return_inserted_row_001.ps1 to return/read the inserted Validation Evidence smoke-test row. Do not mutate or delete rows in this workflow.",
+  "script_path": "chatgpt_staging/exec_scripts/airtable_return_inserted_row_001.ps1",
+  "shell": "powershell_5",
+  "timeout_seconds": 180,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true
+}
