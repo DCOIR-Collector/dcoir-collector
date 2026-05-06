@@ -1,0 +1,12 @@
+wbs_key,wbs_path,parent_wbs_key,rank,title,state,gate,done_criteria,validation_notes
+CLEANUP-WBS-09,09,,9,Existing Data Standardization Execution,planned,airtable_write,All child tasks have evidence and existing rows are standardized or routed for governed follow-up,Existing rows must be brought into approved standards not only described
+CLEANUP-WBS-09-01,09.01,CLEANUP-WBS-09,1,Inventory standardization targets,planned,planning_only,Live target tables fields rows and current nonstandard values are inventoried,No write work before live target inventory
+CLEANUP-WBS-09-02,09.02,CLEANUP-WBS-09,2,Map current values to canonical standards,planned,planning_only,Each target has a canonical destination exemption or review route,Use WBS04 WBS05 and WBS06 outputs
+CLEANUP-WBS-09-03,09.03,CLEANUP-WBS-09,3,Generate dry run standardization plan,planned,planning_only,Dry run lists proposed row creations row updates replacement rows legacy markers checks and zero unclassified actions,No data write before dry run evidence
+CLEANUP-WBS-09-04,09.04,CLEANUP-WBS-09,4,Create missing canonical destinations,planned,schema_change,Approved missing options or destination fields exist and schema readback proves them,Additive schema gate only
+CLEANUP-WBS-09-05,09.05,CLEANUP-WBS-09,5,Apply safe in place value normalization,planned,airtable_write,Safe direct value updates are applied and verified by readback,Only after dry run
+CLEANUP-WBS-09-06,09.06,CLEANUP-WBS-09,6,Create corrected replacement records,planned,airtable_write,Replacement records preserve unique data and source traceability,Use corrected-copy pattern when safer than direct mutation
+CLEANUP-WBS-09-07,09.07,CLEANUP-WBS-09,7,Verify replacements and dependency migration,planned,airtable_write,Replacement rows and dependencies are verified before old rows are superseded,Dependency gate
+CLEANUP-WBS-09-08,09.08,CLEANUP-WBS-09,8,Stage superseded rows for governed follow up,planned,operator_review,Superseded rows are staged only after replacement and dependency readback,Governed row-retirement gate
+CLEANUP-WBS-09-09,09.09,CLEANUP-WBS-09,9,Mark legacy fields for later schema review,planned,schema_change,Approved legacy fields are clearly marked after data migration and schema readback,Marking is not final schema removal
+CLEANUP-WBS-09-10,09.10,CLEANUP-WBS-09,10,Post standardization verification and closeout,planned,planning_only,Verification shows data meets standards and all leftovers are routed or exempted,Closeout requires evidence artifacts
