@@ -82,6 +82,11 @@ jobs:
 
           - workflow: chatgpt-workflow-run-reporter
           - report_scope: repo-workflows
+          - report_family: completed-run-summary
+          - assistant_polling_target: false
+          - identifier_type: github_run_id
+          - do_not_use_for_live_polling: true
+          - live_heartbeat_report_scope: progressive-in-session
           - result: success
           - conclusion: success
           - source_event: workflow_dispatch
@@ -90,13 +95,17 @@ jobs:
           - reporter_sha: ${GITHUB_SHA}
           - report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 
+          ## Report routing
+
+          This is a completed-run summary under repo-workflows. Use it after completion or for reporter smoke validation. For active ChatGPT-staged jobs, poll the live-heartbeat report path by request_id instead.
+
           ## Troubleshooting context
 
-          Manual reporter smoke check: ${{ inputs.note }}
+          Manual reporter smoke check.
 
           ## Next ChatGPT action
 
-          Verify this report by GitHub readback, then allow retention cleanup to remove it after the configured success-report retention window.
+          Verify this report by GitHub readback, then allow retention cleanup to remove it after the configured success-report retention window. Do not use this completed-run summary for live polling.
           REPORT
           else
             python .github/scripts/write_workflow_report.py workflow-run \
