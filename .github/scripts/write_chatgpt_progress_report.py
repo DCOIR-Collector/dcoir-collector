@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
 """Write a ChatGPT-readable progressive workflow report.
 
-This is for in-session workflows where ChatGPT polls one stable
-workflow_report.md path while a GitHub Actions job is still running.
-Each call rewrites the same report and preserves prior phase bullets when
-possible.
+Each call appends one heartbeat to progress_history.jsonl and rewrites the
+stable workflow_report.md. The sidecar survives tools that overwrite the report.
 """
 from __future__ import annotations
 
 import argparse
 import datetime as dt
+import json
 import os
 import re
 from pathlib import Path
 
 SAFE_SEGMENT_RE = re.compile(r"[^A-Za-z0-9._-]+")
-HISTORY_MARKER = "## Phase history"
 
 
 def utc_now() -> str:
@@ -28,20 +26,20 @@ def safe_segment(value: str, default: str = "unknown") -> str:
     return text[:120]
 
 
-def read_existing_history(path: Path) -> list[str]:
+def read_history(path: Path) -> list[dict]:
     if not path.is_file():
         return []
-    text = path.read_text(encoding="utf-8", errors="replace")
-    if HISTORY_MARKER not in text:
-        return []
-    tail = text.split(HISTORY_MARKER, 1)[1]
-    lines: list[str] = []
-    for line in tail.splitlines()[1:]:
-        if line.startswith("## "):
-            break
-        if line.startswith("- "):
-            lines.append(line)
-    return lines[-50:]
+    rows: list[dict] = []
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if not line.strip():
+            continue
+        try:
+            item = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(item, dict):
+            rows.append(item)
+    return rows[-100:]
 
 
 def main() -> int:
@@ -62,14 +60,32 @@ def main() -> int:
     request_id = safe_segment(args.request_id)
     phase = safe_segment(args.phase)
     result = safe_segment(args.result)
-    report_path = Path(args.report_root) / workflow / request_id / "workflow_report.md"
-    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_dir = Path(args.report_root) / workflow / request_id
+    report_dir.mkdir(parents=True, exist_ok=True)
+    report_path = report_dir / "workflow_report.md"
+    history_path = report_dir / "progress_history.jsonl"
 
     ts = utc_now()
-    history = read_existing_history(report_path)
-    history.append(f"- {ts} | phase={phase} | result={result} | {args.message}".rstrip())
-    history = history[-50:]
+    entry = {
+        "timestamp_utc": ts,
+        "workflow": args.workflow,
+        "request_id": args.request_id,
+        "phase": phase,
+        "result": result,
+        "message": args.message,
+        "request_path": args.request_path,
+        "github_run_id": os.environ.get("GITHUB_RUN_ID", "unknown"),
+        "github_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", "unknown"),
+        "github_sha": os.environ.get("GITHUB_SHA", "unknown"),
+        "github_ref": os.environ.get("GITHUB_REF", "unknown"),
+        "artifact_name": args.artifact_name,
+        "exit_code": args.exit_code,
+        "extra": [x for x in args.extra if str(x).strip()],
+    }
+    with history_path.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(entry, sort_keys=True) + "\n")
 
+    history = read_history(history_path)
     run_id = os.environ.get("GITHUB_RUN_ID", "unknown")
     run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "unknown")
     sha = os.environ.get("GITHUB_SHA", "unknown")
@@ -94,6 +110,7 @@ def main() -> int:
         f"- github_ref: {ref}",
         f"- workflow_run_url: {run_url}",
         f"- report_updated_utc: {ts}",
+        f"- progress_history_path: {history_path.as_posix()}",
     ]
     if args.artifact_name:
         lines.append(f"- artifact_name: {args.artifact_name}")
@@ -102,20 +119,12 @@ def main() -> int:
     for item in args.extra:
         if item.strip():
             lines.append(f"- {item.strip()}")
-    lines += [
-        "",
-        "## Current status",
-        "",
-        args.message or f"Workflow is in phase `{phase}`.",
-        "",
-        HISTORY_MARKER,
-        "",
-        *history,
-        "",
-        "## Next ChatGPT action",
-        "",
-        "Poll this same report path until result is success or failure. If result is running, use the phase and phase history to decide whether to wait, inspect the GitHub run URL, or report a blocker.",
-    ]
+    lines += ["", "## Current status", "", args.message or f"Workflow is in phase `{phase}`.", "", "## Phase history", ""]
+    for item in history:
+        lines.append(
+            f"- {item.get('timestamp_utc','')} | phase={item.get('phase','')} | result={item.get('result','')} | {item.get('message','')}".rstrip()
+        )
+    lines += ["", "## Next ChatGPT action", "", "Poll this same report path until result is success or failure. If result is running, use the phase history to decide whether to wait, inspect the run URL, or report a blocker."]
     report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(report_path.as_posix())
     return 0
