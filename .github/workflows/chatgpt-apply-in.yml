@@ -104,6 +104,42 @@ jobs:
           echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
           echo "skip=false" >> "$GITHUB_OUTPUT"
 
+      - name: Write heartbeat - payload resolved
+        if: steps.payload.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-apply-in \
+            --request-id '${{ steps.payload.outputs.request_id }}' \
+            --request-path '${{ steps.payload.outputs.payload_path }}' \
+            --phase payload-resolved \
+            --result running \
+            --message 'Apply-in payload path resolved. Decode and apply validation are next.'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add chatgpt_staging/status_reports/chatgpt-apply-in/${{ steps.payload.outputs.request_id }}
+          git commit -m "Progress chatgpt-apply-in ${{ steps.payload.outputs.request_id }} payload-resolved [skip ci]" || exit 0
+          git pull --rebase origin main
+          git push
+
+      - name: Write heartbeat - running apply-in
+        if: steps.payload.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin main
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-apply-in \
+            --request-id '${{ steps.payload.outputs.request_id }}' \
+            --request-path '${{ steps.payload.outputs.payload_path }}' \
+            --phase running-apply-in \
+            --result running \
+            --message 'Apply-in decode, manifest validation, file copy/delete, and hash checks are about to run.'
+          git add chatgpt_staging/status_reports/chatgpt-apply-in/${{ steps.payload.outputs.request_id }}
+          git commit -m "Progress chatgpt-apply-in ${{ steps.payload.outputs.request_id }} running-apply-in [skip ci]" || exit 0
+          git push
+
       - name: Decode ZIP payload and apply bundle
         if: steps.payload.outputs.skip != 'true'
         shell: bash
@@ -114,13 +150,14 @@ jobs:
           WORK_DIR="chatgpt_staging/work/$REQUEST_ID"
           REPORT_DIR="chatgpt_staging/status_reports/chatgpt-apply-in/$REQUEST_ID"
           REPORT_PATH="$REPORT_DIR/workflow_report.md"
+          NATIVE_REPORT_PATH="$REPORT_DIR/native_apply_in_success_report.md"
           echo "REQUEST_ID=$REQUEST_ID" >> "$GITHUB_ENV"
           echo "PAYLOAD=$PAYLOAD" >> "$GITHUB_ENV"
           echo "WORK_DIR=$WORK_DIR" >> "$GITHUB_ENV"
           echo "REPORT_DIR=$REPORT_DIR" >> "$GITHUB_ENV"
           echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
 
-          rm -rf "$WORK_DIR" "$REPORT_DIR"
+          rm -rf "$WORK_DIR"
           mkdir -p "$WORK_DIR/extract" "$REPORT_DIR"
 
           python - "$PAYLOAD" "$WORK_DIR/payload.zip" <<'PY'
@@ -134,9 +171,7 @@ jobs:
           output_path = pathlib.Path(sys.argv[2])
           raw = payload_path.read_text(encoding="utf-8", errors="replace")
           if "# dcoir-payload-b64-parts-v1" in raw or "payload.zip.b64.parts" in raw:
-              raise SystemExit(
-                  "Unsupported staging shape. This workflow accepts exactly one base64 ZIP file: payload.zip.b64. Do not use parts/chunks."
-              )
+              raise SystemExit("Unsupported staging shape. This workflow accepts exactly one base64 ZIP file: payload.zip.b64. Do not use parts/chunks.")
           if "[... ELLIPSIZATION ...]" in raw:
               raise SystemExit("payload.zip.b64 contains a truncation marker; rebuild and stage the full base64 file")
           cleaned = "".join(raw.split())
@@ -145,9 +180,7 @@ jobs:
               shown = " ".join(repr(ch) for ch in bad_chars[:20])
               raise SystemExit(f"Invalid base64 characters in payload.zip.b64: {shown}")
           if len(cleaned) % 4:
-              raise SystemExit(
-                  f"Invalid base64 length: {len(cleaned)} characters leaves remainder {len(cleaned) % 4}; payload may be truncated"
-              )
+              raise SystemExit(f"Invalid base64 length: {len(cleaned)} characters leaves remainder {len(cleaned) % 4}; payload may be truncated")
           try:
               blob = base64.b64decode(cleaned, validate=True)
           except binascii.Error as exc:
@@ -191,15 +224,7 @@ jobs:
               raise SystemExit("allowed_roots must not include repo root or blank roots")
 
           allow_missing_current_hash = bool(manifest.get("allow_missing_current_hash", False))
-          blocked_prefixes = [
-              ".git/",
-              "chatgpt_staging/out/",
-              "chatgpt_staging/work/",
-              "chatgpt_staging/apply_reports/",
-              "chatgpt_staging/failure_reports/",
-              "chatgpt_staging/cleanup_requests/",
-              "chatgpt_staging/status_reports/",
-          ]
+          blocked_prefixes = [".git/", "chatgpt_staging/out/", "chatgpt_staging/work/", "chatgpt_staging/apply_reports/", "chatgpt_staging/failure_reports/", "chatgpt_staging/cleanup_requests/", "chatgpt_staging/status_reports/"]
           allow_workflows = bool(manifest.get("allow_workflow_changes", False))
           workflow_change_reason = str(manifest.get("workflow_change_reason", "")).strip()
           if allow_workflows and not workflow_change_reason:
@@ -246,11 +271,9 @@ jobs:
                   raise SystemExit(f"Unsafe source path: {source}")
               if not source.startswith("files/"):
                   raise SystemExit(f"Source path must live under files/: {source}")
-
               src_path = extract_root / source
               if not src_path.is_file():
                   raise SystemExit(f"Source file missing in ZIP: {src_path}")
-
               dst_path = pathlib.Path(target)
               exists = dst_path.exists()
               blob_sha = tracked_blob_sha(target)
@@ -295,12 +318,10 @@ jobs:
               expected_current_sha256 = item.get("expected_current_sha256")
               recursive = bool(item.get("recursive", False))
               require_exists = bool(item.get("require_exists", True))
-
               if not safe_rel(target):
                   raise SystemExit(f"Unsafe or disallowed delete path: {target}")
               if target.startswith(".github/workflows/"):
                   raise SystemExit("Workflow deletion is not allowed through apply-in")
-
               dst_path = pathlib.Path(target)
               tracked = tracked_paths_under(target)
               if not tracked:
@@ -308,12 +329,10 @@ jobs:
                       raise SystemExit(f"Delete target has no tracked files: {target}")
                   warnings.append(f"delete target already absent: {target}")
                   continue
-
               if dst_path.is_dir() and not recursive:
                   raise SystemExit(f"Directory delete requires recursive=true: {target}")
               if len(pathlib.PurePosixPath(target).parts) < 3 and recursive:
                   raise SystemExit(f"Recursive delete target is too broad: {target}")
-
               if expected_blob_sha:
                   blob_sha = tracked_blob_sha(target)
                   if blob_sha != expected_blob_sha:
@@ -324,13 +343,11 @@ jobs:
                   actual = sha256_file(dst_path)
                   if actual != expected_current_sha256:
                       raise SystemExit(f"Current sha256 mismatch for delete target {target}: expected {expected_current_sha256}, got {actual}")
-
               subprocess.check_call(["git", "rm", "-r", "--", target])
               deleted.append(target)
 
           if not applied and not deleted:
               raise SystemExit("No files applied or deleted")
-
           out = pathlib.Path("chatgpt_staging/apply_reports")
           out.mkdir(parents=True, exist_ok=True)
           report = out / f"{request_id}_apply_report.md"
@@ -341,7 +358,6 @@ jobs:
               lines.extend(["", "## Warnings", ""])
               lines.extend(f"- {w}" for w in warnings)
           report.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
           work = pathlib.Path("chatgpt_staging/work")
           work.mkdir(parents=True, exist_ok=True)
           (work / "applied_paths.txt").write_text("\n".join(applied) + ("\n" if applied else ""), encoding="utf-8")
@@ -356,6 +372,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$REPORT_DIR"
+          NATIVE_REPORT_PATH="$REPORT_DIR/native_apply_in_success_report.md"
           {
             echo "# ChatGPT workflow report"
             echo
@@ -390,13 +407,27 @@ jobs:
             echo "## Next ChatGPT action"
             echo
             echo "Verify the committed target changes, hash policy outcome, deletion outcome, and apply report. If readback is good, update Airtable and clean this status report when safe."
-          } > "$REPORT_PATH"
+          } > "$NATIVE_REPORT_PATH"
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-apply-in \
+            --request-id "$REQUEST_ID" \
+            --request-path "$PAYLOAD" \
+            --phase bundle-applied-before-commit \
+            --result success \
+            --message 'Apply-in bundle was applied successfully before commit. Native apply-in details are appended below.'
+          {
+            echo
+            echo "## Native apply-in success report"
+            echo
+            cat "$NATIVE_REPORT_PATH"
+          } >> "$REPORT_PATH"
 
       - name: Commit applied changes
         if: steps.payload.outputs.skip != 'true' && (github.event_name == 'push' || inputs.commit_changes)
         shell: bash
         run: |
           set -euo pipefail
+          git pull --rebase origin main
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -430,9 +461,10 @@ jobs:
           WORK_DIR="${WORK_DIR:-chatgpt_staging/work/$REQUEST_ID}"
           REPORT_DIR="chatgpt_staging/status_reports/chatgpt-apply-in/$REQUEST_ID"
           REPORT_PATH="$REPORT_DIR/workflow_report.md"
+          NATIVE_REPORT_PATH="$REPORT_DIR/native_apply_in_failure_report.md"
           ART_DIR="$RUNNER_TEMP/chatgpt_apply_in_failure/$REQUEST_ID"
           ARTIFACT_NAME="chatgpt-apply-in-failure-${GITHUB_RUN_ID}"
-          rm -rf "$REPORT_DIR" "$ART_DIR"
+          rm -rf "$ART_DIR"
           mkdir -p "$REPORT_DIR" "$ART_DIR"
 
           {
@@ -468,7 +500,21 @@ jobs:
             echo "## Next ChatGPT action"
             echo
             echo "Read this report, inspect the artifact or run log if needed, regenerate a single payload.zip.b64 with current hashes, then retry. Do not switch to parts/chunks."
-          } > "$REPORT_PATH"
+          } > "$NATIVE_REPORT_PATH"
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-apply-in \
+            --request-id "$REQUEST_ID" \
+            --request-path "$PAYLOAD" \
+            --phase apply-in-failure \
+            --result failure \
+            --artifact-name "$ARTIFACT_NAME" \
+            --message 'The apply-in workflow failed. Native failure details are appended below.'
+          {
+            echo
+            echo "## Native apply-in failure report"
+            echo
+            cat "$NATIVE_REPORT_PATH"
+          } >> "$REPORT_PATH"
 
           cp "$REPORT_PATH" "$ART_DIR/workflow_report.md"
           if [[ -f "$PAYLOAD" ]]; then sha256sum "$PAYLOAD" > "$ART_DIR/payload_b64.sha256"; fi
