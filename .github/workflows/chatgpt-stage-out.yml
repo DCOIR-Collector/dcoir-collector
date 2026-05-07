@@ -56,16 +56,6 @@ jobs:
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          echo "request_path=$REQUEST_PATH" >> "$GITHUB_OUTPUT"
-          echo "skip=false" >> "$GITHUB_OUTPUT"
-
-      - name: Validate request and create stage-out bundle
-        if: steps.request.outputs.skip != 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          REQUEST_PATH='${{ steps.request.outputs.request_path }}'
-
           if [[ "$REQUEST_PATH" != chatgpt_staging/requests/*.json ]]; then
             echo "Request path must be under chatgpt_staging/requests/ and end in .json" >&2
             exit 1
@@ -74,7 +64,6 @@ jobs:
             echo "Request file not found: $REQUEST_PATH" >&2
             exit 1
           fi
-
           REQUEST_ID="$(python -c 'import json,sys; print(json.load(open(sys.argv[1])).get("request_id", ""))' "$REQUEST_PATH")"
           if [[ -z "$REQUEST_ID" ]]; then
             echo "request_id is required" >&2
@@ -83,12 +72,60 @@ jobs:
           case "$REQUEST_ID" in
             *[!A-Za-z0-9._-]*|'') echo "Unsafe request_id: $REQUEST_ID" >&2; exit 1 ;;
           esac
+          echo "request_path=$REQUEST_PATH" >> "$GITHUB_OUTPUT"
+          echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Write heartbeat - request resolved
+        if: steps.request.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-stage-out \
+            --request-id '${{ steps.request.outputs.request_id }}' \
+            --request-path '${{ steps.request.outputs.request_path }}' \
+            --phase request-resolved \
+            --result running \
+            --message 'Stage-out request path resolved. Request validation and bundle creation are next.'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add chatgpt_staging/status_reports/chatgpt-stage-out/${{ steps.request.outputs.request_id }}
+          git commit -m "Progress chatgpt-stage-out ${{ steps.request.outputs.request_id }} request-resolved [skip ci]" || exit 0
+          git pull --rebase origin main
+          git push
+
+      - name: Write heartbeat - running stage-out
+        if: steps.request.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin main
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-stage-out \
+            --request-id '${{ steps.request.outputs.request_id }}' \
+            --request-path '${{ steps.request.outputs.request_path }}' \
+            --phase running-stage-out \
+            --result running \
+            --message 'Stage-out bundle creation is about to run. If this report remains in this phase, inspect the GitHub run URL for runtime progress.'
+          git add chatgpt_staging/status_reports/chatgpt-stage-out/${{ steps.request.outputs.request_id }}
+          git commit -m "Progress chatgpt-stage-out ${{ steps.request.outputs.request_id }} running-stage-out [skip ci]" || exit 0
+          git push
+
+      - name: Validate request and create stage-out bundle
+        if: steps.request.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST_PATH='${{ steps.request.outputs.request_path }}'
+          REQUEST_ID='${{ steps.request.outputs.request_id }}'
 
           OUT_DIR="chatgpt_staging/out/$REQUEST_ID"
           WORK_DIR="chatgpt_staging/work/$REQUEST_ID"
           REPORT_DIR="chatgpt_staging/status_reports/chatgpt-stage-out/$REQUEST_ID"
           REPORT_PATH="$REPORT_DIR/workflow_report.md"
-          rm -rf "$OUT_DIR" "$WORK_DIR" "$REPORT_DIR"
+          NATIVE_REPORT_PATH="$REPORT_DIR/native_stage_out_report.md"
+          rm -rf "$OUT_DIR" "$WORK_DIR"
           mkdir -p "$OUT_DIR/files" "$OUT_DIR/chunks" "$WORK_DIR" "$REPORT_DIR"
 
           python - "$REQUEST_PATH" "$OUT_DIR" <<'PY'
@@ -215,7 +252,21 @@ jobs:
             echo "## Next ChatGPT action"
             echo
             echo "Read manifest.md/manifest.json and staged_files.zip or chunks under $OUT_DIR. Record evidence, then request cleanup when safe."
-          } > "$REPORT_PATH"
+          } > "$NATIVE_REPORT_PATH"
+
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-stage-out \
+            --request-id "$REQUEST_ID" \
+            --request-path "$REQUEST_PATH" \
+            --phase bundle-created \
+            --result success \
+            --message 'Stage-out bundle was created successfully. Native stage-out output details are appended below.'
+          {
+            echo
+            echo "## Native stage-out report"
+            echo
+            cat "$NATIVE_REPORT_PATH"
+          } >> "$REPORT_PATH"
 
           echo "OUT_DIR=$OUT_DIR" >> "$GITHUB_ENV"
           echo "REQUEST_PATH=$REQUEST_PATH" >> "$GITHUB_ENV"
@@ -236,6 +287,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git pull --rebase origin main
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$OUT_DIR" "$REPORT_DIR"
@@ -249,15 +301,13 @@ jobs:
         run: |
           set -euo pipefail
           REQUEST_PATH='${{ steps.request.outputs.request_path }}'
-          REQUEST_ID="unknown"
-          if [[ -f "$REQUEST_PATH" ]]; then
-            REQUEST_ID="$(python -c 'import json,sys; print(json.load(open(sys.argv[1])).get("request_id", "unknown"))' "$REQUEST_PATH" || echo unknown)"
-          fi
+          REQUEST_ID='${{ steps.request.outputs.request_id }}'
           case "$REQUEST_ID" in
             *[!A-Za-z0-9._-]*|'') REQUEST_ID="unsafe_or_unknown" ;;
           esac
           REPORT_DIR="chatgpt_staging/status_reports/chatgpt-stage-out/$REQUEST_ID"
           REPORT_PATH="$REPORT_DIR/workflow_report.md"
+          NATIVE_REPORT_PATH="$REPORT_DIR/native_stage_out_failure_report.md"
           mkdir -p "$REPORT_DIR"
           {
             echo "# ChatGPT workflow report"
@@ -285,7 +335,20 @@ jobs:
             echo "## Next ChatGPT action"
             echo
             echo "Read this report, inspect the run log if needed, update Airtable with the failure phase, then repair or regenerate the request."
-          } > "$REPORT_PATH"
+          } > "$NATIVE_REPORT_PATH"
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-stage-out \
+            --request-id "$REQUEST_ID" \
+            --request-path "$REQUEST_PATH" \
+            --phase stage-out-failure \
+            --result failure \
+            --message 'The stage-out workflow failed. Native failure details are appended below.'
+          {
+            echo
+            echo "## Native stage-out failure report"
+            echo
+            cat "$NATIVE_REPORT_PATH"
+          } >> "$REPORT_PATH"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$REPORT_DIR"
