@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-07T07:57:31Z",
+  "generated_at_utc": "2026-05-07T19:10:38Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -251,17 +251,17 @@
     },
     "dcoir-memory-preflight": {
       "source_root": "dcoir-memory-preflight",
-      "source_tree_hash": "0bf93573632c3760e4a52bbc0890a93772922d5f04388f0a8acf31d0aa90894f",
+      "source_tree_hash": "da9c46c8bc0e705a095248cc47f14f0aa67c09ccc6de0ee31360fb2dd4828826",
       "release_zip_name": "dcoir-memory-preflight.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 11,
-      "total_bytes": 34858,
+      "file_count": 15,
+      "total_bytes": 55301,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "d737a794c63145b7fffa5186e58a02059d7648f62ec82e116cd603657e57dfe8",
-          "size_bytes": 15190
+          "sha256": "24ac053e7539ccebd2e59f1b5861392491b0f704df9d68a3dc1f5e7713e077a7",
+          "size_bytes": 19978
         },
         {
           "path": "agents/openai.yaml",
@@ -300,18 +300,38 @@
         },
         {
           "path": "references/preflight_task_families.md",
-          "sha256": "1ce903b89599582f19eb9624c76ce1b650d9533d6be33331053c36cb3d31adb7",
-          "size_bytes": 1566
+          "sha256": "223ec6c3fcea538cc4d6c771e29c765cf35422fa7aefbcf11e969f9d6d031833",
+          "size_bytes": 2138
         },
         {
           "path": "references/session_buffer_flush_triggers.md",
-          "sha256": "2434194ba9c8b0da39d0ff65093f9cf96a0f08a465fad1314a5607bbaa3d79d1",
-          "size_bytes": 1416
+          "sha256": "5f93e5e39440b04d95dead854ebdc5c6e8dac905aff45f97d2063cd61371be6c",
+          "size_bytes": 1761
+        },
+        {
+          "path": "references/session_checkpoint_and_closeout_workflow.md",
+          "sha256": "6aaa05ca47df21dc77d3bfd94d454120a869ca4257bc39ca365524f23562a352",
+          "size_bytes": 2786
         },
         {
           "path": "references/task_time_skill_routing.md",
-          "sha256": "a9c046dda621139423804e521dcfc17e592d8aa2a02126c764e53ab51532d80b",
-          "size_bytes": 1610
+          "sha256": "a2cea50f2fbf13ac67cf0fa2688d69226ca73dbe8317cf2cf9082ddc62357c5f",
+          "size_bytes": 2199
+        },
+        {
+          "path": "scripts/build_checkpoint_payload.py",
+          "sha256": "5f092e6e93a1eee2e172f545eb5d994619fec45a8e17784c3abc4583663c1d7b",
+          "size_bytes": 5912
+        },
+        {
+          "path": "scripts/validate_cache_contract.py",
+          "sha256": "60c7dcc121c5834a641a712e4000b11d4f6674cd1d724e433b792adf081863c9",
+          "size_bytes": 3384
+        },
+        {
+          "path": "scripts/verify_memory_preflight_skill.py",
+          "sha256": "6fe32c51a90f8848cba64cf1f345ac412689e8048dc1e706ed59ffd7b2c974de",
+          "size_bytes": 2067
         }
       ]
     },
@@ -409,17 +429,17 @@
     },
     "dcoir-validation-orchestrator": {
       "source_root": "dcoir-validation-orchestrator",
-      "source_tree_hash": "edbf3feee460c9de224c624807a756983249c821180b8b640ff472ac70df132c",
+      "source_tree_hash": "88806a832dc82d0322147776c46293cf2d17c74ae586e03b1e45ae3b7739348f",
       "release_zip_name": "dcoir-validation-orchestrator.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 10,
-      "total_bytes": 36484,
+      "file_count": 12,
+      "total_bytes": 46009,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "6f053d8b033fd7338c1cf4b06b431c2a351177a3a4d1a0dd6c9b7e79172d5ea0",
-          "size_bytes": 14131
+          "sha256": "67ee0bb50d42a87d3e7de9e118db772df3a73252c3ebebc5541eeb9cf1227200",
+          "size_bytes": 15490
         },
         {
           "path": "agents/openai.yaml",
@@ -447,6 +467,11 @@
           "size_bytes": 4441
         },
         {
+          "path": "references/airtable_write_gate.md",
+          "sha256": "25b07d9c7b122b4315e5d454d7fcee082f3b27899a95233f3b34ba865163345d",
+          "size_bytes": 1921
+        },
+        {
           "path": "references/task_time_validation_gate.md",
           "sha256": "90c2e26200ecc4df5625b8ee30c0d99ad58e87460926af6e3c052f8c857d7e51",
           "size_bytes": 2237
@@ -460,6 +485,11 @@
           "path": "scripts/emit_validation_plan.py",
           "sha256": "a4e319d7c96547ee3f0c25dfe931ab230664e8eb71d8daedc2f4a5f2bd4d642d",
           "size_bytes": 3398
+        },
+        {
+          "path": "scripts/evaluate_write_gate.py",
+          "sha256": "70ba32afeef506bef9274a72a6a02137fee092a2530065fbf4a89ab97248c7a8",
+          "size_bytes": 6245
         },
         {
           "path": "scripts/render_validation_memory.py",
