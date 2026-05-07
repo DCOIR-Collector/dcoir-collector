@@ -1,7 +1,7 @@
 # DCOIR Skill Parity Summary
 
 - Project: AFRICOM_SOC_IR / DCOIR
-- Generated at UTC: 2026-05-05T10:59:20Z
+- Generated at UTC: 2026-05-07T07:57:31Z
 - Baseline origin: repo_source
 - Skill count: 8
 
@@ -11,7 +11,7 @@
 | `dcoir-decision-policy` | verified | 17 | 83603 | `8243ffc5723dc94538c0e9e68a443a5ef6b0c43378e62b12fde0a957902aa91e` |
 | `dcoir-github-desktop-lane-advisor` | verified | 7 | 23503 | `d777db78060d8b5b5b7981333a883a66ddebae8c6b72a56bab00b0b93e354371` |
 | `dcoir-local-config-registry-maintainer` | verified | 7 | 26078 | `35197f27e57a0786d560c3587c23df391394a51fdea1f7ebd1430bdb5aed1c93` |
-| `dcoir-memory-preflight` | verified | 11 | 32954 | `872abe3853e151ede482643909a2277981fe1e3e8674d4ebcff2ed70a2bc67ca` |
+| `dcoir-memory-preflight` | verified | 11 | 34858 | `0bf93573632c3760e4a52bbc0890a93772922d5f04388f0a8acf31d0aa90894f` |
 | `dcoir-repo-packager` | verified | 9 | 44307 | `cd430416cf478ed92bc9b52847e0c88eb4c074e14eb82f75ca8659395079bfba` |
 | `dcoir-session-manager` | verified | 5 | 17779 | `3438456cdc0aa55b3953685bbd1f80e85c1dbe292bdc3e70752c3f50091a141c` |
 | `dcoir-validation-orchestrator` | verified | 10 | 36484 | `edbf3feee460c9de224c624807a756983249c821180b8b640ff472ac70df132c` |

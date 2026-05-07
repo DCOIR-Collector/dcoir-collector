@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-05T10:59:20Z",
+  "generated_at_utc": "2026-05-07T07:57:31Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -251,12 +251,12 @@
     },
     "dcoir-memory-preflight": {
       "source_root": "dcoir-memory-preflight",
-      "source_tree_hash": "872abe3853e151ede482643909a2277981fe1e3e8674d4ebcff2ed70a2bc67ca",
+      "source_tree_hash": "0bf93573632c3760e4a52bbc0890a93772922d5f04388f0a8acf31d0aa90894f",
       "release_zip_name": "dcoir-memory-preflight.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 11,
-      "total_bytes": 32954,
+      "total_bytes": 34858,
       "files": [
         {
           "path": "SKILL.md",
@@ -265,8 +265,8 @@
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "e5e97e75c7076793addee2bc5976c54960ffc469b7b0b8a80f6d923de04325e9",
-          "size_bytes": 299
+          "sha256": "7e281ab92301e8ec445f7ac36e4adcbf418cefd7e0f0f7b73b250c638dc12134",
+          "size_bytes": 308
         },
         {
           "path": "assets/icon.svg",
@@ -275,8 +275,8 @@
         },
         {
           "path": "references/airtable_cache_contract.md",
-          "sha256": "5ddba5f0a6bc1d9d2b108aa711e2e3f2f9ceb1042307569dc052b0f4f0a98213",
-          "size_bytes": 3896
+          "sha256": "fe66438233df104772085853327572493fc02058b0973af283cf9fad994a240d",
+          "size_bytes": 5791
         },
         {
           "path": "references/airtable_memory_workflow.md",
