@@ -1,8 +1,8 @@
 param(
   [Parameter(Mandatory=$true)][string]$CommitMessage,
+  [Parameter(Mandatory=$true)][string[]]$Paths,
   [int]$MaxAttempts = 5,
-  [switch]$RequirePush,
-  [Parameter(Mandatory=$true, ValueFromRemainingArguments=$true)][string[]]$Paths
+  [switch]$RequirePush
 )
 
 $ErrorActionPreference = 'Continue'
@@ -10,8 +10,17 @@ $ErrorActionPreference = 'Continue'
 git config user.name "github-actions[bot]"
 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+$ExpandedPaths = @()
 foreach ($path in $Paths) {
   if ([string]::IsNullOrWhiteSpace($path)) { continue }
+  foreach ($item in ($path -split '\|')) {
+    if (-not [string]::IsNullOrWhiteSpace($item)) {
+      $ExpandedPaths += $item
+    }
+  }
+}
+
+foreach ($path in $ExpandedPaths) {
   git add -- $path 2>$null
 }
 
