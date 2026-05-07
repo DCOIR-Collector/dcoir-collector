@@ -10,7 +10,7 @@
 - poll_until_result: success_or_failure
 - do_not_use_repo_workflows_for_live_polling: true
 - result: running
-- phase: request-resolved
+- phase: running-stage-out
 - request_id: stageout-clean-helper-smoke-003
 - request_path: chatgpt_staging/requests/stageout-clean-helper-smoke-003.json
 - github_run_id: 25514140072
@@ -18,7 +18,7 @@
 - github_sha: a1ea296cc8217c3de5df7fbe4a525ad64b2ab5a3
 - github_ref: refs/heads/main
 - workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25514140072
-- report_updated_utc: 2026-05-07T18:20:48Z
+- report_updated_utc: 2026-05-07T18:20:53Z
 - progress_history_path: chatgpt_staging/status_reports/chatgpt-stage-out/stageout-clean-helper-smoke-003/progress_history.jsonl
 
 ## Report routing
@@ -27,11 +27,12 @@ This is the live heartbeat report for an active ChatGPT-staged job. Poll this ex
 
 ## Current status
 
-Stage-out request path resolved. Request validation and bundle creation are next.
+Stage-out bundle creation is about to run. If this report remains in this phase, inspect the GitHub run URL for runtime progress.
 
 ## Phase history
 
 - 2026-05-07T18:20:48Z | phase=request-resolved | result=running | Stage-out request path resolved. Request validation and bundle creation are next.
+- 2026-05-07T18:20:53Z | phase=running-stage-out | result=running | Stage-out bundle creation is about to run. If this report remains in this phase, inspect the GitHub run URL for runtime progress.
 
 ## Next ChatGPT action
 
