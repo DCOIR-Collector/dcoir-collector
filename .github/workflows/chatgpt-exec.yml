@@ -39,70 +39,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prepare resilient report push helper
+      - name: Verify report push helper
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          @'
-          param(
-            [Parameter(Mandatory=$true)][string]$CommitMessage,
-            [Parameter(Mandatory=$true)][string[]]$Paths,
-            [int]$MaxAttempts = 5
-          )
-
-          $ErrorActionPreference = 'Continue'
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          foreach ($path in $Paths) {
-            if ([string]::IsNullOrWhiteSpace($path)) { continue }
-            git add -- $path 2>$null
+          if (-not (Test-Path -LiteralPath '.github/scripts/Invoke-ChatGptReportPush.ps1' -PathType Leaf)) {
+            throw 'Missing report push helper .github/scripts/Invoke-ChatGptReportPush.ps1'
           }
-
-          $status = git status --porcelain
-          if ([string]::IsNullOrWhiteSpace($status)) {
-            Write-Host "No report changes to commit for: $CommitMessage"
-            exit 0
-          }
-
-          git commit -m $CommitMessage
-          if ($LASTEXITCODE -ne 0) {
-            Write-Warning "git commit failed for report commit '$CommitMessage'. Continuing so the exec job is not blocked by report persistence."
-            git status --short
-            exit 0
-          }
-
-          for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
-            Write-Host "Report push attempt $attempt of $MaxAttempts for: $CommitMessage"
-            git fetch origin main
-            if ($LASTEXITCODE -ne 0) {
-              Write-Warning "git fetch failed on attempt $attempt."
-              Start-Sleep -Seconds ([Math]::Min(30, 5 * $attempt))
-              continue
-            }
-
-            git rebase origin/main
-            if ($LASTEXITCODE -ne 0) {
-              Write-Warning "git rebase failed on attempt $attempt; aborting rebase and retrying."
-              git rebase --abort 2>$null
-              Start-Sleep -Seconds ([Math]::Min(30, 5 * $attempt))
-              continue
-            }
-
-            git push origin HEAD:main
-            if ($LASTEXITCODE -eq 0) {
-              Write-Host "Report push succeeded on attempt $attempt."
-              exit 0
-            }
-
-            Write-Warning "git push failed on attempt $attempt. This can happen during transient remote ref update failures such as commit_refs."
-            Start-Sleep -Seconds ([Math]::Min(30, 5 * $attempt))
-          }
-
-          Write-Warning "Report push failed after $MaxAttempts attempts. Continuing so transient report-push failure does not prevent the approved command from running."
-          exit 0
-          '@ | Out-File -FilePath '.github/scripts/Invoke-ChatGptReportPush.ps1' -Encoding utf8
 
       - name: Resolve exec request path
         id: request
@@ -213,7 +156,7 @@ jobs:
             ) | Out-File -FilePath $env:DCOIR_EXEC_REPORT_PATH -Encoding utf8 -Append
           }
           if ($env:DCOIR_EXEC_CLEANUP_REQUEST_AFTER_RUN -ne 'False' -and $env:DCOIR_EXEC_CLEANUP_REQUEST_AFTER_RUN -ne 'false') {
-            git rm -f '${{ steps.request.outputs.request_path }}' 2>$null
+            Remove-Item -LiteralPath '${{ steps.request.outputs.request_path }}' -Force -ErrorAction SilentlyContinue
           }
           & .\.github\scripts\Invoke-ChatGptReportPush.ps1 `
             -CommitMessage "Record ChatGPT exec workflow report [skip ci]" `
