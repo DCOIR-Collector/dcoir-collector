@@ -6,13 +6,15 @@ Preferred flush-check trigger points:
 - after blocker resolution
 - when switching major tasks
 - at major milestones
-- before session export or handoff
+- before session export, handoff, closeout, or starter-prompt generation
+- after Session Checkpoint creation or checkpoint-ready payload preparation
 - when the operator asks what remains
 - when a helper skill reports meaningful state drift
 - when a GitHub Desktop manual repo-update delivery or grouped governed push is about to happen
 
 Truth rule:
-- buffered state is session-local only until it is flushed to GitHub or exported in a handoff artifact
+- buffered state is session-local only until it is flushed to GitHub, written to Airtable, or exported in a handoff artifact
+- checkpoint-ready payloads emitted in chat are non-durable unless they are written to Airtable Session Checkpoints or another governed durable surface
 
 ## Valid flush/manicure review
 A valid flush/manicure review for this skill should surface:
@@ -21,6 +23,7 @@ A valid flush/manicure review for this skill should surface:
 - successful mitigation
 - lesson classification
 - whether the lesson stays one-off, promotion-ready, or only buffered for now
+- checkpoint/write status and readback gap when relevant
 - the next flush trigger
 - one best next move
 

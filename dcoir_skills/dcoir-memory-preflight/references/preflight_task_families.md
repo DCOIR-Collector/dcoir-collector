@@ -1,6 +1,7 @@
 # Preflight Task Families
 
 Use memory preflight before execution for these task families:
+- startup, resume, re-anchor, active branch recovery, closeout, handoff, and Session Checkpoint continuity
 - GitHub create/update/delete work
 - grouped multi-file repo edits
 - structural renames or repo layout changes
@@ -17,6 +18,9 @@ Use memory preflight again after blocker recovery when the resolved lesson could
 - a reusable limitation candidate
 - a reusable failure-signature candidate
 - a reusable helper-skill or process-document candidate
+
+## Continuity ownership family
+Use this family when the operator asks to resume, re-anchor, close out, hand off, remember, capture, park, carry forward, recover queue state, or continue from a checkpoint. `dcoir-memory-preflight` should resolve authority order, identify active Queue Control/Plan/Work Item state, decide whether a Session Checkpoint is required, and create or prepare a checkpoint payload when no dedicated readable continuity skill is available.
 
 ## Dynamic helper-skill routing family
 
