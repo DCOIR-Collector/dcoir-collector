@@ -3,6 +3,7 @@
   "request_id": "exec-20260507-wbs22-wave5-stop-before-wave6-002",
   "operator_approved": true,
   "approved_at_utc": "2026-05-07T13:50:00Z",
+  "restaged_at_utc": "2026-05-07T13:53:00Z",
   "shell": "powershell_5",
   "timeout_seconds": 1800,
   "artifact_retention_days": 3,
