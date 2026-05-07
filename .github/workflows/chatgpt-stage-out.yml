@@ -35,6 +35,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Verify report push helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .github/scripts/Invoke-ChatGptReportPush.ps1
+
       - name: Resolve request path
         id: request
         shell: bash
@@ -88,19 +94,15 @@ jobs:
             --phase request-resolved \
             --result running \
             --message 'Stage-out request path resolved. Request validation and bundle creation are next.'
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add chatgpt_staging/status_reports/chatgpt-stage-out/${{ steps.request.outputs.request_id }}
-          git commit -m "Progress chatgpt-stage-out ${{ steps.request.outputs.request_id }} request-resolved [skip ci]" || exit 0
-          git pull --rebase origin main
-          git push
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Progress chatgpt-stage-out ${{ steps.request.outputs.request_id }} request-resolved [skip ci]" \
+            -Paths "chatgpt_staging/status_reports/chatgpt-stage-out/${{ steps.request.outputs.request_id }}"
 
       - name: Write heartbeat - running stage-out
         if: steps.request.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
-          git pull --rebase origin main
           python .github/scripts/write_chatgpt_progress_report.py \
             --workflow chatgpt-stage-out \
             --request-id '${{ steps.request.outputs.request_id }}' \
@@ -108,9 +110,9 @@ jobs:
             --phase running-stage-out \
             --result running \
             --message 'Stage-out bundle creation is about to run. If this report remains in this phase, inspect the GitHub run URL for runtime progress.'
-          git add chatgpt_staging/status_reports/chatgpt-stage-out/${{ steps.request.outputs.request_id }}
-          git commit -m "Progress chatgpt-stage-out ${{ steps.request.outputs.request_id }} running-stage-out [skip ci]" || exit 0
-          git push
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Progress chatgpt-stage-out ${{ steps.request.outputs.request_id }} running-stage-out [skip ci]" \
+            -Paths "chatgpt_staging/status_reports/chatgpt-stage-out/${{ steps.request.outputs.request_id }}"
 
       - name: Validate request and create stage-out bundle
         if: steps.request.outputs.skip != 'true'
@@ -273,12 +275,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$OUT_DIR" "$REPORT_DIR"
-          git rm -f "$REQUEST_PATH" || true
-          git commit -m "Stage ChatGPT readback bundle and report [skip ci]" || exit 0
-          git push
+          rm -f "$REQUEST_PATH" || true
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Stage ChatGPT readback bundle and report [skip ci]" \
+            -Paths "$OUT_DIR" "$REPORT_DIR" "$REQUEST_PATH"
 
       - name: Capture stage-out failure report
         if: failure() && steps.request.outputs.skip != 'true'
@@ -334,8 +334,6 @@ jobs:
             echo
             cat "$NATIVE_REPORT_PATH"
           } >> "$REPORT_PATH"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$REPORT_DIR"
-          git commit -m "Record ChatGPT stage-out failure report [skip ci]" || true
-          git push || true
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Record ChatGPT stage-out failure report [skip ci]" \
+            -Paths "$REPORT_DIR"
