@@ -12,9 +12,9 @@
 - command_sha256: 35fd2ed303c9f2f0472bfe85cd3bf46132780ea3fbd096133f34361d417b1e7a
 - artifact_name: chatgpt-exec-exec-20260507-wbs22-wave3-bulk-merge-safe-001
 - artifact_retention_days: 3
-- started_utc: 2026-05-07T13:26:11Z
-- finished_utc: 2026-05-07T13:26:20Z
-- report_created_utc: 2026-05-07T13:26:20Z
+- started_utc: 2026-05-07T13:27:38Z
+- finished_utc: 2026-05-07T13:27:45Z
+- report_created_utc: 2026-05-07T13:27:46Z
 
 ## Approved command preview
 
@@ -39,15 +39,13 @@ python $script
   "request_id": "exec-20260507-wbs22-wave3-bulk-merge-safe-001",
   "result": "passed",
   "actions": [
-    "evidence",
     "wbs",
-    "plan",
-    "checkpoint"
+    "plan"
   ],
   "errors": [],
   "evidence_key": "VE-WBS22-WAVE3-BULK-EXEC-20260507-001",
   "checkpoint_id": "CHK-DCOIR-WBS22-WAVE3-BULK-EXEC-20260507-001",
-  "finished_at_utc": "2026-05-07T13:26:20Z"
+  "finished_at_utc": "2026-05-07T13:27:45Z"
 }
 
 ```
@@ -72,8 +70,8 @@ Read this report and download the artifact if needed; record evidence and clean 
 
 ## GitHub Actions run
 
-- github_run_id: 25498663910
+- github_run_id: 25498745481
 - github_run_attempt: 1
-- github_sha: 2b7cee0c04100fbf9ff45d16e1b4ec8e5ff637c0
+- github_sha: 7d7022771369297cf76e8c353eb9f110ba593d6b
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25498663910
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25498745481
