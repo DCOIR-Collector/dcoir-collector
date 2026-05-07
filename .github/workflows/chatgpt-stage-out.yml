@@ -177,13 +177,7 @@ jobs:
           if not selected:
               raise SystemExit("No files selected")
 
-          manifest = {
-              "request_id": req["request_id"],
-              "request_path": str(request_path),
-              "mode": req.get("mode", "zip_first_with_chunks_fallback"),
-              "allowed_roots": allowed_roots,
-              "files": []
-          }
+          manifest = {"request_id": req["request_id"], "request_path": str(request_path), "mode": req.get("mode", "zip_first_with_chunks_fallback"), "allowed_roots": allowed_roots, "files": []}
           md = ["# ChatGPT stage-out manifest", "", f"- request_id: `{req['request_id']}`", f"- request_path: `{request_path}`", "", "## Files", ""]
 
           zip_path = out_dir / "staged_files.zip"
@@ -206,15 +200,7 @@ jobs:
                       safe_name = source.name.replace("/", "_")
                       chunk_name = f"{idx:03d}__{safe_name}__chunk{chunk_no:03d}.txt"
                       chunk_path = out_dir / "chunks" / chunk_name
-                      header = [
-                          f"original_path: {p}",
-                          f"blob_sha: {blob_sha}",
-                          f"sha256: {sha256}",
-                          f"chunk: {chunk_no}",
-                          f"line_start: {start+1}",
-                          f"line_end: {min(start+chunk_lines, len(lines))}",
-                          "---"
-                      ]
+                      header = [f"original_path: {p}", f"blob_sha: {blob_sha}", f"sha256: {sha256}", f"chunk: {chunk_no}", f"line_start: {start+1}", f"line_end: {min(start+chunk_lines, len(lines))}", "---"]
                       chunk_path.write_text("\n".join(header + lines[start:start+chunk_lines]) + "\n", encoding="utf-8")
                       chunks.append(str(chunk_path.relative_to(out_dir)))
                   entry = {"path": p, "bytes": len(data), "lines": len(lines), "blob_sha": blob_sha, "sha256": sha256, "chunks": chunks}
@@ -287,7 +273,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git pull --rebase origin main
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$OUT_DIR" "$REPORT_DIR"
