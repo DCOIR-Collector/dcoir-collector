@@ -12,9 +12,9 @@
 - command_sha256: ecc376135ec9e26ebd8153b33639a40b6b0ff66139a09a981c83bf252c4630bd
 - artifact_name: chatgpt-exec-exec-20260507-wbs22-wave4-queue-candidate-001
 - artifact_retention_days: 3
-- started_utc: 2026-05-07T13:29:40Z
-- finished_utc: 2026-05-07T13:29:47Z
-- report_created_utc: 2026-05-07T13:29:47Z
+- started_utc: 2026-05-07T13:31:19Z
+- finished_utc: 2026-05-07T13:31:24Z
+- report_created_utc: 2026-05-07T13:31:24Z
 
 ## Approved command preview
 
@@ -39,16 +39,14 @@ python $script
   "request_id": "exec-20260507-wbs22-wave4-queue-candidate-001",
   "result": "passed",
   "actions": [
-    "evidence",
     "wbs",
-    "plan",
-    "checkpoint"
+    "plan"
   ],
   "errors": [],
   "queue_rows_observed": 0,
   "evidence_key": "VE-WBS22-WAVE4-BULK-EXEC-20260507-001",
   "checkpoint_id": "CHK-DCOIR-WBS22-WAVE4-BULK-EXEC-20260507-001",
-  "finished_at_utc": "2026-05-07T13:29:47Z"
+  "finished_at_utc": "2026-05-07T13:31:23Z"
 }
 
 ```
@@ -73,8 +71,8 @@ Read this report and download the artifact if needed; record evidence and clean 
 
 ## GitHub Actions run
 
-- github_run_id: 25498846123
+- github_run_id: 25498945286
 - github_run_attempt: 1
-- github_sha: febd2eb390b5425b979775d9ac8ed137fe003a51
+- github_sha: f7dd788cfc5b8a4469f2eabe95478f09d973c598
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25498846123
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25498945286
