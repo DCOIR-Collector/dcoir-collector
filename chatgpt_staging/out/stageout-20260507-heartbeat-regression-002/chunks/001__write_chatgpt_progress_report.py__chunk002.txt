@@ -1,0 +1,61 @@
+original_path: .github/scripts/write_chatgpt_progress_report.py
+blob_sha: b8b71e90d73c4e4e452ee248fa661bb2e410c8ff
+sha256: 51ceb8c0b1af18279cd1c1f9958499d265515ac24c8e0c6850f698a9f841ca51
+chunk: 2
+line_start: 81
+line_end: 134
+---
+        "artifact_name": args.artifact_name,
+        "exit_code": args.exit_code,
+        "extra": [x for x in args.extra if str(x).strip()],
+    }
+    with history_path.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(entry, sort_keys=True) + "\n")
+
+    history = read_history(history_path)
+    run_id = os.environ.get("GITHUB_RUN_ID", "unknown")
+    run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "unknown")
+    sha = os.environ.get("GITHUB_SHA", "unknown")
+    ref = os.environ.get("GITHUB_REF", "unknown")
+    repo = os.environ.get("GITHUB_REPOSITORY", "unknown")
+    run_url = f"https://github.com/{repo}/actions/runs/{run_id}" if repo != "unknown" and run_id != "unknown" else ""
+
+    lines = [
+        "# ChatGPT workflow report",
+        "",
+        "## Result",
+        "",
+        f"- workflow: {args.workflow}",
+        "- report_scope: progressive-in-session",
+        f"- result: {result}",
+        f"- phase: {phase}",
+        f"- request_id: {args.request_id}",
+        f"- request_path: {args.request_path}",
+        f"- github_run_id: {run_id}",
+        f"- github_run_attempt: {run_attempt}",
+        f"- github_sha: {sha}",
+        f"- github_ref: {ref}",
+        f"- workflow_run_url: {run_url}",
+        f"- report_updated_utc: {ts}",
+        f"- progress_history_path: {history_path.as_posix()}",
+    ]
+    if args.artifact_name:
+        lines.append(f"- artifact_name: {args.artifact_name}")
+    if args.exit_code:
+        lines.append(f"- exit_code: {args.exit_code}")
+    for item in args.extra:
+        if item.strip():
+            lines.append(f"- {item.strip()}")
+    lines += ["", "## Current status", "", args.message or f"Workflow is in phase `{phase}`.", "", "## Phase history", ""]
+    for item in history:
+        lines.append(
+            f"- {item.get('timestamp_utc','')} | phase={item.get('phase','')} | result={item.get('result','')} | {item.get('message','')}".rstrip()
+        )
+    lines += ["", "## Next ChatGPT action", "", "Poll this same report path until result is success or failure. If result is running, use the phase history to decide whether to wait, inspect the run URL, or report a blocker."]
+    report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(report_path.as_posix())
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
