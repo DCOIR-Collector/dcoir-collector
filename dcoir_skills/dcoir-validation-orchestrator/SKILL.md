@@ -1,7 +1,8 @@
 ---
 name: dcoir-validation-orchestrator
-description: build explicit validation plans, task-time validation gates, regression gates, evidence thresholds, readiness claims, post-change verification, install/readback checks, and live/readback validation for dcoir changes, skill updates, packages, airtable cleanup, github workflows, and operational workflows. use before declaring readiness, after patches, when evidence is incomplete, or when validation planning/execution applies.
+description: build explicit validation plans, task-time validation gates, regression gates, evidence thresholds, readiness claims, write gate checks, post-change verification, install/readback checks, and live/readback validation for dcoir changes, skill updates, packages, airtable cleanup, github workflows, and operational workflows. use before declaring readiness, after patches, when evidence is incomplete, when validation planning/execution applies, or when a proposed airtable/governance write needs pass/fail/conditional-pass/stop-escalate review before execution.
 ---
+<!-- skill-marker: updated-skill|20260507T081800Z|write-gate-temporary-fold-in|in-session-update|dcoir-validation-orchestrator|SKILL.md -->
 <!-- skill-marker: updated-skill|20260505T090000Z|task-time-validation-gate-strengthening|in-session-update|dcoir-validation-orchestrator|SKILL.md -->
 
 
@@ -59,6 +60,20 @@ Compact validation gate output should identify: validation target; phase (`pre-l
 Do not claim readiness from inspection alone when execution, generated output, installed-skill readback, package inspection, Airtable readback, GitHub readback, or workflow logs can reasonably be checked. If full validation is blocked, state the bounded validation actually performed and the remaining evidence gap.
 
 Read `references/task_time_validation_gate.md` for compact trigger/output rules.
+
+
+## Temporary Airtable Write Gate fold-in
+During the DCOIR cleanup/restructure plan, this skill temporarily owns the validation-only Airtable Write Gate because the standalone `dcoir-airtable-write-gate` skill may not be runtime-readable when the session skill budget is constrained.
+
+Use this fold-in before any proposed DCOIR Airtable or governance mutation needs a safety decision. It returns one of: `PASS`, `CONDITIONAL_PASS`, `FAIL`, or `STOP_ESCALATE`. It does not execute writes, cleanup, deletion, merge, schema, repo, skill, workflow, automation, or Delete Queue actions.
+
+Use `references/airtable_write_gate.md` for the manual contract. When a structured proposed-action JSON is available, run:
+
+```bash
+python scripts/evaluate_write_gate.py --input proposed_action.json --output gate_report.json
+```
+
+Treat this as a temporary scaffold responsibility. At plan conclusion, remove or split this Write Gate fold-in during scaffold cleanup after the final Write Gate architecture is chosen.
 
 ## Core workflow
 1. Resolve the current control plane first.
@@ -143,6 +158,7 @@ On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refres
 ## References
 - `references/validation_scenario_library.md`
 - `references/task_time_validation_gate.md`
+- `references/airtable_write_gate.md` for temporary validation-only Write Gate checks
 - `references/airtable_memory_workflow.md`
 - `../project_discovery_contract.json` when current repository or helper-memory naming assumptions matter
 
