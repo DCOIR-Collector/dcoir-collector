@@ -44,6 +44,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Verify report push helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .github/scripts/Invoke-ChatGptReportPush.ps1
+
       - name: Resolve payload path and reject chunk staging
         id: payload
         shell: bash
@@ -116,19 +122,15 @@ jobs:
             --phase payload-resolved \
             --result running \
             --message 'Apply-in payload path resolved. Decode and apply validation are next.'
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add chatgpt_staging/status_reports/chatgpt-apply-in/${{ steps.payload.outputs.request_id }}
-          git commit -m "Progress chatgpt-apply-in ${{ steps.payload.outputs.request_id }} payload-resolved [skip ci]" || exit 0
-          git pull --rebase origin main
-          git push
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Progress chatgpt-apply-in ${{ steps.payload.outputs.request_id }} payload-resolved [skip ci]" \
+            -Paths "chatgpt_staging/status_reports/chatgpt-apply-in/${{ steps.payload.outputs.request_id }}"
 
       - name: Write heartbeat - running apply-in
         if: steps.payload.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
-          git pull --rebase origin main
           python .github/scripts/write_chatgpt_progress_report.py \
             --workflow chatgpt-apply-in \
             --request-id '${{ steps.payload.outputs.request_id }}' \
@@ -136,9 +138,9 @@ jobs:
             --phase running-apply-in \
             --result running \
             --message 'Apply-in decode, manifest validation, file copy/delete, and hash checks are about to run.'
-          git add chatgpt_staging/status_reports/chatgpt-apply-in/${{ steps.payload.outputs.request_id }}
-          git commit -m "Progress chatgpt-apply-in ${{ steps.payload.outputs.request_id }} running-apply-in [skip ci]" || exit 0
-          git push
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Progress chatgpt-apply-in ${{ steps.payload.outputs.request_id }} running-apply-in [skip ci]" \
+            -Paths "chatgpt_staging/status_reports/chatgpt-apply-in/${{ steps.payload.outputs.request_id }}"
 
       - name: Decode ZIP payload and apply bundle
         if: steps.payload.outputs.skip != 'true'
@@ -427,25 +429,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          if [[ -f chatgpt_staging/work/applied_paths.txt ]]; then
-            while IFS= read -r p; do
-              [[ -n "$p" ]] && git add -- "$p"
-            done < chatgpt_staging/work/applied_paths.txt
-          fi
-          if [[ -f chatgpt_staging/work/deleted_paths.txt ]]; then
-            while IFS= read -r p; do
-              [[ -n "$p" ]] && git add -u -- "$p" || true
-            done < chatgpt_staging/work/deleted_paths.txt
-          fi
-          git add chatgpt_staging/apply_reports "$REPORT_DIR" || true
           if [[ "${{ github.event_name }}" == "push" || "${{ inputs.delete_payload_after_success }}" == "true" ]]; then
-            git rm -f "$PAYLOAD" || true
+            rm -f "$PAYLOAD" || true
           fi
-          git commit -m "Apply ChatGPT staging bundle and report [skip ci]" || exit 0
-          git push
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Apply ChatGPT staging bundle and report [skip ci]" \
+            -Paths "chatgpt_staging/apply_reports" "$REPORT_DIR" "$PAYLOAD" "chatgpt_staging/work/applied_paths.txt" "chatgpt_staging/work/deleted_paths.txt"
 
       - name: Capture apply-in failure report
         if: failure() && steps.payload.outputs.skip != 'true'
@@ -520,12 +509,10 @@ jobs:
           if [[ -f "$WORK_DIR/payload.zip" ]]; then sha256sum "$WORK_DIR/payload.zip" > "$ART_DIR/payload_zip.sha256"; fi
           if [[ -f "$WORK_DIR/extract/apply_manifest.json" ]]; then cp "$WORK_DIR/extract/apply_manifest.json" "$ART_DIR/apply_manifest.json"; fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git restore --staged . || true
-          git add "$REPORT_DIR"
-          git commit -m "Record ChatGPT apply-in workflow report [skip ci]" || true
-          git push || true
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Record ChatGPT apply-in workflow report [skip ci]" \
+            -Paths "$REPORT_DIR"
           echo "FAIL_ARTIFACT_DIR=$ART_DIR" >> "$GITHUB_ENV"
 
       - name: Upload apply-in failure evidence artifact
