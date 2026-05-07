@@ -12,9 +12,9 @@
 - command_sha256: 49dd14966a87c3eac5d49eae7da4fd5cbf122f1bf1469b5b2d2a05d60c391edb
 - artifact_name: chatgpt-exec-exec-20260507-wbs22-wave1-bulk-evidence-001
 - artifact_retention_days: 3
-- started_utc: 2026-05-07T13:18:25Z
-- finished_utc: 2026-05-07T13:18:46Z
-- report_created_utc: 2026-05-07T13:18:46Z
+- started_utc: 2026-05-07T13:19:22Z
+- finished_utc: 2026-05-07T13:19:26Z
+- report_created_utc: 2026-05-07T13:19:26Z
 
 ## Approved command preview
 
@@ -39,10 +39,8 @@ python $script
   "request_id": "exec-20260507-wbs22-wave1-bulk-evidence-001",
   "result": "passed",
   "actions": [
-    "created evidence",
     "updated WBS batch",
-    "advanced plan pointer",
-    "created checkpoint"
+    "advanced plan pointer"
   ],
   "errors": [],
   "evidence_key": "VE-WBS22-WAVE1-BULK-EXEC-20260507-001",
@@ -59,7 +57,7 @@ python $script
     "evidence": "recggejTVaPazKt2h",
     "checkpoint": "recKbZIraUe8Y9IZF"
   },
-  "finished_at_utc": "2026-05-07T13:18:46Z"
+  "finished_at_utc": "2026-05-07T13:19:26Z"
 }
 
 ```
@@ -84,8 +82,8 @@ Read this report and download the artifact if needed; record evidence and clean 
 
 ## GitHub Actions run
 
-- github_run_id: 25498255098
+- github_run_id: 25498303725
 - github_run_attempt: 1
-- github_sha: e7a6fd9a0596ea7772d07baf4ad484f3f372ed79
+- github_sha: c7889c6ca8ec4ac21329c1f285fa00ca12df1372
 - github_ref: refs/heads/main
-- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25498255098
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25498303725
