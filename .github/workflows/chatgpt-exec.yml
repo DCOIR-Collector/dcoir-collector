@@ -60,8 +60,46 @@ jobs:
           if (-not (Test-Path -LiteralPath $requestPath -PathType Leaf)) {
             throw "Exec request file not found: $requestPath"
           }
+          $requestId = [IO.Path]::GetFileNameWithoutExtension($requestPath)
           "skip=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "request_path=$requestPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "request_id=$requestId" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Write progressive report - request resolved
+        if: steps.request.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python .github/scripts/write_chatgpt_progress_report.py `
+            --workflow chatgpt-exec `
+            --request-id '${{ steps.request.outputs.request_id }}' `
+            --request-path '${{ steps.request.outputs.request_path }}' `
+            --phase request-resolved `
+            --result running `
+            --message 'Exec request path resolved. The workflow is preparing to run the approved command harness.'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add chatgpt_staging/status_reports/chatgpt-exec/${{ steps.request.outputs.request_id }}/workflow_report.md
+          git commit -m "Progress chatgpt-exec ${{ steps.request.outputs.request_id }} request-resolved [skip ci]" || exit 0
+          git pull --rebase origin main
+          git push
+
+      - name: Write progressive report - running harness
+        if: steps.request.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git pull --rebase origin main
+          python .github/scripts/write_chatgpt_progress_report.py `
+            --workflow chatgpt-exec `
+            --request-id '${{ steps.request.outputs.request_id }}' `
+            --request-path '${{ steps.request.outputs.request_path }}' `
+            --phase running-harness `
+            --result running `
+            --message 'Approved command harness is about to run. If this report remains in this phase, inspect the GitHub run URL for harness/runtime progress.'
+          git add chatgpt_staging/status_reports/chatgpt-exec/${{ steps.request.outputs.request_id }}/workflow_report.md
+          git commit -m "Progress chatgpt-exec ${{ steps.request.outputs.request_id }} running-harness [skip ci]" || exit 0
+          git push
 
       - name: Run approved command request
         if: steps.request.outputs.skip != 'true'
@@ -77,11 +115,32 @@ jobs:
             -JsonResultPath $resultJson `
             -SecretEnvNames @('DCOIR_AIRTABLE_TOKEN','DCOIR_AIRTABLE_BASE_ID','DCOIR_GITHUB_FG_TOKEN','DCOIR_GITHUB_CL_TOKEN','DCOIR_OPENAI_API_KEY','DCOIR_OPENAI_PROJECT_ID','OPENAI_API_KEY')
 
+      - name: Write progressive report - harness finished
+        if: steps.request.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git pull --rebase origin main
+          $result = if ($env:DCOIR_EXEC_EXIT_CODE -eq '0') { 'success' } else { 'failure' }
+          python .github/scripts/write_chatgpt_progress_report.py `
+            --workflow chatgpt-exec `
+            --request-id '${{ steps.request.outputs.request_id }}' `
+            --request-path '${{ steps.request.outputs.request_path }}' `
+            --phase harness-finished `
+            --result $result `
+            --exit-code $env:DCOIR_EXEC_EXIT_CODE `
+            --artifact-name $env:DCOIR_EXEC_ARTIFACT_NAME `
+            --message "Approved command harness finished with exit code $env:DCOIR_EXEC_EXIT_CODE. Final native exec report commit is next."
+          git add chatgpt_staging/status_reports/chatgpt-exec/${{ steps.request.outputs.request_id }}/workflow_report.md
+          git commit -m "Progress chatgpt-exec ${{ steps.request.outputs.request_id }} harness-finished [skip ci]" || exit 0
+          git push
+
       - name: Commit exec status report and cleanup request
         if: steps.request.outputs.skip != 'true'
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          git pull --rebase origin main
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if ($env:DCOIR_EXEC_REPORT_PATH -and (Test-Path -LiteralPath $env:DCOIR_EXEC_REPORT_PATH -PathType Leaf)) {
