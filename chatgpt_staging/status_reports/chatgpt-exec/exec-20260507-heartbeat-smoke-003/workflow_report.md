@@ -31,3 +31,11 @@ Approved command harness finished with exit code 0. Final native exec report com
 ## Next ChatGPT action
 
 Poll this same report path until result is success or failure. If result is running, use the phase history to decide whether to wait, inspect the run URL, or report a blocker.
+
+## GitHub Actions run
+
+- github_run_id: 25503470126
+- github_run_attempt: 1
+- github_sha: 8323f6968f9df1ba46a9130694c00fbe41677bcd
+- github_ref: refs/heads/main
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25503470126
