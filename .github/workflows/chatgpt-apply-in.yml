@@ -429,12 +429,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [[ -f chatgpt_staging/work/applied_paths.txt ]]; then
+            while IFS= read -r p; do
+              [[ -n "$p" ]] && git add -- "$p"
+            done < chatgpt_staging/work/applied_paths.txt
+          fi
+          if [[ -f chatgpt_staging/work/deleted_paths.txt ]]; then
+            while IFS= read -r p; do
+              [[ -n "$p" ]] && git add -u -- "$p" || true
+            done < chatgpt_staging/work/deleted_paths.txt
+          fi
           if [[ "${{ github.event_name }}" == "push" || "${{ inputs.delete_payload_after_success }}" == "true" ]]; then
             rm -f "$PAYLOAD" || true
           fi
           pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
             -CommitMessage "Apply ChatGPT staging bundle and report [skip ci]" \
-            -Paths "chatgpt_staging/apply_reports" "$REPORT_DIR" "$PAYLOAD" "chatgpt_staging/work/applied_paths.txt" "chatgpt_staging/work/deleted_paths.txt"
+            -Paths "chatgpt_staging/apply_reports" "$REPORT_DIR" "$PAYLOAD" "chatgpt_staging/work/applied_paths.txt" "chatgpt_staging/work/deleted_paths.txt" "chatgpt_staging/work/hash_warnings.txt"
 
       - name: Capture apply-in failure report
         if: failure() && steps.payload.outputs.skip != 'true'
