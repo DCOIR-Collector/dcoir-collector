@@ -120,7 +120,6 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          git pull --rebase origin main
           $result = if ($env:DCOIR_EXEC_EXIT_CODE -eq '0') { 'success' } else { 'failure' }
           python .github/scripts/write_chatgpt_progress_report.py `
             --workflow chatgpt-exec `
@@ -140,7 +139,6 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          git pull --rebase origin main
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if ($env:DCOIR_EXEC_REPORT_PATH -and (Test-Path -LiteralPath $env:DCOIR_EXEC_REPORT_PATH -PathType Leaf)) {
