@@ -1,6 +1,6 @@
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$script:DcoirAirtableBulkUpdateVersion = '2026-05-08.1'
+$script:DcoirAirtableBulkUpdateVersion = '2026-05-08.2'
 
 function Get-DcoirAirtableBulkUpdateVersion {
     [CmdletBinding()]
@@ -78,7 +78,7 @@ function Invoke-DcoirAirtableSelectAliasUpdateWithBeforeGates {
     $seen = @{}
     $before = New-Object System.Collections.Generic.List[object]
     foreach ($target in $targets) {
-        foreach ($name in @('table_id','record_id','field_id','old_choice_id','new_choice_id')) {
+        foreach ($name in @('table_id','record_id','field_id','old_choice_name','new_choice_name')) {
             if (-not ($target.PSObject.Properties.Name -contains $name)) { throw "Target missing required property: $name" }
             if ([string]::IsNullOrWhiteSpace([string]$target.$name)) { throw "Target has blank required property: $name" }
         }
@@ -88,7 +88,7 @@ function Invoke-DcoirAirtableSelectAliasUpdateWithBeforeGates {
 
         $record = Get-DcoirAirtableBulkUpdateRecordById -BaseId $BaseId -TableId ([string]$target.table_id) -RecordId ([string]$target.record_id) -Headers $Headers
         $actual = [string](Get-DcoirAirtableUpdateFieldValueById -Fields $record.fields -FieldId ([string]$target.field_id))
-        $expected = [string]$target.old_choice_id
+        $expected = [string]$target.old_choice_name
         $before.Add([ordered]@{
             table_id = [string]$target.table_id
             table_name = [string]$target.table_name
@@ -96,15 +96,15 @@ function Invoke-DcoirAirtableSelectAliasUpdateWithBeforeGates {
             display_key = [string]$target.display_key
             field_id = [string]$target.field_id
             field_name = [string]$target.field_name
-            expected_old_choice_id = $expected
-            expected_old_choice_name = [string]$target.old_choice_name
-            actual_before_choice_id = $actual
-            new_choice_id = [string]$target.new_choice_id
+            expected_old_choice_name = $expected
+            expected_old_choice_id = if ($target.PSObject.Properties.Name -contains 'old_choice_id') { [string]$target.old_choice_id } else { $null }
+            actual_before_choice_name = $actual
             new_choice_name = [string]$target.new_choice_name
+            new_choice_id = if ($target.PSObject.Properties.Name -contains 'new_choice_id') { [string]$target.new_choice_id } else { $null }
             before_gate_result = if ($actual -eq $expected) { 'pass' } else { 'fail' }
         }) | Out-Null
         if ($actual -ne $expected) {
-            throw "Before-value gate failed for $targetKey. Expected $expected but found $actual."
+            throw "Before-value gate failed for $targetKey. Expected choice name '$expected' but found '$actual'."
         }
     }
 
@@ -113,7 +113,7 @@ function Invoke-DcoirAirtableSelectAliasUpdateWithBeforeGates {
         $tableId = [string]$target.table_id
         if (-not $byTable.ContainsKey($tableId)) { $byTable[$tableId] = New-Object System.Collections.Generic.List[object] }
         $fields = [ordered]@{}
-        $fields[[string]$target.field_id] = [string]$target.new_choice_id
+        $fields[[string]$target.field_id] = [string]$target.new_choice_name
         $byTable[$tableId].Add([ordered]@{ id = [string]$target.record_id; fields = $fields }) | Out-Null
     }
 
@@ -130,7 +130,7 @@ function Invoke-DcoirAirtableSelectAliasUpdateWithBeforeGates {
     foreach ($target in $targets) {
         $record = Get-DcoirAirtableBulkUpdateRecordById -BaseId $BaseId -TableId ([string]$target.table_id) -RecordId ([string]$target.record_id) -Headers $Headers
         $actual = [string](Get-DcoirAirtableUpdateFieldValueById -Fields $record.fields -FieldId ([string]$target.field_id))
-        $expected = [string]$target.new_choice_id
+        $expected = [string]$target.new_choice_name
         $row = [ordered]@{
             table_id = [string]$target.table_id
             table_name = [string]$target.table_name
@@ -138,9 +138,9 @@ function Invoke-DcoirAirtableSelectAliasUpdateWithBeforeGates {
             display_key = [string]$target.display_key
             field_id = [string]$target.field_id
             field_name = [string]$target.field_name
-            expected_new_choice_id = $expected
-            expected_new_choice_name = [string]$target.new_choice_name
-            actual_after_choice_id = $actual
+            expected_new_choice_name = $expected
+            expected_new_choice_id = if ($target.PSObject.Properties.Name -contains 'new_choice_id') { [string]$target.new_choice_id } else { $null }
+            actual_after_choice_name = $actual
             after_gate_result = if ($actual -eq $expected) { 'pass' } else { 'fail' }
         }
         $after.Add($row) | Out-Null
@@ -157,6 +157,7 @@ function Invoke-DcoirAirtableSelectAliasUpdateWithBeforeGates {
         after_mismatches = @($mismatchAfter.ToArray())
         planned_payload = [ordered]@{
             mode = 'update_select_aliases_with_before_value_gates'
+            value_contract = 'singleSelect record values are compared and written by choice name; choice IDs are metadata only'
             table_count = $byTable.Keys.Count
             target_count = $targets.Count
             updates_by_table = $byTable
