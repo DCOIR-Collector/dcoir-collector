@@ -29,6 +29,7 @@ foreach ($path in $ExtraPaths) {
 
 git config user.name "github-actions[bot]"
 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+git config core.longpaths true
 
 $ExpandedPaths = @()
 foreach ($path in $AllPaths) {
@@ -53,7 +54,7 @@ if ($ExpandedPaths.Count -eq 0) {
 Write-Host "Staging report paths for: $CommitMessage"
 foreach ($path in $ExpandedPaths) { Write-Host "  $path" }
 
-& git add -A -- @ExpandedPaths
+& git -c core.longpaths=true add -A -- @ExpandedPaths
 $addExit = $LASTEXITCODE
 if ($addExit -ne 0) {
   Write-Warning "git add failed with exit code $addExit for: $CommitMessage"
@@ -62,7 +63,7 @@ if ($addExit -ne 0) {
   exit 0
 }
 
-git diff --cached --quiet
+& git -c core.longpaths=true diff --cached --quiet
 if ($LASTEXITCODE -eq 0) {
   Write-Host "No staged changes to commit for: $CommitMessage"
   git status --short
@@ -73,7 +74,7 @@ if ($LASTEXITCODE -eq 0) {
   exit 0
 }
 
-git commit -m $CommitMessage
+& git -c core.longpaths=true commit -m $CommitMessage
 if ($LASTEXITCODE -ne 0) {
   Write-Warning "git commit failed for: $CommitMessage"
   git status --short
@@ -83,21 +84,21 @@ if ($LASTEXITCODE -ne 0) {
 
 for ($attempt = 1; $attempt -le $MaxAttemptCount; $attempt++) {
   Write-Host "Report push attempt $attempt of $MaxAttemptCount for: $CommitMessage"
-  git fetch origin main
+  & git -c core.longpaths=true fetch origin main
   if ($LASTEXITCODE -ne 0) {
     Write-Warning "git fetch failed on attempt $attempt."
     Start-Sleep -Seconds ([Math]::Min(30, 5 * $attempt))
     continue
   }
-  git rebase origin/main
+  & git -c core.longpaths=true rebase origin/main
   if ($LASTEXITCODE -ne 0) {
     Write-Warning "git rebase failed on attempt $attempt; aborting rebase and retrying."
-    git rebase --abort 2>$null
+    & git -c core.longpaths=true rebase --abort 2>$null
     git status --short
     Start-Sleep -Seconds ([Math]::Min(30, 5 * $attempt))
     continue
   }
-  git push origin HEAD:main
+  & git -c core.longpaths=true push origin HEAD:main
   if ($LASTEXITCODE -eq 0) {
     Write-Host "Report push succeeded on attempt $attempt."
     exit 0
