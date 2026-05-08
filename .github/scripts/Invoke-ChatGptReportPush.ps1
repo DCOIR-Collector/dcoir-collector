@@ -46,6 +46,11 @@ foreach ($path in $ExpandedPaths) {
 git diff --cached --quiet
 if ($LASTEXITCODE -eq 0) {
   Write-Host "No staged changes to commit for: $CommitMessage"
+  if ($RequirePush) {
+    Write-Error "Required report push had no staged changes for: $CommitMessage"
+    git status --short
+    exit 1
+  }
   exit 0
 }
 
