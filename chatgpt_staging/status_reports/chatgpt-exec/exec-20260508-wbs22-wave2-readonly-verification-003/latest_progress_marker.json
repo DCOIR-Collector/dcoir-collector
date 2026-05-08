@@ -1,0 +1,15 @@
+{
+  "artifact_name": "",
+  "exit_code": "",
+  "github_ref": "refs/heads/main",
+  "github_run_attempt": "1",
+  "github_run_id": "25552051418",
+  "github_sha": "f62f2effbe55eda5b68f3f8e6f34bd9734a9d51d",
+  "phase": "request-resolved",
+  "request_id": "exec-20260508-wbs22-wave2-readonly-verification-003",
+  "request_path": "chatgpt_staging/exec_requests/exec-20260508-wbs22-wave2-readonly-verification-003.json",
+  "result": "running",
+  "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
+  "updated_utc": "2026-05-08T11:03:07Z",
+  "workflow": "chatgpt-exec"
+}
