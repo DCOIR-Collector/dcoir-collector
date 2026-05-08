@@ -27,6 +27,8 @@ When sanitized output files are produced, workflows should also commit an unzipp
 chatgpt_staging/status_reports/<workflow>/<request_id>/artifact_readback/
 ```
 
+For `chatgpt-exec`, files written under `DCOIR_DOWNLOADS_DIR` appear under `artifact_readback/downloads/<output_folder>/`.
+
 For `chatgpt-stage-out`, the primary unzipped readback path is:
 
 ```text

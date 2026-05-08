@@ -17,10 +17,18 @@ chatgpt_staging/status_reports/<workflow>/<request_id>/artifact_readback/
 chatgpt_staging/out/<request_id>/
 ```
 
+## Exec output path
+
+For `chatgpt-exec`, command output files written under `DCOIR_DOWNLOADS_DIR` appear under:
+
+```text
+chatgpt_staging/status_reports/chatgpt-exec/<request_id>/artifact_readback/downloads/<output_folder>/
+```
+
 ## Canonical policy
 
 ```text
 chatgpt_staging/HEARTBEAT_AND_ARTIFACT_READBACK.md
 ```
 
-`chatgpt-exec` now copies sanitized artifact contents into `artifact_readback/` beside the committed workflow report. ZIP artifacts remain available but are supplemental.
+`chatgpt-exec` copies sanitized artifact contents into `artifact_readback/` beside the committed workflow report. ZIP artifacts remain available but are supplemental.

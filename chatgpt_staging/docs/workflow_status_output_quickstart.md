@@ -52,6 +52,10 @@ Read the native apply-in success/failure report embedded in the workflow report 
 
 ZIP artifacts are supplemental. They remain useful for GitHub provenance and short-term operator download, but ChatGPT should not rely on ZIP download/upload when committed reports or readback folders exist.
 
+## Apply-in payload rule
+
+Before staging `payload.zip.b64`, generate it with a tool or script, verify ZIP open/CRC, verify base64 round-trip, verify length is divisible by 4, record SHA256 values, and only then stage the single payload file.
+
 ## Current validated exec smoke
 
 `smoke-exec-artifact-readback-002` verified that `chatgpt-exec` commits:
@@ -65,12 +69,3 @@ ZIP artifacts are supplemental. They remain useful for GitHub provenance and sho
 - `artifact_readback/stdout.sanitized.txt`
 - `artifact_readback/stderr.sanitized.txt`
 - `artifact_readback/downloads/<output_folder>/...`
-
-## Related docs
-
-- `chatgpt_staging/HEARTBEAT_AND_ARTIFACT_READBACK.md`
-- `chatgpt_staging/docs/exec_request_readback.md`
-- `chatgpt_staging/docs/apply_in_readback.md`
-- `chatgpt_staging/docs/stage_out_readback.md`
-- `operator_tools/github_desktop_lane/docs/CHATGPT_HEARTBEAT_READBACK.md`
-- `operator_tools/github_desktop_lane/docs/CHATGPT_EXEC_READBACK_CONTRACT.md`

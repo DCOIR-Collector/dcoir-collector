@@ -13,4 +13,10 @@ For output inspection, read the committed unzipped readback path first:
 chatgpt_staging/status_reports/chatgpt-exec/<request_id>/artifact_readback/
 ```
 
+Files written under `DCOIR_DOWNLOADS_DIR` are committed under:
+
+```text
+chatgpt_staging/status_reports/chatgpt-exec/<request_id>/artifact_readback/downloads/<output_folder>/
+```
+
 Use the ZIP artifact only as fallback or supplemental provenance.

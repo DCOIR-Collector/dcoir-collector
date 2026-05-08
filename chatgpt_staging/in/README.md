@@ -34,25 +34,28 @@ chunk_manifest.json
 # dcoir-payload-b64-parts-v1
 ```
 
-Do not split or chunk the base64. If the payload is too large or connector limits are hit, reduce the apply-in batch size and rebuild a new single `payload.zip.b64`.
+Do not split or chunk the base64.
 
 ## Required validation before staging
 
 Before writing `payload.zip.b64`, validate:
 
 1. request id is safe;
-2. ZIP opens;
+2. ZIP opens and CRC passes;
 3. `apply_manifest.json` exists at archive root;
 4. `files/` exists at archive root;
-5. base64 decode round-trip matches the ZIP SHA256;
-6. no truncation marker such as `[... ELLIPSIZATION ...]` exists;
-7. no parts/chunk artifacts exist under the request folder.
+5. base64 length is divisible by 4;
+6. base64 decode round-trip matches the ZIP SHA256;
+7. no truncation marker such as `[... ELLIPSIZATION ...]` exists;
+8. no non-base64 characters exist except whitespace;
+9. no parts/chunk artifacts exist under the request folder.
 
 ## Expected verification after staging
 
 After pushing `payload.zip.b64` to `main`, verify:
 
 1. workflow report exists at `chatgpt_staging/status_reports/chatgpt-apply-in/<request_id>/workflow_report.md`;
-2. report result is `success`;
-3. workflow job conclusion is `success`;
-4. every target file is read back from GitHub `main` before claiming success.
+2. `progress_history.jsonl` exists at the same request path;
+3. report result is `success`;
+4. workflow job conclusion is `success`;
+5. every target file is read back from GitHub `main` before claiming success.
