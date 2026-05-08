@@ -1,0 +1,128 @@
+{
+    "table_id":  "tblDfSl29psxRnes1",
+    "table_name":  "Governance Control Plane",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  6,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  true,
+    "records":  [
+                    {
+                        "id":  "rec4Dc9zqVSJOW5b1",
+                        "createdTime":  "2026-04-27T17:15:03.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "control_key":  "CONTROL-STARTUP-AIRTABLE-FIRST",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "repo_role_definition":  "GitHub role after Airtable-first cutover: governed readable/source-code repository, promoted history, packaging/source-of-file truth, and repo write/readback surface. GitHub is no longer normal startup current-state authority, live todo authority, or administrative control-plane authority when equivalent Airtable rows exist.",
+                                       "retention_class":  "review",
+                                       "live_queue_authority":  true,
+                                       "last_confirmed_text":  "2026-05-04 T6C startup-chain drift patch: removed stale Plan Tasks normal-startup read and aligned Governance Control Plane with current Airtable-first schema rules.",
+                                       "retained_repo_surfaces":  "Retained GitHub repo surfaces remain authoritative only for source files and promoted repo history. CP-01/CP-02 are legacy/promoted-history fallback references during transition, not normal startup fetch targets once this Airtable control-plane row is available.",
+                                       "workspace_model":  "AFRICOM_SOC_IR / DCOIR Airtable-first startup control plane",
+                                       "review_after":  "2026-04-28",
+                                       "authority_order":  "Airtable is startup and load-sequence authority for resume, queue, active plans, cleanup state, operator preferences, helper-memory lookup, and administrative control. GitHub CP and old todo files are detached from normal startup and used only for governed source, promoted history, packaging, explicit repo readback, or final keep/delete review.",
+                                       "status":  "active",
+                                       "startup_chain":  "Normal startup chain: 1) Use Project Instructions as first bootstrap anchor. 2) Read Project-space CP-00 only as a pointer to Airtable-first startup, not as a readable-source repository. 3) Read Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST. 4) Invoke dcoir-session-resume using Airtable durable state first. 5) Invoke dcoir-memory-preflight using Airtable helper-memory tables first. 6) Invoke dcoir-airtable-schema-cache to refresh or validate the local schema cache before broad Airtable reads. 7) During automatic startup/re-anchor, prefer compact non-display Airtable reads for Queue Control, Work Items, active Plans, Session Checkpoints, Operator Preferences, Admin Registry skill-state rows, relevant helper-memory tables, SKILLROUTE-* rows when skill routing may apply, Operator Tools Registry when reusable local tools may apply, and task-specific current tables such as Delete Queue, Validation Evidence, or DCOIR Lifecycle Ledger. 8) Read GitHub only when the immediate task specifically requires governed repo source content, source-code validation, package generation, repo promotion/readback, promoted-history comparison, or explicit repo readback. Do not fetch GitHub CP-01/CP-02 during normal startup when CONTROL-STARTUP-AIRTABLE-FIRST is present/current.",
+                                       "project_attachment_set":  "Project attachments remain bootstrap/runtime pointers only. They must not reintroduce Project-space readable-source duplication or override Airtable live authority."
+                                   }
+                    },
+                    {
+                        "id":  "recJTlDOVagXu7IjK",
+                        "createdTime":  "2026-04-24T20:34:08.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "control_key":  "GCP-001",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "repo_role_definition":  "malwaredevil/dcoir-collector is governed readable source, helper-skill source, collector source, control plane, and promoted history.",
+                                       "retention_class":  "review",
+                                       "last_confirmed_text":  "2026-04-24 batch CSV import preparation",
+                                       "retained_repo_surfaces":  "CP-01; CP-02; project docs/logs; dcoir_skills; collector source; Gemini/prompt-pack source; important promoted decisions.",
+                                       "workspace_model":  "Airtable-first execution state; GitHub governed readable source/control plane/promoted history; Project space bootstrap/runtime anchor only.",
+                                       "review_after":  "2026-04-28",
+                                       "authority_order":  "Project Instructions -\u003e CP-00 -\u003e GitHub CP-01 -\u003e GitHub CP-02 -\u003e Airtable Queue Control/Work Items/active Plans for live queue.",
+                                       "status":  "active",
+                                       "startup_chain":  "Project Instructions -\u003e CP-00 -\u003e dcoir-session-resume -\u003e dcoir-memory-preflight -\u003e Airtable queue/plan state -\u003e task-specific helper skill.",
+                                       "project_attachment_set":  "Project space is bootstrap/runtime anchor only, not a second readable text repository."
+                                   }
+                    },
+                    {
+                        "id":  "reccMrDaVNElX1xLE",
+                        "createdTime":  "2026-04-24T22:03:42.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "control_key":  "GCP-AIRTABLE-LIVE-QUEUE-AUTHORITY",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "repo_role_definition":  "GitHub records durable decisions and promoted history; ordinary queue churn stays Airtable-only.",
+                                       "retention_class":  "review",
+                                       "live_queue_authority":  true,
+                                       "last_confirmed_text":  "2026-04-24 seeded from CP-02 and LOG-70 queue authority language.",
+                                       "retained_repo_surfaces":  "Queue Control, Work Items, Plans, Plan Tasks, Session Checkpoints, Operator Preferences.",
+                                       "workspace_model":  "Airtable-first live queue authority model",
+                                       "review_after":  "2026-04-28",
+                                       "authority_order":  "2",
+                                       "status":  "active",
+                                       "startup_chain":  "After re-anchor, use Airtable Queue Control, Work Items, and active Plans for live queue order and resume-first execution.",
+                                       "project_attachment_set":  "Airtable is the structured live execution state for queue and plan work."
+                                   }
+                    },
+                    {
+                        "id":  "recckEFlzXh6R2KUJ",
+                        "createdTime":  "2026-04-26T09:49:33.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "control_key":  "GCP-T4.0.5-github-primary-airtable-live-authority-20260426",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "repo_role_definition":  "GitHub malwaredevil/dcoir-collector is the governed readable source, helper-skill source, control plane, and promoted history. It is not the live queue authority for ordinary priority/branch selection.",
+                                       "retention_class":  "review",
+                                       "live_queue_authority":  true,
+                                       "last_confirmed_text":  "2026-04-26T09:50Z",
+                                       "retained_repo_surfaces":  "Current control-plane set named by CP-01: CP-01, CP-02, DOC-01, DOC-03, DOC-05, DOC-06, LOG-03, LOG-05, LOG-69, LOG-70. Retired todo surfaces remain historical/migration notes unless T99 later removes them after gates.",
+                                       "workspace_model":  "GitHub-primary readable-source model plus Airtable live operational authority",
+                                       "review_after":  "2026-04-28",
+                                       "authority_order":  "Startup/source authority: Project Instructions -\u003e Project CP-00 -\u003e GitHub CP-01 -\u003e GitHub CP-02 -\u003e Airtable live queue/plan surfaces for execution order. GitHub remains governed readable source; Airtable owns live queue, plans, session carry-forward, operator preferences, testing catalog state, and durable helper memory where tables exist.",
+                                       "status":  "active",
+                                       "startup_chain":  "1. Project Instructions. 2. CP-00 bootstrap pointer when present. 3. dcoir-session-resume. 4. GitHub CP-01 then CP-02 when current-state matters. 5. dcoir-memory-preflight. 6. Airtable Queue Control, Work Items, active Plans, Plan Tasks. 7. Skill-specific durable memory tables when relevant.",
+                                       "project_attachment_set":  "Project-space CP-00 and operator-facing attachment files are bootstrap/runtime aids only. They do not replace GitHub CP-01/CP-02 or Airtable records."
+                                   }
+                    },
+                    {
+                        "id":  "reclygacurJNtEe0E",
+                        "createdTime":  "2026-04-24T22:03:42.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "control_key":  "GCP-GITHUB-PRIMARY-GOVERNED-TEXT",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "repo_role_definition":  "GitHub repository malwaredevil/dcoir-collector remains the governed readable source and promoted history surface for DCOIR text artifacts.",
+                                       "retention_class":  "review",
+                                       "last_confirmed_text":  "2026-04-24 seeded from current GitHub control-plane sources CP-01/CP-02/LOG-70.",
+                                       "retained_repo_surfaces":  "CP-01, CP-02, LOG-03, LOG-05, DOC sources, project_sources, knowledge, dcoir_skills, collector source, prompt-pack/runtime sources.",
+                                       "workspace_model":  "GitHub-primary governed readable source model",
+                                       "review_after":  "2026-04-28",
+                                       "authority_order":  "1",
+                                       "status":  "active",
+                                       "startup_chain":  "Project Instructions -\u003e CP-00 when present -\u003e dcoir-session-resume -\u003e dcoir-memory-preflight -\u003e task-specific helpers.",
+                                       "project_attachment_set":  "Project space is bootstrap/runtime anchor only, not duplicate readable text repository."
+                                   }
+                    },
+                    {
+                        "id":  "recnAc3Acnc8rWUJF",
+                        "createdTime":  "2026-04-24T22:03:42.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "control_key":  "GCP-CURRENT-STATE-20260417-CLOSEOUT",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "repo_role_definition":  "Current state id 2026-04-17-infrastructure-first-reprioritization-closeout-v1; CP-02 version 4.0.9.",
+                                       "retention_class":  "review",
+                                       "last_confirmed_text":  "2026-04-24 seeded from CP-02 4.0.9 and LOG-70.",
+                                       "retained_repo_surfaces":  "CP-01, CP-02, LOG-70, LOG-03, LOG-05.",
+                                       "workspace_model":  "Promoted current-state history model",
+                                       "review_after":  "2026-04-28",
+                                       "authority_order":  "3",
+                                       "status":  "active",
+                                       "startup_chain":  "Use the promoted current state as governed history while deferring fresher ordinary queue order to Airtable when applicable.",
+                                       "project_attachment_set":  "Airtable queue state can supersede GitHub narrative for live order until a later promoted refresh."
+                                   }
+                    }
+                ]
+}

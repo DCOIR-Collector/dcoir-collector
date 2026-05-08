@@ -1,0 +1,1792 @@
+{
+    "table_id":  "tblgsQAVWvh8K7gIR",
+    "table_name":  "Work Items",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  111,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  true,
+    "records":  [
+                    {
+                        "id":  "rec3Ablyo4ZgUliqq",
+                        "createdTime":  "2026-04-19T12:43:22.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Completed through source/readback plus GitHub Actions build-artifact proof. The optional EXE build lane now embeds support-tool binaries staged from supporting_assets/DCOIR_Collector.zip into the PS2EXE output and produces DCOIR_Collector_optional_exe_variant.exe plus embedded_tool_payload_manifest.json. Operator screenshot confirmed successful workflow artifact output shape. Endpoint/runtime execution remains untested because workplace controls prevent downloading/executing EXE/ZIP artifacts.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260419-PS2EXE-BOUND-LANE",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/Collector_Runtime_Package_Manifest.json.txt; project_sources/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt; project_sources/generation_validation/compile_dcoir_collector_runtime.py; project_sources/generation_validation/validate_dcoir_collector_runtime_package.py",
+                                       "Work Item":  "Bounded PS2EXE manual-trigger EXE variant lane",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  5
+                                   }
+                    },
+                    {
+                        "id":  "rec3nInfy2hPLqigx",
+                        "createdTime":  "2026-05-01T12:50:17.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Correction from operator: the GitHub Desktop update bundle was provided, but it was not noticeable enough and was easy to scroll past. This is not evidence that the GitHub lane was missing. Keep as a general UX/workflow improvement: skill-update responses should make the installable skill ZIP and matching GitHub update lane visually obvious, short, and hard to miss.",
+                                       "updated_at":  "2026-05-01T13:18:00.000Z",
+                                       "Item ID":  "WI-20260501-SKILL-UPDATE-DELIVERY-VISIBILITY",
+                                       "Work Item":  "Make skill-update delivery links more obvious",
+                                       "Status":  "todo",
+                                       "Queue Rank":  270
+                                   }
+                    },
+                    {
+                        "id":  "rec3nsh8AeXARP3eg",
+                        "createdTime":  "2026-04-10T14:39:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The project needs one reusable repo-wide rule set for growth-prone governed files, not only a collector-specific example.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-STR-001",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/04_Structure_And_Refactor_Lane.txt",
+                                       "Work Item":  "Finish and apply the governed structural refactor standard in DOC-04",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "rec4H3VB3SkS4qF9j",
+                        "createdTime":  "2026-04-14T11:48:13.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Completed in-session on 2026-04-14 via Perplexity Comet. Parent issue #35 and child issues #36 through #44 were created in malwaredevil/dcoir-collector.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260414-COLLECTOR-TEST-GAP-ISSUES",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "GitHub issues for chunking regression, true targeted filtering gap, simplified targeted UX, built-in help output, real parallel runtime execution, and Gemini instruction-density regression",
+                                       "Work Item":  "Open GitHub issue set for collector test-surface and runtime gaps",
+                                       "Status":  "todo",
+                                       "Priority":  "high"
+                                   }
+                    },
+                    {
+                        "id":  "rec4XTYVDYHZHLd8n",
+                        "createdTime":  "2026-04-28T18:59:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record recwFGWuXDFjvCJGf / idea_id=IDEA-20260420-OBS-002. Idea detail: Operator observation: at the start of new alert-triage chats, Gemini still emits an operational-readiness gate such as \u0027Initializing session under Master Prompt. Confirming operational readiness\u0027 followed by requests to confirm enterprise web search and live response tool availability. The operator no longer wants this pre-triage readiness exchange because it is no longer needed and delays the actual work. Desired behavior: once the known environment status is available, the agent should jump di",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260420-obs-00",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260420-obs-002",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Gemini still emits unnecessary readiness gate before initial alert triage",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "rec4ldzSzBr9SmvrW",
+                        "createdTime":  "2026-04-28T18:59:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record rechuyEzIZkOfUDqc / idea_id=IDEA-20260423-GEM-ATTACHMENT-IOC-PROVENANCE. Idea detail: Add a reusable Gemini workflow rule for report-driven IOC expansion/removal: when the analyst uploads incident documents and asks Gemini to add missing IOCs or remove incident-localized ones, Gemini must enumerate the files it actually reviewed, distinguish analyst-supplied IOCs from report-derived IOCs, and give short provenance notes for each added or removed indicator family. If only a subset of attachments was reviewed, Gemini should say so plainly instead of implying full review coverage.",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260423-gem-at",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260423-gem-attach",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Gemini attachment review must state exact IOC provenance",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "rec53HwsCX55JYBSs",
+                        "createdTime":  "2026-04-14T08:09:11.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator clarified that targeted collection should support real filtering semantics, not only popup/script profile shortcuts. Desired first implementation: explicit start date/time and end date/time filtering, usable directly on the first collector run as well as ideally in enrichment or log-related lanes, so a machine can be collected immediately against a bounded query rather than only after a broad T1/T2 pass. Current source shows WindowStart and WindowEnd only as targeted collection guidance/context surfaces, while LogText uses Hours/EventId/MaxEvents rather than exact start-end filtering.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260414-COLLECTOR-TIME-WINDOW-FILTERS",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/DCOIR_Collector.ps1; project_sources/collector_parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1; project_sources/collector_parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1",
+                                       "Work Item":  "Collector: add exact start/end time filtering for first-run and log-related lanes",
+                                       "Status":  "todo",
+                                       "Priority":  "high"
+                                   }
+                    },
+                    {
+                        "id":  "rec5VkfHBs6bqUsN5",
+                        "createdTime":  "2026-04-10T14:30:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Future sessions should not have to rediscover what was extracted, where it lives, and why it matters.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-QUE-008",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/02_Queued_Next.txt",
+                                       "Work Item":  "Add governed workflow and navigation notes for newly extracted readable source folders",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "rec6LbZq8U05V4qc4",
+                        "createdTime":  "2026-04-10T14:49:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Extracted readable text should be integrated deliberately, not left as loose side material.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DEF-001",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/05_Deferred_Or_Conditional.txt",
+                                       "Work Item":  "Integrate future extracted or newly received readable bundles deliberately into governed GitHub locations",
+                                       "Status":  "todo",
+                                       "Priority":  "low"
+                                   }
+                    },
+                    {
+                        "id":  "rec84MQ77wg6TwPMq",
+                        "createdTime":  "2026-04-10T14:39:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The routing note is the richer current descriptive inventory surface for helper-skill selection.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DOC-002",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/03_Documentation_And_Knowledge_Lane.txt",
+                                       "Work Item":  "Keep DCOIR helper-skills routing note aligned to current inventory and workflow rules",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "rec8NefUC8zeWMwi4",
+                        "createdTime":  "2026-04-30T16:44:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator requested a future work item outside the active plan to review all DCOIR helper skills because their markdown appears repetitive and confusing. Scope includes revising/improving SKILL.md and references, verifying every skill that has a same-named Airtable table actually uses that table for helper memory, and improving routing so skills are invoked when applicable.",
+                                       "Item ID":  "WI-20260430-DCOIR-HELPER-SKILL-MARKDOWN-AUDIT",
+                                       "Repo Path or Skill":  "dcoir_skills/*; helper-specific Airtable memory tables; skill invocation behavior",
+                                       "Work Item":  "Audit and simplify all DCOIR helper skills and Airtable-memory usage",
+                                       "Status":  "todo",
+                                       "Queue Rank":  260
+                                   }
+                    },
+                    {
+                        "id":  "rec91gP0ZnJKexlSb",
+                        "createdTime":  "2026-04-10T14:30:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Extending the tracker was the smallest correct first move, but a dedicated skill may become cleaner if the workflow grows broader.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-QUE-005",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/02_Queued_Next.txt",
+                                       "Work Item":  "Decide later whether session close-out should stay inside dcoir-session-tracker or become its own skill",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "rec9FVdMfdRwlwSu6",
+                        "createdTime":  "2026-04-10T14:49:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Packaging and delivery artifacts should not quietly drift behind the live control plane.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-STR-006",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/04_Structure_And_Refactor_Lane.txt",
+                                       "Work Item":  "Review whether remaining repo delivery artifacts still lag current split todo and task-memory posture",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "rec9PPkvEr0cbktvy",
+                        "createdTime":  "2026-04-15T15:34:30.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "This migration replaces GitHub todo files with Airtable as the sole live todo authority and will drive the downstream skill and governed-source refresh bundles.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "promoted_history_only",
+                                       "Item ID":  "WI-20260415-airtable-todo-authority-migration",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "Airtable / DCOIR workflow / skill update lane",
+                                       "Work Item":  "Airtable-only todo authority migration",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  99
+                                   }
+                    },
+                    {
+                        "id":  "recA1iy7x40kbvDTg",
+                        "createdTime":  "2026-04-10T14:39:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Old partial structures should not be removed until dependency checks confirm nothing still relies on them.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-STR-004",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/04_Structure_And_Refactor_Lane.txt",
+                                       "Work Item":  "Review remaining legacy or orphaned split-attempt artifacts before cleanup",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recAjNEzwYfmPdcom",
+                        "createdTime":  "2026-04-28T18:59:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record recbydhQ6bOUoQrIG / idea_id=IDEA-20260423-GEM-NORESULT-HONESTY-GATE. Idea detail: Add a durable Gemini validation/repair rule that when analyst-run KQL/ESQL/osquery steps return no results, Gemini must treat that as bounded absence rather than converting it into proof of stealth, malware, or collapse of the benign hypothesis. Require the response to explicitly separate: what the alert directly proves, what the no-result query fails to add, and what coverage limitations could still explain the gap.",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260423-gem-no",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260423-gem-noresu",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Gemini no-results honesty gate",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recB3p5KcuGDZHtLT",
+                        "createdTime":  "2026-04-10T14:30:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The project needs a durable graded validation posture with explicit pass or fail metrics that evolves whenever behavior changes.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-QUE-001",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/02_Queued_Next.txt",
+                                       "Work Item":  "Build a CI/CD-style end-to-end and edge-case validation regime",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  7
+                                   }
+                    },
+                    {
+                        "id":  "recB7CP3lqwGhFNXb",
+                        "createdTime":  "2026-04-28T15:19:52.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator wants yes/no-like fields to be actual checkboxes and multi-state workflow/status fields to be single-selects where appropriate. Delete Queue was partially hardened with approved_to_delete checkbox and delete_stage single-select. Base-wide type standardization remains open and should follow description/default review to avoid unsafe type changes.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "closeout_only",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-AIRTABLE-FIELD-STANDARDIZATION-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "Airtable retained tables",
+                                       "Work Item":  "Standardize Airtable field types across retained tables",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  40
+                                   }
+                    },
+                    {
+                        "id":  "recBgsyRyXg3O44C8",
+                        "createdTime":  "2026-04-28T14:26:02.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator stated on 2026-04-28 that all old Airtable Automations UI automations were disabled and deleted.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-AIRTABLE-OLD-AUTOMATIONS-UI-REVIEW-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "Airtable Automations UI",
+                                       "Work Item":  "Review old Airtable automations after Delete Queue cutover",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  50
+                                   }
+                    },
+                    {
+                        "id":  "recCUn4whe7fer4P0",
+                        "createdTime":  "2026-05-07T05:15:03.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Source: Scribe observation 1 from 2026-05-07. After Elastic alert upload, Gemini Agent emitted fenced YAML blocks containing internal readiness, normalized evidence, routing, scope recommendations, query-planning notes, and output-composer instructions before the final SOC-facing answer. Prior defect manifested as JSON leakage; current iteration leaks YAML instead. Root issue is internal prime/sub-agent handoff/state being exposed to the operator. Expected behavior: operator sees only final analyst-facing output needed for triage: BLUF, facts, analysis, validated query, and analyst scratchpad. Recommended next-iteration fix: deterministic final output gate/sanitizer; final composer owns all operator-visible text; block fenced internal yaml/json and internal keys such as readiness_confirmed, immediate_work_family, normalized_evidence, notes_for_query_planner, notes_for_output_composer, selected_command_family, candidate_datasets_ranked. Regression test: upload Elastic alert and assert final response contains no internal YAML/JSON/state blocks. Severity: critical.",
+                                       "retention_class":  "operational",
+                                       "Work Type":  "bug",
+                                       "GitHub Promotion Need":  "likely_required",
+                                       "Authority Scope":  "airtable-first",
+                                       "Item ID":  "WI-20260507-GEMINI-OUTPUT-SANITIZER-001",
+                                       "Repo Path or Skill":  "Gemini Agent framework / output composer / response sanitizer",
+                                       "Work Item":  "Fix Gemini Agent internal handoff/state leakage in operator output",
+                                       "Area":  "gemini",
+                                       "Status":  "todo",
+                                       "Priority":  "critical",
+                                       "Queue Rank":  9001
+                                   }
+                    },
+                    {
+                        "id":  "recDuliYuGWaa4mMp",
+                        "createdTime":  "2026-04-10T14:30:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Rapid project growth may have introduced overlap or stale patterns that should be simplified only after the current workflow line is settled.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-QUE-007",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/02_Queued_Next.txt",
+                                       "Work Item":  "Audit repo for true duplicate content after current workflow line settles",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recE8RCIvHY722Drp",
+                        "createdTime":  "2026-04-17T13:38:04.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Reminder follow-on from PLAN-20260417-github-airtable-overlap-cleanup. Re-check later whether the three temporary cleanup Airtable tables are still worth retaining as audit history or can be safely deleted.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260417-cleanup-airtables-delete-review",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "Cleanup Items; Cleanup Decision Matrix; Cleanup Support Artifacts",
+                                       "Work Item":  "Review temporary cleanup Airtables for deletion",
+                                       "Status":  "todo",
+                                       "Priority":  "low",
+                                       "Queue Rank":  999
+                                   }
+                    },
+                    {
+                        "id":  "recEUZoMN5vWsTHKo",
+                        "createdTime":  "2026-05-01T10:19:11.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-05-01T12:39:00.000Z",
+                                       "Priority":  "high",
+                                       "created_at":  "2026-05-01T10:25:00.000Z",
+                                       "Repo Path or Skill":  "operator_tools/github_desktop_lane/",
+                                       "GitHub Promotion Need":  "closeout_only",
+                                       "retention_class":  "operational",
+                                       "Authority Scope":  "airtable-first",
+                                       "Item ID":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "Work Item":  "Modularize remaining GitHub Desktop lane operator tools",
+                                       "canonical_parent_plan_id":  "PLAN-20260501-OPERATOR-TOOLS-MODULARIZATION-FOLLOWON",
+                                       "Status":  "todo",
+                                       "Evidence / Notes":  "Closed after validated module split for remaining GitHub Desktop lane operator tools. Created/validated Dcoir.Git, Dcoir.Snapshot, and Dcoir.RepoPatch. Converted and validated git diagnostic, safe pre-pull, text-only snapshot, targeted snapshot, and repo patch apply tools. README.md and tool_catalog.json readback confirmed validated module architecture and tool status. Remaining harnesses are intentionally thin wrappers around the Actions orchestrator; no additional unconverted heavy operator tool remains in this branch scope.",
+                                       "Queue Rank":  1
+                                   }
+                    },
+                    {
+                        "id":  "recFOXaSWDrVtsbF9",
+                        "createdTime":  "2026-04-28T16:07:38.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from operator correction during resume from SESSION-CHECKPOINT-20260428-STARTUP-CONTROL-RECOVERY-HANDOFF: \u0027GitHub empowerment workflows: needs work item.\u0027 Scope is to follow through on GitHub connector/project empowerment workflows and any repo/project setup required to make ChatGPT use GitHub effectively. Do not move this ahead of the active Airtable schema-description normalization branch.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "Item ID":  "WI-GITHUB-EMPOWERMENT-WORKFLOWS-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "GitHub empowerment workflow follow-through",
+                                       "Status":  "todo"
+                                   }
+                    },
+                    {
+                        "id":  "recG9OVF58XQUdaNj",
+                        "createdTime":  "2026-05-01T14:52:33.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator does not want one environment variable per Airtable table. Current Work Items cleanup tool should eventually become a config-driven generic table cleanup tool. General environment variables should remain token, base, output folder, and optional cleanup config path. Table-specific IDs, field mappings, option maps, defaults, and delete-prefix targets should live in a config file selected once.",
+                                       "updated_at":  "2026-05-01T14:55:00.000Z",
+                                       "Item ID":  "WI-20260501-GENERALIZE-AIRTABLE-TABLE-CLEANUP-TOOL",
+                                       "Work Item":  "Generalize Airtable table cleanup tool using config files",
+                                       "Status":  "todo",
+                                       "Queue Rank":  278
+                                   }
+                    },
+                    {
+                        "id":  "recGz5ki6hQILBP63",
+                        "createdTime":  "2026-04-17T09:17:15.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Collector coverage inventory parent T1.2 closed after COL-TARGET-001 backfill; runtime-only proofs remain cataloged as Not Run and are not claimed as executed.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260417-COLLECTOR-MASTER-QUEUE-P3",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "PLAN-20260416-collector-master-wave",
+                                       "Work Item":  "Collector master merged hardening and validation wringer wave",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  1
+                                   }
+                    },
+                    {
+                        "id":  "recGzgaQGfB6brOQK",
+                        "createdTime":  "2026-04-28T18:59:47.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record reczFoRC5muCMMeQH / idea_id=IDEA-20260423-GEM-JSON-INTAKE-NO-SCAFFOLD. Idea detail: Add a reusable Gemini workflow rule that when the analyst pastes alert JSON, Gemini must normalize it directly into the standard analyst-facing DCOIR format rather than exposing readiness objects, scope-planner JSON, classifier JSON, provenance arrays, or internal agent hierarchy explanations. If the model needs internal structuring, that structure must remain hidden and the first visible answer should already be in the normal operator format.",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260423-gem-js",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260423-gem-json-i",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Gemini alert-JSON intake must not expose scaffold JSON",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recH6VZKSAq9gcP3T",
+                        "createdTime":  "2026-04-10T14:30:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Reopened to match the current authoritative governed control-plane and GitHub mirror posture. A prior Airtable note had recorded this as closed, but the governed control plane later corrected the earlier premature closure and kept installed-skill parity remediation open as an active item. Use this Airtable row as the direct counterpart to GitHub mirror issue #12.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "GOV-QUEUE-001",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/01_Active_Now.txt; dcoir_skills/skill_parity_manifest.json; dcoir_skills/skill_parity_summary.md",
+                                       "Work Item":  "Resolve installed-skill parity drift against governed repo baseline",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  4
+                                   }
+                    },
+                    {
+                        "id":  "recHVeedEOm00PFps",
+                        "createdTime":  "2026-04-10T14:49:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Imported from the closeout history because you asked for closed states too. The bounded duplicate-readable-surface cleanup was completed and the later reopen correction explicitly kept it closed and intact.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DONE-001",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/LOG-66_DCOIR_Remaining_Queue_Closeout_And_Duplicate_Surface_Cleanup_2026-04-09.txt",
+                                       "Work Item":  "Duplicate-readable-surface cleanup completed and remains closed",
+                                       "Status":  "todo",
+                                       "Priority":  "low"
+                                   }
+                    },
+                    {
+                        "id":  "recIEOq1eWxY0dnue",
+                        "createdTime":  "2026-04-10T14:39:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "These are core project deliverables and operating principles, not side notes.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DOC-005",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/03_Documentation_And_Knowledge_Lane.txt",
+                                       "Work Item":  "Keep master prompt, Gemini design line, DFIR principles, and enrichment posture visible in docs",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recIVGeYXLdxNbujz",
+                        "createdTime":  "2026-04-10T14:49:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The current update should validate the real workflow before introducing another helper-skill surface.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DEF-005",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/05_Deferred_Or_Conditional.txt",
+                                       "Work Item":  "Treat dedicated session close-out skill as a bounded follow-on decision only if tracker workflow later proves it cleaner",
+                                       "Status":  "todo",
+                                       "Priority":  "low"
+                                   }
+                    },
+                    {
+                        "id":  "recJ04VFXYpNwKt0C",
+                        "createdTime":  "2026-04-14T11:48:13.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Completed in-session on 2026-04-14. GitHub Desktop manual repo-update bundle was applied and the updated skills were installed from the generated skills zip. This completes the initial skill-source/doc/governance rollout for the Airtable Validation Test Cases testing workflow.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260414-AIRTABLE-TEST-SKILL-UPDATES",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "dcoir-session-resume; dcoir-memory-preflight; dcoir-validation-orchestrator; dcoir-session-tracker; dcoir-collector-qa; dcoir-live-test-remediation-planner",
+                                       "Work Item":  "Update key DCOIR skills to enforce Airtable test-catalog workflow",
+                                       "Status":  "todo",
+                                       "Priority":  "high"
+                                   }
+                    },
+                    {
+                        "id":  "recJKsrzAbGlbLU53",
+                        "createdTime":  "2026-04-30T16:18:00.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator requested a future work item, outside the active plan, to create an Airtable automation that updates each table\u0027s updated_at field to the current date/time when a record is inserted or changed. Need account for table-specific field names and Airtable automation limits.",
+                                       "Item ID":  "WI-20260430-AIRTABLE-UPDATED-AT-AUTOMATION",
+                                       "Repo Path or Skill":  "Airtable automation; all governed tables with updated_at-like fields",
+                                       "Work Item":  "Design Airtable updated_at automation for all governed tables",
+                                       "Status":  "todo",
+                                       "Queue Rank":  250
+                                   }
+                    },
+                    {
+                        "id":  "recJkp18zrbP62ewe",
+                        "createdTime":  "2026-04-28T16:09:29.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from operator correction during resume from SESSION-CHECKPOINT-20260428-STARTUP-CONTROL-RECOVERY-HANDOFF: \u0027Backfill/ETL preferences into the proper skills/tables: needs durability if not already.\u0027 Scope is to verify that package standards, response discipline, toolchain preferences, Airtable authority rules, and other operator preferences are stored in the correct durable surfaces and later encoded into the relevant dcoir-* skills or project instructions when appropriate. Do not derail the active Airtable schema-description normalization branch.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "Item ID":  "WI-DCOIR-PREFERENCE-BACKFILL-ETL-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Backfill/ETL operator preferences into proper skills and Airtable tables",
+                                       "Status":  "todo"
+                                   }
+                    },
+                    {
+                        "id":  "recKPdqAc14pqxis2",
+                        "createdTime":  "2026-04-10T14:39:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Human-readable knowledge is a first-class project asset.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DOC-003",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/03_Documentation_And_Knowledge_Lane.txt",
+                                       "Work Item":  "Expand knowledge into a fuller wiki-style documentation structure",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recKfap5yBTsLsfdD",
+                        "createdTime":  "2026-04-14T11:48:13.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Completed in-session on 2026-04-14 via the GitHub Desktop update bundle. Repo-readable docs/knowledge/governance surfaces for the Airtable-first testing workflow were applied.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260414-AIRTABLE-TEST-DOC-UPDATES",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "README.md; project_sources/README.md; knowledge/README.md; Knowledge - 02 - Elastic Quick Start; Knowledge - 04 - Tier 1 Collect Runbook; Knowledge - 08 - Troubleshooting; possible new collector testing procedure doc",
+                                       "Work Item":  "Add GitHub docs for Airtable-first testing workflow and collector live-test lessons",
+                                       "Status":  "todo",
+                                       "Priority":  "high"
+                                   }
+                    },
+                    {
+                        "id":  "recKn9TtAFZBlQ6Cl",
+                        "createdTime":  "2026-04-28T15:25:43.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Open project item: future Gemini design and repair work must actually consult the Gemini Research Reference table, not rely on chat memory alone. This was identified in the prior transcript and carried in the active session tracker.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-GEMINI-RESEARCH-REFERENCE-WIRING-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "Gemini Research Reference / Gemini prompt-pack workflows",
+                                       "Work Item":  "Wire Gemini work to Gemini Research Reference",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  95
+                                   }
+                    },
+                    {
+                        "id":  "recKqichK0zmiiHEl",
+                        "createdTime":  "2026-05-01T19:25:22.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator confirmed GitHub Pro plus private repo prevents CodeQL/code scanning workflow from uploading results. This is NOT part of PLAN-20260430-exe-knowledge-docs-and-scrub and should be handled only after that plan is closed. Follow-up: replace removed CodeQL workflow with repo-local checks that actually run, such as Python static checks, PowerShell Script Analyzer, workflow YAML/action-version audit, secret-pattern checks, and dependency-manifest checks where available. Do not gate or silence CodeQL as a permanent solution; remove it cleanly and replace with functioning checks.",
+                                       "updated_at":  "2026-05-01T19:30:00.000Z",
+                                       "Item ID":  "WI-20260501-REPLACE-CODEQL-LOCAL-SECURITY-CHECKS",
+                                       "Repo Path or Skill":  ".github/workflows; project_sources/github_actions; operator_tools/github_desktop_lane",
+                                       "Work Item":  "Replace CodeQL with repo-local security checks that work on private Pro repo",
+                                       "Status":  "todo",
+                                       "Queue Rank":  500
+                                   }
+                    },
+                    {
+                        "id":  "recLYzICQYxkOsLkN",
+                        "createdTime":  "2026-04-19T18:49:00.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Post-proof polish item after successful v8-style manual tester run. Remaining visible issues include Git/Python prerequisite labels staying at Waiting despite successful detection, need for a fast smoke-test path for status-only or launcher-only changes, and continued housekeeping/AV-resilience follow-through.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260419-MANUAL-TESTER-POLISH",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/generation_validation/manual_test_framework; local tester delivery bundle; tester UI/status handling",
+                                       "Work Item":  "Manual tester post-proof polish wave",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  14
+                                   }
+                    },
+                    {
+                        "id":  "recMc5icEGiXMK0Zw",
+                        "createdTime":  "2026-04-28T18:59:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record rechqtpJcGXrdw6tN / idea_id=IDEA-20260423-GEM-SIEM-SYNTAX-GATE. Idea detail: Add a durable Gemini validation/repair rule that any emitted Elastic KQL or ES|QL intended for operator execution must be parser-safe before being presented as ready. After the first operator-reported parser failure, Gemini should switch into bounded syntax-repair mode: identify the exact failing token class, make one disciplined correction, and avoid fresh unsupported changes such as slash-substitution for Windows paths unless explicitly grounded. Do not claim the query is fixed until the opera",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260423-gem-si",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260423-gem-siem-s",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Gemini SIEM query parser-safety gate",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recMkLZMRR9yLGnhX",
+                        "createdTime":  "2026-04-28T18:59:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record recGvIGqOccmhwACg / idea_id=IDEA-20260423-T2-PATHWAYS-001. Idea detail: Future-session carry-forward from live collector validation: T2 is currently blocked after T1/enrichment because quick collect T2 failed with package-not-found for DCOIR_Collector.zip. Operator-directed follow-up is to map and address each T2 execution path explicitly: (1) T2 as the first command when script and zip are uploaded, (2) T2 as a follow-on command after T1 has executed, and (3) T2 as a follow-on command after enrichment has executed. Working plan note: for the current session, contin",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260423-t2-pat",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260423-t2-pathway",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Map T2 execution pathways and fix strategy after blocked live test",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recNA2wDhvkKgnEgh",
+                        "createdTime":  "2026-04-15T21:50:59.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Session-complete validation state: validate-on-push run #134 succeeded after the collector loader activation commit. manual-gemini-bundle-build run #11 succeeded. manual-collector-runtime-package-build run #11 succeeded. manual-full-validation Core succeeded. manual-full-validation FullRegression succeeded. scheduled-health-check manual execution also succeeded. Current collector repo state includes both the explicit event-window override part and the live loader wiring; current Gemini governed source remains materially dense and current build/regression lanes are passing. Residual watch item: GitHub issue #15 remains an automatic-schedule verification item rather than a manual-run viability problem.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260415-WORKFLOW-VALIDATION-WAVE",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  ".github/workflows/ ; project_sources/generation_validation/ ; project_sources/run_DCOIR_Tests.ps1 ; DCOIR_Gemini_Bundle_Source",
+                                       "Work Item":  "Workflow/action validation and remediation wave",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  99
+                                   }
+                    },
+                    {
+                        "id":  "recNOfV3StvW4ovIf",
+                        "createdTime":  "2026-04-10T14:30:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Agent Mode may improve operator experience or workflow coverage, but it should not be adopted casually or treated as available by assumption.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-QUE-004",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/02_Queued_Next.txt",
+                                       "Work Item":  "Explore how Agent Mode could fit the DCOIR workflow more seamlessly",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  10
+                                   }
+                    },
+                    {
+                        "id":  "recODV6gojloR0HGI",
+                        "createdTime":  "2026-04-28T18:59:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record rec35NZFdhhbLzEvd / idea_id=IDEA-20260420-OBS-003. Idea detail: Operator observation: in two fresh chat sessions, immediately after the operator provided operational status in response to the readiness prompt, Gemini emitted a large raw JSON readiness block and only then produced the user-facing response. The JSON included readiness_confirmed, tool availability, missing_minimum_evidence, known_scope_defaults, and related internal structured state. Desired behavior: once the environment is confirmed, Gemini should emit only the final operator-facing triage re",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260420-obs-00",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260420-obs-003",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Gemini emits large readiness JSON block after environment confirmation in new sessions",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recOenVLVkK8GvoiZ",
+                        "createdTime":  "2026-04-10T14:39:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Resume and governance must remain clean even after structural refactors.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-STR-005",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/04_Structure_And_Refactor_Lane.txt",
+                                       "Work Item":  "Preserve cross-file traceability whenever governed files are split",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recPdWg7CUczTaBsu",
+                        "createdTime":  "2026-04-10T12:16:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Demo row created to show how dcoir-session-tracker opens a tracker-owned Airtable Work Item and later closes that same row automatically when completion is verified.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "DEMO-SESSION-001",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "dcoir-session-tracker",
+                                       "Work Item":  "Demo session-tracker work item lifecycle",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recQ3I9hfmmAqxc21",
+                        "createdTime":  "2026-04-19T14:09:44.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator requested that once the manual testing platform is proven in a real live run, it should become the durable default way to execute DCOIR manual local tests, with maintainable control surfaces and future update paths.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260419-MANUAL-TEST-FRAMEWORK-DURABLE",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "Manual test framework bundle; collector validation workflow; local testing knowledge surfaces",
+                                       "Work Item":  "Promote manual test framework into durable default DCOIR local validation method after live proof",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  13
+                                   }
+                    },
+                    {
+                        "id":  "recQG2NN1ugNvspC3",
+                        "createdTime":  "2026-05-01T14:29:44.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator wants every current and future local DCOIR operator tool to avoid hard-coded local paths and IDs where practical. Tools should read named local configuration values first, clearly report which source supplied paths and IDs, avoid printing secret values, and use safe fallbacks only when local configuration is missing.",
+                                       "updated_at":  "2026-05-01T14:35:00.000Z",
+                                       "Item ID":  "WI-20260501-STANDARDIZE-LOCAL-TOOL-CONFIG-HANDLING",
+                                       "Work Item":  "Standardize local tool configuration handling",
+                                       "Status":  "todo",
+                                       "Queue Rank":  276
+                                   }
+                    },
+                    {
+                        "id":  "recQJcXjsodnihULm",
+                        "createdTime":  "2026-04-28T15:25:43.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator requested: first clear Repo Surface Registry data, then provide a current GitHub snapshot; ChatGPT should map the data to the Repo Surface Registry fields and provide a CSV for Airtable import. This belongs after Airtable schema-description cleanup and before later GitHub restructuring decisions that depend on current repo surface truth.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-GITHUB-REPO-SURFACE-REGISTRY-REFRESH-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "Repo Surface Registry / malwaredevil/dcoir-collector",
+                                       "Work Item":  "Refresh Repo Surface Registry from current GitHub snapshot",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  100
+                                   }
+                    },
+                    {
+                        "id":  "recR0gNf1UzwJr6bU",
+                        "createdTime":  "2026-04-10T14:30:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The task-memory bank is now the durable GitHub memory location for validated lessons.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-QUE-006",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/02_Queued_Next.txt",
+                                       "Work Item":  "Continue maintaining and extending knowledge/task_memory",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  11
+                                   }
+                    },
+                    {
+                        "id":  "recRKY3l49Azz3By0",
+                        "createdTime":  "2026-04-10T14:30:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Reopened to match the current authoritative governed control-plane and GitHub mirror posture. Airtable had carried a later note describing an explicit Drive evaluation outcome, but the governed control plane was not refreshed to close this item and still treats the Drive staging decision as active. Keep this row open until the governed repo-readable line explicitly records and closes the decision. Use this Airtable row as the direct counterpart to GitHub mirror issue #13.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "GOV-QUEUE-002",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/01_Active_Now.txt; Google Drive staging evaluation",
+                                       "Work Item":  "Perform optional Google Drive staging evaluation and record the actual decision",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  6
+                                   }
+                    },
+                    {
+                        "id":  "recRRmpt76IASEocK",
+                        "createdTime":  "2026-04-28T18:59:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record recQtKnfZXggsJkxD / idea_id=IDEA-20260416-CODEX-DESKTOP-SETTINGS-REVIEW. Idea detail: Later follow-on requested by the operator: walk through all Codex desktop app settings with screenshot uploads and help set them up properly.",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260416-codex",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260416-codex-desk",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Review Codex desktop app settings with uploaded screenshots",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recRv6RW5j4CHreQw",
+                        "createdTime":  "2026-04-29T17:59:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator requested a future governed branch to turn current dry-run/guard ops workflows into controlled repo automations where appropriate. Scope: design approval gates, sandbox tests, request schemas, no production-file changes until approved, safe apply/delete/restructure behavior, rollback/readback evidence, and operator confirmation steps. This is separate from current schema alignment audit and should not be executed casually during validation branches.",
+                                       "retention_class":  "core",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-GITHUB-CONTROLLED-OPS-AUTOMATION-20260429",
+                                       "Repo Path or Skill":  "GitHub Actions ops workflows, ops request JSONs, approval gates, sandbox/no-op testing, GitHub Desktop delivery safeguards, Delete Queue/source-role governance alignment",
+                                       "Work Item":  "Design controlled GitHub repo automation pathways for ops workflows",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  2
+                                   }
+                    },
+                    {
+                        "id":  "recTB01POGZhMjUnL",
+                        "createdTime":  "2026-04-10T14:49:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The project should not drift into unvalidated execution-path assumptions.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DEF-004",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/05_Deferred_Or_Conditional.txt",
+                                       "Work Item":  "Do not adopt new chat-bound GitHub surfaces, connectors, or Agent Mode paths until explicitly approved and validated",
+                                       "Status":  "todo",
+                                       "Priority":  "low"
+                                   }
+                    },
+                    {
+                        "id":  "recTCtpE34vPaa1oj",
+                        "createdTime":  "2026-04-10T10:09:05.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "2026-04-16: scheduled-health-check workflow passed when executed manually on main. This is positive evidence that the workflow body itself is green, but it does not by itself prove that the scheduled trigger problem is fully resolved. Keep the item open until a real scheduled run lands automatically or the trigger diagnosis is otherwise closed with evidence.\n\n2026-04-19 operator observation: the last apparently automatic scheduled-health-check run was Apr 13, 09:02 GMT+2. Later observed runs were manual workflow_dispatch runs. This strengthened the earlier conclusion: the workflow body itself was green when run manually, but automatic scheduled-trigger proof was still missing.\n\n2026-05-05 closeout: GitHub readback found current automatic schedule proof. chatgpt_staging/status_reports/repo-workflows/scheduled-health-check/25306279467/workflow_report.md reports scheduled-health-check result=success, conclusion=success, source_event=schedule, head_branch=main, workflow_run_id=25306279467, source_created_at=2026-05-04T07:20:29Z, source_updated_at=2026-05-04T07:30:08Z. No workflow code change required; missing proof condition is satisfied.",
+                                       "updated_at":  "2026-05-05T05:20:00.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "AIRTABLE-WORKFLOW-001",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  ".github/workflows/scheduled-health-check.yml",
+                                       "Work Item":  "Fix scheduled-health-check automatic execution",
+                                       "Status":  "done",
+                                       "Priority":  "high"
+                                   }
+                    },
+                    {
+                        "id":  "recTWcBTXrHSGvUnW",
+                        "createdTime":  "2026-04-10T14:30:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The operator wants fewer confirmation clicks, better call efficiency, and durable guidance grounded in what actually works.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-QUE-002",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/02_Queued_Next.txt",
+                                       "Work Item":  "Run a dedicated GitHub optimization and discovery pass",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  8
+                                   }
+                    },
+                    {
+                        "id":  "recTt0On3R8IlcocL",
+                        "createdTime":  "2026-04-13T15:42:28.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Closed on the Airtable side after GitHub mirror issue #10 was closed as completed. Airtable accountability remains part of the mirror pilot posture, but this standalone follow-on row no longer needs to remain in the open work queue.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260413-AIRTABLE-MIRROR-ACCOUNTABILITY",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "Airtable working-state surfaces",
+                                       "Work Item":  "Keep Airtable accountability aligned to GitHub mirror pilot",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recVZarwCLOIa9xq4",
+                        "createdTime":  "2026-04-28T18:59:47.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record recyrumSXpFUA2xTV / idea_id=idea-validate-on-push-failing-20260414. Idea detail: Validate-on-push is currently failing and needs dedicated troubleshooting immediately after the Gemini source-update sequence is finished and accepted. This is the next follow-on technical lane after Gemini, not parallel work right now.",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-validate-on-pus",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-validate-on-push-fa",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Validate-on-push failing after Gemini work",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recVdZnMbyUVOaNOE",
+                        "createdTime":  "2026-04-29T13:00:57.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Activated/resume-first after GitHub Actions validation branch closed on 2026-04-29. Do not begin broad changes until operator continues this branch.",
+                                       "retention_class":  "core",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-AIRTABLE-SCHEMA-ALIGNMENT-AUDIT-20260429",
+                                       "Repo Path or Skill":  "Project Instructions; attached project bootstrap files; dcoir-* skills; malwaredevil/dcoir-collector; Airtable schema/workflow surfaces",
+                                       "Work Item":  "Post-cleanup Airtable schema alignment audit and durable workflow repair",
+                                       "Status":  "todo",
+                                       "Priority":  "critical",
+                                       "Queue Rank":  1
+                                   }
+                    },
+                    {
+                        "id":  "recW2nabUo9RwFcMu",
+                        "createdTime":  "2026-04-10T14:39:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Consistent naming reduces confusion and eases future updates.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-STR-003",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/04_Structure_And_Refactor_Lane.txt",
+                                       "Work Item":  "Normalize naming and folder conventions where older experimental paths remain",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recXTu4z029GcObni",
+                        "createdTime":  "2026-04-28T18:59:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record recxiKW1Gad4BLAR8 / idea_id=IDEA-20260424-airtable-row-delete-trigger. Idea detail: Create an Airtable pattern where a specific lifecycle/delete field value on a row triggers an Airtable automation that deletes that same row. This closes the assistant-side delete_records gap by letting ChatGPT mark records for deletion through ordinary update operations while Airtable performs the actual deletion through an owner-configured automation.",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260424-airtab",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260424-airtable-r",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Create Airtable row-delete trigger automation",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recXsF0RbV4RAHuoN",
+                        "createdTime":  "2026-04-15T15:34:30.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Queued immediately behind the Airtable-only todo authority migration. This remains the next engineering branch after migration closeout.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260415-collector-hardening-queued",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "PLAN-20260414-collector-hardening-wave",
+                                       "Work Item":  "Collector hardening wave",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  3
+                                   }
+                    },
+                    {
+                        "id":  "recYuLUPvX0YeEATq",
+                        "createdTime":  "2026-05-07T05:15:03.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Source: operator request on 2026-05-07. Preserve and later convert the current weekly USB violations report prompt into a reusable agent/skill. Full source prompt is stored in Idea Inbox record IDEA-20260507-USB-VIOLATIONS-AGENT-PROMPT-001. Key workflow: collect CSV/XLSX/tabular USB violations data; use Stuttgart Germany time; enforce Friday reporting-window logic; validate required columns and mappings; classify INCN as NIPR/unclassified and INCS as SIPR/secret; handle SIPR/NIPR split recipients; produce exact plaintext email blocks; never invent or infer unclear source values; include correction tables for user-approved changes.",
+                                       "retention_class":  "operational",
+                                       "Work Type":  "enhancement",
+                                       "GitHub Promotion Need":  "likely_required",
+                                       "Authority Scope":  "airtable-first",
+                                       "Item ID":  "WI-20260507-USB-VIOLATIONS-AGENT-001",
+                                       "Repo Path or Skill":  "Future agent/skill conversion candidate / weekly USB violations report workflow",
+                                       "Work Item":  "Create USB violations weekly report agent or skill",
+                                       "Area":  "skills",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  9002
+                                   }
+                    },
+                    {
+                        "id":  "recZlY8ck0ZIAma0z",
+                        "createdTime":  "2026-04-13T15:42:28.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Manual GitHub mirror normalization is now fully complete. Verified post-run state: MIRROR-INIT-001 (#8), MIRROR-INIT-002 (#9), and MIRROR-INIT-003 (#10) are closed; MIRROR-INIT-004 (#11), GOV-QUEUE-001 (#12), GOV-QUEUE-002 (#13), and IDEA-20260412-GITHUB-MIRROR (#34) remain open. The DCOIR Mirror project items for #8, #9, and #10 were moved to Done. Agent Delivery and Mirror Bootstrap milestones are closed. No new ambiguity remains from the normalization itself. The only intentionally open strategic question in this line is the broader backlog-ownership question tracked by #34, while governed-doc incorporation remains under #11.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260413-GH-MIRROR-AUDIT",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "GitHub mirror project / GITHUB_SEED_ITEMS.md",
+                                       "Work Item":  "Verify GitHub mirror project against seed model",
+                                       "Status":  "todo",
+                                       "Priority":  "high"
+                                   }
+                    },
+                    {
+                        "id":  "recZpZASNF456JnUg",
+                        "createdTime":  "2026-04-10T14:39:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Growth-prone files should be restructured before they become brittle.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-STR-002",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/04_Structure_And_Refactor_Lane.txt",
+                                       "Work Item":  "Review large governed logs and continuity files for sustainable split candidates",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recaOQx43HhHUG7Wz",
+                        "createdTime":  "2026-04-28T18:59:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record recKgTM6g9nLVIRsQ / idea_id=IDEA-20260422-GH-SHA-MISMATCH-RECOVERY. Idea detail: During live Gemini governed-source repair, a GitHub `update_file` attempt failed with a 409 SHA mismatch because the file had advanced beyond the earlier fetched snapshot. The correct recovery was not to treat this as a mysterious blocker. The right bounded recovery is: refetch the exact live file from `main`, take the new blob SHA as authoritative, rebase the prepared edit onto that current content, and retry the write against the refreshed SHA. Treat this as a normal connector write-race or st",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260422-gh-sha",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260422-gh-sha-mis",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: GitHub update_file SHA mismatch should trigger immediate live-state refetch and reapply, not confusion or delay",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recappbHcFh623M53",
+                        "createdTime":  "2026-04-28T15:25:43.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator strongly prefers scripting packages with numbered click-in-order scripts, visible console output, dry-run/review ZIP at step 02 when relevant, apply/verify/final artifact ZIP, and plain-English instructions in chat. This was captured in Operator Preferences but must also be reflected in the appropriate skills/workflows so it is applied consistently.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-DCOIR-SCRIPTING-PACKAGE-STANDARDIZE-SKILLS-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "dcoir-repo-packager / relevant dcoir-* skills / Operator Preferences",
+                                       "Work Item":  "Encode DCOIR scripting package standards into skills/workflows",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  85
+                                   }
+                    },
+                    {
+                        "id":  "recbQ335sLkVNH45u",
+                        "createdTime":  "2026-05-03T09:05:43.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-05-03T09:12:00.000Z",
+                                       "Priority":  "high",
+                                       "created_at":  "2026-05-03T09:12:00.000Z",
+                                       "Repo Path or Skill":  "dcoir_skills/*; dcoir-memory-preflight SKILLROUTE-*; Project Instructions; project attachments",
+                                       "GitHub Promotion Need":  "required",
+                                       "retention_class":  "active",
+                                       "Authority Scope":  "airtable_first",
+                                       "Item ID":  "WI-20260503-PROJECT-HEALTH-SKILL-STARTUP-AUDIT",
+                                       "Work Type":  "validation",
+                                       "Evidence / Notes":  "Audit installed/governed skill instructions or repo skill source, SKILLROUTE rows, startup/re-anchor rules, and helper-memory rows for project-health behavior. Confirm that new sessions use Project Instructions, CP-00 pointer, Governance Control Plane, dcoir-session-resume, dcoir-memory-preflight, dcoir-airtable-schema-cache, and dynamic routing. Operator asked to make it so all relevant skills are run during re-anchor; evaluate this carefully and implement discoverable routing without hardcoding installed-skill inventory.",
+                                       "Work Item":  "Audit skill startup routing and project-health re-anchor behavior",
+                                       "canonical_parent_plan_id":  "PLAN-20260503-airtable-database-health-export-tool",
+                                       "Status":  "todo",
+                                       "Area":  "skills",
+                                       "Queue Rank":  90
+                                   }
+                    },
+                    {
+                        "id":  "recbkCKtiD2rlXBKp",
+                        "createdTime":  "2026-04-20T14:19:25.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator note 2026-04-20: validate-on-push still runs on CP and misc. updates that should not require it. Future fix should tighten watched paths to the exact folders/files that truly need this workflow, favoring a precise allowlist over the current broader path set.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260420-VALIDATE-ON-PUSH-PATH-NARROWING",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  ".github/workflows/validate-on-push.yml",
+                                       "Work Item":  "Narrow validate-on-push to exact watched surfaces",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  16
+                                   }
+                    },
+                    {
+                        "id":  "recc3PsBIaNariuZQ",
+                        "createdTime":  "2026-04-28T15:19:52.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator stated on 2026-04-28 that Legacy Delete Queue fields approval_status and delete_status have been deleted. Schema reconnaissance count changed from 356 to 354 fields, consistent with those two fields being removed.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-AIRTABLE-LEGACY-DELETE-QUEUE-FIELDS-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "Delete Queue",
+                                       "Work Item":  "Decide legacy Delete Queue field retirement",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  30
+                                   }
+                    },
+                    {
+                        "id":  "recc3RU5Y5nFZKiQ9",
+                        "createdTime":  "2026-04-10T14:49:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Skill changes should remain bounded, regression-tested, and intentional.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DEF-002",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/05_Deferred_Or_Conditional.txt",
+                                       "Work Item":  "Apply additional skill package maintenance only when a new validated bundle is ready",
+                                       "Status":  "todo",
+                                       "Priority":  "low"
+                                   }
+                    },
+                    {
+                        "id":  "recdL5t48VeCj05EV",
+                        "createdTime":  "2026-04-30T11:00:21.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Closed out of PLAN-20260430-exe-knowledge-docs-and-scrub because the staging lane is multi-step and has been promoted to its own plan: PLAN-20260501-chatgpt-github-staging-lane. Existing proven test state preserved: stage-out PASS, apply-in PASS, base64 ZIP apply-in PASS, delete-payload-after-success PASS, ZIP readback PASS, payload.zip.b64 deletion verified, and sample_alpha/sample_beta ZIP updates verified. Not production-complete yet. Remaining work promoted to the new plan: outbound cleanup/deletion, error handling/quarantine, trigger isolation, allowed-root policy, source-hash validation, stale-write protection, repo-bloat mitigation, operator instructions, and final validation evidence. Potential Delete Queue candidate after sufficient history is retained: this transitional Work Item row may be deleted later because the new plan now owns the work.",
+                                       "updated_at":  "2026-05-01T21:12:00.000Z",
+                                       "retention_class":  "operational",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "airtable-first",
+                                       "Item ID":  "WI-20260430-CHATGPT-GITHUB-STAGING-LANE",
+                                       "Repo Path or Skill":  ".github/workflows; chatgpt_staging; operator_tools/github_desktop_lane",
+                                       "Work Item":  "Implement ChatGPT GitHub Staging Lane for large-file readback and batch apply",
+                                       "Status":  "done",
+                                       "Priority":  "high",
+                                       "Queue Rank":  96
+                                   }
+                    },
+                    {
+                        "id":  "recdoZWSTv292Htia",
+                        "createdTime":  "2026-04-19T13:17:11.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator officially queued richer contextual help on 2026-04-19 as a follow-on feature. Current help supports top-level -Help and -Quick help, but not full per-area contextual help such as flag- or mode-specific help discovery across the whole collector surface.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260419-CONTEXT-HELP-FOLLOWON",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/DCOIR_Collector.ps1; project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1; project_sources/collector_parts/DCOIR_Collector.05_Main_Entry.ps1",
+                                       "Work Item":  "Implement richer contextual help across collector command areas",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  12
+                                   }
+                    },
+                    {
+                        "id":  "recdxl7fb7BfnBqmX",
+                        "createdTime":  "2026-05-01T13:06:56.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Closed after final Work Items schema cleanup verification and tool/docs alignment. Final verify showed records needing cleanup: 0; missing select options: 0; obsolete option usage: 0; DELETE-prefixed fields remaining: 0. Queue Control active_work_items link and Work Items reverse link were removed after review. Tool/docs were updated and CAP verified at GitHub commit 2a3efa74bf80a3f7e8644438f3c1a30ed53ed578. Evidence: VE-20260501-WORK-ITEMS-SCHEMA-CLEANUP-FINAL-VERIFY-PASS and VE-20260501-WORK-ITEMS-CLEANUP-V7-CAP-PASS.",
+                                       "updated_at":  "2026-05-01T16:04:00.000Z",
+                                       "Work Type":  "task",
+                                       "Item ID":  "WI-20260501-SIMPLIFY-WORK-ITEMS-SCHEMA",
+                                       "Work Item":  "Simplify Work Items schema",
+                                       "Area":  "airtable",
+                                       "Status":  "done",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  275
+                                   }
+                    },
+                    {
+                        "id":  "receWoK8Mj4oAdTxe",
+                        "createdTime":  "2026-04-28T15:25:43.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Closeout evidence includes uploaded monitor/artifact reviews through 20260429T193706 ops workflow logs. Ops dry-run workflows completed success and did not modify production repo content. Watchlist: Node.js 20 deprecation warning for actions/checkout@v4, future maintenance item, not current failure.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-GITHUB-ACTIONS-VALIDATION-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  ".github/workflows / malwaredevil/dcoir-collector",
+                                       "Work Item":  "Validate GitHub Actions after Airtable cleanup",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "GitHub Promotion Need":  "required"
+                                   }
+                    },
+                    {
+                        "id":  "recejya07758GI9xO",
+                        "createdTime":  "2026-04-19T18:59:37.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator called out that the test got looser while the collector behavior itself is not fully cleaned up yet. Follow-on should make quick-help and related help-return behavior clean in the collector itself and then keep the tester honest to that behavior rather than masking it.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260419-COLLECTOR-QUICKHELP-CLEANUP",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/DCOIR_Collector.ps1; project_sources/collector_parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1; local manual tester expectation/grading surfaces",
+                                       "Work Item":  "Collector quick-help clean-return and tester expectation alignment",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  15
+                                   }
+                    },
+                    {
+                        "id":  "recfnU2AHfcBY2JRw",
+                        "createdTime":  "2026-04-28T15:25:43.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Open project item: verify each dcoir-* helper skill reads from and writes to its intended dedicated Airtable helper-memory table where one exists. This supports Airtable-first durable memory and avoids drift back to legacy GitHub helper-memory files.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-SKILL-AIRTABLE-WIRING-VERIFY-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "dcoir-* helper skills / Airtable helper-memory tables",
+                                       "Work Item":  "Verify helper-skill Airtable wiring",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  90
+                                   }
+                    },
+                    {
+                        "id":  "rech1SP55W3IT5BlF",
+                        "createdTime":  "2026-05-03T09:05:43.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-05-03T09:12:00.000Z",
+                                       "Priority":  "high",
+                                       "created_at":  "2026-05-03T09:12:00.000Z",
+                                       "Repo Path or Skill":  "Operator Preferences; Project Instructions; CP-00; DCOIR_* attachments; dcoir-session-tracker; dcoir-github-desktop-lane-advisor; dcoir-repo-packager",
+                                       "GitHub Promotion Need":  "required",
+                                       "retention_class":  "active",
+                                       "Authority Scope":  "airtable_first",
+                                       "Item ID":  "WI-20260503-PROJECT-HEALTH-PREFERENCE-ATTACHMENT-AUDIT",
+                                       "Work Type":  "validation",
+                                       "Evidence / Notes":  "Find and reconcile any stored preference or instruction that suppresses Airtable table displays too broadly. Keep automatic startup reads silent, but allow Airtable displays during active execution when useful. Also enforce bundle hygiene preference: GitHub Desktop bundles must not include ChatGPT-only commit-summary or convenience artifacts. Update affected instructions/attachments/skills or queue changes as needed.",
+                                       "Work Item":  "Audit preferences and attachments for Airtable display and bundle hygiene rules",
+                                       "canonical_parent_plan_id":  "PLAN-20260503-airtable-database-health-export-tool",
+                                       "Status":  "todo",
+                                       "Area":  "governance",
+                                       "Queue Rank":  92
+                                   }
+                    },
+                    {
+                        "id":  "rechhsZUwt5WkDcxj",
+                        "createdTime":  "2026-04-14T11:48:13.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Recommended posture: do not immediately rework Actions to depend on Airtable. Current workflows already run harness/full regression and should remain source-tree-based. Later optional improvement: add stable test IDs or emitted validation manifests so CI artifacts map more directly to Airtable Validation Test Cases rows.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260414-AIRTABLE-TEST-ACTIONS-TRACEABILITY",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  ".github/workflows/validate-on-push.yml; .github/workflows/manual-full-validation.yml; .github/workflows/scheduled-health-check.yml; .github/workflows/manual-gemini-bundle-build.yml; .github/workflows/manual-collector-runtime-package-build.yml",
+                                       "Work Item":  "Keep GitHub Actions mostly unchanged but add traceability hooks later",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "reci70vrRAyfw8eFH",
+                        "createdTime":  "2026-04-10T10:18:43.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Original concern: local session-tracker JSON did not already exist when needed, showing that container/local-file continuity was not reliable enough for skills that must preserve session-state ideas, plans, or checkpoints.\n\n2026-05-05 closeout: Concern is addressed by the current Airtable-first architecture. Durable state now lives in Airtable authority surfaces, including Queue Control, Plans, Work Items, Session Checkpoints, Idea Inbox, Operator Preferences, Admin Registry skill_state rows, SKILLROUTE/helper-memory tables, Validation Evidence, Delete Queue, Lifecycle Ledger, Local Configuration Registry, and Operator Tools Registry. Current dcoir-* cache contracts define local JSON caches as bounded advisory/readiness copies only; live Airtable remains authority. No new implementation, skill consolidation, or GitHub code change required.",
+                                       "updated_at":  "2026-05-05T05:10:00.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "AIRTABLE-ARCH-001",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "stateful dcoir skills with local JSON working-state files",
+                                       "Work Item":  "Re-evaluate stateful skill persistence model toward Airtable-primary durability",
+                                       "Status":  "done",
+                                       "Priority":  "high"
+                                   }
+                    },
+                    {
+                        "id":  "recjMpKBMhbUijNgg",
+                        "createdTime":  "2026-04-10T14:39:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The first inventory pass confirmed that shallow pointer README surfaces are not enough for future maintainability.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DOC-001",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/03_Documentation_And_Knowledge_Lane.txt",
+                                       "Work Item":  "Keep refreshed root and folder README surfaces aligned to the visible governed working line",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recjhry6czl0jw1T0",
+                        "createdTime":  "2026-04-20T14:19:25.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator rule 2026-04-20: anything tracked in Airtable should not also be tracked in GitHub. Any GitHub surface duplicative of Airtable control should be deleted manually by the operator, with a local backup retained first in case rollback is needed.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260420-GITHUB-AIRTABLE-DUPLICATE-CLEANUP",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt",
+                                       "Work Item":  "Remove GitHub surfaces duplicative of Airtable live control",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  17
+                                   }
+                    },
+                    {
+                        "id":  "reckKDxuMk8lpjXXO",
+                        "createdTime":  "2026-04-28T15:19:52.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Open branch from prior transcript and session tracker: define how Idea Inbox entries become Work Items, validation rows, GitHub promotion candidates, closed/dropped items, or retained ideas. Needed to prevent Idea Inbox from becoming a misc dumping ground.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "closeout_only",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-IDEA-INBOX-PROMOTION-WORKFLOW-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "Idea Inbox / Work Items / Validation Test Cases",
+                                       "Work Item":  "Define Idea Inbox promotion workflow",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  70
+                                   }
+                    },
+                    {
+                        "id":  "reclZRaM4smJTkTus",
+                        "createdTime":  "2026-04-22T16:06:55.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator wants later repo cleanup to reduce confusing duplicate or legacy surfaces. Preserve knowledge/*.md as the single authoritative editable knowledge set. Later cleanup should verify live references first, then remove only truly redundant or legacy copies without breaking Gemini packaging, supporting delivery assets, or documented benchmark/reference surfaces.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Authority Scope":  "working_note_only",
+                                       "Item ID":  "TODO-2026-04-22-REPO-CLEANUP-DUPLICATES",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "knowledge/; project_sources/DCOIR_Gemini_Bundle_Source/02_PRIME_AGENT_ATTACHMENTS/; supporting_assets/",
+                                       "Work Item":  "Remove duplicative files and clean up confusing legacy repo surfaces",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "GitHub Promotion Need":  "none"
+                                   }
+                    },
+                    {
+                        "id":  "recm1DQH4z08USyOF",
+                        "createdTime":  "2026-04-10T14:30:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Useful connectors may improve workflow reach or reduce friction, but only if their value, fit, and invocation posture are understood clearly.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-QUE-003",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/02_Queued_Next.txt",
+                                       "Work Item":  "Research additional ChatGPT connectors with real project value",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  9
+                                   }
+                    },
+                    {
+                        "id":  "recmAaHiP8xi0hDzP",
+                        "createdTime":  "2026-04-17T09:17:15.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Resume-first after collector coverage closeout. Start by drilling to the deepest active Gemini remediation Plan Task, especially Gemini prime agent and sub-agent Instructions if still active.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260417-GEMINI-QUEUE-P4",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "PLAN-20260415-workflow-collector-gemini-remediation-wave",
+                                       "Work Item":  "Workflow, collector, and Gemini remediation wave",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  1
+                                   }
+                    },
+                    {
+                        "id":  "recmBPWYsfjT4EYWy",
+                        "createdTime":  "2026-04-15T17:14:55.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The validate-on-push workflow was corrected to restore the intended core harness lane and the operator confirmed the fix worked.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260415-VALIDATE-ON-PUSH-FAILURES",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "GitHub Actions / validate-on-push",
+                                       "Work Item":  "Fix validate-on-push workflow failures",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  2
+                                   }
+                    },
+                    {
+                        "id":  "recmMtcf9NzN9WZtU",
+                        "createdTime":  "2026-04-10T14:49:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The project should not keep carrying temporary drift-handling rules after a stronger solution is validated.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DEF-006",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/05_Deferred_Or_Conditional.txt",
+                                       "Work Item":  "Refresh control-plane and continuity model explicitly after current-state enforcement problem is durably solved",
+                                       "Status":  "todo",
+                                       "Priority":  "low"
+                                   }
+                    },
+                    {
+                        "id":  "recmf2q3SOo29SN4Q",
+                        "createdTime":  "2026-04-28T15:25:43.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator requested the expert prompt be expanded to include Python, CLI/toolchain, GitHub, OpenAI API/local AI, UI/UX when relevant, and any small field of expertise needed for this DCOIR project. This should not interrupt the active schema-description branch but should be captured for later refinement.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "decision_only",
+                                       "Authority Scope":  "working_note_only",
+                                       "Item ID":  "WI-DCOIR-EXPERTISE-PROMPT-REFRESH-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "Operator-facing prompt / project instructions candidate",
+                                       "Work Item":  "Refresh all-encompassing DCOIR expertise prompt",
+                                       "Status":  "todo",
+                                       "Priority":  "low",
+                                       "Queue Rank":  130
+                                   }
+                    },
+                    {
+                        "id":  "recmtq9r1nnkwmcwZ",
+                        "createdTime":  "2026-04-13T15:42:28.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Reclassified out of the open todo queue. This row now serves as a captured operational lesson from the mirror seeding work rather than an active backlog item: long browser-agent GitHub object-creation runs were unstable and should use smaller batches, intermediate verification, or an alternate execution lane.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260413-BROWSER-AGENT-BLOCKER",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "Agent Delivery / browser execution lane",
+                                       "Work Item":  "Capture browser-agent instability handling for GitHub object creation",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recmx5ciZaKFpvile",
+                        "createdTime":  "2026-04-28T15:25:43.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator requested skill consolidation similar to Airtable table consolidation: inventory skills and decide what should be combined, updated, retired, or deleted so Airtable, ChatGPT Project, GitHub, and Skills operate lean, fast, and accurately.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-SKILL-CONSOLIDATION-INVENTORY-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "dcoir-* skills / skill library",
+                                       "Work Item":  "Inventory and consolidate DCOIR skills",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  80
+                                   }
+                    },
+                    {
+                        "id":  "recnKbub52CYa30Dt",
+                        "createdTime":  "2026-04-10T14:39:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "README and navigation upkeep versus broad knowledge-doc generation now have a clearer split, but the boundary may need review as docs grow.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DOC-004",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/03_Documentation_And_Knowledge_Lane.txt",
+                                       "Work Item":  "Keep ownership boundary between readme-maintainer and knowledge-doc-maintainer under review",
+                                       "Status":  "todo",
+                                       "Priority":  "low"
+                                   }
+                    },
+                    {
+                        "id":  "recnbaP4v0AXcxEYf",
+                        "createdTime":  "2026-04-28T17:18:49.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Closeout basis: 20260429T142544 - DCOIR_Airtable_Final_Field_Type_Default_Option_Cleanup_Evidence.zip. 04_verify_summary.json pass=true; package_version=final-field-type-default-option-cleanup-v5-no-color; manual_cleanup_required=false; pass_with_manual_cleanup_required=false.",
+                                       "updated_at":  "2026-04-29T08:55:30.000Z",
+                                       "retention_class":  "retain",
+                                       "Item ID":  "WI-AIRTABLE-ARCHITECTURE-RECON-ACTION-BUNDLES-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Airtable architecture reconnaissance and action bundle campaign",
+                                       "Status":  "todo",
+                                       "Priority":  "high"
+                                   }
+                    },
+                    {
+                        "id":  "reco8eYT6B4lp9S1m",
+                        "createdTime":  "2026-04-17T09:17:15.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Reprioritized to queue rank 2 behind the GitHub / Airtable overlap cleanup wave. This remains the second infrastructure branch.\n\n2026-04-19 operator observation: the last apparently automatic scheduled-health-check run was Apr 13, 09:02 GMT+2. Later observed runs were manual. Keep this branch blocked on real automatic scheduled execution proof rather than manual-run success alone.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "none",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260417-AIRTABLE-HARDENING-QUEUE-P2",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "PLAN-20260415-airtable-operations-and-workflow-hardening",
+                                       "Work Item":  "Airtable operations and workflow hardening",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  3
+                                   }
+                    },
+                    {
+                        "id":  "recokEvQt07C2bipC",
+                        "createdTime":  "2026-04-20T16:08:34.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Live test on 2026-04-20 showed that the process inventory captured useful context for flagged items, but the analyst follow-up queue labeled several likely-benign items as suspicious. Examples included DlpUserAgent.exe in the Defender DLP path, a user PowerShell running 119Icon.ps1, and a common rundll32 COM/embedding pattern.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260420-COLLECTOR-FOLLOWUP-TUNING",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "DCOIR_Collector.ps1",
+                                       "Work Item":  "Tune analyst follow-up queue suspicion labeling",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  51
+                                   }
+                    },
+                    {
+                        "id":  "recp7y5hgKr6uEAlF",
+                        "createdTime":  "2026-04-28T13:28:50.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Durable item from operator: set useful Airtable field defaults so scripts need to send less data and records stay standardized. Known Delete Queue defaults set by operator: created_at=current date/time, approved_to_delete=unchecked, delete_stage=pending. This item should not derail active schema-description work; it follows after description normalization or is handled where default documentation overlaps.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "closeout_only",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-AIRTABLE-FIELD-DEFAULTS-AUDIT-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "Airtable retained tables",
+                                       "Work Item":  "Audit Airtable field defaults and default documentation",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  20
+                                   }
+                    },
+                    {
+                        "id":  "recqREmt7BNph2zST",
+                        "createdTime":  "2026-04-10T14:49:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Duplicate readable material, duplicate extracted sources, or duplicated supporting assets can create confusion, cleanup risk, and maintenance drift.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-STR-007",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/04_Structure_And_Refactor_Lane.txt",
+                                       "Work Item":  "Audit repo for true duplicate content and remove only verified duplicates",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recqa38vgIjs1RG3z",
+                        "createdTime":  "2026-04-10T14:49:27.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "The canonical memory bank should keep improving as new validated workflows are learned.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "REPO-DEF-003",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/todo/05_Deferred_Or_Conditional.txt",
+                                       "Work Item":  "Promote future validated GitHub procedures or failure signatures into task memory",
+                                       "Status":  "todo",
+                                       "Priority":  "low"
+                                   }
+                    },
+                    {
+                        "id":  "recqimh1ijOsAtsiK",
+                        "createdTime":  "2026-04-13T16:59:02.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "This is now the consolidated Airtable row for any future bounded governed refresh tied to the mirror pilot and Agent Delivery posture. Mirror normalization is complete and does not itself require a governed-file bundle, but if the operator later chooses to promote mirror workflow and Agent Delivery posture into governed repo-readable sources, that work should be staged here rather than split across multiple overlapping Airtable rows.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-20260413-BOUNDED-GOV-REFRESH",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "project_sources/DOC-01_AFRICOM_SOC_IR_Project_Setup_and_Workflow.txt; new LOG-68 governed workflow refresh note",
+                                       "Work Item":  "Evaluate and, if approved, prepare bounded governed refresh for mirror pilot and Agent Delivery posture",
+                                       "Status":  "todo",
+                                       "Priority":  "high"
+                                   }
+                    },
+                    {
+                        "id":  "recrHrwmNIBDKFHwR",
+                        "createdTime":  "2026-04-20T16:08:34.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Live test on 2026-04-20 showed the security high-signal summary is smaller and useful, but still contains too much repetitive scheduled-task and service-install noise. It is not yet as tightly triage-focused as intended for first review.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260420-COLLECTOR-HIGHSIGNAL-TUNING",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "DCOIR_Collector.ps1",
+                                       "Work Item":  "Tighten security high-signal summary suppression",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  52
+                                   }
+                    },
+                    {
+                        "id":  "recrlXLp6VkXof1Gg",
+                        "createdTime":  "2026-04-17T09:17:15.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Infrastructure-first reprioritization promoted this branch to priority 1. Execution starts at T0 and creates the temporary execution tracking artifacts before any GitHub mutation work.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "decision_only",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260417-GH-AIRTABLE-OVERLAP-CLEANUP",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "PLAN-20260417-github-airtable-overlap-cleanup",
+                                       "Work Item":  "GitHub / Airtable overlap cleanup and retired-surface reduction",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  1
+                                   }
+                    },
+                    {
+                        "id":  "recrqxVkelKheOaEX",
+                        "createdTime":  "2026-04-15T14:17:54.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Pre-collector queue narrowed to: 1) post-install skill parity follow-through, 2) explicit Google Drive staging evaluation, 3) durable in-session skill-update-path preference capture. Plain-English brief response preference already exists as an implemented operator preference.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "Authority Scope":  "working_note_only",
+                                       "Item ID":  "WI-20260415-pre-collector-follow-through",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "DCOIR workflow / skill update lane",
+                                       "Work Item":  "Finish remaining pre-collector follow-through",
+                                       "Status":  "todo",
+                                       "GitHub Promotion Need":  "none",
+                                       "Queue Rank":  3
+                                   }
+                    },
+                    {
+                        "id":  "rectJ51X7gF9jvXvE",
+                        "createdTime":  "2026-04-20T16:08:34.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Live test on 2026-04-20 showed repeated response-action command rendering mismatches. Relative path with -File worked cleanly in the Elastic response-action lane, while malformed nested-quote variants failed. The collector-emitted DELETE_SCRIPT_COMMAND reliably removed the staged script; assistant-provided delete variants did not.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260420-COLLECTOR-CMD-RENDER",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "DCOIR_Collector.ps1",
+                                       "Work Item":  "Collector response-action command rendering fix",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  50
+                                   }
+                    },
+                    {
+                        "id":  "rectwSWnano9lXCfy",
+                        "createdTime":  "2026-05-01T14:36:41.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator identified repo-bloat risk in operator_tools: older working files can remain after newer renamed/updated tool iterations replace them. These files are hard to detect because they may still function but are no longer referenced or recommended. Need durable cleanup strategy for identifying superseded tool wrappers/scripts, comparing registry/catalog/README references to actual files, and safely deleting older versions after confirmation.",
+                                       "updated_at":  "2026-05-01T14:45:00.000Z",
+                                       "Item ID":  "WI-20260501-OPERATOR-TOOLS-STALE-FILE-CLEANUP-STRATEGY",
+                                       "Work Item":  "Design stale operator tool file cleanup strategy",
+                                       "Status":  "todo",
+                                       "Queue Rank":  277
+                                   }
+                    },
+                    {
+                        "id":  "recuLKkYWXuNDtSIE",
+                        "createdTime":  "2026-04-28T18:59:45.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Created from Idea Inbox record recpHJabazucN46W6 / idea_id=IDEA-20260423-DEFAULT-NOFLAGS-001. Idea detail: Collector improvement requested during the live massive validation wave: when the operator runs DCOIR_Collector.ps1 with no flags, the script should execute both T1 and T2 as the quick/easy default path. This should not be implemented during the current test pass. Instead, preserve it as planned post-wave work, add explicit validation coverage for it in Airtable Validation Test Cases, and after the current wave is complete, patch the collector based on findings from this wave plus this new lane,",
+                                       "canonical_parent_plan_id":  "PLAN-IDEA-idea-20260423-defaul",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "review",
+                                       "Item ID":  "WI-FROM-IDEA-idea-20260423-default-no",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Work Item":  "Review promoted idea: Add default no-flags collector execution lane to run T1 plus T2",
+                                       "Status":  "todo",
+                                       "Priority":  "medium"
+                                   }
+                    },
+                    {
+                        "id":  "recuvhfnV8VpC0kfj",
+                        "createdTime":  "2026-04-28T15:25:43.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Carried forward from prior transcript: repo restructuring/package work is parked until Airtable cleanup closes. Future work should use GitHub as governed source/readback and not fetch CP-01/CP-02 for normal startup.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "required",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-GITHUB-REPO-RESTRUCTURE-RESUME-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "malwaredevil/dcoir-collector repo restructure branch",
+                                       "Work Item":  "Resume repo restructuring and GitHub package work",
+                                       "Status":  "todo",
+                                       "Priority":  "medium",
+                                       "Queue Rank":  120
+                                   }
+                    },
+                    {
+                        "id":  "recvfj1zaAzQDFoOS",
+                        "createdTime":  "2026-04-28T15:19:52.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Operator observed that confusion about whether preferences/work items/ideas/validation notes belong in multiple possible tables is exactly the schema problem to solve. There should be one authoritative source for each information type. When ChatGPT is unsure which table should store something, it must raise a conspicuous observation so the schema can be fixed at the right point.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "closeout_only",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-AIRTABLE-TABLE-CONSOLIDATION-AUTHORITY-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "Airtable base architecture",
+                                       "Work Item":  "Review Airtable table consolidation and authority ownership",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  60
+                                   }
+                    },
+                    {
+                        "id":  "recvojvVoan87mIKg",
+                        "createdTime":  "2026-05-03T09:05:43.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-05-03T09:12:00.000Z",
+                                       "Priority":  "high",
+                                       "created_at":  "2026-05-03T09:12:00.000Z",
+                                       "Repo Path or Skill":  "operator_tools/github_desktop_lane/docs/OPERATOR_TOOL_ENGINEERING_CONTRACTS.md; dcoir-github-desktop-lane-advisor; dcoir-repo-packager; project attachments",
+                                       "GitHub Promotion Need":  "required",
+                                       "retention_class":  "active",
+                                       "Authority Scope":  "airtable_first",
+                                       "Item ID":  "WI-20260503-PROJECT-HEALTH-TOOL-CONTRACTS-PROPAGATION",
+                                       "Work Type":  "documentation",
+                                       "Evidence / Notes":  "Review whether general programming and language-specific tool engineering contracts exist for PowerShell, Python, Docker/container, Rust, and other future languages. If missing, create or update durable contracts in repo docs, helper skills, project attachments, and/or Project Instructions so a brand-new session knows how to create reusable tools, use modules, avoid bloat, use Machine/System env vars, log diagnostics, avoid secrets, and package only affected repo-relative files.",
+                                       "Work Item":  "Propagate reusable tool engineering contracts across project surfaces",
+                                       "canonical_parent_plan_id":  "PLAN-20260503-airtable-database-health-export-tool",
+                                       "Status":  "todo",
+                                       "Area":  "workflow",
+                                       "Queue Rank":  91
+                                   }
+                    },
+                    {
+                        "id":  "recwORdDklFPUxCZP",
+                        "createdTime":  "2026-04-28T15:19:52.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Closeout evidence: DCOIR_Airtable_Schema_Description_Normalization_Evidence_20260428_183230.zip reviewed. 01 verify inputs passed. 02 dry-run plan was v3 with 23 table description changes and 356 field description changes. 03 apply results: success_count=379, failure_count=0. 04 verification: pass=true, mismatch_count=0. Mismatch CSV contained header only. Special checks passed: Plans.active_task_title remains single-line text, Plan Checkpoints.safe_to_flush_now remains long text, Delete Queue approved_to_delete/delete_stage/current defaults documented, and approval_status/delete_status are legacy/do-not-use fields.",
+                                       "updated_at":  "2026-04-28T18:59:35.000Z",
+                                       "retention_class":  "retain",
+                                       "GitHub Promotion Need":  "closeout_only",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-AIRTABLE-SCHEMA-DESCRIPTION-NORMALIZATION-20260428",
+                                       "created_at":  "2026-04-28T18:59:35.000Z",
+                                       "Repo Path or Skill":  "Airtable metadata / schema descriptions",
+                                       "Work Item":  "Normalize Airtable table and field descriptions",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  1
+                                   }
+                    },
+                    {
+                        "id":  "recxTHTjwJ4bUqsJs",
+                        "createdTime":  "2026-05-03T08:30:18.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-05-03T08:45:00.000Z",
+                                       "Priority":  "high",
+                                       "created_at":  "2026-05-03T08:30:00.000Z",
+                                       "Repo Path or Skill":  "operator_tools/airtable_database_health_exporter",
+                                       "GitHub Promotion Need":  "required",
+                                       "retention_class":  "active",
+                                       "Authority Scope":  "airtable_first",
+                                       "Item ID":  "WI-20260503-AIRTABLE-DB-HEALTH-EXPORT-TOOL-001",
+                                       "Work Type":  "implementation",
+                                       "Evidence / Notes":  "Reusable Airtable database health export ZIP tool has been designed and packaged as a GitHub Desktop bundle. Created module-first PowerShell implementation under operator_tools/github_desktop_lane/: modules/Dcoir.Airtable/Dcoir.Airtable.psm1, scripts/New-DcoirAirtableDatabaseHealthExport.ps1, manifests/airtable_database_health_export.sample.json, docs/AIRTABLE_DATABASE_HEALTH_EXPORT.md, docs/OPERATOR_TOOL_ENGINEERING_CONTRACTS.md, and tool_catalog.airtable_database_health_export.addendum.json. Local JSON validation passed in container. PowerShell runtime smoke was not executed in container because PowerShell is unavailable here. Operator should apply the bundle, optionally merge the catalog addendum into tool_catalog.json in a follow-up, set System env vars, and run schema-only smoke test.",
+                                       "Work Item":  "Design Airtable database health export ZIP tool",
+                                       "canonical_parent_plan_id":  "PLAN-20260503-airtable-database-health-export-tool",
+                                       "Status":  "waiting",
+                                       "Area":  "airtable",
+                                       "Queue Rank":  100
+                                   }
+                    },
+                    {
+                        "id":  "recze4KxEGbmehijs",
+                        "createdTime":  "2026-04-15T17:14:55.000Z",
+                        "fields":  {
+                                       "Evidence / Notes":  "Closeout complete on 2026-04-16. Airtable/GitHub issue alignment was finished to the current reliable-chat-lane boundary. Titles and descriptions for issues #38-#43 were aligned more closely to GitHub. Durable GitHub task-memory promotion was completed into governed task memory, including a new 2026-04-16 session-promotion record plus updated compiled indexes and manifest visibility. Validated lane split preserved: issue-thread comment mutation is workable; issue-state mutation remains unproven in this chat lane; low-level git-object file writes remain the reliable governed-file recovery path.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "retention_class":  "review",
+                                       "GitHub Promotion Need":  "decision_only",
+                                       "Authority Scope":  "active_todo_authority",
+                                       "Item ID":  "WI-20260415-GITHUB-ISSUES-AIRTABLE-ALIGNMENT",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "Repo Path or Skill":  "GitHub Issues / Airtable Work Items",
+                                       "Work Item":  "Align GitHub issues to Airtable todo authority",
+                                       "Status":  "todo",
+                                       "Priority":  "high",
+                                       "Queue Rank":  1
+                                   }
+                    }
+                ]
+}

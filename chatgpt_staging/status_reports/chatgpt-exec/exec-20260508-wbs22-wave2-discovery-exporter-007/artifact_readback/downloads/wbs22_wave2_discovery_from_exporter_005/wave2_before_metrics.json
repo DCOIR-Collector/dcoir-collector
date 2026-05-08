@@ -1,0 +1,18 @@
+﻿{
+    "schema":  "dcoir.wbs22.wave2.before_metrics.v1",
+    "generated_at_utc":  "2026-05-08T09:58:26Z",
+    "source":  "New-DcoirAirtableDatabaseHealthExport.ps1 full-record export",
+    "export_folder":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260508-wbs22-wave2-discovery-exporter-007\\downloads\\wbs22_wave2_discovery_005_20260508_095815",
+    "selected_table_count":  21,
+    "total_field_count":  308,
+    "total_records_exported":  1470,
+    "tables_with_status_like_field":  18,
+    "tables_with_review_after":  18,
+    "tables_with_retention_class":  18,
+    "tables_with_pointer_like_fields":  15,
+    "tables_with_resume_prompt":  1,
+    "candidate_record_count":  245,
+    "immediate_wave2_candidate_count":  5,
+    "deferred_candidate_count":  240,
+    "table_access_failure_count":  0
+}

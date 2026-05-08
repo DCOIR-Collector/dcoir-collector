@@ -1,0 +1,1644 @@
+{
+    "table_id":  "tblrPFQH2uZEYBYE9",
+    "table_name":  "Validation Evidence",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  117,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  true,
+    "records":  [
+                    {
+                        "id":  "rec02u9Epd5XmSwje",
+                        "createdTime":  "2026-04-30T04:51:02.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator explicitly confirmed both GitHub Actions runs passed in the GitHub website for paired mode ChunkingReconstructionMetadata. Per branch rule, artifact inspection was skipped because the operator confirmed pass status and this validation branch trusts explicit website confirmation when provided. Workflows: manual-collector-optional-exe-build.yml with exe_validation_suite=ChunkingReconstructionMetadata; manual-full-validation.yml with suite=ChunkingReconstructionMetadata.",
+                                       "source_locator":  "GitHub Actions website confirmation from operator in chat, 2026-04-30; no artifact inspection performed.",
+                                       "validation_case_key":  "ChunkingReconstructionMetadata",
+                                       "evidence_key":  "EVID-20260430-OPTIONAL-EXE-PAIRED-CHUNKINGRECONSTRUCTIONMETADATA-PASS",
+                                       "work_item_key":  "optional-exe-paired-validation",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec091hPDe4reILMo",
+                        "createdTime":  "2026-04-28T10:21:51.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Migrated from Release Validation Evidence. CP-01 and CP-02 in latest snapshot identify Version 4.0.9 and current-state id 2026-04-17-infrastructure-first-reprioritization-closeout-v1.; legacy_record_id=reckNAutWsV3arZkO",
+                                       "review_after":  "2026-04-28",
+                                       "source_locator":  "project_sources/CP-01_DCOIR_Version_Manifest.txt; project_sources/CP-02_DCOIR_Change_Log.txt from snapshot 0734.",
+                                       "validation_case_key":  "control-plane-current-state",
+                                       "created_at":  "2026-04-28T10:21:42.000Z",
+                                       "evidence_key":  "MIG-RVE-RVE-4.0.9-CONTROL-PLANE-READBACK",
+                                       "retention_class":  "review",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "result":  "pass",
+                                       "release_key":  "REL-CONTROL-PLANE-4.0.9"
+                                   }
+                    },
+                    {
+                        "id":  "rec0cLb1qT0NpCwHf",
+                        "createdTime":  "2026-05-01T16:27:59.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator ran Airtable Scripting Extension status backfill after setting defaults. Results: Work Items blank Status records found: 120 and backfilled to todo. Plans blank plan_state records found: 0. Queue Control blank status records found: 0. Script completed with Backfill complete.",
+                                       "repo_surface_key":  "Airtable Work Items / Plans / Queue Control status fields",
+                                       "source_locator":  "Operator-reported Airtable Scripting Extension output in chat",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T16:35:00.000Z",
+                                       "evidence_key":  "VE-20260501-STATUS-BACKFILL-PASS",
+                                       "work_item_key":  "WI-20260501-SIMPLIFY-WORK-ITEMS-SCHEMA",
+                                       "updated_at":  "2026-05-01T16:35:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec2JEdTVtpGPRJPo",
+                        "createdTime":  "2026-05-01T12:32:36.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit 6d796c5b72742e5f9b7d04696835d846403cb0f8 for docs-only operator guide update. Changed files are README.md, docs/OPERATOR_GUIDE.md, and modules/README.md under operator_tools/github_desktop_lane.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane",
+                                       "source_locator":  "GitHub commit 6d796c5b72742e5f9b7d04696835d846403cb0f8",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T12:38:00.000Z",
+                                       "evidence_key":  "VE-20260501-GITHUB-DESKTOP-LANE-OPERATOR-DOCS-CAP-PASS",
+                                       "work_item_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "updated_at":  "2026-05-01T12:38:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec2Rezcnj253g3rY",
+                        "createdTime":  "2026-04-30T03:44:54.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator explicitly confirmed both GitHub Actions runs passed in the GitHub website for paired mode SessionBehavior. Per branch rule, artifact inspection was skipped because the operator confirmed pass status and asked this path to trust website confirmation when explicitly provided. Workflows: manual-collector-optional-exe-build.yml with exe_validation_suite=SessionBehavior; manual-full-validation.yml with suite=SessionBehavior.",
+                                       "source_locator":  "GitHub Actions website confirmation from operator in chat, 2026-04-30; no artifact inspection performed.",
+                                       "validation_case_key":  "SessionBehavior",
+                                       "evidence_key":  "EVID-20260430-OPTIONAL-EXE-PAIRED-SESSIONBEHAVIOR-PASS",
+                                       "work_item_key":  "optional-exe-paired-validation",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec4F9fn5jIA66GN7",
+                        "createdTime":  "2026-05-03T19:17:11.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Hash-fallback validation passed through chatgpt-exec. Workflow report for exec-20260503-airtable-schema-hashfix-002 shows result=success, shell=powershell_5, exit_code=0, started_utc=2026-05-03T19:02:37Z, finished_utc=2026-05-03T19:02:42Z, GitHub run id 25287957928. Airtable database health export reached Airtable, selected/exported 24 table schemas, and output_zip is non-null: dcoir_airtable_health_export_20260503_190238.chatgpt.zip. This confirms New-DcoirChatGPTFriendlyZip.ps1 version 2026-05-03.1 SHA256 fallback fixed the GitHub Actions Get-FileHash packaging defect.",
+                                       "source_locator":  "chatgpt_staging/status_reports/chatgpt-exec/exec-20260503-airtable-schema-hashfix-002/workflow_report.md",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T19:48:00.000Z",
+                                       "evidence_key":  "EVID-20260503-EXEC-HASHFIX-VALIDATION-PASS-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec4hGYhZlFULp0Iv",
+                        "createdTime":  "2026-05-01T02:53:24.000Z",
+                        "fields":  {
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "validation_case_key":  "DCOIR Actions Mode Ladder Core and QuickAliases fail-fast validation",
+                                       "source_locator":  "Uploaded dcoir_actions_mode_ladder_result.json; dcoir_actions_ladder-manual-full-validation-Core.json; dcoir_actions_ladder-manual-full-validation-QuickAliases.json; Core and QuickAliases chatgpt ZIPs",
+                                       "evidence_summary":  "Uploaded dcoir_actions_mode_ladder_result.json and per-gate manifests confirm Invoke-DcoirActionsModeLadder.ps1 v2026-05-01.2 correctly split Core and QuickAliases into separate sequential gates. Core completed success with failed_or_non_success_count=0 and QuickAliases then completed success with failed_or_non_success_count=0. Each gate used allow_multiple_live_dispatches=false, max_dispatch_count=1, max_parallel=1, create_chatgpt_friendly_zip=true, and download_artifacts=true. Evidence indicates comma parsing fix and sequential gate behavior passed for the short ladder.",
+                                       "evidence_key":  "EVID-20260501-actions-mode-ladder-core-quickaliases-pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec5GhgX1xwU8hLo1",
+                        "createdTime":  "2026-04-28T10:21:51.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Migrated from Release Validation Evidence. Release note states Gemini bundle compile should emit DCOIR_Gemini_Email_Build_Bundle_3_0_3.zip after the batch.; legacy_record_id=recq8eyjqdphzsxux",
+                                       "review_after":  "2026-04-28",
+                                       "source_locator":  "release_notes/20260423_collector_gemini_surface_followthrough_batch.txt Validation notes.",
+                                       "validation_case_key":  "gemini-bundle-source",
+                                       "created_at":  "2026-04-28T10:21:42.000Z",
+                                       "evidence_key":  "MIG-RVE-RVE-20260423-GEMINI-COMPILE-EXPECTED",
+                                       "retention_class":  "review",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "result":  "pending",
+                                       "release_key":  "REL-COLLECTOR-GEMINI-20260423"
+                                   }
+                    },
+                    {
+                        "id":  "rec6e5CeMUXHnmYcN",
+                        "createdTime":  "2026-05-01T12:08:11.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Governed repo-side source readback for dcoir-github-desktop-lane-advisor passed after manual install and GitHub Desktop source update. Readback confirmed updated SKILL.md marker/content, updated GitHub Desktop lane tool families reference, and updated Operator Tools Registry contract reference with current tool IDs and Delete Queue cleanup rule.",
+                                       "repo_surface_key":  "dcoir_skills/dcoir-github-desktop-lane-advisor/",
+                                       "source_locator":  "GitHub readback confirmed: SKILL.md marker updated-skill|20260501T115800Z|operator-tools-module-split; references/github_desktop_lane_tool_families.md includes repo_repair_apply, upload_packaging, github_actions_orchestration, text-only snapshot wording, and module/tool harness limit; references/operator_tools_registry_contract.md includes JSON outputs, backing modules, validation evidence, active/retention_class fields, current active tool IDs, and Delete Queue cleanup rule.",
+                                       "validation_case_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS-ADVISOR-SKILL-SOURCE-READBACK",
+                                       "created_at":  "2026-05-01T12:05:00.000Z",
+                                       "evidence_key":  "VE-20260501-GITHUB-DESKTOP-LANE-ADVISOR-SOURCE-READBACK-PASS",
+                                       "work_item_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "updated_at":  "2026-05-01T12:05:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec6gSQl6e1pz4P14",
+                        "createdTime":  "2026-04-30T17:51:59.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Knowledge/Gemini parity verified by GitHub readback: 17 maintained knowledge files found, 17 Gemini attachment copies found, manifest required_files includes Knowledge 01-17 attachments, sync script maps each manifest attachment back to knowledge/*.md and compares content, build release runs sync before validation/compile, and validate-on-push smoke-tests that build path.",
+                                       "source_locator":  "GitHub readback: knowledge/Knowledge - *.md; project_sources/gemini/bundle_source/02_PRIME_AGENT_ATTACHMENTS/Knowledge - *.md.txt; Gemini_Bundle_Source_Manifest.json; sync_dcoir_gemini_knowledge_attachments.py; build_dcoir_gemini_release.py; validate-on-push.yml",
+                                       "validation_case_key":  "WI-20260430-VERIFY-KNOWLEDGE-GEMINI-PARITY",
+                                       "evidence_key":  "EVID-20260430-KNOWLEDGE-GEMINI-PARITY",
+                                       "work_item_key":  "WI-20260430-VERIFY-KNOWLEDGE-GEMINI-PARITY",
+                                       "retention_class":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "rec7WTyi8ggCYOPZy",
+                        "createdTime":  "2026-05-01T16:56:57.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit 4db1cae368c1c0c3ecec7366b7ec146837a7991c. Commit adds Nimble-style Knowledge-to-Wiki publish workflow watching knowledge/** and workflow changes, cloning the separate wiki repo, mirroring knowledge/ into the wiki, mapping knowledge/README.md to Home.md, and documenting setup in project_sources/wiki/README.md.",
+                                       "repo_surface_key":  ".github/workflows/publish_knowledge_to_wiki.yml; project_sources/wiki/README.md",
+                                       "source_locator":  "GitHub commit 4db1cae368c1c0c3ecec7366b7ec146837a7991c",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T16:52:00.000Z",
+                                       "evidence_key":  "VE-20260501-KNOWLEDGE-WIKI-PUBLISH-WORKFLOW-CAP-PASS",
+                                       "work_item_key":  "WI-20260430-KNOWLEDGE-TO-GITHUB-WIKI",
+                                       "updated_at":  "2026-05-01T16:52:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec7drJzDQbqHKiYa",
+                        "createdTime":  "2026-05-06T03:17:28.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Task-completion evidence audit completed by exec-20260505-wbs-evidence-repair-001. WBS04-02 and WBS05-01 repaired with live-schema artifacts; WBS05-02..WBS07 remain bounded planning/model definitions; WBS08 remains active and not complete.",
+                                       "source_locator":  "exec-20260505-wbs-evidence-repair-001",
+                                       "validation_case_key":  "PLAN-AIRTABLE-CLEANUP-RESTRUCTURE",
+                                       "evidence_key":  "EVID-CLEANUP-WBS-COMPLETION-AUDIT-20260505",
+                                       "work_item_key":  "CLEANUP-WBS-AUDIT",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec7j4zF9Li1xNvQr",
+                        "createdTime":  "2026-05-03T19:33:40.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Final side-quest validation passed. A simple operator-approved PowerShell code block was executed through the chatgpt-exec lane after direct request staging was blocked, using the validated apply-in-to-exec handoff: apply-in payload wrote exec request exec-20260503-simple-codeblock-smoke-001, then GitHub connector update_file restaged the request with restaged_at_utc commit 94303fb19180d2d5058d8c2e8f4933aaa2f293c6 to trigger chatgpt-exec. Workflow report shows result=success, shell=powershell_5, exit_code=0, timed_out=False, stdout JSON success=true, repo_root_present=true, downloads_dir_present=true, PowerShell version 5.1.26100.32522. Artifact chatgpt-exec-exec-20260503-simple-codeblock-smoke-001 exists with id 6773197518, size 2545 bytes, expires 2026-05-06T19:32:14Z.",
+                                       "source_locator":  "chatgpt_staging/status_reports/chatgpt-exec/exec-20260503-simple-codeblock-smoke-001/workflow_report.md; GitHub run 25288644995; artifact id 6773197518",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T20:15:00.000Z",
+                                       "evidence_key":  "EVID-20260503-SIMPLE-CODEBLOCK-EXEC-SMOKE-PASS-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec8JLKKcJtmmUDWg",
+                        "createdTime":  "2026-05-01T14:39:30.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit 1116b9f7a09ff8633a0c4eccb392d6668d4d7474. Commit removed superseded long Work Items schema cleanup wrapper filenames after numbered wrappers replaced them.",
+                                       "repo_surface_key":  "operator_tools/airtable_work_items_schema_cleanup",
+                                       "source_locator":  "GitHub commit 1116b9f7a09ff8633a0c4eccb392d6668d4d7474",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T14:40:00.000Z",
+                                       "evidence_key":  "VE-20260501-WORK-ITEMS-CLEANUP-WRAPPER-DELETE-CAP-PASS",
+                                       "work_item_key":  "WI-20260501-SIMPLIFY-WORK-ITEMS-SCHEMA",
+                                       "updated_at":  "2026-05-01T14:40:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec8ZJUbdbXjf75Oo",
+                        "createdTime":  "2026-05-07T17:13:43.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Target bundle prepared and approved for real Wave 1 evidence/backfill. Executed exact approved low-risk evidence/backfill writes only: appended WBS22-03 validation_notes/context and created this Validation Evidence row. Prior bookkeeping-only wave reports excluded as completion proof. Exact targets: WBS evidence fields and this Validation Evidence row. Write Gate result: CONDITIONAL_PASS satisfied by explicit operator approval and fresh schema/readback. Wave 1 is not complete until broader actual Wave 1 cleanup/evidence work is executed and after-readback supports completion.",
+                                       "review_after":  "2026-05-08",
+                                       "source_locator":  "Session Checkpoints:recMwKQ9pr6N4TXDw; Plans:recoLHyurY4OZx3K8; DCOIR Cleanup WBS:recpMq2l7OjE5YfoK",
+                                       "validation_case_key":  "WBS22-WAVE1-REAL-TARGET-BUNDLE",
+                                       "created_at":  "2026-05-07T17:00:00.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE1-REAL-TARGET-BUNDLE-20260507-1700Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-03",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-07T17:00:00.000Z",
+                                       "result":  "pending"
+                                   }
+                    },
+                    {
+                        "id":  "rec8luA4QPgK6vWY4",
+                        "createdTime":  "2026-05-03T18:26:00.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Approved exec-lane Airtable schema smoke request was staged to GitHub. Commit 712f823c7e6a1db7e69c5eb4d8b0c9f8b6e5c7ce added chatgpt_staging/exec_requests/exec-20260503-airtable-schema-smoke-001.json. GitHub readback confirms the request file is present on main. Immediate workflow report readback returned 404 and commit workflow-run/status lookup returned no associated runs/statuses yet. Next action is to check Actions manually or trigger chatgpt-exec via workflow_dispatch using request_path chatgpt_staging/exec_requests/exec-20260503-airtable-schema-smoke-001.json if push trigger did not fire.",
+                                       "source_locator":  "GitHub commit 712f823c7e6a1db7e69c5eb4d8b0c9f8b6e5c7ce; request path chatgpt_staging/exec_requests/exec-20260503-airtable-schema-smoke-001.json",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T18:45:00.000Z",
+                                       "evidence_key":  "EVID-20260503-CHATGPT-EXEC-SCHEMA-SMOKE-STAGED-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pending"
+                                   }
+                    },
+                    {
+                        "id":  "rec9BqV1tCd3gfzrd",
+                        "createdTime":  "2026-05-03T18:31:37.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "ChatGPT exec-lane schema smoke verified. Workflow report for exec-20260503-airtable-schema-smoke-001 shows result=success, shell=powershell_5, exit_code=0, started_utc=2026-05-03T18:24:22Z, finished_utc=2026-05-03T18:24:24Z. The approved command ran the Airtable database health export in GitHub Actions, Machine/System environment variables were present, Airtable connectivity worked, and 24 table schemas were selected/exported. Request file was automatically removed by workflow commit 6e0115738b18bec6ab73d9b48292e660a6fd8c38. Follow-up defect noted: export tool reported ZIP creation failed because Get-FileHash was unavailable, so output_zip was null even though the schema export result was success.",
+                                       "source_locator":  "chatgpt_staging/status_reports/chatgpt-exec/exec-20260503-airtable-schema-smoke-001/workflow_report.md; commit 6e0115738b18bec6ab73d9b48292e660a6fd8c38",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T18:50:00.000Z",
+                                       "evidence_key":  "EVID-20260503-CHATGPT-EXEC-SCHEMA-SMOKE-PASS-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec9j9OJfu6qboGkL",
+                        "createdTime":  "2026-05-03T16:54:52.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Blocked-action recovery ladder codified in Airtable and governed GitHub skill source. Created Operator Preference PREF-20260503-BLOCKED-REPO-UPDATE-RECOVERY-LADDER and dcoir-decision-policy memory row DECISION-20260503-BLOCKED-REPO-UPDATE-RECOVERY-LADDER. GitHub source updates: decision_matrix.md commit 8d7ce71102c2b742ba2f1da0a277c3ce14ba5c10 added the recovery ladder; dcoir-decision-policy SKILL.md commit ac8a98c1aa1fcc8b7d4b19879c15075297d74348 added update marker; dcoir-github-desktop-lane-advisor SKILL.md commit 5533fb154bce6a51a7fda2bb2b8f43ea21ebf7a9 added blocked-action recovery guidance. Packaged two affected skills into dcoir_blocked_action_recovery_ladder_skills.zip; operator install still required before installed behavior changes.",
+                                       "source_locator":  "GitHub commits 8d7ce71102c2b742ba2f1da0a277c3ce14ba5c10, ac8a98c1aa1fcc8b7d4b19879c15075297d74348, 5533fb154bce6a51a7fda2bb2b8f43ea21ebf7a9; package /mnt/data/dcoir_blocked_action_recovery_ladder_skills.zip",
+                                       "validation_case_key":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER",
+                                       "created_at":  "2026-05-03T17:00:00.000Z",
+                                       "evidence_key":  "EVID-20260503-BLOCKED-ACTION-RECOVERY-LADDER-CODIFIED-001",
+                                       "work_item_key":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rec9urHEeQ58iFPTY",
+                        "createdTime":  "2026-05-07T11:46:32.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 2 review record prepared before execution. Scope: resume and governance consistency only. Included target classes: Plan pointer cleanup; Queue Control consistency; WBS state cleanup; review_after cleanup; retention_class cleanup; checkpoint status cleanup. Purpose: make live resume/governance state consistent after WBS13-WBS21 completion and WBS22 activation. Excluded: duplicate/merge work; Delete Queue creation or processing; schema/table/field changes; scaffold lifecycle/decommissioning; GitHub/source changes; skill changes; workflow mutation; broad cosmetic cleanup. Operator shorthand \u0027k\u0027 approved recording this Wave 2 scope, not executing target updates. Execution still requires exact target records/fields, before snapshots, proposed payloads, Write Gate result, explicit approval phrase, and after-readback plan.",
+                                       "source_locator":  "Airtable:DCOIR Cleanup WBS CLEANUP-WBS-22-04/CLEANUP-WBS-22-05; Plans; Queue Control; Session Checkpoints; review_after/retention_class-bearing Airtable tables",
+                                       "validation_case_key":  "WBS22-WAVE-REVIEW",
+                                       "created_at":  "2026-05-07T11:44:00.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE2-REVIEW-20260507-1144Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-04 / CLEANUP-WBS-22-05",
+                                       "updated_at":  "2026-05-07T11:44:00.000Z"
+                                   }
+                    },
+                    {
+                        "id":  "recAZVdHoZd7yJ4o6",
+                        "createdTime":  "2026-05-03T17:22:55.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Installed-skill verification passed for re-anchor helper invocation rule. dcoir-session-resume installed SKILL.md and dcoir-memory-preflight installed SKILL.md both show marker updated-skill|20260503T173000Z|reanchor-helper-invocation-rule. Installed content now requires the DCOIR re-anchor helper chain: session-resume, memory-preflight, schema-cache, session-tracker, conditional plan-tracker, and context-relevant helper checks via active lane and SKILLROUTE rows rather than loading every full helper skill body.",
+                                       "source_locator":  "Installed-skill readback via api_tool_skills for dcoir-session-resume/SKILL.md and dcoir-memory-preflight/SKILL.md",
+                                       "validation_case_key":  "WI-20260503-REANCHOR-HELPER-RULE",
+                                       "created_at":  "2026-05-03T17:45:00.000Z",
+                                       "evidence_key":  "EVID-20260503-REANCHOR-HELPER-RULE-INSTALL-PASS-001",
+                                       "work_item_key":  "WI-20260503-REANCHOR-HELPER-RULE",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recAgFT6283S8fwGe",
+                        "createdTime":  "2026-05-03T17:18:35.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Re-anchor helper invocation rule codified in Airtable Operator Preferences and governed GitHub helper source. Updated dcoir-session-resume to require Project Instructions, CP-00 pointer, Airtable control plane/live queue, dcoir-memory-preflight, dcoir-airtable-schema-cache, dcoir-session-tracker, conditional dcoir-plan-tracker, then context-relevant helpers via active lane and SKILLROUTE rows. Updated dcoir-memory-preflight to report re-anchor helper-chain posture and require schema-cache after preflight. Packaged affected skills into dcoir_reanchor_helper_rule_skills.zip; operator install still required before installed behavior changes.",
+                                       "source_locator":  "GitHub commits 231e76c644b04bd6da6d9107b8cf8cf38416239e and e725df178cbba1c994d2450a1b8218d7fa8e9b89; package /mnt/data/dcoir_reanchor_helper_rule_skills.zip",
+                                       "validation_case_key":  "WI-20260503-REANCHOR-HELPER-RULE",
+                                       "created_at":  "2026-05-03T17:35:00.000Z",
+                                       "evidence_key":  "EVID-20260503-REANCHOR-HELPER-RULE-CODIFIED-001",
+                                       "work_item_key":  "WI-20260503-REANCHOR-HELPER-RULE",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recAsvTtNOlaEgEOo",
+                        "createdTime":  "2026-04-30T04:41:34.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator explicitly confirmed both GitHub Actions runs passed in the GitHub website for paired mode ChunkingOversizeArtifact. Per branch rule, artifact inspection was skipped because the operator confirmed pass status and this validation branch trusts explicit website confirmation when provided. Workflows: manual-collector-optional-exe-build.yml with exe_validation_suite=ChunkingOversizeArtifact; manual-full-validation.yml with suite=ChunkingOversizeArtifact.",
+                                       "source_locator":  "GitHub Actions website confirmation from operator in chat, 2026-04-30; no artifact inspection performed.",
+                                       "validation_case_key":  "ChunkingOversizeArtifact",
+                                       "evidence_key":  "EVID-20260430-OPTIONAL-EXE-PAIRED-CHUNKINGOVERSIZEARTIFACT-PASS",
+                                       "work_item_key":  "optional-exe-paired-validation",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recAwAijmjzSgwr9i",
+                        "createdTime":  "2026-05-03T19:17:11.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Durably captured the apply-in-to-exec handoff lane after successful validation. GitHub docs updated: chatgpt_staging/EXECUTION_LANE.md commit d3cb01236fe44444b51bcfbaa977ee615d04266f and operator_tools/github_desktop_lane/docs/CHATGPT_EXEC_LANE_OPERATOR_GUIDE.md commit 65bf53c9c3fde44c9c47f4988b05f17b25c276cb now document the exact procedure. Airtable dcoir-memory-preflight row MEM-20260503-APPLY-IN-TO-EXEC-HANDOFF-LANE and dcoir-validation-orchestrator row VAL-20260503-APPLY-IN-TO-EXEC-HANDOFF-LANE created. Operator Tools Registry row DCOIR-CHATGPT-EXEC-LANE updated with active procedure notes. Validation basis: apply-in report apply-20260503-exec-hashfix-validation-001, exec request exec-20260503-airtable-schema-hashfix-002, non-[skip ci] restage commit 5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e, exec run 25287957928, and exec report showing output_zip non-null.",
+                                       "source_locator":  "chatgpt_staging/EXECUTION_LANE.md; operator_tools/github_desktop_lane/docs/CHATGPT_EXEC_LANE_OPERATOR_GUIDE.md; MEM-20260503-APPLY-IN-TO-EXEC-HANDOFF-LANE; VAL-20260503-APPLY-IN-TO-EXEC-HANDOFF-LANE",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T19:48:00.000Z",
+                                       "evidence_key":  "EVID-20260503-APPLY-IN-TO-EXEC-HANDOFF-CAPTURED-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recB0XevT3I2bL47V",
+                        "createdTime":  "2026-05-05T11:38:08.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Ran controlled pass and fail scenarios for the ChatGPT apply-in workflow. Pass test staged one valid single payload.zip.b64 with root apply_manifest.json and files/, applied one harmless self-test file under chatgpt_staging/self_tests, removed the payload after success, wrote apply and workflow reports, and read back the target file. Fail test staged one invalid single payload.zip.b64 that decoded to non-ZIP bytes; workflow failed at Decode ZIP payload and apply bundle, captured failure report and artifact, and the deliberately invalid payload was removed after verification.",
+                                       "repo_surface_key":  "chatgpt-apply-in primary workflow",
+                                       "source_locator":  "Pass request apply-20260505-chatgpt-in-pass-001; pass staging commit 66948603c3d83e5c33bd597146d141aa5d3d8f13; pass workflow run 25373942145; pass target chatgpt_staging/self_tests/chatgpt_apply_in_pass_20260505.txt read back successfully; pass workflow report SHA 7b6bbc87bbd20ecde6392e1e7e9a23161610017b; pass apply report SHA 70d3be8c2fb9ce00cb7fb669941d346dd7e99179. Fail request apply-20260505-chatgpt-in-fail-001; fail staging commit 9899dc3e16ac2d1b68c38bdbcac539587d742329; fail workflow run 25374015166; job conclusion failure as expected; Decode ZIP payload and apply bundle failed as expected; Capture apply-in failure report and Upload apply-in failure evidence artifact succeeded; fail workflow report SHA 50ee94d4f9d163575ebbfa149056c3420adf078b; invalid payload removed by commit e40445a86e11fbc632879412eb0002714d93e5a5.",
+                                       "validation_case_key":  "VAL-CHATGPT-APPLY-IN-SINGLE-PAYLOAD-ONLY",
+                                       "created_at":  "2026-05-05T11:40:00.000Z",
+                                       "evidence_key":  "EVID-CHATGPT-APPLY-IN-PASS-FAIL-SELF-TEST-20260505",
+                                       "work_item_key":  "chatgpt-apply-in-pass-fail-self-test",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-05T11:40:00.000Z",
+                                       "result":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "recBh15zzLyF6qMbw",
+                        "createdTime":  "2026-05-07T14:01:08.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Reset performed after operator review determined prior Waves 1-5 chatgpt-exec runs advanced WBS/plan bookkeeping but did not perform the intended cleanup discovery, duplicate analysis, Delete Queue candidate creation, or queue processing. WBS22 has been reset to restart at Wave 1 execution: CLEANUP-WBS-22-03 active; CLEANUP-WBS-22-04 through CLEANUP-WBS-22-12 planned; plan pointer reset to CLEANUP-WBS-22-03. Prior workflow reports remain as audit evidence but are not accepted as real cleanup completion.",
+                                       "source_locator":  "Airtable reset 2026-05-07T14:00Z; affected WBS records recpMq2l7OjE5YfoK, recSJWdke5hsh9E4H, recPiAsI0H1F7JF2s, recxw7OJh28aLkG2y, recDJ0KWFG357NTIY, rec0jEYcxU4FDS8zf, rec11eUfWeQPOHZp6, recCWX7H4DtnchDPW, recGp9dyHYA6Uc49C, recGJCiLeWpRpEGsi; plan recoLHyurY4OZx3K8",
+                                       "validation_case_key":  "WBS22-RESET-ERRONEOUS-PROGRESSION",
+                                       "created_at":  "2026-05-07T14:00:00.000Z",
+                                       "evidence_key":  "VE-WBS22-RESET-BOOKKEEPING-WAVES-20260507-1400Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-03",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-07T14:00:00.000Z",
+                                       "result":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "recByjSEfoHMlGRU7",
+                        "createdTime":  "2026-05-05T19:10:08.000Z",
+                        "fields":  {
+                                       "work_item_key":  "CLEANUP-WBS-04-05",
+                                       "validation_case_key":  "CLEANUP-WBS-04-05",
+                                       "source_locator":  "exec-20260505-wbs04-dedupe-signatures-005",
+                                       "evidence_summary":  "WBS04-05 completed by exec-20260505-wbs04-dedupe-signatures-005. Dedupe signature proposals defined for 21 tables. Artifact files: wbs04_dedupe_signatures.json and wbs04_dedupe_signatures.md.",
+                                       "evidence_key":  "EVID-CLEANUP-WBS-04-05-DEDUPE-SIGNATURES-20260505"
+                                   }
+                    },
+                    {
+                        "id":  "recC0lsGij9zfBTeD",
+                        "createdTime":  "2026-05-01T20:43:10.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator reported CAP after installing the dcoir-local-config-registry-maintainer skill and committing/pushing the repo bundle. GitHub readback verified commit 70c1cf70056d4c295b7132c2b6ad8e6f853e8b86. Commit adds the governed helper-skill source under dcoir_skills/dcoir-local-config-registry-maintainer with SKILL.md, agents/openai.yaml, icon, local configuration registry contract reference, and runtime reference pattern reference.",
+                                       "repo_surface_key":  "dcoir-local-config-registry-maintainer skill source and manual install package",
+                                       "source_locator":  "GitHub commit 70c1cf70056d4c295b7132c2b6ad8e6f853e8b86; operator CAP for manual skill install",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T20:45:00.000Z",
+                                       "evidence_key":  "VE-20260501-LOCAL-CONFIG-MAINTAINER-SKILL-CAP-PASS",
+                                       "work_item_key":  "WI-20260430-OPENAI-API-KEY-ENV-SMOKE-TEST",
+                                       "updated_at":  "2026-05-01T20:45:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recDWZWcXsFnm55Va",
+                        "createdTime":  "2026-05-01T03:26:27.000Z",
+                        "fields":  {
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "validation_case_key":  "DCOIR Actions Workflow Orchestrator parallel promotion test observed pass",
+                                       "source_locator":  "Uploaded dcoir_actions_parallel_promotion_test.json; dcoir_actions_parallel_promotion_test.chatgpt.zip; operator observation of GitHub Actions parallel/queued behavior",
+                                       "evidence_summary":  "Operator uploaded dcoir_actions_parallel_promotion_test.json and ZIP. Manifest confirms three different workflow dispatches in one run set: collector-documentation-quality.yml, validate-on-push.yml, and manual-gemini-bundle-build.yml with allow_multiple_live_dispatches=true, max_dispatch_count=3, max_parallel=3, create_chatgpt_friendly_zip=true, and download_artifacts=true. Operator observed the tool started all three; GitHub allowed two simultaneous workflow runs while the third queued, which is acceptable and proves the orchestrator can dispatch parallel different-workflow batches while GitHub runner/concurrency limits control actual execution. Operator also observed output folder was not deleted after ZIP creation, requiring cleanup patch before promotion.",
+                                       "evidence_key":  "EVID-20260501-actions-parallel-promotion-test-observed-pass"
+                                   }
+                    },
+                    {
+                        "id":  "recEI8GFkUT8GP6dE",
+                        "createdTime":  "2026-05-01T06:01:03.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Gate 2 passed: two-step fail-fast ladder dispatched manual-full-validation.yml with Suite=Core then Suite=QuickAliases. Both runs completed successfully. Run IDs: Core 25204210785; QuickAliases 25204276172. Orchestrator captured evidence, created dcoir_actions_ladder-manual-full-validation-Core_QuickAliases.chatgpt.zip, and cleaned the expanded output folder after successful ZIP creation.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded log gate2_ladder_core_quickaliases_20260501_075229.log.txt; uploaded ZIP dcoir_actions_ladder-manual-full-validation-Core_QuickAliases.chatgpt.zip; GitHub Actions runs 25204210785 and 25204276172.",
+                                       "validation_case_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS-GATE2",
+                                       "created_at":  "2026-05-01T05:59:30.000Z",
+                                       "evidence_key":  "VE-20260501-ACTIONS-GATE2-LADDER-CORE-QUICKALIASES",
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "updated_at":  "2026-05-01T05:59:30.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recEMbwdOM9O5UBXb",
+                        "createdTime":  "2026-05-01T03:09:48.000Z",
+                        "fields":  {
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "validation_case_key":  "DCOIR Actions Mode Ladder SessionBehavior Retrieval TargetedCollection pass",
+                                       "source_locator":  "Uploaded dcoir_actions_mode_ladder_result.json; SessionBehavior/Retrieval/TargetedCollection manifests and chatgpt ZIPs",
+                                       "evidence_summary":  "Uploaded dcoir_actions_mode_ladder_result.json and per-gate manifests confirm sequential mode ladder gates SessionBehavior, Retrieval, and TargetedCollection completed success with failed_or_non_success_count=0. Each gate used manual-full-validation.yml, max_parallel=1, max_dispatch_count=1, allow_multiple_live_dispatches=false, create_chatgpt_friendly_zip=true, and download_artifacts=true. These suites are counted as repository health validation passes and should not be repeated unless later code changes touch relevant covered areas.",
+                                       "evidence_key":  "EVID-20260501-actions-mode-ladder-session-retrieval-targeted-pass"
+                                   }
+                    },
+                    {
+                        "id":  "recIG6XeUxUbQLVuA",
+                        "createdTime":  "2026-05-03T17:29:12.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Reconciled remaining umbrella Work Items T3 and T4 against completed specific branches. T3 startup skill-awareness is satisfied by WI-20260503-REANCHOR-HELPER-RULE and evidence EVID-20260503-REANCHOR-HELPER-RULE-INSTALL-PASS-001. T4 GitHub update lane enforcement is satisfied by WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER and evidence EVID-20260503-BLOCKED-ACTION-DECISION-POLICY-INSTALL-PASS-003. Both umbrella rows were marked done; remaining next active branch is T5 Airtable display guidance audit.",
+                                       "source_locator":  "Work Items T3/T4; completed specific branch evidence rows",
+                                       "validation_case_key":  "WI-PROJECT-HEALTH-RECOVERY-20260503",
+                                       "created_at":  "2026-05-03T18:05:00.000Z",
+                                       "evidence_key":  "EVID-20260503-UMBRELLA-T3-T4-RECONCILED-001",
+                                       "work_item_key":  "WI-PROJECT-HEALTH-RECOVERY-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recJ7lG6NEgTxsW50",
+                        "createdTime":  "2026-05-01T18:22:51.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit 1fe639a9f7df6ced8e2a24e373725b412fb8eaa1. Commit adds CodeQL workflow, Dependency Review workflow, Dependabot auto-merge workflow, Dependabot GitHub Actions config updates, GitHub Actions maintenance documentation, and Queue Control drift/enforcement addenda for dcoir-plan-tracker, dcoir-session-resume, and dcoir-memory-preflight repo-side skill source. Dependabot PR #51 was also merged with merge commit 186bbdec5427ede029cfee4c65f51c7cae61e35d.",
+                                       "repo_surface_key":  ".github/workflows; .github/dependabot.yml; dcoir_skills queue-control sync guidance",
+                                       "source_locator":  "GitHub commit 1fe639a9f7df6ced8e2a24e373725b412fb8eaa1; PR #51 merge commit 186bbdec5427ede029cfee4c65f51c7cae61e35d",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T18:12:00.000Z",
+                                       "evidence_key":  "VE-20260501-SECURITY-QUEUE-CONTROL-CAP-PASS",
+                                       "work_item_key":  "WI-20260430-KNOWLEDGE-TO-GITHUB-WIKI",
+                                       "updated_at":  "2026-05-01T18:12:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recJMd8zAJQl4XlWN",
+                        "createdTime":  "2026-05-01T11:31:52.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "RepoPatch WhatIfOnly warning-clean rerun passed after approved-verb cleanup. Invoke-DcoirRepoPatchApply.ps1 version 2026-05-01.4 completed without the prior Dcoir.RepoPatch unapproved-verb import warning. It confirmed branch main, HEAD aligned with origin/main at 0/0, clean working tree, observed README precheck hash, resolved payload base, evaluated copy map from root/README.sample.md to operator_tools/github_desktop_lane/tests/fixtures/applied_README.sample.md, confirmed matching source/existing hashes, found no delete paths, confirmed postcheck required path, produced success result JSON, and left final git status empty.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded dcoir_repopatch_whatif_warning_clean_rerun_20260501_133115.log.txt, dcoir_repo_patch_apply_20260501_133116.log.txt, and dcoir_repo_patch_apply_20260501_133116.result.json. Result JSON status=success and what_if_only=true.",
+                                       "validation_case_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS-REPOPATCH-WHATIF-WARNING-CLEAN",
+                                       "created_at":  "2026-05-01T11:34:00.000Z",
+                                       "evidence_key":  "VE-20260501-DCOIR-REPOPATCH-WHATIF-WARNING-CLEAN-PASS",
+                                       "work_item_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "updated_at":  "2026-05-01T11:34:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recK1pU4tCjyEEBhO",
+                        "createdTime":  "2026-04-30T22:18:17.000Z",
+                        "fields":  {
+                                       "work_item_key":  "CP-20260430-skill-pass-closeout",
+                                       "validation_case_key":  "DCOIR helper-skill maintenance pass install/push verification",
+                                       "source_locator":  "GitHub commit b09caf8d5bc34ada8647d290e495ee8f78205947; installed skill filesystem under /home/oai/skills/dcoir-*",
+                                       "evidence_summary":  "Verified manual install marker readback from installed skill filesystem and GitHub push readback for commit b09caf8d5bc34ada8647d290e495ee8f78205947. The resource reader body view hides YAML metadata, but filesystem readback shows SKILL.md files start with YAML frontmatter and markers are after frontmatter. GitHub commit readback shows markers added after YAML frontmatter for affected skills and stale Plan Tasks / control-plane path cleanups applied.",
+                                       "evidence_key":  "EVID-20260501-skill-pass-install-push-verified"
+                                   }
+                    },
+                    {
+                        "id":  "recK4PoaXPsgQfOLR",
+                        "createdTime":  "2026-05-05T11:30:15.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Closed the remaining gap for standalone invalid part/chunk artifacts by adding .github/workflows/chatgpt-apply-in-invalid-staging-cleanup.yml. This workflow triggers on chatgpt_staging/in/*/part-*.b64, *.part*, payload.zip.b64.parts/**, chunk_manifest.json, and *chunk* paths; removes unsupported artifacts; and writes a status report pointing back to the required single payload.zip.b64 shape.",
+                                       "repo_surface_key":  "chatgpt-apply-in-invalid-staging-cleanup",
+                                       "source_locator":  "GitHub commit edd174811bdebfdcd3110c5b77cd546a06e111bc; GitHub readback verified .github/workflows/chatgpt-apply-in-invalid-staging-cleanup.yml at main with SHA 31f791f0e0cb436bc00cea3ea730cefb79fb3066.",
+                                       "validation_case_key":  "VAL-CHATGPT-APPLY-IN-SINGLE-PAYLOAD-ONLY",
+                                       "created_at":  "2026-05-05T11:32:00.000Z",
+                                       "evidence_key":  "EVID-CHATGPT-APPLY-IN-INVALID-STAGING-CLEANUP-20260505",
+                                       "work_item_key":  "apply-in-single-payload-guardrails",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-05T11:32:00.000Z",
+                                       "result":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "recKEsHJu19dO8jir",
+                        "createdTime":  "2026-05-03T19:17:27.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Hash-fallback validation passed through chatgpt-exec. Workflow report for exec-20260503-airtable-schema-hashfix-002 shows result=success, shell=powershell_5, exit_code=0, started_utc=2026-05-03T19:02:37Z, finished_utc=2026-05-03T19:02:42Z, GitHub run id 25287957928. Airtable database health export reached Airtable, selected/exported 24 table schemas, and output_zip is non-null: dcoir_airtable_health_export_20260503_190238.chatgpt.zip. This confirms New-DcoirChatGPTFriendlyZip.ps1 version 2026-05-03.1 SHA256 fallback fixed the GitHub Actions Get-FileHash packaging defect.",
+                                       "source_locator":  "chatgpt_staging/status_reports/chatgpt-exec/exec-20260503-airtable-schema-hashfix-002/workflow_report.md",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T19:48:00.000Z",
+                                       "evidence_key":  "EVID-20260503-EXEC-HASHFIX-VALIDATION-PASS-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recKpA8NQJbq9an2U",
+                        "createdTime":  "2026-05-01T10:11:54.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Final full-regression gate passed: orchestrator dispatched manual-full-validation.yml with suite=FullRegression and manual-collector-optional-exe-build.yml with exe_validation_suite=FullRegression concurrently using max_parallel=2. Both runs completed successfully. Run IDs: manual-full-validation FullRegression 25206786500; optional EXE FullRegression 25206790214. Orchestrator captured evidence, created dcoir_actions_parallel_fullregression_final_gate.chatgpt.zip, and cleaned expanded output folder after successful ZIP creation. GitHub job readback confirmed both jobs and all relevant steps completed successfully. This completes repo health validation for this branch when combined with prior successful gates and workflow coverage evidence.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded log parallel_fullregression_final_gate_20260501_093803.log.txt; uploaded manifest dcoir_actions_parallel_fullregression_final_gate.json; uploaded ZIP dcoir_actions_parallel_fullregression_final_gate.chatgpt.zip; GitHub Actions runs 25206786500 and 25206790214; GitHub job readback confirmed success.",
+                                       "validation_case_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS-FULLREGRESSION-FINAL-GATE",
+                                       "created_at":  "2026-05-01T07:52:55.000Z",
+                                       "evidence_key":  "VE-20260501-ACTIONS-PARALLEL-FULLREGRESSION-FINAL-GATE",
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "updated_at":  "2026-05-01T07:52:55.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recLqK3eeBvvJEHAT",
+                        "createdTime":  "2026-05-03T13:00:04.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Full Airtable export artifact dcoir_airtable_health_export_20260503_145529.chatgpt.zip validated and used for tool registration. run_summary.success true; ExportMode FullRecords; FullRecordDump true; RedactLikelySecrets true; MaxRecordsPerTable 0; MetadataScope All; ProbeUnsupportedMetadata true; 24 selected tables; 24 schema files; 24 record files; 1132 records exported. GitHub registration updated: tool_catalog.json commit bb649333b8d77501dfc88057e904ceb5ce0dde11; README.md commit bc15b48ad20c40e9bcc0035abeab9fe1d3633095; Dcoir.Airtable redaction precision fixed commit 0ba54d64ea3d72c7c71491bdb7cae521b86c7c1c. Operator Tools Registry row recAZf7aC0I86TsCS updated to active with full parameters and discovery terms.",
+                                       "repo_surface_key":  "PLAN-20260503-project-health-recovery",
+                                       "source_locator":  "uploaded artifact: dcoir_airtable_health_export_20260503_145529.chatgpt.zip",
+                                       "validation_case_key":  "DCOIR-AIRTABLE-DB-HEALTH-EXPORT",
+                                       "evidence_key":  "VE-20260503-AIRTABLE-FULL-EXPORT-REGISTERED",
+                                       "work_item_key":  "WI-20260503-AIRTABLE-FULL-RECORD-DUMP; WI-20260503-AIRTABLE-EXPORT-PARAMETERIZATION",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recLsvVWz9ZCw8HZH",
+                        "createdTime":  "2026-05-03T18:46:46.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "CAP readback passed for Get-FileHash fallback repair. Verified operator_tools/github_desktop_lane/scripts/New-DcoirChatGPTFriendlyZip.ps1 on main has tool version 2026-05-03.1 and Get-DcoirFileSha256 now checks Get-Command Get-FileHash first, uses Get-FileHash when available, and falls back to System.Security.Cryptography.SHA256 .NET stream hashing when Get-FileHash is unavailable. Next validation is rerun the Airtable schema export through chatgpt-exec and verify output_zip is not null.",
+                                       "source_locator":  "GitHub readback: operator_tools/github_desktop_lane/scripts/New-DcoirChatGPTFriendlyZip.ps1 on main",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T19:18:00.000Z",
+                                       "evidence_key":  "EVID-20260503-EXEC-LANE-HASH-PATCH-CAP-PASS-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recMfHcHgOghsdRLy",
+                        "createdTime":  "2026-05-03T19:17:27.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Durably captured the apply-in-to-exec handoff lane after successful validation. GitHub docs updated: chatgpt_staging/EXECUTION_LANE.md commit d3cb01236fe44444b51bcfbaa977ee615d04266f and operator_tools/github_desktop_lane/docs/CHATGPT_EXEC_LANE_OPERATOR_GUIDE.md commit 65bf53c9c3fde44c9c47f4988b05f17b25c276cb now document the exact procedure. Airtable dcoir-memory-preflight row MEM-20260503-APPLY-IN-TO-EXEC-HANDOFF-LANE and dcoir-validation-orchestrator row VAL-20260503-APPLY-IN-TO-EXEC-HANDOFF-LANE created. Operator Tools Registry row DCOIR-CHATGPT-EXEC-LANE updated with active procedure notes. Validation basis: apply-in report apply-20260503-exec-hashfix-validation-001, exec request exec-20260503-airtable-schema-hashfix-002, non-[skip ci] restage commit 5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e, exec run 25287957928, and exec report showing output_zip non-null.",
+                                       "source_locator":  "chatgpt_staging/EXECUTION_LANE.md; operator_tools/github_desktop_lane/docs/CHATGPT_EXEC_LANE_OPERATOR_GUIDE.md; MEM-20260503-APPLY-IN-TO-EXEC-HANDOFF-LANE; VAL-20260503-APPLY-IN-TO-EXEC-HANDOFF-LANE",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T19:48:00.000Z",
+                                       "evidence_key":  "EVID-20260503-APPLY-IN-TO-EXEC-HANDOFF-CAPTURED-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recMs9pHV28N475zt",
+                        "createdTime":  "2026-05-03T15:03:50.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Local staging helper produced payload.zip.b64 and payload_staging_report.json for request_id val-20260503-apply-in-payload-staging-validation-001. Log reports input ZIP SHA256 2929180dec0b0fabfb6194f15cadde21b1bad4435e5bb97f23454fb873275ef5, round-trip SHA256 match, round-trip validation passed, staging report written, and completed successfully.",
+                                       "source_locator":  "uploaded log: dcoir_apply_in_payload_stager_20260503_170307.log.txt",
+                                       "validation_case_key":  "WI-20260503-APPLY-IN-PAYLOAD-STAGING-VALIDATION",
+                                       "created_at":  "2026-05-03T15:04:00.000Z",
+                                       "evidence_key":  "EVID-20260503-APPLY-IN-STAGING-LOCAL-PASS-001",
+                                       "work_item_key":  "WI-20260503-APPLY-IN-PAYLOAD-STAGING-VALIDATION",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recMvHl1lxNvVOFpu",
+                        "createdTime":  "2026-05-01T11:14:07.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Safe pre-pull apply smoke validation passed after module-first repair. Invoke-DcoirSafePrePullApply.ps1 used the self-contained Dcoir.Git module, detected a clean tree, did not create or reapply an old stash, fetched origin, performed fast-forward pull, confirmed already up to date, and left the repo aligned with origin/main. Existing older stashes were preserved and not applied.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded log dcoir_safe_prepull_apply_smoke_20260501_131221.log.txt. HEAD 42fe919; branch main aligned with origin/main; no local changes to save; no new stash created; reapply skipped; existing stash entries preserved.",
+                                       "validation_case_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS-SAFE-PREPULL-SMOKE",
+                                       "created_at":  "2026-05-01T11:15:00.000Z",
+                                       "evidence_key":  "VE-20260501-DCOIR-SAFE-PREPULL-SMOKE-PASS",
+                                       "work_item_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "updated_at":  "2026-05-01T11:15:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recNLY6pkglPqAG6z",
+                        "createdTime":  "2026-05-01T11:33:17.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "RepoPatch real fixture apply smoke validation passed. Invoke-DcoirRepoPatchApply.ps1 version 2026-05-01.4 ran with WhatIfOnly=false using Dcoir.Git and Dcoir.RepoPatch, confirmed branch main, HEAD aligned with origin/main at 0/0, clean working tree, observed README precheck hash, resolved payload base, applied copy map from root/README.sample.md to operator_tools/github_desktop_lane/tests/fixtures/applied_README.sample.md, confirmed source/previous/new hashes matched, found no delete paths, confirmed postcheck required path, produced success result JSON, and left final git status empty.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded dcoir_repopatch_apply_fixture_smoke_20260501_133239.log.txt, dcoir_repo_patch_apply_20260501_133240.log.txt, and dcoir_repo_patch_apply_20260501_133240.result.json. Result JSON status=success and what_if_only=false.",
+                                       "validation_case_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS-REPOPATCH-APPLY-FIXTURE-SMOKE",
+                                       "created_at":  "2026-05-01T11:36:00.000Z",
+                                       "evidence_key":  "VE-20260501-DCOIR-REPOPATCH-APPLY-FIXTURE-SMOKE-PASS",
+                                       "work_item_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "updated_at":  "2026-05-01T11:36:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recOEXy38IAcEAN5a",
+                        "createdTime":  "2026-05-01T06:16:47.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Promotion readiness reached for the DCOIR Actions workflow orchestrator as the preferred GitHub Actions dispatch/monitor/capture lane. Gate 1 solo workflow passed, Gate 2 two-suite ladder passed, and Gate 3 two parallel different workflows passed. The orchestrator architecture/toolset is validated enough to use as the preferred operator lane for GitHub Actions workflow dispatch, monitoring, evidence capture, ZIP packaging, cleanup, summaries, and exit-code behavior.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Gate 1 run 25203475613; Gate 2 runs 25204210785 and 25204276172; Gate 3 runs 25204445191 and 25204448803. Uploaded logs and ZIPs provided by operator; GitHub job readback confirmed success for Gate 2 and Gate 3 runs.",
+                                       "validation_case_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS-PROMOTION",
+                                       "created_at":  "2026-05-01T06:20:00.000Z",
+                                       "evidence_key":  "VE-20260501-ACTIONS-PREFERRED-LANE-PROMOTION",
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "updated_at":  "2026-05-01T06:20:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recPH6L98Bhz9AepE",
+                        "createdTime":  "2026-05-03T13:58:28.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator CAP verified by GitHub readback on main. Files present: operator_tools/github_desktop_lane/modules/Dcoir.Logging/Dcoir.Logging.psm1 version 2026-05-03.1; operator_tools/github_desktop_lane/scripts/New-DcoirApplyInPayload.ps1 version 2026-05-03.3 imports Dcoir.Logging and returns log_path; operator_tools/github_desktop_lane/docs/CHATGPT_APPLY_IN_PAYLOAD_STAGING.md documents the logging requirement and uploadable log path. This verifies the shared-logging first pass and apply-in helper wiring. Remaining work: make the logging default discoverable in README/catalog/registry and migrate other operator tools as touched.",
+                                       "repo_surface_key":  "PLAN-20260503-project-health-recovery",
+                                       "source_locator":  "GitHub readback: Dcoir.Logging.psm1; New-DcoirApplyInPayload.ps1; CHATGPT_APPLY_IN_PAYLOAD_STAGING.md",
+                                       "validation_case_key":  "DCOIR-OPERATOR-TOOL-LOGGING",
+                                       "evidence_key":  "VE-20260503-OPERATOR-LOGGING-CAP-READBACK",
+                                       "work_item_key":  "WI-20260503-OPERATOR-TOOL-SHARED-LOGGING; WI-20260503-OPERATOR-TOOL-LOGGING-DEFAULT-ENFORCEMENT; WI-20260503-APPLY-IN-PAYLOAD-STAGING-VALIDATION",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recPO9PW00oy5U4eb",
+                        "createdTime":  "2026-05-01T15:14:05.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit 303209835f8b995e646d9899c73be09f73ee457f. Commit adds enableSelectFieldChoiceDeletion to generated Airtable Scripting Extension option cleanup scripts and self-test coverage for waiting/status preservation.",
+                                       "repo_surface_key":  "operator_tools/airtable_work_items_schema_cleanup",
+                                       "source_locator":  "GitHub commit 303209835f8b995e646d9899c73be09f73ee457f",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T15:12:00.000Z",
+                                       "evidence_key":  "VE-20260501-WORK-ITEMS-CLEANUP-V6-CAP-PASS",
+                                       "work_item_key":  "WI-20260501-SIMPLIFY-WORK-ITEMS-SCHEMA",
+                                       "updated_at":  "2026-05-01T15:12:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recPOspqwwjNQhPyG",
+                        "createdTime":  "2026-05-07T11:59:47.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 3 review record prepared before execution. Scope: duplicate and merge-safe review/update work. Full table inventory classification applied. Included tables: Work Items, Session Checkpoints, Idea Inbox, Plans, Operator Preferences, Validation Test Cases, Repo Surface Registry, dcoir-memory-preflight, dcoir-decision-policy, dcoir-validation-orchestrator, Validation Evidence, Admin Registry, DCOIR Lifecycle Ledger, Local Configuration Registry, Operator Tools Registry, and DCOIR Cleanup WBS. Excluded/read-only context tables: Governance Control Plane, Queue Control, Delete Queue, and Gemini Research Reference. Deferred: DCOIR Cleanup Scaffold Registry to WBS23 unless only non-disposition readback is needed. Allowed: identify duplicate candidates, identify deletion candidates for Wave 4, document retained/replacement records, consolidate notes into retained/current rows, improve searchability, mark clearly stale rows as review/superseded/retired where already supported, and record dependency notes. Not allowed: actual record deletion, Delete Queue row creation, Delete Queue processing, schema/table/field changes, scaffold disposition, GitHub/source changes, skill changes, or workflow mutation. Operator shorthand \u0027k\u0027 approved recording this Wave 3 planning scope, not executing duplicate/merge updates.",
+                                       "source_locator":  "Airtable:DCOIR Cleanup WBS CLEANUP-WBS-22-06/CLEANUP-WBS-22-07; full live-schema table inventory classification from 2026-05-07",
+                                       "validation_case_key":  "WBS22-WAVE-REVIEW",
+                                       "created_at":  "2026-05-07T11:58:00.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE3-REVIEW-20260507-1158Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-06 / CLEANUP-WBS-22-07",
+                                       "updated_at":  "2026-05-07T11:58:00.000Z"
+                                   }
+                    },
+                    {
+                        "id":  "recPRaNx6kF7MXPQF",
+                        "createdTime":  "2026-05-03T17:08:02.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator pasted skill editor contents showing dcoir-decision-policy still had only old markers. Local package inspection found prior dcoir-decision-policy install ZIP had decision_matrix blocked-action ladder content but stale SKILL.md marker block, which explains failed marker verification. Rebuilt a fresh single-skill ZIP dcoir-decision-policy_reinstall_20260503T165000Z.zip with the 20260503T165000Z blocked-action-recovery-ladder marker at the top of SKILL.md and verified the ZIP includes decision_matrix.md section I Blocked repo-update recovery ladder.",
+                                       "source_locator":  "Artifact: /mnt/data/dcoir-decision-policy_reinstall_20260503T165000Z.zip",
+                                       "validation_case_key":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER",
+                                       "created_at":  "2026-05-03T17:20:00.000Z",
+                                       "evidence_key":  "EVID-20260503-BLOCKED-ACTION-DECISION-POLICY-REBUILD-001",
+                                       "work_item_key":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER",
+                                       "retention_class":  "operational",
+                                       "result":  "pending"
+                                   }
+                    },
+                    {
+                        "id":  "recPcJKNARDXy0kyu",
+                        "createdTime":  "2026-05-03T15:09:14.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit b3d7fd573cce38ca8b6a9bbdf838caf1488439bc, authored by github-actions[bot], with message \u0027Apply ChatGPT staging bundle and report [skip ci]\u0027. The workflow report for request_id val-20260503-apply-in-payload-staging-validation-001 shows result=success, workflow=chatgpt-apply-in, run_id=25282593756, triggering SHA 61d52e5e54b80d87cfd77e5253d5c25209739ef5, and applied path chatgpt_staging/validation/val-20260503-apply-in-payload-staging-validation.md. Apply report confirms the same applied path and inbound payload.zip.b64 was deleted after success.",
+                                       "source_locator":  "GitHub commit/readback: b3d7fd573cce38ca8b6a9bbdf838caf1488439bc; request_id val-20260503-apply-in-payload-staging-validation-001",
+                                       "validation_case_key":  "WI-20260503-APPLY-IN-PAYLOAD-STAGING-VALIDATION",
+                                       "created_at":  "2026-05-03T15:09:00.000Z",
+                                       "evidence_key":  "EVID-20260503-APPLY-IN-WORKFLOW-SUCCESS-001",
+                                       "work_item_key":  "WI-20260503-APPLY-IN-PAYLOAD-STAGING-VALIDATION",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recPsBty7eEY7iVyv",
+                        "createdTime":  "2026-05-08T04:38:21.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Prepared and executed approved Wave 1 prep/evidence capture only after checkpoint CHK-DCOIR-WBS22-WAVE1-RESUME-AFTER-WORKFLOW-REPAIR-20260507-1835Z. Captures live before snapshots, exact Wave 1 evidence/backfill targets, proposed payloads, Write Gate PASS, approval basis \u0027Proceed\u0027, and after-readback plan. This row does not complete Wave 1 and does not authorize Waves 2-5. No status/pointer cleanup, duplicate/merge work, Delete Queue creation/processing, schema changes, GitHub/source changes, skill changes, workflow changes, or Wave 2-6 work was performed.",
+                                       "source_locator":  "Governance Control Plane:rec4Dc9zqVSJOW5b1; Session Checkpoints:recnYFdJ2El158X7S; Plans:recoLHyurY4OZx3K8; Queue Control:recW8cAlClYFEVhjF; DCOIR Cleanup WBS:recpMq2l7OjE5YfoK",
+                                       "validation_case_key":  "WBS22-WAVE1-PREP-ONLY",
+                                       "created_at":  "2026-05-08T03:40:00.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE1-PREP-ONLY-20260508-0340Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-03",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recRfx8ykofALimZD",
+                        "createdTime":  "2026-05-03T11:37:37.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Readback verified chatgpt-report-retention-cleanup ran in delete mode for workflow_filter repo-workflows/chatgpt-workflow-reporting-validation with success_retention_days=0, failure_retention_days=30, cleanup_retention_days=7, keep_latest_per_workflow=true, candidate_count=1. Cleanup selected success report path chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-reporting-validation/25261738515/workflow_report.md. Direct GitHub fetch of that selected path now returns 404 Not Found, verifying deletion occurred. Current evidence indicates the cleanup workflow is operational for scoped deletion and the schedule exists at 03:37 UTC daily; remaining optional check is a broad scheduled non-dry-run after natural retention aging.",
+                                       "source_locator":  "GitHub readback: chatgpt_staging/status_reports/retention-cleanup/retention-cleanup-25273138405/workflow_report.md; 404 readback for deleted selected report path 25261738515.",
+                                       "validation_case_key":  "chatgpt-report-retention-cleanup",
+                                       "created_at":  "2026-05-03T13:58:00.000Z",
+                                       "evidence_key":  "VE-20260503-REPORT-RETENTION-CLEANUP-SCOPED-DELETE-PASS",
+                                       "work_item_key":  "WI-PROJECT-HEALTH-T8-REPORT-RETENTION-CLEANUP-OPS-20260503",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-03T13:58:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recShllZ6mXTTQHkA",
+                        "createdTime":  "2026-05-01T01:28:50.000Z",
+                        "fields":  {
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "validation_case_key":  "DCOIR Actions Workflow Orchestrator v2026-05-01.4 dry-run validation",
+                                       "source_locator":  "Uploaded file dcoir_actions_workflow_orchestrator_sample.chatgpt.zip; orchestrator_summary.json; zip_manifest.json; dispatch_plan.json",
+                                       "evidence_summary":  "Uploaded dcoir_actions_workflow_orchestrator_sample.chatgpt.zip was inspected after live-dispatch guard patch. ZIP extracted cleanly. Orchestrator summary reports v2026-05-01.4, mode=dispatch, dry_run=true, run_count=1, workflow=manual-full-validation.yml, input suite=QuickAliases, allow_multiple_live_dispatches=false, max_dispatch_count=1, dispatches_started=0, dispatches_succeeded=0, dispatches_blocked=0, failed_or_non_success_count=0. ZIP manifest reports New-DcoirChatGPTFriendlyZip.ps1 v2026-05-01.2, rootless=true, optimized_for_chatgpt_unpacking=true, archive_path_separator=\u0027/\u0027.",
+                                       "evidence_key":  "EVID-20260501-actions-orchestrator-v4-dry-run-pass"
+                                   }
+                    },
+                    {
+                        "id":  "recSzHgPrX8dFd1Xi",
+                        "createdTime":  "2026-05-07T13:29:45.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 4 queue-candidate batch completed by chatgpt-exec. WBS22-08 and WBS22-09 complete, WBS22-10 active, plan pointer advanced. Queue table observed with 0 rows. This batch did not create new queue rows because no exact new candidate manifest was present.",
+                                       "source_locator":  "chatgpt_staging/status_reports/chatgpt-exec/exec-20260507-wbs22-wave4-queue-candidate-001/workflow_report.md",
+                                       "validation_case_key":  "WBS22-WAVE4-BULK",
+                                       "created_at":  "2026-05-07T13:29:43.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE4-BULK-EXEC-20260507-001",
+                                       "work_item_key":  "CLEANUP-WBS-22-09",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-07T13:29:43.000Z",
+                                       "result":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "recTghKEaZsUt2oqT",
+                        "createdTime":  "2026-05-01T12:56:59.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit 1b54cfc4680ed0a5f0b69e049c85f3f7d40a5c8b for dcoir-plan-tracker parent-plan sync gate update. The installed skill package was reported installed by the operator, and the governed repo-side bundle was committed and pushed.",
+                                       "repo_surface_key":  "dcoir_skills/dcoir-plan-tracker",
+                                       "source_locator":  "GitHub commit 1b54cfc4680ed0a5f0b69e049c85f3f7d40a5c8b",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T13:00:00.000Z",
+                                       "evidence_key":  "VE-20260501-PLAN-TRACKER-PARENT-SYNC-GATE-CAP-PASS",
+                                       "work_item_key":  "dcoir-plan-tracker",
+                                       "updated_at":  "2026-05-01T13:00:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recTqS4BBiF61i885",
+                        "createdTime":  "2026-04-30T04:34:21.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator explicitly confirmed both GitHub Actions runs passed in the GitHub website for paired mode TargetedCollection. Per branch rule, artifact inspection was skipped because the operator confirmed pass status and this validation branch trusts explicit website confirmation when provided. Workflows: manual-collector-optional-exe-build.yml with exe_validation_suite=TargetedCollection; manual-full-validation.yml with suite=TargetedCollection.",
+                                       "source_locator":  "GitHub Actions website confirmation from operator in chat, 2026-04-30; no artifact inspection performed.",
+                                       "validation_case_key":  "TargetedCollection",
+                                       "evidence_key":  "EVID-20260430-OPTIONAL-EXE-PAIRED-TARGETEDCOLLECTION-PASS",
+                                       "work_item_key":  "optional-exe-paired-validation",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recUQF5xo17KzOBGR",
+                        "createdTime":  "2026-05-03T15:57:34.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Local Configuration Registry normalization completed for generated code/codeblock safety. Active rows now use Machine-scope PowerShell references where appropriate for DCOIR_AIRTABLE_BASE_ID, DCOIR_AIRTABLE_TOKEN, DCOIR_CONFIG_DIR, DCOIR_DOWNLOADS_DIR, and DCOIR_REPO_ROOT; sensitive rows for Airtable/GitHub/OpenAI tokens and API keys are marked sensitive and not safe to display; config kinds are normalized. Operator Preference PREF-20260503-LOCAL-CONFIG-REFERENCES-IN-CODEBLOCKS created to require future DCOIR generated code/codeblocks to consult Local Configuration Registry, use registered environment variable references, fail fast on missing variables, and never print/log/package secret values.",
+                                       "source_locator":  "Airtable Local Configuration Registry; Operator Preferences PREF-20260503-LOCAL-CONFIG-REFERENCES-IN-CODEBLOCKS",
+                                       "validation_case_key":  "WI-20260503-LOCAL-CONFIG-COPYPASTE-COMMANDS",
+                                       "created_at":  "2026-05-03T16:00:00.000Z",
+                                       "evidence_key":  "EVID-20260503-LOCAL-CONFIG-CODEBLOCK-GUIDANCE-001",
+                                       "work_item_key":  "WI-20260503-LOCAL-CONFIG-COPYPASTE-COMMANDS",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recUVQNElbg3PzIcM",
+                        "createdTime":  "2026-05-03T18:52:11.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "After CAP roll-forward preference was recorded, attempted to stage exec-20260503-airtable-schema-hashfix-002.json directly for hash fallback validation. GitHub connector create_file was blocked by safety checks. Fallback per blocked-action recovery ladder is a minimal GitHub Desktop manual bundle containing only chatgpt_staging/exec_requests/exec-20260503-airtable-schema-hashfix-002.json. Applying this bundle should trigger chatgpt-exec; validation target is Airtable schema export success with output_zip not null.",
+                                       "source_locator":  "/mnt/data/dcoir_exec_hashfix_validation_request_bundle.zip",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T19:22:00.000Z",
+                                       "evidence_key":  "EVID-20260503-EXEC-LANE-HASHFIX-VALIDATION-STAGING-BLOCKED-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "blocked"
+                                   }
+                    },
+                    {
+                        "id":  "recUhWJb9J2muhuCd",
+                        "createdTime":  "2026-05-07T12:03:13.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 5 review record prepared before execution. Scope: Delete Queue processing only. Included source/target table: Delete Queue. Process rows only when approved_to_delete is true, delete_stage is pending or equivalent, target still exists, dependency checks are clear, and exact processing approval is present. Readback/context tables for dependency safety or target absence: Work Items, Session Checkpoints, Idea Inbox, Plans, Operator Preferences, Validation Test Cases, Repo Surface Registry, dcoir-memory-preflight, dcoir-decision-policy, dcoir-validation-orchestrator, Validation Evidence, Admin Registry, DCOIR Lifecycle Ledger, Local Configuration Registry, Operator Tools Registry, and DCOIR Cleanup WBS. Excluded/read-only authority: Governance Control Plane, Queue Control, and Gemini Research Reference. Deferred: DCOIR Cleanup Scaffold Registry to WBS23 unless only non-disposition readback is needed. Allowed: process explicitly approved Delete Queue rows, verify target absence, record verification notes, update Delete Queue stage/status after processing, and record validation evidence. Not allowed: creating new Delete Queue rows, deleting unqueued records, deleting unapproved queued records, schema/table/field changes, scaffold disposition, GitHub/source changes, skill changes, or workflow mutation. Operator shorthand \u0027k\u0027 approved recording this Wave 5 planning scope, not processing Delete Queue rows.",
+                                       "source_locator":  "Airtable:DCOIR Cleanup WBS CLEANUP-WBS-22-10/CLEANUP-WBS-22-11; Delete Queue; full live-schema table inventory classification from 2026-05-07",
+                                       "validation_case_key":  "WBS22-WAVE-REVIEW",
+                                       "created_at":  "2026-05-07T12:07:00.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE5-REVIEW-20260507-1207Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-10 / CLEANUP-WBS-22-11",
+                                       "updated_at":  "2026-05-07T12:07:00.000Z"
+                                   }
+                    },
+                    {
+                        "id":  "recUtIsbKUCnVSjaL",
+                        "createdTime":  "2026-05-03T15:32:30.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified chatgpt-staging-cleanup success for request_id val-20260503-apply-in-payload-staging-validation-001. Workflow report shows run_id 25283147649, triggering SHA c52e8aac263bcc6d17a6ee0fb5b6e770fc96a781, removed_count 3. Removed paths: apply report, apply-in status report directory, and cleanup request marker. Separate fetch readback confirmed those deleted paths return 404 on main. The cleanup workflow retained the current cleanup status report by design for ChatGPT readback.",
+                                       "source_locator":  "GitHub cleanup report: chatgpt_staging/status_reports/chatgpt-staging-cleanup/val-20260503-apply-in-payload-staging-validation-001/workflow_report.md",
+                                       "validation_case_key":  "WI-20260503-APPLY-IN-CLEANUP-REPORTS-VALIDATION",
+                                       "created_at":  "2026-05-03T15:35:00.000Z",
+                                       "evidence_key":  "EVID-20260503-APPLY-IN-CLEANUP-SUCCESS-001",
+                                       "work_item_key":  "WI-20260503-APPLY-IN-CLEANUP-REPORTS-VALIDATION",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recVRVd9BcpGnNdSn",
+                        "createdTime":  "2026-05-01T01:01:19.000Z",
+                        "fields":  {
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "validation_case_key":  "DCOIR Actions Workflow Orchestrator watch-mode validation",
+                                       "source_locator":  "Uploaded file dcoir_actions_watch_sample.chatgpt.zip; orchestrator_summary.json; zip_manifest.json; run logs and jobs for runs 25188471616 and 25186015359",
+                                       "evidence_summary":  "Uploaded dcoir_actions_watch_sample.chatgpt.zip was inspected. ZIP integrity passed with 21 rootless entries and no unzip errors. All archive paths use forward slashes. zip_manifest.json reports New-DcoirChatGPTFriendlyZip.ps1 v2026-05-01.2, rootless=true, optimized_for_chatgpt_unpacking=true, archive_path_separator=\u0027/\u0027. orchestrator_summary.json reports Invoke-DcoirActionsWorkflowOrchestrator.ps1 v2026-05-01.3, mode=watch, run_count=2, failed_or_non_success_count=0. Both watched validate-on-push.yml workflow runs were terminal completed/success: 25188471616 and 25186015359. Evidence includes run metadata, jobs, logs, and debug gh API captures.",
+                                       "evidence_key":  "EVID-20260501-actions-orchestrator-watch-pass"
+                                   }
+                    },
+                    {
+                        "id":  "recVVhcjlNy459lDH",
+                        "createdTime":  "2026-05-07T13:22:46.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 2 governance consistency batch completed by chatgpt-exec. WBS22-04 and WBS22-05 complete, WBS22-06 active, plan pointer advanced.",
+                                       "source_locator":  "chatgpt_staging/status_reports/chatgpt-exec/exec-20260507-wbs22-wave2-bulk-governance-003/workflow_report.md",
+                                       "validation_case_key":  "WBS22-WAVE2-BULK",
+                                       "created_at":  "2026-05-07T13:22:42.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE2-BULK-EXEC-20260507-003",
+                                       "work_item_key":  "CLEANUP-WBS-22-05",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-07T13:22:42.000Z",
+                                       "result":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "recVlFgDVa26IRmYr",
+                        "createdTime":  "2026-05-01T15:44:58.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Final verify passed after Work Items schema cleanup. Records needing normalization: 0. Missing canonical select options: 0. Obsolete option usage: 0. DELETE-prefixed fields remaining: 0. Queue Control active_work_items link and Work Items reverse link were removed after review.",
+                                       "repo_surface_key":  "Airtable Work Items table",
+                                       "source_locator":  "Uploaded verify report work_items_schema_cleanup_04_verify_20260501T154210Z.md / JSON",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T15:45:00.000Z",
+                                       "evidence_key":  "VE-20260501-WORK-ITEMS-SCHEMA-CLEANUP-FINAL-VERIFY-PASS",
+                                       "work_item_key":  "WI-20260501-SIMPLIFY-WORK-ITEMS-SCHEMA",
+                                       "updated_at":  "2026-05-01T15:45:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recVwj9WH04y7OdX4",
+                        "createdTime":  "2026-05-03T16:23:24.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Investigated Local Configuration Registry rows DCOIR_GITHUB_FG_TOKEN and DCOIR_OPENAI_API_KEY. Actual secret values are intentionally not stored and should remain absent. The defect was the maintainer contract/reporting gap: unchecked safe_to_display=false renders visually blank and was not forcefully reported as an explicit safety-control state. Patched dcoir-local-config-registry-maintainer SKILL.md and references/local_config_registry_contract.md to require explicit distinction between absent secret values and missing/ambiguous safety-control metadata, report false checkbox values, and treat missing control metadata as a defect. Skill validated and packaged successfully as skill.zip.",
+                                       "source_locator":  "GitHub commits f4e5f1e7afa4a962e7336c9ec4d6c3e894cca20c and 7b2904c0c31c16294a14b723c0f024e2a2f75669; packaged /mnt/data/dcoir_skill_pkg_out/skill.zip",
+                                       "validation_case_key":  "WI-20260503-LOCAL-CONFIG-MAINTAINER-CONTRACT-GAP",
+                                       "created_at":  "2026-05-03T16:20:00.000Z",
+                                       "evidence_key":  "EVID-20260503-LOCAL-CONFIG-MAINTAINER-CONTRACT-PATCH-001",
+                                       "work_item_key":  "WI-20260503-LOCAL-CONFIG-MAINTAINER-CONTRACT-GAP",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recW4fxhicuNKsYVI",
+                        "createdTime":  "2026-05-01T00:58:31.000Z",
+                        "fields":  {
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "validation_case_key":  "DCOIR Actions Workflow Orchestrator dry-run with optimized ZIP validation",
+                                       "source_locator":  "Uploaded file dcoir_actions_workflow_orchestrator_sample.chatgpt.zip; zip_manifest.json; captured_files.json; orchestrator_summary.json; unzip -t",
+                                       "evidence_summary":  "Uploaded dcoir_actions_workflow_orchestrator_sample.chatgpt.zip was inspected after ZIP helper v2026-05-01.2. unzip -Z1 showed 8 rootless entries, all using forward-slash archive paths, including debug/gh_auth_status.txt. unzip -t reported no errors. zip_manifest.json reports optimized_for_chatgpt_unpacking=true, archive_path_separator=\u0027/\u0027, rootless=true, tool_version=2026-05-01.2. orchestrator_summary.json reports orchestrator v2026-05-01.3, mode=dispatch, dry_run=true, max_parallel=1, run_count=2, failed_or_non_success_count=0, and both planned workflow records stayed state=dry_run with no run IDs dispatched.",
+                                       "evidence_key":  "EVID-20260501-actions-orchestrator-dry-run-zip-clean-pass"
+                                   }
+                    },
+                    {
+                        "id":  "recWPWpzwMDYVbXXk",
+                        "createdTime":  "2026-05-01T01:36:06.000Z",
+                        "fields":  {
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "validation_case_key":  "DCOIR Actions Workflow Orchestrator v2026-05-01.4 live dispatch state tracking bug",
+                                       "source_locator":  "Uploaded dcoir_actions_live_dispatch_test.chatgpt.zip; dcoir_actions_live_dispatch_test.json; orchestrator.log.txt; orchestrator_summary.json; dispatch_ledger.json",
+                                       "evidence_summary":  "Uploaded dcoir_actions_live_dispatch_test.chatgpt.zip and JSON were inspected. The manifest had exactly one run entry with dry_run=false, require_dispatch_confirmation=true, allow_multiple_live_dispatches=false, max_dispatch_count=1, max_parallel=1, workflow manual-full-validation.yml, input suite=QuickAliases. The orchestrator v2026-05-01.4 did dispatch exactly one GitHub workflow run, run_id=25197969853, but due to PowerShell record parameter coercion/state tracking it did not preserve the active state on the ArrayList record. On the next monitor cycle it still saw the record as planned, attempted a second dispatch, and the max_dispatch_count guard blocked it. The guard prevented repeated launches, but the run record was marked terminal with an error and no evidence capture occurred. Root fix: preserve/update the original ordered dictionary record in place and write dispatch_ledger.json after run ID binding.",
+                                       "evidence_key":  "EVID-20260501-actions-orchestrator-v4-live-dispatch-state-bug"
+                                   }
+                    },
+                    {
+                        "id":  "recWrLIouWZ2H4zYN",
+                        "createdTime":  "2026-05-03T12:49:55.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Uploaded artifact dcoir_airtable_health_export_20260503_144718.chatgpt.zip validated as successful bounded live export. run_summary.success true; schema_only false; redacted_likely_secrets true; selected_table_count 24; max_records_per_table 25; module_version 2026-05-03.4. Contains 24 table schema files, 24 table record files, schema.base_tables.json with table id/name/description/primaryFieldId/fields/views, field id/name/type/description/options where available, and view id/name/type. Does not include Airtable automation or extension metadata.",
+                                       "repo_surface_key":  "PLAN-20260503-project-health-recovery",
+                                       "source_locator":  "uploaded artifact: dcoir_airtable_health_export_20260503_144718.chatgpt.zip",
+                                       "validation_case_key":  "DCOIR-AIRTABLE-DB-HEALTH-EXPORT",
+                                       "evidence_key":  "VE-20260503-AIRTABLE-DB-HEALTH-LIVE-BOUNDED-PASS",
+                                       "work_item_key":  "WI-20260503-AIRTABLE-DB-HEALTH-LIVE-COLLECTION; WI-20260503-AIRTABLE-LIVE-EXPORT-URL-BUG",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recXP0la2VWCY9GYb",
+                        "createdTime":  "2026-05-07T12:40:47.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 1 target bundle prepared for low-risk evidence/backfill only. Before snapshots verified: Governance Control Plane rec4Dc9zqVSJOW5b1; Session Checkpoint recqegh50YO0yiOYT; Plan recoLHyurY4OZx3K8; WBS22 scope rows recKw4gF32qjCc7tL, rec99kgvmNNO3Dibh, recpMq2l7OjE5YfoK. No cleanup execution occurred. Duplicate evidence search for this key and Wave 1 target-bundle wording returned no existing Validation Evidence rows. Gate was STOP_ESCALATE due startup/skill drift until operator decision. Operator then provided exact approval phrase: APPROVE WBS22 WAVE1 EVIDENCE BACKFILL ONLY. This evidence row is the only approved Wave 1 write in this approval scope.",
+                                       "source_locator":  "Airtable appM4KSwnVf3G3OTK: Governance Control Plane rec4Dc9zqVSJOW5b1; Session Checkpoints recqegh50YO0yiOYT; Plans recoLHyurY4OZx3K8; DCOIR Cleanup WBS recKw4gF32qjCc7tL/rec99kgvmNNO3Dibh/recpMq2l7OjE5YfoK",
+                                       "validation_case_key":  "WBS22-WAVE1-WRITE-GATE",
+                                       "created_at":  "2026-05-07T12:36:00.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE1-TARGET-BUNDLE-20260507-1236Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-03",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-07T12:36:00.000Z",
+                                       "result":  "pending"
+                                   }
+                    },
+                    {
+                        "id":  "recXQg7KVoy6kWe7N",
+                        "createdTime":  "2026-05-07T11:34:21.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 1 review record prepared before execution. Scope: low-risk evidence/backfill only. Included draft targets: DCOIR Cleanup WBS records CLEANUP-WBS-22, CLEANUP-WBS-22-02, and CLEANUP-WBS-22-03; field validation_notes only. Purpose: improve WBS22 traceability, record that WBS22-01 and WBS22-02 are complete, record that WBS22-03 is active, and preserve execution guardrails. Excluded: Queue Control repair already completed as resume-state maintenance; Plan pointer repair; deletes; Delete Queue creation or processing; schema/table/field changes; GitHub/source changes; skill changes; workflow mutation; scaffold lifecycle/decommissioning. Scaffold review belongs to WBS23 after WBS22 closeout. Dependencies checked: Governance Control Plane supports Airtable-first authority; Plan and checkpoint agree WBS22-03 is active; Queue Control stale WBS13 pointer was repaired before this review record. Approval gate: Wave 1 updates still require explicit approval phrase naming exact records and fields. After-readback plan: re-read each target record and verify only validation_notes changed; then re-read Plan, Queue Control, latest checkpoint, and WBS22 rows.",
+                                       "source_locator":  "Airtable:DCOIR Cleanup WBS CLEANUP-WBS-22/CLEANUP-WBS-22-02/CLEANUP-WBS-22-03; Queue Control recW8cAlClYFEVhjF; Operator Preferences PREF-DCOIR-WBS22-REVIEW-AND-RECORD-WAVES",
+                                       "validation_case_key":  "WBS22-WAVE-REVIEW",
+                                       "created_at":  "2026-05-07T11:34:00.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE1-REVIEW-20260507-1134Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-03",
+                                       "updated_at":  "2026-05-07T11:34:00.000Z"
+                                   }
+                    },
+                    {
+                        "id":  "recXT8Ty4akOzIjQL",
+                        "createdTime":  "2026-05-06T03:17:28.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Repaired by exec-20260505-wbs-evidence-repair-001. WBS04-02 now has live-schema-derived ID component evidence for 21 tables. Artifact files: wbs04_02_id_components.json and wbs04_02_id_components.md.",
+                                       "source_locator":  "exec-20260505-wbs-evidence-repair-001",
+                                       "validation_case_key":  "CLEANUP-WBS-04-02",
+                                       "evidence_key":  "EVID-CLEANUP-WBS-04-02-ID-COMPONENTS-REPAIR-20260505",
+                                       "work_item_key":  "CLEANUP-WBS-04-02",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recXp3BecEWxoMDvz",
+                        "createdTime":  "2026-05-03T18:31:37.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "CAP readback passed for exec-lane wait/reporting patch. Verified .github/workflows/chatgpt-exec.yml now bridges OPENAI_API_KEY, passes it into Invoke-DcoirActionsExecHarness.ps1, and appends GitHub run metadata to committed workflow_report.md. Verified chatgpt_staging/EXECUTION_LANE.md and operator_tools/github_desktop_lane/docs/CHATGPT_EXEC_LANE_OPERATOR_GUIDE.md now include the 60-90 second initial wait rule, bounded 3-5 minute polling window, pending-state wording, and failure-report limitations. Commit summary search did not find the suggested summary, but file readback on main confirms the patch contents are present.",
+                                       "source_locator":  "/mnt/data/dcoir_exec_lane_wait_patch_bundle.zip",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T19:00:00.000Z",
+                                       "evidence_key":  "EVID-20260503-CHATGPT-EXEC-WAIT-RULE-BUNDLE-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recY2qmDC9RPfS5lW",
+                        "createdTime":  "2026-04-30T17:51:59.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Gemini manifest and workflow inventory verified: manifest required_files includes all 17 knowledge attachment copies; validate_dcoir_gemini_bundle.py checks exact match between manifest-listed and discovered Knowledge - *.md.txt files; manual-gemini-bundle-build verifies required source surfaces and knowledge count threshold.",
+                                       "source_locator":  "GitHub readback: Gemini_Bundle_Source_Manifest.json; validate_dcoir_gemini_bundle.py; manual-gemini-bundle-build.yml",
+                                       "validation_case_key":  "WI-20260430-VERIFY-KNOWLEDGE-GEMINI-PARITY",
+                                       "evidence_key":  "EVID-20260430-GEMINI-BUNDLE-INVENTORY-WORKFLOW",
+                                       "work_item_key":  "WI-20260430-VERIFY-KNOWLEDGE-GEMINI-PARITY",
+                                       "retention_class":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "recYXcgtSBScUf6nG",
+                        "createdTime":  "2026-05-03T19:04:41.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Apply-in succeeded and created exec request chatgpt_staging/exec_requests/exec-20260503-airtable-schema-hashfix-002.json. Because apply-in commits with [skip ci], the exec workflow did not appear to trigger from that commit. The request was restaged with non-[skip ci] commit 5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e. Immediate and bounded initial readbacks did not yet show chatgpt-exec workflow_report.md; state is pending/not yet produced, not failed. Next action: continue checking Actions/report or manually dispatch chatgpt-exec with request_path chatgpt_staging/exec_requests/exec-20260503-airtable-schema-hashfix-002.json.",
+                                       "source_locator":  "Exec request path chatgpt_staging/exec_requests/exec-20260503-airtable-schema-hashfix-002.json; restage commit 5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T19:35:00.000Z",
+                                       "evidence_key":  "EVID-20260503-EXEC-HASHFIX-VALIDATION-RESTAGED-PENDING-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pending"
+                                   }
+                    },
+                    {
+                        "id":  "recZJfaMMf35HRQYi",
+                        "createdTime":  "2026-05-03T14:05:31.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Built GitHub Desktop manual repo-update bundle dcoir_operator_logging_default_enforcement_github_desktop.zip using dcoir-repo-packager. Bundle contains only affected repo-relative files: operator_tools/github_desktop_lane/modules/README.md, operator_tools/github_desktop_lane/docs/OPERATOR_TOOL_LOGGING_STANDARD.md, and operator_tools/github_desktop_lane/tool_catalog_operator_logging_policy.json. No wrapper root. No meta/instructional files. Airtable Operator Tools Registry row DCOIR-OPERATOR-TOOL-LOGGING was created as live discovery authority. Waiting on operator CAP/commit-push.",
+                                       "repo_surface_key":  "PLAN-20260503-project-health-recovery",
+                                       "source_locator":  "local artifact: /mnt/data/dcoir_operator_logging_default_enforcement_github_desktop.zip; packager report: /mnt/data/logging_default_out/packager_report.json",
+                                       "validation_case_key":  "DCOIR-OPERATOR-TOOL-LOGGING",
+                                       "evidence_key":  "VE-20260503-LOGGING-DEFAULT-BUNDLE-BUILT",
+                                       "work_item_key":  "WI-20260503-OPERATOR-TOOL-LOGGING-DEFAULT-ENFORCEMENT",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recZzrjtYXVSRWXXK",
+                        "createdTime":  "2026-04-30T23:19:42.000Z",
+                        "fields":  {
+                                       "work_item_key":  "WI-20260430-GENERALIZE-REPAIR-APPLY-TOOL",
+                                       "validation_case_key":  "Rank 8.2 reusable operator tools promoted active",
+                                       "source_locator":  "GitHub main readback: operator_tools/github_desktop_lane/scripts/New-DcoirChatGPTFriendlyZip.ps1 and operator_tools/github_desktop_lane/tool_catalog.json. Airtable Operator Tools Registry rows: DCOIR-REPO-PATCH-APPLY and DCOIR-CHATGPT-FRIENDLY-ZIP.",
+                                       "evidence_summary":  "Rank 8.2 produced and verified two active reusable operator tools: DCOIR-REPO-PATCH-APPLY for manifest-driven repo repair/apply workflows, and DCOIR-CHATGPT-FRIENDLY-ZIP for upload-friendly ZIP creation from formal tools or ad hoc terminal scripts. GitHub readback verified New-DcoirChatGPTFriendlyZip.ps1 and tool_catalog.json on main; Operator Tools Registry rows were promoted to active.",
+                                       "evidence_key":  "EVID-20260501-rank-8-2-operator-tools-active"
+                                   }
+                    },
+                    {
+                        "id":  "recaQmL405NfXYFyo",
+                        "createdTime":  "2026-05-08T05:02:28.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Read-only chatgpt-exec allowed-surface export/discovery completed successfully for WBS22 Wave 1 candidate surfaces. Request exec-20260508-wbs22-wave1-allowed-surface-export-001 reported success with exit_code 0 and artifact chatgpt-exec-exec-20260508-wbs22-wave1-allowed-surface-export-001. Review found current Wave 1 write candidates limited to evidence/readback updates only; no cleanup execution, status/pointer cleanup, duplicate/merge work, Delete Queue work, schema changes, GitHub/source changes, skill changes, workflow changes, or Wave 2-6 work was performed.",
+                                       "source_locator":  "GitHub Actions run 25537452480; artifact 6872032771; DCOIR Cleanup WBS:recpMq2l7OjE5YfoK; Validation Evidence:recPsBty7eEY7iVyv; Session Checkpoints:recnYFdJ2El158X7S",
+                                       "validation_case_key":  "WBS22-WAVE1-ALLOWED-SURFACE-DISCOVERY",
+                                       "created_at":  "2026-05-08T04:51:00.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE1-ALLOWED-SURFACE-EXPORT-20260508-0451Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-03",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recajMUUzGWVqsv9b",
+                        "createdTime":  "2026-04-30T06:40:56.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator explicitly confirmed manual-collector-optional-exe-build FullRegression passed in the GitHub website after FailureGates EXE-mode harness handling was normalized. This completes the remaining optional EXE paired validation branch modes. Artifact inspection was skipped per branch rule trusting explicit operator website confirmation.",
+                                       "source_locator":  "GitHub Actions website confirmation from operator in chat, 2026-04-30; FullRegression EXE passed.",
+                                       "validation_case_key":  "FullRegression",
+                                       "evidence_key":  "EVID-20260430-OPTIONAL-EXE-PAIRED-FULLREGRESSION-PASS",
+                                       "work_item_key":  "optional-exe-paired-validation",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "reccoGUzBAqrKk6CG",
+                        "createdTime":  "2026-05-01T11:22:16.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Text-only repo snapshot smoke validation passed after Dcoir.Snapshot module path trim compatibility fix. New-DcoirTextOnlyRepoSnapshot.ps1 used Dcoir.Git and Dcoir.Snapshot, confirmed clean git working tree, scanned and copied text files, produced ZIP, log, and manifest outputs. Included 454 files and skipped 4703 files according to the uploaded log.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded log dcoir_snapshot_textonly_smoke_rerun_20260501_132120.log.txt. Output ZIP: C:\\Users\\batch_lrjfue\\Downloads\\dcoir_snapshot_textonly_smoke_20260501_132121.zip. Output log: C:\\Users\\batch_lrjfue\\Downloads\\dcoir_snapshot_textonly_smoke_20260501_132121.log.txt. Output manifest: C:\\Users\\batch_lrjfue\\Downloads\\dcoir_snapshot_textonly_smoke_20260501_132121.manifest.json.",
+                                       "validation_case_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS-SNAPSHOT-TEXTONLY-SMOKE",
+                                       "created_at":  "2026-05-01T11:24:00.000Z",
+                                       "evidence_key":  "VE-20260501-DCOIR-SNAPSHOT-TEXTONLY-SMOKE-PASS",
+                                       "work_item_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "updated_at":  "2026-05-01T11:24:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recdtMzvwGvClwIWK",
+                        "createdTime":  "2026-05-03T18:42:02.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Attempted to stage the Get-FileHash fallback repair through chatgpt apply-in to avoid another manual CAP, but the connector safety layer blocked the payload create_file call. Fallback per blocked-action recovery ladder is GitHub Desktop/manual repo-update bundle. The prepared bundle dcoir_exec_lane_hash_patch_bundle.zip contains only operator_tools/github_desktop_lane/scripts/New-DcoirChatGPTFriendlyZip.ps1 with version 2026-05-03.1 and .NET SHA256 fallback when Get-FileHash is unavailable.",
+                                       "source_locator":  "/mnt/data/dcoir_exec_lane_hash_patch_bundle.zip",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T19:12:00.000Z",
+                                       "evidence_key":  "EVID-20260503-EXEC-LANE-HASH-PATCH-APPLY-IN-BLOCKED-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "blocked"
+                                   }
+                    },
+                    {
+                        "id":  "receKrh87jKD2ZFsP",
+                        "createdTime":  "2026-05-01T17:34:09.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit 72deb078277bd7a8e54166c0abbdcdbe060e2954. Commit updates checkout@v4 references to checkout@v6 in known workflows, adds/refreshes Dependabot GitHub Actions update config, adds workflow-maintenance-audit.yml, and adds check_workflow_action_versions.py to fail visibly on stale workflow action versions.",
+                                       "repo_surface_key":  ".github/workflows; .github/dependabot.yml; project_sources/github_actions/tools/check_workflow_action_versions.py",
+                                       "source_locator":  "GitHub commit 72deb078277bd7a8e54166c0abbdcdbe060e2954",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T17:30:00.000Z",
+                                       "evidence_key":  "VE-20260501-WORKFLOW-MAINTENANCE-AUDIT-CAP-PASS",
+                                       "work_item_key":  "WI-20260430-KNOWLEDGE-TO-GITHUB-WIKI",
+                                       "updated_at":  "2026-05-01T17:30:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recfLgbpMLIwAndHF",
+                        "createdTime":  "2026-05-03T17:03:07.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Second installed-skill readback after operator reported reinstall still does not show dcoir-decision-policy marker updated-skill|20260503T165000Z|blocked-action-recovery-ladder. Installed copy still begins with older markers updated-skill|20260503T111500Z and updated-skill|20260429T171500Z. dcoir-github-desktop-lane-advisor remains verified. Work Item remains waiting until decision-policy installed marker confirms.",
+                                       "source_locator":  "Installed-skill readback via api_tool_skills: dcoir-decision-policy still pending marker confirmation",
+                                       "validation_case_key":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER",
+                                       "created_at":  "2026-05-03T17:10:00.000Z",
+                                       "evidence_key":  "EVID-20260503-BLOCKED-ACTION-DECISION-POLICY-INSTALL-STILL-PENDING-002",
+                                       "work_item_key":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER",
+                                       "retention_class":  "operational",
+                                       "result":  "pending"
+                                   }
+                    },
+                    {
+                        "id":  "recfep0bdp8g4rxb7",
+                        "createdTime":  "2026-05-05T05:05:25.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Closed AIRTABLE-WORKFLOW-001 based on GitHub repo workflow report showing scheduled-health-check completed successfully from source_event=schedule on main. Workflow run id 25306279467, run number 29, attempt 1, source_created_at 2026-05-04T07:20:29Z, source_updated_at 2026-05-04T07:30:08Z, report_created_utc 2026-05-04T07:30:24Z. No workflow code change needed.",
+                                       "repo_surface_key":  "scheduled-health-check",
+                                       "source_locator":  "chatgpt_staging/status_reports/repo-workflows/scheduled-health-check/25306279467/workflow_report.md",
+                                       "validation_case_key":  "scheduled-health-check automatic schedule proof",
+                                       "created_at":  "2026-05-05T05:20:00.000Z",
+                                       "evidence_key":  "EVIDENCE-20260505-AIRTABLE-WORKFLOW-001-SCHEDULED-HEALTH-CHECK-CLOSEOUT",
+                                       "work_item_key":  "AIRTABLE-WORKFLOW-001",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-05T05:20:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recfm0iz79zbmf37K",
+                        "createdTime":  "2026-05-07T08:07:42.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Validation-only Write Gate helper package was created locally as skill.zip. Package validation passed. Script smoke tests returned PASS for a complete planning-note proposal and STOP_ESCALATE for an unsafe schema-change proposal. This is not installed and not GitHub-synced yet.",
+                                       "repo_surface_key":  "dcoir-airtable-write-gate",
+                                       "source_locator":  "/mnt/data/dcoir_write_gate_dist/skill.zip",
+                                       "validation_case_key":  "DCOIR-WRITE-GATE-PACKAGE-SMOKE",
+                                       "evidence_key":  "VE-DCOIR-WRITE-GATE-SKILL-PACKAGE-20260507-0806Z",
+                                       "work_item_key":  "CLEANUP-WBS-09-IMPLEMENTATION-CANDIDATE",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recg9oJxGBtUMMmtp",
+                        "createdTime":  "2026-05-07T12:23:36.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 6 finalized as planning metadata after operator approval. Target architecture packet created in Admin Registry: ADMIN-WBS22-WAVE6-TARGET-ARCHITECTURE-V1-20260507 / recTwBaBbVtt0aclt. Wave 6 work-packet WBS rows created: CLEANUP-WBS-22-12-A through CLEANUP-WBS-22-12-F and CLEANUP-WBS-22-13-A through CLEANUP-WBS-22-13-C. Final Wave 6 scope: schema/table/manual cleanup, field type migrations, controlled-select conversions, computed/formula/lookup/rollup/helper fields, value backfill/normalization, dependency mapping, approval packets, approved schema micro-batches, after-readback validation, and leftover/deferred handoff. Full live table universe must be classified before execution. No schema or data migration executed by this finalization. Exact schema/migration actions remain red-gated and require target table/field/action, before snapshot, dependency review, explicit approval, and after-readback plan.",
+                                       "source_locator":  "Admin Registry recTwBaBbVtt0aclt; DCOIR Cleanup WBS Wave 6 subtask rows; live schema readback 2026-05-07",
+                                       "validation_case_key":  "WBS22-WAVE-REVIEW",
+                                       "created_at":  "2026-05-07T12:24:00.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE6-FINALIZED-20260507-1224Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-12 / CLEANUP-WBS-22-13",
+                                       "updated_at":  "2026-05-07T12:24:00.000Z"
+                                   }
+                    },
+                    {
+                        "id":  "recggejTVaPazKt2h",
+                        "createdTime":  "2026-05-07T13:18:45.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 1 evidence/backfill bulk execution via chatgpt-exec. WBS22-03 completed, WBS22-04 activated, plan pointer advanced. No schema, queue-processing, duplicate/merge, source, skill, workflow, scaffold, or Wave 6 work was performed.",
+                                       "source_locator":  "chatgpt_staging/status_reports/chatgpt-exec/exec-20260507-wbs22-wave1-bulk-evidence-001/workflow_report.md",
+                                       "validation_case_key":  "WBS22-WAVE1-BULK-EXECUTION",
+                                       "created_at":  "2026-05-07T13:18:33.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE1-BULK-EXEC-20260507-001",
+                                       "work_item_key":  "CLEANUP-WBS-22-03",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-07T13:18:33.000Z",
+                                       "result":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "recgoJWA9YSGoBZDT",
+                        "createdTime":  "2026-05-01T15:59:31.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit 2a3efa74bf80a3f7e8644438f3c1a30ed53ed578. Commit aligns Work Items cleanup tool/docs with final Airtable schema: retired fields removed, Queue Control active_work_items link removed, prefix_delete_fields empty, and current verify expected to show zero cleanup targets.",
+                                       "repo_surface_key":  "operator_tools/airtable_work_items_schema_cleanup",
+                                       "source_locator":  "GitHub commit 2a3efa74bf80a3f7e8644438f3c1a30ed53ed578",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T16:00:00.000Z",
+                                       "evidence_key":  "VE-20260501-WORK-ITEMS-CLEANUP-V7-CAP-PASS",
+                                       "work_item_key":  "WI-20260501-SIMPLIFY-WORK-ITEMS-SCHEMA",
+                                       "updated_at":  "2026-05-01T16:00:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rechNi9FYfJmGWPIB",
+                        "createdTime":  "2026-05-03T07:33:48.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "PASS: chatgpt-report-retention-cleanup delete-mode validation completed. Cleanup report retention-cleanup-25273138405 showed mode=delete, success_days=0, failure_days=30, cleanup_days=7, workflow_filter=repo-workflows/chatgpt-workflow-reporting-validation, candidate_count=1. GitHub compare from 880fd5fd79fbb7e4f30b86884c7f5e5948ce9dc6 to main showed the older success harness report chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-reporting-validation/25261738515/workflow_report.md removed and new cleanup report added. Direct readback confirmed the latest failure/debug report 25261773354 remains present and an unrelated Workflow-maintenance-audit report remains present. Direct fetch of the deleted success report returned 404 Not Found.",
+                                       "source_locator":  "cleanup report: chatgpt_staging/status_reports/retention-cleanup/retention-cleanup-25273138405/workflow_report.md; deleted target: chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-reporting-validation/25261738515/workflow_report.md; preserved failure: chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-reporting-validation/25261773354/workflow_report.md; preserved unrelated: chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/25261570066/workflow_report.md; compare base/head: 880fd5fd79fbb7e4f30b86884c7f5e5948ce9dc6..main",
+                                       "validation_case_key":  "VAL-20260502-REPO-WIDE-REPORT-CLEANUP-DELETE-MODE",
+                                       "created_at":  "2026-05-03T07:36:00.000Z",
+                                       "evidence_key":  "EVID-20260503-REPO-WIDE-REPORT-CLEANUP-DELETE-MODE-001",
+                                       "work_item_key":  "WI-20260502-STAGING-LANE-FOLLOWUP-REPO-WIDE-WORKFLOW-REPORTS",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "rechQYIyDbyBFNxs4",
+                        "createdTime":  "2026-05-01T19:04:25.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit f6b790751c698967627960c0e300559b531113c8. Commit adds a guarded dry-run-first GitHub issue close tool using DCOIR_GITHUB_FG_TOKEN or DCOIR_GITHUB_CL_TOKEN, excluding pull requests, logging to DCOIR_DOWNLOADS_DIR, and requiring explicit apply confirmation for bulk issue closure.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/scripts/Invoke-DcoirCloseGitHubIssues.ps1; Run_DCOIR_CloseGitHubIssues_DryRun.cmd; Run_DCOIR_CloseGitHubIssues_Apply.cmd",
+                                       "source_locator":  "GitHub commit f6b790751c698967627960c0e300559b531113c8",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T19:00:00.000Z",
+                                       "evidence_key":  "VE-20260501-CLOSE-GITHUB-ISSUES-TOOL-CAP-PASS",
+                                       "work_item_key":  "WI-20260430-OPENAI-API-KEY-ENV-SMOKE-TEST",
+                                       "updated_at":  "2026-05-01T19:00:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "reciSvjH9de20Ew8H",
+                        "createdTime":  "2026-05-05T19:07:11.000Z",
+                        "fields":  {
+                                       "work_item_key":  "CLEANUP-WBS-04-04",
+                                       "validation_case_key":  "CLEANUP-WBS-04-04",
+                                       "source_locator":  "exec-20260505-wbs04-uniqueness-suffix-004",
+                                       "evidence_summary":  "WBS04-04 completed by exec-20260505-wbs04-uniqueness-suffix-004. Uniqueness suffix options and collision notes defined for 21 tables. Artifact files: wbs04_uniqueness_suffix.json and wbs04_uniqueness_suffix.md.",
+                                       "evidence_key":  "EVID-CLEANUP-WBS-04-04-UNIQUENESS-SUFFIX-20260505"
+                                   }
+                    },
+                    {
+                        "id":  "reciUYhBoe7zL2oB1",
+                        "createdTime":  "2026-05-03T14:08:30.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator CAP verified by GitHub readback on main. Files present and aligned: operator_tools/github_desktop_lane/modules/README.md includes Default logging contract and Dcoir.Logging module role; operator_tools/github_desktop_lane/docs/OPERATOR_TOOL_LOGGING_STANDARD.md defines required one-uploadable-log behavior, required log contents, secret handling, and minimal pattern; operator_tools/github_desktop_lane/tool_catalog_operator_logging_policy.json defines DCOIR-OPERATOR-TOOL-LOGGING-DEFAULT policy and points to Operator Tools Registry row DCOIR-OPERATOR-TOOL-LOGGING. This completes default-enforcement/discovery for shared operator-tool logging.",
+                                       "repo_surface_key":  "PLAN-20260503-project-health-recovery",
+                                       "source_locator":  "GitHub readback: modules/README.md; docs/OPERATOR_TOOL_LOGGING_STANDARD.md; tool_catalog_operator_logging_policy.json",
+                                       "validation_case_key":  "DCOIR-OPERATOR-TOOL-LOGGING",
+                                       "evidence_key":  "VE-20260503-LOGGING-DEFAULT-CAP-READBACK",
+                                       "work_item_key":  "WI-20260503-OPERATOR-TOOL-LOGGING-DEFAULT-ENFORCEMENT",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recj7JZy2a5Cq8Tqv",
+                        "createdTime":  "2026-05-01T11:24:57.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Targeted snapshot smoke validation passed. New-DcoirTargetedSnapshot.ps1 used Dcoir.Git and Dcoir.Snapshot, confirmed branch main, clean tree before and after pull, fetched origin, fast-forward pull reported already up to date, copied the five requested repo-relative snapshot files, and produced a ZIP/log output.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded logs dcoir_targeted_snapshot_smoke_20260501_132419.log.txt and dcoir_targeted_snapshot_smoke_20260501_132421.log.txt; uploaded manifest dcoir_targeted_snapshot_smoke_manifest.json. Output ZIP: C:\\Users\\batch_lrjfue\\Downloads\\dcoir_targeted_snapshot_smoke_20260501_132421.zip. Copied Dcoir.Snapshot psm1/psd1, New-DcoirTargetedSnapshot.ps1, New-DcoirTextOnlyRepoSnapshot.ps1, and tool_catalog.json.",
+                                       "validation_case_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS-SNAPSHOT-TARGETED-SMOKE",
+                                       "created_at":  "2026-05-01T11:27:00.000Z",
+                                       "evidence_key":  "VE-20260501-DCOIR-SNAPSHOT-TARGETED-SMOKE-PASS",
+                                       "work_item_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "updated_at":  "2026-05-01T11:27:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recj7QqSd4MEOzL2p",
+                        "createdTime":  "2026-05-01T06:15:47.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Gate 3 passed: orchestrator dispatched two different workflows in parallel with max_parallel=2. manual-full-validation.yml QuickAliases run 25204445191 completed success. validate-on-push.yml run 25204448803 completed success. Orchestrator monitored both concurrently, captured evidence for both, created dcoir_actions_gate3_parallel_different_workflows.chatgpt.zip, and cleaned the expanded output folder after successful ZIP creation.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded log gate3_parallel_different_workflows_20260501_080203.log.txt; uploaded manifest dcoir_actions_gate3_parallel_different_workflows.json; uploaded ZIP dcoir_actions_gate3_parallel_different_workflows.chatgpt.zip; GitHub Actions runs 25204445191 and 25204448803.",
+                                       "validation_case_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS-GATE3",
+                                       "created_at":  "2026-05-01T06:06:30.000Z",
+                                       "evidence_key":  "VE-20260501-ACTIONS-GATE3-PARALLEL-DIFFERENT-WORKFLOWS",
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "updated_at":  "2026-05-01T06:06:30.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recjolHgs1RHEGQi0",
+                        "createdTime":  "2026-05-01T00:44:14.000Z",
+                        "fields":  {
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "validation_case_key":  "DCOIR Actions Workflow Orchestrator dry-run dispatch validation",
+                                       "source_locator":  "Uploaded file dcoir_actions_workflow_orchestrator_sample.chatgpt.zip; orchestrator_summary.json; orchestrator.log.txt",
+                                       "evidence_summary":  "Uploaded dcoir_actions_workflow_orchestrator_sample.chatgpt.zip was inspected. Orchestrator v2026-05-01.3 ran in dispatch mode with dry_run=true, max_parallel=1, two planned workflow records, no workflow runs dispatched, and failed_or_non_success_count=0. Machine/System DCOIR_REPO_ROOT and DCOIR_DOWNLOADS_DIR were resolved correctly. Minor packaging finding: ZIP used a backslash path entry for debug\\gh_auth_status.txt, which triggered an unzip warning in Linux but extraction still succeeded; fix New-DcoirChatGPTFriendlyZip.ps1 to normalize archive paths to forward slashes before promotion.",
+                                       "evidence_key":  "EVID-20260501-actions-orchestrator-dry-run-pass"
+                                   }
+                    },
+                    {
+                        "id":  "reck4YrPXV4T0qowO",
+                        "createdTime":  "2026-05-05T19:06:05.000Z",
+                        "fields":  {
+                                       "work_item_key":  "CLEANUP-WBS-04-03",
+                                       "validation_case_key":  "CLEANUP-WBS-04-03",
+                                       "source_locator":  "exec-20260505-wbs04-slug-sources-003",
+                                       "evidence_summary":  "WBS04-03 completed by exec-20260505-wbs04-slug-sources-003. Canonical slug sources defined for 21 tables. Artifact files: wbs04_slug_sources.json and wbs04_slug_sources.md.",
+                                       "evidence_key":  "EVID-CLEANUP-WBS-04-03-SLUG-SOURCES-20260505"
+                                   }
+                    },
+                    {
+                        "id":  "recke4kpkJPjVgjsg",
+                        "createdTime":  "2026-05-03T17:00:11.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Installed-skill readback after operator install is partial. dcoir-github-desktop-lane-advisor installed copy shows marker updated-skill|20260503T165000Z|blocked-action-recovery-ladder and includes the blocked-action recovery ladder. dcoir-decision-policy installed copy does not show the 20260503T165000Z marker and still begins with older markers updated-skill|20260503T111500Z and updated-skill|20260429T171500Z. Work Item remains waiting until dcoir-decision-policy.zip is reinstalled and marker readback confirms the new version.",
+                                       "source_locator":  "Installed-skill readback via api_tool_skills: dcoir-github-desktop-lane-advisor pass; dcoir-decision-policy pending reinstall",
+                                       "validation_case_key":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER",
+                                       "created_at":  "2026-05-03T17:05:00.000Z",
+                                       "evidence_key":  "EVID-20260503-BLOCKED-ACTION-SKILL-INSTALL-PARTIAL-001",
+                                       "work_item_key":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER",
+                                       "retention_class":  "operational",
+                                       "result":  "pending"
+                                   }
+                    },
+                    {
+                        "id":  "reckk32WS4RRbWgoS",
+                        "createdTime":  "2026-05-07T12:02:07.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 4 review record prepared before execution. Scope: Delete Queue candidate creation only. Full table inventory classification applied. Candidate source tables: Work Items, Session Checkpoints, Idea Inbox, Plans, Operator Preferences, Validation Test Cases, Repo Surface Registry, dcoir-memory-preflight, dcoir-decision-policy, dcoir-validation-orchestrator, Validation Evidence, Admin Registry, DCOIR Lifecycle Ledger, Local Configuration Registry, Operator Tools Registry, and DCOIR Cleanup WBS. Included target table: Delete Queue, for pending queue-row creation only. Excluded/read-only context: Governance Control Plane, Queue Control, and Gemini Research Reference. Deferred: DCOIR Cleanup Scaffold Registry to WBS23 unless only non-disposition readback is needed. Allowed: create Delete Queue rows only for explicitly approved deletion candidates; keep approved_to_delete false unless separately approved; include target_table, target_record_id, delete_key, reason, requested_by, requested_at, dependency notes, and duplicate-queue search evidence; read back created queue rows. Not allowed: deleting target records, processing Delete Queue, schema/table/field changes, scaffold disposition, GitHub/source changes, skill changes, or workflow mutation. Operator shorthand \u0027k\u0027 approved recording this Wave 4 planning scope, not creating Delete Queue rows.",
+                                       "source_locator":  "Airtable:DCOIR Cleanup WBS CLEANUP-WBS-22-08/CLEANUP-WBS-22-09; Delete Queue; full live-schema table inventory classification from 2026-05-07",
+                                       "validation_case_key":  "WBS22-WAVE-REVIEW",
+                                       "created_at":  "2026-05-07T12:03:00.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE4-REVIEW-20260507-1203Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-08 / CLEANUP-WBS-22-09",
+                                       "updated_at":  "2026-05-07T12:03:00.000Z"
+                                   }
+                    },
+                    {
+                        "id":  "recl0CtvrFVBIRw15",
+                        "createdTime":  "2026-04-28T10:21:51.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Migrated from Release Validation Evidence. Release note records that Python syntax checks were rerun for the updated manual test framework runner.; legacy_record_id=recde0W2ItXX02Gyj",
+                                       "review_after":  "2026-04-28",
+                                       "source_locator":  "release_notes/20260423_collector_gemini_surface_followthrough_batch.txt Validation notes.",
+                                       "validation_case_key":  "manual-test-framework",
+                                       "created_at":  "2026-04-28T10:21:42.000Z",
+                                       "evidence_key":  "MIG-RVE-RVE-20260423-PYTHON-SYNTAX",
+                                       "retention_class":  "review",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "result":  "pass",
+                                       "release_key":  "REL-COLLECTOR-GEMINI-20260423"
+                                   }
+                    },
+                    {
+                        "id":  "recl2wVdNlIX8C7Ot",
+                        "createdTime":  "2026-05-03T17:11:31.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Fresh single-skill reinstall succeeded. Installed dcoir-decision-policy SKILL.md readback now shows marker updated-skill|20260503T165000Z|blocked-action-recovery-ladder above prior markers. Installed decision_matrix.md readback includes section I Blocked repo-update recovery ladder with direct connector write, bounded retry/equivalent operation, staged ChatGPT apply-in/GitHub Actions lane, GitHub Desktop/manual bundle fallback, verification before close, and failure evidence preservation. Together with earlier verified dcoir-github-desktop-lane-advisor marker, installed-skill behavior now matches governed source and Airtable policy.",
+                                       "source_locator":  "Installed-skill readback via api_tool_skills for dcoir-decision-policy/SKILL.md and references/decision_matrix.md",
+                                       "validation_case_key":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER",
+                                       "created_at":  "2026-05-03T17:25:00.000Z",
+                                       "evidence_key":  "EVID-20260503-BLOCKED-ACTION-DECISION-POLICY-INSTALL-PASS-003",
+                                       "work_item_key":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "reclHp0TlZ7CLJr5N",
+                        "createdTime":  "2026-04-30T06:39:01.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator confirmed manual-collector-optional-exe-build FailureGates passed after EXE-mode harness normalization. manual-full-validation FailureGates was previously confirmed pass in GitHub UI. Artifact inspection was skipped per branch rule trusting explicit operator website confirmation.",
+                                       "source_locator":  "GitHub Actions website confirmation from operator in chat, 2026-04-30; FailureGates EXE rerun passed after harness EXE bind-reject handling updates.",
+                                       "validation_case_key":  "FailureGates",
+                                       "evidence_key":  "EVID-20260430-OPTIONAL-EXE-PAIRED-FAILUREGATES-PASS",
+                                       "work_item_key":  "optional-exe-paired-validation",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recm5t7D1JQNx1FRR",
+                        "createdTime":  "2026-05-01T07:13:24.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Parallel validation passed: orchestrator dispatched manual-full-validation.yml with suite=MajorVersion and manual-collector-optional-exe-build.yml with exe_validation_suite=Core concurrently using max_parallel=2. Both runs completed successfully. Run IDs: manual-full-validation MajorVersion 25205496061; optional EXE Core 25205500086. Orchestrator captured evidence, created dcoir_actions_parallel_majorversion_exe_core.chatgpt.zip, and cleaned expanded output folder after successful ZIP creation. GitHub job readback confirmed both jobs and relevant steps completed successfully.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded log parallel_majorversion_exe_core_20260501_084547.log.txt; uploaded manifest dcoir_actions_parallel_majorversion_exe_core.json; uploaded ZIP dcoir_actions_parallel_majorversion_exe_core.chatgpt.zip; GitHub Actions runs 25205496061 and 25205500086.",
+                                       "validation_case_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS-PARALLEL-MAJORVERSION-EXE-CORE",
+                                       "created_at":  "2026-05-01T06:56:45.000Z",
+                                       "evidence_key":  "VE-20260501-ACTIONS-PARALLEL-MAJORVERSION-EXE-CORE",
+                                       "work_item_key":  "WI-20260430-REVIEW-ACTIONS-POWERSHELL-TOOLS",
+                                       "updated_at":  "2026-05-01T06:56:45.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recnfLz4x4vDLx7wN",
+                        "createdTime":  "2026-04-28T10:21:51.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Migrated from Release Validation Evidence. Release note records that maintained current surfaces were re-grepped to remove stale single-quote/unescaped endpoint examples.; legacy_record_id=recBgi1EThrASKy8r",
+                                       "review_after":  "2026-04-28",
+                                       "source_locator":  "release_notes/20260423_collector_gemini_surface_followthrough_batch.txt Validation notes.",
+                                       "validation_case_key":  "knowledge-and-gemini-docs",
+                                       "created_at":  "2026-04-28T10:21:42.000Z",
+                                       "evidence_key":  "MIG-RVE-RVE-20260423-STALE-ENDPOINT-EXAMPLES",
+                                       "retention_class":  "review",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "result":  "pass",
+                                       "release_key":  "REL-COLLECTOR-GEMINI-20260423"
+                                   }
+                    },
+                    {
+                        "id":  "reco5xOdKm89nJ52G",
+                        "createdTime":  "2026-05-07T13:34:10.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 5 completed by chatgpt-exec. Delete Queue row count observed: 0. No queue rows were processed because none qualified in this run. WBS22 is now stopped at Wave 6 review.",
+                                       "source_locator":  "chatgpt_staging/status_reports/chatgpt-exec/exec-20260507-wbs22-wave5-stop-before-wave6-002/workflow_report.md",
+                                       "validation_case_key":  "WBS22-WAVE5-STOP",
+                                       "created_at":  "2026-05-07T13:34:08.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE5-COMPLETE-STOP-BEFORE-WAVE6-20260507-002",
+                                       "work_item_key":  "CLEANUP-WBS-22-11",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-07T13:34:08.000Z",
+                                       "result":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "recov2nzrwxJgR9Tz",
+                        "createdTime":  "2026-05-06T03:17:28.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Repaired by exec-20260505-wbs-evidence-repair-001. WBS05-01 now has live-schema-derived select inventory evidence for 69 select or multi-select fields. Artifact files: wbs05_01_select_inventory.json and wbs05_01_select_inventory.md.",
+                                       "source_locator":  "exec-20260505-wbs-evidence-repair-001",
+                                       "validation_case_key":  "CLEANUP-WBS-05-01",
+                                       "evidence_key":  "EVID-CLEANUP-WBS-05-01-SELECT-INVENTORY-REPAIR-20260505",
+                                       "work_item_key":  "CLEANUP-WBS-05-01",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recpVaGRsJwiRHght",
+                        "createdTime":  "2026-05-05T05:08:13.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Closed AIRTABLE-ARCH-001 because the original concern about unreliable local JSON working-state persistence has been addressed by the current Airtable-first architecture. Durable state now lives in Airtable surfaces such as Queue Control, Plans, Work Items, Session Checkpoints, Idea Inbox, Operator Preferences, Admin Registry skill_state rows, SKILLROUTE/helper-memory tables, Validation Evidence, Delete Queue, Lifecycle Ledger, Local Configuration Registry, and Operator Tools Registry. Current dcoir-* cache contracts define local JSON caches as bounded advisory/readiness copies only; live Airtable remains authority for writes, deletes, migration, cleanup, and dependency-sensitive decisions. No new implementation or skill consolidation is required.",
+                                       "repo_surface_key":  "Airtable-first durability model",
+                                       "source_locator":  "AIRTABLE live readback: CONTROL-STARTUP-AIRTABLE-FIRST; dcoir-session-manager and dcoir-memory-preflight cache contracts; Work Item AIRTABLE-ARCH-001",
+                                       "validation_case_key":  "stateful skill persistence model review",
+                                       "created_at":  "2026-05-05T05:10:00.000Z",
+                                       "evidence_key":  "EVIDENCE-20260505-AIRTABLE-ARCH-001-AIRTABLE-PRIMARY-DURABILITY-CLOSEOUT",
+                                       "work_item_key":  "AIRTABLE-ARCH-001",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-05T05:10:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recq38ZQrrxospNVe",
+                        "createdTime":  "2026-05-03T11:49:28.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "CAP verified by GitHub main readback. chatgpt-report-retention-cleanup workflow now schedules 22:00 and 23:00 UTC with Europe/Berlin midnight gate, giving midnight Stuttgart local cleanup across CET/CEST. Scheduled run remains delete mode. Manual dispatch default dry_run=false. Retention defaults are now success=1 day, failure=7 days, cleanup=2 days. write_workflow_report.py cleanup argparse defaults match. WORKFLOW_REPORTING_POLICY.md documents the same behavior.",
+                                       "source_locator":  "GitHub main readback: .github/workflows/chatgpt-report-retention-cleanup.yml; .github/scripts/write_workflow_report.py; chatgpt_staging/WORKFLOW_REPORTING_POLICY.md",
+                                       "validation_case_key":  "chatgpt-report-retention-cleanup-quickfix",
+                                       "created_at":  "2026-05-03T14:31:00.000Z",
+                                       "evidence_key":  "VE-20260503-REPORT-RETENTION-CLEANUP-QUICKFIX-CAP-PASS",
+                                       "work_item_key":  "WI-PROJECT-HEALTH-T8-REPORT-RETENTION-CLEANUP-OPS-20260503",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-03T14:31:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recq5syy0NiN1khUd",
+                        "createdTime":  "2026-05-01T11:28:35.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "RepoPatch WhatIfOnly smoke validation passed. Invoke-DcoirRepoPatchApply.ps1 version 2026-05-01.3 used Dcoir.Git and Dcoir.RepoPatch, confirmed branch main, HEAD aligned with origin/main at 0/0, clean working tree, observed README precheck hash, resolved payload base, evaluated copy map from root/README.sample.md to operator_tools/github_desktop_lane/tests/fixtures/applied_README.sample.md, confirmed matching source/existing hashes, found no delete paths, confirmed postcheck required path, produced success result JSON, and left final git status empty. Note: import warning for unapproved verbs in Dcoir.RepoPatch was observed and should be cleaned before promotion/non-WhatIf smoke.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded dcoir_repopatch_whatif_smoke_20260501_132748.log.txt, dcoir_repo_patch_apply_20260501_132749.log.txt, and dcoir_repo_patch_apply_20260501_132749.result.json. Result JSON status=success and what_if_only=true.",
+                                       "validation_case_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS-REPOPATCH-WHATIF-SMOKE",
+                                       "created_at":  "2026-05-01T11:30:00.000Z",
+                                       "evidence_key":  "VE-20260501-DCOIR-REPOPATCH-WHATIF-SMOKE-PASS",
+                                       "work_item_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "updated_at":  "2026-05-01T11:30:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recqWojLvhg6Hai3S",
+                        "createdTime":  "2026-05-01T12:09:03.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Skill parity surfaces readback passed for dcoir-github-desktop-lane-advisor after source update. Manifest and summary are present, generated_at_utc=2026-05-01T12:04:21Z, baseline_origin=repo_source, advisor status=verified, file_count=5, and tree/file hashes are recorded for SKILL.md, agents/openai.yaml, assets/icon.svg, references/github_desktop_lane_tool_families.md, and references/operator_tools_registry_contract.md.",
+                                       "repo_surface_key":  "dcoir_skills/skill_parity_manifest.json; dcoir_skills/skill_parity_summary.md",
+                                       "source_locator":  "Readback confirmed skill_parity_manifest.json and skill_parity_summary.md include dcoir-github-desktop-lane-advisor with source_tree_hash 7412cfa9b0e952212a7d2f156eaccf319358d273ef4f7947424f48036edef172, status verified, file_count 5, and file hashes for updated source/reference files. Release zip hash remains not-recorded, consistent with the current manifest surface.",
+                                       "validation_case_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS-ADVISOR-SKILL-PARITY-SURFACES",
+                                       "created_at":  "2026-05-01T12:10:00.000Z",
+                                       "evidence_key":  "VE-20260501-GITHUB-DESKTOP-LANE-ADVISOR-PARITY-SURFACES-PASS",
+                                       "work_item_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "updated_at":  "2026-05-01T12:10:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recqnrj4Cij0hN7P9",
+                        "createdTime":  "2026-05-01T20:32:44.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Operator ran project-scoped OpenAI API smoke test successfully. Environment variables present: OPENAI_API_KEY, DCOIR_OPENAI_API_KEY, DCOIR_OPENAI_PROJECT_ID. Keys matched. Responses API create call passed using OpenAI-Project header. Response created and retrieved successfully with same project header. Output text: DCOIR project scoped smoke test ok. Usage: 21 input tokens, 19 output tokens, 40 total tokens, 0 reasoning tokens. Success marker: DCOIR_OPENAI_PROJECT_SCOPED_SMOKE_TEST_DONE.",
+                                       "repo_surface_key":  "OpenAI API project-scoped local environment smoke test",
+                                       "source_locator":  "Operator-provided terminal output in chat; no secret values exposed",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T20:42:00.000Z",
+                                       "evidence_key":  "VE-20260501-OPENAI-PROJECT-SCOPED-SMOKE-PASS",
+                                       "work_item_key":  "WI-20260430-OPENAI-API-KEY-ENV-SMOKE-TEST",
+                                       "updated_at":  "2026-05-01T20:42:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recrARkJJARmwtdmD",
+                        "createdTime":  "2026-05-03T12:23:58.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Uploaded artifact dcoir_airtable_health_export_20260503_142207.chatgpt.zip validated. ZIP integrity passed; 34 files; 24 schema files; run_summary success true; schema_only true; redacted_likely_secrets true; selected_table_count 24; no records files or record_count exports; environment values recorded only as presence with value_exported false; secret pattern scan found 0 hits for common Airtable, GitHub, OpenAI, Bearer, and JWT token patterns.",
+                                       "repo_surface_key":  "PLAN-20260503-project-health-recovery",
+                                       "source_locator":  "uploaded artifact: dcoir_airtable_health_export_20260503_142207.chatgpt.zip",
+                                       "validation_case_key":  "DCOIR-AIRTABLE-DB-HEALTH-EXPORT",
+                                       "evidence_key":  "VE-20260503-AIRTABLE-DB-HEALTH-SCHEMAONLY-PASS",
+                                       "work_item_key":  "DCOIR-AIRTABLE-DB-HEALTH-EXPORT",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recu1pcFBxGtgLYY3",
+                        "createdTime":  "2026-05-03T13:12:41.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Full unredacted DCOIR Airtable export artifact dcoir_airtable_health_export_20260503_151039.chatgpt.zip validated. run_summary.success true; ExportMode FullRecords; FullRecordDump true; RedactLikelySecrets false; MaxRecordsPerTable 0; MetadataScope All; ProbeUnsupportedMetadata true; selected_table_count 24; 24 record files; 24 table schema files plus base/summary schema files; total records exported 1134; redaction markers 0. This is the authoritative database snapshot for plan-wide mapping under the scrubbed-data policy.",
+                                       "repo_surface_key":  "PLAN-20260503-project-health-recovery",
+                                       "source_locator":  "uploaded artifact: dcoir_airtable_health_export_20260503_151039.chatgpt.zip",
+                                       "validation_case_key":  "DCOIR-AIRTABLE-DB-HEALTH-EXPORT",
+                                       "evidence_key":  "VE-20260503-AIRTABLE-FULL-UNREDACTED-PASS",
+                                       "work_item_key":  "WI-20260503-AIRTABLE-FULL-RECORD-DUMP",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recuDTjZAg85Q7e9m",
+                        "createdTime":  "2026-05-01T11:09:32.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Dcoir.Git self-contained module and Get-DcoirGitConflictDiagnostic.ps1 smoke validation passed after module-first repair. Diagnostic reached HEAD 914f1d4, confirmed branch main, origin/main alignment, ahead/behind 0/0, no unmerged files, no working tree or staged diffs, and no active merge/rebase/cherry-pick state. The diagnostic wrote output successfully without module import/export errors.",
+                                       "repo_surface_key":  "operator_tools/github_desktop_lane/",
+                                       "source_locator":  "Uploaded logs dcoir_git_diagnostic_smoke_selfcontained_20260501_130623.log.txt and dcoir_git_conflict_diagnostic_20260501_130624.txt. Git state clean and up to date at 914f1d4.",
+                                       "validation_case_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS-DCOIR-GIT-DIAGNOSTIC-SMOKE",
+                                       "created_at":  "2026-05-01T11:12:00.000Z",
+                                       "evidence_key":  "VE-20260501-DCOIR-GIT-DIAGNOSTIC-SMOKE-PASS",
+                                       "work_item_key":  "WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS",
+                                       "updated_at":  "2026-05-01T11:12:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recuOl8FOSALAoNRO",
+                        "createdTime":  "2026-05-07T08:34:09.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "chatgpt-apply-in workflow sync-validation-write-gate-fold-in-20260507-0001 succeeded and applied three paths: dcoir_skills/dcoir-validation-orchestrator/SKILL.md, references/airtable_write_gate.md, and scripts/evaluate_write_gate.py. GitHub readback confirmed the folded-in marker in SKILL.md and both new Write Gate files. No deletes were requested or applied.",
+                                       "repo_surface_key":  "dcoir-validation-orchestrator",
+                                       "source_locator":  "chatgpt_staging/status_reports/chatgpt-apply-in/sync-validation-write-gate-fold-in-20260507-0001/workflow_report.md",
+                                       "validation_case_key":  "DCOIR-VALIDATION-ORCH-WRITE-GATE-GITHUB-SYNC",
+                                       "evidence_key":  "VE-DCOIR-VALIDATION-ORCH-WRITE-GATE-GITHUB-SYNC-20260507-0834Z",
+                                       "work_item_key":  "CLEANUP-WBS-22-07",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recviiCaN0PM1FDAh",
+                        "createdTime":  "2026-05-03T15:09:06.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit b3d7fd573cce38ca8b6a9bbdf838caf1488439bc, authored by github-actions[bot], with message \u0027Apply ChatGPT staging bundle and report [skip ci]\u0027. The workflow report for request_id val-20260503-apply-in-payload-staging-validation-001 shows result=success, workflow=chatgpt-apply-in, run_id=25282593756, triggering SHA 61d52e5e54b80d87cfd77e5253d5c25209739ef5, and applied path chatgpt_staging/validation/val-20260503-apply-in-payload-staging-validation.md. Apply report confirms the same applied path and inbound payload.zip.b64 was deleted after success.",
+                                       "source_locator":  "GitHub commit/readback: b3d7fd573cce38ca8b6a9bbdf838caf1488439bc; request_id val-20260503-apply-in-payload-staging-validation-001",
+                                       "validation_case_key":  "WI-20260503-APPLY-IN-PAYLOAD-STAGING-VALIDATION",
+                                       "created_at":  "2026-05-03T15:09:00.000Z",
+                                       "evidence_key":  "EVID-20260503-APPLY-IN-WORKFLOW-SUCCESS-001",
+                                       "work_item_key":  "WI-20260503-APPLY-IN-PAYLOAD-STAGING-VALIDATION",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recwRDnmIg88Mj2gT",
+                        "createdTime":  "2026-05-05T11:23:34.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Implemented guardrails to prevent recurring parts/chunk drift for chatgpt-apply-in: workflow rejects chunk staging and decodes only a single payload.zip.b64; staging README documents contract; builder/validator emits one payload.zip.b64 only; parity sync runbook and tool catalog route to the builder; Airtable Operator Tools Registry, memory-preflight, decision-policy, and validation catalog now carry the rule.",
+                                       "repo_surface_key":  "chatgpt-apply-in-staging-contract",
+                                       "source_locator":  "GitHub commits: 1a7f07c8c06d68eedfd3822c4df77ceadaafb002, c3b3b9a15a209bf287da1e11e7e2a79055f5f774, 8b2692c6aa7972b05beb6caa5c07cc4c32ec0dcf, 89c85dacce53bbb9e70a7a87c3b9e17682997085, 8260ab7f805641ee91d31f4a1c88496def664d57, e85f0e111bac864d3aeb0b2beeadc85eda47042a; Airtable records: rec4CVcBeOHBY65gW, recSk4M9x06HHabVI, recRXLgpI9csh5vas, reccMXaIR4D6HpLCA.",
+                                       "validation_case_key":  "VAL-CHATGPT-APPLY-IN-SINGLE-PAYLOAD-ONLY",
+                                       "created_at":  "2026-05-05T11:24:00.000Z",
+                                       "evidence_key":  "EVID-CHATGPT-APPLY-IN-SINGLE-PAYLOAD-GUARDRAILS-20260505",
+                                       "work_item_key":  "apply-in-single-payload-guardrails",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-05T11:24:00.000Z",
+                                       "result":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "recwW30CXbLci4LZC",
+                        "createdTime":  "2026-05-07T13:26:16.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Wave 3 merge-safe review batch completed by chatgpt-exec. WBS22-06 and WBS22-07 complete, WBS22-08 active, plan pointer advanced. No queue row creation, queue processing, schema, source, skill, workflow, scaffold, or Wave 6 work was performed.",
+                                       "source_locator":  "chatgpt_staging/status_reports/chatgpt-exec/exec-20260507-wbs22-wave3-bulk-merge-safe-001/workflow_report.md",
+                                       "validation_case_key":  "WBS22-WAVE3-BULK",
+                                       "created_at":  "2026-05-07T13:26:13.000Z",
+                                       "evidence_key":  "VE-WBS22-WAVE3-BULK-EXEC-20260507-001",
+                                       "work_item_key":  "CLEANUP-WBS-22-07",
+                                       "retention_class":  "operational",
+                                       "updated_at":  "2026-05-07T13:26:13.000Z",
+                                       "result":  "passed"
+                                   }
+                    },
+                    {
+                        "id":  "recxPwX9S4wAt7guf",
+                        "createdTime":  "2026-05-03T17:26:28.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Verified Local Configuration Registry and Operator Tools Registry cleanup state for the current project-health recovery slice. Local Configuration Registry has one active canonical row per inspected config_name; sensitive token/API key rows remain not-stored-by-design and safety-control metadata is explicit. Normalized DCOIR_OPENAI_PROJECT_ID to protected project_id posture with sensitive_value=true and safe_to_display=false. Operator Tools Registry active rows were reviewed; refreshed stale notes for DCOIR-CHATGPT-APPLY-IN-PAYLOAD-STAGER, DCOIR-OPERATOR-TOOL-LOGGING, and DCOIR-AIRTABLE-DB-HEALTH-EXPORT to reflect completed validation/CAP/source-readback state. GitHub README/tool_catalog source readback already reflected current Airtable export guidance, so no new repo bundle was needed for this slice.",
+                                       "source_locator":  "Airtable Local Configuration Registry; Airtable Operator Tools Registry; GitHub operator_tools/github_desktop_lane/README.md; GitHub operator_tools/github_desktop_lane/tool_catalog.json",
+                                       "validation_case_key":  "WI-PROJECT-HEALTH-RECOVERY-20260503",
+                                       "created_at":  "2026-05-03T18:00:00.000Z",
+                                       "evidence_key":  "EVID-20260503-REGISTRY-CLEANUP-STATE-VERIFIED-001",
+                                       "work_item_key":  "WI-PROJECT-HEALTH-RECOVERY-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pass"
+                                   }
+                    },
+                    {
+                        "id":  "recxUA2kTcGmEOlce",
+                        "createdTime":  "2026-05-03T18:06:13.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "Built GitHub Desktop manual repo-update bundle for initial ChatGPT exec lane. Operator requirements applied: approved command text instead of maintained command allowlist, explicit preview before staging, source tools unchanged, reusable workflow harness/module under operator_tools, Machine-scope environment bridge for Actions runner, request cleanup by default, sanitized logs/artifacts, short artifact retention. Bundle contains chatgpt-exec workflow, Dcoir.ActionsExec module, Invoke-DcoirActionsExecHarness.ps1, sample request, exec request scaffold, execution lane docs, and operator guide. Packager skill gate could not be used because local source staging lacked historical CP control-role files; manual rootless GitHub Desktop bundle was created instead.",
+                                       "source_locator":  "/mnt/data/dcoir_chatgpt_exec_lane_github_desktop_bundle.zip",
+                                       "validation_case_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "created_at":  "2026-05-03T18:20:00.000Z",
+                                       "evidence_key":  "EVID-20260503-CHATGPT-EXEC-LANE-BUNDLE-DRAFT-001",
+                                       "work_item_key":  "WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503",
+                                       "retention_class":  "operational",
+                                       "result":  "pending"
+                                   }
+                    },
+                    {
+                        "id":  "recysjLpVchlzEJNZ",
+                        "createdTime":  "2026-05-01T14:55:10.000Z",
+                        "fields":  {
+                                       "evidence_summary":  "GitHub readback verified commit e3bfd907a5f198328a5582588d0db4b51c166b65. Commit preserves canonical Status options during option-delete script generation and adds config-driven generic table cleanup design notes.",
+                                       "repo_surface_key":  "operator_tools/airtable_work_items_schema_cleanup",
+                                       "source_locator":  "GitHub commit e3bfd907a5f198328a5582588d0db4b51c166b65",
+                                       "retention_class":  "operational",
+                                       "created_at":  "2026-05-01T14:58:00.000Z",
+                                       "evidence_key":  "VE-20260501-WORK-ITEMS-CLEANUP-V5-CAP-PASS",
+                                       "work_item_key":  "WI-20260501-SIMPLIFY-WORK-ITEMS-SCHEMA",
+                                       "updated_at":  "2026-05-01T14:58:00.000Z",
+                                       "result":  "pass"
+                                   }
+                    }
+                ]
+}

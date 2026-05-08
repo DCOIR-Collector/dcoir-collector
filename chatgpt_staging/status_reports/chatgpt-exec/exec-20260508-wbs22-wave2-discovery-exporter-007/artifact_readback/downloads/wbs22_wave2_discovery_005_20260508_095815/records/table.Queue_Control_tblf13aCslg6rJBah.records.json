@@ -1,0 +1,30 @@
+{
+    "table_id":  "tblf13aCslg6rJBah",
+    "table_name":  "Queue Control",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  1,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  true,
+    "records":  [
+                    {
+                        "id":  "recW8cAlClYFEVhjF",
+                        "createdTime":  "2026-04-15T15:39:27.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-05-07T11:25:00.000Z",
+                                       "last_confirmed_text":  "2026-05-08T05:10:00Z: Wave 1 real evidence/backfill completed by readback; active pointer advanced to CLEANUP-WBS-22-04.",
+                                       "control_key":  "QUEUE-CONTROL-20260415-active-authority",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "notes":  "Closeout repaired Queue Control to WBS13 after the earlier attempted update did not land. Continue planning-only safety and approval gate design. No cleanup execution is authorized.",
+                                       "resume_rule":  "Resume cleanup plan at CLEANUP-WBS-22-04. Prepare Wave 2 exact target bundle for status/review/retention/pointer cleanup. Use live schema/readback, exact target records/fields, before snapshots, proposed payloads, Write Gate, approval basis, after-readback, and metrics. Proceed aggressively within Wave 2 scope only; do not enter Wave 3 or Delete Queue/schema lanes until gated.",
+                                       "superseded_github_surfaces":  "project_sources/CP-01_DCOIR_Version_Manifest.txt ; project_sources/CP-02_DCOIR_Change_Log.txt ; project_sources/LOG-03_DCOIR_Session_Handoff_Brief.txt ; project_sources/LOG-05_DCOIR_Session_Resume_Anchor_2026-04-03.txt still describe the earlier overlap-cleanup active branch or the earlier 2026-04-17 live queue ordering and therefore should not be treated as fresher than the current Airtable queue state until a bounded governed refresh is applied.",
+                                       "retention_class":  "active",
+                                       "branch_summary":  "Active branch: PLAN-AIRTABLE-CLEANUP-RESTRUCTURE / CLEANUP-WBS-22 Airtable Cleanup Execution Waves. Wave 1 evidence/backfill completed and read back on 2026-05-08T05:10Z. Current active task: CLEANUP-WBS-22-04 Prepare Wave 2 status review retention and pointer cleanup.",
+                                       "review_after":  "2026-04-28",
+                                       "next_revalidation_trigger":  "Before any WBS22 Wave 2 apply step, after any checkpoint that changes active task, or before Wave 3 duplicate/merge prep.",
+                                       "branch_decision":  "Checkpoint/readback basis: WBS22-03 is complete; WBS22-04 is active; Plan active_task_id is CLEANUP-WBS-22-04. Wave 1 changed evidence/readback surfaces only and did not delete records, process Delete Queue, perform duplicate/merge work, change schema, or mutate GitHub/source/skills/workflows.",
+                                       "status":  "active"
+                                   }
+                    }
+                ]
+}

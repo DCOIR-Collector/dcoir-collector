@@ -1,0 +1,374 @@
+﻿[
+    {
+        "table_name":  "Work Items",
+        "table_id":  "tblgsQAVWvh8K7gIR",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  15,
+        "record_count_exported":  111,
+        "has_status_like_field":  true,
+        "has_review_after":  false,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "Queue Rank"
+                                ],
+        "records_file":  "records/table.Work_Items_tblgsQAVWvh8K7gIR.records.json",
+        "schema_file":  "schema/table.Work_Items_tblgsQAVWvh8K7gIR.schema.json"
+    },
+    {
+        "table_name":  "Session Checkpoints",
+        "table_id":  "tblTe75HKZOJaPDGn",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  19,
+        "record_count_exported":  94,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  true,
+        "pointer_like_fields":  [
+                                    "checkpoint_id",
+                                    "resume_prompt",
+                                    "checkpoint_at",
+                                    "checkpoint_status"
+                                ],
+        "records_file":  "records/table.Session_Checkpoints_tblTe75HKZOJaPDGn.records.json",
+        "schema_file":  "schema/table.Session_Checkpoints_tblTe75HKZOJaPDGn.schema.json"
+    },
+    {
+        "table_name":  "Idea Inbox",
+        "table_id":  "tblWwBxwrjZF6JR3r",
+        "handling":  "wave2_deferred_broad_hygiene_review",
+        "stop_reason":  "",
+        "field_count":  16,
+        "record_count_exported":  15,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "source_checkpoint_id"
+                                ],
+        "records_file":  "records/table.Idea_Inbox_tblWwBxwrjZF6JR3r.records.json",
+        "schema_file":  "schema/table.Idea_Inbox_tblWwBxwrjZF6JR3r.schema.json"
+    },
+    {
+        "table_name":  "Plans",
+        "table_id":  "tblBcp5FyMIfOm7Xe",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  22,
+        "record_count_exported":  13,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "active_task_id",
+                                    "active_task_title",
+                                    "exact_resume_goal",
+                                    "resume_detail",
+                                    "Queue Control",
+                                    "active_plan_task_id"
+                                ],
+        "records_file":  "records/table.Plans_tblBcp5FyMIfOm7Xe.records.json",
+        "schema_file":  "schema/table.Plans_tblBcp5FyMIfOm7Xe.schema.json"
+    },
+    {
+        "table_name":  "Operator Preferences",
+        "table_id":  "tblnxZ3eLPT3W38wl",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  17,
+        "record_count_exported":  207,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "source_session_id",
+                                    "source_checkpoint_id",
+                                    "source_idea_id"
+                                ],
+        "records_file":  "records/table.Operator_Preferences_tblnxZ3eLPT3W38wl.records.json",
+        "schema_file":  "schema/table.Operator_Preferences_tblnxZ3eLPT3W38wl.schema.json"
+    },
+    {
+        "table_name":  "Validation Test Cases",
+        "table_id":  "tblRnMpQUomIGyFVL",
+        "handling":  "wave2_deferred_broad_hygiene_review",
+        "stop_reason":  "",
+        "field_count":  16,
+        "record_count_exported":  111,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+
+                                ],
+        "records_file":  "records/table.Validation_Test_Cases_tblRnMpQUomIGyFVL.records.json",
+        "schema_file":  "schema/table.Validation_Test_Cases_tblRnMpQUomIGyFVL.schema.json"
+    },
+    {
+        "table_name":  "Queue Control",
+        "table_id":  "tblf13aCslg6rJBah",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  14,
+        "record_count_exported":  1,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "active_plans",
+                                    "resume_rule"
+                                ],
+        "records_file":  "records/table.Queue_Control_tblf13aCslg6rJBah.records.json",
+        "schema_file":  "schema/table.Queue_Control_tblf13aCslg6rJBah.schema.json"
+    },
+    {
+        "table_name":  "Gemini Research Reference",
+        "table_id":  "tblfZnARJxcMJ0yHW",
+        "handling":  "wave2_deferred_broad_hygiene_review",
+        "stop_reason":  "",
+        "field_count":  15,
+        "record_count_exported":  76,
+        "has_status_like_field":  false,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "source_basis"
+                                ],
+        "records_file":  "records/table.Gemini_Research_Reference_tblfZnARJxcMJ0yHW.records.json",
+        "schema_file":  "schema/table.Gemini_Research_Reference_tblfZnARJxcMJ0yHW.schema.json"
+    },
+    {
+        "table_name":  "Governance Control Plane",
+        "table_id":  "tblDfSl29psxRnes1",
+        "handling":  "wave2_deferred_broad_hygiene_review",
+        "stop_reason":  "",
+        "field_count":  14,
+        "record_count_exported":  6,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "live_queue_authority"
+                                ],
+        "records_file":  "records/table.Governance_Control_Plane_tblDfSl29psxRnes1.records.json",
+        "schema_file":  "schema/table.Governance_Control_Plane_tblDfSl29psxRnes1.schema.json"
+    },
+    {
+        "table_name":  "Repo Surface Registry",
+        "table_id":  "tblzBiXp7kwTXM0ru",
+        "handling":  "wave2_deferred_broad_hygiene_review",
+        "stop_reason":  "",
+        "field_count":  11,
+        "record_count_exported":  147,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "locator",
+                                    "replacement_surface"
+                                ],
+        "records_file":  "records/table.Repo_Surface_Registry_tblzBiXp7kwTXM0ru.records.json",
+        "schema_file":  "schema/table.Repo_Surface_Registry_tblzBiXp7kwTXM0ru.schema.json"
+    },
+    {
+        "table_name":  "dcoir-memory-preflight",
+        "table_id":  "tblcNNuKqi8IkFsSQ",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  15,
+        "record_count_exported":  38,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+
+                                ],
+        "records_file":  "records/table.dcoir-memory-preflight_tblcNNuKqi8IkFsSQ.records.json",
+        "schema_file":  "schema/table.dcoir-memory-preflight_tblcNNuKqi8IkFsSQ.schema.json"
+    },
+    {
+        "table_name":  "dcoir-decision-policy",
+        "table_id":  "tblKHVXq16Xd5I31m",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  13,
+        "record_count_exported":  9,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "source_basis"
+                                ],
+        "records_file":  "records/table.dcoir-decision-policy_tblKHVXq16Xd5I31m.records.json",
+        "schema_file":  "schema/table.dcoir-decision-policy_tblKHVXq16Xd5I31m.schema.json"
+    },
+    {
+        "table_name":  "dcoir-validation-orchestrator",
+        "table_id":  "tbls9O1B0Rs8YvTAj",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  13,
+        "record_count_exported":  5,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "active_validation_plan"
+                                ],
+        "records_file":  "records/table.dcoir-validation-orchestrator_tbls9O1B0Rs8YvTAj.records.json",
+        "schema_file":  "schema/table.dcoir-validation-orchestrator_tbls9O1B0Rs8YvTAj.schema.json"
+    },
+    {
+        "table_name":  "Delete Queue",
+        "table_id":  "tbl1lMz5N6n7zShO0",
+        "handling":  "read_only_stop_surface",
+        "stop_reason":  "Wave 2 must not process Delete Queue, delete records, or do scaffold disposition.",
+        "field_count":  14,
+        "record_count_exported":  0,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "target_table",
+                                    "target_record_id"
+                                ],
+        "records_file":  "records/table.Delete_Queue_tbl1lMz5N6n7zShO0.records.json",
+        "schema_file":  "schema/table.Delete_Queue_tbl1lMz5N6n7zShO0.schema.json"
+    },
+    {
+        "table_name":  "Validation Evidence",
+        "table_id":  "tblrPFQH2uZEYBYE9",
+        "handling":  "wave2_deferred_broad_hygiene_review",
+        "stop_reason":  "",
+        "field_count":  12,
+        "record_count_exported":  117,
+        "has_status_like_field":  false,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "source_locator"
+                                ],
+        "records_file":  "records/table.Validation_Evidence_tblrPFQH2uZEYBYE9.records.json",
+        "schema_file":  "schema/table.Validation_Evidence_tblrPFQH2uZEYBYE9.schema.json"
+    },
+    {
+        "table_name":  "Admin Registry",
+        "table_id":  "tblFaJW1V2DPc9css",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  11,
+        "record_count_exported":  116,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+
+                                ],
+        "records_file":  "records/table.Admin_Registry_tblFaJW1V2DPc9css.records.json",
+        "schema_file":  "schema/table.Admin_Registry_tblFaJW1V2DPc9css.schema.json"
+    },
+    {
+        "table_name":  "DCOIR Lifecycle Ledger",
+        "table_id":  "tblNsjkGUUIdRpHuE",
+        "handling":  "wave2_deferred_broad_hygiene_review",
+        "stop_reason":  "",
+        "field_count":  13,
+        "record_count_exported":  186,
+        "has_status_like_field":  false,
+        "has_review_after":  false,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "source_table",
+                                    "source_record_id",
+                                    "source_primary_key"
+                                ],
+        "records_file":  "records/table.DCOIR_Lifecycle_Ledger_tblNsjkGUUIdRpHuE.records.json",
+        "schema_file":  "schema/table.DCOIR_Lifecycle_Ledger_tblNsjkGUUIdRpHuE.schema.json"
+    },
+    {
+        "table_name":  "Local Configuration Registry",
+        "table_id":  "tblcJxCoYGpEda0FM",
+        "handling":  "wave2_deferred_broad_hygiene_review",
+        "stop_reason":  "",
+        "field_count":  14,
+        "record_count_exported":  9,
+        "has_status_like_field":  true,
+        "has_review_after":  false,
+        "has_retention_class":  false,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+
+                                ],
+        "records_file":  "records/table.Local_Configuration_Registry_tblcJxCoYGpEda0FM.records.json",
+        "schema_file":  "schema/table.Local_Configuration_Registry_tblcJxCoYGpEda0FM.schema.json"
+    },
+    {
+        "table_name":  "Operator Tools Registry",
+        "table_id":  "tblF1SCJBHRFUhpzi",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  18,
+        "record_count_exported":  16,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  true,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+
+                                ],
+        "records_file":  "records/table.Operator_Tools_Registry_tblF1SCJBHRFUhpzi.records.json",
+        "schema_file":  "schema/table.Operator_Tools_Registry_tblF1SCJBHRFUhpzi.schema.json"
+    },
+    {
+        "table_name":  "DCOIR Cleanup WBS",
+        "table_id":  "tblRxTmpW0VunQlUK",
+        "handling":  "wave2_candidate_core_governance_review",
+        "stop_reason":  "",
+        "field_count":  15,
+        "record_count_exported":  188,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  false,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+
+                                ],
+        "records_file":  "records/table.DCOIR_Cleanup_WBS_tblRxTmpW0VunQlUK.records.json",
+        "schema_file":  "schema/table.DCOIR_Cleanup_WBS_tblRxTmpW0VunQlUK.schema.json"
+    },
+    {
+        "table_name":  "DCOIR Cleanup Scaffold Registry",
+        "table_id":  "tblvtcId7PiFKvfKO",
+        "handling":  "read_only_stop_surface",
+        "stop_reason":  "Wave 2 must not process Delete Queue, delete records, or do scaffold disposition.",
+        "field_count":  11,
+        "record_count_exported":  5,
+        "has_status_like_field":  true,
+        "has_review_after":  true,
+        "has_retention_class":  false,
+        "has_resume_prompt":  false,
+        "pointer_like_fields":  [
+                                    "created_locator"
+                                ],
+        "records_file":  "records/table.DCOIR_Cleanup_Scaffold_Registry_tblvtcId7PiFKvfKO.records.json",
+        "schema_file":  "schema/table.DCOIR_Cleanup_Scaffold_Registry_tblvtcId7PiFKvfKO.schema.json"
+    }
+]

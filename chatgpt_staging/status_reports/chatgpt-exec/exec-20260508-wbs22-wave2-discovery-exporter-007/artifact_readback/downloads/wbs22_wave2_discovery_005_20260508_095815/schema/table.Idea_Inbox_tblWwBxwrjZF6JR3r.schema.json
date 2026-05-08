@@ -1,0 +1,366 @@
+{
+    "id":  "tblWwBxwrjZF6JR3r",
+    "name":  "Idea Inbox",
+    "description":  "Durable intake table for ideas, observations, deferred improvements, and later-promotion candidates. Discovery note: maintained for schema readback so a new/blind operator or assistant can discover table purpose quickly. Inspect field descriptions before writing records.",
+    "primaryFieldId":  "fldw9aHrMeikj4hfl",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldw9aHrMeikj4hfl",
+                       "name":  "idea_id",
+                       "description":  "Purpose: Stable idea identifier. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldpk5jwntA5NbP2o",
+                       "name":  "session_id",
+                       "description":  "Purpose: Source session or branch identifier. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldBoCtxFV4h7pEuk",
+                       "name":  "idea_title",
+                       "description":  "Purpose: Short title for the idea. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldzzj6i4nkc71XGk",
+                       "name":  "idea_detail",
+                       "description":  "Purpose: Full detail or rationale for the idea. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldE3T2c2G49Klwkj",
+                       "name":  "why_it_matters",
+                       "description":  "Purpose: Why the idea matters if preserved. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fld3NZy5ie7LqkQjl",
+                       "name":  "suggested_promotion_target",
+                       "description":  "Purpose: Likely next durable destination if promoted. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldKuWN9I5bFA0BEg",
+                       "name":  "notes",
+                       "description":  "Purpose: Additional notes, updates, or caveats. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "checkbox",
+                       "options":  {
+                                       "icon":  "check",
+                                       "color":  "greenBright"
+                                   },
+                       "id":  "fldyhuC1RXb6TQBu3",
+                       "name":  "promoted_to_github",
+                       "description":  "Purpose: Whether the idea was durably promoted to GitHub. Type: checkbox. Default/omitted behavior: unchecked unless an Airtable field default says otherwise."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldXRAz2DLHzOQmK2",
+                       "name":  "source_checkpoint_id",
+                       "description":  "Purpose: Checkpoint that first carried this idea, when known. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldpo06Fc9RlbOSsE",
+                       "name":  "created_at",
+                       "description":  "Purpose: Timestamp for when the row was created or first observed during cleanup. Type: date/time. Recommended default where configured: current date/time. If no Airtable default exists, scripts may set it explicitly."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldgJDxvK2TNoBPek",
+                       "name":  "updated_at",
+                       "description":  "Purpose: Timestamp for when the row was last updated or refreshed. Type: date/time. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "date",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      }
+                                   },
+                       "id":  "fldNf0eW4kjZKYQHM",
+                       "name":  "review_after",
+                       "description":  "Purpose: Review-after date for aging and cleanup. Type: date. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldAr98ivbOfxmphP",
+                       "name":  "captured_at",
+                       "description":  "Purpose: Parsed idea capture timestamp used for intake sorting and promotion review. Type: date/time. Default: current date/time only when source time is unavailable; scripts should set explicitly."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selWtb5xXJfqdclyl",
+                                                           "name":  "collector",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selfm1mY88aAP3hRC",
+                                                           "name":  "skills",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selXqgNUqqX4KCgbs",
+                                                           "name":  "prompt_pack",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selBnaVybv04nmFWY",
+                                                           "name":  "validation",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selaK6ymENZwSGnI7",
+                                                           "name":  "packaging",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selxMIz4Hsqu74AA3",
+                                                           "name":  "governance",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selPUrhuvxqLsVZbq",
+                                                           "name":  "docs",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel5yN4uN20QqxFFp",
+                                                           "name":  "drive",
+                                                           "color":  "pinkLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selpKNDYKU8Q2XIzZ",
+                                                           "name":  "airtable",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selLvU2H6af3AoTdJ",
+                                                           "name":  "gemini",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel8MGmwLQIssK1i6",
+                                                           "name":  "git_hub",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selGEj2PFCVeWEdio",
+                                                           "name":  "other",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selICbY3LMtcK9w3d",
+                                                           "name":  "workflow",
+                                                           "color":  "tealLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldHoHTIXhA0SBMgP",
+                       "name":  "related_area",
+                       "description":  "Purpose: DCOIR field \u0027related_area\u0027 on \u0027Idea Inbox\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selEdG31cNiYsxrdY",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selyBdcUkv2Ji0M8p",
+                                                           "name":  "implemented",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selCTETIb05ytDwFF",
+                                                           "name":  "candidate",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sela7W0iWyXPQzniN",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selzOumpOp9eHJPcq",
+                                                           "name":  "superseded",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel85PEgmWmwTMakW",
+                                                           "name":  "complete",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selnAB8vUbhXBm0Mf",
+                                                           "name":  "in_progress",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selCBKpXpZPbPfMdI",
+                                                           "name":  "blocked",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel6kDdZUzY6xdnCz",
+                                                           "name":  "pending_review",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seliJIHduau7H3qXH",
+                                                           "name":  "new",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seloMPia2UHxWhU5m",
+                                                           "name":  "parked",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selvMe9K3DaJEDZMN",
+                                                           "name":  "under_review",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selxv4cZbH8lT2nQo",
+                                                           "name":  "promote_to_github",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selQIx1DTSMwvDEPd",
+                                                           "name":  "done",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selR055lBmUiw0VDB",
+                                                           "name":  "dropped",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selbFrGJCPzkrL57N",
+                                                           "name":  "open",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selZ8Pjny7ECIPzfa",
+                                                           "name":  "promoted_to_plan",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selp5N5J1p6HXc5eL",
+                                                           "name":  "review",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldghObs99ambfB4k",
+                       "name":  "status",
+                       "description":  "Purpose: DCOIR field \u0027status\u0027 on \u0027Idea Inbox\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "sel39dilYjKiRAJVU",
+                                                           "name":  "retain",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seljQ6g77jIydqhpW",
+                                                           "name":  "review",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sels1vcV4Ll2CxSDT",
+                                                           "name":  "archive",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selgCxBfmhvHF4Mwz",
+                                                           "name":  "delete_candidate",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel4mR7GNjGhaRdWU",
+                                                           "name":  "working",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selSszTAEUrtwoskc",
+                                                           "name":  "core",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel1Jd67fyJG01XCP",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selDSsEkCMPcKaRLh",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selHu7wbvYWznZ9a3",
+                                                           "name":  "candidate",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldwZA7gM6qRYWhOg",
+                       "name":  "retention_class",
+                       "description":  "Purpose: DCOIR field \u0027retention_class\u0027 on \u0027Idea Inbox\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viwFCPa8VPIbWzM5O",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  }
+              ]
+}

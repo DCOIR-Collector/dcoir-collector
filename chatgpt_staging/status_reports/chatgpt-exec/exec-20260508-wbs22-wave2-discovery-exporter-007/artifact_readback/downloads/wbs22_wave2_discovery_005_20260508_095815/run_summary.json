@@ -1,0 +1,12 @@
+{
+    "success":  true,
+    "output_folder":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260508-wbs22-wave2-discovery-exporter-007\\downloads\\wbs22_wave2_discovery_005_20260508_095815",
+    "output_zip":  null,
+    "schema_only":  false,
+    "export_mode":  "FullRecords",
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  true,
+    "selected_table_count":  21,
+    "max_records_per_table":  0,
+    "finished_at":  "2026-05-08T09:58:24.4046744+00:00"
+}
