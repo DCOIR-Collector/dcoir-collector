@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260508-wbs22-wave6-field-inventory-export-001",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-08T16:34:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 2400,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": false,
+  "approved_command_preview": "Run the existing reusable Airtable database health export operator tool for WBS22 Wave 6 field-level action inventory. Use operator_tools/github_desktop_lane/scripts/New-DcoirAirtableDatabaseHealthExport.ps1 with FullRecords, FullRecordDump, MetadataScope All, and ProbeUnsupportedMetadata. Read-only export only. No Airtable writes, no deletes, no Delete Queue processing, no schema/table/field changes, no select option changes, no computed fields, no value backfill, no GitHub source/workflow/skill changes beyond this approved exec request file.",
+  "command": "$ErrorActionPreference = 'Stop'\n$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')\nif ([string]::IsNullOrWhiteSpace($repo)) { throw 'DCOIR_REPO_ROOT is missing.' }\n$script = Join-Path $repo 'operator_tools\\github_desktop_lane\\scripts\\New-DcoirAirtableDatabaseHealthExport.ps1'\nif (-not (Test-Path -LiteralPath $script -PathType Leaf)) { throw \"Airtable export tool not found: $script\" }\n& $script -ExportMode FullRecords -FullRecordDump -MetadataScope 'All' -ProbeUnsupportedMetadata -OutputNamePrefix 'wbs22_wave6_field_inventory_export'"
+}
