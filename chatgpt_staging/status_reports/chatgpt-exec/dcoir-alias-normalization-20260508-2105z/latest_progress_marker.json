@@ -1,15 +1,15 @@
 {
-  "artifact_name": "",
-  "exit_code": "",
+  "artifact_name": "chatgpt-exec-dcoir-alias-normalization-20260508-2105z",
+  "exit_code": "1",
   "github_ref": "refs/heads/main",
   "github_run_attempt": "1",
   "github_run_id": "25579475908",
   "github_sha": "93fefcbe2e44d3dcd38ce066141254ea79e6a7de",
-  "phase": "running-harness",
+  "phase": "harness-finished",
   "request_id": "dcoir-alias-normalization-20260508-2105z",
   "request_path": "chatgpt_staging/exec_requests/dcoir-alias-normalization-20260508-2105z.json",
-  "result": "running",
+  "result": "failure",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-08T21:04:50Z",
+  "updated_utc": "2026-05-08T21:05:01Z",
   "workflow": "chatgpt-exec"
 }
