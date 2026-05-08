@@ -1,0 +1,10 @@
+﻿{
+    "schema":  "dcoir.exec_artifact_readback_smoke.v1",
+    "result":  "success",
+    "generated_at_utc":  "2026-05-08T06:46:31Z",
+    "expected_readback_path":  "chatgpt_staging/status_reports/chatgpt-exec/smoke-exec-artifact-readback-001/artifact_readback/exec_artifact_readback_smoke_001/smoke_result.json",
+    "notes":  [
+                  "This file was written under DCOIR_DOWNLOADS_DIR.",
+                  "The exec harness should include it in the artifact and committed artifact_readback folder."
+              ]
+}
