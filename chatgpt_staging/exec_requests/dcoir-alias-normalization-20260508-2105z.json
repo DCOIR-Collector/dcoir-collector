@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "dcoir-alias-normalization-20260508-2105z",
+  "operator_approved": true,
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true,
+  "approved_command_preview": "Run approved non-destructive controlled-select alias normalization for exactly 8 Airtable records under PLAN-AIRTABLE-DB-REDESIGN-20260508. Enforce before-value gates and after-readback verification. No schema changes, no option deletion, no Delete Queue rows, no field/table deletion, no changes outside listed records/fields.",
+  "script_path": "chatgpt_staging/exec_scripts/dcoir-alias-normalization-20260508.ps1"
+}
