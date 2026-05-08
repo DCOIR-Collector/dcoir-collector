@@ -8,7 +8,7 @@ param(
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
-$toolVersion = '2026-05-08.1'
+$toolVersion = '2026-05-08.2'
 
 function Get-DcoirEnvValue {
     param([Parameter(Mandatory=$true)][string]$Name, [switch]$Required)
@@ -57,13 +57,9 @@ function Normalize-DcoirToken {
         'passing' = 'pass'
         'failed' = 'fail'
         'failure' = 'fail'
-        'pre_execution' = 'pre_execution'
         'preexecution' = 'pre_execution'
-        'post_execution' = 'post_execution'
         'postexecution' = 'post_execution'
-        'post_blocker' = 'post_blocker'
         'postblocker' = 'post_blocker'
-        'airtable_first' = 'airtable_first'
         'airtablefirst' = 'airtable_first'
     }
     if ($aliases.ContainsKey($v)) { return $aliases[$v] }
@@ -173,9 +169,7 @@ try {
     $skippedTables = @($allTables | Where-Object { -not $IncludeDeleteQueue -and ([string]$_.name -eq 'Delete Queue') } | ForEach-Object { [ordered]@{ id = [string]$_.id; name = [string]$_.name; reason = 'excluded_by_default_preserve_delete_queue_semantics' } })
 
     $recordsByTable = @{}
-    foreach ($table in $selectedTables) {
-        $recordsByTable[[string]$table.id] = @(Get-RecordsForTable -TableId ([string]$table.id))
-    }
+    foreach ($table in $selectedTables) { $recordsByTable[[string]$table.id] = @(Get-RecordsForTable -TableId ([string]$table.id)) }
 
     $selectInventory = New-Object System.Collections.Generic.List[object]
     $textProfiles = New-Object System.Collections.Generic.List[object]
@@ -202,8 +196,7 @@ try {
                 $choices = @(Get-SelectChoices -Field $field)
                 $counts = @{}
                 foreach ($record in $records) {
-                    $value = Get-FieldValue -Fields $record.fields -FieldId $fieldId
-                    foreach ($item in @(Convert-ValueList -Value $value)) {
+                    foreach ($item in @(Convert-ValueList -Value (Get-FieldValue -Fields $record.fields -FieldId $fieldId))) {
                         if (-not $counts.ContainsKey($item)) { $counts[$item] = 0 }
                         $counts[$item]++
                     }
@@ -227,24 +220,19 @@ try {
                 }
                 $blankCount = 0
                 foreach ($record in $records) {
-                    $value = Get-FieldValue -Fields $record.fields -FieldId $fieldId
-                    if (@(Convert-ValueList -Value $value).Count -eq 0) { $blankCount++ }
+                    if (@(Convert-ValueList -Value (Get-FieldValue -Fields $record.fields -FieldId $fieldId)).Count -eq 0) { $blankCount++ }
                 }
                 $selectInventory.Add([ordered]@{ table_id=$tableId; table_name=$tableName; field_id=$fieldId; field_name=$fieldName; field_type=$fieldType; family=$family; record_count=$records.Count; blank_count=$blankCount; option_count=$choices.Count; options=@($choiceProfiles.ToArray()) }) | Out-Null
             }
 
             if ($fieldType -eq 'singleLineText' -or $fieldType -eq 'multilineText') {
                 $valueCounts = @{}
-                $blankCount = 0
-                $maxLen = 0
-                $totalLen = 0
-                $nonBlank = 0
+                $blankCount = 0; $maxLen = 0; $totalLen = 0; $nonBlank = 0
                 foreach ($record in $records) {
                     $value = Get-FieldValue -Fields $record.fields -FieldId $fieldId
                     if ($null -eq $value -or [string]::IsNullOrWhiteSpace([string]$value)) { $blankCount++; continue }
                     $s = ([string]$value).Trim()
-                    $nonBlank++
-                    $totalLen += $s.Length
+                    $nonBlank++; $totalLen += $s.Length
                     if ($s.Length -gt $maxLen) { $maxLen = $s.Length }
                     if (-not $valueCounts.ContainsKey($s)) { $valueCounts[$s] = 0 }
                     $valueCounts[$s]++
@@ -255,7 +243,7 @@ try {
                 $excludedByName = Is-ExcludedTextFieldName -FieldName $fieldName
                 $hasCategoricalName = ((Normalize-DcoirToken $fieldName) -match '(status|state|type|class|scope|area|priority|family|topic|stage|lane|result|decision|surface|role|kind|category)')
                 $bounded = ($nonBlank -ge 3 -and $uniqueCount -ge 2 -and $uniqueCount -le $MaxCandidateUniqueValues -and $uniqueRatio -le $MaxCandidateUniqueRatio -and $maxLen -le 100)
-                $candidate = (-not $excludedByName -and ($bounded -or ($hasCategoricalName -and $uniqueCount -le $MaxCandidateUniqueValues -and $maxLen -le 120)))
+                $candidate = (-not $excludedByName -and $nonBlank -ge 3 -and ($bounded -or ($hasCategoricalName -and $uniqueCount -ge 2 -and $uniqueCount -le $MaxCandidateUniqueValues -and $maxLen -le 120)))
                 $values = @($valueCounts.GetEnumerator() | Sort-Object -Property Value -Descending | ForEach-Object { [ordered]@{ value=[string]$_.Key; normalized=(Normalize-DcoirToken ([string]$_.Key)); count=[int]$_.Value } })
                 $profile = [ordered]@{ table_id=$tableId; table_name=$tableName; field_id=$fieldId; field_name=$fieldName; field_type=$fieldType; family=$family; record_count=$records.Count; nonblank_count=$nonBlank; blank_count=$blankCount; unique_count=$uniqueCount; unique_ratio=$uniqueRatio; average_length=$avgLen; max_length=$maxLen; top_values=@($values | Select-Object -First 50) }
                 $textProfiles.Add($profile) | Out-Null
@@ -304,24 +292,10 @@ try {
         if ($opts.Count -gt 0) { $canonicalSets.Add([ordered]@{ family=$familyKey; proposed_options=$opts; source='existing_selects_and_text_candidates'; review_required=$true }) | Out-Null }
     }
 
-    $inventory = [ordered]@{
-        tool = 'New-DcoirAirtableControlledVocabularyProfile.ps1'
-        tool_version = $toolVersion
-        generated_at_utc = (Get-Date).ToUniversalTime().ToString('o')
-        base_id = $baseId
-        include_delete_queue = [bool]$IncludeDeleteQueue
-        selected_table_count = $selectedTables.Count
-        skipped_tables = $skippedTables
-        total_records_profiled = [int](@($recordsByTable.Values | ForEach-Object { @($_).Count } | Measure-Object -Sum).Sum)
-        select_field_count = $selectInventory.Count
-        text_field_profile_count = $textProfiles.Count
-        text_to_select_candidate_count = $textCandidates.Count
-        excluded_text_field_count = $excludedText.Count
-    }
-
-    $targetRecords = [ordered]@{ read_only = $true; target = 'controlled_vocabulary_inventory'; plan_key = 'PLAN-AIRTABLE-DB-REDESIGN-20260508'; wbs_scope = '02.01-02.05'; selected_tables = @($selectedTables | ForEach-Object { [ordered]@{ id=[string]$_.id; name=[string]$_.name } }); skipped_tables = $skippedTables }
-    $plannedPayload = [ordered]@{ read_only = $true; mutation_planned = $false; next_payload_type = 'approval_packet_after_operator_review'; note = 'No Airtable schema/data changes are proposed by this profiling run.' }
-    $verification = [ordered]@{ result='pass'; read_only = $true; schema_tables_read = $allTables.Count; tables_profiled = $selectedTables.Count; delete_queue_excluded = (-not [bool]$IncludeDeleteQueue); artifacts_created = @('target_records.json','planned_payload.json','execution_summary.json','after_readback_verification.json','controlled_vocabulary_inventory.json','select_field_inventory.json','text_field_profiles.json','text_to_select_candidates.json','excluded_text_fields.json','common_field_families.json','option_drift_report.json','canonical_option_sets_proposed.json') }
+    $inventory = [ordered]@{ tool='New-DcoirAirtableControlledVocabularyProfile.ps1'; tool_version=$toolVersion; generated_at_utc=(Get-Date).ToUniversalTime().ToString('o'); base_id=$baseId; include_delete_queue=[bool]$IncludeDeleteQueue; selected_table_count=$selectedTables.Count; skipped_tables=$skippedTables; total_records_profiled=[int](@($recordsByTable.Values | ForEach-Object { @($_).Count } | Measure-Object -Sum).Sum); select_field_count=$selectInventory.Count; text_field_profile_count=$textProfiles.Count; text_to_select_candidate_count=$textCandidates.Count; excluded_text_field_count=$excludedText.Count }
+    $targetRecords = [ordered]@{ read_only=$true; target='controlled_vocabulary_inventory'; plan_key='PLAN-AIRTABLE-DB-REDESIGN-20260508'; wbs_scope='02.01-02.05'; selected_tables=@($selectedTables | ForEach-Object { [ordered]@{ id=[string]$_.id; name=[string]$_.name } }); skipped_tables=$skippedTables }
+    $plannedPayload = [ordered]@{ read_only=$true; mutation_planned=$false; next_payload_type='approval_packet_after_operator_review'; note='No Airtable schema/data changes are proposed by this profiling run.' }
+    $verification = [ordered]@{ result='pass'; read_only=$true; schema_tables_read=$allTables.Count; tables_profiled=$selectedTables.Count; delete_queue_excluded=(-not [bool]$IncludeDeleteQueue); artifacts_created=@('target_records.json','planned_payload.json','execution_summary.json','after_readback_verification.json','controlled_vocabulary_inventory.json','select_field_inventory.json','text_field_profiles.json','text_to_select_candidates.json','excluded_text_fields.json','common_field_families.json','option_drift_report.json','canonical_option_sets_proposed.json') }
 
     Write-JsonFile -Object $targetRecords -Path (Join-Path $runRoot 'target_records.json')
     Write-JsonFile -Object $plannedPayload -Path (Join-Path $runRoot 'planned_payload.json')
@@ -336,24 +310,10 @@ try {
     Write-JsonFile -Object @($driftReport.ToArray()) -Path (Join-Path $runRoot 'option_drift_report.json')
     Write-JsonFile -Object @($canonicalSets.ToArray()) -Path (Join-Path $runRoot 'canonical_option_sets_proposed.json')
 
-    [ordered]@{
-        result = 'success'
-        output_dir = $runRoot
-        selected_table_count = $selectedTables.Count
-        skipped_table_count = $skippedTables.Count
-        select_field_count = $selectInventory.Count
-        text_to_select_candidate_count = $textCandidates.Count
-        option_drift_issue_count = $driftReport.Count
-    } | ConvertTo-Json -Depth 20
+    [ordered]@{ result='success'; output_dir=$runRoot; selected_table_count=$selectedTables.Count; skipped_table_count=$skippedTables.Count; select_field_count=$selectInventory.Count; text_to_select_candidate_count=$textCandidates.Count; option_drift_issue_count=$driftReport.Count } | ConvertTo-Json -Depth 20
 }
 catch {
-    $errorObject = [ordered]@{
-        result = 'failed'
-        error_message = $_.Exception.Message
-        error_type = $_.Exception.GetType().FullName
-        script_stack_trace = $_.ScriptStackTrace
-        output_dir = $runRoot
-    }
+    $errorObject = [ordered]@{ result='failed'; error_message=$_.Exception.Message; error_type=$_.Exception.GetType().FullName; script_stack_trace=$_.ScriptStackTrace; output_dir=$runRoot }
     Write-JsonFile -Object $errorObject -Path (Join-Path $runRoot 'error_report.json') -Depth 20
     throw
 }
