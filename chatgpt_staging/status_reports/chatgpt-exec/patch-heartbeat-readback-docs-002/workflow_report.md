@@ -9,8 +9,8 @@
 - identifier_type: request_id
 - poll_until_result: success_or_failure
 - do_not_use_repo_workflows_for_live_polling: true
-- result: running
-- phase: running-harness
+- result: success
+- phase: harness-finished
 - request_id: patch-heartbeat-readback-docs-002
 - request_path: chatgpt_staging/exec_requests/patch-heartbeat-readback-docs-002.json
 - github_run_id: 25541023540
@@ -18,8 +18,10 @@
 - github_sha: 6cbbacee480fbc3667abb43c2b44a233fa25519e
 - github_ref: refs/heads/main
 - workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25541023540
-- report_updated_utc: 2026-05-08T06:36:59Z
+- report_updated_utc: 2026-05-08T06:37:04Z
 - progress_history_path: chatgpt_staging/status_reports/chatgpt-exec/patch-heartbeat-readback-docs-002/progress_history.jsonl
+- artifact_name: chatgpt-exec-patch-heartbeat-readback-docs-002
+- exit_code: 0
 
 ## Report routing
 
@@ -27,12 +29,13 @@ This is the live heartbeat report for an active ChatGPT-staged job. Poll this ex
 
 ## Current status
 
-Approved command harness is about to run. If this report remains in this phase, inspect the GitHub run URL for harness/runtime progress.
+Approved command harness finished with exit code 0. Final native exec report commit is next.
 
 ## Phase history
 
 - 2026-05-08T06:36:56Z | phase=request-resolved | result=running | Exec request path resolved. The workflow is preparing to run the approved command harness.
 - 2026-05-08T06:36:59Z | phase=running-harness | result=running | Approved command harness is about to run. If this report remains in this phase, inspect the GitHub run URL for harness/runtime progress.
+- 2026-05-08T06:37:04Z | phase=harness-finished | result=success | Approved command harness finished with exit code 0. Final native exec report commit is next.
 
 ## Next ChatGPT action
 
