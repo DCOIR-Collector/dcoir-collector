@@ -1,0 +1,6 @@
+About to read Airtable table: Work Items (tblgsQAVWvh8K7gIR)
+Configured base matches expected: True
+Record read result: failure
+Error status code: 403
+Output directory: D:\a\_temp\dcoir_chatgpt_exec\exec-20260508-wbs22-wave2-single-table-probe-001\downloads\wbs22_wave2_single_table_probe_001
+

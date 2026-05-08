@@ -1,0 +1,15 @@
+﻿{
+    "schema":  "dcoir.wbs22_wave2_single_table_probe.v1",
+    "generated_at_utc":  "2026-05-08T08:17:16Z",
+    "mode":  "single_table_read_only_probe_no_mutation",
+    "table_name":  "Work Items",
+    "table_id":  "tblgsQAVWvh8K7gIR",
+    "expected_base_id_redacted":  "appM4K...3OTK",
+    "configured_base_id_redacted":  "appM4K...3OTK",
+    "configured_matches_expected":  true,
+    "record_read_result":  "failure",
+    "record_count_returned":  0,
+    "error_status_code":  403,
+    "error_message":  "The remote server returned an error: (403) Forbidden.",
+    "error_details":  "{\"error\":{\"type\":\"INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND\",\"message\":\"Invalid permissions, or the requested model was not found. Check that both your user and your token have the required permissions, and that the model names and/or ids are correct.\"}}"
+}

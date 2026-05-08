@@ -1,0 +1,16 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_result.v1",
+  "request_id": "exec-20260508-wbs22-wave2-single-table-probe-001",
+  "result": "failure",
+  "exit_code": 1,
+  "timed_out": false,
+  "shell": "powershell_5",
+  "command_sha256": "4f4504531d4b64dce939ebe7f05a83f8e9abe56096f8667a24b2258028a92555",
+  "started_utc": "2026-05-08T08:17:16Z",
+  "finished_utc": "2026-05-08T08:17:17Z",
+  "artifact_dir": "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260508-wbs22-wave2-single-table-probe-001\\artifact",
+  "artifact_name": "chatgpt-exec-exec-20260508-wbs22-wave2-single-table-probe-001",
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": false,
+  "report_path": "D:\\a\\dcoir-collector\\dcoir-collector\\chatgpt_staging\\status_reports\\chatgpt-exec\\exec-20260508-wbs22-wave2-single-table-probe-001\\workflow_report.md"
+}
