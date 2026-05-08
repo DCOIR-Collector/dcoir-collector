@@ -36,7 +36,9 @@ function Copy-DcoirExecArtifactReadback {
         Remove-Item -LiteralPath $readbackDir -Recurse -Force -ErrorAction SilentlyContinue
     }
     New-Item -ItemType Directory -Force -Path $readbackDir | Out-Null
-    Copy-Item -LiteralPath (Join-Path $ArtifactDir '*') -Destination $readbackDir -Recurse -Force -ErrorAction SilentlyContinue
+    Get-ChildItem -LiteralPath $ArtifactDir -Force | ForEach-Object {
+        Copy-Item -LiteralPath $_.FullName -Destination $readbackDir -Recurse -Force -ErrorAction Stop
+    }
     @(
         '# ChatGPT artifact readback',
         '',
