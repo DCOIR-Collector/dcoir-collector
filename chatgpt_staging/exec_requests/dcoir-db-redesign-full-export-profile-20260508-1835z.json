@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "dcoir-db-redesign-full-export-profile-20260508-1835z",
+  "operator_approved": true,
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true,
+  "approved_command_preview": "Read-only full Airtable database health export/profile for new database redesign plan. Uses proven operator_tools Airtable exporter. ExportMode FullRecords, FullRecordDump, MetadataScope All, ProbeUnsupportedMetadata, RedactLikelySecrets. No Airtable mutation.",
+  "command": "$ErrorActionPreference = 'Stop'\n$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')\nif ([string]::IsNullOrWhiteSpace($repo)) { $repo = (Get-Location).Path }\n$script = Join-Path $repo 'operator_tools\\github_desktop_lane\\scripts\\New-DcoirAirtableDatabaseHealthExport.ps1'\nif (-not (Test-Path -LiteralPath $script -PathType Leaf)) { throw ('Missing Airtable exporter script: ' + $script) }\n& $script -ExportMode FullRecords -FullRecordDump -MetadataScope 'All' -ProbeUnsupportedMetadata -RedactLikelySecrets -OutputNamePrefix 'dcoir_db_redesign_full_export_profile_20260508'\n"
+}
