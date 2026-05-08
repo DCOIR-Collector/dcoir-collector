@@ -10,7 +10,7 @@
 - poll_until_result: success_or_failure
 - do_not_use_repo_workflows_for_live_polling: true
 - result: success
-- phase: harness-finished
+- phase: final-readback-commit
 - request_id: dcoir-controlled-vocabulary-profile-20260508-2045z
 - request_path: chatgpt_staging/exec_requests/dcoir-controlled-vocabulary-profile-20260508-2045z.json
 - github_run_id: 25578563562
@@ -18,7 +18,7 @@
 - github_sha: 3351c6239f2cd1da1def6812c974d07c59d607e0
 - github_ref: refs/heads/main
 - workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25578563562
-- report_updated_utc: 2026-05-08T20:44:02Z
+- report_updated_utc: 2026-05-08T20:44:07Z
 - progress_history_path: chatgpt_staging/status_reports/chatgpt-exec/dcoir-controlled-vocabulary-profile-20260508-2045z/progress_history.jsonl
 - latest_progress_marker_path: chatgpt_staging/status_reports/chatgpt-exec/dcoir-controlled-vocabulary-profile-20260508-2045z/latest_progress_marker.json
 - artifact_name: chatgpt-exec-dcoir-controlled-vocabulary-profile-20260508-2045z
@@ -30,14 +30,28 @@ This is the live heartbeat report for an active ChatGPT-staged job. Poll this ex
 
 ## Current status
 
-Approved command harness finished with exit code 0. Final native exec report commit is next.
+Final exec readback is being committed with workflow report, progress history, marker, and artifact_readback files.
 
 ## Phase history
 
 - 2026-05-08T20:43:37Z | phase=request-resolved | result=running | Exec request path resolved. The workflow is preparing to run the approved command harness.
 - 2026-05-08T20:43:40Z | phase=running-harness | result=running | Approved command harness is about to run. If this report remains in this phase, inspect the GitHub run URL for harness/runtime progress.
 - 2026-05-08T20:44:02Z | phase=harness-finished | result=success | Approved command harness finished with exit code 0. Final native exec report commit is next.
+- 2026-05-08T20:44:07Z | phase=final-readback-commit | result=success | Final exec readback is being committed with workflow report, progress history, marker, and artifact_readback files.
 
 ## Next ChatGPT action
 
 Poll this same report path until result is success or failure. If result is running, use the phase history to decide whether to wait, inspect the run URL, or report a blocker.
+
+## GitHub Actions run
+
+- github_run_id: 25578563562
+- github_run_attempt: 1
+- github_sha: 3351c6239f2cd1da1def6812c974d07c59d607e0
+- github_ref: refs/heads/main
+- workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/25578563562
+
+## Artifact readback
+
+- artifact_readback_path: chatgpt_staging\status_reports\chatgpt-exec\dcoir-controlled-vocabulary-profile-20260508-2045z\artifact_readback
+- readback_contract: committed sanitized unzipped artifact files are authoritative for ChatGPT readback before ZIP artifact handling.

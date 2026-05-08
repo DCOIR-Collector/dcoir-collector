@@ -1,0 +1,13 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_final_readback_marker.v1",
+  "request_id": "dcoir-controlled-vocabulary-profile-20260508-2045z",
+  "result": "success",
+  "exit_code": "0",
+  "artifact_name": "chatgpt-exec-dcoir-controlled-vocabulary-profile-20260508-2045z",
+  "artifact_readback_committed": true,
+  "github_run_id": "25578563562",
+  "github_run_attempt": "1",
+  "github_sha": "3351c6239f2cd1da1def6812c974d07c59d607e0",
+  "github_ref": "refs/heads/main",
+  "created_utc": "2026-05-08T20:44:07Z"
+}
