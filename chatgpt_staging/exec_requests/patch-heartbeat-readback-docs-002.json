@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "patch-heartbeat-readback-docs-002",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-08T06:43:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 600,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": false,
+  "script_path": "chatgpt_staging/exec_scripts/patch_heartbeat_readback_docs_002.ps1",
+  "approved_command_preview": "Run approved repo script chatgpt_staging/exec_scripts/patch_heartbeat_readback_docs_002.ps1. The script inserts short heartbeat/readback pointer sections into chatgpt_staging/README.md, chatgpt_staging/WORKFLOW_REPORTING_POLICY.md, and chatgpt_staging/EXECUTION_LANE.md, then commits only those docs plus a docs_patch_result.json readback file using Invoke-ChatGptReportPush.ps1. No Airtable, schema, Delete Queue, source-code, skill, or workflow YAML changes."
+}
