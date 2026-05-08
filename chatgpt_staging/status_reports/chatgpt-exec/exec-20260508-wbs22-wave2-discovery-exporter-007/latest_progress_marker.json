@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25549331992",
   "github_sha": "3673015472890bd662ed4896e62664fb49770ec2",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "exec-20260508-wbs22-wave2-discovery-exporter-007",
   "request_path": "chatgpt_staging/exec_requests/exec-20260508-wbs22-wave2-discovery-exporter-007.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-08T09:58:07Z",
+  "updated_utc": "2026-05-08T09:58:10Z",
   "workflow": "chatgpt-exec"
 }
