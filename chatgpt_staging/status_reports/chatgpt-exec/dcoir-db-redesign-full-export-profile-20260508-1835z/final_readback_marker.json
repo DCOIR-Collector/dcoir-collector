@@ -1,0 +1,13 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_final_readback_marker.v1",
+  "request_id": "dcoir-db-redesign-full-export-profile-20260508-1835z",
+  "result": "success",
+  "exit_code": "0",
+  "artifact_name": "chatgpt-exec-dcoir-db-redesign-full-export-profile-20260508-1835z",
+  "artifact_readback_committed": true,
+  "github_run_id": "25572931259",
+  "github_run_attempt": "1",
+  "github_sha": "ee18557d342cf27f3008c007b83b072eb03a92eb",
+  "github_ref": "refs/heads/main",
+  "created_utc": "2026-05-08T18:38:50Z"
+}

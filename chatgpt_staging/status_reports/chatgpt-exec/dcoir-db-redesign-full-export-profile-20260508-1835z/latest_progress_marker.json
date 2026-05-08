@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25572931259",
   "github_sha": "ee18557d342cf27f3008c007b83b072eb03a92eb",
-  "phase": "harness-finished",
+  "phase": "final-readback-commit",
   "request_id": "dcoir-db-redesign-full-export-profile-20260508-1835z",
   "request_path": "chatgpt_staging/exec_requests/dcoir-db-redesign-full-export-profile-20260508-1835z.json",
   "result": "success",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-08T18:38:47Z",
+  "updated_utc": "2026-05-08T18:38:50Z",
   "workflow": "chatgpt-exec"
 }
