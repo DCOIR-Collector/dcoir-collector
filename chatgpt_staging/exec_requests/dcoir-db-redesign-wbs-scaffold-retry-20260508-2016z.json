@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "dcoir-db-redesign-wbs-scaffold-retry-20260508-2016z",
+  "operator_approved": true,
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true,
+  "approved_command_preview": "Retry create and verify missing non-destructive WBS scaffold rows for PLAN-AIRTABLE-DB-REDESIGN-20260508 only after fixing input path handling and strict-mode dynamic field access. No schema changes, no cleanup data mutation outside WBS planning rows, no Delete Queue rows, no deletions.",
+  "script_path": "chatgpt_staging/exec_scripts/dcoir-db-redesign-wbs-scaffold-20260508.ps1"
+}
