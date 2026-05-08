@@ -1,0 +1,40 @@
+{
+  "schema": "dcoir.airtable_redesign.approval_packet.v1",
+  "packet_id": "APPROVAL-DBREDESIGN-WBS02-ALIAS-NORMALIZATION-20260508",
+  "plan_key": "PLAN-AIRTABLE-DB-REDESIGN-20260508",
+  "wbs_scope": "02.05/02.06 first non-destructive controlled-select alias normalization",
+  "action_type": "airtable_data_update",
+  "risk_level": "low_non_destructive_data_normalization",
+  "requires_explicit_operator_approval": true,
+  "operator_approved_in_chat": true,
+  "summary": "Normalize four controlled-select alias spellings to existing canonical options. No schema changes, no option deletion, no Delete Queue rows, no field/table retirement.",
+  "preconditions": [
+    "Fresh readback must still show each target record has the expected old choice before update.",
+    "Update only the listed record IDs and field IDs.",
+    "Stop on any before-value mismatch or unexpected target count.",
+    "After-readback must prove all 8 targets changed to expected canonical choices and no extra records changed."
+  ],
+  "disallowed_actions": [
+    "schema changes",
+    "select option deletion",
+    "field deletion",
+    "table deletion",
+    "Delete Queue row creation",
+    "changes outside the listed records/fields"
+  ],
+  "expected_total_updates": 8,
+  "target_records": [
+    {"table_name":"dcoir-memory-preflight","table_id":"tblcNNuKqi8IkFsSQ","record_id":"recQ5EWFHUWIQveUH","display_key":"MEM-CHATGPT-WORKFLOW-HEARTBEAT-POLLING-20260507","field_name":"invocation_mode","field_id":"fldEG5XzJh9z0E4Rt","old_choice_name":"post-blocker","old_choice_id":"sel02eoBz1jaAu6oa","new_choice_name":"post_blocker","new_choice_id":"sel8zTIyNhrrf84Hg"},
+    {"table_name":"dcoir-memory-preflight","table_id":"tblcNNuKqi8IkFsSQ","record_id":"recSk4M9x06HHabVI","display_key":"SKILLROUTE-CHATGPT-APPLY-IN-SINGLE-PAYLOAD","field_name":"invocation_mode","field_id":"fldEG5XzJh9z0E4Rt","old_choice_name":"pre-execution","old_choice_id":"selyWsRUdBN1879OZ","new_choice_name":"pre_execution","new_choice_id":"selT8l4Kxw5n73jxZ"},
+    {"table_name":"Validation Evidence","table_id":"tblrPFQH2uZEYBYE9","record_id":"recSzHgPrX8dFd1Xi","display_key":"VE-WBS22-WAVE4-BULK-EXEC-20260507-001","field_name":"result","field_id":"fldh0cLWnWvHgzC5f","old_choice_name":"passed","old_choice_id":"selhcJlBj03GUiRrl","new_choice_name":"pass","new_choice_id":"sel2RoYzUNS6GWkrc"},
+    {"table_name":"Validation Evidence","table_id":"tblrPFQH2uZEYBYE9","record_id":"reco5xOdKm89nJ52G","display_key":"VE-WBS22-WAVE5-COMPLETE-STOP-BEFORE-WAVE6-20260507-002","field_name":"result","field_id":"fldh0cLWnWvHgzC5f","old_choice_name":"passed","old_choice_id":"selhcJlBj03GUiRrl","new_choice_name":"pass","new_choice_id":"sel2RoYzUNS6GWkrc"},
+    {"table_name":"Work Items","table_id":"tblgsQAVWvh8K7gIR","record_id":"recCUn4whe7fer4P0","display_key":"WI-20260507-GEMINI-OUTPUT-SANITIZER-001","field_name":"Authority Scope","field_id":"fldQ5YKb9EuM8nqph","old_choice_name":"airtable-first","old_choice_id":"selAfAxDKM3PzvkNg","new_choice_name":"airtable_first","new_choice_id":"selrYmWxUxll38a3P"},
+    {"table_name":"Work Items","table_id":"tblgsQAVWvh8K7gIR","record_id":"recEUZoMN5vWsTHKo","display_key":"WI-20260501-MODULARIZE-REMAINING-GITHUB-DESKTOP-LANE-TOOLS","field_name":"Authority Scope","field_id":"fldQ5YKb9EuM8nqph","old_choice_name":"airtable-first","old_choice_id":"selAfAxDKM3PzvkNg","new_choice_name":"airtable_first","new_choice_id":"selrYmWxUxll38a3P"},
+    {"table_name":"Work Items","table_id":"tblgsQAVWvh8K7gIR","record_id":"recYuLUPvX0YeEATq","display_key":"WI-20260507-USB-VIOLATIONS-AGENT-001","field_name":"Authority Scope","field_id":"fldQ5YKb9EuM8nqph","old_choice_name":"airtable-first","old_choice_id":"selAfAxDKM3PzvkNg","new_choice_name":"airtable_first","new_choice_id":"selrYmWxUxll38a3P"},
+    {"table_name":"Work Items","table_id":"tblgsQAVWvh8K7gIR","record_id":"recdL5t48VeCj05EV","display_key":"WI-20260430-CHATGPT-GITHUB-STAGING-LANE","field_name":"Authority Scope","field_id":"fldQ5YKb9EuM8nqph","old_choice_name":"airtable-first","old_choice_id":"selAfAxDKM3PzvkNg","new_choice_name":"airtable_first","new_choice_id":"selrYmWxUxll38a3P"}
+  ],
+  "planned_payload_shape": {
+    "mode": "update_select_aliases_with_before_value_gates",
+    "artifacts_required": ["target_records.json","planned_payload.json","execution_summary.json","after_readback_verification.json","error_report.json on failure"]
+  }
+}
