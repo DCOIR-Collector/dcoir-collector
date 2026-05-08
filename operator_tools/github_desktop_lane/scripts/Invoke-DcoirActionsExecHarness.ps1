@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)][string]$RequestPath,
     [string]$RepoRoot = (Get-Location).Path,
@@ -18,6 +18,45 @@ function Write-GithubEnvValue {
     param([string]$Name, [string]$Value)
     if ([string]::IsNullOrWhiteSpace($GithubEnvPath)) { return }
     "$Name=$Value" | Out-File -FilePath $GithubEnvPath -Encoding utf8 -Append
+}
+
+function Copy-DcoirExecArtifactReadback {
+    param(
+        [AllowNull()][string]$ArtifactDir,
+        [AllowNull()][string]$ReportPath
+    )
+    if ([string]::IsNullOrWhiteSpace($ArtifactDir)) { return }
+    if ([string]::IsNullOrWhiteSpace($ReportPath)) { return }
+    if (-not (Test-Path -LiteralPath $ArtifactDir -PathType Container)) { return }
+    $reportDir = Split-Path -Parent $ReportPath
+    if ([string]::IsNullOrWhiteSpace($reportDir)) { return }
+    New-Item -ItemType Directory -Force -Path $reportDir | Out-Null
+    $readbackDir = Join-Path $reportDir 'artifact_readback'
+    if (Test-Path -LiteralPath $readbackDir) {
+        Remove-Item -LiteralPath $readbackDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    New-Item -ItemType Directory -Force -Path $readbackDir | Out-Null
+    Copy-Item -LiteralPath (Join-Path $ArtifactDir '*') -Destination $readbackDir -Recurse -Force -ErrorAction SilentlyContinue
+    @(
+        '# ChatGPT artifact readback',
+        '',
+        'This directory is a sanitized unzipped copy of the GitHub Actions artifact contents.',
+        '',
+        'ChatGPT should read this repo path before asking the operator to download or upload ZIP artifacts.',
+        '',
+        'The GitHub Actions artifact is still uploaded separately for short-retention operator download and provenance.',
+        ''
+    ) | Out-File -FilePath (Join-Path $readbackDir 'README.md') -Encoding utf8
+    if (Test-Path -LiteralPath $ReportPath -PathType Leaf) {
+        @(
+            '',
+            '## Artifact readback',
+            '',
+            "- artifact_readback_path: $($readbackDir.Replace('\\','/'))",
+            '- readback_contract: sanitized unzipped artifact files are committed as ordinary GitHub files for ChatGPT connector readback.',
+            '- zip_artifact_contract: the GitHub Actions artifact remains available separately for short-retention operator download.'
+        ) | Out-File -FilePath $ReportPath -Encoding utf8 -Append
+    }
 }
 
 function Resolve-DcoirExecRequestPath {
@@ -54,6 +93,7 @@ function Resolve-DcoirExecRequestPath {
 try {
     $effectiveRequestPath = Resolve-DcoirExecRequestPath -OriginalRequestPath $RequestPath
     $result = Invoke-DcoirActionsExecRequest -RequestPath $effectiveRequestPath -RepoRoot $RepoRoot -OutputRoot $OutputRoot -SecretEnvNames $SecretEnvNames
+    Copy-DcoirExecArtifactReadback -ArtifactDir ([string]$result.artifact_dir) -ReportPath ([string]$result.report_path)
     if ($JsonResultPath) { $result | ConvertTo-Json -Depth 8 | Out-File -FilePath $JsonResultPath -Encoding utf8 }
     Write-GithubEnvValue -Name 'DCOIR_EXEC_REQUEST_ID' -Value ([string]$result.request_id)
     Write-GithubEnvValue -Name 'DCOIR_EXEC_RESULT' -Value ([string]$result.result)
@@ -83,6 +123,7 @@ catch {
 
     $reportPath = Join-Path $RepoRoot (Join-Path 'chatgpt_staging/status_reports/chatgpt-exec' (Join-Path $safeId 'workflow_report.md'))
     Write-DcoirActionsExecReport -ReportPath $reportPath -RequestId $safeId -Result 'failure' -Shell 'unknown' -ExitCode 1 -TimedOut $false -CommandSha256 'unavailable' -ApprovedPreview 'Harness failed before approved command execution.' -CommandSanitized '[harness failed before command resolution]' -ErrorText $errorText -ArtifactRetentionDays 3
+    Copy-DcoirExecArtifactReadback -ArtifactDir $artifactDir -ReportPath $reportPath
 
     if ($JsonResultPath) {
         [ordered]@{
