@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "smoke-exec-artifact-readback-001",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-08T06:49:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 300,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": false,
+  "script_path": "chatgpt_staging/exec_scripts/smoke_exec_artifact_readback_001.ps1",
+  "approved_command_preview": "Run approved non-destructive smoke script chatgpt_staging/exec_scripts/smoke_exec_artifact_readback_001.ps1. It writes small test files under DCOIR_DOWNLOADS_DIR and prints stdout/stderr to prove workflow_report.md, progress_history.jsonl, and committed artifact_readback files are readable. No Airtable writes, schema changes, Delete Queue, source-code, skill, or workflow YAML changes."
+}
