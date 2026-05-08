@@ -1,0 +1,15 @@
+{
+  "artifact_name": "",
+  "exit_code": "",
+  "github_ref": "refs/heads/main",
+  "github_run_attempt": "1",
+  "github_run_id": "25580703442",
+  "github_sha": "cb50830c654369f8766aaeae0df4f96babe9ed90",
+  "phase": "request-resolved",
+  "request_id": "dcoir-alias-normalization-retry-20260508-2136z",
+  "request_path": "chatgpt_staging/exec_requests/dcoir-alias-normalization-retry-20260508-2136z.json",
+  "result": "running",
+  "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
+  "updated_utc": "2026-05-08T21:35:43Z",
+  "workflow": "chatgpt-exec"
+}
