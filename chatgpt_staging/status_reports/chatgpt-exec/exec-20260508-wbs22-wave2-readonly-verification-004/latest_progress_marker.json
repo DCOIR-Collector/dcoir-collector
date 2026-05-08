@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25552259224",
   "github_sha": "5bf3fe520a0b4176f20f8ca090e3c2e73c9bdea1",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "exec-20260508-wbs22-wave2-readonly-verification-004",
   "request_path": "chatgpt_staging/exec_requests/exec-20260508-wbs22-wave2-readonly-verification-004.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-08T11:08:18Z",
+  "updated_utc": "2026-05-08T11:08:21Z",
   "workflow": "chatgpt-exec"
 }
