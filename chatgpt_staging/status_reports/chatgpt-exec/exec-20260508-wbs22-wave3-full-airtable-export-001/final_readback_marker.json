@@ -1,0 +1,13 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_final_readback_marker.v1",
+  "request_id": "exec-20260508-wbs22-wave3-full-airtable-export-001",
+  "result": "success",
+  "exit_code": "0",
+  "artifact_name": "chatgpt-exec-exec-20260508-wbs22-wave3-full-airtable-export-001",
+  "artifact_readback_committed": true,
+  "github_run_id": "25561560648",
+  "github_run_attempt": "1",
+  "github_sha": "544913f8de345320373c05430961c9f88c3910e2",
+  "github_ref": "refs/heads/main",
+  "created_utc": "2026-05-08T14:37:16Z"
+}
