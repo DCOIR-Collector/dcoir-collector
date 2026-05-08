@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260508-wbs22-wave2-bulk-maintenance-001",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-08T10:18:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": false,
+  "script_path": "chatgpt_staging/exec_scripts/wbs22_wave2_bulk_maintenance_update_001.ps1",
+  "approved_command_preview": "Run one Wave 2 bulk maintenance update job using v007 reconnaissance candidates. Group updates internally by Airtable table. Apply only deterministic Wave 2 maintenance fields: retention_class, review_after, and blank status where explicit table policy exists. Write full terminal transcript, before/update plan/results/after/skipped/verification JSON, and markdown report to DCOIR_DOWNLOADS_DIR. No deletes, no Delete Queue processing, no schema changes, no duplicate/merge, no GitHub/source/skill/workflow changes, no scaffold disposition."
+}
