@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25571360863",
   "github_sha": "5bfe87f296408b91b71cf5c4c8c5a89140d7be4c",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "exec-20260508-cleanup-plan-scaffold-delete-queue-closeout-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260508-cleanup-plan-scaffold-delete-queue-closeout-001.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-08T18:04:25Z",
+  "updated_utc": "2026-05-08T18:04:27Z",
   "workflow": "chatgpt-exec"
 }
