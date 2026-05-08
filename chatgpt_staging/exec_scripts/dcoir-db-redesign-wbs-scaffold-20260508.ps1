@@ -26,8 +26,8 @@ foreach ($name in $required) { if (-not $fieldByName.ContainsKey($name)) { throw
 
 $inputDir = Join-Path $repo 'chatgpt_staging\exec_inputs\dcoir-db-redesign-wbs-scaffold-20260508'
 $inputFiles = @(
-  Join-Path $inputDir 'remaining_wbs_rows.json',
-  Join-Path $inputDir 'remaining_wbs_rows_part2.json'
+  (Join-Path $inputDir 'remaining_wbs_rows.json')
+  (Join-Path $inputDir 'remaining_wbs_rows_part2.json')
 )
 $targetRows = New-Object System.Collections.Generic.List[object]
 foreach ($file in $inputFiles) {
@@ -43,6 +43,14 @@ foreach ($row in @($targetRows.ToArray())) {
   if ($targetKeys.ContainsKey($key)) { throw ('Duplicate input wbs_key: ' + $key) }
   $targetKeys[$key] = $true
   if ([string]$row.plan_key -ne $planKey) { throw ('Unexpected plan_key for ' + $key) }
+}
+
+function Get-DcoirDynamicFieldValue {
+  param([Parameter(Mandatory=$true)]$Fields, [Parameter(Mandatory=$true)][string]$FieldId)
+  if ($null -eq $Fields) { return $null }
+  $prop = $Fields.PSObject.Properties[$FieldId]
+  if ($null -eq $prop) { return $null }
+  return $prop.Value
 }
 
 function Get-AllRecordsForTable {
@@ -65,9 +73,7 @@ $wbsKeyField = $fieldByName['wbs_key']
 $planKeyField = $fieldByName['plan_key']
 $existingByKey = @{}
 foreach ($record in $before) {
-  $fields = $record.fields
-  $key = ''
-  if ($null -ne $fields.PSObject.Properties[$wbsKeyField]) { $key = [string]$fields.$wbsKeyField }
+  $key = [string](Get-DcoirDynamicFieldValue -Fields $record.fields -FieldId $wbsKeyField)
   if (-not [string]::IsNullOrWhiteSpace($key)) { $existingByKey[$key] = $record.id }
 }
 
@@ -149,11 +155,8 @@ try {
   $afterKeys = @{}
   $planRecords = New-Object System.Collections.Generic.List[object]
   foreach ($record in $after) {
-    $fields = $record.fields
-    $key = ''
-    $pkey = ''
-    if ($null -ne $fields.PSObject.Properties[$wbsKeyField]) { $key = [string]$fields.$wbsKeyField }
-    if ($null -ne $fields.PSObject.Properties[$planKeyField]) { $pkey = [string]$fields.$planKeyField }
+    $key = [string](Get-DcoirDynamicFieldValue -Fields $record.fields -FieldId $wbsKeyField)
+    $pkey = [string](Get-DcoirDynamicFieldValue -Fields $record.fields -FieldId $planKeyField)
     if ($pkey -eq $planKey) { $planRecords.Add([ordered]@{ id = $record.id; wbs_key = $key }) | Out-Null }
     if (-not [string]::IsNullOrWhiteSpace($key)) { if (-not $afterKeys.ContainsKey($key)) { $afterKeys[$key] = 0 }; $afterKeys[$key]++ }
   }
