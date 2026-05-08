@@ -1,15 +1,15 @@
 {
-  "artifact_name": "",
-  "exit_code": "",
+  "artifact_name": "chatgpt-exec-exec-20260508-exec-success-readback-smoke-001",
+  "exit_code": "0",
   "github_ref": "refs/heads/main",
   "github_run_attempt": "1",
   "github_run_id": "25547971063",
   "github_sha": "98f35230c82ab20ce13fa3f48d9a8a6929014b2a",
-  "phase": "running-harness",
+  "phase": "harness-finished",
   "request_id": "exec-20260508-exec-success-readback-smoke-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260508-exec-success-readback-smoke-001.json",
-  "result": "running",
+  "result": "success",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-08T09:26:43Z",
+  "updated_utc": "2026-05-08T09:26:47Z",
   "workflow": "chatgpt-exec"
 }
