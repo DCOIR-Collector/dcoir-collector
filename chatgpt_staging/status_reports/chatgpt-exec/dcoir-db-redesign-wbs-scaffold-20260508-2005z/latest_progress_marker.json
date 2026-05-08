@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25577013957",
   "github_sha": "86f7fd56bf5602a00eec0a651495d5d4a10824d2",
-  "phase": "harness-finished",
+  "phase": "final-readback-commit",
   "request_id": "dcoir-db-redesign-wbs-scaffold-20260508-2005z",
   "request_path": "chatgpt_staging/exec_requests/dcoir-db-redesign-wbs-scaffold-20260508-2005z.json",
   "result": "failure",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-08T20:08:56Z",
+  "updated_utc": "2026-05-08T20:08:59Z",
   "workflow": "chatgpt-exec"
 }
