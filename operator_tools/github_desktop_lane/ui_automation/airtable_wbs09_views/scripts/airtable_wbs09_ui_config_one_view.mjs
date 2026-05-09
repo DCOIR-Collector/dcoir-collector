@@ -1,11 +1,12 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
+import { getFilterOperatorLabel, validateViewConfigContract, summarizeViewConfig } from '../../shared/dcoir_airtable_view_config.mjs';
 
-const VERSION = '2026-05-09.draft26-table-id-navigation';
+const VERSION = '2026-05-09.draft27-expanded-filter-sort-support';
 let args;
 
 function parseArgs(argv) {
@@ -85,26 +86,8 @@ function selectViews(views) {
 }
 
 function oneViewContract(view) {
-  const filters = Array.isArray(view.filters) ? view.filters : [];
-  const sorts = Array.isArray(view.sorts) ? view.sorts : [];
-  if (filters.length > 1) throw new Error(`This draft supports at most one filter condition; ${view.view_key || view.view_name} has ${filters.length}.`);
-  if (sorts.length > 1) throw new Error(`This draft supports at most one sort condition; ${view.view_key || view.view_name} has ${sorts.length}.`);
-  if (filters.length === 1) {
-    const f = filters[0];
-    if (!f.field) throw new Error('Filter is missing field name.');
-    if (!['is one of', '=', 'is not empty'].includes(f.operator)) throw new Error(`Unsupported filter operator for one-view smoke: ${f.operator}`);
-    const values = Array.isArray(f.value) ? f.value : (f.value === null || f.value === undefined ? [] : [f.value]);
-    if (f.operator !== 'is not empty' && values.length < 1) throw new Error('Single-filter smoke target requires at least one filter value.');
-  }
-  if (sorts.length === 1) {
-    const s = sorts[0];
-    if (!s.field) throw new Error('Sort is missing field name.');
-    if (!['asc', 'desc'].includes(s.direction)) throw new Error(`Unsupported sort direction: ${s.direction}`);
-  }
-  return { filters, sorts };
+  return validateViewConfigContract(view, { maxFilters: 1, maxSorts: 5 });
 }
-
-
 function verifySchemaAuditGate(schemaAuditJson) {
   if (!schemaAuditJson || !String(schemaAuditJson).trim()) throw new Error('Batch configuration requires --schema-audit-json pointing to a fresh PASS audit report.');
   if (!fs.existsSync(schemaAuditJson)) throw new Error(`Schema audit JSON not found: ${schemaAuditJson}`);
@@ -331,6 +314,7 @@ async function configureFilter(page, result) {
     result.steps.push({ action: 'configure_filter_skipped', ok: true, reason: 'target has no manifest filters' });
     return;
   }
+  const filter = target.filters[0];
   const filterField = filterFieldForView(target);
   const filterClick = await clickToolbarButton(page, /\bFilter\b|Filter rows/, 'filter');
   result.steps.push({ action: 'open_filter_panel', ...filterClick });
@@ -352,20 +336,28 @@ async function configureFilter(page, result) {
   if (!field.ok) throw new Error(`Could not select ${filterField} as filter field.`);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_03_filter_field'));
 
-    const operatorLabel = target.filters[0].operator === '='
-    ? 'is'
-    : (target.filters[0].operator === 'is not empty' ? 'is not empty' : 'is any of');
-  const operator = await selectDropdownValue(page, /^(contains|is|is not|is not empty|is empty|is any of|has any of|is one of)$/i, { x: 660, y: 268 }, operatorLabel, 'filter-operator');
-  result.steps.push({ action: 'set_filter_operator', operator: operatorLabel, ...operator });
+  const operatorLabel = getFilterOperatorLabel(filter.operator);
+  const operator = await selectDropdownValue(
+    page,
+    /^(contains|is|is not|is not empty|is empty|is any of|has any of|is one of|is on or before|on or before)$/i,
+    { x: 660, y: 268 },
+    operatorLabel,
+    'filter-operator'
+  );
+  result.steps.push({ action: 'set_filter_operator', operator: operatorLabel, manifest_operator: filter.operator, ...operator });
   if (!operator.ok) throw new Error(`Could not set filter operator to ${operatorLabel}.`);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_04_filter_operator'));
 
-  if (target.filters[0].operator === 'is not empty') {
+  if (filter.operator === 'is not empty') {
     result.steps.push({ action: 'configure_filter_value_skipped', ok: true, reason: 'is not empty operator does not require a value' });
     await page.waitForTimeout(900);
     result.snapshots.push(await captureSnapshot(page, 'one_view_config_05_filter_no_value_required'));
   } else {
-    const valueOpen = await clickPanelText(page, /^(Select an option|Select options|Choose options|Enter a value|active|blocked|waiting|todo|in_progress)$/i, 'filter-value-open');
+    const valueOpen = await clickPanelText(
+      page,
+      /^(Select an option|Select options|Choose options|Enter a value|Enter text|Select date|Choose date|Date|Today|today|active|blocked|waiting|todo|in_progress)$/i,
+      'filter-value-open'
+    );
     result.steps.push({ action: 'open_filter_value_selector', ...valueOpen });
     if (!valueOpen.ok) throw new Error('Could not open filter value selector.');
     for (const value of filterValuesForView(target)) {
@@ -373,7 +365,7 @@ async function configureFilter(page, result) {
       await page.keyboard.type(String(value), { delay: 15 });
       await page.waitForTimeout(550);
       await page.keyboard.press('Enter');
-      result.steps.push({ action: 'select_filter_value', value });
+      result.steps.push({ action: 'select_filter_value', value, manifest_operator: filter.operator });
     }
     await page.waitForTimeout(900);
     result.snapshots.push(await captureSnapshot(page, 'one_view_config_05_filter_values'));
@@ -381,44 +373,50 @@ async function configureFilter(page, result) {
   await page.keyboard.press('Escape').catch(() => {});
   await page.waitForTimeout(500);
 }
-
 async function configureSort(page, result) {
   const target = result.target;
-  if (!target.sorts || target.sorts.length === 0) {
+  const sorts = Array.isArray(target.sorts) ? target.sorts : [];
+  if (sorts.length === 0) {
     result.steps.push({ action: 'configure_sort_skipped', ok: true, reason: 'target has no manifest sorts' });
     return;
   }
-  const sortField = sortFieldForView(target);
-  const sortDirection = sortDirectionForView(target) === 'desc' ? 'descending' : 'ascending';
   const sortClick = await clickToolbarButton(page, /\bSort\b|Sort rows/, 'sort');
   result.steps.push({ action: 'open_sort_panel', ...sortClick });
   if (!sortClick.ok) throw new Error('Could not open Sort panel.');
   await page.waitForTimeout(700);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_06_sort_panel_before'));
 
-  const addSort = await clickPanelText(page, /^\+?\s*(Add sort|Pick another field to sort by)$/i, 'add-sort');
-  result.steps.push({ action: 'add_sort_or_field_list_ready', ...addSort });
-  if (addSort.ok) await page.waitForTimeout(800);
-  else result.steps.push({ action: 'sort_panel_field_list_already_visible', ok: true, note: 'No Add sort control found; Airtable displayed the field picker directly or an existing sort row is active.' });
+  for (let sortIndex = 0; sortIndex < sorts.length; sortIndex += 1) {
+    const sort = sorts[sortIndex];
+    const sortField = sort.field;
+    const sortDirection = sort.direction === 'desc' ? 'descending' : 'ascending';
+    const sortOrdinal = sortIndex + 1;
 
-  let field = await clickPanelText(page, exactRe(sortField), `sort-field-${safeName(sortField)}-direct`);
-  if (!field.ok) field = await selectDropdownValue(page, /^(Pick a field|Select a field|Work Item|Queue Rank|Priority|Name)$/i, { x: 510, y: 268 }, sortField, 'sort-field');
-  result.steps.push({ action: 'set_sort_field', field: sortField, ...field });
-  if (!field.ok) throw new Error(`Could not select ${sortField} as sort field.`);
-  await page.waitForTimeout(700);
+    const addSort = await clickPanelText(page, /^\+?\s*(Add sort|Pick another field to sort by)$/i, `add-sort-${sortOrdinal}`);
+    result.steps.push({ action: 'add_sort_or_field_list_ready', sort_index: sortOrdinal, ...addSort });
+    if (addSort.ok) await page.waitForTimeout(800);
+    else if (sortIndex === 0) result.steps.push({ action: 'sort_panel_field_list_already_visible', ok: true, note: 'No Add sort control found; Airtable displayed the field picker directly or an existing sort row is active.' });
+    else throw new Error(`Could not add sort condition ${sortOrdinal}.`);
 
-  const direction = await selectDropdownValue(page, /^(A\s*â†’\s*Z|1\s*â†’\s*9|Ascending|asc|Z\s*â†’\s*A|9\s*â†’\s*1|Descending|desc)$/i, { x: 725, y: 268 }, sortDirection, 'sort-direction');
-  result.steps.push({ action: 'set_sort_direction', direction: sortDirection, ...direction });
-  if (!direction.ok) {
-    if (sortDirection === 'ascending') result.steps.push({ action: 'sort_direction_assumed_default_ascending', ok: true, note: 'Airtable often defaults to ascending when the sort field is selected and no direction selector is visible.' });
-    else throw new Error('Could not set required descending sort direction.');
+    let field = await clickPanelText(page, exactRe(sortField), `sort-${sortOrdinal}-field-${safeName(sortField)}-direct`);
+    if (!field.ok) field = await selectDropdownValue(page, /^(Pick a field|Select a field|Work Item|Queue Rank|Priority|Name|Execution Lane|Test ID|canonical_parent_plan_id)$/i, { x: 510, y: 268 + ((sortOrdinal - 1) * 42) }, sortField, `sort-${sortOrdinal}-field`);
+    result.steps.push({ action: 'set_sort_field', sort_index: sortOrdinal, field: sortField, ...field });
+    if (!field.ok) throw new Error(`Could not select ${sortField} as sort field for sort ${sortOrdinal}.`);
+    await page.waitForTimeout(700);
+
+    const direction = await selectDropdownValue(page, /^(A\s*â†’\s*Z|1\s*â†’\s*9|Ascending|asc|Z\s*â†’\s*A|9\s*â†’\s*1|Descending|desc)$/i, { x: 725, y: 268 + ((sortOrdinal - 1) * 42) }, sortDirection, `sort-${sortOrdinal}-direction`);
+    result.steps.push({ action: 'set_sort_direction', sort_index: sortOrdinal, direction: sortDirection, ...direction });
+    if (!direction.ok) {
+      if (sortDirection === 'ascending') result.steps.push({ action: 'sort_direction_assumed_default_ascending', ok: true, sort_index: sortOrdinal, note: 'Airtable often defaults to ascending when the sort field is selected and no direction selector is visible.' });
+      else throw new Error(`Could not set required descending sort direction for sort ${sortOrdinal}.`);
+    }
+    await page.waitForTimeout(700);
+    result.snapshots.push(await captureSnapshot(page, `one_view_config_07_sort_${sortOrdinal}_configured`));
   }
-  await page.waitForTimeout(900);
-  result.snapshots.push(await captureSnapshot(page, 'one_view_config_07_sort_configured'));
+
   await page.keyboard.press('Escape').catch(() => {});
   await page.waitForTimeout(500);
 }
-
 async function verifyPostConditions(page, target) {
   const expectedFilter = target.filters && target.filters.length ? filterFieldForView(target) : null;
   const expectedSort = target.sorts && target.sorts.length ? sortFieldForView(target) : null;
