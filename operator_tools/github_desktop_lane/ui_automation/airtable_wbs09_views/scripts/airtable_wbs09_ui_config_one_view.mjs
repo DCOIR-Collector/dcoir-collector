@@ -4,12 +4,13 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft15-generic-one-view-config-smoke';
+const VERSION = '2026-05-09.draft16-bounded-batch-config-smoke';
 let args;
 
 function parseArgs(argv) {
   const parsed = {
     executeConfigureOneView: false,
+    executeConfigureViewBatch: false,
     enableScreenshots: false,
     stopOnFirstFailure: true,
     headless: false,
@@ -27,11 +28,13 @@ function parseArgs(argv) {
     else if (a === '--output-dir') parsed.outputDir = next();
     else if (a === '--base-url') parsed.baseUrl = next();
     else if (a === '--execute-configure-one-view') parsed.executeConfigureOneView = true;
+    else if (a === '--execute-configure-view-batch') parsed.executeConfigureViewBatch = true;
     else if (a === '--confirm') parsed.confirm = next();
     else if (a === '--max-views') parsed.maxViews = Number(next());
     else if (a === '--start-index') parsed.startIndex = Number(next());
     else if (a === '--table-name') parsed.tableName = next();
     else if (a === '--view-name') parsed.viewName = next();
+    else if (a === '--schema-audit-json') parsed.schemaAuditJson = next();
     else if (a === '--enable-screenshots') parsed.enableScreenshots = true;
     else if (a === '--continue-on-failure') parsed.stopOnFirstFailure = false;
     else if (a === '--headless') parsed.headless = true;
@@ -107,6 +110,21 @@ function oneViewContract(view) {
   return { filters, sorts };
 }
 
+
+function verifySchemaAuditGate(schemaAuditJson) {
+  if (!schemaAuditJson || !String(schemaAuditJson).trim()) throw new Error('Batch configuration requires --schema-audit-json pointing to a fresh PASS audit report.');
+  if (!fs.existsSync(schemaAuditJson)) throw new Error(`Schema audit JSON not found: ${schemaAuditJson}`);
+  const audit = JSON.parse(fs.readFileSync(schemaAuditJson, 'utf8'));
+  const status = audit.status;
+  const errors = Number(audit.error_count || 0);
+  const warnings = Number(audit.warning_count || 0);
+  const views = Number(audit.manifest_view_count || 0);
+  if (status !== 'PASS' || errors !== 0 || warnings !== 0 || views !== 65) {
+    throw new Error(`Schema audit gate failed. Expected PASS/errors=0/warnings=0/views=65; got status=${status}, errors=${errors}, warnings=${warnings}, views=${views}.`);
+  }
+  return { status, error_count: errors, warning_count: warnings, manifest_view_count: views, source: schemaAuditJson };
+}
+
 async function getVisibleDomSnapshot(page) {
   return await page.evaluate(() => {
     const elements = Array.from(document.querySelectorAll('button, [role="button"], input, textarea, [aria-label], [placeholder], div, span, a')).slice(0, 3000);
@@ -134,12 +152,13 @@ async function getVisibleDomSnapshot(page) {
 }
 
 async function captureSnapshot(page, label) {
-  const payload = { timestamp_utc: nowIso(), label, url: page.url(), title: await page.title(), elements: await getVisibleDomSnapshot(page) };
-  const domPath = path.join(outputDir, `${safeName(label)}.dom.json`);
+  const fullLabel = args.activeSnapshotPrefix ? `${args.activeSnapshotPrefix}_${label}` : label;
+  const payload = { timestamp_utc: nowIso(), label: fullLabel, url: page.url(), title: await page.title(), elements: await getVisibleDomSnapshot(page) };
+  const domPath = path.join(outputDir, `${safeName(fullLabel)}.dom.json`);
   writeJson(domPath, payload);
-  const result = { label, dom_evidence: domPath };
+  const result = { label: fullLabel, dom_evidence: domPath };
   if (args.enableScreenshots) {
-    const screenshotPath = path.join(outputDir, `${safeName(label)}.png`);
+    const screenshotPath = path.join(outputDir, `${safeName(fullLabel)}.png`);
     await page.screenshot({ path: screenshotPath, fullPage: true });
     result.screenshot = screenshotPath;
   }
@@ -414,19 +433,68 @@ async function verifyViewLoaded(page, view) {
   return { tableClick, viewClick };
 }
 
+async function configureSelectedTarget(page, view, target, mode, index) {
+  const prefix = mode === 'execute_configure_view_batch'
+    ? `batch_${String(index + 1).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}`
+    : '';
+  args.activeSnapshotPrefix = prefix;
+  const report = { timestamp_utc: nowIso(), tool_version: VERSION, mode, target, steps: [], snapshots: [], status: 'started' };
+  const loaded = await verifyViewLoaded(page, view);
+  report.steps.push({ action: 'select_table', ...loaded.tableClick });
+  report.steps.push({ action: 'select_view', ...loaded.viewClick });
+  if (!loaded.tableClick.ok || !loaded.viewClick.ok) throw new Error(`Could not safely select target table/view before configuration: ${view.table_name} / ${view.view_name}.`);
+  report.snapshots.push(await captureSnapshot(page, 'one_view_config_00_target_loaded'));
+  await configureFilter(page, report);
+  await configureSort(page, report);
+  report.status = 'configuration_clicked_unverified';
+  report.completed_at_utc = nowIso();
+  report.snapshots.push(await captureSnapshot(page, 'one_view_config_08_final_unverified'));
+  args.activeSnapshotPrefix = '';
+  return report;
+}
+
 try {
-  log('Starting DCOIR WBS09 one-view config smoke tool.', { version: VERSION });
+  log('Starting DCOIR WBS09 config smoke tool.', { version: VERSION });
   if (!args.manifest) throw new Error('Missing --manifest');
-  if (!args.executeConfigureOneView) throw new Error('This script only supports --execute-configure-one-view.');
-  if (args.confirm !== 'CONFIGURE_WBS09_ONE_VIEW') throw new Error('Configure mode requires --confirm CONFIGURE_WBS09_ONE_VIEW');
+  const modeCount = [args.executeConfigureOneView, args.executeConfigureViewBatch].filter(Boolean).length;
+  if (modeCount !== 1) throw new Error('Specify exactly one mode: --execute-configure-one-view or --execute-configure-view-batch.');
+  const mode = args.executeConfigureViewBatch ? 'execute_configure_view_batch' : 'execute_configure_one_view';
+  const expectedConfirm = args.executeConfigureViewBatch ? 'CONFIGURE_WBS09_VIEW_BATCH' : 'CONFIGURE_WBS09_ONE_VIEW';
+  if (args.confirm !== expectedConfirm) throw new Error(`Configure mode requires --confirm ${expectedConfirm}`);
+
   const manifest = JSON.parse(fs.readFileSync(args.manifest, 'utf8'));
   const { views, tables } = validateManifest(manifest);
   const selected = selectViews(views);
-  if (selected.length !== 1) throw new Error('One-view configuration requires exactly one selected manifest view. Pass -TableName and -ViewName.');
-  const view = selected[0];
-  const contract = oneViewContract(view);
-  const plan = { timestamp_utc: nowIso(), tool_version: VERSION, mode: 'execute_configure_one_view', manifest_view_count: views.length, manifest_table_count: tables.length, selected_view_count: 1, output_dir: outputDir, downloads_env_var: 'DCOIR_DOWNLOADS_DIR', repo_root_env_var: 'DCOIR_REPO_ROOT', base_id: manifest.base_id, base_url: args.baseUrl || `https://airtable.com/${manifest.base_id}`, supported_target_contract: 'generic_single_view_max_one_filter_max_one_sort', target: { table_name: view.table_name, table_id: view.table_id, view_name: view.view_name, filters: contract.filters, sorts: contract.sorts } };
-  writeJson(path.join(outputDir, 'one_view_config_plan.json'), plan);
+  if (args.executeConfigureOneView && selected.length !== 1) throw new Error('One-view configuration requires exactly one selected manifest view. Pass -TableName and -ViewName.');
+  if (args.executeConfigureViewBatch) {
+    if (selected.length < 1) throw new Error('Batch configuration requires at least one selected view.');
+    if (selected.length > 5) throw new Error(`Batch configuration is bounded to at most 5 selected views; got ${selected.length}. Use -MaxViews 5 or lower.`);
+    if (!args.maxViews || Number(args.maxViews) < 1) throw new Error('Batch configuration requires -MaxViews 1..5 as an explicit safety bound.');
+  }
+
+  const schemaGate = args.executeConfigureViewBatch ? verifySchemaAuditGate(args.schemaAuditJson) : null;
+  const targets = selected.map((view) => {
+    const contract = oneViewContract(view);
+    return { table_name: view.table_name, table_id: view.table_id, view_name: view.view_name, filters: contract.filters, sorts: contract.sorts };
+  });
+
+  const plan = {
+    timestamp_utc: nowIso(),
+    tool_version: VERSION,
+    mode,
+    manifest_view_count: views.length,
+    manifest_table_count: tables.length,
+    selected_view_count: selected.length,
+    output_dir: outputDir,
+    downloads_env_var: 'DCOIR_DOWNLOADS_DIR',
+    repo_root_env_var: 'DCOIR_REPO_ROOT',
+    base_id: manifest.base_id,
+    base_url: args.baseUrl || `https://airtable.com/${manifest.base_id}`,
+    supported_target_contract: args.executeConfigureViewBatch ? 'bounded_batch_max_five_views_each_max_one_filter_max_one_sort_schema_audit_pass_required' : 'generic_single_view_max_one_filter_max_one_sort',
+    schema_audit_gate: schemaGate,
+    targets
+  };
+  writeJson(path.join(outputDir, args.executeConfigureViewBatch ? 'view_batch_config_plan.json' : 'one_view_config_plan.json'), plan);
 
   let chromium;
   try { ({ chromium } = await import('playwright')); } catch { throw new Error('Playwright is required. Run the installer script first: Install-DcoirAirtableWbs09UiViewPrereqs.ps1'); }
@@ -454,23 +522,32 @@ try {
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
   rl = readline.createInterface({ input, output });
   await rl.question('Log into Airtable, confirm the DCOIR base is open, then press Enter. Ctrl+C aborts before any configuration click. ');
-  const confirm2 = await rl.question(`About to configure ONE existing WBS09 Airtable view: ${view.table_name} / ${view.view_name}. Type CONFIGURE_WBS09_ONE_VIEW again to proceed: `);
-  if (confirm2 !== 'CONFIGURE_WBS09_ONE_VIEW') throw new Error('Second interactive confirmation did not match; stopped before configuration clicks.');
+  const targetList = targets.map((t, i) => `${i + 1}. ${t.table_name} / ${t.view_name}`).join('\n');
+  const prompt = args.executeConfigureViewBatch
+    ? `About to configure ${targets.length} existing WBS09 Airtable view(s):\n${targetList}\nType ${expectedConfirm} again to proceed: `
+    : `About to configure ONE existing WBS09 Airtable view: ${targets[0].table_name} / ${targets[0].view_name}. Type ${expectedConfirm} again to proceed: `;
+  const confirm2 = await rl.question(prompt);
+  if (confirm2 !== expectedConfirm) throw new Error('Second interactive confirmation did not match; stopped before configuration clicks.');
 
-  const report = { timestamp_utc: nowIso(), tool_version: VERSION, mode: 'execute_configure_one_view', target: plan.target, steps: [], snapshots: [], status: 'started' };
-  const loaded = await verifyViewLoaded(page, view);
-  report.steps.push({ action: 'select_table', ...loaded.tableClick });
-  report.steps.push({ action: 'select_view', ...loaded.viewClick });
-  if (!loaded.tableClick.ok || !loaded.viewClick.ok) throw new Error('Could not safely select target table/view before configuration.');
-  report.snapshots.push(await captureSnapshot(page, 'one_view_config_00_target_loaded'));
+  if (args.executeConfigureViewBatch) {
+    const batchReport = { timestamp_utc: nowIso(), tool_version: VERSION, mode, schema_audit_gate: schemaGate, status: 'started', results: [] };
+    for (let i = 0; i < selected.length; i += 1) {
+      log('Starting bounded batch target.', { index: i + 1, table: selected[i].table_name, view: selected[i].view_name });
+      const result = await configureSelectedTarget(page, selected[i], targets[i], mode, i);
+      batchReport.results.push(result);
+      batchReport.last_completed_index = i + 1;
+      writeJson(path.join(outputDir, 'view_batch_config_report.partial.json'), batchReport);
+    }
+    batchReport.status = 'configuration_clicked_unverified';
+    batchReport.completed_at_utc = nowIso();
+    writeJson(path.join(outputDir, 'view_batch_config_report.json'), batchReport);
+    log('Bounded view-batch configuration branch ended.', { status: batchReport.status, result_count: batchReport.results.length });
+  } else {
+    const report = await configureSelectedTarget(page, selected[0], targets[0], mode, 0);
+    writeJson(path.join(outputDir, 'one_view_config_report.json'), report);
+    log('One-view configuration branch ended.', { status: report.status, snapshot_count: report.snapshots.length });
+  }
 
-  await configureFilter(page, report);
-  await configureSort(page, report);
-  report.status = 'configuration_clicked_unverified';
-  report.completed_at_utc = nowIso();
-  report.snapshots.push(await captureSnapshot(page, 'one_view_config_08_final_unverified'));
-  writeJson(path.join(outputDir, 'one_view_config_report.json'), report);
-  log('One-view configuration branch ended.', { status: report.status, snapshot_count: report.snapshots.length });
   if (closeMode === 'persistent_context') await context.close(); else await browser.close();
   process.exit(0);
 } catch (e) {

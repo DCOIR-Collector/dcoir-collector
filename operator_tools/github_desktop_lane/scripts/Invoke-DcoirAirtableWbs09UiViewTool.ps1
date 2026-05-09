@@ -5,8 +5,10 @@ param(
     [Parameter(ParameterSetName='ConfigCalibrate')][switch]$CalibrateViewConfigSelectors,
     [Parameter(ParameterSetName='Execute')][switch]$ExecuteCreateViewsOnly,
     [Parameter(ParameterSetName='ConfigExecute')][switch]$ExecuteConfigureOneViewOnly,
+    [Parameter(ParameterSetName='ConfigBatch')][switch]$ExecuteConfigureViewBatchOnly,
     [Parameter(ParameterSetName='Execute')]
     [Parameter(ParameterSetName='ConfigExecute')]
+    [Parameter(ParameterSetName='ConfigBatch')]
     [string]$ConfirmToken,
     [switch]$ExperimentalConfigureFilters,
     [string]$ManifestPath,
@@ -15,6 +17,7 @@ param(
     [int]$StartIndex = 1,
     [string]$TableName,
     [string]$ViewName,
+    [string]$SchemaAuditJson,
     [switch]$EnableScreenshots,
     [switch]$ContinueOnFailure,
     [switch]$UseChromeChannel,
@@ -66,7 +69,7 @@ $node = Get-Command node -ErrorAction SilentlyContinue
 if ($null -eq $node) { throw 'Node.js is required but was not found on PATH. Run Install-DcoirAirtableWbs09UiViewPrereqs.ps1 first.' }
 
 $nodeScript = Join-Path $toolRoot 'scripts\airtable_wbs09_ui_views.mjs'
-if ($ExecuteConfigureOneViewOnly) {
+if ($ExecuteConfigureOneViewOnly -or $ExecuteConfigureViewBatchOnly) {
     $nodeScript = Join-Path $toolRoot 'scripts\airtable_wbs09_ui_config_one_view.mjs'
 }
 if (-not (Test-Path -LiteralPath $nodeScript -PathType Leaf)) { throw ('Node script not found: ' + $nodeScript) }
@@ -77,7 +80,13 @@ $argsList = @(
     '--output-dir', $outDir
 )
 
-if ($ExecuteConfigureOneViewOnly) {
+if ($ExecuteConfigureViewBatchOnly) {
+    if ($ConfirmToken -ne 'CONFIGURE_WBS09_VIEW_BATCH') { throw 'Configure-view-batch mode requires -ConfirmToken CONFIGURE_WBS09_VIEW_BATCH' }
+    if ($MaxViews -lt 1 -or $MaxViews -gt 5) { throw 'Configure-view-batch mode requires -MaxViews between 1 and 5.' }
+    if ([string]::IsNullOrWhiteSpace($SchemaAuditJson)) { throw 'Configure-view-batch mode requires -SchemaAuditJson pointing to a fresh PASS audit report.' }
+    if (-not (Test-Path -LiteralPath $SchemaAuditJson -PathType Leaf)) { throw ('SchemaAuditJson not found: ' + $SchemaAuditJson) }
+    $argsList += @('--execute-configure-view-batch','--confirm','CONFIGURE_WBS09_VIEW_BATCH','--schema-audit-json',$SchemaAuditJson)
+} elseif ($ExecuteConfigureOneViewOnly) {
     if ($ConfirmToken -ne 'CONFIGURE_WBS09_ONE_VIEW') { throw 'Configure-one-view mode requires -ConfirmToken CONFIGURE_WBS09_ONE_VIEW' }
     $argsList += @('--execute-configure-one-view','--confirm','CONFIGURE_WBS09_ONE_VIEW')
 } elseif ($ExecuteCreateViewsOnly) {
