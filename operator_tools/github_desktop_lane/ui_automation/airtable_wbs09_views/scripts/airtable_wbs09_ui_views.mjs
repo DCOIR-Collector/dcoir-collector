@@ -1,10 +1,10 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft10-view-config-calibration-payload-fix';
+const VERSION = '2026-05-09.draft11-narrow-toolbar-buttons';
 let args;
 
 function parseArgs(argv) {
@@ -368,26 +368,63 @@ async function clickExistingView(page, viewName) {
 }
 
 async function clickToolbarButton(page, labelRegex, label) {
+  const roleCandidatesByLabel = {
+    filter: [/^Filter rows$/i, /^Filter$/i],
+    sort: [/^Sort rows$/i, /^Sort$/i],
+    'hide-fields': [/^Hide fields$/i]
+  };
+  const candidates = roleCandidatesByLabel[label] || [labelRegex];
+
+  for (const name of candidates) {
+    const loc = page.getByRole('button', { name });
+    const count = await loc.count().catch(() => 0);
+    for (let i = 0; i < count; i += 1) {
+      const item = loc.nth(i);
+      const box = await item.boundingBox().catch(() => null);
+      const visible = await item.isVisible().catch(() => false);
+      if (!visible || !box) continue;
+      if (box.y < 80 || box.y > 145 || box.x < 760 || box.x > 1320 || box.width < 10 || box.width > 180 || box.height < 10 || box.height > 40) continue;
+      const text = (await item.innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
+      const aria = await item.getAttribute('aria-label').catch(() => '');
+      await item.click({ timeout: 3000 });
+      return { ok: true, selector: `role-toolbar-button:${label}`, text, aria: aria || '', x: Math.round(box.x), y: Math.round(box.y), w: Math.round(box.width), h: Math.round(box.height) };
+    }
+  }
+
   const payload = { source: labelRegex.source, label };
   const picked = await page.evaluate(({ source, label }) => {
     const re = new RegExp(source, 'i');
+    const wanted = {
+      filter: [{ aria: 'Filter rows', text: 'Filter' }],
+      sort: [{ aria: 'Sort rows', text: 'Sort' }],
+      'hide-fields': [{ aria: 'Hide fields', text: 'Hide fields' }]
+    }[label] || [];
+
     function visible(el) {
       const style = window.getComputedStyle(el);
       const box = el.getBoundingClientRect();
       return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
     }
-    const nodes = Array.from(document.querySelectorAll('button, [role="button"], div, span, a'));
-    const candidates = nodes.map((el) => {
+
+    const candidates = Array.from(document.querySelectorAll('button, [role="button"]')).map((el) => {
       const box = el.getBoundingClientRect();
       const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
       const aria = el.getAttribute('aria-label') || '';
-      return { el, text, aria, x: box.x, y: box.y, w: box.width, h: box.height };
-    }).filter(c => visible(c.el) && c.y >= 80 && c.y <= 140 && c.x >= 500 && re.test(`${c.text} ${c.aria}`)).sort((a, b) => a.x - b.x);
+      const role = el.getAttribute('role') || '';
+      return { el, text, aria, role, x: box.x, y: box.y, w: box.width, h: box.height };
+    }).filter((c) => {
+      if (!visible(c.el)) return false;
+      if (c.y < 80 || c.y > 145 || c.x < 760 || c.x > 1320 || c.w < 10 || c.w > 180 || c.h < 10 || c.h > 40) return false;
+      const exact = wanted.some(w => c.aria === w.aria || c.text === w.text);
+      return exact || re.test(`${c.text} ${c.aria}`);
+    }).sort((a, b) => (a.w * a.h) - (b.w * b.h) || a.x - b.x);
+
     const c = candidates[0];
     if (!c) return null;
     c.el.click();
-    return { selector: `geometry:toolbar-${label}`, text: c.text, aria: c.aria, x: Math.round(c.x), y: Math.round(c.y), w: Math.round(c.w), h: Math.round(c.h) };
+    return { selector: `geometry:narrow-toolbar-${label}`, text: c.text, aria: c.aria, x: Math.round(c.x), y: Math.round(c.y), w: Math.round(c.w), h: Math.round(c.h) };
   }, payload);
+
   return picked ? { ok: true, ...picked } : { ok: false };
 }
 
@@ -508,3 +545,4 @@ try {
   console.error(errorReport.error);
   process.exit(1);
 }
+
