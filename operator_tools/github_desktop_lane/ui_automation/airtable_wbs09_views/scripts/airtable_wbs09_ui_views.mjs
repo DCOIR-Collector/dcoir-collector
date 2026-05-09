@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft9-view-config-calibration';
+const VERSION = '2026-05-09.draft10-view-config-calibration-payload-fix';
 let args;
 
 function parseArgs(argv) {
@@ -368,8 +368,8 @@ async function clickExistingView(page, viewName) {
 }
 
 async function clickToolbarButton(page, labelRegex, label) {
-  const source = labelRegex.source;
-  const picked = await page.evaluate((source, label) => {
+  const payload = { source: labelRegex.source, label };
+  const picked = await page.evaluate(({ source, label }) => {
     const re = new RegExp(source, 'i');
     function visible(el) {
       const style = window.getComputedStyle(el);
@@ -387,7 +387,7 @@ async function clickToolbarButton(page, labelRegex, label) {
     if (!c) return null;
     c.el.click();
     return { selector: `geometry:toolbar-${label}`, text: c.text, aria: c.aria, x: Math.round(c.x), y: Math.round(c.y), w: Math.round(c.w), h: Math.round(c.h) };
-  }, source, label);
+  }, payload);
   return picked ? { ok: true, ...picked } : { ok: false };
 }
 
