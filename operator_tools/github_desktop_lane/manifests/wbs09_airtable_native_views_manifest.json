@@ -182,8 +182,7 @@
           "operator": "is one of",
           "value": [
             "blocked",
-            "pending_review",
-            "review"
+            "waiting"
           ]
         }
       ],
@@ -193,7 +192,9 @@
           "direction": "desc"
         }
       ],
-      "notes": "",
+      "notes": [
+        "2026-05-09 draft14 schema audit: Work Items.Status does not include pending_review/review; using blocked and waiting for decision/review attention."
+      ],
       "table_id": "tblgsQAVWvh8K7gIR",
       "table_name": "Work Items",
       "table_role": "Active queue leaves and executable work",
@@ -547,8 +548,8 @@
           "value": [
             "failed",
             "blocked",
-            "unknown",
-            "pending"
+            "not_run",
+            "planned"
           ]
         }
       ],
@@ -558,7 +559,9 @@
           "direction": "desc"
         }
       ],
-      "notes": "",
+      "notes": [
+        "2026-05-09 draft14 schema audit: Observed Status does not include unknown/pending; using failed, blocked, not_run, planned."
+      ],
       "table_id": "tblRnMpQUomIGyFVL",
       "table_name": "Validation Test Cases",
       "table_role": "Reusable validation catalog",
@@ -795,9 +798,10 @@
           "field": "authority_status",
           "operator": "is one of",
           "value": [
-            "active",
-            "current",
-            "source_of_truth"
+            "current_github_authority",
+            "current_source",
+            "retained",
+            "retained_reference"
           ]
         }
       ],
@@ -807,7 +811,9 @@
           "direction": "asc"
         }
       ],
-      "notes": "",
+      "notes": [
+        "2026-05-09 draft14 schema audit: authority_status values active/current/source_of_truth are invalid; using current_github_authority, current_source, retained, retained_reference."
+      ],
       "table_id": "tblzBiXp7kwTXM0ru",
       "table_name": "Repo Surface Registry",
       "table_role": "Repo keep/delete/source-role evidence",
@@ -1166,9 +1172,8 @@
           "field": "result",
           "operator": "is one of",
           "value": [
-            "failed",
-            "conditional_pass",
-            "blocked"
+            "blocked",
+            "pending"
           ]
         }
       ],
@@ -1178,7 +1183,9 @@
           "direction": "desc"
         }
       ],
-      "notes": "",
+      "notes": [
+        "2026-05-09 draft14 schema audit: result values failed/conditional_pass are invalid; using blocked and pending as non-pass attention states."
+      ],
       "table_id": "tblrPFQH2uZEYBYE9",
       "table_name": "Validation Evidence",
       "table_role": "Validation proof and readiness evidence",
@@ -1407,21 +1414,27 @@
     {
       "view_name": "WBS09 - Review Due",
       "view_type": "grid",
-      "purpose": "Config registry rows due for review.",
+      "purpose": "Show active/candidate/planned local configuration names for review because this table has no review_after field.",
       "filters": [
         {
-          "field": "review_after",
-          "operator": "on or before",
-          "value": "today"
+          "field": "status",
+          "operator": "is one of",
+          "value": [
+            "active",
+            "candidate",
+            "planned"
+          ]
         }
       ],
       "sorts": [
         {
-          "field": "review_after",
-          "direction": "asc"
+          "field": "last_confirmed_at",
+          "direction": "desc"
         }
       ],
-      "notes": "",
+      "notes": [
+        "2026-05-09 draft14 schema audit: Local Configuration Registry has no review_after field; using status filter and last_confirmed_at sort for a valid review surface."
+      ],
       "table_id": "tblcJxCoYGpEda0FM",
       "table_name": "Local Configuration Registry",
       "table_role": "Config-name inventory and safe references",
@@ -1616,7 +1629,7 @@
         {
           "field": "status",
           "operator": "=",
-          "value": "active"
+          "value": "active_scaffold"
         }
       ],
       "sorts": [
@@ -1625,7 +1638,9 @@
           "direction": "asc"
         }
       ],
-      "notes": "",
+      "notes": [
+        "2026-05-09 draft14 schema audit: status active is invalid; using active_scaffold."
+      ],
       "table_id": "tblvtcId7PiFKvfKO",
       "table_name": "DCOIR Cleanup Scaffold Registry",
       "table_role": "Temporary scaffold lifecycle and disposition",
@@ -1695,5 +1710,15 @@
     "launcher": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirAirtableWbs09UiViewTool.ps1",
     "installer": "operator_tools/github_desktop_lane/scripts/Install-DcoirAirtableWbs09UiViewPrereqs.ps1",
     "status": "draft_prepared_no_execution"
+  },
+  "schema_audit": {
+    "last_audit_utc": "2026-05-09T19:05:00Z",
+    "last_audit_status": "PASS",
+    "source": "Airtable connector live schema readback plus repo manifest audit script",
+    "blocked_before_patch": 7,
+    "patched_manifest_draft": "2026-05-09.draft14-schema-audit-fixes",
+    "notes": [
+      "Resolved all known schema-backed blocking findings from wbs09_manifest_schema_audit_20260509.json before broader UI automation rollout."
+    ]
   }
 }
