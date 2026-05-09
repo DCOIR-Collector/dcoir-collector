@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft6-keep-open-dom-evidence';
+const VERSION = '2026-05-09.draft7-sidebar-geometry-create-flow';
 let args;
 
 function parseArgs(argv) {
@@ -106,52 +106,9 @@ async function clickFirst(page, candidates, options = {}) {
   return { ok: false };
 }
 
-async function fillFirst(page, candidates, value, options = {}) {
-  const timeout = options.timeout ?? 2000;
-  for (const candidate of candidates) {
-    try {
-      const loc = typeof candidate === 'string' ? page.locator(candidate).first() : candidate.first();
-      if (await loc.count()) {
-        await loc.fill(value, { timeout });
-        return { ok: true, selector: String(candidate) };
-      }
-    } catch (_) {}
-  }
-  return { ok: false };
-}
-
-async function clickVisibleTextFallback(page, pattern, label, options = {}) {
-  const timeout = options.timeout ?? 3000;
-  const source = pattern.source;
-  const handle = await page.evaluateHandle((reSource) => {
-    const re = new RegExp(reSource, 'i');
-    const elements = Array.from(document.querySelectorAll('button, [role="button"], div, span, a'));
-    function visible(el) {
-      const style = window.getComputedStyle(el);
-      const box = el.getBoundingClientRect();
-      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
-    }
-    for (const el of elements) {
-      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
-      if (visible(el) && re.test(text)) return el;
-    }
-    return null;
-  }, source);
-  const el = handle.asElement();
-  if (!el) return { ok: false };
-  await el.click({ timeout });
-  return { ok: true, selector: `visible-text-fallback:${label}` };
-}
-
-async function captureDomEvidence(page, outputDir, index, view, reason, result) {
-  const base = `failure_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}_${safeName(reason)}`;
-  if (args.enableScreenshots) {
-    const screenshotPath = path.join(outputDir, `${base}.png`);
-    await page.screenshot({ path: screenshotPath, fullPage: true });
-    result.screenshot = screenshotPath;
-  }
-  const dom = await page.evaluate(() => {
-    const elements = Array.from(document.querySelectorAll('button, [role="button"], input, textarea, [aria-label], [placeholder], div, span, a')).slice(0, 2000);
+async function getVisibleDomSnapshot(page) {
+  return await page.evaluate(() => {
+    const elements = Array.from(document.querySelectorAll('button, [role="button"], input, textarea, [aria-label], [placeholder], div, span, a')).slice(0, 2500);
     function visible(el) {
       const style = window.getComputedStyle(el);
       const box = el.getBoundingClientRect();
@@ -165,17 +122,182 @@ async function captureDomEvidence(page, outputDir, index, view, reason, result) 
         aria: el.getAttribute('aria-label'),
         placeholder: el.getAttribute('placeholder'),
         type: el.getAttribute('type'),
-        text: (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 250),
+        text: (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 300),
         x: Math.round(box.x),
         y: Math.round(box.y),
         w: Math.round(box.width),
         h: Math.round(box.height)
       };
-    }).filter(x => x.text || x.aria || x.placeholder || x.role || x.type).slice(0, 500);
+    }).filter(x => x.text || x.aria || x.placeholder || x.role || x.type).slice(0, 700);
   });
+}
+
+async function captureDomEvidence(page, outputDir, index, view, reason, result) {
+  const base = `failure_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}_${safeName(reason)}`;
+  if (args.enableScreenshots) {
+    const screenshotPath = path.join(outputDir, `${base}.png`);
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    result.screenshot = screenshotPath;
+  }
+  const dom = await getVisibleDomSnapshot(page);
   const domPath = path.join(outputDir, `${base}.dom.json`);
   writeJson(domPath, { timestamp_utc: nowIso(), reason, url: page.url(), title: await page.title(), elements: dom });
   result.dom_evidence = domPath;
+}
+
+async function clickVisibleTextFallback(page, pattern, label, options = {}) {
+  const timeout = options.timeout ?? 3000;
+  const handle = await page.evaluateHandle((source) => {
+    const re = new RegExp(source, 'i');
+    const elements = Array.from(document.querySelectorAll('button, [role="button"], div, span, a'));
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    for (const el of elements) {
+      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (visible(el) && re.test(text)) return el;
+    }
+    return null;
+  }, pattern.source);
+  const el = handle.asElement();
+  if (!el) return { ok: false };
+  await el.click({ timeout });
+  return { ok: true, selector: `visible-text-fallback:${label}` };
+}
+
+async function clickSidebarCreateNew(page) {
+  const picked = await page.evaluate(() => {
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    const candidates = Array.from(document.querySelectorAll('button, [role="button"]')).map((el) => {
+      const box = el.getBoundingClientRect();
+      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+      return { el, text, x: box.x, y: box.y, w: box.width, h: box.height };
+    }).filter((c) => {
+      return visible(c.el)
+        && /^\+?\s*Create new\.{0,3}\s*$/i.test(c.text)
+        && c.x >= 40 && c.x < 360
+        && c.y >= 120
+        && c.w >= 80;
+    }).sort((a, b) => a.y - b.y || a.x - b.x);
+    const c = candidates[0];
+    if (!c) return null;
+    c.el.scrollIntoView({ block: 'center', inline: 'center' });
+    c.el.click();
+    return { selector: 'geometry:sidebar-create-new-button', text: c.text, x: Math.round(c.x), y: Math.round(c.y), w: Math.round(c.w), h: Math.round(c.h) };
+  });
+  return picked ? { ok: true, ...picked } : { ok: false };
+}
+
+async function clickGridOptionFromCreateMenu(page) {
+  const picked = await page.evaluate(() => {
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    function clickableAncestor(el) {
+      let cur = el;
+      for (let i = 0; cur && i < 5; i += 1) {
+        const tag = cur.tagName;
+        const role = cur.getAttribute('role');
+        if (tag === 'BUTTON' || tag === 'A' || role === 'button' || cur.onclick) return cur;
+        cur = cur.parentElement;
+      }
+      return el;
+    }
+    const nodes = Array.from(document.querySelectorAll('button, [role="button"], div, span, a'));
+    const candidates = nodes.map((el) => {
+      const box = el.getBoundingClientRect();
+      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+      return { el, text, x: box.x, y: box.y, w: box.width, h: box.height };
+    }).filter((c) => {
+      return visible(c.el)
+        && /^Grid$/i.test(c.text)
+        && c.x >= 40 && c.x < 520
+        && c.y >= 160
+        && c.w > 8 && c.h > 8;
+    }).sort((a, b) => a.y - b.y || a.x - b.x);
+    const c = candidates[0];
+    if (!c) return null;
+    const target = clickableAncestor(c.el);
+    const targetBox = target.getBoundingClientRect();
+    target.click();
+    return { selector: 'geometry:create-menu-grid-option', text: c.text, x: Math.round(c.x), y: Math.round(c.y), w: Math.round(c.w), h: Math.round(c.h), target_x: Math.round(targetBox.x), target_y: Math.round(targetBox.y), target_w: Math.round(targetBox.width), target_h: Math.round(targetBox.height) };
+  });
+  return picked ? { ok: true, ...picked } : { ok: false };
+}
+
+async function fillNewViewNameInput(page, viewName) {
+  const handle = await page.evaluateHandle(() => {
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    const inputs = Array.from(document.querySelectorAll('input, textarea')).map((el) => {
+      const box = el.getBoundingClientRect();
+      const aria = el.getAttribute('aria-label') || '';
+      const placeholder = el.getAttribute('placeholder') || '';
+      const type = el.getAttribute('type') || '';
+      return { el, aria, placeholder, type, x: box.x, y: box.y, w: box.width, h: box.height };
+    }).filter((c) => {
+      const label = `${c.aria} ${c.placeholder}`;
+      if (!visible(c.el)) return false;
+      if (/find a view/i.test(label)) return false;
+      if (c.type && !/^(text|search)$/i.test(c.type)) return false;
+      return c.w >= 40 && c.h >= 16;
+    }).sort((a, b) => {
+      const scoreA = (/view name|name/i.test(`${a.aria} ${a.placeholder}`) ? 0 : 1);
+      const scoreB = (/view name|name/i.test(`${b.aria} ${b.placeholder}`) ? 0 : 1);
+      return scoreA - scoreB || a.y - b.y || a.x - b.x;
+    });
+    const c = inputs[0];
+    return c ? c.el : null;
+  });
+  const el = handle.asElement();
+  if (!el) return { ok: false };
+  const box = await el.boundingBox();
+  await el.click({ timeout: 3000 });
+  const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+  await page.keyboard.press(`${modifier}+A`);
+  await page.keyboard.type(viewName, { delay: 10 });
+  return { ok: true, selector: 'geometry:new-view-name-input-excluding-find-view', x: box ? Math.round(box.x) : null, y: box ? Math.round(box.y) : null, w: box ? Math.round(box.width) : null, h: box ? Math.round(box.height) : null };
+}
+
+async function clickFinalCreateButton(page) {
+  const picked = await page.evaluate(() => {
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    const buttons = Array.from(document.querySelectorAll('button, [role="button"]')).map((el) => {
+      const box = el.getBoundingClientRect();
+      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+      const aria = el.getAttribute('aria-label') || '';
+      const disabled = el.disabled || el.getAttribute('aria-disabled') === 'true';
+      return { el, text, aria, disabled, x: box.x, y: box.y, w: box.width, h: box.height };
+    }).filter((c) => {
+      const label = `${c.text} ${c.aria}`.trim();
+      if (!visible(c.el) || c.disabled) return false;
+      if (/^\+?\s*Create new\.{0,3}$/i.test(label)) return false;
+      if (/Create new\.{0,3}\s+No matching views/i.test(label)) return false;
+      return /^(Create|Create view|Create new view|Create grid view)$/i.test(c.text)
+        || /Create view|Create new view|Create grid view/i.test(c.aria);
+    }).sort((a, b) => b.y - a.y || b.x - a.x);
+    const c = buttons[0];
+    if (!c) return null;
+    c.el.click();
+    return { selector: 'geometry:final-create-button', text: c.text, aria: c.aria, x: Math.round(c.x), y: Math.round(c.y), w: Math.round(c.w), h: Math.round(c.h) };
+  });
+  if (picked) return { ok: true, ...picked };
+  return await clickVisibleTextFallback(page, /\bCreate (new |grid )?view\b|^Create$/i, 'final create visible text', { timeout: 3000 });
 }
 
 async function createGridViewAttempt(page, view, outputDir, index) {
@@ -188,6 +310,10 @@ async function createGridViewAttempt(page, view, outputDir, index) {
     attempted_at_utc: nowIso(),
     notes: []
   };
+
+  await page.keyboard.press('Escape').catch(() => {});
+  await page.waitForTimeout(250);
+  await page.mouse.move(520, 90).catch(() => {});
 
   const tableClick = await clickFirst(page, [
     page.getByText(view.table_name, { exact: true }),
@@ -202,92 +328,51 @@ async function createGridViewAttempt(page, view, outputDir, index) {
   }
   result.notes.push(`Selected table using ${tableClick.selector}`);
   await page.waitForTimeout(800);
+  await page.keyboard.press('Escape').catch(() => {});
+  await page.mouse.move(520, 90).catch(() => {});
 
-  let createNew = { ok: false };
-  const gridMenuVisible = await page.getByText(/^grid$/i).count().catch(() => 0);
-  if (gridMenuVisible > 0) {
-    createNew = { ok: true, selector: 'grid-menu-already-open' };
-    result.notes.push('Create-new menu appears already open; proceeding to Grid selection.');
-  } else {
-    createNew = await clickFirst(page, [
-      page.getByText(/^\s*\+?\s*Create new\.{0,3}\s*$/i),
-      page.getByText(/Create new\.\.\./i),
-      page.getByText(/Create new/i),
-      page.getByRole('button', { name: /create new/i }),
-      page.getByRole('button', { name: /add view/i }),
-      page.getByText(/add view/i),
-      '[aria-label*="Create new"]',
-      '[aria-label*="Create"]',
-      '[data-testid*="create"]'
-    ], { timeout: 3000 });
-    if (!createNew.ok) createNew = await clickVisibleTextFallback(page, /\bCreate new\b/, 'Create new visible text', { timeout: 3000 });
-  }
+  const createNew = await clickSidebarCreateNew(page);
   if (!createNew.ok) {
     result.status = 'selector_create_new_not_found';
-    result.notes.push('Could not find a safe Create new/Add view control.');
+    result.notes.push('Could not find the left-sidebar Create new... button.');
     await captureDomEvidence(page, outputDir, index, view, 'create_new_not_found', result);
     return result;
   }
-  if (createNew.selector !== 'grid-menu-already-open') {
-    result.notes.push(`Clicked create-new control using ${createNew.selector}`);
-    await page.waitForTimeout(800);
-  }
+  result.notes.push(`Clicked create-new control using ${createNew.selector} at x=${createNew.x}, y=${createNew.y}.`);
+  await page.waitForTimeout(900);
+  await page.mouse.move(520, 90).catch(() => {});
 
-  const gridChoice = await clickFirst(page, [
-    page.getByText(/^grid$/i),
-    page.getByRole('button', { name: /^grid$/i }),
-    page.getByRole('button', { name: /grid/i }),
-    page.getByText(/grid view/i),
-    '[data-testid*="grid"]'
-  ], { timeout: 3000 });
+  const gridChoice = await clickGridOptionFromCreateMenu(page);
   if (!gridChoice.ok) {
     result.status = 'selector_grid_choice_not_found';
-    result.notes.push('Could not choose Grid view safely.');
+    result.notes.push('Could not choose Grid from the create-new popup without touching the current Grid view control.');
     await captureDomEvidence(page, outputDir, index, view, 'grid_choice_not_found', result);
     return result;
   }
-  result.notes.push(`Selected grid view using ${gridChoice.selector}`);
+  result.notes.push(`Selected create-menu Grid option using ${gridChoice.selector} at x=${gridChoice.x}, y=${gridChoice.y}.`);
   await page.waitForTimeout(1000);
+  await page.mouse.move(520, 90).catch(() => {});
 
-  const nameFill = await fillFirst(page, [
-    page.getByLabel(/view name/i),
-    page.getByPlaceholder(/view name/i),
-    page.getByPlaceholder(/name/i),
-    'input[type="text"]'
-  ], view.view_name, { timeout: 3000 });
+  const nameFill = await fillNewViewNameInput(page, view.view_name);
   if (!nameFill.ok) {
     result.status = 'selector_view_name_input_not_found';
-    result.notes.push('Could not find view-name input safely.');
+    result.notes.push('Could not find a new-view name input. The Find a view search box is intentionally excluded.');
     await captureDomEvidence(page, outputDir, index, view, 'view_name_input_not_found', result);
     return result;
   }
-  result.notes.push(`Filled view name using ${nameFill.selector}`);
-  await page.waitForTimeout(700);
+  result.notes.push(`Filled view name using ${nameFill.selector} at x=${nameFill.x}, y=${nameFill.y}.`);
+  await page.waitForTimeout(800);
 
-  const finalCreate = await clickFirst(page, [
-    page.getByRole('button', { name: /^create$/i }),
-    page.getByRole('button', { name: /create view/i }),
-    page.getByRole('button', { name: /create new view/i }),
-    page.getByRole('button', { name: /create grid view/i }),
-    page.getByRole('button', { name: /create .*view/i }),
-    page.locator('button:has-text("Create new view")'),
-    page.locator('button:has-text("Create grid view")'),
-    page.locator('button:has-text("Create view")'),
-    page.locator('button:has-text("Create")'),
-    page.getByText(/^create$/i),
-    page.getByText(/create view/i),
-    page.getByText(/create new view/i),
-    page.getByText(/create grid view/i)
-  ], { timeout: 3000 });
+  const finalCreate = await clickFinalCreateButton(page);
   if (!finalCreate.ok) {
     result.status = 'selector_final_create_not_found';
-    result.notes.push('Could not find final Create button safely. View name may be staged in UI but create was not clicked.');
+    result.notes.push('Could not find final Create/Create view button safely. View name may be staged in UI but create was not clicked.');
     await captureDomEvidence(page, outputDir, index, view, 'final_create_not_found', result);
     return result;
   }
   result.status = 'create_clicked_unverified';
   result.notes.push(`Clicked final create using ${finalCreate.selector}. Verify in Airtable before continuing.`);
-  await page.waitForTimeout(1200);
+  await page.waitForTimeout(1500);
 
   if (args.enableScreenshots) {
     const screenshotPath = path.join(outputDir, `after_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}.png`);
@@ -330,7 +415,7 @@ try {
       playwright_required_for_execute: true,
       dry_run_requires_browser: false,
       execution_requires_confirm: 'CREATE_WBS09_NATIVE_VIEWS',
-      filters_and_sorts: 'not configured in draft execution; view creation only',
+      filters_and_sorts: 'not configured in this draft; view creation only',
       known_risk: 'Airtable UI selectors may drift; execute one view first and verify before bulk run.'
     });
   }
