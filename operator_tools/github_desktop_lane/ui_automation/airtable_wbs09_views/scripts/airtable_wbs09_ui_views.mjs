@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft7-sidebar-geometry-create-flow';
+const VERSION = '2026-05-09.draft8-start-index';
 let args;
 
 function parseArgs(argv) {
@@ -20,7 +20,8 @@ function parseArgs(argv) {
     useChromeChannel: false,
     userDataDir: null,
     connectCdpUrl: null,
-    keepBrowserOpenOnFailure: false
+    keepBrowserOpenOnFailure: false,
+    startIndex: 1
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -33,6 +34,7 @@ function parseArgs(argv) {
     else if (a === '--experimental-configure-filters') parsed.experimentalConfigureFilters = true;
     else if (a === '--confirm') parsed.confirm = next();
     else if (a === '--max-views') parsed.maxViews = Number(next());
+    else if (a === '--start-index') parsed.startIndex = Number(next());
     else if (a === '--table-name') parsed.tableName = next();
     else if (a === '--enable-screenshots') parsed.enableScreenshots = true;
     else if (a === '--continue-on-failure') parsed.stopOnFirstFailure = false;
@@ -88,6 +90,10 @@ function validateManifest(manifest) {
 function selectViews(views) {
   let selected = views;
   if (args.tableName) selected = selected.filter(v => v.table_name.toLowerCase() === args.tableName.toLowerCase());
+  const startIndex = Number(args.startIndex || 1);
+  if (!Number.isInteger(startIndex) || startIndex < 1) throw new Error(`--start-index must be an integer >= 1; got ${args.startIndex}`);
+  if (startIndex > selected.length + 1) throw new Error(`--start-index ${startIndex} is beyond selected view count ${selected.length}`);
+  if (startIndex > 1) selected = selected.slice(startIndex - 1);
   if (args.maxViews && args.maxViews > 0) selected = selected.slice(0, args.maxViews);
   return selected;
 }
@@ -395,6 +401,7 @@ try {
     manifest_view_count: views.length,
     manifest_table_count: tables.length,
     selected_view_count: selected.length,
+    start_index: Number(args.startIndex || 1),
     output_dir: outputDir,
     downloads_env_var: 'DCOIR_DOWNLOADS_DIR',
     repo_root_env_var: 'DCOIR_REPO_ROOT',
@@ -415,6 +422,7 @@ try {
       playwright_required_for_execute: true,
       dry_run_requires_browser: false,
       execution_requires_confirm: 'CREATE_WBS09_NATIVE_VIEWS',
+      start_index_supported: true,
       filters_and_sorts: 'not configured in this draft; view creation only',
       known_risk: 'Airtable UI selectors may drift; execute one view first and verify before bulk run.'
     });

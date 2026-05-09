@@ -8,6 +8,7 @@ param(
     [string]$ManifestPath,
     [string]$BaseUrl,
     [int]$MaxViews = 0,
+    [int]$StartIndex = 1,
     [string]$TableName,
     [switch]$EnableScreenshots,
     [switch]$ContinueOnFailure,
@@ -19,6 +20,8 @@ param(
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
+
+if ($StartIndex -lt 1) { throw 'StartIndex must be 1 or greater. Use -StartIndex 2 to skip the already-created first manifest view.' }
 
 $repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
 if ([string]::IsNullOrWhiteSpace($repo)) { throw 'Missing required Local Configuration Registry variable: DCOIR_REPO_ROOT' }
@@ -52,6 +55,7 @@ Write-ToolLog 'Starting DCOIR WBS09 Airtable UI view tool launcher.'
 Write-ToolLog ('Repo root: ' + $repo)
 Write-ToolLog ('Output directory: ' + $outDir)
 Write-ToolLog ('Manifest path: ' + $ManifestPath)
+Write-ToolLog ('Start index: ' + $StartIndex)
 
 $node = Get-Command node -ErrorAction SilentlyContinue
 if ($null -eq $node) { throw 'Node.js is required but was not found on PATH. Run Install-DcoirAirtableWbs09UiViewPrereqs.ps1 first.' }
@@ -76,6 +80,7 @@ if ($ExecuteCreateViewsOnly) {
 
 if ($ExperimentalConfigureFilters) { $argsList += '--experimental-configure-filters' }
 if (-not [string]::IsNullOrWhiteSpace($BaseUrl)) { $argsList += @('--base-url', $BaseUrl) }
+if ($StartIndex -gt 1) { $argsList += @('--start-index', [string]$StartIndex) }
 if ($MaxViews -gt 0) { $argsList += @('--max-views', [string]$MaxViews) }
 if (-not [string]::IsNullOrWhiteSpace($TableName)) { $argsList += @('--table-name', $TableName) }
 if ($EnableScreenshots) { $argsList += '--enable-screenshots' }
