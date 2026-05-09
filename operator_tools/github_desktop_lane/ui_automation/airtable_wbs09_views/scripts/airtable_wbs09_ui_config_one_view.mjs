@@ -1,10 +1,10 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft16-bounded-batch-config-smoke';
+const VERSION = '2026-05-09.draft17-json-bom-safe-schema-gate';
 let args;
 
 function parseArgs(argv) {
@@ -48,6 +48,10 @@ function parseArgs(argv) {
 }
 
 function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
+function readJsonFile(p) {
+  const text = fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, '');
+  return JSON.parse(text);
+}
 function writeJson(p, obj) { fs.writeFileSync(p, JSON.stringify(obj, null, 2), 'utf8'); }
 function nowIso() { return new Date().toISOString(); }
 function safeName(s) { return String(s).replace(/[^A-Za-z0-9_.-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 120) || 'item'; }
@@ -114,7 +118,7 @@ function oneViewContract(view) {
 function verifySchemaAuditGate(schemaAuditJson) {
   if (!schemaAuditJson || !String(schemaAuditJson).trim()) throw new Error('Batch configuration requires --schema-audit-json pointing to a fresh PASS audit report.');
   if (!fs.existsSync(schemaAuditJson)) throw new Error(`Schema audit JSON not found: ${schemaAuditJson}`);
-  const audit = JSON.parse(fs.readFileSync(schemaAuditJson, 'utf8'));
+  const audit = readJsonFile(schemaAuditJson);
   const status = audit.status;
   const errors = Number(audit.error_count || 0);
   const warnings = Number(audit.warning_count || 0);
@@ -405,7 +409,7 @@ async function configureSort(page, result) {
   if (!field.ok) throw new Error(`Could not select ${sortField} as sort field.`);
   await page.waitForTimeout(700);
 
-  const direction = await selectDropdownValue(page, /^(A\s*→\s*Z|1\s*→\s*9|Ascending|asc|Z\s*→\s*A|9\s*→\s*1|Descending|desc)$/i, { x: 725, y: 268 }, sortDirection, 'sort-direction');
+  const direction = await selectDropdownValue(page, /^(A\s*â†’\s*Z|1\s*â†’\s*9|Ascending|asc|Z\s*â†’\s*A|9\s*â†’\s*1|Descending|desc)$/i, { x: 725, y: 268 }, sortDirection, 'sort-direction');
   result.steps.push({ action: 'set_sort_direction', direction: sortDirection, ...direction });
   if (!direction.ok) {
     if (sortDirection === 'ascending') result.steps.push({ action: 'sort_direction_assumed_default_ascending', ok: true, note: 'Airtable often defaults to ascending when the sort field is selected and no direction selector is visible.' });
@@ -462,7 +466,7 @@ try {
   const expectedConfirm = args.executeConfigureViewBatch ? 'CONFIGURE_WBS09_VIEW_BATCH' : 'CONFIGURE_WBS09_ONE_VIEW';
   if (args.confirm !== expectedConfirm) throw new Error(`Configure mode requires --confirm ${expectedConfirm}`);
 
-  const manifest = JSON.parse(fs.readFileSync(args.manifest, 'utf8'));
+  const manifest = readJsonFile(args.manifest);
   const { views, tables } = validateManifest(manifest);
   const selected = selectViews(views);
   if (args.executeConfigureOneView && selected.length !== 1) throw new Error('One-view configuration requires exactly one selected manifest view. Pass -TableName and -ViewName.');
@@ -570,3 +574,4 @@ try {
   } catch {}
   process.exit(1);
 }
+
