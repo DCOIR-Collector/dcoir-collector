@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$ManifestPath,
     [Parameter(Mandatory=$true)][string]$SchemaJson,
@@ -17,7 +17,7 @@ function Get-MachineEnvRequired {
     param([string]$Name)
     $value = [Environment]::GetEnvironmentVariable($Name, 'Machine')
     if ([string]::IsNullOrWhiteSpace($value)) { throw "Missing required Machine/System environment variable: $Name" }
-    if ($value -match 'C:\\path\\to\\|/path/to/') { throw "Refusing placeholder value for $Name: $value" }
+    if ($value -match 'C:\\path\\to\\|/path/to/') { throw "Refusing placeholder value for ${Name}: $value" }
     return $value
 }
 
@@ -368,3 +368,4 @@ Write-Host "Audit Markdown: $mdPath"
 if ($errorCount -gt 0) { exit 2 }
 if ($FailOnWarnings -and $warningCount -gt 0) { exit 3 }
 exit 0
+
