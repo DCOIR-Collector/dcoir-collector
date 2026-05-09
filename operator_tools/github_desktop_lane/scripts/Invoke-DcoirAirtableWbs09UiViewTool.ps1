@@ -13,7 +13,8 @@ param(
     [switch]$ContinueOnFailure,
     [switch]$UseChromeChannel,
     [string]$UserDataDir,
-    [string]$ConnectOverCdpUrl
+    [string]$ConnectOverCdpUrl,
+    [switch]$KeepBrowserOpenOnFailure
 )
 
 Set-StrictMode -Version 2.0
@@ -27,7 +28,6 @@ $downloads = [Environment]::GetEnvironmentVariable('DCOIR_DOWNLOADS_DIR','Machin
 if ([string]::IsNullOrWhiteSpace($downloads)) { throw 'Missing required Local Configuration Registry variable: DCOIR_DOWNLOADS_DIR' }
 if (-not (Test-Path -LiteralPath $downloads -PathType Container)) { throw ('DCOIR_DOWNLOADS_DIR does not exist or is not a directory: ' + $downloads) }
 
-$scriptRoot = Join-Path $repo 'operator_tools\github_desktop_lane\scripts'
 $toolRoot = Join-Path $repo 'operator_tools\github_desktop_lane\ui_automation\airtable_wbs09_views'
 if (-not (Test-Path -LiteralPath $toolRoot -PathType Container)) { throw ('Tool root not found. Did you apply/push/pull the repo bundle? ' + $toolRoot) }
 
@@ -83,6 +83,7 @@ if ($ContinueOnFailure) { $argsList += '--continue-on-failure' }
 if ($UseChromeChannel) { $argsList += '--use-chrome-channel' }
 if (-not [string]::IsNullOrWhiteSpace($UserDataDir)) { $argsList += @('--user-data-dir', $UserDataDir) }
 if (-not [string]::IsNullOrWhiteSpace($ConnectOverCdpUrl)) { $argsList += @('--connect-cdp-url', $ConnectOverCdpUrl) }
+if ($KeepBrowserOpenOnFailure) { $argsList += '--keep-browser-open-on-failure' }
 
 Push-Location $toolRoot
 try {

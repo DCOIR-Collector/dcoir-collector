@@ -4,10 +4,11 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft5-create-new-sidebar-screenshots';
+const VERSION = '2026-05-09.draft6-keep-open-dom-evidence';
+let args;
 
 function parseArgs(argv) {
-  const args = {
+  const parsed = {
     dryRun: false,
     executeCreateViewsOnly: false,
     experimentalConfigureFilters: false,
@@ -18,31 +19,33 @@ function parseArgs(argv) {
     headless: false,
     useChromeChannel: false,
     userDataDir: null,
-    connectCdpUrl: null
+    connectCdpUrl: null,
+    keepBrowserOpenOnFailure: false
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     const next = () => argv[++i];
-    if (a === '--manifest') args.manifest = next();
-    else if (a === '--output-dir') args.outputDir = next();
-    else if (a === '--base-url') args.baseUrl = next();
-    else if (a === '--dry-run') args.dryRun = true;
-    else if (a === '--execute-create-views-only') args.executeCreateViewsOnly = true;
-    else if (a === '--experimental-configure-filters') args.experimentalConfigureFilters = true;
-    else if (a === '--confirm') args.confirm = next();
-    else if (a === '--max-views') args.maxViews = Number(next());
-    else if (a === '--table-name') args.tableName = next();
-    else if (a === '--enable-screenshots') args.enableScreenshots = true;
-    else if (a === '--continue-on-failure') args.stopOnFirstFailure = false;
-    else if (a === '--capability-report') args.capabilityReport = true;
-    else if (a === '--calibration-mode') args.calibrationMode = true;
-    else if (a === '--headless') args.headless = true;
-    else if (a === '--use-chrome-channel') args.useChromeChannel = true;
-    else if (a === '--user-data-dir') args.userDataDir = next();
-    else if (a === '--connect-cdp-url') args.connectCdpUrl = next();
+    if (a === '--manifest') parsed.manifest = next();
+    else if (a === '--output-dir') parsed.outputDir = next();
+    else if (a === '--base-url') parsed.baseUrl = next();
+    else if (a === '--dry-run') parsed.dryRun = true;
+    else if (a === '--execute-create-views-only') parsed.executeCreateViewsOnly = true;
+    else if (a === '--experimental-configure-filters') parsed.experimentalConfigureFilters = true;
+    else if (a === '--confirm') parsed.confirm = next();
+    else if (a === '--max-views') parsed.maxViews = Number(next());
+    else if (a === '--table-name') parsed.tableName = next();
+    else if (a === '--enable-screenshots') parsed.enableScreenshots = true;
+    else if (a === '--continue-on-failure') parsed.stopOnFirstFailure = false;
+    else if (a === '--capability-report') parsed.capabilityReport = true;
+    else if (a === '--calibration-mode') parsed.calibrationMode = true;
+    else if (a === '--headless') parsed.headless = true;
+    else if (a === '--use-chrome-channel') parsed.useChromeChannel = true;
+    else if (a === '--user-data-dir') parsed.userDataDir = next();
+    else if (a === '--connect-cdp-url') parsed.connectCdpUrl = next();
+    else if (a === '--keep-browser-open-on-failure') parsed.keepBrowserOpenOnFailure = true;
     else throw new Error(`Unknown argument: ${a}`);
   }
-  return args;
+  return parsed;
 }
 
 function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
@@ -50,39 +53,7 @@ function writeJson(p, obj) { fs.writeFileSync(p, JSON.stringify(obj, null, 2), '
 function nowIso() { return new Date().toISOString(); }
 function safeName(s) { return String(s).replace(/[^A-Za-z0-9_.-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 120) || 'item'; }
 
-async function captureFailureScreenshot(page, outputDir, index, view, reason, result) {
-  if (!args.enableScreenshots) return;
-  const screenshotPath = path.join(
-    outputDir,
-    `failure_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}_${safeName(reason)}.png`
-  );
-  await page.screenshot({ path: screenshotPath, fullPage: true });
-  result.screenshot = screenshotPath;
-}
-
-async function clickVisibleTextFallback(page, pattern, label, options = {}) {
-  const timeout = options.timeout ?? 3000;
-  const handle = await page.evaluateHandle((source) => {
-    const re = new RegExp(source, 'i');
-    const elements = Array.from(document.querySelectorAll('button, [role="button"], div, span, a'));
-    function visible(el) {
-      const style = window.getComputedStyle(el);
-      const box = el.getBoundingClientRect();
-      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
-    }
-    for (const el of elements) {
-      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
-      if (visible(el) && re.test(text)) return el;
-    }
-    return null;
-  }, pattern.source);
-  const el = handle.asElement();
-  if (!el) return { ok: false };
-  await el.click({ timeout });
-  return { ok: true, selector: `visible-text-fallback:${label}` };
-}
-
-const args = parseArgs(process.argv);
+args = parseArgs(process.argv);
 const downloads = process.env.DCOIR_DOWNLOADS_DIR;
 if (!downloads || !downloads.trim()) {
   console.error('Missing required Local Configuration Registry variable: DCOIR_DOWNLOADS_DIR');
@@ -149,6 +120,64 @@ async function fillFirst(page, candidates, value, options = {}) {
   return { ok: false };
 }
 
+async function clickVisibleTextFallback(page, pattern, label, options = {}) {
+  const timeout = options.timeout ?? 3000;
+  const source = pattern.source;
+  const handle = await page.evaluateHandle((reSource) => {
+    const re = new RegExp(reSource, 'i');
+    const elements = Array.from(document.querySelectorAll('button, [role="button"], div, span, a'));
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    for (const el of elements) {
+      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (visible(el) && re.test(text)) return el;
+    }
+    return null;
+  }, source);
+  const el = handle.asElement();
+  if (!el) return { ok: false };
+  await el.click({ timeout });
+  return { ok: true, selector: `visible-text-fallback:${label}` };
+}
+
+async function captureDomEvidence(page, outputDir, index, view, reason, result) {
+  const base = `failure_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}_${safeName(reason)}`;
+  if (args.enableScreenshots) {
+    const screenshotPath = path.join(outputDir, `${base}.png`);
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    result.screenshot = screenshotPath;
+  }
+  const dom = await page.evaluate(() => {
+    const elements = Array.from(document.querySelectorAll('button, [role="button"], input, textarea, [aria-label], [placeholder], div, span, a')).slice(0, 2000);
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    return elements.filter(visible).map((el) => {
+      const box = el.getBoundingClientRect();
+      return {
+        tag: el.tagName,
+        role: el.getAttribute('role'),
+        aria: el.getAttribute('aria-label'),
+        placeholder: el.getAttribute('placeholder'),
+        type: el.getAttribute('type'),
+        text: (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 250),
+        x: Math.round(box.x),
+        y: Math.round(box.y),
+        w: Math.round(box.width),
+        h: Math.round(box.height)
+      };
+    }).filter(x => x.text || x.aria || x.placeholder || x.role || x.type).slice(0, 500);
+  });
+  const domPath = path.join(outputDir, `${base}.dom.json`);
+  writeJson(domPath, { timestamp_utc: nowIso(), reason, url: page.url(), title: await page.title(), elements: dom });
+  result.dom_evidence = domPath;
+}
+
 async function createGridViewAttempt(page, view, outputDir, index) {
   const result = {
     index,
@@ -160,7 +189,6 @@ async function createGridViewAttempt(page, view, outputDir, index) {
     notes: []
   };
 
-  // Airtable UI is not a stable public API. These selectors are conservative and stop loudly.
   const tableClick = await clickFirst(page, [
     page.getByText(view.table_name, { exact: true }),
     `[title="${view.table_name.replace(/"/g, '\\"')}"]`,
@@ -168,16 +196,16 @@ async function createGridViewAttempt(page, view, outputDir, index) {
   ], { timeout: 3000 });
   if (!tableClick.ok) {
     result.status = 'needs_manual_table_selection';
-    result.notes.push(`Could not safely click table tab/name: ${view.table_name}. Open that table manually and rerun with -TableName and -MaxViews 1.`);
-    await captureFailureScreenshot(page, outputDir, index, view, 'table_selection_not_found', result);
+    result.notes.push(`Could not safely click table tab/name: ${view.table_name}.`);
+    await captureDomEvidence(page, outputDir, index, view, 'table_selection_not_found', result);
     return result;
   }
   result.notes.push(`Selected table using ${tableClick.selector}`);
   await page.waitForTimeout(800);
 
   let createNew = { ok: false };
-  const gridAlreadyVisible = await page.getByText(/^grid$/i).count().catch(() => 0);
-  if (gridAlreadyVisible > 0) {
+  const gridMenuVisible = await page.getByText(/^grid$/i).count().catch(() => 0);
+  if (gridMenuVisible > 0) {
     createNew = { ok: true, selector: 'grid-menu-already-open' };
     result.notes.push('Create-new menu appears already open; proceeding to Grid selection.');
   } else {
@@ -192,14 +220,12 @@ async function createGridViewAttempt(page, view, outputDir, index) {
       '[aria-label*="Create"]',
       '[data-testid*="create"]'
     ], { timeout: 3000 });
-    if (!createNew.ok) {
-      createNew = await clickVisibleTextFallback(page, /\bCreate new\b/, 'Create new visible text', { timeout: 3000 });
-    }
+    if (!createNew.ok) createNew = await clickVisibleTextFallback(page, /\bCreate new\b/, 'Create new visible text', { timeout: 3000 });
   }
   if (!createNew.ok) {
     result.status = 'selector_create_new_not_found';
-    result.notes.push('Could not find a safe Create new/Add view control. No view created. Screenshot captured when enabled.');
-    await captureFailureScreenshot(page, outputDir, index, view, 'create_new_not_found', result);
+    result.notes.push('Could not find a safe Create new/Add view control.');
+    await captureDomEvidence(page, outputDir, index, view, 'create_new_not_found', result);
     return result;
   }
   if (createNew.selector !== 'grid-menu-already-open') {
@@ -209,18 +235,19 @@ async function createGridViewAttempt(page, view, outputDir, index) {
 
   const gridChoice = await clickFirst(page, [
     page.getByText(/^grid$/i),
+    page.getByRole('button', { name: /^grid$/i }),
     page.getByRole('button', { name: /grid/i }),
     page.getByText(/grid view/i),
     '[data-testid*="grid"]'
   ], { timeout: 3000 });
   if (!gridChoice.ok) {
     result.status = 'selector_grid_choice_not_found';
-    result.notes.push('Could not choose Grid view safely. No view created.');
-    await captureFailureScreenshot(page, outputDir, index, view, 'grid_choice_not_found', result);
+    result.notes.push('Could not choose Grid view safely.');
+    await captureDomEvidence(page, outputDir, index, view, 'grid_choice_not_found', result);
     return result;
   }
   result.notes.push(`Selected grid view using ${gridChoice.selector}`);
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(1000);
 
   const nameFill = await fillFirst(page, [
     page.getByLabel(/view name/i),
@@ -230,12 +257,12 @@ async function createGridViewAttempt(page, view, outputDir, index) {
   ], view.view_name, { timeout: 3000 });
   if (!nameFill.ok) {
     result.status = 'selector_view_name_input_not_found';
-    result.notes.push('Could not find view-name input safely. No create confirmation clicked.');
-    await captureFailureScreenshot(page, outputDir, index, view, 'view_name_input_not_found', result);
+    result.notes.push('Could not find view-name input safely.');
+    await captureDomEvidence(page, outputDir, index, view, 'view_name_input_not_found', result);
     return result;
   }
   result.notes.push(`Filled view name using ${nameFill.selector}`);
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(700);
 
   const finalCreate = await clickFirst(page, [
     page.getByRole('button', { name: /^create$/i }),
@@ -255,11 +282,7 @@ async function createGridViewAttempt(page, view, outputDir, index) {
   if (!finalCreate.ok) {
     result.status = 'selector_final_create_not_found';
     result.notes.push('Could not find final Create button safely. View name may be staged in UI but create was not clicked.');
-    if (args.enableScreenshots) {
-      const screenshotPath = path.join(outputDir, `failure_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}_final_create_not_found.png`);
-      await page.screenshot({ path: screenshotPath, fullPage: true });
-      result.screenshot = screenshotPath;
-    }
+    await captureDomEvidence(page, outputDir, index, view, 'final_create_not_found', result);
     return result;
   }
   result.status = 'create_clicked_unverified';
@@ -294,6 +317,7 @@ try {
     base_url: args.baseUrl || `https://airtable.com/${manifest.base_id}`,
     dry_run: !args.executeCreateViewsOnly,
     experimental_configure_filters: Boolean(args.experimentalConfigureFilters),
+    keep_browser_open_on_failure: Boolean(args.keepBrowserOpenOnFailure),
     views: selected.map(v => ({ table_name: v.table_name, table_id: v.table_id, view_name: v.view_name, view_type: v.view_type, filter_count: (v.filters || []).length, sort_count: (v.sorts || []).length }))
   };
   writeJson(path.join(outputDir, args.executeCreateViewsOnly ? 'execution_plan.json' : 'dry_run_report.json'), summary);
@@ -315,7 +339,7 @@ try {
     log('Dry run complete. No browser opened and no Airtable mutation attempted.');
     process.exit(0);
   }
-  if (args.experimentalConfigureFilters) throw new Error('Filter/sort UI automation is intentionally blocked in draft2. Create views first; configure filters manually or approve a selector-calibrated follow-up.');
+  if (args.experimentalConfigureFilters) throw new Error('Filter/sort UI automation is intentionally blocked in this draft. Create views first; configure filters only after explicit selector-calibrated approval.');
   if (args.executeCreateViewsOnly && args.confirm !== 'CREATE_WBS09_NATIVE_VIEWS') throw new Error('Execute mode requires --confirm CREATE_WBS09_NATIVE_VIEWS');
 
   let chromium;
@@ -330,10 +354,10 @@ try {
 
   if (args.connectCdpUrl) {
     closeMode = 'cdp_disconnect_only';
-    log('Connecting to existing Chrome over CDP. Use only with a dedicated operator-approved Chrome session.', { connect_cdp_url: args.connectCdpUrl });
+    log('Connecting to existing Chrome over CDP.', { connect_cdp_url: args.connectCdpUrl });
     browser = await chromium.connectOverCDP(args.connectCdpUrl);
     context = browser.contexts()[0];
-    if (!context) throw new Error('CDP connection succeeded but no browser context was available. Start Chrome with --remote-debugging-port and a dedicated --user-data-dir.');
+    if (!context) throw new Error('CDP connection succeeded but no browser context was available.');
     page = context.pages()[0] || await context.newPage();
   } else if (args.userDataDir) {
     closeMode = 'persistent_context';
@@ -348,26 +372,17 @@ try {
     page = context.pages()[0] || await context.newPage();
   } else {
     log('Launching browser context.', { chrome_channel: Boolean(args.useChromeChannel) });
-    browser = await chromium.launch({
-      headless: Boolean(args.headless),
-      channel: args.useChromeChannel ? 'chrome' : undefined
-    });
+    browser = await chromium.launch({ headless: Boolean(args.headless), channel: args.useChromeChannel ? 'chrome' : undefined });
     context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     page = await context.newPage();
   }
 
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-
   const rl = readline.createInterface({ input, output });
   await rl.question('Log into Airtable, confirm the DCOIR base is open, then press Enter. Ctrl+C aborts before any create click. ');
 
   if (args.calibrationMode) {
-    const calibration = {
-      timestamp_utc: nowIso(),
-      url: page.url(),
-      title: await page.title(),
-      note: 'Calibration mode opened Airtable and recorded page metadata only. No view creation attempted.'
-    };
+    const calibration = { timestamp_utc: nowIso(), url: page.url(), title: await page.title(), note: 'Calibration mode opened Airtable and recorded page metadata only. No view creation attempted.' };
     if (args.enableScreenshots) {
       const screenshotPath = path.join(outputDir, 'calibration_page.png');
       await page.screenshot({ path: screenshotPath, fullPage: true });
@@ -395,9 +410,13 @@ try {
     if (result.status !== 'create_clicked_unverified' && args.stopOnFirstFailure) break;
   }
   writeJson(path.join(outputDir, 'execution_report.json'), { timestamp_utc: nowIso(), results });
+  const failures = results.filter(r => r.status !== 'create_clicked_unverified');
+  if (failures.length && args.keepBrowserOpenOnFailure) {
+    writeJson(path.join(outputDir, 'keep_open_failure_report.json'), { timestamp_utc: nowIso(), reason: 'failure_detected', failure_count: failures.length, results });
+    await rl.question('Failure detected. Browser will remain open for inspection. Press Enter in PowerShell only after you finish inspecting/uploading screenshots. ');
+  }
   if (closeMode === 'persistent_context') await context.close();
   else await browser.close();
-  const failures = results.filter(r => r.status !== 'create_clicked_unverified');
   log('Execution branch ended.', { result_count: results.length, failure_count: failures.length });
   process.exit(failures.length ? 1 : 0);
 } catch (e) {
