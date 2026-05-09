@@ -5,7 +5,7 @@ import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
 
-const VERSION = '2026-05-09.draft20-common-module-status-rollup';
+const VERSION = '2026-05-09.draft21-common-module-duplicate-cleanup';
 let args;
 
 function parseArgs(argv) {
@@ -629,6 +629,7 @@ try {
   } catch {}
   process.exit(1);
 }
+
 
 
 
