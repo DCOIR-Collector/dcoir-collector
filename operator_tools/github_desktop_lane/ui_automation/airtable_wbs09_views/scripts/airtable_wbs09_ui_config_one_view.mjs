@@ -5,7 +5,7 @@ import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
 
-const VERSION = '2026-05-09.draft24-batch-status-rollup-wired';
+const VERSION = '2026-05-09.draft25-is-not-empty-filter-operator';
 let args;
 
 function parseArgs(argv) {
@@ -92,9 +92,9 @@ function oneViewContract(view) {
   if (filters.length === 1) {
     const f = filters[0];
     if (!f.field) throw new Error('Filter is missing field name.');
-    if (!['is one of', '='].includes(f.operator)) throw new Error(`Unsupported filter operator for one-view smoke: ${f.operator}`);
+    if (!['is one of', '=', 'is not empty'].includes(f.operator)) throw new Error(`Unsupported filter operator for one-view smoke: ${f.operator}`);
     const values = Array.isArray(f.value) ? f.value : (f.value === null || f.value === undefined ? [] : [f.value]);
-    if (values.length < 1) throw new Error('Single-filter smoke target requires at least one filter value.');
+    if (f.operator !== 'is not empty' && values.length < 1) throw new Error('Single-filter smoke target requires at least one filter value.');
   }
   if (sorts.length === 1) {
     const s = sorts[0];
@@ -352,24 +352,32 @@ async function configureFilter(page, result) {
   if (!field.ok) throw new Error(`Could not select ${filterField} as filter field.`);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_03_filter_field'));
 
-  const operatorLabel = target.filters[0].operator === '=' ? 'is' : 'is any of';
-  const operator = await selectDropdownValue(page, /^(contains|is|is not|is any of|has any of|is one of)$/i, { x: 660, y: 268 }, operatorLabel, 'filter-operator');
+    const operatorLabel = target.filters[0].operator === '='
+    ? 'is'
+    : (target.filters[0].operator === 'is not empty' ? 'is not empty' : 'is any of');
+  const operator = await selectDropdownValue(page, /^(contains|is|is not|is not empty|is empty|is any of|has any of|is one of)$/i, { x: 660, y: 268 }, operatorLabel, 'filter-operator');
   result.steps.push({ action: 'set_filter_operator', operator: operatorLabel, ...operator });
   if (!operator.ok) throw new Error(`Could not set filter operator to ${operatorLabel}.`);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_04_filter_operator'));
 
-  const valueOpen = await clickPanelText(page, /^(Select an option|Select options|Choose options|Enter a value|active|blocked|waiting|todo|in_progress)$/i, 'filter-value-open');
-  result.steps.push({ action: 'open_filter_value_selector', ...valueOpen });
-  if (!valueOpen.ok) throw new Error('Could not open filter value selector.');
-  for (const value of filterValuesForView(target)) {
-    await page.waitForTimeout(300);
-    await page.keyboard.type(String(value), { delay: 15 });
-    await page.waitForTimeout(550);
-    await page.keyboard.press('Enter');
-    result.steps.push({ action: 'select_filter_value', value });
+  if (target.filters[0].operator === 'is not empty') {
+    result.steps.push({ action: 'configure_filter_value_skipped', ok: true, reason: 'is not empty operator does not require a value' });
+    await page.waitForTimeout(900);
+    result.snapshots.push(await captureSnapshot(page, 'one_view_config_05_filter_no_value_required'));
+  } else {
+    const valueOpen = await clickPanelText(page, /^(Select an option|Select options|Choose options|Enter a value|active|blocked|waiting|todo|in_progress)$/i, 'filter-value-open');
+    result.steps.push({ action: 'open_filter_value_selector', ...valueOpen });
+    if (!valueOpen.ok) throw new Error('Could not open filter value selector.');
+    for (const value of filterValuesForView(target)) {
+      await page.waitForTimeout(300);
+      await page.keyboard.type(String(value), { delay: 15 });
+      await page.waitForTimeout(550);
+      await page.keyboard.press('Enter');
+      result.steps.push({ action: 'select_filter_value', value });
+    }
+    await page.waitForTimeout(900);
+    result.snapshots.push(await captureSnapshot(page, 'one_view_config_05_filter_values'));
   }
-  await page.waitForTimeout(900);
-  result.snapshots.push(await captureSnapshot(page, 'one_view_config_05_filter_values'));
   await page.keyboard.press('Escape').catch(() => {});
   await page.waitForTimeout(500);
 }
