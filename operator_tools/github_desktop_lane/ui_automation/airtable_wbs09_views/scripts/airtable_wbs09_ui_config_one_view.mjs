@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft17-json-bom-safe-schema-gate';
+const VERSION = '2026-05-09.draft18-sort-postcondition-verification';
 let args;
 
 function parseArgs(argv) {
@@ -307,7 +307,7 @@ async function clickPanelText(page, pattern, label) {
       const box = el.getBoundingClientRect();
       const text = (el.innerText || el.textContent || el.getAttribute('aria-label') || el.getAttribute('placeholder') || '').replace(/\s+/g, ' ').trim();
       return { el, text, x: box.x, y: box.y, w: box.width, h: box.height };
-    }).filter(c => visible(c.el) && c.x >= 400 && c.x <= 1100 && c.y >= 110 && c.y <= 650 && re.test(c.text)).sort((a, b) => (a.w * a.h) - (b.w * b.h) || a.y - b.y || a.x - b.x);
+    }).filter(c => visible(c.el) && c.x >= 400 && c.x <= 1100 && c.y >= 110 && c.y <= 900 && re.test(c.text)).sort((a, b) => (a.w * a.h) - (b.w * b.h) || a.y - b.y || a.x - b.x);
     const c = candidates[0];
     if (!c) return null;
     const target = clickableAncestor(c.el);
@@ -421,6 +421,56 @@ async function configureSort(page, result) {
   await page.waitForTimeout(500);
 }
 
+async function verifyPostConditions(page, target) {
+  const expectedFilter = target.filters && target.filters.length ? filterFieldForView(target) : null;
+  const expectedSort = target.sorts && target.sorts.length ? sortFieldForView(target) : null;
+
+  const probe = await page.evaluate(({ expectedFilter, expectedSort }) => {
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+
+    const toolbarText = Array.from(document.querySelectorAll('button, [role="button"], div, span'))
+      .map((el) => {
+        const box = el.getBoundingClientRect();
+        return {
+          text: (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim(),
+          aria: el.getAttribute('aria-label') || '',
+          x: box.x,
+          y: box.y,
+          w: box.width,
+          h: box.height,
+          visible: visible(el)
+        };
+      })
+      .filter((c) => c.visible && c.y >= 80 && c.y <= 150 && c.x >= 650 && c.x <= 1400)
+      .map((c) => `${c.text} ${c.aria}`.trim())
+      .join(' ');
+
+    const bodyText = (document.body.innerText || '').replace(/\s+/g, ' ').trim();
+    const text = `${toolbarText} ${bodyText}`;
+
+    const hasFilter = !expectedFilter || text.toLowerCase().includes(`filtered by ${expectedFilter}`.toLowerCase());
+    const hasSort = !expectedSort || /sorted by\s+\d+\s+field/i.test(text) || /sorted by/i.test(text);
+
+    const missing = [];
+    if (!hasFilter) missing.push(`filter badge for ${expectedFilter}`);
+    if (!hasSort) missing.push(`sort badge for ${expectedSort}`);
+
+    return {
+      expected_filter_field: expectedFilter,
+      expected_sort_field: expectedSort,
+      has_filter_badge: hasFilter,
+      has_sort_badge: hasSort,
+      missing,
+      toolbar_text_sample: toolbarText.slice(0, 800)
+    };
+  }, { expectedFilter, expectedSort });
+
+  return { ok: probe.missing.length === 0, ...probe };
+}
 let browser = null;
 let context = null;
 let page = null;
@@ -450,9 +500,15 @@ async function configureSelectedTarget(page, view, target, mode, index) {
   report.snapshots.push(await captureSnapshot(page, 'one_view_config_00_target_loaded'));
   await configureFilter(page, report);
   await configureSort(page, report);
-  report.status = 'configuration_clicked_unverified';
   report.completed_at_utc = nowIso();
   report.snapshots.push(await captureSnapshot(page, 'one_view_config_08_final_unverified'));
+  const postConditions = await verifyPostConditions(page, target);
+  report.steps.push({ action: 'verify_post_conditions', ...postConditions });
+  if (!postConditions.ok) {
+    report.status = 'configuration_postcondition_failed';
+    throw new Error(`Post-condition verification failed for ${target.table_name} / ${target.view_name}: ${postConditions.missing.join(', ')}`);
+  }
+  report.status = 'configuration_verified';
   args.activeSnapshotPrefix = '';
   return report;
 }
@@ -574,4 +630,5 @@ try {
   } catch {}
   process.exit(1);
 }
+
 
