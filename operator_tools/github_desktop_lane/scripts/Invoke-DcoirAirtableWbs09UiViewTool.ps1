@@ -4,7 +4,10 @@ param(
     [Parameter(ParameterSetName='Calibrate')][switch]$CalibrateSelectors,
     [Parameter(ParameterSetName='ConfigCalibrate')][switch]$CalibrateViewConfigSelectors,
     [Parameter(ParameterSetName='Execute')][switch]$ExecuteCreateViewsOnly,
-    [Parameter(ParameterSetName='Execute')][string]$ConfirmToken,
+    [Parameter(ParameterSetName='ConfigExecute')][switch]$ExecuteConfigureOneViewOnly,
+    [Parameter(ParameterSetName='Execute')]
+    [Parameter(ParameterSetName='ConfigExecute')]
+    [string]$ConfirmToken,
     [switch]$ExperimentalConfigureFilters,
     [string]$ManifestPath,
     [string]$BaseUrl,
@@ -63,6 +66,9 @@ $node = Get-Command node -ErrorAction SilentlyContinue
 if ($null -eq $node) { throw 'Node.js is required but was not found on PATH. Run Install-DcoirAirtableWbs09UiViewPrereqs.ps1 first.' }
 
 $nodeScript = Join-Path $toolRoot 'scripts\airtable_wbs09_ui_views.mjs'
+if ($ExecuteConfigureOneViewOnly) {
+    $nodeScript = Join-Path $toolRoot 'scripts\airtable_wbs09_ui_config_one_view.mjs'
+}
 if (-not (Test-Path -LiteralPath $nodeScript -PathType Leaf)) { throw ('Node script not found: ' + $nodeScript) }
 
 $argsList = @(
@@ -71,7 +77,10 @@ $argsList = @(
     '--output-dir', $outDir
 )
 
-if ($ExecuteCreateViewsOnly) {
+if ($ExecuteConfigureOneViewOnly) {
+    if ($ConfirmToken -ne 'CONFIGURE_WBS09_ONE_VIEW') { throw 'Configure-one-view mode requires -ConfirmToken CONFIGURE_WBS09_ONE_VIEW' }
+    $argsList += @('--execute-configure-one-view','--confirm','CONFIGURE_WBS09_ONE_VIEW')
+} elseif ($ExecuteCreateViewsOnly) {
     if ($ConfirmToken -ne 'CREATE_WBS09_NATIVE_VIEWS') { throw 'Execute mode requires -ConfirmToken CREATE_WBS09_NATIVE_VIEWS' }
     $argsList += @('--execute-create-views-only','--confirm','CREATE_WBS09_NATIVE_VIEWS')
 } elseif ($CalibrateSelectors) {
