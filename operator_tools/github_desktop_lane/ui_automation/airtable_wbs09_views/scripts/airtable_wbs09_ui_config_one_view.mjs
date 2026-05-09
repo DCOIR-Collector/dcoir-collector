@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft18-sort-postcondition-verification';
+const VERSION = '2026-05-09.draft19-batch-status-verification-rollup';
 let args;
 
 function parseArgs(argv) {
@@ -630,5 +630,6 @@ try {
   } catch {}
   process.exit(1);
 }
+
 
 
