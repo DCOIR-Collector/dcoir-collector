@@ -1,11 +1,11 @@
-﻿#!/usr/bin/env node
+#!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
 
-const VERSION = '2026-05-09.draft22-common-module-syntax-cleanup';
+const VERSION = '2026-05-09.draft23-no-bom-node-check';
 let args;
 
 function parseArgs(argv) {

@@ -1,4 +1,4 @@
-﻿import fs from 'node:fs';
+import fs from 'node:fs';
 
 export function ensureDir(p) {
   fs.mkdirSync(p, { recursive: true });
