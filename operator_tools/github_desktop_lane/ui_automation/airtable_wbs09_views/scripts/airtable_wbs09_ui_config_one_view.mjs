@@ -5,7 +5,7 @@ import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
 
-const VERSION = '2026-05-09.draft25-is-not-empty-filter-operator';
+const VERSION = '2026-05-09.draft26-table-id-navigation';
 let args;
 
 function parseArgs(argv) {
@@ -482,10 +482,30 @@ let page = null;
 let closeMode = 'launched';
 let rl = null;
 
+async function gotoTableById(page, view) {
+  const previousUrl = page.url();
+  try {
+    const current = new URL(previousUrl);
+    const appId = current.pathname.split('/').filter(Boolean).find((part) => /^app[A-Za-z0-9]+$/.test(part));
+    if (!appId) return { ok: false, selector: 'url:table-id-navigation', previous_url: previousUrl, error: 'Could not derive Airtable app id from current URL.' };
+    if (!/^tbl[A-Za-z0-9]+$/.test(String(view.table_id || ''))) return { ok: false, selector: 'url:table-id-navigation', previous_url: previousUrl, error: `Invalid or missing table id: ${view.table_id}` };
+    const targetUrl = `${current.origin}/${appId}/${view.table_id}?blocks=hide`;
+    await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(1600);
+    return { ok: true, selector: 'url:table-id-navigation', previous_url: previousUrl, url: targetUrl };
+  } catch (error) {
+    return { ok: false, selector: 'url:table-id-navigation', previous_url: previousUrl, error: String(error && error.message ? error.message : error) };
+  }
+}
+
 async function verifyViewLoaded(page, view) {
   await page.keyboard.press('Escape').catch(() => {});
   await page.waitForTimeout(300);
-  const tableClick = await clickFirst(page, [page.getByText(view.table_name, { exact: true }), `[title="${String(view.table_name).replace(/"/g, '\\"')}"]`, `text="${String(view.table_name).replace(/"/g, '\\"')}"`], { timeout: 3000 });
+  let tableClick = await gotoTableById(page, view);
+  if (!tableClick.ok) {
+    tableClick = await clickFirst(page, [page.getByText(view.table_name, { exact: true }), `[title="${String(view.table_name).replace(/"/g, '\\"')}"]`, `text="${String(view.table_name).replace(/"/g, '\\"')}"`], { timeout: 3000 });
+  }
   await page.waitForTimeout(900);
   const viewClick = await clickExistingView(page, view.view_name);
   await page.waitForTimeout(1200);
