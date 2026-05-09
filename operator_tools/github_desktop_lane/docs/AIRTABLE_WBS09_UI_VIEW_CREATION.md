@@ -82,3 +82,36 @@ Stop and upload the latest output folder or `.chatgpt.zip` if any of these occur
 - The first create attempt cannot find the table selector, Create new control, Grid option, name input, or final Create button.
 - Any view appears duplicated or incorrectly named.
 - Any UI prompt asks for permission/scope/visibility choices that are not expected.
+
+## 2026-05-09 auth-profile recovery lane
+
+If calibration opens Chromium but Google refuses sign-in with `This browser or app may not be secure`, stop the run with Ctrl+C and do not continue to execution.
+
+Preferred recovery is to use a real Chrome session that the operator signs into manually, then attach the tool to that existing browser over a local debugging endpoint.
+
+### Start dedicated Chrome profile for Airtable auth
+
+Use a dedicated profile under `DCOIR_DOWNLOADS_DIR` so the automation does not touch the operator's normal browser profile:
+
+```powershell
+$downloads = [Environment]::GetEnvironmentVariable('DCOIR_DOWNLOADS_DIR','Machine')
+$profile = Join-Path $downloads 'dcoir_airtable_wbs09_chrome_profile'
+$chrome = Join-Path ${env:ProgramFiles} 'Google\Chrome\Application\chrome.exe'
+if (-not (Test-Path -LiteralPath $chrome -PathType Leaf)) { $chrome = Join-Path ${env:ProgramFiles(x86)} 'Google\Chrome\Application\chrome.exe' }
+& $chrome --remote-debugging-port=9222 --user-data-dir="$profile" "https://airtable.com/appM4KSwnVf3G3OTK"
+```
+
+Sign into Airtable manually in that Chrome window. Keep it open.
+
+### Calibrate through the existing Chrome session
+
+```powershell
+$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
+& (Join-Path $repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirAirtableWbs09UiViewTool.ps1') -CalibrateSelectors -EnableScreenshots -ConnectOverCdpUrl 'http://127.0.0.1:9222'
+```
+
+This mode uses the operator-approved Chrome session and does not create views during calibration.
+
+### Close the dedicated Chrome session after the run
+
+Close all Chrome windows that were launched with the dedicated WBS09 profile after calibration/execution is complete. Do not leave remote debugging Chrome sessions open longer than needed.

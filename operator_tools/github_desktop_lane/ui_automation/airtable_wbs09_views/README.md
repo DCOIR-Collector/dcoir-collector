@@ -30,3 +30,14 @@ Default mode is dry-run. Live UI view creation requires:
 3. a second interactive typed confirmation after the browser opens
 
 The draft does not configure filters/sorts in Airtable. It creates grid views only, then stops loudly if selectors drift.
+
+## Auth-profile / existing Chrome mode
+
+Draft3 adds support for attaching to an already-open Chrome instance with `--connect-cdp-url`. This is intended for identity-provider sign-in flows that reject the default Playwright Chromium browser.
+
+PowerShell launcher example:
+
+```powershell
+$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
+& (Join-Path $repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirAirtableWbs09UiViewTool.ps1') -CalibrateSelectors -EnableScreenshots -ConnectOverCdpUrl 'http://127.0.0.1:9222'
+```

@@ -10,7 +10,10 @@ param(
     [int]$MaxViews = 0,
     [string]$TableName,
     [switch]$EnableScreenshots,
-    [switch]$ContinueOnFailure
+    [switch]$ContinueOnFailure,
+    [switch]$UseChromeChannel,
+    [string]$UserDataDir,
+    [string]$ConnectOverCdpUrl
 )
 
 Set-StrictMode -Version 2.0
@@ -77,6 +80,9 @@ if ($MaxViews -gt 0) { $argsList += @('--max-views', [string]$MaxViews) }
 if (-not [string]::IsNullOrWhiteSpace($TableName)) { $argsList += @('--table-name', $TableName) }
 if ($EnableScreenshots) { $argsList += '--enable-screenshots' }
 if ($ContinueOnFailure) { $argsList += '--continue-on-failure' }
+if ($UseChromeChannel) { $argsList += '--use-chrome-channel' }
+if (-not [string]::IsNullOrWhiteSpace($UserDataDir)) { $argsList += @('--user-data-dir', $UserDataDir) }
+if (-not [string]::IsNullOrWhiteSpace($ConnectOverCdpUrl)) { $argsList += @('--connect-cdp-url', $ConnectOverCdpUrl) }
 
 Push-Location $toolRoot
 try {

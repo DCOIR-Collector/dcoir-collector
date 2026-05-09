@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft2';
+const VERSION = '2026-05-09.draft3-auth-profile';
 
 function parseArgs(argv) {
   const args = {
@@ -15,7 +15,10 @@ function parseArgs(argv) {
     stopOnFirstFailure: true,
     capabilityReport: false,
     calibrationMode: false,
-    headless: false
+    headless: false,
+    useChromeChannel: false,
+    userDataDir: null,
+    connectCdpUrl: null
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -34,6 +37,9 @@ function parseArgs(argv) {
     else if (a === '--capability-report') args.capabilityReport = true;
     else if (a === '--calibration-mode') args.calibrationMode = true;
     else if (a === '--headless') args.headless = true;
+    else if (a === '--use-chrome-channel') args.useChromeChannel = true;
+    else if (a === '--user-data-dir') args.userDataDir = next();
+    else if (a === '--connect-cdp-url') args.connectCdpUrl = next();
     else throw new Error(`Unknown argument: ${a}`);
   }
   return args;
@@ -251,10 +257,40 @@ try {
   try { ({ chromium } = await import('playwright')); }
   catch { throw new Error('Playwright is required. Run the installer script first: Install-DcoirAirtableWbs09UiViewPrereqs.ps1'); }
 
-  const browser = await chromium.launch({ headless: Boolean(args.headless) });
-  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
-  const page = await context.newPage();
   const baseUrl = args.baseUrl || `https://airtable.com/${manifest.base_id}`;
+  let browser = null;
+  let context = null;
+  let page = null;
+  let closeMode = 'launched';
+
+  if (args.connectCdpUrl) {
+    closeMode = 'cdp_disconnect_only';
+    log('Connecting to existing Chrome over CDP. Use only with a dedicated operator-approved Chrome session.', { connect_cdp_url: args.connectCdpUrl });
+    browser = await chromium.connectOverCDP(args.connectCdpUrl);
+    context = browser.contexts()[0];
+    if (!context) throw new Error('CDP connection succeeded but no browser context was available. Start Chrome with --remote-debugging-port and a dedicated --user-data-dir.');
+    page = context.pages()[0] || await context.newPage();
+  } else if (args.userDataDir) {
+    closeMode = 'persistent_context';
+    log('Launching persistent browser context.', { user_data_dir: args.userDataDir, chrome_channel: Boolean(args.useChromeChannel) });
+    ensureDir(args.userDataDir);
+    context = await chromium.launchPersistentContext(args.userDataDir, {
+      headless: Boolean(args.headless),
+      channel: args.useChromeChannel ? 'chrome' : undefined,
+      viewport: { width: 1440, height: 1000 }
+    });
+    browser = context.browser();
+    page = context.pages()[0] || await context.newPage();
+  } else {
+    log('Launching browser context.', { chrome_channel: Boolean(args.useChromeChannel) });
+    browser = await chromium.launch({
+      headless: Boolean(args.headless),
+      channel: args.useChromeChannel ? 'chrome' : undefined
+    });
+    context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    page = await context.newPage();
+  }
+
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
 
   const rl = readline.createInterface({ input, output });
@@ -273,7 +309,8 @@ try {
       calibration.screenshot = screenshotPath;
     }
     writeJson(path.join(outputDir, 'calibration_report.json'), calibration);
-    await browser.close();
+    if (closeMode === 'persistent_context') await context.close();
+    else await browser.close();
     log('Calibration complete. No Airtable mutation attempted.');
     process.exit(0);
   }
@@ -293,7 +330,8 @@ try {
     if (result.status !== 'create_clicked_unverified' && args.stopOnFirstFailure) break;
   }
   writeJson(path.join(outputDir, 'execution_report.json'), { timestamp_utc: nowIso(), results });
-  await browser.close();
+  if (closeMode === 'persistent_context') await context.close();
+  else await browser.close();
   const failures = results.filter(r => r.status !== 'create_clicked_unverified');
   log('Execution branch ended.', { result_count: results.length, failure_count: failures.length });
   process.exit(failures.length ? 1 : 0);
