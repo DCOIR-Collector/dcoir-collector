@@ -5,7 +5,7 @@ import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
 
-const VERSION = '2026-05-09.draft21-common-module-duplicate-cleanup';
+const VERSION = '2026-05-09.draft22-common-module-syntax-cleanup';
 let args;
 
 function parseArgs(argv) {
@@ -48,8 +48,6 @@ function parseArgs(argv) {
   return parsed;
 }
 
-function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
-function exactRe(s) { return new RegExp(`^${reEscape(s)}$`, 'i'); }
 
 args = parseArgs(process.argv);
 const downloads = process.env.DCOIR_DOWNLOADS_DIR;
@@ -629,6 +627,7 @@ try {
   } catch {}
   process.exit(1);
 }
+
 
 
 
