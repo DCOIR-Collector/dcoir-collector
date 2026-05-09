@@ -3,8 +3,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
+import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
 
-const VERSION = '2026-05-09.draft19-batch-status-verification-rollup';
+const VERSION = '2026-05-09.draft20-common-module-status-rollup';
 let args;
 
 function parseArgs(argv) {
@@ -48,16 +49,7 @@ function parseArgs(argv) {
 }
 
 function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
-function readJsonFile(p) {
-  const text = fs.readFileSync(p, 'utf8').replace(/^\uFEFF/, '');
-  return JSON.parse(text);
-}
-function writeJson(p, obj) { fs.writeFileSync(p, JSON.stringify(obj, null, 2), 'utf8'); }
-function nowIso() { return new Date().toISOString(); }
-function safeName(s) { return String(s).replace(/[^A-Za-z0-9_.-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 120) || 'item'; }
-function reEscape(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function exactRe(s) { return new RegExp(`^${reEscape(s)}$`, 'i'); }
-function norm(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
 
 args = parseArgs(process.argv);
 const downloads = process.env.DCOIR_DOWNLOADS_DIR;
@@ -471,6 +463,13 @@ async function verifyPostConditions(page, target) {
 
   return { ok: probe.missing.length === 0, ...probe };
 }
+function rollupConfigurationStatus(results) {
+  const rows = Array.isArray(results) ? results : [];
+  if (rows.length < 1) return 'configuration_not_run';
+  return rows.every((r) => r && r.status === 'configuration_verified')
+    ? 'configuration_verified'
+    : 'configuration_postcondition_failed';
+}
 let browser = null;
 let context = null;
 let page = null;
@@ -630,6 +629,7 @@ try {
   } catch {}
   process.exit(1);
 }
+
 
 
 
