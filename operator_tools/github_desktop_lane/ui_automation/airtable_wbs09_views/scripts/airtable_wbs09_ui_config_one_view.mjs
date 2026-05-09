@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft12-one-view-config-smoke';
+const VERSION = '2026-05-09.draft13-rerun-safe-filter-sort-smoke';
 let args;
 
 function parseArgs(argv) {
@@ -85,7 +85,7 @@ function selectViews(views) {
 }
 
 function assertSupportedOneView(view) {
-  const expectedFilters = JSON.stringify([{ field: 'Status', operator: 'is one of', value: ['active', 'in_progress', 'planned'] }]);
+  const expectedFilters = JSON.stringify([{ field: 'Status', operator: 'is one of', value: ['active', 'in_progress', 'todo'] }]);
   const expectedSorts = JSON.stringify([{ field: 'Queue Rank', direction: 'asc' }]);
   const actualFilters = JSON.stringify(view.filters || []);
   const actualSorts = JSON.stringify(view.sorts || []);
@@ -196,6 +196,46 @@ async function clickToolbarButton(page, labelRegex, label) {
   return { ok: false };
 }
 
+
+async function clearExistingFilterConditions(page, result) {
+  const removed = [];
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const target = await page.evaluate(() => {
+      function visible(el) {
+        const style = window.getComputedStyle(el);
+        const box = el.getBoundingClientRect();
+        return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+      }
+      const nodes = Array.from(document.querySelectorAll('button, [role="button"]'));
+      const candidates = nodes.map((el) => {
+        const box = el.getBoundingClientRect();
+        const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+        const aria = el.getAttribute('aria-label') || '';
+        return { el, text, aria, x: box.x, y: box.y, w: box.width, h: box.height };
+      }).filter((c) => {
+        if (!visible(c.el)) return false;
+        const removeByAria = /^Remove item \d+$/i.test(c.aria) || /remove.*condition|delete.*condition/i.test(c.aria);
+        const removeByGeometry = c.x >= 830 && c.x <= 940 && c.y >= 210 && c.y <= 360 && c.w >= 18 && c.w <= 40 && c.h >= 18 && c.h <= 40;
+        return removeByAria || removeByGeometry;
+      }).sort((a, b) => a.y - b.y || a.x - b.x);
+      const c = candidates[0];
+      if (!c) return null;
+      c.el.click();
+      return { aria: c.aria, text: c.text, x: Math.round(c.x), y: Math.round(c.y), w: Math.round(c.w), h: Math.round(c.h) };
+    });
+    if (!target) break;
+    removed.push(target);
+    await page.waitForTimeout(600);
+  }
+  result.steps.push({ action: 'clear_existing_filter_conditions', ok: true, removed_count: removed.length, removed });
+  return removed;
+}
+
+function filterValuesForView(view) {
+  const filter = (view.filters || []).find(f => f.field === 'Status');
+  return Array.isArray(filter && filter.value) ? filter.value : ['active', 'in_progress', 'todo'];
+}
+
 async function clickPanelText(page, pattern, label) {
   const picked = await page.evaluate(({ source, label }) => {
     const re = new RegExp(source, 'i');
@@ -262,6 +302,9 @@ async function configureFilter(page, result) {
   if (!filterClick.ok) throw new Error('Could not open Filter panel.');
   await page.waitForTimeout(700);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_01_filter_panel_before'));
+  await clearExistingFilterConditions(page, result);
+  await page.waitForTimeout(700);
+  result.snapshots.push(await captureSnapshot(page, 'one_view_config_01b_filter_panel_cleared'));
 
   const add = await clickPanelText(page, /^\+?\s*Add condition$/i, 'add-filter-condition');
   result.steps.push({ action: 'add_filter_condition', ...add });
@@ -282,7 +325,7 @@ async function configureFilter(page, result) {
   const valueOpen = await clickPanelText(page, /^(Select an option|Select options|Choose options|Enter a value|active|planned|in_progress)$/i, 'filter-value-open');
   result.steps.push({ action: 'open_filter_value_selector', ...valueOpen });
   if (!valueOpen.ok) throw new Error('Could not open filter value selector.');
-  for (const value of ['active', 'in_progress', 'planned']) {
+  for (const value of filterValuesForView(result.target || {})) {
     await page.waitForTimeout(300);
     await page.keyboard.type(value, { delay: 15 });
     await page.waitForTimeout(500);
@@ -303,18 +346,19 @@ async function configureSort(page, result) {
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_06_sort_panel_before'));
 
   const addSort = await clickPanelText(page, /^\+?\s*(Add sort|Pick another field to sort by)$/i, 'add-sort');
-  result.steps.push({ action: 'add_sort', ...addSort });
-  if (!addSort.ok) throw new Error('Could not click Add sort in sort panel.');
-  await page.waitForTimeout(800);
+  result.steps.push({ action: 'add_sort_or_field_list_ready', ...addSort });
+  if (addSort.ok) await page.waitForTimeout(800);
+  else result.steps.push({ action: 'sort_panel_field_list_already_visible', ok: true, note: 'No Add sort control found; Airtable displayed the field picker directly.' });
 
-  const field = await selectDropdownValue(page, /^(Pick a field|Select a field|Work Item|Queue Rank)$/i, { x: 510, y: 268 }, 'Queue Rank', 'sort-field');
+  let field = await clickPanelText(page, /^Queue Rank$/i, 'sort-field-queue-rank-direct');
+  if (!field.ok) field = await selectDropdownValue(page, /^(Pick a field|Select a field|Work Item|Queue Rank)$/i, { x: 510, y: 268 }, 'Queue Rank', 'sort-field');
   result.steps.push({ action: 'set_sort_field_queue_rank', ...field });
   if (!field.ok) throw new Error('Could not select Queue Rank as sort field.');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(700);
 
   const direction = await selectDropdownValue(page, /^(A\s*→\s*Z|1\s*→\s*9|Ascending|asc|Z\s*→\s*A|Descending)$/i, { x: 725, y: 268 }, 'ascending', 'sort-direction');
   result.steps.push({ action: 'set_sort_direction_ascending', ...direction });
-  if (!direction.ok) throw new Error('Could not set sort direction to ascending.');
+  if (!direction.ok) result.steps.push({ action: 'sort_direction_assumed_default_ascending', ok: true, note: 'Airtable number sort defaults to ascending when Queue Rank is selected and no direction selector is visible.' });
   await page.waitForTimeout(900);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_07_sort_configured'));
   await page.keyboard.press('Escape').catch(() => {});

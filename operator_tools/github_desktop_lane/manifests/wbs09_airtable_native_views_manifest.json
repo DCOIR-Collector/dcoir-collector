@@ -153,7 +153,7 @@
           "value": [
             "active",
             "in_progress",
-            "planned"
+            "todo"
           ]
         }
       ],
@@ -163,7 +163,10 @@
           "direction": "asc"
         }
       ],
-      "notes": "",
+      "notes": [
+        "",
+        "2026-05-09 draft13: live Work Items Status choices use todo, active, in_progress; planned is not a valid Status option."
+      ],
       "table_id": "tblgsQAVWvh8K7gIR",
       "table_name": "Work Items",
       "table_role": "Active queue leaves and executable work",
