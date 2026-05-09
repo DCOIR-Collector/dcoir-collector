@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft4-final-create-selector';
+const VERSION = '2026-05-09.draft5-create-new-sidebar-screenshots';
 
 function parseArgs(argv) {
   const args = {
@@ -49,6 +49,38 @@ function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
 function writeJson(p, obj) { fs.writeFileSync(p, JSON.stringify(obj, null, 2), 'utf8'); }
 function nowIso() { return new Date().toISOString(); }
 function safeName(s) { return String(s).replace(/[^A-Za-z0-9_.-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 120) || 'item'; }
+
+async function captureFailureScreenshot(page, outputDir, index, view, reason, result) {
+  if (!args.enableScreenshots) return;
+  const screenshotPath = path.join(
+    outputDir,
+    `failure_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}_${safeName(reason)}.png`
+  );
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  result.screenshot = screenshotPath;
+}
+
+async function clickVisibleTextFallback(page, pattern, label, options = {}) {
+  const timeout = options.timeout ?? 3000;
+  const handle = await page.evaluateHandle((source) => {
+    const re = new RegExp(source, 'i');
+    const elements = Array.from(document.querySelectorAll('button, [role="button"], div, span, a'));
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    for (const el of elements) {
+      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (visible(el) && re.test(text)) return el;
+    }
+    return null;
+  }, pattern.source);
+  const el = handle.asElement();
+  if (!el) return { ok: false };
+  await el.click({ timeout });
+  return { ok: true, selector: `visible-text-fallback:${label}` };
+}
 
 const args = parseArgs(process.argv);
 const downloads = process.env.DCOIR_DOWNLOADS_DIR;
@@ -137,26 +169,43 @@ async function createGridViewAttempt(page, view, outputDir, index) {
   if (!tableClick.ok) {
     result.status = 'needs_manual_table_selection';
     result.notes.push(`Could not safely click table tab/name: ${view.table_name}. Open that table manually and rerun with -TableName and -MaxViews 1.`);
+    await captureFailureScreenshot(page, outputDir, index, view, 'table_selection_not_found', result);
     return result;
   }
   result.notes.push(`Selected table using ${tableClick.selector}`);
   await page.waitForTimeout(800);
 
-  const createNew = await clickFirst(page, [
-    page.getByRole('button', { name: /create new/i }),
-    page.getByText(/create new/i),
-    page.getByRole('button', { name: /add view/i }),
-    page.getByText(/add view/i),
-    '[aria-label*="Create"]',
-    '[data-testid*="create"]'
-  ], { timeout: 3000 });
+  let createNew = { ok: false };
+  const gridAlreadyVisible = await page.getByText(/^grid$/i).count().catch(() => 0);
+  if (gridAlreadyVisible > 0) {
+    createNew = { ok: true, selector: 'grid-menu-already-open' };
+    result.notes.push('Create-new menu appears already open; proceeding to Grid selection.');
+  } else {
+    createNew = await clickFirst(page, [
+      page.getByText(/^\s*\+?\s*Create new\.{0,3}\s*$/i),
+      page.getByText(/Create new\.\.\./i),
+      page.getByText(/Create new/i),
+      page.getByRole('button', { name: /create new/i }),
+      page.getByRole('button', { name: /add view/i }),
+      page.getByText(/add view/i),
+      '[aria-label*="Create new"]',
+      '[aria-label*="Create"]',
+      '[data-testid*="create"]'
+    ], { timeout: 3000 });
+    if (!createNew.ok) {
+      createNew = await clickVisibleTextFallback(page, /\bCreate new\b/, 'Create new visible text', { timeout: 3000 });
+    }
+  }
   if (!createNew.ok) {
     result.status = 'selector_create_new_not_found';
-    result.notes.push('Could not find a safe Create new/Add view control. No view created. Capture screenshot/log and stop.');
+    result.notes.push('Could not find a safe Create new/Add view control. No view created. Screenshot captured when enabled.');
+    await captureFailureScreenshot(page, outputDir, index, view, 'create_new_not_found', result);
     return result;
   }
-  result.notes.push(`Clicked create-new control using ${createNew.selector}`);
-  await page.waitForTimeout(800);
+  if (createNew.selector !== 'grid-menu-already-open') {
+    result.notes.push(`Clicked create-new control using ${createNew.selector}`);
+    await page.waitForTimeout(800);
+  }
 
   const gridChoice = await clickFirst(page, [
     page.getByText(/^grid$/i),
@@ -167,6 +216,7 @@ async function createGridViewAttempt(page, view, outputDir, index) {
   if (!gridChoice.ok) {
     result.status = 'selector_grid_choice_not_found';
     result.notes.push('Could not choose Grid view safely. No view created.');
+    await captureFailureScreenshot(page, outputDir, index, view, 'grid_choice_not_found', result);
     return result;
   }
   result.notes.push(`Selected grid view using ${gridChoice.selector}`);
@@ -181,6 +231,7 @@ async function createGridViewAttempt(page, view, outputDir, index) {
   if (!nameFill.ok) {
     result.status = 'selector_view_name_input_not_found';
     result.notes.push('Could not find view-name input safely. No create confirmation clicked.');
+    await captureFailureScreenshot(page, outputDir, index, view, 'view_name_input_not_found', result);
     return result;
   }
   result.notes.push(`Filled view name using ${nameFill.selector}`);

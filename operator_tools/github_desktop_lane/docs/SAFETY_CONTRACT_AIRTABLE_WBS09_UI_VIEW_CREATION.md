@@ -34,3 +34,9 @@ Safety rules:
 - Close the dedicated Chrome session after the run.
 - Calibration remains no-mutation.
 - Execution still requires `-ExecuteCreateViewsOnly -ConfirmToken CREATE_WBS09_NATIVE_VIEWS` and should start with `-MaxViews 1`.
+
+
+## 2026-05-09 draft5 patch
+- Adds Airtable sidebar create-new selector handling for the visible `+ Create new...` control.
+- Treats an already-open view-type menu as a valid create-new state.
+- Captures screenshots for create-new, table-selection, grid-choice, view-name-input, and final-create selector failures when `-EnableScreenshots` is set.

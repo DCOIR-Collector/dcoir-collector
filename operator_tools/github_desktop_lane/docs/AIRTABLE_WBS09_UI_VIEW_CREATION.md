@@ -119,3 +119,9 @@ Close all Chrome windows that were launched with the dedicated WBS09 profile aft
 ## Draft4 selector patch
 
 The draft4 patch expands the final create-button selector set to include Airtable labels such as `Create new view` and `Create grid view`, and writes a failure screenshot when the final create control is not found.
+
+
+## 2026-05-09 draft5 patch
+- Adds Airtable sidebar create-new selector handling for the visible `+ Create new...` control.
+- Treats an already-open view-type menu as a valid create-new state.
+- Captures screenshots for create-new, table-selection, grid-choice, view-name-input, and final-create selector failures when `-EnableScreenshots` is set.
