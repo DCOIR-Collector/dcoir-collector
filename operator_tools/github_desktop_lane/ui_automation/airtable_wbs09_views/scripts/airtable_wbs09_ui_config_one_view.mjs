@@ -5,7 +5,7 @@ import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
 
-const VERSION = '2026-05-09.draft23-no-bom-node-check';
+const VERSION = '2026-05-09.draft24-batch-status-rollup-wired';
 let args;
 
 function parseArgs(argv) {
@@ -595,7 +595,7 @@ try {
       batchReport.last_completed_index = i + 1;
       writeJson(path.join(outputDir, 'view_batch_config_report.partial.json'), batchReport);
     }
-    batchReport.status = 'configuration_clicked_unverified';
+    batchReport.status = rollupConfigurationStatus(batchReport.results);
     batchReport.completed_at_utc = nowIso();
     writeJson(path.join(outputDir, 'view_batch_config_report.json'), batchReport);
     log('Bounded view-batch configuration branch ended.', { status: batchReport.status, result_count: batchReport.results.length });
