@@ -41,3 +41,7 @@ PowerShell launcher example:
 $repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
 & (Join-Path $repo 'operator_tools\github_desktop_lane\scripts\Invoke-DcoirAirtableWbs09UiViewTool.ps1') -CalibrateSelectors -EnableScreenshots -ConnectOverCdpUrl 'http://127.0.0.1:9222'
 ```
+
+## Draft4 selector patch
+
+The draft4 patch expands the final create-button selector set to include Airtable labels such as `Create new view` and `Create grid view`, and writes a failure screenshot when the final create control is not found.

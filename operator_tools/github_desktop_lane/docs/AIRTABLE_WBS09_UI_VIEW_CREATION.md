@@ -115,3 +115,7 @@ This mode uses the operator-approved Chrome session and does not create views du
 ### Close the dedicated Chrome session after the run
 
 Close all Chrome windows that were launched with the dedicated WBS09 profile after calibration/execution is complete. Do not leave remote debugging Chrome sessions open longer than needed.
+
+## Draft4 selector patch
+
+The draft4 patch expands the final create-button selector set to include Airtable labels such as `Create new view` and `Create grid view`, and writes a failure screenshot when the final create control is not found.

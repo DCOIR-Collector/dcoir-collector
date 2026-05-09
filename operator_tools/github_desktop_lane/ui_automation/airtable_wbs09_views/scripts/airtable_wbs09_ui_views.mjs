@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft3-auth-profile';
+const VERSION = '2026-05-09.draft4-final-create-selector';
 
 function parseArgs(argv) {
   const args = {
@@ -189,12 +189,26 @@ async function createGridViewAttempt(page, view, outputDir, index) {
   const finalCreate = await clickFirst(page, [
     page.getByRole('button', { name: /^create$/i }),
     page.getByRole('button', { name: /create view/i }),
+    page.getByRole('button', { name: /create new view/i }),
+    page.getByRole('button', { name: /create grid view/i }),
+    page.getByRole('button', { name: /create .*view/i }),
+    page.locator('button:has-text("Create new view")'),
+    page.locator('button:has-text("Create grid view")'),
+    page.locator('button:has-text("Create view")'),
+    page.locator('button:has-text("Create")'),
     page.getByText(/^create$/i),
-    page.getByText(/create view/i)
+    page.getByText(/create view/i),
+    page.getByText(/create new view/i),
+    page.getByText(/create grid view/i)
   ], { timeout: 3000 });
   if (!finalCreate.ok) {
     result.status = 'selector_final_create_not_found';
     result.notes.push('Could not find final Create button safely. View name may be staged in UI but create was not clicked.');
+    if (args.enableScreenshots) {
+      const screenshotPath = path.join(outputDir, `failure_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}_final_create_not_found.png`);
+      await page.screenshot({ path: screenshotPath, fullPage: true });
+      result.screenshot = screenshotPath;
+    }
     return result;
   }
   result.status = 'create_clicked_unverified';
