@@ -1,0 +1,13 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_final_readback_marker.v1",
+  "request_id": "exec-20260509-wbs02-remaining-text-to-select-bulk-recon-001",
+  "result": "success",
+  "exit_code": "0",
+  "artifact_name": "chatgpt-exec-exec-20260509-wbs02-remaining-text-to-select-bulk-recon-001",
+  "artifact_readback_committed": true,
+  "github_run_id": "25602308488",
+  "github_run_attempt": "1",
+  "github_sha": "2a8ea1b8eb002e05acdfdc1e16dde54229dce9a9",
+  "github_ref": "refs/heads/main",
+  "created_utc": "2026-05-09T13:29:58Z"
+}
