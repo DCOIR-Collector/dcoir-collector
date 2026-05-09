@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft13-rerun-safe-filter-sort-smoke';
+const VERSION = '2026-05-09.draft15-generic-one-view-config-smoke';
 let args;
 
 function parseArgs(argv) {
@@ -48,6 +48,9 @@ function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
 function writeJson(p, obj) { fs.writeFileSync(p, JSON.stringify(obj, null, 2), 'utf8'); }
 function nowIso() { return new Date().toISOString(); }
 function safeName(s) { return String(s).replace(/[^A-Za-z0-9_.-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 120) || 'item'; }
+function reEscape(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function exactRe(s) { return new RegExp(`^${reEscape(s)}$`, 'i'); }
+function norm(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
 
 args = parseArgs(process.argv);
 const downloads = process.env.DCOIR_DOWNLOADS_DIR;
@@ -74,8 +77,8 @@ function validateManifest(manifest) {
 
 function selectViews(views) {
   let selected = views;
-  if (args.tableName) selected = selected.filter(v => v.table_name.toLowerCase() === args.tableName.toLowerCase());
-  if (args.viewName) selected = selected.filter(v => v.view_name.toLowerCase() === args.viewName.toLowerCase());
+  if (args.tableName) selected = selected.filter(v => String(v.table_name).toLowerCase() === args.tableName.toLowerCase());
+  if (args.viewName) selected = selected.filter(v => String(v.view_name).toLowerCase() === args.viewName.toLowerCase());
   const startIndex = Number(args.startIndex || 1);
   if (!Number.isInteger(startIndex) || startIndex < 1) throw new Error(`--start-index must be an integer >= 1; got ${args.startIndex}`);
   if (startIndex > selected.length + 1) throw new Error(`--start-index ${startIndex} is beyond selected view count ${selected.length}`);
@@ -84,17 +87,24 @@ function selectViews(views) {
   return selected;
 }
 
-function assertSupportedOneView(view) {
-  const expectedFilters = JSON.stringify([{ field: 'Status', operator: 'is one of', value: ['active', 'in_progress', 'todo'] }]);
-  const expectedSorts = JSON.stringify([{ field: 'Queue Rank', direction: 'asc' }]);
-  const actualFilters = JSON.stringify(view.filters || []);
-  const actualSorts = JSON.stringify(view.sorts || []);
-  if (view.table_name !== 'Work Items' || view.view_name !== 'WBS09 - Active Queue') {
-    throw new Error('This draft supports only the first smoke target: Work Items / WBS09 - Active Queue.');
+function oneViewContract(view) {
+  const filters = Array.isArray(view.filters) ? view.filters : [];
+  const sorts = Array.isArray(view.sorts) ? view.sorts : [];
+  if (filters.length > 1) throw new Error(`This draft supports at most one filter condition; ${view.view_key || view.view_name} has ${filters.length}.`);
+  if (sorts.length > 1) throw new Error(`This draft supports at most one sort condition; ${view.view_key || view.view_name} has ${sorts.length}.`);
+  if (filters.length === 1) {
+    const f = filters[0];
+    if (!f.field) throw new Error('Filter is missing field name.');
+    if (!['is one of', '='].includes(f.operator)) throw new Error(`Unsupported filter operator for one-view smoke: ${f.operator}`);
+    const values = Array.isArray(f.value) ? f.value : (f.value === null || f.value === undefined ? [] : [f.value]);
+    if (values.length < 1) throw new Error('Single-filter smoke target requires at least one filter value.');
   }
-  if (actualFilters !== expectedFilters || actualSorts !== expectedSorts) {
-    throw new Error('Manifest target does not match the supported Work Items / Active Queue filter+sort smoke-test contract.');
+  if (sorts.length === 1) {
+    const s = sorts[0];
+    if (!s.field) throw new Error('Sort is missing field name.');
+    if (!['asc', 'desc'].includes(s.direction)) throw new Error(`Unsupported sort direction: ${s.direction}`);
   }
+  return { filters, sorts };
 }
 
 async function getVisibleDomSnapshot(page) {
@@ -162,7 +172,7 @@ async function clickExistingView(page, viewName) {
     const candidates = nodes.map((el) => {
       const box = el.getBoundingClientRect();
       return { el, text: norm(el.innerText || el.textContent), x: box.x, y: box.y, w: box.width, h: box.height };
-    }).filter(c => visible(c.el) && c.text === name && c.x >= 40 && c.x < 360 && c.y >= 120 && c.w > 20 && c.h > 8).sort((a, b) => a.y - b.y || a.x - b.x);
+    }).filter(c => visible(c.el) && c.text === name && c.x >= 40 && c.x < 420 && c.y >= 100 && c.w > 20 && c.h > 8).sort((a, b) => a.y - b.y || a.x - b.x);
     const c = candidates[0];
     if (!c) return null;
     c.el.scrollIntoView({ block: 'center', inline: 'center' });
@@ -187,7 +197,7 @@ async function clickToolbarButton(page, labelRegex, label) {
       const visible = await item.isVisible().catch(() => false);
       if (!visible || !box) continue;
       if (box.y < 80 || box.y > 145 || box.x < 760 || box.x > 1320 || box.width < 10 || box.width > 180 || box.height < 10 || box.height > 40) continue;
-      const text = (await item.innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
+      const text = norm(await item.innerText().catch(() => ''));
       const aria = await item.getAttribute('aria-label').catch(() => '');
       await item.click({ timeout: 3000 });
       return { ok: true, selector: `role-toolbar-button:${label}`, text, aria: aria || '', x: Math.round(box.x), y: Math.round(box.y), w: Math.round(box.width), h: Math.round(box.height) };
@@ -195,7 +205,6 @@ async function clickToolbarButton(page, labelRegex, label) {
   }
   return { ok: false };
 }
-
 
 async function clearExistingFilterConditions(page, result) {
   const removed = [];
@@ -215,7 +224,7 @@ async function clearExistingFilterConditions(page, result) {
       }).filter((c) => {
         if (!visible(c.el)) return false;
         const removeByAria = /^Remove item \d+$/i.test(c.aria) || /remove.*condition|delete.*condition/i.test(c.aria);
-        const removeByGeometry = c.x >= 830 && c.x <= 940 && c.y >= 210 && c.y <= 360 && c.w >= 18 && c.w <= 40 && c.h >= 18 && c.h <= 40;
+        const removeByGeometry = c.x >= 830 && c.x <= 940 && c.y >= 200 && c.y <= 380 && c.w >= 18 && c.w <= 40 && c.h >= 18 && c.h <= 40;
         return removeByAria || removeByGeometry;
       }).sort((a, b) => a.y - b.y || a.x - b.x);
       const c = candidates[0];
@@ -232,8 +241,24 @@ async function clearExistingFilterConditions(page, result) {
 }
 
 function filterValuesForView(view) {
-  const filter = (view.filters || []).find(f => f.field === 'Status');
-  return Array.isArray(filter && filter.value) ? filter.value : ['active', 'in_progress', 'todo'];
+  const filter = (view.filters || [])[0];
+  if (!filter) return [];
+  return Array.isArray(filter.value) ? filter.value : [filter.value];
+}
+
+function filterFieldForView(view) {
+  const filter = (view.filters || [])[0];
+  return filter ? filter.field : null;
+}
+
+function sortFieldForView(view) {
+  const sort = (view.sorts || [])[0];
+  return sort ? sort.field : null;
+}
+
+function sortDirectionForView(view) {
+  const sort = (view.sorts || [])[0];
+  return sort ? sort.direction : null;
 }
 
 async function clickPanelText(page, pattern, label) {
@@ -259,7 +284,7 @@ async function clickPanelText(page, pattern, label) {
       const box = el.getBoundingClientRect();
       const text = (el.innerText || el.textContent || el.getAttribute('aria-label') || el.getAttribute('placeholder') || '').replace(/\s+/g, ' ').trim();
       return { el, text, x: box.x, y: box.y, w: box.width, h: box.height };
-    }).filter(c => visible(c.el) && c.x >= 430 && c.x <= 1040 && c.y >= 120 && c.y <= 560 && re.test(c.text)).sort((a, b) => (a.w * a.h) - (b.w * b.h) || a.y - b.y || a.x - b.x);
+    }).filter(c => visible(c.el) && c.x >= 400 && c.x <= 1100 && c.y >= 110 && c.y <= 650 && re.test(c.text)).sort((a, b) => (a.w * a.h) - (b.w * b.h) || a.y - b.y || a.x - b.x);
     const c = candidates[0];
     if (!c) return null;
     const target = clickableAncestor(c.el);
@@ -275,28 +300,25 @@ async function clickPanelCoordinate(page, x, y, label) {
   return { ok: true, selector: `coordinate:${label}`, x, y };
 }
 
-async function typeAndEnter(page, text) {
-  const mod = process.platform === 'darwin' ? 'Meta' : 'Control';
-  await page.keyboard.press(`${mod}+A`).catch(() => {});
-  await page.keyboard.type(text, { delay: 15 });
-  await page.waitForTimeout(300);
-  await page.keyboard.press('Enter');
-  await page.waitForTimeout(600);
-}
-
 async function selectDropdownValue(page, candidateText, fallbackPoint, value, label) {
   let step = await clickPanelText(page, candidateText, `${label}-open-by-text`);
   if (!step.ok && fallbackPoint) step = await clickPanelCoordinate(page, fallbackPoint.x, fallbackPoint.y, `${label}-open-by-coordinate`);
   if (!step.ok) return { ok: false, selector: `unable:${label}-open` };
   await page.waitForTimeout(450);
-  await page.keyboard.type(value, { delay: 15 });
-  await page.waitForTimeout(500);
+  await page.keyboard.type(String(value), { delay: 15 });
+  await page.waitForTimeout(550);
   await page.keyboard.press('Enter');
   await page.waitForTimeout(700);
   return { ok: true, selector: `${step.selector}+keyboard-select`, value };
 }
 
 async function configureFilter(page, result) {
+  const target = result.target;
+  if (!target.filters || target.filters.length === 0) {
+    result.steps.push({ action: 'configure_filter_skipped', ok: true, reason: 'target has no manifest filters' });
+    return;
+  }
+  const filterField = filterFieldForView(target);
   const filterClick = await clickToolbarButton(page, /\bFilter\b|Filter rows/, 'filter');
   result.steps.push({ action: 'open_filter_panel', ...filterClick });
   if (!filterClick.ok) throw new Error('Could not open Filter panel.');
@@ -312,23 +334,24 @@ async function configureFilter(page, result) {
   await page.waitForTimeout(900);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_02_filter_condition_added'));
 
-  const field = await selectDropdownValue(page, /^(Work Item|Select a field|Field|Status)$/i, { x: 520, y: 268 }, 'Status', 'filter-field');
-  result.steps.push({ action: 'set_filter_field_status', ...field });
-  if (!field.ok) throw new Error('Could not select Status as filter field.');
-  result.snapshots.push(await captureSnapshot(page, 'one_view_config_03_filter_field_status'));
+  const field = await selectDropdownValue(page, /^(Work Item|Select a field|Field|Status|Name)$/i, { x: 520, y: 268 }, filterField, 'filter-field');
+  result.steps.push({ action: 'set_filter_field', field: filterField, ...field });
+  if (!field.ok) throw new Error(`Could not select ${filterField} as filter field.`);
+  result.snapshots.push(await captureSnapshot(page, 'one_view_config_03_filter_field'));
 
-  const operator = await selectDropdownValue(page, /^(contains|is|is not|is any of|has any of|is one of)$/i, { x: 660, y: 268 }, 'is any of', 'filter-operator');
-  result.steps.push({ action: 'set_filter_operator_is_any_of', ...operator });
-  if (!operator.ok) throw new Error('Could not set filter operator to is any of.');
+  const operatorLabel = target.filters[0].operator === '=' ? 'is' : 'is any of';
+  const operator = await selectDropdownValue(page, /^(contains|is|is not|is any of|has any of|is one of)$/i, { x: 660, y: 268 }, operatorLabel, 'filter-operator');
+  result.steps.push({ action: 'set_filter_operator', operator: operatorLabel, ...operator });
+  if (!operator.ok) throw new Error(`Could not set filter operator to ${operatorLabel}.`);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_04_filter_operator'));
 
-  const valueOpen = await clickPanelText(page, /^(Select an option|Select options|Choose options|Enter a value|active|planned|in_progress)$/i, 'filter-value-open');
+  const valueOpen = await clickPanelText(page, /^(Select an option|Select options|Choose options|Enter a value|active|blocked|waiting|todo|in_progress)$/i, 'filter-value-open');
   result.steps.push({ action: 'open_filter_value_selector', ...valueOpen });
   if (!valueOpen.ok) throw new Error('Could not open filter value selector.');
-  for (const value of filterValuesForView(result.target || {})) {
+  for (const value of filterValuesForView(target)) {
     await page.waitForTimeout(300);
-    await page.keyboard.type(value, { delay: 15 });
-    await page.waitForTimeout(500);
+    await page.keyboard.type(String(value), { delay: 15 });
+    await page.waitForTimeout(550);
     await page.keyboard.press('Enter');
     result.steps.push({ action: 'select_filter_value', value });
   }
@@ -339,6 +362,13 @@ async function configureFilter(page, result) {
 }
 
 async function configureSort(page, result) {
+  const target = result.target;
+  if (!target.sorts || target.sorts.length === 0) {
+    result.steps.push({ action: 'configure_sort_skipped', ok: true, reason: 'target has no manifest sorts' });
+    return;
+  }
+  const sortField = sortFieldForView(target);
+  const sortDirection = sortDirectionForView(target) === 'desc' ? 'descending' : 'ascending';
   const sortClick = await clickToolbarButton(page, /\bSort\b|Sort rows/, 'sort');
   result.steps.push({ action: 'open_sort_panel', ...sortClick });
   if (!sortClick.ok) throw new Error('Could not open Sort panel.');
@@ -348,17 +378,20 @@ async function configureSort(page, result) {
   const addSort = await clickPanelText(page, /^\+?\s*(Add sort|Pick another field to sort by)$/i, 'add-sort');
   result.steps.push({ action: 'add_sort_or_field_list_ready', ...addSort });
   if (addSort.ok) await page.waitForTimeout(800);
-  else result.steps.push({ action: 'sort_panel_field_list_already_visible', ok: true, note: 'No Add sort control found; Airtable displayed the field picker directly.' });
+  else result.steps.push({ action: 'sort_panel_field_list_already_visible', ok: true, note: 'No Add sort control found; Airtable displayed the field picker directly or an existing sort row is active.' });
 
-  let field = await clickPanelText(page, /^Queue Rank$/i, 'sort-field-queue-rank-direct');
-  if (!field.ok) field = await selectDropdownValue(page, /^(Pick a field|Select a field|Work Item|Queue Rank)$/i, { x: 510, y: 268 }, 'Queue Rank', 'sort-field');
-  result.steps.push({ action: 'set_sort_field_queue_rank', ...field });
-  if (!field.ok) throw new Error('Could not select Queue Rank as sort field.');
+  let field = await clickPanelText(page, exactRe(sortField), `sort-field-${safeName(sortField)}-direct`);
+  if (!field.ok) field = await selectDropdownValue(page, /^(Pick a field|Select a field|Work Item|Queue Rank|Priority|Name)$/i, { x: 510, y: 268 }, sortField, 'sort-field');
+  result.steps.push({ action: 'set_sort_field', field: sortField, ...field });
+  if (!field.ok) throw new Error(`Could not select ${sortField} as sort field.`);
   await page.waitForTimeout(700);
 
-  const direction = await selectDropdownValue(page, /^(A\s*→\s*Z|1\s*→\s*9|Ascending|asc|Z\s*→\s*A|Descending)$/i, { x: 725, y: 268 }, 'ascending', 'sort-direction');
-  result.steps.push({ action: 'set_sort_direction_ascending', ...direction });
-  if (!direction.ok) result.steps.push({ action: 'sort_direction_assumed_default_ascending', ok: true, note: 'Airtable number sort defaults to ascending when Queue Rank is selected and no direction selector is visible.' });
+  const direction = await selectDropdownValue(page, /^(A\s*→\s*Z|1\s*→\s*9|Ascending|asc|Z\s*→\s*A|9\s*→\s*1|Descending|desc)$/i, { x: 725, y: 268 }, sortDirection, 'sort-direction');
+  result.steps.push({ action: 'set_sort_direction', direction: sortDirection, ...direction });
+  if (!direction.ok) {
+    if (sortDirection === 'ascending') result.steps.push({ action: 'sort_direction_assumed_default_ascending', ok: true, note: 'Airtable often defaults to ascending when the sort field is selected and no direction selector is visible.' });
+    else throw new Error('Could not set required descending sort direction.');
+  }
   await page.waitForTimeout(900);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_07_sort_configured'));
   await page.keyboard.press('Escape').catch(() => {});
@@ -374,7 +407,7 @@ let rl = null;
 async function verifyViewLoaded(page, view) {
   await page.keyboard.press('Escape').catch(() => {});
   await page.waitForTimeout(300);
-  const tableClick = await clickFirst(page, [page.getByText(view.table_name, { exact: true }), `[title="${view.table_name.replace(/"/g, '\\"')}"]`, `text="${view.table_name.replace(/"/g, '\\"')}"`], { timeout: 3000 });
+  const tableClick = await clickFirst(page, [page.getByText(view.table_name, { exact: true }), `[title="${String(view.table_name).replace(/"/g, '\\"')}"]`, `text="${String(view.table_name).replace(/"/g, '\\"')}"`], { timeout: 3000 });
   await page.waitForTimeout(900);
   const viewClick = await clickExistingView(page, view.view_name);
   await page.waitForTimeout(1200);
@@ -391,8 +424,8 @@ try {
   const selected = selectViews(views);
   if (selected.length !== 1) throw new Error('One-view configuration requires exactly one selected manifest view. Pass -TableName and -ViewName.');
   const view = selected[0];
-  assertSupportedOneView(view);
-  const plan = { timestamp_utc: nowIso(), tool_version: VERSION, mode: 'execute_configure_one_view', manifest_view_count: views.length, manifest_table_count: tables.length, selected_view_count: 1, output_dir: outputDir, downloads_env_var: 'DCOIR_DOWNLOADS_DIR', repo_root_env_var: 'DCOIR_REPO_ROOT', base_id: manifest.base_id, base_url: args.baseUrl || `https://airtable.com/${manifest.base_id}`, supported_target_only: true, target: { table_name: view.table_name, table_id: view.table_id, view_name: view.view_name, filters: view.filters || [], sorts: view.sorts || [] } };
+  const contract = oneViewContract(view);
+  const plan = { timestamp_utc: nowIso(), tool_version: VERSION, mode: 'execute_configure_one_view', manifest_view_count: views.length, manifest_table_count: tables.length, selected_view_count: 1, output_dir: outputDir, downloads_env_var: 'DCOIR_DOWNLOADS_DIR', repo_root_env_var: 'DCOIR_REPO_ROOT', base_id: manifest.base_id, base_url: args.baseUrl || `https://airtable.com/${manifest.base_id}`, supported_target_contract: 'generic_single_view_max_one_filter_max_one_sort', target: { table_name: view.table_name, table_id: view.table_id, view_name: view.view_name, filters: contract.filters, sorts: contract.sorts } };
   writeJson(path.join(outputDir, 'one_view_config_plan.json'), plan);
 
   let chromium;
@@ -421,7 +454,7 @@ try {
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
   rl = readline.createInterface({ input, output });
   await rl.question('Log into Airtable, confirm the DCOIR base is open, then press Enter. Ctrl+C aborts before any configuration click. ');
-  const confirm2 = await rl.question('About to configure ONE existing WBS09 Airtable view: Work Items / WBS09 - Active Queue. Type CONFIGURE_WBS09_ONE_VIEW again to proceed: ');
+  const confirm2 = await rl.question(`About to configure ONE existing WBS09 Airtable view: ${view.table_name} / ${view.view_name}. Type CONFIGURE_WBS09_ONE_VIEW again to proceed: `);
   if (confirm2 !== 'CONFIGURE_WBS09_ONE_VIEW') throw new Error('Second interactive confirmation did not match; stopped before configuration clicks.');
 
   const report = { timestamp_utc: nowIso(), tool_version: VERSION, mode: 'execute_configure_one_view', target: plan.target, steps: [], snapshots: [], status: 'started' };
@@ -443,9 +476,7 @@ try {
 } catch (e) {
   const errorReport = { timestamp_utc: nowIso(), error: String(e && e.message ? e.message : e), stack: e && e.stack ? e.stack : null };
   try {
-    if (page) {
-      errorReport.failure_snapshot = await captureSnapshot(page, 'one_view_config_failure');
-    }
+    if (page) errorReport.failure_snapshot = await captureSnapshot(page, 'one_view_config_failure');
   } catch (snapshotError) {
     errorReport.failure_snapshot_error = String(snapshotError && snapshotError.message ? snapshotError.message : snapshotError);
   }
