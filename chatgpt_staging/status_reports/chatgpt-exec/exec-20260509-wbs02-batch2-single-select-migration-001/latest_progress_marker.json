@@ -1,15 +1,15 @@
 {
-  "artifact_name": "",
-  "exit_code": "",
+  "artifact_name": "chatgpt-exec-exec-20260509-wbs02-batch2-single-select-migration-001",
+  "exit_code": "1",
   "github_ref": "refs/heads/main",
   "github_run_attempt": "1",
   "github_run_id": "25592964500",
   "github_sha": "4905f80bcf9d3e905bf7ed29d025c2e03ab92988",
-  "phase": "running-harness",
+  "phase": "harness-finished",
   "request_id": "exec-20260509-wbs02-batch2-single-select-migration-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260509-wbs02-batch2-single-select-migration-001.json",
-  "result": "running",
+  "result": "failure",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-09T05:31:33Z",
+  "updated_utc": "2026-05-09T05:31:44Z",
   "workflow": "chatgpt-exec"
 }
