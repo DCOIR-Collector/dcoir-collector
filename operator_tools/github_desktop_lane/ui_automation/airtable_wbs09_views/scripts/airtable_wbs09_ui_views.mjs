@@ -4,7 +4,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
-const VERSION = '2026-05-09.draft8-start-index';
+const VERSION = '2026-05-09.draft9-view-config-calibration';
 let args;
 
 function parseArgs(argv) {
@@ -16,12 +16,14 @@ function parseArgs(argv) {
     stopOnFirstFailure: true,
     capabilityReport: false,
     calibrationMode: false,
+    calibrateViewConfigSelectors: false,
     headless: false,
     useChromeChannel: false,
     userDataDir: null,
     connectCdpUrl: null,
     keepBrowserOpenOnFailure: false,
-    startIndex: 1
+    startIndex: 1,
+    viewName: null
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -31,11 +33,13 @@ function parseArgs(argv) {
     else if (a === '--base-url') parsed.baseUrl = next();
     else if (a === '--dry-run') parsed.dryRun = true;
     else if (a === '--execute-create-views-only') parsed.executeCreateViewsOnly = true;
+    else if (a === '--calibrate-view-config-selectors') parsed.calibrateViewConfigSelectors = true;
     else if (a === '--experimental-configure-filters') parsed.experimentalConfigureFilters = true;
     else if (a === '--confirm') parsed.confirm = next();
     else if (a === '--max-views') parsed.maxViews = Number(next());
     else if (a === '--start-index') parsed.startIndex = Number(next());
     else if (a === '--table-name') parsed.tableName = next();
+    else if (a === '--view-name') parsed.viewName = next();
     else if (a === '--enable-screenshots') parsed.enableScreenshots = true;
     else if (a === '--continue-on-failure') parsed.stopOnFirstFailure = false;
     else if (a === '--capability-report') parsed.capabilityReport = true;
@@ -90,6 +94,7 @@ function validateManifest(manifest) {
 function selectViews(views) {
   let selected = views;
   if (args.tableName) selected = selected.filter(v => v.table_name.toLowerCase() === args.tableName.toLowerCase());
+  if (args.viewName) selected = selected.filter(v => v.view_name.toLowerCase() === args.viewName.toLowerCase());
   const startIndex = Number(args.startIndex || 1);
   if (!Number.isInteger(startIndex) || startIndex < 1) throw new Error(`--start-index must be an integer >= 1; got ${args.startIndex}`);
   if (startIndex > selected.length + 1) throw new Error(`--start-index ${startIndex} is beyond selected view count ${selected.length}`);
@@ -138,6 +143,19 @@ async function getVisibleDomSnapshot(page) {
   });
 }
 
+async function captureSnapshot(page, outputDir, label) {
+  const payload = { timestamp_utc: nowIso(), label, url: page.url(), title: await page.title(), elements: await getVisibleDomSnapshot(page) };
+  const domPath = path.join(outputDir, `${safeName(label)}.dom.json`);
+  writeJson(domPath, payload);
+  const result = { label, dom_evidence: domPath };
+  if (args.enableScreenshots) {
+    const screenshotPath = path.join(outputDir, `${safeName(label)}.png`);
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    result.screenshot = screenshotPath;
+  }
+  return result;
+}
+
 async function captureDomEvidence(page, outputDir, index, view, reason, result) {
   const base = `failure_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}_${safeName(reason)}`;
   if (args.enableScreenshots) {
@@ -184,13 +202,7 @@ async function clickSidebarCreateNew(page) {
       const box = el.getBoundingClientRect();
       const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
       return { el, text, x: box.x, y: box.y, w: box.width, h: box.height };
-    }).filter((c) => {
-      return visible(c.el)
-        && /^\+?\s*Create new\.{0,3}\s*$/i.test(c.text)
-        && c.x >= 40 && c.x < 360
-        && c.y >= 120
-        && c.w >= 80;
-    }).sort((a, b) => a.y - b.y || a.x - b.x);
+    }).filter((c) => visible(c.el) && /^\+?\s*Create new\.{0,3}\s*$/i.test(c.text) && c.x >= 40 && c.x < 360 && c.y >= 120 && c.w >= 80).sort((a, b) => a.y - b.y || a.x - b.x);
     const c = candidates[0];
     if (!c) return null;
     c.el.scrollIntoView({ block: 'center', inline: 'center' });
@@ -222,13 +234,7 @@ async function clickGridOptionFromCreateMenu(page) {
       const box = el.getBoundingClientRect();
       const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
       return { el, text, x: box.x, y: box.y, w: box.width, h: box.height };
-    }).filter((c) => {
-      return visible(c.el)
-        && /^Grid$/i.test(c.text)
-        && c.x >= 40 && c.x < 520
-        && c.y >= 160
-        && c.w > 8 && c.h > 8;
-    }).sort((a, b) => a.y - b.y || a.x - b.x);
+    }).filter((c) => visible(c.el) && /^Grid$/i.test(c.text) && c.x >= 40 && c.x < 520 && c.y >= 160 && c.w > 8 && c.h > 8).sort((a, b) => a.y - b.y || a.x - b.x);
     const c = candidates[0];
     if (!c) return null;
     const target = clickableAncestor(c.el);
@@ -294,8 +300,7 @@ async function clickFinalCreateButton(page) {
       if (!visible(c.el) || c.disabled) return false;
       if (/^\+?\s*Create new\.{0,3}$/i.test(label)) return false;
       if (/Create new\.{0,3}\s+No matching views/i.test(label)) return false;
-      return /^(Create|Create view|Create new view|Create grid view)$/i.test(c.text)
-        || /Create view|Create new view|Create grid view/i.test(c.aria);
+      return /^(Create|Create view|Create new view|Create grid view)$/i.test(c.text) || /Create view|Create new view|Create grid view/i.test(c.aria);
     }).sort((a, b) => b.y - a.y || b.x - a.x);
     const c = buttons[0];
     if (!c) return null;
@@ -307,84 +312,114 @@ async function clickFinalCreateButton(page) {
 }
 
 async function createGridViewAttempt(page, view, outputDir, index) {
-  const result = {
-    index,
-    table_name: view.table_name,
-    table_id: view.table_id,
-    view_name: view.view_name,
-    status: 'started',
-    attempted_at_utc: nowIso(),
-    notes: []
-  };
-
+  const result = { index, table_name: view.table_name, table_id: view.table_id, view_name: view.view_name, status: 'started', attempted_at_utc: nowIso(), notes: [] };
   await page.keyboard.press('Escape').catch(() => {});
   await page.waitForTimeout(250);
   await page.mouse.move(520, 90).catch(() => {});
-
-  const tableClick = await clickFirst(page, [
-    page.getByText(view.table_name, { exact: true }),
-    `[title="${view.table_name.replace(/"/g, '\\"')}"]`,
-    `text="${view.table_name.replace(/"/g, '\\"')}"`
-  ], { timeout: 3000 });
-  if (!tableClick.ok) {
-    result.status = 'needs_manual_table_selection';
-    result.notes.push(`Could not safely click table tab/name: ${view.table_name}.`);
-    await captureDomEvidence(page, outputDir, index, view, 'table_selection_not_found', result);
-    return result;
-  }
+  const tableClick = await clickFirst(page, [page.getByText(view.table_name, { exact: true }), `[title="${view.table_name.replace(/"/g, '\\"')}"]`, `text="${view.table_name.replace(/"/g, '\\"')}"`], { timeout: 3000 });
+  if (!tableClick.ok) { result.status = 'needs_manual_table_selection'; result.notes.push(`Could not safely click table tab/name: ${view.table_name}.`); await captureDomEvidence(page, outputDir, index, view, 'table_selection_not_found', result); return result; }
   result.notes.push(`Selected table using ${tableClick.selector}`);
   await page.waitForTimeout(800);
   await page.keyboard.press('Escape').catch(() => {});
   await page.mouse.move(520, 90).catch(() => {});
-
   const createNew = await clickSidebarCreateNew(page);
-  if (!createNew.ok) {
-    result.status = 'selector_create_new_not_found';
-    result.notes.push('Could not find the left-sidebar Create new... button.');
-    await captureDomEvidence(page, outputDir, index, view, 'create_new_not_found', result);
-    return result;
-  }
+  if (!createNew.ok) { result.status = 'selector_create_new_not_found'; result.notes.push('Could not find the left-sidebar Create new... button.'); await captureDomEvidence(page, outputDir, index, view, 'create_new_not_found', result); return result; }
   result.notes.push(`Clicked create-new control using ${createNew.selector} at x=${createNew.x}, y=${createNew.y}.`);
   await page.waitForTimeout(900);
   await page.mouse.move(520, 90).catch(() => {});
-
   const gridChoice = await clickGridOptionFromCreateMenu(page);
-  if (!gridChoice.ok) {
-    result.status = 'selector_grid_choice_not_found';
-    result.notes.push('Could not choose Grid from the create-new popup without touching the current Grid view control.');
-    await captureDomEvidence(page, outputDir, index, view, 'grid_choice_not_found', result);
-    return result;
-  }
+  if (!gridChoice.ok) { result.status = 'selector_grid_choice_not_found'; result.notes.push('Could not choose Grid from the create-new popup without touching the current Grid view control.'); await captureDomEvidence(page, outputDir, index, view, 'grid_choice_not_found', result); return result; }
   result.notes.push(`Selected create-menu Grid option using ${gridChoice.selector} at x=${gridChoice.x}, y=${gridChoice.y}.`);
   await page.waitForTimeout(1000);
   await page.mouse.move(520, 90).catch(() => {});
-
   const nameFill = await fillNewViewNameInput(page, view.view_name);
-  if (!nameFill.ok) {
-    result.status = 'selector_view_name_input_not_found';
-    result.notes.push('Could not find a new-view name input. The Find a view search box is intentionally excluded.');
-    await captureDomEvidence(page, outputDir, index, view, 'view_name_input_not_found', result);
-    return result;
-  }
+  if (!nameFill.ok) { result.status = 'selector_view_name_input_not_found'; result.notes.push('Could not find a new-view name input. The Find a view search box is intentionally excluded.'); await captureDomEvidence(page, outputDir, index, view, 'view_name_input_not_found', result); return result; }
   result.notes.push(`Filled view name using ${nameFill.selector} at x=${nameFill.x}, y=${nameFill.y}.`);
   await page.waitForTimeout(800);
-
   const finalCreate = await clickFinalCreateButton(page);
-  if (!finalCreate.ok) {
-    result.status = 'selector_final_create_not_found';
-    result.notes.push('Could not find final Create/Create view button safely. View name may be staged in UI but create was not clicked.');
-    await captureDomEvidence(page, outputDir, index, view, 'final_create_not_found', result);
-    return result;
-  }
+  if (!finalCreate.ok) { result.status = 'selector_final_create_not_found'; result.notes.push('Could not find final Create/Create view button safely. View name may be staged in UI but create was not clicked.'); await captureDomEvidence(page, outputDir, index, view, 'final_create_not_found', result); return result; }
   result.status = 'create_clicked_unverified';
   result.notes.push(`Clicked final create using ${finalCreate.selector}. Verify in Airtable before continuing.`);
   await page.waitForTimeout(1500);
+  if (args.enableScreenshots) { const screenshotPath = path.join(outputDir, `after_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}.png`); await page.screenshot({ path: screenshotPath, fullPage: true }); result.screenshot = screenshotPath; }
+  return result;
+}
 
-  if (args.enableScreenshots) {
-    const screenshotPath = path.join(outputDir, `after_${String(index).padStart(3, '0')}_${safeName(view.table_name)}_${safeName(view.view_name)}.png`);
-    await page.screenshot({ path: screenshotPath, fullPage: true });
-    result.screenshot = screenshotPath;
-  }
+async function clickExistingView(page, viewName) {
+  const picked = await page.evaluate((name) => {
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    const norm = (s) => String(s || '').replace(/\s+/g, ' ').trim();
+    const nodes = Array.from(document.querySelectorAll('button, [role="button"], div, span, a'));
+    const candidates = nodes.map((el) => {
+      const box = el.getBoundingClientRect();
+      return { el, text: norm(el.innerText || el.textContent), x: box.x, y: box.y, w: box.width, h: box.height };
+    }).filter(c => visible(c.el) && c.text === name && c.x >= 40 && c.x < 360 && c.y >= 120 && c.w > 20 && c.h > 8).sort((a, b) => a.y - b.y || a.x - b.x);
+    const c = candidates[0];
+    if (!c) return null;
+    c.el.scrollIntoView({ block: 'center', inline: 'center' });
+    c.el.click();
+    return { selector: 'geometry:existing-view-sidebar-row', text: c.text, x: Math.round(c.x), y: Math.round(c.y), w: Math.round(c.w), h: Math.round(c.h) };
+  }, viewName);
+  return picked ? { ok: true, ...picked } : { ok: false };
+}
+
+async function clickToolbarButton(page, labelRegex, label) {
+  const source = labelRegex.source;
+  const picked = await page.evaluate((source, label) => {
+    const re = new RegExp(source, 'i');
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    const nodes = Array.from(document.querySelectorAll('button, [role="button"], div, span, a'));
+    const candidates = nodes.map((el) => {
+      const box = el.getBoundingClientRect();
+      const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+      const aria = el.getAttribute('aria-label') || '';
+      return { el, text, aria, x: box.x, y: box.y, w: box.width, h: box.height };
+    }).filter(c => visible(c.el) && c.y >= 80 && c.y <= 140 && c.x >= 500 && re.test(`${c.text} ${c.aria}`)).sort((a, b) => a.x - b.x);
+    const c = candidates[0];
+    if (!c) return null;
+    c.el.click();
+    return { selector: `geometry:toolbar-${label}`, text: c.text, aria: c.aria, x: Math.round(c.x), y: Math.round(c.y), w: Math.round(c.w), h: Math.round(c.h) };
+  }, source, label);
+  return picked ? { ok: true, ...picked } : { ok: false };
+}
+
+async function calibrateViewConfiguration(page, outputDir, view) {
+  const result = { timestamp_utc: nowIso(), mode: 'calibrate_view_config_selectors', tool_version: VERSION, target: { table_name: view.table_name, table_id: view.table_id, view_name: view.view_name }, steps: [], snapshots: [] };
+  await page.keyboard.press('Escape').catch(() => {});
+  await page.waitForTimeout(300);
+  const tableClick = await clickFirst(page, [page.getByText(view.table_name, { exact: true }), `[title="${view.table_name.replace(/"/g, '\\"')}"]`, `text="${view.table_name.replace(/"/g, '\\"')}"`], { timeout: 3000 });
+  result.steps.push({ action: 'select_table', ...tableClick });
+  await page.waitForTimeout(900);
+  const viewClick = await clickExistingView(page, view.view_name);
+  result.steps.push({ action: 'select_view', ...viewClick });
+  await page.waitForTimeout(1200);
+  result.snapshots.push(await captureSnapshot(page, outputDir, 'config_calibration_01_view_loaded'));
+  await page.keyboard.press('Escape').catch(() => {});
+  const filterClick = await clickToolbarButton(page, /\bFilter\b|Filter rows/, 'filter');
+  result.steps.push({ action: 'open_filter_panel', ...filterClick });
+  await page.waitForTimeout(1200);
+  result.snapshots.push(await captureSnapshot(page, outputDir, 'config_calibration_02_filter_panel'));
+  await page.keyboard.press('Escape').catch(() => {});
+  await page.waitForTimeout(400);
+  const sortClick = await clickToolbarButton(page, /\bSort\b|Sort rows/, 'sort');
+  result.steps.push({ action: 'open_sort_panel', ...sortClick });
+  await page.waitForTimeout(1200);
+  result.snapshots.push(await captureSnapshot(page, outputDir, 'config_calibration_03_sort_panel'));
+  await page.keyboard.press('Escape').catch(() => {});
+  await page.waitForTimeout(400);
+  const hideClick = await clickToolbarButton(page, /Hide fields|Fields/, 'hide-fields');
+  result.steps.push({ action: 'open_hide_fields_panel', ...hideClick });
+  await page.waitForTimeout(1200);
+  result.snapshots.push(await captureSnapshot(page, outputDir, 'config_calibration_04_hide_fields_panel'));
+  writeJson(path.join(outputDir, 'view_config_calibration_report.json'), result);
   return result;
 }
 
@@ -394,57 +429,23 @@ try {
   const manifest = JSON.parse(fs.readFileSync(args.manifest, 'utf8'));
   const { views, tables } = validateManifest(manifest);
   const selected = selectViews(views);
-  const summary = {
-    timestamp_utc: nowIso(),
-    tool_version: VERSION,
-    mode: args.executeCreateViewsOnly ? 'execute_create_views_only' : (args.calibrationMode ? 'calibration' : 'dry_run'),
-    manifest_view_count: views.length,
-    manifest_table_count: tables.length,
-    selected_view_count: selected.length,
-    start_index: Number(args.startIndex || 1),
-    output_dir: outputDir,
-    downloads_env_var: 'DCOIR_DOWNLOADS_DIR',
-    repo_root_env_var: 'DCOIR_REPO_ROOT',
-    base_id: manifest.base_id,
-    base_url: args.baseUrl || `https://airtable.com/${manifest.base_id}`,
-    dry_run: !args.executeCreateViewsOnly,
-    experimental_configure_filters: Boolean(args.experimentalConfigureFilters),
-    keep_browser_open_on_failure: Boolean(args.keepBrowserOpenOnFailure),
-    views: selected.map(v => ({ table_name: v.table_name, table_id: v.table_id, view_name: v.view_name, view_type: v.view_type, filter_count: (v.filters || []).length, sort_count: (v.sorts || []).length }))
-  };
-  writeJson(path.join(outputDir, args.executeCreateViewsOnly ? 'execution_plan.json' : 'dry_run_report.json'), summary);
+  const summary = { timestamp_utc: nowIso(), tool_version: VERSION, mode: args.executeCreateViewsOnly ? 'execute_create_views_only' : (args.calibrationMode ? 'calibration' : (args.calibrateViewConfigSelectors ? 'calibrate_view_config_selectors' : 'dry_run')), manifest_view_count: views.length, manifest_table_count: tables.length, selected_view_count: selected.length, start_index: Number(args.startIndex || 1), output_dir: outputDir, downloads_env_var: 'DCOIR_DOWNLOADS_DIR', repo_root_env_var: 'DCOIR_REPO_ROOT', base_id: manifest.base_id, base_url: args.baseUrl || `https://airtable.com/${manifest.base_id}`, dry_run: !args.executeCreateViewsOnly && !args.calibrationMode && !args.calibrateViewConfigSelectors, experimental_configure_filters: Boolean(args.experimentalConfigureFilters), keep_browser_open_on_failure: Boolean(args.keepBrowserOpenOnFailure), views: selected.map(v => ({ table_name: v.table_name, table_id: v.table_id, view_name: v.view_name, view_type: v.view_type, filter_count: (v.filters || []).length, sort_count: (v.sorts || []).length })) };
+  writeJson(path.join(outputDir, args.executeCreateViewsOnly ? 'execution_plan.json' : (args.calibrateViewConfigSelectors ? 'view_config_calibration_plan.json' : 'dry_run_report.json')), summary);
   log('Validated manifest and wrote plan.', { selected_view_count: selected.length });
-
   if (args.capabilityReport) {
-    writeJson(path.join(outputDir, 'capability_report.json'), {
-      timestamp_utc: nowIso(),
-      node_version: process.version,
-      playwright_required_for_execute: true,
-      dry_run_requires_browser: false,
-      execution_requires_confirm: 'CREATE_WBS09_NATIVE_VIEWS',
-      start_index_supported: true,
-      filters_and_sorts: 'not configured in this draft; view creation only',
-      known_risk: 'Airtable UI selectors may drift; execute one view first and verify before bulk run.'
-    });
+    writeJson(path.join(outputDir, 'capability_report.json'), { timestamp_utc: nowIso(), node_version: process.version, playwright_required_for_execute: true, dry_run_requires_browser: false, execution_requires_confirm: 'CREATE_WBS09_NATIVE_VIEWS', start_index_supported: true, view_config_calibration_supported: true, filters_and_sorts: 'calibration only in this draft; no filter/sort mutation attempted', known_risk: 'Airtable UI selectors may drift; calibrate on one view before any configuration execution.' });
   }
-
-  if (!args.executeCreateViewsOnly && !args.calibrationMode) {
-    log('Dry run complete. No browser opened and no Airtable mutation attempted.');
-    process.exit(0);
-  }
-  if (args.experimentalConfigureFilters) throw new Error('Filter/sort UI automation is intentionally blocked in this draft. Create views first; configure filters only after explicit selector-calibrated approval.');
+  if (!args.executeCreateViewsOnly && !args.calibrationMode && !args.calibrateViewConfigSelectors) { log('Dry run complete. No browser opened and no Airtable mutation attempted.'); process.exit(0); }
+  if (args.experimentalConfigureFilters) throw new Error('Filter/sort UI automation is intentionally blocked in this draft. This build supports selector calibration only, not configuration mutation.');
   if (args.executeCreateViewsOnly && args.confirm !== 'CREATE_WBS09_NATIVE_VIEWS') throw new Error('Execute mode requires --confirm CREATE_WBS09_NATIVE_VIEWS');
-
+  if (args.calibrateViewConfigSelectors && selected.length !== 1) throw new Error('View configuration calibration requires exactly one selected manifest view. Pass -TableName and -ViewName.');
   let chromium;
-  try { ({ chromium } = await import('playwright')); }
-  catch { throw new Error('Playwright is required. Run the installer script first: Install-DcoirAirtableWbs09UiViewPrereqs.ps1'); }
-
+  try { ({ chromium } = await import('playwright')); } catch { throw new Error('Playwright is required. Run the installer script first: Install-DcoirAirtableWbs09UiViewPrereqs.ps1'); }
   const baseUrl = args.baseUrl || `https://airtable.com/${manifest.base_id}`;
   let browser = null;
   let context = null;
   let page = null;
   let closeMode = 'launched';
-
   if (args.connectCdpUrl) {
     closeMode = 'cdp_disconnect_only';
     log('Connecting to existing Chrome over CDP.', { connect_cdp_url: args.connectCdpUrl });
@@ -456,11 +457,7 @@ try {
     closeMode = 'persistent_context';
     log('Launching persistent browser context.', { user_data_dir: args.userDataDir, chrome_channel: Boolean(args.useChromeChannel) });
     ensureDir(args.userDataDir);
-    context = await chromium.launchPersistentContext(args.userDataDir, {
-      headless: Boolean(args.headless),
-      channel: args.useChromeChannel ? 'chrome' : undefined,
-      viewport: { width: 1440, height: 1000 }
-    });
+    context = await chromium.launchPersistentContext(args.userDataDir, { headless: Boolean(args.headless), channel: args.useChromeChannel ? 'chrome' : undefined, viewport: { width: 1440, height: 1000 } });
     browser = context.browser();
     page = context.pages()[0] || await context.newPage();
   } else {
@@ -469,28 +466,25 @@ try {
     context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     page = await context.newPage();
   }
-
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
   const rl = readline.createInterface({ input, output });
   await rl.question('Log into Airtable, confirm the DCOIR base is open, then press Enter. Ctrl+C aborts before any create click. ');
-
   if (args.calibrationMode) {
     const calibration = { timestamp_utc: nowIso(), url: page.url(), title: await page.title(), note: 'Calibration mode opened Airtable and recorded page metadata only. No view creation attempted.' };
-    if (args.enableScreenshots) {
-      const screenshotPath = path.join(outputDir, 'calibration_page.png');
-      await page.screenshot({ path: screenshotPath, fullPage: true });
-      calibration.screenshot = screenshotPath;
-    }
+    if (args.enableScreenshots) { const screenshotPath = path.join(outputDir, 'calibration_page.png'); await page.screenshot({ path: screenshotPath, fullPage: true }); calibration.screenshot = screenshotPath; }
     writeJson(path.join(outputDir, 'calibration_report.json'), calibration);
-    if (closeMode === 'persistent_context') await context.close();
-    else await browser.close();
+    if (closeMode === 'persistent_context') await context.close(); else await browser.close();
     log('Calibration complete. No Airtable mutation attempted.');
     process.exit(0);
   }
-
+  if (args.calibrateViewConfigSelectors) {
+    const report = await calibrateViewConfiguration(page, outputDir, selected[0]);
+    if (closeMode === 'persistent_context') await context.close(); else await browser.close();
+    log('View configuration selector calibration complete. No Airtable mutation attempted.', { snapshot_count: report.snapshots.length });
+    process.exit(0);
+  }
   const confirm2 = await rl.question(`About to attempt ${selected.length} native Airtable grid view create action(s), one at a time. Type CREATE_WBS09_NATIVE_VIEWS again to proceed: `);
   if (confirm2 !== 'CREATE_WBS09_NATIVE_VIEWS') throw new Error('Second interactive confirmation did not match; stopped before create-clicks.');
-
   const results = [];
   let index = 0;
   for (const view of selected) {
@@ -504,12 +498,8 @@ try {
   }
   writeJson(path.join(outputDir, 'execution_report.json'), { timestamp_utc: nowIso(), results });
   const failures = results.filter(r => r.status !== 'create_clicked_unverified');
-  if (failures.length && args.keepBrowserOpenOnFailure) {
-    writeJson(path.join(outputDir, 'keep_open_failure_report.json'), { timestamp_utc: nowIso(), reason: 'failure_detected', failure_count: failures.length, results });
-    await rl.question('Failure detected. Browser will remain open for inspection. Press Enter in PowerShell only after you finish inspecting/uploading screenshots. ');
-  }
-  if (closeMode === 'persistent_context') await context.close();
-  else await browser.close();
+  if (failures.length && args.keepBrowserOpenOnFailure) { writeJson(path.join(outputDir, 'keep_open_failure_report.json'), { timestamp_utc: nowIso(), reason: 'failure_detected', failure_count: failures.length, results }); await rl.question('Failure detected. Browser will remain open for inspection. Press Enter in PowerShell only after you finish inspecting/uploading screenshots. '); }
+  if (closeMode === 'persistent_context') await context.close(); else await browser.close();
   log('Execution branch ended.', { result_count: results.length, failure_count: failures.length });
   process.exit(failures.length ? 1 : 0);
 } catch (e) {

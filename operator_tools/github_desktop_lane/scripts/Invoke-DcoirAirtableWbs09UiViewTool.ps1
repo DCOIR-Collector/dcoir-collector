@@ -2,6 +2,7 @@
 param(
     [Parameter(ParameterSetName='DryRun')][switch]$DryRun,
     [Parameter(ParameterSetName='Calibrate')][switch]$CalibrateSelectors,
+    [Parameter(ParameterSetName='ConfigCalibrate')][switch]$CalibrateViewConfigSelectors,
     [Parameter(ParameterSetName='Execute')][switch]$ExecuteCreateViewsOnly,
     [Parameter(ParameterSetName='Execute')][string]$ConfirmToken,
     [switch]$ExperimentalConfigureFilters,
@@ -10,6 +11,7 @@ param(
     [int]$MaxViews = 0,
     [int]$StartIndex = 1,
     [string]$TableName,
+    [string]$ViewName,
     [switch]$EnableScreenshots,
     [switch]$ContinueOnFailure,
     [switch]$UseChromeChannel,
@@ -74,15 +76,18 @@ if ($ExecuteCreateViewsOnly) {
     $argsList += @('--execute-create-views-only','--confirm','CREATE_WBS09_NATIVE_VIEWS')
 } elseif ($CalibrateSelectors) {
     $argsList += '--calibration-mode'
+} elseif ($CalibrateViewConfigSelectors) {
+    $argsList += '--calibrate-view-config-selectors'
 } else {
     $argsList += '--dry-run'
 }
 
 if ($ExperimentalConfigureFilters) { $argsList += '--experimental-configure-filters' }
 if (-not [string]::IsNullOrWhiteSpace($BaseUrl)) { $argsList += @('--base-url', $BaseUrl) }
-if ($StartIndex -gt 1) { $argsList += @('--start-index', [string]$StartIndex) }
 if ($MaxViews -gt 0) { $argsList += @('--max-views', [string]$MaxViews) }
+if ($StartIndex -gt 1) { $argsList += @('--start-index', [string]$StartIndex) }
 if (-not [string]::IsNullOrWhiteSpace($TableName)) { $argsList += @('--table-name', $TableName) }
+if (-not [string]::IsNullOrWhiteSpace($ViewName)) { $argsList += @('--view-name', $ViewName) }
 if ($EnableScreenshots) { $argsList += '--enable-screenshots' }
 if ($ContinueOnFailure) { $argsList += '--continue-on-failure' }
 if ($UseChromeChannel) { $argsList += '--use-chrome-channel' }
