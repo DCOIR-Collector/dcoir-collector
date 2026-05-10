@@ -6,7 +6,7 @@ import { stdin as input, stdout as output } from 'node:process';
 import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
 import { getFilterOperatorLabel, validateViewConfigContract, summarizeViewConfig, normalizeFilterValues, filterRequiresValue } from '../../shared/dcoir_airtable_view_config.mjs';
 
-const VERSION = '2026-05-09.draft28-multi-filter-support';
+const VERSION = '2026-05-10.draft29-inline-text-filter-values';
 let args;
 
 function parseArgs(argv) {
@@ -316,6 +316,79 @@ async function selectDropdownValue(page, candidateText, fallbackPoint, value, la
   return { ok: true, selector: `${step.selector}+keyboard-select`, value };
 }
 
+async function enterInlineFilterTextValue(page, result, filter, filterIndex) {
+  const ordinal = filterIndex + 1;
+  const rowY = 268 + (filterIndex * 46);
+  const values = filterValuesForCondition(filter);
+  if (values.length < 1) throw new Error(`Inline text filter ${ordinal} requires at least one value.`);
+  const value = String(values[0]);
+
+  const target = await page.evaluate(({ rowY }) => {
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    const nodes = Array.from(document.querySelectorAll('input, textarea, [contenteditable="true"]'));
+    const candidates = nodes.map((el) => {
+      const box = el.getBoundingClientRect();
+      const placeholder = el.getAttribute('placeholder') || '';
+      const aria = el.getAttribute('aria-label') || '';
+      const disabled = el.disabled || el.getAttribute('aria-disabled') === 'true';
+      return {
+        el,
+        placeholder,
+        aria,
+        disabled,
+        x: box.x,
+        y: box.y,
+        w: box.width,
+        h: box.height,
+        cx: box.x + (box.width / 2),
+        cy: box.y + (box.height / 2)
+      };
+    }).filter((c) => {
+      if (!visible(c.el) || c.disabled) return false;
+      const nearFilterRow = c.y >= rowY - 60 && c.y <= rowY + 80;
+      const likelyValueColumn = c.x >= 650 && c.x <= 1050 && c.w >= 40 && c.h >= 10;
+      return nearFilterRow && likelyValueColumn;
+    }).sort((a, b) => {
+      const aScore = Math.abs((a.y + (a.h / 2)) - rowY) + Math.abs(a.x - 730) / 10;
+      const bScore = Math.abs((b.y + (b.h / 2)) - rowY) + Math.abs(b.x - 730) / 10;
+      return aScore - bScore;
+    });
+    const c = candidates[0];
+    if (!c) return null;
+    return {
+      selector: 'inline-filter-text-input',
+      placeholder: c.placeholder,
+      aria: c.aria,
+      x: Math.round(c.x),
+      y: Math.round(c.y),
+      w: Math.round(c.w),
+      h: Math.round(c.h),
+      cx: Math.round(c.cx),
+      cy: Math.round(c.cy)
+    };
+  }, { rowY });
+
+  result.steps.push({ action: 'locate_inline_filter_text_input', filter_index: ordinal, value, ...(target || { ok: false }) });
+  if (!target) throw new Error(`Could not locate inline text value input for filter ${ordinal}.`);
+
+  await page.mouse.click(target.cx, target.cy);
+  await page.waitForTimeout(250);
+  const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+  await page.keyboard.press(`${modifier}+A`).catch(() => {});
+  await page.keyboard.press('Backspace').catch(() => {});
+  await page.keyboard.type(value, { delay: 15 });
+  await page.waitForTimeout(550);
+  await page.keyboard.press('Enter').catch(() => {});
+  await page.waitForTimeout(900);
+
+  result.steps.push({ action: 'set_inline_filter_text_value', filter_index: ordinal, ok: true, value, selector: target.selector });
+  result.snapshots.push(await captureSnapshot(page, `one_view_config_05_filter_${ordinal}_inline_text_value`));
+}
+
 async function configureSingleFilterCondition(page, result, filter, filterIndex) {
   const ordinal = filterIndex + 1;
   const rowY = 268 + (filterIndex * 46);
@@ -348,6 +421,11 @@ async function configureSingleFilterCondition(page, result, filter, filterIndex)
     result.steps.push({ action: 'configure_filter_value_skipped', filter_index: ordinal, ok: true, reason: 'operator does not require a value' });
     await page.waitForTimeout(900);
     result.snapshots.push(await captureSnapshot(page, `one_view_config_05_filter_${ordinal}_no_value_required`));
+    return;
+  }
+
+  if (filter.operator === 'contains') {
+    await enterInlineFilterTextValue(page, result, filter, filterIndex);
     return;
   }
 
