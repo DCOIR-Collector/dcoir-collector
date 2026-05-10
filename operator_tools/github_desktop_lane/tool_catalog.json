@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-08.1",
+  "catalog_version": "2026-05-10.2",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/ and tools/chatgpt_apply_in/",
     "registry_source": "airtable Operator Tools Registry",
@@ -64,6 +64,30 @@
       "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.AirtableBulk/Dcoir.AirtableBulk.psm1",
       "role": "Airtable bulk-create helpers: root JSON array parsing, field-id readback under Set-StrictMode, create-missing-by-key, batching, duplicate/missing after-readback verification, and reusable planning/execution/readback structures",
       "validated_status": "validated by dcoir-db-redesign-wbs-scaffold-run3-20260508-2025z; created 52 missing WBS rows, skipped existing keys safely, and passed after-readback verification with no missing or duplicate expected keys"
+    },
+    {
+      "module_id": "DCOIR-AIRTABLE-BULK-UPDATE",
+      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.AirtableBulkUpdate/Dcoir.AirtableBulkUpdate.psm1",
+      "role": "Airtable bulk-update helpers: field-id based update payloads, choice-name select handling, after-readback verification, and reusable planned/execution/readback structures.",
+      "validated_status": "validated by WBS02/WBS cleanup branch; version 2026-05-08.2 compares and writes Airtable select choice names while retaining choice IDs as metadata only"
+    },
+    {
+      "module_id": "DCOIR-OPERATOR-LOGGING",
+      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Logging/Dcoir.Logging.psm1",
+      "role": "Reusable operator-tool logging default: one uploadable log path, UTF-8 logging, phase transitions, error detail, safe configuration presence/source, and secret-safe output discipline.",
+      "validated_status": "CAP/readback verified for operator logging default; referenced by tool_catalog_operator_logging_policy.json"
+    },
+    {
+      "module_id": "DCOIR-AIRTABLE-UI-GEOMETRY",
+      "module_path": "operator_tools/github_desktop_lane/ui_automation/shared/dcoir_airtable_ui_geometry.mjs",
+      "role": "Reusable Airtable browser/UI geometry helpers for toolbar targeting, left-sidebar view selection, transient UI dismissal, and safe mouse parking to avoid metadata tooltip hot zones.",
+      "validated_status": "validated through WBS09 panel readback representative runs; readback-only promotion commit 2beb3e7a6367c24185da284b34e1fa7d595fa9ae"
+    },
+    {
+      "module_id": "DCOIR-AIRTABLE-PANEL-READBACK",
+      "module_path": "operator_tools/github_desktop_lane/ui_automation/shared/dcoir_airtable_panel_readback.mjs",
+      "role": "Reusable browser/UI Filter/Sort panel extraction and comparison primitives for Airtable native saved view state, including before/after refresh/reselect verification.",
+      "validated_status": "validated through WBS09 representative readback evidence; intentionally read-only and not a create/repair action module"
     }
   ],
   "tools": [
@@ -191,6 +215,108 @@
       "version_or_hash": "2026-05-08.1; commits 6a4674ff76c94e267bd7febaf35817b9ee5eedeb, bb92a4b4344f8927e7c22591096f86c216fa2f2f, and 01c2c67d3bb86225b5cb17a33ce6a980a971fd67",
       "notes": "Reusable module for scripts that need Airtable record inserts through chatgpt-exec or operator-side PowerShell. Provides root JSON array parsing, field-id readback under Set-StrictMode, create-missing-by-key semantics, Airtable batch create with max batch size 10, duplicate/missing expected-key after-readback verification, and reusable planned_payload/execution/readback result structures. It does not update, delete, merge, or enqueue Delete Queue rows. Use when chatgpt-exec work discovers a reusable Airtable insert/readback pattern instead of leaving it as one-off staging code.",
       "validated_status": "validated by dcoir-db-redesign-wbs-scaffold-run3-20260508-2025z artifact: 52 rows created, 72 plan records after readback, zero missing expected keys, zero duplicate expected keys, empty stderr, script-level success."
+    },
+    {
+      "tool_id": "DCOIR-CHATGPT-APPLY-IN-PAYLOAD-STAGER",
+      "tool_name": "DCOIR ChatGPT Apply-In Payload Stager",
+      "tool_family": "github_actions_orchestration",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirApplyInPayload.ps1",
+      "output_pattern": "ChatGPT apply-in payload staging folder/ZIP and payload report under DCOIR_DOWNLOADS_DIR",
+      "version_or_hash": "registry: 2026-05-03.1; commits 4196648f857744ed9576b9d749019ae21fa31dd4 and cec00dfb2254c702ec481aefc383990ea673d803",
+      "notes": "Active apply-in staging helper. Use for GitHub Actions apply-in payload preparation. Core skill parity runbook prefers bounded batches; if a four-skill batch fails, retry 2+2; one-skill payload only for natural final remainder or explicit operator-approved test/retry."
+    },
+    {
+      "tool_id": "DCOIR-OPERATOR-TOOL-LOGGING",
+      "tool_name": "DCOIR Operator Tool Logging Standard",
+      "tool_family": "operator_tool_standard",
+      "repo_path": "operator_tools/github_desktop_lane/modules/Dcoir.Logging/Dcoir.Logging.psm1",
+      "output_pattern": "caller-owned uploadable log path returned on success and failure",
+      "version_or_hash": "2026-05-03.1",
+      "notes": "Module-level logging standard for operator tools. New/reworked local tools should prefer this module over ad hoc logging and should return an uploadable log path."
+    },
+    {
+      "tool_id": "DCOIR-WBS09-MANIFEST-SCHEMA-AUDIT",
+      "tool_name": "DCOIR WBS09 Manifest Schema Audit",
+      "tool_family": "validation",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirWbs09ManifestSchemaAudit.ps1",
+      "output_pattern": "WBS09 schema-audit JSON/report under DCOIR_DOWNLOADS_DIR",
+      "version_or_hash": "2026-05-09.draft1-schema-gate",
+      "notes": "Active schema-backed WBS09 manifest audit gate. Use before broad view configuration or any manifest-driven Airtable UI pass; source/schema freshness belongs with dcoir-airtable-schema-cache and validation readiness with dcoir-validation-orchestrator."
+    },
+    {
+      "tool_id": "DCOIR-CLOSE-GITHUB-ISSUES",
+      "tool_name": "DCOIR Close GitHub Issues Tool",
+      "tool_family": "github_actions_orchestration",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirCloseGitHubIssues.ps1",
+      "output_pattern": "dry-run/apply issue close logs and summaries",
+      "version_or_hash": "2026-05-01.1 pending CAP",
+      "notes": "Guarded bulk issue closure helper. Dry-run first; use only with explicit operator intent and token/config preconditions satisfied."
+    },
+    {
+      "tool_id": "DCOIR-CHATGPT-EXEC-LANE",
+      "tool_name": "DCOIR ChatGPT Exec Lane Harness",
+      "tool_family": "github_actions_orchestration",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsExecHarness.ps1",
+      "output_pattern": "chatgpt exec request/report artifacts and output ZIPs",
+      "version_or_hash": "validated exec lane; example restage commit 5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e",
+      "notes": "Active ChatGPT exec lane harness. Validated sequence: create apply-in payload that writes one exec request JSON, verify apply-in report and exec request readback, then restage the already-created request JSON without [skip ci] if needed to trigger exec."
+    },
+    {
+      "tool_id": "DCOIR-AIRTABLE-BULK-UPDATE-MODULE",
+      "tool_name": "DCOIR Airtable Bulk Update Module",
+      "tool_family": "github_desktop_lane",
+      "repo_path": "operator_tools/github_desktop_lane/modules/Dcoir.AirtableBulkUpdate/Dcoir.AirtableBulkUpdate.psm1",
+      "output_pattern": "caller-owned planned_payload.json; execution_summary.json; after_readback_verification.json; error_report.json on failure",
+      "version_or_hash": "2026-05-08.2 / commit b388f0cc9c4d480ba3e6d3614d6b4db994484dcf",
+      "notes": "Reusable Airtable update helper module. Uses choice names for Airtable select readback/write comparison and keeps choice IDs as metadata only. Use when a branch discovers reusable update/readback behavior rather than one-off staging code."
+    },
+    {
+      "tool_id": "TOOL-AIRTABLE-WORK-ITEMS-SCHEMA-CLEANUP",
+      "tool_name": "DCOIR Work Items Schema Cleanup Tool",
+      "tool_family": "other",
+      "repo_path": "operator_tools/airtable_work_items_schema_cleanup/",
+      "output_pattern": "cleanup dry-run/apply/verify logs and config-driven output artifacts",
+      "version_or_hash": "v7 pending CAP",
+      "notes": "Table-cleanup support tool. Current Work Items cleanup no longer expects retired DELETE-prefixed fields or Queue Control active_work_items link. Future generic cleanup should use config files rather than table-specific environment variables."
+    },
+    {
+      "tool_id": "DCOIR-AIRTABLE-WBS09-UI-VIEW-CREATOR",
+      "tool_name": "DCOIR Airtable WBS09 UI Native View Creator/Configurator",
+      "tool_family": "airtable_ui_automation",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirAirtableWbs09UiViewTool.ps1",
+      "installer_path": "operator_tools/github_desktop_lane/scripts/Install-DcoirAirtableWbs09UiViewPrereqs.ps1",
+      "engine_path": "operator_tools/github_desktop_lane/ui_automation/airtable_wbs09_views/scripts/airtable_wbs09_ui_views.mjs",
+      "manifest_path": "operator_tools/github_desktop_lane/manifests/wbs09_airtable_native_views_manifest.json",
+      "output_pattern": "DCOIR_DOWNLOADS_DIR/dcoir_wbs09_airtable_ui_views_*",
+      "version_or_hash": "last good configure source commit 9b423f84cae47c094a5c6f9af8f0bde8d37fba76; view-readback foundation commit 2beb3e7a6367c24185da284b34e1fa7d595fa9ae",
+      "status": "draft_limited_do_not_use_for_broad_repair",
+      "notes": "Browser/Playwright WBS09 native view creation/configuration tool. Creation and some one-view configure paths have passed earlier bounded smoke tests, but repair/configure action primitives failed on checkbox filters, relative-date dropdowns, and second-sort insertion during 2026-05-10 recovery. Do not run broad rollout or represent repair automation as ready until redesigned around discover -> plan -> execute -> verify."
+    },
+    {
+      "tool_id": "DCOIR-AIRTABLE-WBS09-VIEW-PANEL-READBACK",
+      "tool_name": "DCOIR Airtable WBS09 Native View Panel Readback",
+      "tool_family": "airtable_ui_automation",
+      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirAirtableWbs09ViewPanelReadback.ps1",
+      "engine_path": "operator_tools/github_desktop_lane/ui_automation/airtable_wbs09_views/scripts/airtable_wbs09_view_panel_readback.mjs",
+      "shared_modules": [
+        "operator_tools/github_desktop_lane/ui_automation/shared/dcoir_airtable_panel_readback.mjs",
+        "operator_tools/github_desktop_lane/ui_automation/shared/dcoir_airtable_ui_geometry.mjs"
+      ],
+      "manifest_path": "operator_tools/github_desktop_lane/manifests/wbs09_airtable_native_views_manifest.json",
+      "docs_path": "operator_tools/github_desktop_lane/docs/AIRTABLE_WBS09_VIEW_PANEL_READBACK.md",
+      "output_pattern": "DCOIR_DOWNLOADS_DIR/dcoir_wbs09_view_panel_readback_*",
+      "version_or_hash": "2026-05-10.wbs09-panel-readback.1 / 2026-05-10.panel-readback.3 / commit 2beb3e7a6367c24185da284b34e1fa7d595fa9ae",
+      "status": "active_readback_only",
+      "notes": "Read-only browser/UI evidence tool for saved Airtable native Filter/Sort panel state. Does not create or repair views. Use as verification foundation for future create/repair pipeline."
     }
-  ]
+  ],
+  "sweep_notes": {
+    "updated_at": "2026-05-10T14:50:00Z",
+    "source_snapshot": "20260510T164209_operator_tools.chatgpt.zip",
+    "purpose": "Merged discoverability gaps found between local operator_tools snapshot, GitHub catalog, and Airtable Operator Tools Registry. Added current registry-only tools and WBS09 readback/create-configure surfaces to the main catalog so fresh sessions do not need chat context.",
+    "known_limitations": [
+      "Airtable Operator Tools Registry select field does not currently include airtable_ui_automation; Airtable rows use the nearest existing select value and preserve the original family in notes when needed.",
+      "WBS09 create/configure automation is documented as draft_limited_do_not_use_for_broad_repair until redesigned around discover -> plan -> execute -> verify."
+    ]
+  }
 }
