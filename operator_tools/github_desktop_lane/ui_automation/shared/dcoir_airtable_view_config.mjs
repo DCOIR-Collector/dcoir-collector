@@ -1,5 +1,5 @@
 // DCOIR Airtable view configuration primitives
-// Version: 2026-05-09.draft27-expanded-filter-sort-support
+// Version: 2026-05-09.draft28-multi-filter-support
 
 export const SUPPORTED_FILTER_OPERATORS = Object.freeze([
   'is one of',
@@ -18,6 +18,10 @@ export function normalizeFilterValues(filter) {
   return [filter.value];
 }
 
+export function filterRequiresValue(filter) {
+  return filter && filter.operator !== 'is not empty';
+}
+
 export function getFilterOperatorLabel(operator) {
   const op = String(operator || '').trim();
   if (op === '=') return 'is';
@@ -31,7 +35,7 @@ export function getFilterOperatorLabel(operator) {
 export function validateViewConfigContract(view, options = {}) {
   const filters = Array.isArray(view.filters) ? view.filters : [];
   const sorts = Array.isArray(view.sorts) ? view.sorts : [];
-  const maxFilters = Number.isInteger(options.maxFilters) ? options.maxFilters : 1;
+  const maxFilters = Number.isInteger(options.maxFilters) ? options.maxFilters : 2;
   const maxSorts = Number.isInteger(options.maxSorts) ? options.maxSorts : 5;
 
   if (filters.length > maxFilters) {
@@ -47,7 +51,7 @@ export function validateViewConfigContract(view, options = {}) {
       throw new Error(`Unsupported filter operator for one-view smoke: ${filter.operator}`);
     }
     const values = normalizeFilterValues(filter);
-    if (!['is not empty'].includes(filter.operator) && values.length < 1) {
+    if (filterRequiresValue(filter) && values.length < 1) {
       throw new Error('Single-filter smoke target requires at least one filter value.');
     }
   }

@@ -4,9 +4,9 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
-import { getFilterOperatorLabel, validateViewConfigContract, summarizeViewConfig } from '../../shared/dcoir_airtable_view_config.mjs';
+import { getFilterOperatorLabel, validateViewConfigContract, summarizeViewConfig, normalizeFilterValues, filterRequiresValue } from '../../shared/dcoir_airtable_view_config.mjs';
 
-const VERSION = '2026-05-09.draft27-expanded-filter-sort-support';
+const VERSION = '2026-05-09.draft28-multi-filter-support';
 let args;
 
 function parseArgs(argv) {
@@ -86,7 +86,7 @@ function selectViews(views) {
 }
 
 function oneViewContract(view) {
-  return validateViewConfigContract(view, { maxFilters: 1, maxSorts: 5 });
+  return validateViewConfigContract(view, { maxFilters: 2, maxSorts: 5 });
 }
 function verifySchemaAuditGate(schemaAuditJson) {
   if (!schemaAuditJson || !String(schemaAuditJson).trim()) throw new Error('Batch configuration requires --schema-audit-json pointing to a fresh PASS audit report.');
@@ -242,8 +242,16 @@ function filterValuesForView(view) {
   return Array.isArray(filter.value) ? filter.value : [filter.value];
 }
 
+function filterValuesForCondition(filter) {
+  return normalizeFilterValues(filter);
+}
+
 function filterFieldForView(view) {
   const filter = (view.filters || [])[0];
+  return filter ? filter.field : null;
+}
+
+function filterFieldForCondition(filter) {
   return filter ? filter.field : null;
 }
 
@@ -308,14 +316,66 @@ async function selectDropdownValue(page, candidateText, fallbackPoint, value, la
   return { ok: true, selector: `${step.selector}+keyboard-select`, value };
 }
 
+async function configureSingleFilterCondition(page, result, filter, filterIndex) {
+  const ordinal = filterIndex + 1;
+  const rowY = 268 + (filterIndex * 46);
+  const filterField = filterFieldForCondition(filter);
+
+  const add = await clickPanelText(page, /^\+?\s*Add condition$/i, `add-filter-condition-${ordinal}`);
+  result.steps.push({ action: 'add_filter_condition', filter_index: ordinal, ...add });
+  if (!add.ok) throw new Error(`Could not click Add condition in filter panel for filter ${ordinal}.`);
+  await page.waitForTimeout(900);
+  result.snapshots.push(await captureSnapshot(page, `one_view_config_02_filter_${ordinal}_condition_added`));
+
+  const field = await selectDropdownValue(page, /^(Work Item|Select a field|Field|Status|Name|delete_stage|approved_to_delete|active|Priority|Queue Rank)$/i, { x: 520, y: rowY }, filterField, `filter-${ordinal}-field`);
+  result.steps.push({ action: 'set_filter_field', filter_index: ordinal, field: filterField, ...field });
+  if (!field.ok) throw new Error(`Could not select ${filterField} as filter field for filter ${ordinal}.`);
+  result.snapshots.push(await captureSnapshot(page, `one_view_config_03_filter_${ordinal}_field`));
+
+  const operatorLabel = getFilterOperatorLabel(filter.operator);
+  const operator = await selectDropdownValue(
+    page,
+    /^(contains|is|is not|is not empty|is empty|is any of|has any of|is one of|is on or before|on or before)$/i,
+    { x: 660, y: rowY },
+    operatorLabel,
+    `filter-${ordinal}-operator`
+  );
+  result.steps.push({ action: 'set_filter_operator', filter_index: ordinal, operator: operatorLabel, manifest_operator: filter.operator, ...operator });
+  if (!operator.ok) throw new Error(`Could not set filter ${ordinal} operator to ${operatorLabel}.`);
+  result.snapshots.push(await captureSnapshot(page, `one_view_config_04_filter_${ordinal}_operator`));
+
+  if (!filterRequiresValue(filter)) {
+    result.steps.push({ action: 'configure_filter_value_skipped', filter_index: ordinal, ok: true, reason: 'operator does not require a value' });
+    await page.waitForTimeout(900);
+    result.snapshots.push(await captureSnapshot(page, `one_view_config_05_filter_${ordinal}_no_value_required`));
+    return;
+  }
+
+  const valueOpen = await clickPanelText(
+    page,
+    /^(Select an option|Select options|Choose options|Enter a value|Enter text|Select date|Choose date|Date|Today|today|active|blocked|waiting|todo|in_progress|pending|true|false)$/i,
+    `filter-${ordinal}-value-open`
+  );
+  result.steps.push({ action: 'open_filter_value_selector', filter_index: ordinal, ...valueOpen });
+  if (!valueOpen.ok) throw new Error(`Could not open value selector for filter ${ordinal}.`);
+  for (const value of filterValuesForCondition(filter)) {
+    await page.waitForTimeout(300);
+    await page.keyboard.type(String(value), { delay: 15 });
+    await page.waitForTimeout(550);
+    await page.keyboard.press('Enter');
+    result.steps.push({ action: 'select_filter_value', filter_index: ordinal, value, manifest_operator: filter.operator });
+  }
+  await page.waitForTimeout(900);
+  result.snapshots.push(await captureSnapshot(page, `one_view_config_05_filter_${ordinal}_values`));
+}
+
 async function configureFilter(page, result) {
   const target = result.target;
-  if (!target.filters || target.filters.length === 0) {
+  const filters = Array.isArray(target.filters) ? target.filters : [];
+  if (filters.length === 0) {
     result.steps.push({ action: 'configure_filter_skipped', ok: true, reason: 'target has no manifest filters' });
     return;
   }
-  const filter = target.filters[0];
-  const filterField = filterFieldForView(target);
   const filterClick = await clickToolbarButton(page, /\bFilter\b|Filter rows/, 'filter');
   result.steps.push({ action: 'open_filter_panel', ...filterClick });
   if (!filterClick.ok) throw new Error('Could not open Filter panel.');
@@ -325,51 +385,10 @@ async function configureFilter(page, result) {
   await page.waitForTimeout(700);
   result.snapshots.push(await captureSnapshot(page, 'one_view_config_01b_filter_panel_cleared'));
 
-  const add = await clickPanelText(page, /^\+?\s*Add condition$/i, 'add-filter-condition');
-  result.steps.push({ action: 'add_filter_condition', ...add });
-  if (!add.ok) throw new Error('Could not click Add condition in filter panel.');
-  await page.waitForTimeout(900);
-  result.snapshots.push(await captureSnapshot(page, 'one_view_config_02_filter_condition_added'));
-
-  const field = await selectDropdownValue(page, /^(Work Item|Select a field|Field|Status|Name)$/i, { x: 520, y: 268 }, filterField, 'filter-field');
-  result.steps.push({ action: 'set_filter_field', field: filterField, ...field });
-  if (!field.ok) throw new Error(`Could not select ${filterField} as filter field.`);
-  result.snapshots.push(await captureSnapshot(page, 'one_view_config_03_filter_field'));
-
-  const operatorLabel = getFilterOperatorLabel(filter.operator);
-  const operator = await selectDropdownValue(
-    page,
-    /^(contains|is|is not|is not empty|is empty|is any of|has any of|is one of|is on or before|on or before)$/i,
-    { x: 660, y: 268 },
-    operatorLabel,
-    'filter-operator'
-  );
-  result.steps.push({ action: 'set_filter_operator', operator: operatorLabel, manifest_operator: filter.operator, ...operator });
-  if (!operator.ok) throw new Error(`Could not set filter operator to ${operatorLabel}.`);
-  result.snapshots.push(await captureSnapshot(page, 'one_view_config_04_filter_operator'));
-
-  if (filter.operator === 'is not empty') {
-    result.steps.push({ action: 'configure_filter_value_skipped', ok: true, reason: 'is not empty operator does not require a value' });
-    await page.waitForTimeout(900);
-    result.snapshots.push(await captureSnapshot(page, 'one_view_config_05_filter_no_value_required'));
-  } else {
-    const valueOpen = await clickPanelText(
-      page,
-      /^(Select an option|Select options|Choose options|Enter a value|Enter text|Select date|Choose date|Date|Today|today|active|blocked|waiting|todo|in_progress)$/i,
-      'filter-value-open'
-    );
-    result.steps.push({ action: 'open_filter_value_selector', ...valueOpen });
-    if (!valueOpen.ok) throw new Error('Could not open filter value selector.');
-    for (const value of filterValuesForView(target)) {
-      await page.waitForTimeout(300);
-      await page.keyboard.type(String(value), { delay: 15 });
-      await page.waitForTimeout(550);
-      await page.keyboard.press('Enter');
-      result.steps.push({ action: 'select_filter_value', value, manifest_operator: filter.operator });
-    }
-    await page.waitForTimeout(900);
-    result.snapshots.push(await captureSnapshot(page, 'one_view_config_05_filter_values'));
+  for (let filterIndex = 0; filterIndex < filters.length; filterIndex += 1) {
+    await configureSingleFilterCondition(page, result, filters[filterIndex], filterIndex);
   }
+
   await page.keyboard.press('Escape').catch(() => {});
   await page.waitForTimeout(500);
 }
@@ -418,10 +437,14 @@ async function configureSort(page, result) {
   await page.waitForTimeout(500);
 }
 async function verifyPostConditions(page, target) {
-  const expectedFilter = target.filters && target.filters.length ? filterFieldForView(target) : null;
-  const expectedSort = target.sorts && target.sorts.length ? sortFieldForView(target) : null;
+  const expectedFilters = Array.isArray(target.filters)
+    ? target.filters.map((f, i) => ({ index: i + 1, field: f.field, operator: f.operator, operator_label: getFilterOperatorLabel(f.operator) }))
+    : [];
+  const expectedSorts = Array.isArray(target.sorts)
+    ? target.sorts.map((s, i) => ({ index: i + 1, field: s.field, direction: s.direction }))
+    : [];
 
-  const probe = await page.evaluate(({ expectedFilter, expectedSort }) => {
+  const probe = await page.evaluate(({ expectedFilters, expectedSorts }) => {
     function visible(el) {
       const style = window.getComputedStyle(el);
       const box = el.getBoundingClientRect();
@@ -447,23 +470,28 @@ async function verifyPostConditions(page, target) {
 
     const bodyText = (document.body.innerText || '').replace(/\s+/g, ' ').trim();
     const text = `${toolbarText} ${bodyText}`;
+    const lower = text.toLowerCase();
 
-    const hasFilter = !expectedFilter || text.toLowerCase().includes(`filtered by ${expectedFilter}`.toLowerCase());
-    const hasSort = !expectedSort || /sorted by\s+\d+\s+field/i.test(text) || /sorted by/i.test(text);
+    const hasFilterBadge = expectedFilters.length === 0 || /filtered by/i.test(text);
+    const hasFilterFields = expectedFilters.length === 0 || expectedFilters.every((f) => lower.includes(String(f.field || '').toLowerCase()));
+    const hasSortBadge = expectedSorts.length === 0 || /sorted by\s+\d+\s+field/i.test(text) || /sorted by/i.test(text);
+    const hasSortFields = expectedSorts.length === 0 || expectedSorts.every((s) => lower.includes(String(s.field || '').toLowerCase())) || hasSortBadge;
 
     const missing = [];
-    if (!hasFilter) missing.push(`filter badge for ${expectedFilter}`);
-    if (!hasSort) missing.push(`sort badge for ${expectedSort}`);
+    if (expectedFilters.length > 0 && !(hasFilterBadge || hasFilterFields)) missing.push(`filter post-condition for ${expectedFilters.length} expected filter(s)`);
+    if (expectedSorts.length > 0 && !hasSortFields) missing.push(`sort post-condition for ${expectedSorts.length} expected sort(s)`);
 
     return {
-      expected_filter_field: expectedFilter,
-      expected_sort_field: expectedSort,
-      has_filter_badge: hasFilter,
-      has_sort_badge: hasSort,
+      expected_filter_conditions: expectedFilters,
+      expected_sort_conditions: expectedSorts,
+      has_filter_badge: hasFilterBadge,
+      has_filter_fields: hasFilterFields,
+      has_sort_badge: hasSortBadge,
+      has_sort_fields: hasSortFields,
       missing,
       toolbar_text_sample: toolbarText.slice(0, 800)
     };
-  }, { expectedFilter, expectedSort });
+  }, { expectedFilters, expectedSorts });
 
   return { ok: probe.missing.length === 0, ...probe };
 }
