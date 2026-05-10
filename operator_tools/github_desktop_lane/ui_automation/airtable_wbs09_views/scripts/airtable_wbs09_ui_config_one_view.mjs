@@ -6,7 +6,7 @@ import { stdin as input, stdout as output } from 'node:process';
 import { ensureDir, readJsonFile, writeJson, nowIso, safeName, reEscape, exactRe, norm } from '../../shared/dcoir_ui_common.mjs';
 import { getFilterOperatorLabel, validateViewConfigContract, summarizeViewConfig, normalizeFilterValues, filterRequiresValue } from '../../shared/dcoir_airtable_view_config.mjs';
 
-const VERSION = '2026-05-10.draft29-inline-text-filter-values';
+const VERSION = '2026-05-10.draft30-relative-date-filter-values';
 let args;
 
 function parseArgs(argv) {
@@ -389,6 +389,28 @@ async function enterInlineFilterTextValue(page, result, filter, filterIndex) {
   result.snapshots.push(await captureSnapshot(page, `one_view_config_05_filter_${ordinal}_inline_text_value`));
 }
 
+async function selectRelativeDateFilterValue(page, result, filter, filterIndex) {
+  const ordinal = filterIndex + 1;
+  const rowY = 268 + (filterIndex * 46);
+  const values = filterValuesForCondition(filter);
+  if (values.length < 1) throw new Error(`Relative date filter ${ordinal} requires at least one value.`);
+  const value = String(values[0]);
+
+  const relativeDateOpen = await selectDropdownValue(
+    page,
+    /^(exact date|today|tomorrow|yesterday|one week ago|one month ago|date)$/i,
+    { x: 690, y: rowY },
+    value,
+    `filter-${ordinal}-relative-date-value`
+  );
+
+  result.steps.push({ action: 'set_relative_date_filter_value', filter_index: ordinal, value, manifest_operator: filter.operator, ...relativeDateOpen });
+  if (!relativeDateOpen.ok) throw new Error(`Could not set relative date value ${value} for filter ${ordinal}.`);
+
+  await page.waitForTimeout(900);
+  result.snapshots.push(await captureSnapshot(page, `one_view_config_05_filter_${ordinal}_relative_date_value`));
+}
+
 async function configureSingleFilterCondition(page, result, filter, filterIndex) {
   const ordinal = filterIndex + 1;
   const rowY = 268 + (filterIndex * 46);
@@ -426,6 +448,11 @@ async function configureSingleFilterCondition(page, result, filter, filterIndex)
 
   if (filter.operator === 'contains') {
     await enterInlineFilterTextValue(page, result, filter, filterIndex);
+    return;
+  }
+
+  if (filter.operator === 'on or before') {
+    await selectRelativeDateFilterValue(page, result, filter, filterIndex);
     return;
   }
 
@@ -679,7 +706,7 @@ try {
     repo_root_env_var: 'DCOIR_REPO_ROOT',
     base_id: manifest.base_id,
     base_url: args.baseUrl || `https://airtable.com/${manifest.base_id}`,
-    supported_target_contract: args.executeConfigureViewBatch ? 'bounded_batch_max_five_views_each_max_one_filter_max_one_sort_schema_audit_pass_required' : 'generic_single_view_max_one_filter_max_one_sort',
+    supported_target_contract: args.executeConfigureViewBatch ? 'bounded_batch_max_five_views_each_max_two_filters_max_five_sorts_schema_audit_pass_required' : 'generic_single_view_max_two_filters_max_five_sorts',
     schema_audit_gate: schemaGate,
     targets
   };
