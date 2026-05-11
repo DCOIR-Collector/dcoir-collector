@@ -431,7 +431,15 @@ jobs:
           set -euo pipefail
           if [[ -f chatgpt_staging/work/applied_paths.txt ]]; then
             while IFS= read -r p; do
-              [[ -n "$p" ]] && git add -- "$p"
+              if [[ -z "$p" ]]; then
+                continue
+              fi
+              if [[ "$p" == .github/workflows/* ]]; then
+                echo "Skipping workflow file from normal apply-in commit: $p"
+                git restore -- "$p" || true
+                continue
+              fi
+              git add -- "$p"
             done < chatgpt_staging/work/applied_paths.txt
           fi
           if [[ -f chatgpt_staging/work/deleted_paths.txt ]]; then
