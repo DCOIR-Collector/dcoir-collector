@@ -10,7 +10,7 @@ import {
   compareAirtablePanelReadback
 } from './dcoir_airtable_panel_readback.mjs';
 
-export const AIRTABLE_PANEL_DISCOVERY_VERSION = '2026-05-10.panel-discovery.4';
+export const AIRTABLE_PANEL_DISCOVERY_VERSION = '2026-05-10.panel-discovery.6';
 
 function normalizeText(value) {
   return String(value || '')
@@ -171,11 +171,34 @@ function rowIndexForElement(element, rows) {
   return bestDistance <= 80 ? best : null;
 }
 
+function isAirtableHelpControlContent(content) {
+  const text = lowerText(content || '');
+  if (!text) return false;
+  if (text === '?' || text === 'help' || text === 'learn more') return true;
+  if (/^learn more( about)?( sorting| filtering| filters| sorts)?$/.test(text)) return true;
+  return /learn more about|help \/ quick tips|quick tips|sort records|filter records|help center/.test(text);
+}
+
+function isAirtableHelpControlElement(element) {
+  const content = `${element.text || ''} ${element.aria || ''} ${element.placeholder || ''} ${element.value || ''} ${element.title || ''} ${element.testid || ''}`;
+  if (isAirtableHelpControlContent(content)) return true;
+  const tag = String(element.tag || '').toLowerCase();
+  const role = String(element.role || '').toLowerCase();
+  const w = Number(element.w || 0);
+  const h = Number(element.h || 0);
+  const buttonLike = role === 'button' || tag === 'button';
+  // Airtable places a tiny question-mark help button beside panel titles. It can
+  // inherit nearby row geometry, so exclude it by size and panel-header band too.
+  if (buttonLike && w <= 24 && h <= 24 && isAirtableHelpControlContent(content || '?')) return true;
+  return false;
+}
+
 function classifyControl(element) {
   const content = lowerText(`${element.text || ''} ${element.aria || ''} ${element.placeholder || ''} ${element.value || ''}`);
   const tag = String(element.tag || '').toLowerCase();
   const role = String(element.role || '').toLowerCase();
   const type = String(element.type || '').toLowerCase();
+  if (isAirtableHelpControlElement(element)) return 'help-control';
   if (type === 'checkbox') return 'checkbox';
   if (tag === 'input' || tag === 'textarea' || element.placeholder) return 'input';
   if (role === 'button' || tag === 'button') return 'button';
@@ -188,9 +211,11 @@ function classifyControl(element) {
 function likelyDropdownTrigger(element) {
   const kind = classifyControl(element);
   const content = lowerText(`${element.text || ''} ${element.aria || ''} ${element.placeholder || ''} ${element.value || ''}`);
-  if (!['button', 'text-or-container'].includes(kind)) return false;
+  if (kind !== 'button') return false;
   if (!content || content.length > 100) return false;
-  if (/add condition|add another sort|pick another field to sort by|copy from another view|remove|delete|filter|sort by|automatically sort/.test(content)) return false;
+  if (isAirtableHelpControlElement(element)) return false;
+  if (/^where$|^and$|^or$/.test(content)) return false;
+  if (/add condition|add another sort|pick another field to sort by|copy from another view|remove|delete|filter$|sort by|automatically sort|reorder item|expand/.test(content)) return false;
   if (Number(element.w || 0) > 360 || Number(element.h || 0) > 60) return false;
   return true;
 }
@@ -226,11 +251,16 @@ export function buildPanelControlInventory(panelExtraction) {
     };
   });
 
-  const triggers = controls.filter((control) => control.likely_dropdown_trigger).sort((a, b) => {
-    const aRow = a.row_index || 999;
-    const bRow = b.row_index || 999;
-    return aRow - bRow || Number(a.y || 0) - Number(b.y || 0) || Number(a.x || 0) - Number(b.x || 0);
-  });
+  const triggers = controls
+    .filter((control) => control.likely_dropdown_trigger)
+    .filter((control) => control.kind === 'button')
+    .filter((control) => control.kind !== 'help-control' && control.kind !== 'add-control' && control.kind !== 'remove-control')
+    .filter((control) => !isAirtableHelpControlContent(control.content || control.text || control.aria || ''))
+    .sort((a, b) => {
+      const aRow = a.row_index || 999;
+      const bRow = b.row_index || 999;
+      return aRow - bRow || Number(a.y || 0) - Number(b.y || 0) || Number(a.x || 0) - Number(b.x || 0);
+    });
 
   return {
     rows: summarizeRows(panelExtraction),
@@ -325,7 +355,8 @@ export async function probePanelDropdownOptions(page, panelKind, inventory, opti
   const maxProbes = Math.max(0, Number(options.maxDropdownProbes || 0));
   if (!maxProbes) return [];
   const rowControls = (inventory.dropdown_triggers || [])
-    .filter((trigger) => trigger.row_index && trigger.kind !== 'add-control' && trigger.kind !== 'remove-control')
+    .filter((trigger) => trigger.row_index && trigger.kind === 'button' && trigger.kind !== 'help-control' && trigger.kind !== 'add-control' && trigger.kind !== 'remove-control')
+    .filter((trigger) => !isAirtableHelpControlContent(trigger.content || trigger.text || trigger.aria || ''))
     .sort((a, b) => triggerPriority(a, panelKind) - triggerPriority(b, panelKind) || Number(a.y || 0) - Number(b.y || 0) || Number(a.x || 0) - Number(b.x || 0));
 
   // Deduplicate nested Airtable elements for the same visible control. Prefer explicit role=button,
@@ -375,6 +406,20 @@ export async function probePanelDropdownOptions(page, panelKind, inventory, opti
     });
     await page.keyboard.press('Escape').catch(() => {});
     await page.waitForTimeout(350).catch(() => {});
+    await page.evaluate(() => {
+      const normalize = (s) => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      const panels = Array.from(document.querySelectorAll('aside, [role="dialog"], [aria-label], div'));
+      for (const panel of panels) {
+        const text = normalize(panel.innerText || panel.textContent || '');
+        if (!text.includes('help / quick tips') && !text.includes('sort records') && !text.includes('filter records')) continue;
+        const buttons = Array.from(panel.querySelectorAll('button, [role="button"]'));
+        const close = buttons.find((button) => {
+          const label = normalize(button.getAttribute('aria-label') || button.innerText || button.textContent || '');
+          return label === 'close' || label === 'dismiss' || label === '×' || label === 'x';
+        });
+        if (close) close.click();
+      }
+    }).catch(() => {});
   }
   return probes;
 }
@@ -405,7 +450,8 @@ export async function captureAirtablePanelDiscovery(page, outputDir, target, kin
       read_only: true,
       mutation_controls_clicked: false,
       option_probe_mode: Boolean(options.probeDropdownOptions),
-      note: 'Discovery opens panels and may open dropdowns to read options, but it does not type values, select options, add rows, remove rows, or save changes.'
+      help_controls_excluded: true,
+      note: 'Discovery opens panels and may open dropdowns to read options, but it does not type values, select options, add rows, remove rows, or save changes. Help/question-mark controls are excluded from dropdown probing.'
     }
   };
   const discoveryPath = path.join(outputDir, `${safeName(target.table_name)}_${safeName(target.view_name)}_${phase}_${kind}_discovery.json`);
