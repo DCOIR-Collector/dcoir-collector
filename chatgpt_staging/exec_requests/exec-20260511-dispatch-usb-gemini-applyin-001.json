@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260511-dispatch-usb-gemini-applyin-001",
+  "operator_approved": true,
+  "command": "gh workflow run chatgpt-apply-in.yml --ref main -f payload_b64_path=chatgpt_staging/in/applyin-20260511-gemini-usb-subagent-clean-001/payload.zip.b64 -f commit_changes=true -f delete_payload_after_success=true",
+  "approved_command_preview": "Dispatch chatgpt-apply-in against the already staged USB Gemini payload path.",
+  "shell": "powershell_5",
+  "timeout_seconds": 300,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true
+}
