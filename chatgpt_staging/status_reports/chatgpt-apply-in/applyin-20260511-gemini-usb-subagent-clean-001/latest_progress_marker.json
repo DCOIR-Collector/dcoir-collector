@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25669959907",
   "github_sha": "5fcacf5633759aac0bdefdf32fd04febd1f0cbe1",
-  "phase": "payload-resolved",
+  "phase": "running-apply-in",
   "request_id": "applyin-20260511-gemini-usb-subagent-clean-001",
   "request_path": "chatgpt_staging/in/applyin-20260511-gemini-usb-subagent-clean-001/payload.zip.b64",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-11T12:25:21Z",
+  "updated_utc": "2026-05-11T12:25:24Z",
   "workflow": "chatgpt-apply-in"
 }
