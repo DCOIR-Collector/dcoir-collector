@@ -1,0 +1,15 @@
+{
+  "artifact_name": "",
+  "exit_code": "",
+  "github_ref": "refs/heads/main",
+  "github_run_attempt": "1",
+  "github_run_id": "25671043444",
+  "github_sha": "10559b04dc26a0603ccec36aab618ca25c68606a",
+  "phase": "request-resolved",
+  "request_id": "exec-20260511-fix-report-push-optional-paths-001",
+  "request_path": "chatgpt_staging/exec_requests/exec-20260511-fix-report-push-optional-paths-001.json",
+  "result": "running",
+  "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
+  "updated_utc": "2026-05-11T12:48:11Z",
+  "workflow": "chatgpt-exec"
+}
