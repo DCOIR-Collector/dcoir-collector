@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260511-fix-report-push-ignored-paths-001",
+  "operator_approved": true,
+  "script_path": "chatgpt_staging/exec_scripts/fix_report_push_ignored_paths_001.ps1",
+  "approved_command_preview": "Patch the report push helper so ignored untracked helper-work paths are skipped while tracked deletions and real report/source paths are still staged.",
+  "shell": "powershell_5",
+  "timeout_seconds": 300,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true
+}
