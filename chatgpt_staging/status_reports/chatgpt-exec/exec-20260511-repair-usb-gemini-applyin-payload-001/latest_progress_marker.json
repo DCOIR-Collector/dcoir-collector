@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25669673930",
   "github_sha": "45a243994154fad75f21884daebf6601ae75f288",
-  "phase": "harness-finished",
+  "phase": "final-readback-commit",
   "request_id": "exec-20260511-repair-usb-gemini-applyin-payload-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260511-repair-usb-gemini-applyin-payload-001.json",
   "result": "success",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-11T12:19:31Z",
+  "updated_utc": "2026-05-11T12:19:34Z",
   "workflow": "chatgpt-exec"
 }
