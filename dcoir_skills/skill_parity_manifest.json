@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-11T18:39:08Z",
+  "generated_at_utc": "2026-05-11T18:54:18Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -403,37 +403,37 @@
     },
     "dcoir-session-manager": {
       "source_root": "dcoir-session-manager",
-      "source_tree_hash": "f6d768567322ea149f85e0cbd464814dccfc439af93dc2171f664680022d1882",
+      "source_tree_hash": "3438456cdc0aa55b3953685bbd1f80e85c1dbe292bdc3e70752c3f50091a141c",
       "release_zip_name": "dcoir-session-manager.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 5,
-      "total_bytes": 18000,
+      "total_bytes": 17779,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "ff87463fa1e6c9f904acdc7c42b059b76c61eb5b7175198c711a6ac4067e7bfe",
-          "size_bytes": 10342
+          "sha256": "d51f59ca11a4bf0e9e63059db63568c838bdc5710ad219d79db193eee74ca46d",
+          "size_bytes": 10227
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "9be2ccd9bf061f6bf4a98dce9c2b2e3b53d9b34516d76eb5af8c7a31fef46b76",
-          "size_bytes": 202
+          "sha256": "ad930349e87c0ae22337d07acbe0e990eaa267b37276eec0831971e635a20fe9",
+          "size_bytes": 197
         },
         {
           "path": "assets/icon.svg",
-          "sha256": "d2a5348b812b0a3739309f50b6c81f0035f7486ebb4b7f5d386612bf72adc1a9",
-          "size_bytes": 351
+          "sha256": "2e8158af44a1016257017868c524268175eeee2dfaf36c4ec9dcad3cbbacc9bf",
+          "size_bytes": 350
         },
         {
           "path": "references/airtable_cache_contract.md",
-          "sha256": "3bcd1c7cae00128d1b950bf0fa7aae4221f87accb300cef5a8c30f0d30af961f",
-          "size_bytes": 4968
+          "sha256": "ed0e1ae4d19b58fa9645aa953a99c8fe4b02f6093fe02b5815bb9704b034cb6a",
+          "size_bytes": 4900
         },
         {
           "path": "references/session_checkpoint_and_closeout_workflow.md",
-          "sha256": "d710ad1f573f9a9efda07358e98999f305bcec72536d5843b5085314e5143eac",
-          "size_bytes": 2137
+          "sha256": "c48986eb28d2adfeac24df91ef5c0f8bb647ef05c4cd31989cd102aa1c5cb52c",
+          "size_bytes": 2105
         }
       ]
     },
@@ -513,5 +513,10 @@
         }
       ]
     }
+  },
+  "contract": {
+    "path": "dcoir_skills/project_discovery_contract.json",
+    "sha256": "96221ff172daf4b51bd11c2b185431325e917288c70c1f44462590906e804d96",
+    "size_bytes": 7763
   }
 }
