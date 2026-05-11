@@ -1,17 +1,12 @@
-# GitHub Actions maintenance
+# Superseded workflow guidance pointer
 
-This folder documents repository automation for workflow and dependency change visibility.
+Status: retained pointer/stub. This file is no longer the authoritative source for current workflow routing or workflow execution guidance.
 
-## Current model
+Current source-of-truth model:
 
-- Dependabot watches GitHub Actions references and opens pull requests.
-- Workflow maintenance audit fails visibly if known stale action versions return.
-- Dependency Review checks dependency changes on pull requests.
-- CodeQL scans supported code on push, pull request, weekly schedule, and manual dispatch.
-- Dependabot auto-merge can enable auto-merge for GitHub Actions update PRs after repository auto-merge is enabled and required checks are satisfied.
+- Airtable table `GitHub Workflow Inventory` owns general GitHub Actions workflow routing guidance.
+- The top comment block in each `.github/workflows/*.yml` file owns workflow-specific execution guidance.
+- The workflow YAML body remains the executable source of truth.
+- Workflow status reports under `chatgpt_staging/status_reports/` are readback/evidence surfaces, not durable workflow-use documentation.
 
-## Operator notes
-
-For low-risk Dependabot GitHub Actions PRs, allow auto-merge after checks pass. For larger source, workflow, or security-sensitive changes, review manually before merge.
-
-Direct pushes remain acceptable for small operator-approved GitHub Desktop bundles, but automation and dependency changes should use pull requests when practical.
+Use this file only as a historical locator. Do not update it with new workflow-use instructions. Update the relevant workflow header and Airtable row instead.

@@ -1,3 +1,30 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-staging_lane-chatgpt-exec-0002 (Airtable formula preview; final key may use table autonumber suffix)
+# Purpose:
+# - Run a reviewed operator-approved command request on a Windows GitHub Actions runner and commit ChatGPT-readable execution reports.
+# Use when:
+# - Use when a command needs runner-side execution, GitHub secrets bridging, artifact capture, and committed status readback.
+# Do not use when:
+# - Do not use for unapproved commands, local workstation actions, destructive commands without an explicit request contract, or simple readable repo edits better handled by a bundle.
+# Trigger model:
+# - workflow_dispatch inputs: request_path; push branches: main paths: chatgpt_staging/exec_requests/*.json
+# Required inputs:
+# - request_path: Repo-relative exec request JSON under chatgpt_staging/exec_requests/ default=chatgpt_staging/exec_requests/request.json
+# Required secrets/config:
+# - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
+# Runtime dependencies:
+# - Requires chatgpt_staging/exec_requests/<request_id>.json and operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsExecHarness.ps1.
+# Expected outputs/readback:
+# - Reports under chatgpt_staging/status_reports/chatgpt-exec/<request_id>/, committed artifact_readback when available, and an uploaded GitHub Actions artifact.
+# Safety notes:
+# - Request path must match chatgpt_staging/exec_requests/<safe-id>.json; approved command preview and operator_approved=true must be in the request; secrets are bridged by name only.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
+# Airtable routing:
+# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
+# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
 name: chatgpt-exec
 
 on:

@@ -48,6 +48,7 @@ Refresh or recreate routine caches:
 - before relying on cached rows for routing, preference, validation, packaging, or config-name decisions;
 - immediately after this skill successfully writes to a routine cached table;
 - when live schema readback shows table/field identity drift;
+- before task-time Airtable writes, deletes, cleanup/migration/merge work, Delete Queue work, or schema-sensitive filters/sorts/select-option handling when relevant schema has not been checked in the current turn;
 - when the operator requests a cache refresh.
 If the skill writes to a conditional/live-read table, verify that write by live Airtable readback. Do not add the table to routine cache unless the cache contract is explicitly updated.
 ## Freshness and authority

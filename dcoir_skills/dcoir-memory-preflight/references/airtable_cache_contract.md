@@ -33,6 +33,13 @@ Routine re-anchor caching is intentionally limited to high-call tables that the 
 - Scope limit: Cache only active/todo/recent rows needed for queue selection when supported; use live Airtable for full backlog analysis, cleanup, or migration.
 - Required cached fields when present: Work Item, Item ID, Repo Path or Skill, Evidence / Notes, Queue Rank, canonical_parent_plan_id, Status, Priority, retention_class, updated_at
 
+
+### GitHub Workflow Inventory (task-triggered routing cache)
+- Table id/source: `TBD_AFTER_AIRTABLE_CREATION` / table name `GitHub Workflow Inventory`
+- Scope limit: Cache only when a task requires workflow selection, workflow validation, workflow source-of-truth cleanup, or workflow-lane decision support. Do not add this table to broad every-turn cache behavior.
+- Required cached fields when present: workflow_key, workflow_name, repo_path, workflow_family, status, trigger_family, routing_owner_skill, active, use_when, do_not_use_when, dispatch_inputs_summary, trigger_summary, readback_summary, safety_notes, maintenance_notes, cache_scope, retention_class, updated_at
+- Excluded fields/content: workflow source code, run logs, artifacts, payloads, report bodies, secret values, and local-only sensitive paths
+
 ## Conditional/live-read tables, not routine cache
 - `Admin Registry` (`tblFaJW1V2DPc9css`): read live only for skill-state, installed-skill drift, object-state, or registry-governance checks.
 - `Idea Inbox` (`tblWwBxwrjZF6JR3r`): read live only during idea capture/promotion, closeout, lifecycle verification, or historical audit.

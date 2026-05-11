@@ -1,3 +1,30 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-staging_lane-chatgpt-workflow-run-reporter-0007 (Airtable formula preview; final key may use table autonumber suffix)
+# Purpose:
+# - Create ChatGPT-readable completed-run reports for allowlisted workflows.
+# Use when:
+# - Use automatically through workflow_run after allowlisted workflow completions, or manually for reporter smoke checks.
+# Do not use when:
+# - Do not use for live polling of active request-id workflows; native staging workflows use their own request-scoped reports.
+# Trigger model:
+# - workflow_run completed for: validate-on-push, Dependency Review, Dependabot auto-merge, scheduled-health-check, collector-documentation-quality, refresh-skill-parity-surfaces, Workflow maintenance audit, manual-gemini-bundle-build, manual-collector-runtime-package-build, manual-collector-optional-exe-build, manual-test-framework-validate, manual-full-validation, Ops apply zip request, Ops dispatch request, Ops file delete request, Ops restructure map request, Publish Knowledge to Wiki, chatgpt-workflow-reporting-validation; workflow_dispatch inputs: note
+# Required inputs:
+# - note: Optional operator note for manual reporter smoke checks default=manual reporter smoke check
+# Required secrets/config:
+# - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
+# Runtime dependencies:
+# - Uses .github/scripts/write_workflow_report.py and GitHub CLI log fetch for failed source runs.
+# Expected outputs/readback:
+# - Reports under chatgpt_staging/status_reports/repo-workflows/<workflow-name>/<run-id>/workflow_report.md.
+# Safety notes:
+# - Do not add the reporter itself or retention cleanup to the allowlist. Update the allowlist when new report-worthy workflows are added.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
+# Airtable routing:
+# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
+# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
 name: chatgpt-workflow-run-reporter
 
 on:

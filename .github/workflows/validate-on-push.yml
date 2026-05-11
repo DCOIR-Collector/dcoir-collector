@@ -1,3 +1,30 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-validation-validate-on-push-0023 (Airtable formula preview; final key may use table autonumber suffix)
+# Purpose:
+# - Automatic scoped validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, and this workflow changes.
+# Use when:
+# - Use as the normal fast validation gate for relevant push paths and manual smoke validation.
+# Do not use when:
+# - Do not treat as full regression; manual-full-validation owns deeper collector regression.
+# Trigger model:
+# - push paths: project_sources/collector/source/**, project_sources/collector/harness/**, project_sources/collector/tools/**, project_sources/collector/manifests/**, project_sources/gemini/bundle_source/**, project_sources/gemini/tools/**, project_sources/validation/**, knowledge/Knowledge - *.md ...; workflow_dispatch
+# Required inputs:
+# - none
+# Required secrets/config:
+# - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
+# Runtime dependencies:
+# - Uses collector/Gemini packaging and validation scripts, required surface list, and selected core harness suite.
+# Expected outputs/readback:
+# - Validation artifacts and repo-workflows report.
+# Safety notes:
+# - Path coverage must be explicit in this file. If a maintained behavior should be validated here, add its watched path or validation logic directly.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
+# Airtable routing:
+# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
+# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
 name: validate-on-push
 
 # Coverage rule:

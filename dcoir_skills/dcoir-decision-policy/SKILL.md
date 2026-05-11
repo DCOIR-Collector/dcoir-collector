@@ -1,3 +1,4 @@
+<!-- skill-marker: updated-skill|20260511T203225Z|github-workflow-inventory-cache-routing|repo-update|dcoir-decision-policy|SKILL.md -->
 ---
 name: dcoir-decision-policy
 description: apply the operator default decision matrix for africom_soc_ir / dcoir project work, including branch choice, blocker recovery, grouped delivery posture, and governance decision surfacing.
@@ -337,6 +338,12 @@ Routine cache scope is intentionally narrow: cache only the high-call tables nam
 This skill is Airtable-backed only for the high-call routine tables named in `references/airtable_cache_contract.md`. Read that contract before relying on cached helper-memory, routing, preference, validation, packaging, or configuration-name state.
 
 On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate only the routine caches named in the contract. If a routine cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. Tables listed as conditional/live-read are not routine caches; read them from live Airtable only when the active task requires them. After this skill writes to a routine cached table, refresh the cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
+
+
+## GitHub Workflow Inventory decision use
+When a DCOIR task requires choosing between GitHub Actions workflows, GitHub Desktop/manual bundle work, connector actions, or local operator tools, consult Airtable table `GitHub Workflow Inventory` when available. Use it as a routing and safety input, not as executable workflow authority. If its guidance conflicts with current workflow YAML behavior, prefer the workflow body for executable facts, report drift, and route the correction through the workflow header plus Airtable row update path.
+
+Use `references/github_workflow_inventory_contract.md` for field scope and cache/readback expectations.
 
 ## Output contract
 When acting under this skill:

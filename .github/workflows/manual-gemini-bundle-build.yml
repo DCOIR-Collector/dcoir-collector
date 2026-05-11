@@ -1,3 +1,30 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-build_package-manual-gemini-bundle-build-0014 (Airtable formula preview; final key may use table autonumber suffix)
+# Purpose:
+# - Build and optionally validate the DCOIR Gemini runtime bundle.
+# Use when:
+# - Use before Gemini bundle delivery or after changes under the Gemini bundle source/tooling surfaces.
+# Do not use when:
+# - Do not use for collector runtime package generation.
+# Trigger model:
+# - workflow_dispatch inputs: bundle_version_override, skip_validation
+# Required inputs:
+# - bundle_version_override: Optional bundle version override (for example 3_0_1) default=; skip_validation: Skip validate_dcoir_gemini_bundle.py before compile default=false
+# Required secrets/config:
+# - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
+# Runtime dependencies:
+# - Uses Gemini bundle manifest/source tree and project_sources/gemini/tools/build_dcoir_gemini_release.py plus validators unless skip_validation is true.
+# Expected outputs/readback:
+# - Gemini bundle artifacts and repo-workflows report.
+# Safety notes:
+# - skip_validation=true limits readiness claims and should be documented in follow-up validation evidence.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
+# Airtable routing:
+# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
+# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
 name: manual-gemini-bundle-build
 
 on:

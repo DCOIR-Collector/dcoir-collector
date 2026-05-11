@@ -1,3 +1,30 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-build_package-manual-collector-optional-exe-build-0011 (Airtable formula preview; final key may use table autonumber suffix)
+# Purpose:
+# - Build the optional collector EXE variant and validate it with a selected harness suite.
+# Use when:
+# - Use when an optional EXE artifact is needed for operator testing or release assessment.
+# Do not use when:
+# - Do not use for the standard collector runtime package; use manual-collector-runtime-package-build.
+# Trigger model:
+# - workflow_dispatch inputs: package_version_override, exe_validation_suite, skip_ps2exe_install
+# Required inputs:
+# - package_version_override: Optional package version override forwarded to the PS1 package builder default=; exe_validation_suite: Harness suite to run against the produced optional EXE default=Core; skip_ps2exe_install: Fail if PS2EXE is not already available instead of acquiring it for the build default=false
+# Required secrets/config:
+# - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
+# Runtime dependencies:
+# - Uses collector runtime packaging scripts, PS2EXE availability/acquisition, and collector harness suites.
+# Expected outputs/readback:
+# - Optional EXE package artifacts and repo-workflows report.
+# Safety notes:
+# - Treat PS2EXE acquisition and selected suite as explicit inputs; do not claim full regression unless FullRegression is selected and passes.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
+# Airtable routing:
+# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
+# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
 name: manual-collector-optional-exe-build
 
 on:

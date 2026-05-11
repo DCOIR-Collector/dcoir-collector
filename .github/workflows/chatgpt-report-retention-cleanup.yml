@@ -1,3 +1,30 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-staging_lane-chatgpt-report-retention-cleanup-0003 (Airtable formula preview; final key may use table autonumber suffix)
+# Purpose:
+# - Clean old ChatGPT workflow status reports according to success, failure, and cleanup retention windows.
+# Use when:
+# - Use for scheduled or manual cleanup of status reports after ChatGPT has consumed needed readback evidence.
+# Do not use when:
+# - Do not use to delete source files, active evidence that must be retained, or reports that have not been reviewed.
+# Trigger model:
+# - schedule: 0 22 * * *, 0 23 * * *; workflow_dispatch inputs: dry_run, success_days, failure_days, cleanup_days, workflow_filter
+# Required inputs:
+# - dry_run: Preview cleanup without deleting reports default=false; success_days: Delete success reports at or above this age in days default=1; failure_days: Delete failure reports at or above this age in days default=7; cleanup_days: Delete cleanup reports at or above this age in days default=2; workflow_filter: Optional path/name filter; leave blank for all reports default=
+# Required secrets/config:
+# - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
+# Runtime dependencies:
+# - Uses repository status report folders under chatgpt_staging/status_reports/.
+# Expected outputs/readback:
+# - Cleanup commits and cleanup status reports under chatgpt_staging/status_reports/retention-cleanup/<run-id>/.
+# Safety notes:
+# - Cleanup must stay under chatgpt_staging/status_reports, preserve latest reports by policy, and use dry_run=true when previewing.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
+# Airtable routing:
+# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
+# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
 name: chatgpt-report-retention-cleanup
 
 on:

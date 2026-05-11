@@ -1,7 +1,7 @@
 interface:
   display_name: DCOIR Decision Policy
-  short_description: Apply the operator's default decision matrix and approval-gated
-    learning so DCOIR work can proceed with minimal clarification.
+  short_description: Apply DCOIR task-time decision gates for authority, approval,
+    lane choice, persistence, validation, and proceed/ask/stop behavior.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

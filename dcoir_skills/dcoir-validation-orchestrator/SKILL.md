@@ -1,3 +1,4 @@
+<!-- skill-marker: updated-skill|20260511T203225Z|github-workflow-inventory-cache-routing|repo-update|dcoir-validation-orchestrator|SKILL.md -->
 ---
 name: dcoir-validation-orchestrator
 description: build explicit validation plans, task-time validation gates, regression gates, evidence thresholds, readiness claims, write gate checks, post-change verification, install/readback checks, and live/readback validation for dcoir changes, skill updates, packages, airtable cleanup, github workflows, and operational workflows. use before declaring readiness, after patches, when evidence is incomplete, when validation planning/execution applies, or when a proposed airtable/governance write needs pass/fail/conditional-pass/stop-escalate review before execution.
@@ -173,3 +174,9 @@ When this table is available:
 - retire or narrow stale rows when the implementation surface changes materially
 
 Keep GitHub as the authority for executable source, packaging files, workflows, and governed readable docs. Airtable owns the dynamic manual-testing workflow state.
+
+
+## GitHub Workflow Inventory validation use
+When validating workflow documentation, workflow routing, workflow readiness claims, report-readback claims, or workflow source-of-truth cleanup, consult Airtable table `GitHub Workflow Inventory` when available. Validate that every current `.github/workflows/*.yml` file has one routing row, that the row aligns with the workflow header, and that the header aligns with executable YAML behavior.
+
+Use `references/github_workflow_inventory_contract.md` for validation targets, cache exclusions, and readiness evidence requirements.

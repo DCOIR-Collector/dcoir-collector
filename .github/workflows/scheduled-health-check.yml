@@ -1,3 +1,30 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-validation-scheduled-health-check-0022 (Airtable formula preview; final key may use table autonumber suffix)
+# Purpose:
+# - Run scheduled or manual health checks for required repo surfaces and quick smoke validation.
+# Use when:
+# - Use for routine health monitoring or when a new session needs a lightweight repo health signal.
+# Do not use when:
+# - Do not use as deep regression or release readiness proof.
+# Trigger model:
+# - schedule: 15 6 * * 1; workflow_dispatch
+# Required inputs:
+# - none
+# Required secrets/config:
+# - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
+# Runtime dependencies:
+# - Uses repository required-surface and validation smoke checks defined in the workflow.
+# Expected outputs/readback:
+# - Health-check artifact/report and repo-workflows report.
+# Safety notes:
+# - A pass is a health signal only; use targeted validation for release or workflow-specific readiness.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
+# Airtable routing:
+# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
+# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
 name: scheduled-health-check
 
 on:

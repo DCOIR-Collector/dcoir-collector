@@ -1,3 +1,4 @@
+<!-- skill-marker: updated-skill|20260511T203225Z|github-workflow-inventory-cache-routing|repo-update|dcoir-memory-preflight|SKILL.md -->
 ---
 name: dcoir-memory-preflight
 description: consult canonical dcoir task memory, airtable governance tables, helper-memory rows, dynamic skill-routing rows, and full continuity/checkpoint rules before dcoir task execution and after blocker recovery. use for session startup, re-anchor, resume, active branch recovery, checkpoint/closeout/handoff, starter prompts, task-time skill applicability checks, execution-lane choice, blocker learning, github/github desktop/tooling friction, skill-routing checks, airtable authority/schema-sensitive work, and cases where any specialist dcoir helper skill may apply.
@@ -184,6 +185,12 @@ Use Delete Queue for Airtable record/row deletion after dependency checks and ap
 Routine cache scope is intentionally narrow. Read `references/airtable_cache_contract.md` before relying on cached helper-memory, routing, preference, validation, packaging, config-name, queue, or checkpoint state.
 
 On every explicit DCOIR re-anchor/startup recovery/resume-first recovery, refresh or recreate only the routine caches named in the contract. If a routine cache is missing, unreadable, stale, or inconsistent with live schema/table identity, refresh before use. Tables listed as conditional/live-read are not routine caches; read them from live Airtable only when the active task requires them. After this skill writes to a routine cached table or Session Checkpoint, refresh the relevant cache and verify the contract-defined freshness indicator. Local cache is advisory only; live Airtable remains authority for writes, deletes, migrations, and dependency-sensitive decisions.
+
+
+## GitHub Workflow Inventory routing
+When selecting, inspecting, validating, or recommending a GitHub Actions workflow, consult Airtable table `GitHub Workflow Inventory` before relying on scattered repo docs or memory. Treat this table as workflow-routing authority only: it provides general use guidance, do-not-use guidance, trigger/readback summaries, and safety notes. The workflow YAML header owns workflow-specific execution guidance, and the workflow body remains executable source.
+
+Use `references/github_workflow_inventory_contract.md` for cache scope, authority boundaries, included fields, exclusions, refresh triggers, and validation requirements. Do not cache workflow source code, logs, artifacts, payloads, or secrets.
 
 ## Output contract
 Return these sections when acting as a full preflight:

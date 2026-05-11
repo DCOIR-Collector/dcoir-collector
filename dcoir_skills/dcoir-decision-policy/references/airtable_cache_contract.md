@@ -9,6 +9,13 @@ Routine re-anchor caching is intentionally limited to high-call tables that the 
 ### Operator Preferences
 - Table id/source: `tblnxZ3eLPT3W38wl`
 - Required cached fields when present: preference_key, preference_statement, effective_behavior, last_confirmed_text, notes, status, scope, retention_class, curation_decision, updated_at
+
+### GitHub Workflow Inventory (task-triggered routing cache)
+- Table id/source: `TBD_AFTER_AIRTABLE_CREATION` / table name `GitHub Workflow Inventory`
+- Scope limit: Cache only when a task requires workflow selection, workflow validation, workflow source-of-truth cleanup, or workflow-lane decision support. Do not add this table to broad every-turn cache behavior.
+- Required cached fields when present: workflow_key, workflow_name, repo_path, workflow_family, status, trigger_family, routing_owner_skill, active, use_when, do_not_use_when, dispatch_inputs_summary, trigger_summary, readback_summary, safety_notes, maintenance_notes, cache_scope, retention_class, updated_at
+- Excluded fields/content: workflow source code, run logs, artifacts, payloads, report bodies, secret values, and local-only sensitive paths
+
 ## Conditional/live-read tables, not routine cache
 - `Admin Registry` (`tblFaJW1V2DPc9css`): read live only for administrative skill-state/object-state or cleanup governance decisions.
 

@@ -1,3 +1,30 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-maintenance-refresh-skill-parity-surfaces-0021 (Airtable formula preview; final key may use table autonumber suffix)
+# Purpose:
+# - Regenerate skill parity manifest and summary after dcoir_skills or skill_parity tooling changes.
+# Use when:
+# - Use after skill source changes to refresh repo parity surfaces.
+# Do not use when:
+# - Do not use as proof that installed skills were manually updated; installed-skill readback remains separate.
+# Trigger model:
+# - workflow_dispatch; push paths: dcoir_skills/**, tools/skill_parity/**, !dcoir_skills/skill_parity_manifest.json, !dcoir_skills/skill_parity_summary.md
+# Required inputs:
+# - none
+# Required secrets/config:
+# - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
+# Runtime dependencies:
+# - Uses tools/skill_parity/build_skill_parity_manifest.py and render_skill_parity_summary.py.
+# Expected outputs/readback:
+# - Updated dcoir_skills/skill_parity_manifest.json and dcoir_skills/skill_parity_summary.md.
+# Safety notes:
+# - Parity surfaces describe repo source. Manual install/readback must still verify installed SKILL.md markers and resources.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
+# Airtable routing:
+# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
+# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
 name: refresh-skill-parity-surfaces
 
 on:

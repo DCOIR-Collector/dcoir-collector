@@ -1,11 +1,12 @@
-# Workflow lanes index
+# Superseded workflow guidance pointer
 
-Status: new-session index for ChatGPT-controlled workflow lanes.
+Status: retained pointer/stub. This file is no longer the authoritative source for current workflow routing or workflow execution guidance.
 
-| Lane | Use for | Status | Output/readback |
-|---|---|---|---|
-| `chatgpt-exec` | approved command execution and bulk operational work | `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md` and `progress_history.jsonl` | `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/artifact_readback/` |
-| `chatgpt-apply-in` / `chatgpt-in` | governed repo patches from a payload manifest | `chatgpt_staging/status_reports/chatgpt-apply-in/<request_id>/workflow_report.md` and `progress_history.jsonl` | native apply-in report embedded in `workflow_report.md`; use `artifact_readback/` only if generated |
-| `chatgpt-stage-out` | repo/file packaging for ChatGPT readback | `chatgpt_staging/status_reports/chatgpt-stage-out/<request_id>/workflow_report.md` and `progress_history.jsonl` | `chatgpt_staging/out/<request_id>/` |
+Current source-of-truth model:
 
-Read exact request-id heartbeat paths first. ZIP artifacts are supplemental.
+- Airtable table `GitHub Workflow Inventory` owns general GitHub Actions workflow routing guidance.
+- The top comment block in each `.github/workflows/*.yml` file owns workflow-specific execution guidance.
+- The workflow YAML body remains the executable source of truth.
+- Workflow status reports under `chatgpt_staging/status_reports/` are readback/evidence surfaces, not durable workflow-use documentation.
+
+Use this file only as a historical locator. Do not update it with new workflow-use instructions. Update the relevant workflow header and Airtable row instead.

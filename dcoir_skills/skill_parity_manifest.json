@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "AFRICOM_SOC_IR / DCOIR",
-  "generated_at_utc": "2026-05-07T19:10:38Z",
+  "generated_at_utc": "2026-05-11T18:39:08Z",
   "baseline_origin": "repo_source",
   "hash_policy": {
     "file_hash": "sha256",
@@ -12,12 +12,12 @@
   "skills": {
     "dcoir-airtable-schema-cache": {
       "source_root": "dcoir-airtable-schema-cache",
-      "source_tree_hash": "b65a7aa83e23aa182951c735490cd5a7689da3da2fe00a6fade2c68359f31037",
+      "source_tree_hash": "fde48b376e5cffeb8aebd67f135fea41db69b58c4e0e7bf850b9846558977e4e",
       "release_zip_name": "dcoir-airtable-schema-cache.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 8,
-      "total_bytes": 26594,
+      "total_bytes": 27230,
       "files": [
         {
           "path": "SKILL.md",
@@ -36,13 +36,13 @@
         },
         {
           "path": "references/airtable_cache_contract.md",
-          "sha256": "8b91cc92a2df526ae44771e70ae64e9ae0f922350b93b20e2b28428876daaa2c",
-          "size_bytes": 3582
+          "sha256": "697e0a16457d50f0c0621f99228269d202c9b16cd39eafd9f805501c7357c664",
+          "size_bytes": 3796
         },
         {
           "path": "references/cache_contract.md",
-          "sha256": "b7fbac8626a1b4c9ba9c242d62aa5308f871f74be3ff7132b31d97edcdb255b2",
-          "size_bytes": 1921
+          "sha256": "88bb4e70f29748d1ea3a33e92c30280638f4e51f1a8361faea62747d1a9fb665",
+          "size_bytes": 2343
         },
         {
           "path": "references/current_operational_tables.json",
@@ -63,22 +63,22 @@
     },
     "dcoir-decision-policy": {
       "source_root": "dcoir-decision-policy",
-      "source_tree_hash": "8243ffc5723dc94538c0e9e68a443a5ef6b0c43378e62b12fde0a957902aa91e",
+      "source_tree_hash": "08de2b0e07ae1836ebba30af834b7656dd0da24726d46c5726251379a5f32603",
       "release_zip_name": "dcoir-decision-policy.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 17,
-      "total_bytes": 83603,
+      "file_count": 18,
+      "total_bytes": 87912,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "3326211a621639788e3f7135288d632da86c3b1c8c6b30b81da886c4410964f1",
-          "size_bytes": 31772
+          "sha256": "581ee2508f3cfde0e034635d2ee20d4a0c8fdcb00d81d58f364eba5e66e3c771",
+          "size_bytes": 32558
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "bfb29d585a419b31ba1e1f5992865c6e2df8fb910b5ed12cb45d1903a2fec515",
-          "size_bytes": 355
+          "sha256": "115f5ef45136de9f89ccf964ea9f9e13489b9751b628152aaf3ff1d1f256fa81",
+          "size_bytes": 359
         },
         {
           "path": "assets/icon.svg",
@@ -87,8 +87,8 @@
         },
         {
           "path": "references/airtable_cache_contract.md",
-          "sha256": "482259cba11531af63b4224d299ea6cab75fb84fddf0714808e70fef46fe1eb0",
-          "size_bytes": 3875
+          "sha256": "c8534ea096f5176409e305f49658fdf718304e3d53ef1210e94bb351d6cf42cf",
+          "size_bytes": 4694
         },
         {
           "path": "references/airtable_memory_workflow.md",
@@ -114,6 +114,11 @@
           "path": "references/decision_matrix.md",
           "sha256": "32ec576dd3f70b97f289308a667dc1ba6fd16642834efcdaf64449cd8fc2eb80",
           "size_bytes": 5802
+        },
+        {
+          "path": "references/github_workflow_inventory_contract.md",
+          "sha256": "41e48303dc6acb0ecddc69bd5c3c6ff085e5f297cf998ac16b8fee9709e2caa0",
+          "size_bytes": 2700
         },
         {
           "path": "references/hard_stop_conditions.md",
@@ -205,12 +210,12 @@
     },
     "dcoir-local-config-registry-maintainer": {
       "source_root": "dcoir-local-config-registry-maintainer",
-      "source_tree_hash": "35197f27e57a0786d560c3587c23df391394a51fdea1f7ebd1430bdb5aed1c93",
+      "source_tree_hash": "e60484931e4ea989c26369c2bae067d1cd97b65d82e27b254b643f5d1a2a8618",
       "release_zip_name": "dcoir-local-config-registry-maintainer.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 7,
-      "total_bytes": 26078,
+      "total_bytes": 28966,
       "files": [
         {
           "path": "SKILL.md",
@@ -219,13 +224,13 @@
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "0dc4a80455a8656935055ae888655fe9b60127784b79576e2f35d27ca056095b",
-          "size_bytes": 194
+          "sha256": "8f14de86a48b40bc814c1982b6fca65a625c5739662be9b147c68c8a54cd2f60",
+          "size_bytes": 348
         },
         {
           "path": "assets/icon.svg",
-          "sha256": "3aaefde839a05a3c2afbc138aac4a658e50ab10713be77cb6b327cbb692b7c7a",
-          "size_bytes": 188
+          "sha256": "fbb6c7314886573cd56c3f86884a65afe3b5f4ce4bf1ee6baeeeb1fa50aea7a4",
+          "size_bytes": 2922
         },
         {
           "path": "references/airtable_cache_contract.md",
@@ -251,32 +256,32 @@
     },
     "dcoir-memory-preflight": {
       "source_root": "dcoir-memory-preflight",
-      "source_tree_hash": "da9c46c8bc0e705a095248cc47f14f0aa67c09ccc6de0ee31360fb2dd4828826",
+      "source_tree_hash": "7ca446a3e59ec51637d831e1cd94883810306dbdc995bf3c0dbe9eb6f61c96e6",
       "release_zip_name": "dcoir-memory-preflight.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 15,
-      "total_bytes": 55301,
+      "file_count": 16,
+      "total_bytes": 61462,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "24ac053e7539ccebd2e59f1b5861392491b0f704df9d68a3dc1f5e7713e077a7",
-          "size_bytes": 19978
+          "sha256": "aaa4aa148711a599601a34a7ad400452b1a841b569dca14f4c1b75e4db7873a4",
+          "size_bytes": 20854
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "7e281ab92301e8ec445f7ac36e4adcbf418cefd7e0f0f7b73b250c638dc12134",
-          "size_bytes": 308
+          "sha256": "1d5ad5aea49c689765bc17710a5339c4214ac0ec99c288f2c5ef6d4ce1cf7620",
+          "size_bytes": 312
         },
         {
           "path": "assets/icon.svg",
-          "sha256": "e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b",
-          "size_bytes": 420
+          "sha256": "51a6923974188748638a424aa59b42b6afad2d910f910a1d43bb13ee10f3ce26",
+          "size_bytes": 2182
         },
         {
           "path": "references/airtable_cache_contract.md",
-          "sha256": "fe66438233df104772085853327572493fc02058b0973af283cf9fad994a240d",
-          "size_bytes": 5791
+          "sha256": "60d2e30eecd0bccc8f8b5c788044d53144039ca9f7ab05b0e1d9553b4d4a8f44",
+          "size_bytes": 6610
         },
         {
           "path": "references/airtable_memory_workflow.md",
@@ -292,6 +297,11 @@
           "path": "references/github_memory_query_map.md",
           "sha256": "45a5c8c9dc4424ba30eb0cba4da780a827b2d3f1e533586878a5747bc1d30279",
           "size_bytes": 1645
+        },
+        {
+          "path": "references/github_workflow_inventory_contract.md",
+          "sha256": "41e48303dc6acb0ecddc69bd5c3c6ff085e5f297cf998ac16b8fee9709e2caa0",
+          "size_bytes": 2700
         },
         {
           "path": "references/post_blocker_classification.md",
@@ -393,53 +403,53 @@
     },
     "dcoir-session-manager": {
       "source_root": "dcoir-session-manager",
-      "source_tree_hash": "3438456cdc0aa55b3953685bbd1f80e85c1dbe292bdc3e70752c3f50091a141c",
+      "source_tree_hash": "f6d768567322ea149f85e0cbd464814dccfc439af93dc2171f664680022d1882",
       "release_zip_name": "dcoir-session-manager.zip",
       "release_zip_hash": "",
       "status": "verified",
       "file_count": 5,
-      "total_bytes": 17779,
+      "total_bytes": 18000,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "d51f59ca11a4bf0e9e63059db63568c838bdc5710ad219d79db193eee74ca46d",
-          "size_bytes": 10227
+          "sha256": "ff87463fa1e6c9f904acdc7c42b059b76c61eb5b7175198c711a6ac4067e7bfe",
+          "size_bytes": 10342
         },
         {
           "path": "agents/openai.yaml",
-          "sha256": "ad930349e87c0ae22337d07acbe0e990eaa267b37276eec0831971e635a20fe9",
-          "size_bytes": 197
+          "sha256": "9be2ccd9bf061f6bf4a98dce9c2b2e3b53d9b34516d76eb5af8c7a31fef46b76",
+          "size_bytes": 202
         },
         {
           "path": "assets/icon.svg",
-          "sha256": "2e8158af44a1016257017868c524268175eeee2dfaf36c4ec9dcad3cbbacc9bf",
-          "size_bytes": 350
+          "sha256": "d2a5348b812b0a3739309f50b6c81f0035f7486ebb4b7f5d386612bf72adc1a9",
+          "size_bytes": 351
         },
         {
           "path": "references/airtable_cache_contract.md",
-          "sha256": "ed0e1ae4d19b58fa9645aa953a99c8fe4b02f6093fe02b5815bb9704b034cb6a",
-          "size_bytes": 4900
+          "sha256": "3bcd1c7cae00128d1b950bf0fa7aae4221f87accb300cef5a8c30f0d30af961f",
+          "size_bytes": 4968
         },
         {
           "path": "references/session_checkpoint_and_closeout_workflow.md",
-          "sha256": "c48986eb28d2adfeac24df91ef5c0f8bb647ef05c4cd31989cd102aa1c5cb52c",
-          "size_bytes": 2105
+          "sha256": "d710ad1f573f9a9efda07358e98999f305bcec72536d5843b5085314e5143eac",
+          "size_bytes": 2137
         }
       ]
     },
     "dcoir-validation-orchestrator": {
       "source_root": "dcoir-validation-orchestrator",
-      "source_tree_hash": "88806a832dc82d0322147776c46293cf2d17c74ae586e03b1e45ae3b7739348f",
+      "source_tree_hash": "22624a59f8bceafc03f17c5f3357e7e51a5f28521f38fcc88169cf9c127df5ac",
       "release_zip_name": "dcoir-validation-orchestrator.zip",
       "release_zip_hash": "",
       "status": "verified",
-      "file_count": 12,
-      "total_bytes": 46009,
+      "file_count": 13,
+      "total_bytes": 50617,
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "67ee0bb50d42a87d3e7de9e118db772df3a73252c3ebebc5541eeb9cf1227200",
-          "size_bytes": 15490
+          "sha256": "3a94079acb441d55393010aa6ff68a50eec6474b15d52ddd4452f7c9a2274e9c",
+          "size_bytes": 16213
         },
         {
           "path": "agents/openai.yaml",
@@ -448,13 +458,13 @@
         },
         {
           "path": "assets/icon.svg",
-          "sha256": "e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b",
-          "size_bytes": 420
+          "sha256": "72343cc4b66256ae7de8474c7cad14e711ad84a94c473732a44f96a56124c42d",
+          "size_bytes": 786
         },
         {
           "path": "references/airtable_cache_contract.md",
-          "sha256": "e107adb99cd043afa7376e0e241b465773443b7665ecf506fd4dc213ca002784",
-          "size_bytes": 3927
+          "sha256": "5224cba1aa8a370c5f13427a339219ccd1bdb29e83f9ab57f427d3dbce966b98",
+          "size_bytes": 4746
         },
         {
           "path": "references/airtable_memory_workflow.md",
@@ -470,6 +480,11 @@
           "path": "references/airtable_write_gate.md",
           "sha256": "25b07d9c7b122b4315e5d454d7fcee082f3b27899a95233f3b34ba865163345d",
           "size_bytes": 1921
+        },
+        {
+          "path": "references/github_workflow_inventory_contract.md",
+          "sha256": "41e48303dc6acb0ecddc69bd5c3c6ff085e5f297cf998ac16b8fee9709e2caa0",
+          "size_bytes": 2700
         },
         {
           "path": "references/task_time_validation_gate.md",
@@ -498,10 +513,5 @@
         }
       ]
     }
-  },
-  "contract": {
-    "path": "dcoir_skills/project_discovery_contract.json",
-    "sha256": "96221ff172daf4b51bd11c2b185431325e917288c70c1f44462590906e804d96",
-    "size_bytes": 7763
   }
 }
