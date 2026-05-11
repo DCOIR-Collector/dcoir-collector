@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.cleanup_request.v1",
+  "request_id": "applyin-20260511-gemini-usb-subagent-clean-001",
+  "cleanup_requests": false,
+  "cleanup_in_payloads": true,
+  "cleanup_out_bundles": false,
+  "cleanup_apply_reports": true,
+  "cleanup_failure_reports": false,
+  "cleanup_status_reports": true,
+  "delete_marker_after_success": true,
+  "reason": "USB Gemini source changes were completed through GitHub Desktop commit 71eeccab1497447d19b65ec7914710d23651f418. The old apply-in payload and related status/apply reports are stale cleanup artifacts."
+}
