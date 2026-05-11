@@ -1,3 +1,0 @@
-hello from stdout smoke
-Smoke output directory: D:\a\_temp\dcoir_chatgpt_exec\smoke-exec-artifact-readback-002\downloads\exec_artifact_readback_smoke_001
-

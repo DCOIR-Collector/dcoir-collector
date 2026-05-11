@@ -1,9 +1,0 @@
-D:\a\dcoir-collector\dcoir-collector\chatgpt_staging\exec_scripts\smoke_exec_artifact_readback_001.ps1 : hello from 
-stderr smoke
-At D:\a\_temp\dcoir_chatgpt_exec\smoke-exec-artifact-readback-002\approved_command.ps1:1 char:1
-+ & 'D:\a\dcoir-collector\dcoir-collector\chatgpt_staging\exec_scripts\ ...
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
-    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,smoke_exec_artifact_readback_001.ps1
- 
-

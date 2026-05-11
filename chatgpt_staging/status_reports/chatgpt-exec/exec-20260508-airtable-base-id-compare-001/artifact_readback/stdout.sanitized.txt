@@ -1,5 +1,0 @@
-Airtable base-id compare complete
-Configured matches expected: True
-Configured length: 17
-Output directory: D:\a\_temp\dcoir_chatgpt_exec\exec-20260508-airtable-base-id-compare-001\downloads\airtable_base_id_compare_001
-
