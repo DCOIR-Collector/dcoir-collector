@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25667515870",
   "github_sha": "0b37e130490ec68ef8bf21513bc93b57c94a0fe1",
-  "phase": "running-stage-out",
+  "phase": "bundle-created",
   "request_id": "stageout-20260511-prime-agent-readback-001",
   "request_path": "chatgpt_staging/requests/stageout-20260511-prime-agent-readback-001.json",
-  "result": "running",
+  "result": "success",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-11T11:32:18Z",
+  "updated_utc": "2026-05-11T11:32:20Z",
   "workflow": "chatgpt-stage-out"
 }
