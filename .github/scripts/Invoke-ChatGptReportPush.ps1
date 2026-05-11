@@ -56,13 +56,20 @@ foreach ($path in $ExpandedPaths) { Write-Host "  $path" }
 
 $StagePaths = @()
 foreach ($pathToStage in $ExpandedPaths) {
-  if (Test-Path -LiteralPath $pathToStage) {
+  $tracked = & git -c core.longpaths=true ls-files --error-unmatch -- $pathToStage 2>$null
+  $isTracked = ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace(($tracked | Out-String)))
+
+  if ($isTracked) {
     $StagePaths += $pathToStage
     continue
   }
 
-  $tracked = & git -c core.longpaths=true ls-files --error-unmatch -- $pathToStage 2>$null
-  if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace(($tracked | Out-String))) {
+  if (Test-Path -LiteralPath $pathToStage) {
+    & git -c core.longpaths=true check-ignore -q -- $pathToStage 2>$null
+    if ($LASTEXITCODE -eq 0) {
+      Write-Host "Skipping ignored untracked report path: $pathToStage"
+      continue
+    }
     $StagePaths += $pathToStage
     continue
   }
@@ -136,4 +143,5 @@ for ($attempt = 1; $attempt -le $MaxAttemptCount; $attempt++) {
 Write-Warning "Report push failed after $MaxAttemptCount attempts."
 if ($RequirePush) { exit 1 }
 exit 0
+
 
