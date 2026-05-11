@@ -1,4 +1,4 @@
-param(
+﻿param(
   [Parameter(Mandatory=$true)][string]$CommitMessage,
   [Parameter(Mandatory=$true)][string[]]$Paths,
   [object]$MaxAttempts = 5,
@@ -54,7 +54,33 @@ if ($ExpandedPaths.Count -eq 0) {
 Write-Host "Staging report paths for: $CommitMessage"
 foreach ($path in $ExpandedPaths) { Write-Host "  $path" }
 
-& git -c core.longpaths=true add -A -- @ExpandedPaths
+$StagePaths = @()
+foreach ($pathToStage in $ExpandedPaths) {
+  if (Test-Path -LiteralPath $pathToStage) {
+    $StagePaths += $pathToStage
+    continue
+  }
+
+  $tracked = & git -c core.longpaths=true ls-files --error-unmatch -- $pathToStage 2>$null
+  if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace(($tracked | Out-String))) {
+    $StagePaths += $pathToStage
+    continue
+  }
+
+  Write-Host "Skipping absent untracked report path: $pathToStage"
+}
+
+$StagePaths = @($StagePaths | Select-Object -Unique)
+if ($StagePaths.Count -eq 0) {
+  Write-Host "No existing or tracked report paths to stage for: $CommitMessage"
+  if ($RequirePush) {
+    Write-Error "Required report push had no stageable paths for: $CommitMessage"
+    exit 1
+  }
+  exit 0
+}
+
+& git -c core.longpaths=true add -A -- @StagePaths
 $addExit = $LASTEXITCODE
 if ($addExit -ne 0) {
   Write-Warning "git add failed with exit code $addExit for: $CommitMessage"
@@ -110,3 +136,4 @@ for ($attempt = 1; $attempt -le $MaxAttemptCount; $attempt++) {
 Write-Warning "Report push failed after $MaxAttemptCount attempts."
 if ($RequirePush) { exit 1 }
 exit 0
+
