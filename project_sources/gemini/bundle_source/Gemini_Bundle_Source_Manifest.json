@@ -1,7 +1,7 @@
 {
   "bundle_name": "DCOIR_Gemini_Email_Build_Bundle",
-  "bundle_version": "3_0_4",
-  "top_level_folder": "DCOIR_Gemini_Email_Build_Bundle_3_0_4",
+  "bundle_version": "3_0_5",
+  "top_level_folder": "DCOIR_Gemini_Email_Build_Bundle_3_0_5",
   "source_strategy": "stored_source_compile_with_direct_knowledge_attachment_generation",
   "authoritative_runtime_source": "project_sources/gemini/bundle_source",
   "behavioral_authority": [
@@ -26,7 +26,8 @@
       "01_GEMINI_AGENT_BUILD/Sub_Agent_07_DCOIR_Collector_Artifact_Interpreter_and_Report_Extractor.md.txt",
       "01_GEMINI_AGENT_BUILD/Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt",
       "01_GEMINI_AGENT_BUILD/Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt",
-      "01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt"
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt",
+      "01_GEMINI_AGENT_BUILD/Sub_Agent_11_USB_Violations_Report_Composer.md.txt"
     ],
     "generated_index_file": "01_GEMINI_AGENT_BUILD/Generated_DCOIR_Gemini_Agent_Index.md.txt",
     "quick_start_file": "00_START_HERE/Gemini_Build_Quick_Start.md.txt"
@@ -47,7 +48,8 @@
     "01_GEMINI_AGENT_BUILD/Sub_Agent_07_DCOIR_Collector_Artifact_Interpreter_and_Report_Extractor.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt",
-    "01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt"
+    "01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt",
+    "01_GEMINI_AGENT_BUILD/Sub_Agent_11_USB_Violations_Report_Composer.md.txt"
   ],
   "authoritative_knowledge_source": "knowledge",
   "generated_knowledge_attachment_dir": "02_PRIME_AGENT_ATTACHMENTS",

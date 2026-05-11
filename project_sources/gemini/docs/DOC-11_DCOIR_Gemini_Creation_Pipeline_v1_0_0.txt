@@ -8,7 +8,7 @@ Purpose
 Current authority and source model
 - PP-01 through PP-07 remain design-time behavioral authority.
 - `project_sources/gemini/bundle_source/` remains the editable runtime source tree.
-- `Gemini_Bundle_Source_Manifest.json.txt` remains the compile contract and now also carries the explicit topology contract.
+- `Gemini_Bundle_Source_Manifest.json` remains the compile contract and now also carries the explicit topology contract.
 - Ordinary shipment remains validation plus compilation, not ad hoc regeneration.
 
 Topology truth rules
@@ -18,6 +18,7 @@ Topology truth rules
   - the expected sub-agent count
   - the required-file set that must ship
 - Validation must compare the manifest topology against the actual source-tree contents and fail on drift.
+- Workflow required-surface validation must read Gemini bundle required files from the manifest rather than duplicating hardcoded sub-agent file lists.
 
 Required behavior when adding or removing sub-agents
 1. Edit the relevant runtime source files in `project_sources/gemini/bundle_source/`.
@@ -43,4 +44,4 @@ Hard rules
 - Keep the validation summary explicit enough that the operator can see the manifest-listed and discovered sub-agent counts.
 
 Recommended next move
-- Use the manifest-driven topology contract for the larger major-version Gemini runtime bundle, then validate the new ten-sub-agent topology through the associated Actions workflow before tomorrow's functionality test.
+- Use the manifest-driven topology contract for the larger major-version Gemini runtime bundle, then validate the current manifest-listed sub-agent topology through the associated Actions workflow before tomorrow's functionality test.

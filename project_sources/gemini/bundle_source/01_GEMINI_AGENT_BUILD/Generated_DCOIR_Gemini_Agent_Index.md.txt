@@ -1,6 +1,6 @@
 # Generated DCOIR Gemini Agent Index
 
-Bundle version: 3_0_4
+Bundle version: 3_0_5
 
 ## Prime agent
 - Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt
@@ -16,6 +16,7 @@ Bundle version: 3_0_4
 - 08. Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt
 - 09. Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt
 - 10. Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt
+- 11. Sub_Agent_11_USB_Violations_Report_Composer.md.txt
 
 ## Major-version feature coverage
 - explicit collector-artifact interpretation
@@ -23,4 +24,5 @@ Bundle version: 3_0_4
 - targeted collection design
 - stricter singular-command consistency
 - stronger false-positive-aware handling of known products
+- weekly USB violations report composition with conservative data validation, SNOW-prefix classification, NIPR/SIPR split handling, and exact plaintext email block output
 - extremely verbose description and instruction fields for predictable behavior

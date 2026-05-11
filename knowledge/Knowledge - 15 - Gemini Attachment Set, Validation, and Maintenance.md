@@ -54,7 +54,7 @@ When the knowledge set changes:
 2. Let the build regenerate `.md.txt` attachment files from the maintained sources.
 3. Update the attachment map.
 4. Update the manifest required-files list.
-5. Update GitHub Actions required-surface checks.
+5. Update GitHub Actions required-surface checks when non-manifest-governed surfaces change; Gemini topology required-file enforcement should remain manifest-driven.
 6. Add or update Airtable validation rows if runtime behavior changed.
 
 ---
@@ -66,7 +66,7 @@ After attachment changes, verify:
 - every required attachment exists;
 - maintained sources and generated attachment inventory match;
 - manifest and attachment map include the same inventory;
-- workflow checks enforce the current count and required files;
+- workflow checks derive Gemini required files from the manifest and enforce required files without duplicating sub-agent counts;
 - agent instructions reference the correct attachment surfaces;
 - no stale duplicated filler or meta-writing text remains.
 

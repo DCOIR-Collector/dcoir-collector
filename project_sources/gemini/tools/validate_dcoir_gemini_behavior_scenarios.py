@@ -47,6 +47,14 @@ SCENARIOS = {
             ['state', 'current', 'resume', 'repeatable', 'continuity'],
         ],
     },
+    'GeminiUSBViolationsReportComposer': {
+        'description': 'The stored Gemini source should preserve the weekly USB violations report workflow, conservative parsing, Stuttgart date-window handling, SNOW-prefix classification, and NIPR/SIPR split output rules.',
+        'all_markers': ['usb violations', 'stuttgart', 'last friday', 'this friday', 'snow ticket', 'incn', 'incs', 'nipr', 'sipr', 'on-site', 'off-site/vpn', 'plaintext'],
+        'any_marker_groups': [
+            ['last week', "last week's"],
+            ['weekly usb violations', 'recipient', 'message draft'],
+        ],
+    },
 }
 
 

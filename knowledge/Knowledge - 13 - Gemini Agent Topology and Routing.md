@@ -2,7 +2,7 @@
 
 _Gemini prime-agent and sub-agent routing model_
 
-**Summary:** The current Gemini topology is one prime agent plus ten specialist sub-agents. The prime routes work; specialists own bounded lanes.
+**Summary:** The current Gemini topology is one prime agent plus eleven specialist sub-agents. The prime routes work; specialists own bounded lanes.
 
 ---
 
@@ -16,7 +16,7 @@ The prime agent owns:
 - evidence-first discipline;
 - final response coordination.
 
-The prime should not duplicate every specialist’s job.
+The prime should not duplicate every specialist's job.
 
 ---
 
@@ -34,6 +34,7 @@ The prime should not duplicate every specialist’s job.
 | 08 IOC Parsing and Public Enrichment Planner | indicator parsing and bounded public enrichment |
 | 09 Targeted Collection Designer | narrow evidence-gap reduction and targeted collection design |
 | 10 Output Contract Guard | final structure, decision state, and output consistency |
+| 11 USB Violations Report Composer | weekly USB violations report validation, SNOW-prefix classification, NIPR/SIPR split handling, and exact plaintext email block drafting |
 
 ---
 
@@ -44,12 +45,13 @@ The prime should not duplicate every specialist’s job.
 - Use IOC enrichment only for evidence-grounded indicators.
 - Use targeted collection when a narrow evidence gap exists.
 - Use final-output enforcement only after the evidence path is clear.
+- Use the USB Violations Report Composer only when the operator explicitly asks to prepare, validate, draft, or convert weekly USB violations report material.
 
 ---
 
 ## Grounding boundary
 
-Routing text must not imply that a search, connector lookup, retrieval action, or collector run happened unless that action was actually available and performed.
+Routing text must not imply that a search, connector lookup, retrieval action, collector run, or USB report dataset parsing happened unless that action was actually available and performed.
 
 ---
 
@@ -61,6 +63,7 @@ Topology changes should be checked against:
 - generated agent index;
 - prime-agent routing text;
 - sub-agent descriptions/instructions;
+- behavior scenario validation;
 - scenario validation rows in Airtable.
 
 ---

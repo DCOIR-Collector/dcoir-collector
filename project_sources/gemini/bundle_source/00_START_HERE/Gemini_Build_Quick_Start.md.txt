@@ -10,9 +10,10 @@ This major-version build expands the bundle from a narrower alert-triage-plus-co
 - the operator may start from retrieved artifacts
 - the operator may start from an IOC package in mixed format
 - the operator may need a targeted collection design instead of a broad baseline
+- the operator may need a recurring weekly USB violations report workflow from structured CSV, XLSX, pasted table, or copied spreadsheet data
 - the operator may need a much richer shared attachment set that explains both the collector line and the Gemini runtime line in stand-alone detail
 
-The active agent topology now includes ten sub-agents:
+The active agent topology now includes eleven sub-agents:
 1. Session readiness and intake
 2. Environment, coverage, and schema mapping
 3. Alert-family classification and known-benign-technology differentiation
@@ -23,6 +24,7 @@ The active agent topology now includes ten sub-agents:
 8. IOC parsing and evidence-grounded public enrichment planning
 9. Targeted collection design and evidence-gap reduction
 10. Output-contract consistency guard and report composition
+11. USB violations report composition
 
 The active shared attachment set now includes fifteen knowledge pages:
 - 01 through 11 preserve the collector, workflow, troubleshooting, FAQ, and prior Gemini posture material
@@ -38,6 +40,9 @@ Starter Prompt 2:
 
 Starter Prompt 3:
 "I have a mixed IOC package in CSV, PDF text, and copied notes. Parse the indicators, classify them by type, show them in analyst-facing grouped form, then give me the narrowest useful KQL, ESQL, response-action, and collector follow-up options."
+
+Starter Prompt 4:
+"I need to prepare the weekly USB violations report. I will provide the USB violations source data and last week's overall count. Validate the data conservatively, ask before guessing, split NIPR/SIPR if needed, and draft the exact plaintext email blocks."
 
 ## Build process
 
@@ -58,5 +63,6 @@ Every serious review of the current bundle should explicitly cover:
 - false-positive-aware handling of known enterprise products
 - SINGULAR TRIAGE COMMAND consistency
 - leadership-writeup behavior
+- weekly USB violations report behavior, including Friday/date-window handling, conservative CSV/XLSX parsing, missing-field checks, SNOW-prefix classification, NIPR/SIPR split output, and exact plaintext recipient, subject, and body blocks
 - attachment-map, manifest, and maintained-knowledge alignment
 - ordinary direct generation/build behavior when the shared knowledge set changes
