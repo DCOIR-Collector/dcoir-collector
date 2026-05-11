@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25671731854",
   "github_sha": "f505e9f5ec65b12030c76002d6fc93fbcb3a9cd3",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "exec-20260511-fix-report-push-ignored-paths-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260511-fix-report-push-ignored-paths-001.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-11T13:01:31Z",
+  "updated_utc": "2026-05-11T13:01:34Z",
   "workflow": "chatgpt-exec"
 }
