@@ -1,0 +1,15 @@
+{
+  "artifact_name": "",
+  "exit_code": "",
+  "github_ref": "refs/heads/main",
+  "github_run_attempt": "1",
+  "github_run_id": "25668481165",
+  "github_sha": "f3a4d9fb73026f5a1b89682dec02d4532a5b3bef",
+  "phase": "request-resolved",
+  "request_id": "exec-20260511-build-usb-gemini-applyin-payload-001",
+  "request_path": "chatgpt_staging/exec_requests/exec-20260511-build-usb-gemini-applyin-payload-001.json",
+  "result": "running",
+  "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
+  "updated_utc": "2026-05-11T11:53:47Z",
+  "workflow": "chatgpt-exec"
+}
