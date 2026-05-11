@@ -3,13 +3,13 @@
   "exit_code": "",
   "github_ref": "refs/heads/main",
   "github_run_attempt": "1",
-  "github_run_id": "25671952184",
-  "github_sha": "ec37d2f27097bfe47afbeb7e2f96626eabbdf395",
-  "phase": "running-apply-in",
+  "github_run_id": "25676108943",
+  "github_sha": "bf79a64134a1d7685a7e295dd24e267f3bc17883",
+  "phase": "payload-resolved",
   "request_id": "applyin-20260511-gemini-usb-subagent-clean-001",
   "request_path": "chatgpt_staging/in/applyin-20260511-gemini-usb-subagent-clean-001/payload.zip.b64",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-11T13:05:43Z",
+  "updated_utc": "2026-05-11T14:23:55Z",
   "workflow": "chatgpt-apply-in"
 }
