@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260511-build-usb-gemini-applyin-payload-001",
+  "operator_approved": true,
+  "script_path": "chatgpt_staging/exec_scripts/build_usb_gemini_applyin_payload_min_001.ps1",
+  "approved_command_preview": "Run approved repo script to generate and stage one chatgpt-apply-in payload for the USB Gemini sub-agent correction batch.",
+  "shell": "powershell_5",
+  "timeout_seconds": 900,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true
+}
