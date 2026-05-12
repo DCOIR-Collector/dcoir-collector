@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Dict, List
 
@@ -52,12 +53,12 @@ def gather_text(paths: List[Path]) -> str:
     return '\n'.join(parts)
 
 
-def marker_count(text: str, labels: List[str]) -> int:
-    lowered = text.lower()
-    total = 0
-    for label in labels:
-        total += lowered.count(label.lower())
-    return total
+def markdown_heading_or_label_count(text: str, label: str) -> int:
+    patterns = [
+        rf'(?im)^\s*###\s+{re.escape(label)}\s*$',
+        rf'(?im)^\s*{re.escape(label)}\s*:',
+    ]
+    return sum(len(re.findall(pattern, text)) for pattern in patterns)
 
 
 def main() -> int:
@@ -82,11 +83,18 @@ def main() -> int:
         errors.append(f'source_strategy must be {expected_strategy} for direct Knowledge packaging')
 
     required_files = manifest.get('required_files', [])
+    source_required_files = list(manifest.get('source_required_files', []))
     missing_files = [rel for rel in required_files if not (source_root / rel).exists()]
+    missing_source_required_files = [rel for rel in source_required_files if not (source_root / rel).exists()]
     checks['required_files_present'] = len(missing_files) == 0
     checks['missing_required_files'] = missing_files
+    checks['source_required_files'] = source_required_files
+    checks['source_required_files_present'] = len(missing_source_required_files) == 0
+    checks['missing_source_required_files'] = missing_source_required_files
     if missing_files:
         errors.append('missing required source-root files: ' + ', '.join(missing_files))
+    if missing_source_required_files:
+        errors.append('missing source-required source-root files: ' + ', '.join(missing_source_required_files))
 
     generated_dir = manifest.get('generated_knowledge_attachment_dir', DEFAULT_GENERATED_KNOWLEDGE_DIR)
     knowledge_sources = sorted(manifest.get('knowledge_attachment_sources', []))
@@ -208,8 +216,8 @@ def main() -> int:
                     errors.append('reassembled prime agent has unbalanced markdown code fences')
                 if 'Prime_Agent_Chunks_Manifest' in assembled or 'prime_agent_chunks/' in assembled:
                     errors.append('reassembled prime agent appears to contain source-only chunk metadata')
-                name_markers = marker_count(assembled, ['### Agent name', 'Agent name:'])
-                description_markers = marker_count(assembled, ['### Agent description', 'Agent description:'])
+                name_markers = markdown_heading_or_label_count(assembled, 'Agent name')
+                description_markers = markdown_heading_or_label_count(assembled, 'Agent description')
                 checks['prime_agent_agent_name_marker_count'] = name_markers
                 checks['prime_agent_agent_description_marker_count'] = description_markers
                 if name_markers != 1 or description_markers != 1:
