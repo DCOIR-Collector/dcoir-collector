@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25728798376",
   "github_sha": "19826ceea3ed60262bba96054979514b97862bd7",
-  "phase": "payload-resolved",
+  "phase": "running-apply-in",
   "request_id": "applyin-20260512-gemini-source-runtime-contract-001",
   "request_path": "chatgpt_staging/in/applyin-20260512-gemini-source-runtime-contract-001/payload.zip.b64",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-12T10:31:14Z",
+  "updated_utc": "2026-05-12T10:31:18Z",
   "workflow": "chatgpt-apply-in"
 }
