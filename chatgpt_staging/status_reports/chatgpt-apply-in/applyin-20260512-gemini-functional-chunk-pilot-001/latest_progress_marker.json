@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25733830587",
   "github_sha": "99500b98e7af650e5789bbd6e6f21c3315da6cc5",
-  "phase": "payload-resolved",
+  "phase": "running-apply-in",
   "request_id": "applyin-20260512-gemini-functional-chunk-pilot-001",
   "request_path": "chatgpt_staging/in/applyin-20260512-gemini-functional-chunk-pilot-001/payload.zip.b64",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-12T12:17:13Z",
+  "updated_utc": "2026-05-12T12:17:17Z",
   "workflow": "chatgpt-apply-in"
 }
