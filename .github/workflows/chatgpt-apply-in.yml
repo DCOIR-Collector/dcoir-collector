@@ -5,8 +5,22 @@
 # - Apply an operator-approved single base64 ZIP payload from chatgpt_staging/in into governed repo paths with manifest, hash, and path-safety checks.
 # Use when:
 # - Use after ChatGPT has produced a reviewed apply_manifest ZIP payload that must be applied inside GitHub Actions rather than by local GitHub Desktop extraction.
+# - Use the verified preflight-branch method for ChatGPT-staged writes whenever practical: build one payload.zip.b64, stage it first to a non-trigger branch named preflight/<request_id>, read back the staged file, verify its Git blob SHA equals the locally expected blob SHA, verify normalized base64 length modulo 4 equals 0, verify the decoded ZIP hash and ZIP member list, then stage the exact same payload text to main under chatgpt_staging/in/<request_id>/payload.zip.b64.
+# - Use one request directory and one payload.zip.b64 per apply operation. For large changes, split into multiple request directories and complete one request before staging the next.
 # Do not use when:
 # - Do not use for chunked/parts payloads, unreviewed changes, broad repo rewrites, or normal workflow-file updates that are better handled by GitHub Desktop/manual bundle review.
+# - Do not stage directly to main before the payload has been read back and verified on a non-trigger preflight branch, unless the operator explicitly approves bypassing that method for a one-off emergency.
+# Verified operating method:
+# - 1. Choose a unique request_id using only A-Z, a-z, 0-9, dot, underscore, and hyphen.
+# - 2. Build a ZIP with exactly apply_manifest.json at archive root and target file content under files/.
+# - 3. Base64-encode that ZIP into one file only: payload.zip.b64. Do not create parts, chunks, chunk manifests, or alternate payload names.
+# - 4. Verify locally before any GitHub write: base64 alphabet only, no truncation marker, normalized length modulo 4 equals 0, decodes to bytes beginning with PK, ZIP opens, ZIP member list is expected, apply_manifest schema is dcoir.chatgpt_staging.apply_manifest.v1, allowed_roots are narrow, target paths are repo-relative and safe, create/update/delete entries have expected hashes, and no unintended files are present.
+# - 5. Create or reuse a non-trigger branch named preflight/<request_id> from current main HEAD.
+# - 6. Create chatgpt_staging/in/<request_id>/payload.zip.b64 on the preflight branch only.
+# - 7. Read back the preflight branch file through the GitHub connector and verify the returned blob SHA equals the expected Git blob SHA for the exact payload text. Also verify the returned content has the same normalized base64 length, modulo 4 equals 0, and the same decoded ZIP SHA-256 as the local payload.
+# - 8. Only after step 7 passes, create the exact same payload.zip.b64 at the same path on main. The main staged file must read back with the same blob SHA before trusting the workflow.
+# - 9. Poll the live heartbeat report at chatgpt_staging/status_reports/chatgpt-apply-in/<request_id>/workflow_report.md until result is success or failure. Do not use repo-workflows completed-run reports for live polling.
+# - 10. On success, read back every applied or deleted target path and compare against the intended file list and hash policy. On failure, stop and inspect the report/artifact before retrying; do not stage a follow-up payload until the failed contract is understood.
 # Trigger model:
 # - workflow_dispatch inputs: payload_b64_path, commit_changes, delete_payload_after_success; push branches: main paths: chatgpt_staging/in/*/payload.zip.b64, chatgpt_staging/in/*/payload.zip.b64.parts/**, chatgpt_staging/in/*/chunk_manifest.json, chatgpt_staging/in/*/*.part*, chatgpt_staging/in/*/*chunk*
 # Required inputs:
@@ -19,6 +33,7 @@
 # - Progress and final reports under chatgpt_staging/status_reports/chatgpt-apply-in/<request_id>/ plus apply reports under chatgpt_staging/apply_reports/.
 # Safety notes:
 # - Rejects chunks/parts, unsafe request ids, unsafe paths, blocked staging/report paths, stale hashes, and workflow changes unless manifest explicitly allows workflow changes with a reason.
+# - ChatGPT must verify the exact staged GitHub copy before relying on this workflow. Local-only verification is insufficient because connector/UI staging can alter or truncate large text payloads.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
 # - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
