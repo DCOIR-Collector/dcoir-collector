@@ -1,15 +1,15 @@
 {
-  "artifact_name": "",
-  "exit_code": "",
+  "artifact_name": "chatgpt-exec-harness-failure-20260512T102144Z",
+  "exit_code": "1",
   "github_ref": "refs/heads/main",
   "github_run_attempt": "1",
   "github_run_id": "25728347791",
   "github_sha": "a21a80b47d0b619f2537aeae379b357c9c89f8b0",
-  "phase": "running-harness",
+  "phase": "harness-finished",
   "request_id": "exec-20260512-gemini-source-runtime-contract-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260512-gemini-source-runtime-contract-001.json",
-  "result": "running",
+  "result": "failure",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-12T10:21:41Z",
+  "updated_utc": "2026-05-12T10:21:45Z",
   "workflow": "chatgpt-exec"
 }
