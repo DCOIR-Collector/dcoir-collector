@@ -44,7 +44,8 @@
       "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_08_ENVIRONMENT_AWARE_DATA_ACCESS_MODEL.md.txt",
       "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_09_DATA_SCHEMA.md.txt",
       "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_10_KNOWN_ENVIRONMENT_INVENTORY.md.txt"
-    ]
+    ],
+    "prime_agent_runtime_mode": "generated_from_chunks"
   },
   "required_files": [
     "README.md",
@@ -52,7 +53,6 @@
     "00_START_HERE/Gemini_Build_Quick_Start.md.txt",
     "00_START_HERE/README_FIRST.md.txt",
     "01_GEMINI_AGENT_BUILD/Generated_DCOIR_Gemini_Agent_Index.md.txt",
-    "01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_01_Session_Readiness_and_Intake.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_02_Environment_and_Coverage_Mapper.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_03_Alert_Family_Classifier_and_Known_Benign_Technology_Differentiator.md.txt",
@@ -99,5 +99,26 @@
     "knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md"
   ],
   "prime_agent_source_mode": "chunked_reassembled",
-  "prime_agent_chunk_manifest": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunks_Manifest.json"
+  "prime_agent_chunk_manifest": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunks_Manifest.json",
+  "prime_agent_runtime_mode": "generated_from_chunks",
+  "runtime_generated_files": [
+    "01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt"
+  ],
+  "source_only_dirs": [
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks"
+  ],
+  "source_only_files": [
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunks_Manifest.json",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_00_Metadata_Description_And_Global_Opening.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_01_STARTUP_CHECK.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_02_NON_NEGOTIABLE_OPERATING_RULES.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_03_REQUIRED_RESPONSE_FORMATS.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_04_INVESTIGATION_WORKFLOW.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_05_TOOL_RULES.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_06_ANALYTIC_GUARDRAILS.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_07_SCHEMA_HANDLING.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_08_ENVIRONMENT_AWARE_DATA_ACCESS_MODEL.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_09_DATA_SCHEMA.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_10_KNOWN_ENVIRONMENT_INVENTORY.md.txt"
+  ]
 }

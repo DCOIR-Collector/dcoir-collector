@@ -41,18 +41,29 @@ def generated_attachment_name(source_rel: str) -> str:
     return name + '.txt'
 
 
-def iter_source_files(source_root: Path, generated_dir: str) -> Iterable[Path]:
+def is_under(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+        return True
+    except ValueError:
+        return False
+
+
+def iter_source_files(source_root: Path, generated_dir: str, source_only_files: set[str], source_only_dirs: set[str]) -> Iterable[Path]:
     generated_root = source_root / generated_dir
+    source_only_dir_paths = [source_root / rel for rel in source_only_dirs]
     for path in sorted(source_root.rglob('*')):
         if not path.is_file():
             continue
         if path.name in EXCLUDE:
             continue
-        try:
-            path.relative_to(generated_root)
+        rel = path.relative_to(source_root).as_posix()
+        if rel in source_only_files:
             continue
-        except ValueError:
-            pass
+        if any(is_under(path, root) for root in source_only_dir_paths):
+            continue
+        if is_under(path, generated_root):
+            continue
         yield path
 
 
@@ -74,6 +85,9 @@ def main() -> int:
     top_level = f"{bundle_name}_{version}"
     generated_dir = manifest.get('generated_knowledge_attachment_dir', DEFAULT_GENERATED_KNOWLEDGE_DIR)
     knowledge_sources = list(manifest.get('knowledge_attachment_sources', []))
+    source_only_files = set(manifest.get('source_only_files', []))
+    source_only_dirs = set(manifest.get('source_only_dirs', []))
+    runtime_generated_files = list(manifest.get('runtime_generated_files', []))
 
     required = manifest.get('required_files', [])
     missing = []
@@ -84,6 +98,9 @@ def main() -> int:
             missing.append(rel)
     for rel in knowledge_sources:
         if not (repo_root / rel).exists():
+            missing.append(rel)
+    for rel in runtime_generated_files:
+        if not (source_root / rel).exists():
             missing.append(rel)
     if missing:
         raise SystemExit('Missing required source files: ' + ', '.join(missing))
@@ -97,7 +114,7 @@ def main() -> int:
     count = 0
     generated_knowledge_files = []
     with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
-        for path in iter_source_files(source_root, generated_dir):
+        for path in iter_source_files(source_root, generated_dir, source_only_files, source_only_dirs):
             rel = path.relative_to(source_root)
             arc = Path(top_level) / rel
             zf.write(path, arc.as_posix())
@@ -124,6 +141,11 @@ def main() -> int:
         'top_level_folder': top_level,
         'file_count': count,
         'source_strategy': manifest.get('source_strategy'),
+        'prime_agent_source_mode': manifest.get('prime_agent_source_mode'),
+        'prime_agent_runtime_mode': manifest.get('prime_agent_runtime_mode'),
+        'runtime_generated_files': runtime_generated_files,
+        'source_only_files': sorted(source_only_files),
+        'source_only_dirs': sorted(source_only_dirs),
         'knowledge_attachment_sources': knowledge_sources,
         'generated_knowledge_attachment_files': generated_knowledge_files,
     }

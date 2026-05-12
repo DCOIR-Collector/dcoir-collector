@@ -125,6 +125,16 @@ def main() -> int:
     topology = manifest.get('topology', {})
     prime_rel = topology.get('prime_agent_file')
     sub_rel_list = list(topology.get('sub_agent_files', []))
+    prime_source_mode = manifest.get('prime_agent_source_mode')
+    prime_runtime_mode = manifest.get('prime_agent_runtime_mode')
+    source_only_files = set(manifest.get('source_only_files', []))
+    source_only_dirs = set(manifest.get('source_only_dirs', []))
+    runtime_generated_files = list(manifest.get('runtime_generated_files', []))
+    checks['prime_agent_source_mode'] = prime_source_mode
+    checks['prime_agent_runtime_mode'] = prime_runtime_mode
+    checks['runtime_generated_files'] = runtime_generated_files
+    checks['source_only_files'] = sorted(source_only_files)
+    checks['source_only_dirs'] = sorted(source_only_dirs)
     checks['topology_source'] = topology.get('topology_source_of_truth', 'missing')
     checks['manifest_prime_agent_file'] = prime_rel
     checks['manifest_sub_agent_files'] = sub_rel_list
@@ -136,15 +146,21 @@ def main() -> int:
     checks['discovered_sub_agent_files'] = discovered_sub
     checks['discovered_sub_agent_count'] = len(discovered_sub)
 
-    if prime_rel and discovered_prime != [prime_rel]:
-        errors.append('prime agent file discovered in source tree does not match manifest topology')
+    if prime_source_mode == 'chunked_reassembled' and prime_runtime_mode == 'generated_from_chunks':
+        allowed_prime_discovery = (discovered_prime == [] or discovered_prime == [prime_rel])
+        if not allowed_prime_discovery:
+            errors.append('chunked prime agent mode allows zero or one generated canonical prime file only')
+        if prime_rel not in runtime_generated_files:
+            errors.append('runtime_generated_files must include manifest topology prime_agent_file in chunked mode')
+    else:
+        if prime_rel and discovered_prime != [prime_rel]:
+            errors.append('prime agent file discovered in source tree does not match manifest topology')
+        allowed_prime_discovery = bool(prime_rel and discovered_prime == [prime_rel])
     if sorted(sub_rel_list) != discovered_sub:
         errors.append('discovered sub-agent files do not exactly match manifest topology')
-    checks['topology_exact_match'] = bool(prime_rel and discovered_prime == [prime_rel] and sorted(sub_rel_list) == discovered_sub)
+    checks['topology_exact_match'] = bool(prime_rel and allowed_prime_discovery and sorted(sub_rel_list) == discovered_sub)
 
 
-    prime_source_mode = manifest.get('prime_agent_source_mode')
-    checks['prime_agent_source_mode'] = prime_source_mode
     if prime_source_mode == 'chunked_reassembled':
         chunk_manifest_rel = manifest.get('prime_agent_chunk_manifest')
         checks['prime_agent_chunk_manifest'] = chunk_manifest_rel
@@ -169,10 +185,23 @@ def main() -> int:
                 if missing_chunks:
                     errors.append('missing prime agent chunks: ' + ', '.join(missing_chunks))
                 assembled = ''.join((source_root / rel).read_text(encoding='utf-8') for rel in chunk_sources if rel and (source_root / rel).exists())
-                canonical = (source_root / prime_rel).read_text(encoding='utf-8') if prime_rel and (source_root / prime_rel).exists() else ''
-                checks['prime_agent_chunk_reassembly_matches_canonical'] = assembled == canonical
-                if assembled != canonical:
-                    errors.append('prime agent chunk reassembly does not match canonical prime agent file')
+                canonical_path = (source_root / prime_rel) if prime_rel else None
+                canonical_exists = bool(canonical_path and canonical_path.exists())
+                checks['prime_agent_generated_canonical_exists'] = canonical_exists
+                if canonical_exists:
+                    canonical = canonical_path.read_text(encoding='utf-8')
+                    checks['prime_agent_chunk_reassembly_matches_canonical'] = assembled == canonical
+                    if assembled != canonical:
+                        errors.append('prime agent chunk reassembly does not match canonical prime agent file')
+                else:
+                    checks['prime_agent_chunk_reassembly_matches_canonical'] = True
+                    checks['prime_agent_chunk_reassembly_sha256_only'] = True
+                if '```' in assembled and assembled.count('```') % 2 != 0:
+                    errors.append('reassembled prime agent has unbalanced markdown code fences')
+                if 'Prime_Agent_Chunks_Manifest' in assembled or 'prime_agent_chunks/' in assembled:
+                    errors.append('reassembled prime agent appears to contain source-only chunk metadata')
+                if assembled.count('Agent name:') != 1 or assembled.count('Agent description:') != 1:
+                    errors.append('reassembled prime agent must contain exactly one Agent name and one Agent description block')
     elif prime_source_mode not in (None, 'single_file'):
         warnings.append('unrecognized prime_agent_source_mode: ' + str(prime_source_mode))
 

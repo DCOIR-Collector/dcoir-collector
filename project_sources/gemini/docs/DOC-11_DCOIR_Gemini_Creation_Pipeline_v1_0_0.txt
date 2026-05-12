@@ -45,3 +45,10 @@ Hard rules
 
 Recommended next move
 - Use the manifest-driven topology contract for the larger major-version Gemini runtime bundle, then validate the current manifest-listed sub-agent topology through the associated Actions workflow before tomorrow's functionality test.
+
+Prime-agent generated runtime topology note
+- The editable prime-agent source is now the ordered chunk set under `01_GEMINI_AGENT_BUILD/prime_agent_chunks/` plus `Prime_Agent_Chunks_Manifest.json`.
+- `01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt` is a generated runtime artifact assembled from the chunk manifest before validation and compile.
+- The generated runtime prime-agent file must appear in the final Gemini Enterprise bundle as one coherent prompt file. Source-only chunk files and the chunk manifest must not ship in the final Gemini delivery ZIP.
+- Build and validation lanes must reassemble before judging the Gemini agent and must inspect the final ZIP for source-only leakage.
+

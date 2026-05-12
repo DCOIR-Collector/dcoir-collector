@@ -5,6 +5,7 @@ import argparse
 import json
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 
@@ -18,6 +19,31 @@ def write_report(output_dir: Path, report: dict) -> None:
     print(json.dumps(report, indent=2))
 
 
+def inspect_gemini_zip_contract(output_dir: Path, manifest: dict) -> dict:
+    bundle_name = manifest['bundle_name']
+    zips = sorted(output_dir.glob(f'{bundle_name}_*.zip'))
+    if not zips:
+        return {'success': False, 'error': 'no Gemini bundle zip found'}
+    zip_path = zips[-1]
+    prime_rel = manifest.get('topology', {}).get('prime_agent_file')
+    source_only_dirs = tuple(rel.rstrip('/') + '/' for rel in manifest.get('source_only_dirs', []))
+    source_only_files = set(manifest.get('source_only_files', []))
+    with zipfile.ZipFile(zip_path) as zf:
+        names = zf.namelist()
+    payload_rels = []
+    for name in names:
+        parts = name.split('/', 1)
+        payload_rels.append(parts[1] if len(parts) == 2 else name)
+    prime_matches = [rel for rel in payload_rels if rel == prime_rel]
+    leaked_files = [rel for rel in payload_rels if rel in source_only_files or any(rel.startswith(prefix) for prefix in source_only_dirs)]
+    return {
+        'success': len(prime_matches) == 1 and not leaked_files,
+        'zip_path': str(zip_path),
+        'prime_agent_entries': prime_matches,
+        'source_only_leaks': leaked_files,
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--source-root', required=True)
@@ -28,6 +54,7 @@ def main() -> int:
 
     script_root = Path(__file__).resolve().parent
     source_root = Path(args.source_root).resolve()
+    manifest = json.loads((source_root / 'Gemini_Bundle_Source_Manifest.json').read_text(encoding='utf-8'))
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     # source_root is <repo>/project_sources/gemini/bundle_source.
@@ -93,9 +120,18 @@ def main() -> int:
         'stderr': compile_proc.stderr,
     })
 
-    success = compile_proc.returncode == 0
-    write_report(output_dir, {'success': success, 'stage': 'complete' if success else 'compile', 'steps': steps})
-    return 0 if success else 1
+    if compile_proc.returncode != 0:
+        write_report(output_dir, {'success': False, 'stage': 'compile', 'steps': steps})
+        return 1
+
+    zip_contract = inspect_gemini_zip_contract(output_dir, manifest)
+    steps.append({'name': 'inspect_gemini_zip_contract', 'returncode': 0 if zip_contract.get('success') else 1, 'report': zip_contract})
+    if not zip_contract.get('success'):
+        write_report(output_dir, {'success': False, 'stage': 'inspect_gemini_zip_contract', 'steps': steps})
+        return 1
+
+    write_report(output_dir, {'success': True, 'stage': 'complete', 'steps': steps})
+    return 0
 
 
 if __name__ == '__main__':
