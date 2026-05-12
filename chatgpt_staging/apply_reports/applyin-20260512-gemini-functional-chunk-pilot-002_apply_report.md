@@ -1,0 +1,4 @@
+# ChatGPT apply-in report
+
+- applied: `project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_00_Agent_Metadata_Description.md.txt`
+- applied: `project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_01_Identity_Surface_Boundaries_And_Truthfulness.md.txt`
