@@ -3,125 +3,182 @@
   "source_prime_agent_file": "01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt",
   "generated_prime_agent_file": "01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt",
   "source_strategy": "chunked_reassembled_prime_agent",
-  "original_sha256_at_split": "18f9b9ee53cf5a5c9d2676025331a4d0ce75a23bce1afa154bf750545680f8cc",
-  "original_line_count_at_split": 1749,
-  "chunk_count": 11,
+  "chunking_strategy": "functional_same_to_same_rewrite_using_gemini_research_reference",
+  "rewrite_guidance_source": "Airtable Gemini Research Reference full-table guidance pull, 76 records, session 2026-05-12",
+  "chunk_count": 21,
   "reassembly": {
     "method": "concatenate_chunks_in_manifest_order",
     "newline_policy": "preserve_chunk_text_exactly",
-    "expected_sha256": "30f5de55995bb2d895bfbe5029a3e8faaf3d21147efc7421a76c1f44adcfb4c5"
+    "expected_sha256": "2117f96b2fc401b37c2268b57fffd3c2553b9d6331076f3ede69c8ec76e713e8"
   },
   "chunks": [
     {
       "chunk_id": "00",
-      "title": "Metadata_Description_And_Global_Opening",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_00_Metadata_Description_And_Global_Opening.md.txt",
-      "line_start": 1,
-      "line_end": 217,
-      "line_count": 217,
-      "starts_with": "### Agent name",
-      "sha256": "2188c7c307ff03a5864f408579b3b865b6fea1d9cece05dc85bcc040799531cf"
+      "title": "Agent_Metadata_Description",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_00_Agent_Metadata_Description.md.txt",
+      "sha256": "c3e4c7e49865cd974ee6486eedb2c86d561c093bf0591dcdc9d3689b86df0777",
+      "line_count": 21,
+      "starts_with": "### Agent name"
     },
     {
       "chunk_id": "01",
-      "title": "STARTUP_CHECK",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_01_STARTUP_CHECK.md.txt",
-      "line_start": 218,
-      "line_end": 231,
-      "line_count": 14,
-      "starts_with": "SECTION 1: STARTUP CHECK",
-      "sha256": "c984994f03866667d702c8744ec73686b832828e4736d5e99ac68d9cc41b7bf3"
+      "title": "Identity_Surface_Boundaries_And_Truthfulness",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_01_Identity_Surface_Boundaries_And_Truthfulness.md.txt",
+      "sha256": "7b88f64725e80e0f9fd5bcd0a1fbc6fd7e581a117faab5f73b9752f57a2eba52",
+      "line_count": 80,
+      "starts_with": "### Full instructions / system prompt / operating guidance"
     },
     {
       "chunk_id": "02",
-      "title": "NON_NEGOTIABLE_OPERATING_RULES",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_02_NON_NEGOTIABLE_OPERATING_RULES.md.txt",
-      "line_start": 232,
-      "line_end": 753,
-      "line_count": 522,
-      "starts_with": "SECTION 2: NON-NEGOTIABLE OPERATING RULES",
-      "sha256": "46a25a2f2430b7cf8ae89fd7e60ad04d9899c741df9000da99edc3d4cf5e5882"
+      "title": "Readiness_Startup_And_Branch_Gating",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_02_Readiness_Startup_And_Branch_Gating.md.txt",
+      "sha256": "26488b6939cc1f6159c843e3ff9aa314bbe9b740d6b277669150027b2189da46",
+      "line_count": 39,
+      "starts_with": "### Readiness, startup, and branch gating"
     },
     {
       "chunk_id": "03",
-      "title": "REQUIRED_RESPONSE_FORMATS",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_03_REQUIRED_RESPONSE_FORMATS.md.txt",
-      "line_start": 754,
-      "line_end": 885,
-      "line_count": 132,
-      "starts_with": "SECTION 3: REQUIRED RESPONSE FORMATS",
-      "sha256": "844d613251f62caa38999003809b5e8f4058fec7f0ff37554ec9afbd5f51ff66"
+      "title": "Response_Completeness_Tools_And_Command_Pacing",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_03_Response_Completeness_Tools_And_Command_Pacing.md.txt",
+      "sha256": "e13099ef5064577019f7af9a39c6d4fd122ddd435de41c23761e5e10759cb8e3",
+      "line_count": 56,
+      "starts_with": "### Response completeness, tool availability, and command pacing"
     },
     {
       "chunk_id": "04",
-      "title": "INVESTIGATION_WORKFLOW",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_04_INVESTIGATION_WORKFLOW.md.txt",
-      "line_start": 886,
-      "line_end": 1095,
-      "line_count": 210,
-      "starts_with": "SECTION 4: INVESTIGATION WORKFLOW",
-      "sha256": "a98b8fdfd510a6df337fa47a157054435fdaf990720339fa188fa2d1df093105"
+      "title": "Source_Labeling_Provenance_And_Evidence_Map",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_04_Source_Labeling_Provenance_And_Evidence_Map.md.txt",
+      "sha256": "8f491ceedf84c885066fd0dce9e9fe7031d91dec6473fb60e6022bebae7aa21e",
+      "line_count": 38,
+      "starts_with": "### Source labeling, provenance, and evidence map"
     },
     {
       "chunk_id": "05",
-      "title": "TOOL_RULES",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_05_TOOL_RULES.md.txt",
-      "line_start": 1096,
-      "line_end": 1241,
-      "line_count": 146,
-      "starts_with": "SECTION 5: TOOL RULES",
-      "sha256": "aafe07b6529b1ad2a88455911c9a394220d1b117e2c355fcd50265b476f05ade"
+      "title": "Query_Objectives_Field_Discovery_And_Syntax_Guards",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_05_Query_Objectives_Field_Discovery_And_Syntax_Guards.md.txt",
+      "sha256": "e3aa1d0217ad0b2293796dfa3c8fb1fe575b3a66f6f411ed788615025f0c8478",
+      "line_count": 39,
+      "starts_with": "### Query objectives, field discovery, and syntax guards"
     },
     {
       "chunk_id": "06",
-      "title": "ANALYTIC_GUARDRAILS",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_06_ANALYTIC_GUARDRAILS.md.txt",
-      "line_start": 1242,
-      "line_end": 1317,
-      "line_count": 76,
-      "starts_with": "SECTION 6: ANALYTIC GUARDRAILS",
-      "sha256": "172c84d5d857e7b6efada8d91e5b87ca33b155a2c6edf458986d94a28ea8ac85"
+      "title": "Zero_Result_Retrieval_Misses_And_Web_Intel",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_06_Zero_Result_Retrieval_Misses_And_Web_Intel.md.txt",
+      "sha256": "38df30018beb2b191ae0520a72525f9a27be308c99a9d457ce8b87414e772cf3",
+      "line_count": 37,
+      "starts_with": "### Zero-result handling, retrieval misses, and web intelligence"
     },
     {
       "chunk_id": "07",
-      "title": "SCHEMA_HANDLING",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_07_SCHEMA_HANDLING.md.txt",
-      "line_start": 1318,
-      "line_end": 1325,
-      "line_count": 8,
-      "starts_with": "SECTION 7: SCHEMA HANDLING",
-      "sha256": "141fbb36b59784ba5005e3def818f556205f097f64f9a633f4bbff92b7dac77c"
+      "title": "Containment_Conclusion_Alert_Family_And_Benign_Tuning",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_07_Containment_Conclusion_Alert_Family_And_Benign_Tuning.md.txt",
+      "sha256": "be41eb8ad3590224ce8f126bf592ce71cb913b13c3b2bdf97dad9d330f09edc8",
+      "line_count": 45,
+      "starts_with": "### Containment, conclusions, alert family, and benign tuning"
     },
     {
       "chunk_id": "08",
-      "title": "ENVIRONMENT_AWARE_DATA_ACCESS_MODEL",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_08_ENVIRONMENT_AWARE_DATA_ACCESS_MODEL.md.txt",
-      "line_start": 1326,
-      "line_end": 1343,
-      "line_count": 18,
-      "starts_with": "SECTION 7A: ENVIRONMENT-AWARE DATA ACCESS MODEL",
-      "sha256": "b38f08698dcca3fc20543c3311365a8809df8fac19017c8cf9ebc6903aec2d12"
+      "title": "Required_Response_Formats",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_08_Required_Response_Formats.md.txt",
+      "sha256": "add2bfa72aaa327966deacd3bba224afd9935765e017c1417c88b96bb54b5ba0",
+      "line_count": 49,
+      "starts_with": "### Required response formats"
     },
     {
       "chunk_id": "09",
-      "title": "DATA_SCHEMA",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_09_DATA_SCHEMA.md.txt",
-      "line_start": 1344,
-      "line_end": 1355,
-      "line_count": 12,
-      "starts_with": "SECTION 8: DATA SCHEMA",
-      "sha256": "792cbaa161d463fc9e901b5500e25045240d7f788fdccee06ea9b7921496ea13"
+      "title": "Investigation_Workflow",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_09_Investigation_Workflow.md.txt",
+      "sha256": "4814db6f3ffeb5a4dac93bb94c15895287a0e4baedf7e4016d6c3333654c66a8",
+      "line_count": 47,
+      "starts_with": "### Investigation workflow"
     },
     {
       "chunk_id": "10",
-      "title": "KNOWN_ENVIRONMENT_INVENTORY",
-      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_10_KNOWN_ENVIRONMENT_INVENTORY.md.txt",
-      "line_start": 1356,
-      "line_end": 1749,
-      "line_count": 394,
-      "starts_with": "SECTION 8A: KNOWN ENVIRONMENT INVENTORY",
-      "sha256": "f826400d4e68b39d6f9211f3a7dd7c97e3fcf1ac8c713ea7de2286abc29ad9a7"
+      "title": "Tool_Rules",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_10_Tool_Rules.md.txt",
+      "sha256": "528a1df620317cb62704b0f0f08727cd5848fe7a10b000f5b85cfa5fa20d9273",
+      "line_count": 44,
+      "starts_with": "### Tool rules"
+    },
+    {
+      "chunk_id": "11",
+      "title": "Analytic_Guardrails",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_11_Analytic_Guardrails.md.txt",
+      "sha256": "c7cef9723c6a770e778b6b9ccf00bcc42c1aba36c40ff2231a9feedc6ab61fb5",
+      "line_count": 38,
+      "starts_with": "### Analytic guardrails"
+    },
+    {
+      "chunk_id": "12",
+      "title": "Schema_Environment_And_Data_Access",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_12_Schema_Environment_And_Data_Access.md.txt",
+      "sha256": "ddcf52c66c024921b9dbd1a33cded0528008bdcfce08c413769dded394536d5b",
+      "line_count": 35,
+      "starts_with": "### Schema, environment, and data access"
+    },
+    {
+      "chunk_id": "13",
+      "title": "Data_Schema_And_Field_Reference",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_13_Data_Schema_And_Field_Reference.md.txt",
+      "sha256": "e03b9ce564f279788fcbe7957e3d39a0561a2ec246059f6a6f1c8eaaa9991fea",
+      "line_count": 37,
+      "starts_with": "### Data schema and field reference"
+    },
+    {
+      "chunk_id": "14",
+      "title": "Known_Environment_Inventory",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_14_Known_Environment_Inventory.md.txt",
+      "sha256": "48ca39233623936545c071a8c72d0d4c6ad857d956e9c627f3bace387695ee4d",
+      "line_count": 32,
+      "starts_with": "### Known environment inventory"
+    },
+    {
+      "chunk_id": "15",
+      "title": "Response_Behavior_And_Output_Contract",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_15_Response_Behavior_And_Output_Contract.md.txt",
+      "sha256": "37dc62501dc972b46a053282e4f7b12b620f142407707e21cc2e53ab0b4d6398",
+      "line_count": 39,
+      "starts_with": "### Response behavior and output contract"
+    },
+    {
+      "chunk_id": "16",
+      "title": "Internal_Orchestration_Model",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_16_Internal_Orchestration_Model.md.txt",
+      "sha256": "e46677cf23c2e1efb04a7464eb20b93352a67b85d03870c59d4993c049168840",
+      "line_count": 37,
+      "starts_with": "### Internal orchestration model"
+    },
+    {
+      "chunk_id": "17",
+      "title": "DCOIR_Branch_Ownership_Collector_And_USB",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_17_DCOIR_Branch_Ownership_Collector_And_USB.md.txt",
+      "sha256": "9511bc0ee7db0df33fdffd3198208f5789fbc8bdab3401b1fd670702e3282adc",
+      "line_count": 39,
+      "starts_with": "### DCOIR branch ownership, collector, and USB report lanes"
+    },
+    {
+      "chunk_id": "18",
+      "title": "IOC_Parsing_Public_Enrichment_And_Mixed_Format_Input",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_18_IOC_Parsing_Public_Enrichment_And_Mixed_Format_Input.md.txt",
+      "sha256": "2a61be965f2dbfc325a0cbe8961b1d94c2ae47d831f42c68a747c340a6b74494",
+      "line_count": 42,
+      "starts_with": "### IOC parsing, public enrichment, and mixed-format input"
+    },
+    {
+      "chunk_id": "19",
+      "title": "Host_Network_Forensics_And_IR_Discipline",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_19_Host_Network_Forensics_And_IR_Discipline.md.txt",
+      "sha256": "b86661c310a40c7fe6b203bb4fbb4eb54ea0e088ccec1dbc26bff02e814745bc",
+      "line_count": 36,
+      "starts_with": "### Host, network, forensics, and incident-response discipline"
+    },
+    {
+      "chunk_id": "20",
+      "title": "Routing_Request_Coverage_Tool_Access_And_Memory",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_20_Routing_Request_Coverage_Tool_Access_And_Memory.md.txt",
+      "sha256": "528c290a565085427eb28152b35634d06090b4d27aa2a4fda7e38a97e79d97f8",
+      "line_count": 36,
+      "starts_with": "### Routing, request coverage, tool access, and memory limits"
     }
   ]
 }
-
