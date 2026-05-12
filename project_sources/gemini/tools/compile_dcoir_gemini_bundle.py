@@ -88,6 +88,7 @@ def main() -> int:
     source_only_files = set(manifest.get('source_only_files', []))
     source_only_dirs = set(manifest.get('source_only_dirs', []))
     runtime_generated_files = list(manifest.get('runtime_generated_files', []))
+    source_required_files = list(manifest.get('source_required_files', []))
 
     required = manifest.get('required_files', [])
     missing = []
@@ -98,6 +99,9 @@ def main() -> int:
             missing.append(rel)
     for rel in knowledge_sources:
         if not (repo_root / rel).exists():
+            missing.append(rel)
+    for rel in source_required_files:
+        if not (source_root / rel).exists():
             missing.append(rel)
     for rel in runtime_generated_files:
         if not (source_root / rel).exists():
@@ -144,6 +148,7 @@ def main() -> int:
         'prime_agent_source_mode': manifest.get('prime_agent_source_mode'),
         'prime_agent_runtime_mode': manifest.get('prime_agent_runtime_mode'),
         'runtime_generated_files': runtime_generated_files,
+        'source_required_files': source_required_files,
         'source_only_files': sorted(source_only_files),
         'source_only_dirs': sorted(source_only_dirs),
         'knowledge_attachment_sources': knowledge_sources,
