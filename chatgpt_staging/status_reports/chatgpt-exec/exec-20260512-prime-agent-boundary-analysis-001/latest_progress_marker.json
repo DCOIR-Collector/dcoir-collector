@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25720878850",
   "github_sha": "0f9cddf0b5b63d663c8c3900066c5b4c51ec0dbb",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "exec-20260512-prime-agent-boundary-analysis-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260512-prime-agent-boundary-analysis-001.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-12T07:47:22Z",
+  "updated_utc": "2026-05-12T07:47:25Z",
   "workflow": "chatgpt-exec"
 }
