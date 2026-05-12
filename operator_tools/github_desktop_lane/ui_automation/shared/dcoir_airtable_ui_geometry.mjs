@@ -76,7 +76,7 @@ export async function clickAirtableViewInSidebar(page, viewName, options = {}) {
 
 export async function clickAirtableToolbarButton(page, kind, options = {}) {
   const label = String(kind || '').toLowerCase();
-  const labelRegex = label === 'filter' ? /\bFilter\b|Filter rows/i : /\bSort\b|Sort rows|Sorted by/i;
+  const labelRegex = label === 'filter' ? /\bFilter\b|Filter rows|Filtered by/i : /\bSort\b|Sort rows|Sorted by/i;
   const xMin = options.xMin ?? 560;
   const xMax = options.xMax ?? 1450;
   const yMin = options.yMin ?? 75;
@@ -87,7 +87,7 @@ export async function clickAirtableToolbarButton(page, kind, options = {}) {
   await dismissTransientUi(page, `before-open-${label}-toolbar-button`);
 
   const roleNames = label === 'filter'
-    ? [/^Filter rows$/i, /^Filter$/i]
+    ? [/^Filter rows$/i, /^Filter$/i, /^Filtered by/i]
     : [/^Sort rows$/i, /^Sort$/i, /^Sorted by/i];
 
   for (const name of roleNames) {
