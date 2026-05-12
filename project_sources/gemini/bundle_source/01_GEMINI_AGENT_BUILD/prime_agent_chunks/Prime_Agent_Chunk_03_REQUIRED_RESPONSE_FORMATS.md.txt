@@ -1,0 +1,132 @@
+SECTION 3: REQUIRED RESPONSE FORMATS
+
+3.1 CONTINUE FORMAT
+
+BLUF
+
+- Hypothesis:
+
+- Confidence:
+
+- Decision State: Continue
+
+FACTS AND SOURCES
+
+- Fact 1 [SOURCE]:
+
+- Fact 2 [SOURCE]:
+
+- Fact 3 [SOURCE]:
+
+- Add more facts only as needed
+
+ANALYSIS
+
+- Primary alert family:
+
+- Secondary family:
+
+- What the alert proves:
+
+- What the alert does not prove:
+
+- Actor:
+
+- Target or Victim:
+
+- Object or Artifact:
+
+- Detector:
+
+- Objective of next step:
+
+- Expected evidence type:
+
+- Required fields:
+
+- Disqualifier condition:
+
+- Confirmed available tools:
+
+- Next best untried tool path:
+
+- Why current hypothesis fits:
+
+- What could still disprove it:
+
+- Reasonable remaining evidence paths:
+
+- Why containment is not yet justified:
+
+- Why troubleshooting is not yet justified:
+
+SYNTAX VERIFICATION
+
+- Tool chosen:
+
+- Rule checks passed:
+
+- Specific syntax traps checked:
+
+- Supporting documentation used:
+
+SINGULAR TRIAGE COMMAND
+
+<one actual command or query only, unless an approved multi-step exception is required>
+
+ANALYST SCRATCHPAD
+
+- Item:
+
+- Item:
+
+- Item:
+
+3.2 BENIGN CONCLUSION FORMAT
+
+1. Executive Summary
+
+2. Benign Rationale
+
+3. Supporting Evidence with source labels
+
+4. Tuning Recommendation
+
+5. Residual Uncertainty
+
+3.3 MALICIOUS CONCLUSION FORMAT
+
+1. Executive Summary
+
+2. Timeline
+
+3. Root Cause or True Source
+
+4. Impact and Scope
+
+5. Supporting Evidence with source labels
+
+6. Containment and Remediation Recommendations
+
+7. Hunting Pivots and Derived Indicators
+
+8. Residual Uncertainty and Visibility Gaps
+
+3.4 UNRESOLVED FORMAT
+
+1. Executive Summary
+
+2. What Is Known
+
+3. What Is Blocked
+
+4. What Evidence Paths Were Exhausted
+
+5. Why Scope Cannot Be Declared
+
+6. Best Next Steps
+
+7. Required Telemetry or Artifacts
+
+8. Why Containment or Troubleshooting Is Not Yet Justified
+

@@ -142,6 +142,40 @@ def main() -> int:
         errors.append('discovered sub-agent files do not exactly match manifest topology')
     checks['topology_exact_match'] = bool(prime_rel and discovered_prime == [prime_rel] and sorted(sub_rel_list) == discovered_sub)
 
+
+    prime_source_mode = manifest.get('prime_agent_source_mode')
+    checks['prime_agent_source_mode'] = prime_source_mode
+    if prime_source_mode == 'chunked_reassembled':
+        chunk_manifest_rel = manifest.get('prime_agent_chunk_manifest')
+        checks['prime_agent_chunk_manifest'] = chunk_manifest_rel
+        if not chunk_manifest_rel:
+            errors.append('prime_agent_chunk_manifest is required when prime_agent_source_mode=chunked_reassembled')
+        else:
+            chunk_manifest_path = source_root / chunk_manifest_rel
+            checks['prime_agent_chunk_manifest_exists'] = chunk_manifest_path.exists()
+            if not chunk_manifest_path.exists():
+                errors.append('prime agent chunk manifest is missing: ' + chunk_manifest_rel)
+            else:
+                chunk_manifest = json.loads(chunk_manifest_path.read_text(encoding='utf-8'))
+                chunk_entries = list(chunk_manifest.get('chunks', []))
+                chunk_sources = [entry.get('path') for entry in chunk_entries]
+                topology_chunk_sources = list(topology.get('prime_agent_chunk_sources', []))
+                checks['prime_agent_chunk_count'] = len(chunk_entries)
+                checks['prime_agent_chunk_sources_match_topology'] = chunk_sources == topology_chunk_sources
+                if chunk_sources != topology_chunk_sources:
+                    errors.append('prime agent chunk sources do not match manifest topology prime_agent_chunk_sources')
+                missing_chunks = [rel for rel in chunk_sources if not rel or not (source_root / rel).exists()]
+                checks['missing_prime_agent_chunks'] = missing_chunks
+                if missing_chunks:
+                    errors.append('missing prime agent chunks: ' + ', '.join(missing_chunks))
+                assembled = ''.join((source_root / rel).read_text(encoding='utf-8') for rel in chunk_sources if rel and (source_root / rel).exists())
+                canonical = (source_root / prime_rel).read_text(encoding='utf-8') if prime_rel and (source_root / prime_rel).exists() else ''
+                checks['prime_agent_chunk_reassembly_matches_canonical'] = assembled == canonical
+                if assembled != canonical:
+                    errors.append('prime agent chunk reassembly does not match canonical prime agent file')
+    elif prime_source_mode not in (None, 'single_file'):
+        warnings.append('unrecognized prime_agent_source_mode: ' + str(prime_source_mode))
+
     attachment_map_path = source_root / ATTACHMENT_MAP
     attachment_map_text = attachment_map_path.read_text(encoding='utf-8', errors='ignore').lower() if attachment_map_path.exists() else ''
     map_missing_titles = [Path(rel).stem.lower() for rel in knowledge_sources if Path(rel).stem.lower() not in attachment_map_text]

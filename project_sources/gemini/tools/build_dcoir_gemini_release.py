@@ -37,8 +37,22 @@ def main() -> int:
     validate_script = script_root / 'validate_dcoir_gemini_bundle.py'
     scenario_script = script_root / 'validate_dcoir_gemini_behavior_scenarios.py'
     compile_script = script_root / 'compile_dcoir_gemini_bundle.py'
+    reassemble_script = script_root / 'reassemble_dcoir_gemini_prime_agent.py'
 
     steps = []
+
+    reassemble_cmd = [sys.executable, str(reassemble_script), '--source-root', str(source_root), '--output-dir', str(output_dir)]
+    reassemble_proc = run_step(reassemble_cmd)
+    steps.append({
+        'name': 'reassemble_prime_agent',
+        'cmd': reassemble_cmd,
+        'returncode': reassemble_proc.returncode,
+        'stdout': reassemble_proc.stdout,
+        'stderr': reassemble_proc.stderr,
+    })
+    if reassemble_proc.returncode != 0:
+        write_report(output_dir, {'success': False, 'stage': 'reassemble_prime_agent', 'steps': steps})
+        return 1
 
     if not args.skip_validation:
         validate_cmd = [sys.executable, str(validate_script), '--source-root', str(source_root), '--output-dir', str(output_dir)]

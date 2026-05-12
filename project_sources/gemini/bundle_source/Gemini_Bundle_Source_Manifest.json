@@ -30,7 +30,21 @@
       "01_GEMINI_AGENT_BUILD/Sub_Agent_11_USB_Violations_Report_Composer.md.txt"
     ],
     "generated_index_file": "01_GEMINI_AGENT_BUILD/Generated_DCOIR_Gemini_Agent_Index.md.txt",
-    "quick_start_file": "00_START_HERE/Gemini_Build_Quick_Start.md.txt"
+    "quick_start_file": "00_START_HERE/Gemini_Build_Quick_Start.md.txt",
+    "prime_agent_chunk_manifest": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunks_Manifest.json",
+    "prime_agent_chunk_sources": [
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_00_Metadata_Description_And_Global_Opening.md.txt",
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_01_STARTUP_CHECK.md.txt",
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_02_NON_NEGOTIABLE_OPERATING_RULES.md.txt",
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_03_REQUIRED_RESPONSE_FORMATS.md.txt",
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_04_INVESTIGATION_WORKFLOW.md.txt",
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_05_TOOL_RULES.md.txt",
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_06_ANALYTIC_GUARDRAILS.md.txt",
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_07_SCHEMA_HANDLING.md.txt",
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_08_ENVIRONMENT_AWARE_DATA_ACCESS_MODEL.md.txt",
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_09_DATA_SCHEMA.md.txt",
+      "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_10_KNOWN_ENVIRONMENT_INVENTORY.md.txt"
+    ]
   },
   "required_files": [
     "README.md",
@@ -49,7 +63,19 @@
     "01_GEMINI_AGENT_BUILD/Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt",
-    "01_GEMINI_AGENT_BUILD/Sub_Agent_11_USB_Violations_Report_Composer.md.txt"
+    "01_GEMINI_AGENT_BUILD/Sub_Agent_11_USB_Violations_Report_Composer.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunks_Manifest.json",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_00_Metadata_Description_And_Global_Opening.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_01_STARTUP_CHECK.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_02_NON_NEGOTIABLE_OPERATING_RULES.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_03_REQUIRED_RESPONSE_FORMATS.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_04_INVESTIGATION_WORKFLOW.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_05_TOOL_RULES.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_06_ANALYTIC_GUARDRAILS.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_07_SCHEMA_HANDLING.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_08_ENVIRONMENT_AWARE_DATA_ACCESS_MODEL.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_09_DATA_SCHEMA.md.txt",
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_10_KNOWN_ENVIRONMENT_INVENTORY.md.txt"
   ],
   "authoritative_knowledge_source": "knowledge",
   "generated_knowledge_attachment_dir": "02_PRIME_AGENT_ATTACHMENTS",
@@ -71,5 +97,7 @@
     "knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md",
     "knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md",
     "knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md"
-  ]
+  ],
+  "prime_agent_source_mode": "chunked_reassembled",
+  "prime_agent_chunk_manifest": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunks_Manifest.json"
 }

@@ -1,0 +1,8 @@
+SECTION 7: SCHEMA HANDLING
+
+The schema section in this instruction is authoritative for field selection unless discovery proves the environment differs.
+
+Use only the fields needed for the question.
+
+If a needed field is not listed in the schema section of this instruction, use discovery before assuming it exists.
+

@@ -1,0 +1,18 @@
+SECTION 7A: ENVIRONMENT-AWARE DATA ACCESS MODEL
+
+Known environment facts for this deployment must influence query planning:
+
+1. logs-* is the primary investigative scope for alert triage.
+
+2. metrics-* is mostly host-context support.
+
+3. Known data streams exist across system, windows, endpoint, zeek, cisco, infoblox, microsoft_sqlserver, menlo, auditd, suricata, threat-intel, and metrics families.
+
+4. Known Kibana data views include logs-*, metrics-*, security-*, vulnerability-*, inventory-*, device_plug, and several managed or environment-specific data views.
+
+5. Exact field names can vary by source, so field-agnostic KQL discovery is valid when field certainty is weak.
+
+6. Use data stream and data view knowledge to improve narrowing only after the objective supports it.
+
+7. Do not force a precise field in a discovery search when free-text or mixed KQL is the safer way to find the evidence.
+

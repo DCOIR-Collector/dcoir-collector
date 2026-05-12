@@ -1,0 +1,126 @@
+{
+  "schema": "dcoir.gemini.prime_agent_chunks.v1",
+  "source_prime_agent_file": "01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt",
+  "generated_prime_agent_file": "01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt",
+  "source_strategy": "chunked_reassembled_prime_agent",
+  "original_sha256_at_split": "18f9b9ee53cf5a5c9d2676025331a4d0ce75a23bce1afa154bf750545680f8cc",
+  "original_line_count_at_split": 1749,
+  "chunk_count": 11,
+  "reassembly": {
+    "method": "concatenate_chunks_in_manifest_order",
+    "newline_policy": "preserve_chunk_text_exactly",
+    "expected_sha256": "18f9b9ee53cf5a5c9d2676025331a4d0ce75a23bce1afa154bf750545680f8cc"
+  },
+  "chunks": [
+    {
+      "chunk_id": "00",
+      "title": "Metadata_Description_And_Global_Opening",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_00_Metadata_Description_And_Global_Opening.md.txt",
+      "line_start": 1,
+      "line_end": 217,
+      "line_count": 217,
+      "starts_with": "### Agent name",
+      "sha256": "2188c7c307ff03a5864f408579b3b865b6fea1d9cece05dc85bcc040799531cf"
+    },
+    {
+      "chunk_id": "01",
+      "title": "STARTUP_CHECK",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_01_STARTUP_CHECK.md.txt",
+      "line_start": 218,
+      "line_end": 231,
+      "line_count": 14,
+      "starts_with": "SECTION 1: STARTUP CHECK",
+      "sha256": "c984994f03866667d702c8744ec73686b832828e4736d5e99ac68d9cc41b7bf3"
+    },
+    {
+      "chunk_id": "02",
+      "title": "NON_NEGOTIABLE_OPERATING_RULES",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_02_NON_NEGOTIABLE_OPERATING_RULES.md.txt",
+      "line_start": 232,
+      "line_end": 753,
+      "line_count": 522,
+      "starts_with": "SECTION 2: NON-NEGOTIABLE OPERATING RULES",
+      "sha256": "46a25a2f2430b7cf8ae89fd7e60ad04d9899c741df9000da99edc3d4cf5e5882"
+    },
+    {
+      "chunk_id": "03",
+      "title": "REQUIRED_RESPONSE_FORMATS",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_03_REQUIRED_RESPONSE_FORMATS.md.txt",
+      "line_start": 754,
+      "line_end": 885,
+      "line_count": 132,
+      "starts_with": "SECTION 3: REQUIRED RESPONSE FORMATS",
+      "sha256": "844d613251f62caa38999003809b5e8f4058fec7f0ff37554ec9afbd5f51ff66"
+    },
+    {
+      "chunk_id": "04",
+      "title": "INVESTIGATION_WORKFLOW",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_04_INVESTIGATION_WORKFLOW.md.txt",
+      "line_start": 886,
+      "line_end": 1095,
+      "line_count": 210,
+      "starts_with": "SECTION 4: INVESTIGATION WORKFLOW",
+      "sha256": "a98b8fdfd510a6df337fa47a157054435fdaf990720339fa188fa2d1df093105"
+    },
+    {
+      "chunk_id": "05",
+      "title": "TOOL_RULES",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_05_TOOL_RULES.md.txt",
+      "line_start": 1096,
+      "line_end": 1241,
+      "line_count": 146,
+      "starts_with": "SECTION 5: TOOL RULES",
+      "sha256": "aafe07b6529b1ad2a88455911c9a394220d1b117e2c355fcd50265b476f05ade"
+    },
+    {
+      "chunk_id": "06",
+      "title": "ANALYTIC_GUARDRAILS",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_06_ANALYTIC_GUARDRAILS.md.txt",
+      "line_start": 1242,
+      "line_end": 1317,
+      "line_count": 76,
+      "starts_with": "SECTION 6: ANALYTIC GUARDRAILS",
+      "sha256": "172c84d5d857e7b6efada8d91e5b87ca33b155a2c6edf458986d94a28ea8ac85"
+    },
+    {
+      "chunk_id": "07",
+      "title": "SCHEMA_HANDLING",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_07_SCHEMA_HANDLING.md.txt",
+      "line_start": 1318,
+      "line_end": 1325,
+      "line_count": 8,
+      "starts_with": "SECTION 7: SCHEMA HANDLING",
+      "sha256": "141fbb36b59784ba5005e3def818f556205f097f64f9a633f4bbff92b7dac77c"
+    },
+    {
+      "chunk_id": "08",
+      "title": "ENVIRONMENT_AWARE_DATA_ACCESS_MODEL",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_08_ENVIRONMENT_AWARE_DATA_ACCESS_MODEL.md.txt",
+      "line_start": 1326,
+      "line_end": 1343,
+      "line_count": 18,
+      "starts_with": "SECTION 7A: ENVIRONMENT-AWARE DATA ACCESS MODEL",
+      "sha256": "b38f08698dcca3fc20543c3311365a8809df8fac19017c8cf9ebc6903aec2d12"
+    },
+    {
+      "chunk_id": "09",
+      "title": "DATA_SCHEMA",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_09_DATA_SCHEMA.md.txt",
+      "line_start": 1344,
+      "line_end": 1355,
+      "line_count": 12,
+      "starts_with": "SECTION 8: DATA SCHEMA",
+      "sha256": "792cbaa161d463fc9e901b5500e25045240d7f788fdccee06ea9b7921496ea13"
+    },
+    {
+      "chunk_id": "10",
+      "title": "KNOWN_ENVIRONMENT_INVENTORY",
+      "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_10_KNOWN_ENVIRONMENT_INVENTORY.md.txt",
+      "line_start": 1356,
+      "line_end": 1749,
+      "line_count": 394,
+      "starts_with": "SECTION 8A: KNOWN ENVIRONMENT INVENTORY",
+      "sha256": "f826400d4e68b39d6f9211f3a7dd7c97e3fcf1ac8c713ea7de2286abc29ad9a7"
+    }
+  ]
+}
