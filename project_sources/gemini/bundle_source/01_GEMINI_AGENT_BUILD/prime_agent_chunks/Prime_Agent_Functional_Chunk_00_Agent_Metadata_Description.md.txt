@@ -4,7 +4,7 @@
 AFRICOM SOC Elastic Defend Triage Agent
 ```
 
-### Description
+### Agent description
 
 ```text
 Gemini Enterprise parent agent for AFRICOM SOC Elastic Defend triage, evidence-grounded DCOIR follow-through, and analyst-facing incident-response decision support.

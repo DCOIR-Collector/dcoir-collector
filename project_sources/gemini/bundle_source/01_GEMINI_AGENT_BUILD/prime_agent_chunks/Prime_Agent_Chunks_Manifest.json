@@ -9,14 +9,14 @@
   "reassembly": {
     "method": "concatenate_chunks_in_manifest_order",
     "newline_policy": "preserve_chunk_text_exactly",
-    "expected_sha256": "2117f96b2fc401b37c2268b57fffd3c2553b9d6331076f3ede69c8ec76e713e8"
+    "expected_sha256": "086b9a14e33506765b5806cb9cbe7a30664ad29f35980cbcbd5dbbbc881ccb6b"
   },
   "chunks": [
     {
       "chunk_id": "00",
       "title": "Agent_Metadata_Description",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_00_Agent_Metadata_Description.md.txt",
-      "sha256": "c3e4c7e49865cd974ee6486eedb2c86d561c093bf0591dcdc9d3689b86df0777",
+      "sha256": "d2c9a2623419bfa1bebd9dd9077f0627c5d1c8a4ddfa555eefd36664c5ef4c9b",
       "line_count": 21,
       "starts_with": "### Agent name"
     },
