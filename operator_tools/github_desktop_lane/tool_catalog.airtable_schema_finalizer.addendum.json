@@ -1,6 +1,6 @@
 {
   "catalog_addendum": "airtable_schema_finalizer",
-  "catalog_version": "2026-05-11.1",
+  "catalog_version": "2026-05-12.1",
   "authority_model": {
     "repo_source": "operator_tools/github_desktop_lane/",
     "airtable_discovery_index": "Operator Tools Registry",
@@ -9,7 +9,7 @@
   "modules": [
     {
       "module_id": "DCOIR-AIRTABLE-SCHEMA-FINALIZER-COMPACT",
-      "role": "Self-contained Airtable schema/readback finalizer script for manifest-driven table/field/readback validation and API-supported field creation. Native formula, autonumber, and default tasks are emitted as report tasks rather than unsafe workarounds."
+      "role": "Self-contained Airtable schema/readback finalizer script for manifest-driven table/field/readback validation, API-supported field creation, readback-only native field validation, and key-match checks. It never deletes Airtable objects."
     }
   ],
   "tools": [
@@ -31,7 +31,8 @@
         "Plan and Validate modes do not write Airtable objects.",
         "Apply mode requires explicit write switches.",
         "The tool does not delete tables, fields, or records.",
-        "Secret values are read from environment variables only and are not printed."
+        "Secret values are read from environment variables only and are not printed.",
+        "Readback-only native fields fail validation if missing instead of being recreated as weaker field types."
       ]
     }
   ]
