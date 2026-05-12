@@ -2,7 +2,7 @@ import path from 'node:path';
 import { writeJson, safeName, nowIso, norm } from './dcoir_ui_common.mjs';
 import { clickAirtableToolbarButton, clickAirtableViewInSidebar, dismissTransientUi, safeMousePark, AIRTABLE_UI_GEOMETRY_VERSION } from './dcoir_airtable_ui_geometry.mjs';
 
-export const AIRTABLE_PANEL_READBACK_VERSION = '2026-05-10.panel-readback.3';
+export const AIRTABLE_PANEL_READBACK_VERSION = '2026-05-12.panel-readback.4';
 
 export function normalizeTargetKey(tableName, viewName) {
   return `${norm(tableName)}::${norm(viewName)}`;
@@ -195,15 +195,33 @@ export async function extractOpenAirtablePanel(page, kind) {
         return { el, text, markerHits, x: box.x, y: box.y, w: box.width, h: box.height, area: box.width * box.height };
       })
       .filter((c) => {
-        if (c.markerHits < 2) return false;
-        if (c.x < 250 || c.y < 70 || c.w < 250 || c.h < 90) return false;
-        if (c.w > 1050 || c.h > 760) return false;
+        const lower = c.text.toLowerCase();
+        const filterConditionSignal = /where|review_after|is on or before|is before|is after|is empty|is not empty|is checked|is unchecked|today|add condition/.test(lower);
+        const sortConditionSignal = /sort by|add another sort|automatically sort records|earliest -> latest|latest -> earliest|ascending|descending|a -> z|z -> a/.test(lower);
+        const enoughMarkers = c.markerHits >= 2 || (kind === 'filter' && c.markerHits >= 1 && filterConditionSignal) || (kind === 'sort' && c.markerHits >= 1 && sortConditionSignal);
+        if (!enoughMarkers) return false;
+        if (c.x < 120 || c.y < 45 || c.w < 170 || c.h < 55) return false;
+        if (c.w > 1150 || c.h > 820) return false;
         return true;
       })
       .sort((a, b) => b.markerHits - a.markerHits || a.area - b.area || a.y - b.y || a.x - b.x);
 
     const panel = containers[0];
-    if (!panel) return { ok: false, reason: 'panel_container_not_found', panel: null, rows: [], raw_elements: [] };
+    if (!panel) {
+      const candidates = Array.from(document.querySelectorAll('button, [role="button"], div, section, [role="dialog"], [role="menu"], [data-testid], [class]'))
+        .filter(visible)
+        .map((el) => {
+          const box = el.getBoundingClientRect();
+          const text = normalize(el.innerText || el.textContent);
+          const lower = text.toLowerCase();
+          const markerHits = markerPhrases.filter((phrase) => lower.includes(phrase)).length;
+          return { text: text.slice(0, 300), markerHits, x: Math.round(box.x), y: Math.round(box.y), w: Math.round(box.width), h: Math.round(box.height) };
+        })
+        .filter((c) => c.markerHits > 0 || /filtered by|sorted by|review_after|is on or before|today|earliest -> latest/i.test(c.text))
+        .sort((a, b) => b.markerHits - a.markerHits || a.y - b.y || a.x - b.x)
+        .slice(0, 40);
+      return { ok: false, reason: 'panel_container_not_found', panel: null, rows: [], raw_elements: [], container_candidates: candidates };
+    }
 
     const bounds = {
       x: Math.round(panel.x),
@@ -298,8 +316,29 @@ export async function extractOpenAirtablePanel(page, kind) {
 }
 
 export async function captureAirtablePanelState(page, outputDir, target, kind, phase, options = {}) {
-  const opened = await openAirtablePanel(page, kind);
-  const extracted = await extractOpenAirtablePanel(page, kind);
+  const readbackAttempts = [];
+  let opened = await openAirtablePanel(page, kind);
+  let extracted = await extractOpenAirtablePanel(page, kind);
+  readbackAttempts.push({ action: 'open_and_extract_initial', opened, ok: extracted.ok, reason: extracted.reason || null, panel: extracted.panel || null, row_count: Array.isArray(extracted.rows) ? extracted.rows.length : 0 });
+
+  if (!extracted.ok) {
+    await page.waitForTimeout(650).catch(() => {});
+    const retryExtract = await extractOpenAirtablePanel(page, kind);
+    readbackAttempts.push({ action: 'extract_retry_after_wait', ok: retryExtract.ok, reason: retryExtract.reason || null, panel: retryExtract.panel || null, row_count: Array.isArray(retryExtract.rows) ? retryExtract.rows.length : 0 });
+    if (retryExtract.ok) extracted = retryExtract;
+  }
+
+  if (!extracted.ok) {
+    await closeOpenAirtablePanel(page).catch(() => {});
+    await page.waitForTimeout(350).catch(() => {});
+    const reopened = await openAirtablePanel(page, kind);
+    await page.waitForTimeout(1100).catch(() => {});
+    const reopenedExtract = await extractOpenAirtablePanel(page, kind);
+    readbackAttempts.push({ action: 'reopen_and_extract_retry', opened: reopened, ok: reopenedExtract.ok, reason: reopenedExtract.reason || null, panel: reopenedExtract.panel || null, row_count: Array.isArray(reopenedExtract.rows) ? reopenedExtract.rows.length : 0 });
+    opened = reopened;
+    if (reopenedExtract.ok) extracted = reopenedExtract;
+  }
+
   const snapshot = await captureDomEvidence(page, outputDir, `${safeName(target.table_name)}_${safeName(target.view_name)}_${phase}_${kind}_panel`, options);
   const state = {
     timestamp_utc: nowIso(),
@@ -309,7 +348,8 @@ export async function captureAirtablePanelState(page, outputDir, target, kind, p
     phase,
     kind,
     opened,
-    panel_extraction: { ok: extracted.ok, reason: extracted.reason || null, panel: extracted.panel || null },
+    readback_attempts: readbackAttempts,
+    panel_extraction: { ok: extracted.ok, reason: extracted.reason || null, panel: extracted.panel || null, container_candidates: extracted.container_candidates || [] },
     rows: extracted.rows || [],
     raw_panel_elements: extracted.raw_elements || [],
     snapshot

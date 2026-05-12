@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-05-11T03:40:03.420Z",
+  "generated_utc": "2026-05-12T15:58:21.315Z",
   "tool_version": "2026-05-10.wbs09-capability-map.4",
   "safety": {
     "read_only": true,
@@ -9,8 +9,8 @@
   },
   "inputs": {
     "manifest_path": "C:\\GitHub\\dcoir-collector\\operator_tools\\github_desktop_lane\\manifests\\wbs09_airtable_native_views_manifest.json",
-    "evidence_root": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence",
-    "evidence_roots_json": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\evidence_roots.ps1_discovered.json",
+    "evidence_root": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence",
+    "evidence_roots_json": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\evidence_roots.ps1_discovered.json",
     "schema_json": null,
     "collect_ui_evidence": true,
     "base_id_source": "provided-or-env"
@@ -19,145 +19,145 @@
     "source_status": "live-airtable-metadata-api",
     "base_id": "appM4KSwnVf3G3OTK",
     "warnings": [],
-    "table_count": 21,
+    "table_count": 22,
     "note": "The live metadata/API schema is used only for table/field ids, field types, select choices, and view names. It is not used as proof of saved native view filter/sort panel configuration."
   },
   "evidence": {
-    "root": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence",
+    "root": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence",
     "evidence_roots_scanned": [
-      "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z",
-      "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z"
+      "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z",
+      "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z"
     ],
     "scanned_json_count": 22,
     "reports": [
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_00_target_loaded.dom.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_00_target_loaded.dom.json",
         "kind": "view_discovery",
         "status": null,
         "view_key": null
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.dom.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.dom.json",
         "kind": "view_discovery",
         "status": null,
         "view_key": null
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.json",
         "kind": "filter",
         "status": null,
         "view_key": "Operator Tools Registry::WBS09 - Validation Due"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_panel.dom.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_panel.dom.json",
         "kind": "view_discovery",
         "status": null,
         "view_key": null
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_state.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_state.json",
         "kind": "filter",
         "status": null,
         "view_key": "Operator Tools Registry::WBS09 - Validation Due"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.dom.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.dom.json",
         "kind": "view_discovery",
         "status": null,
         "view_key": null
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
         "kind": "sort",
         "status": null,
         "view_key": "Operator Tools Registry::WBS09 - Validation Due"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_panel.dom.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_panel.dom.json",
         "kind": "view_discovery",
         "status": null,
         "view_key": null
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
         "kind": "sort",
         "status": null,
         "view_key": "Operator Tools Registry::WBS09 - Validation Due"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
         "kind": "view_discovery",
         "status": "discovery_complete",
         "view_key": "Operator Tools Registry::WBS09 - Validation Due"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\view_discovery_rollup.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\view_discovery_rollup.json",
         "kind": "view_discovery",
         "status": "DISCOVERY_COMPLETE",
         "view_key": "Operator Tools Registry::WBS09 - Validation Due"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_00_target_loaded.dom.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_00_target_loaded.dom.json",
         "kind": "view_discovery",
         "status": null,
         "view_key": null
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.dom.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.dom.json",
         "kind": "view_discovery",
         "status": null,
         "view_key": null
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.json",
         "kind": "filter",
         "status": null,
         "view_key": "Session Checkpoints::WBS09 - Needs Review"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_panel.dom.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_panel.dom.json",
         "kind": "view_discovery",
         "status": null,
         "view_key": null
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_state.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_state.json",
         "kind": "filter",
         "status": null,
         "view_key": "Session Checkpoints::WBS09 - Needs Review"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.dom.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.dom.json",
         "kind": "view_discovery",
         "status": null,
         "view_key": null
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
         "kind": "sort",
         "status": null,
         "view_key": "Session Checkpoints::WBS09 - Needs Review"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_panel.dom.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_panel.dom.json",
         "kind": "view_discovery",
         "status": null,
         "view_key": null
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
         "kind": "sort",
         "status": null,
         "view_key": "Session Checkpoints::WBS09 - Needs Review"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
         "kind": "view_discovery",
         "status": "discovery_complete",
         "view_key": "Session Checkpoints::WBS09 - Needs Review"
       },
       {
-        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\view_discovery_rollup.json",
+        "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\view_discovery_rollup.json",
         "kind": "view_discovery",
         "status": "DISCOVERY_COMPLETE",
         "view_key": "Session Checkpoints::WBS09 - Needs Review"
@@ -167,32 +167,32 @@
       "Operator Tools Registry::WBS09 - Validation Due": {
         "reports": [
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.json",
             "kind": "filter",
             "status": null
           },
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_state.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_state.json",
             "kind": "filter",
             "status": null
           },
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
             "kind": "sort",
             "status": null
           },
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
             "kind": "sort",
             "status": null
           },
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
             "kind": "view_discovery",
             "status": "discovery_complete"
           },
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\view_discovery_rollup.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\view_discovery_rollup.json",
             "kind": "view_discovery",
             "status": "DISCOVERY_COMPLETE"
           }
@@ -201,40 +201,38 @@
           "discovery_complete",
           "DISCOVERY_COMPLETE"
         ],
-        "missing": [
-          "filter row not observed: field=review_after; operator=on or before; value=today"
-        ],
+        "missing": [],
         "observed_text_signals": []
       },
       "Session Checkpoints::WBS09 - Needs Review": {
         "reports": [
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.json",
             "kind": "filter",
             "status": null
           },
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_state.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_state.json",
             "kind": "filter",
             "status": null
           },
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
             "kind": "sort",
             "status": null
           },
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
             "kind": "sort",
             "status": null
           },
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
             "kind": "view_discovery",
             "status": "discovery_complete"
           },
           {
-            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\view_discovery_rollup.json",
+            "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\view_discovery_rollup.json",
             "kind": "view_discovery",
             "status": "DISCOVERY_COMPLETE"
           }
@@ -250,205 +248,159 @@
     "primitive_ui_signals": {
       "filter.select.=": [
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_00_target_loaded.dom.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_00_target_loaded.dom.json",
           "view_key": null,
           "status": null,
           "signal": "single-select equality UI signal observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.dom.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.dom.json",
           "view_key": null,
           "status": null,
           "signal": "single-select equality UI signal observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_panel.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "single-select equality UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "single-select equality UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_panel.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "single-select equality UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_00_target_loaded.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "single-select equality UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "single-select equality UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_panel.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "single-select equality UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "single-select equality UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_panel.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "single-select equality UI signal observed in evidence JSON"
-        }
-      ],
-      "filter.checkbox.=": [
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_00_target_loaded.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "checkbox true/false UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "checkbox true/false UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_panel.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "checkbox true/false UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "checkbox true/false UI signal observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_panel.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "checkbox true/false UI signal observed in evidence JSON"
-        }
-      ],
-      "filter.relative_date.exact_date_empty": [
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.dom.json",
-          "view_key": null,
-          "status": null,
-          "signal": "exact date empty/default state observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
-          "signal": "exact date empty/default state observed in evidence JSON"
+          "signal": "single-select equality UI signal observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_panel.dom.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_panel.dom.json",
           "view_key": null,
           "status": null,
-          "signal": "exact date empty/default state observed in evidence JSON"
+          "signal": "single-select equality UI signal observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_state.json",
-          "view_key": "Operator Tools Registry::WBS09 - Validation Due",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.dom.json",
+          "view_key": null,
           "status": null,
-          "signal": "exact date empty/default state observed in evidence JSON"
+          "signal": "single-select equality UI signal observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_panel.dom.json",
+          "view_key": null,
+          "status": null,
+          "signal": "single-select equality UI signal observed in evidence JSON"
+        },
+        {
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": "discovery_complete",
-          "signal": "exact date empty/default state observed in evidence JSON"
+          "signal": "single-select equality UI signal observed in evidence JSON"
+        },
+        {
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_00_target_loaded.dom.json",
+          "view_key": null,
+          "status": null,
+          "signal": "single-select equality UI signal observed in evidence JSON"
+        },
+        {
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.dom.json",
+          "view_key": null,
+          "status": null,
+          "signal": "single-select equality UI signal observed in evidence JSON"
+        },
+        {
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_panel.dom.json",
+          "view_key": null,
+          "status": null,
+          "signal": "single-select equality UI signal observed in evidence JSON"
+        },
+        {
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.dom.json",
+          "view_key": null,
+          "status": null,
+          "signal": "single-select equality UI signal observed in evidence JSON"
+        },
+        {
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_panel.dom.json",
+          "view_key": null,
+          "status": null,
+          "signal": "single-select equality UI signal observed in evidence JSON"
         }
       ],
       "filter.relative_date.on_or_before_today": [
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.dom.json",
+          "view_key": null,
+          "status": null,
+          "signal": "on or before today observed in evidence JSON"
+        },
+        {
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_discovery.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_panel.dom.json",
+          "view_key": null,
+          "status": null,
+          "signal": "on or before today observed in evidence JSON"
+        },
+        {
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_filter_state.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": "discovery_complete",
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\view_discovery_rollup.json",
-          "view_key": "Operator Tools Registry::WBS09 - Validation Due",
-          "status": "DISCOVERY_COMPLETE",
-          "signal": "on or before today observed in evidence JSON"
-        },
-        {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.dom.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.dom.json",
           "view_key": null,
           "status": null,
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_discovery.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_panel.dom.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_panel.dom.json",
           "view_key": null,
           "status": null,
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_filter_state.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "on or before today observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": "discovery_complete",
           "signal": "on or before today observed in evidence JSON"
@@ -456,37 +408,37 @@
       ],
       "sort.date.asc": [
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "ascending date sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "ascending date sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": "discovery_complete",
           "signal": "ascending date sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "ascending date sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "ascending date sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": "discovery_complete",
           "signal": "ascending date sort option/state observed in evidence JSON"
@@ -494,25 +446,25 @@
       ],
       "sort.text_like.desc": [
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "descending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": "discovery_complete",
           "signal": "descending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "descending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": "discovery_complete",
           "signal": "descending sort option/state observed in evidence JSON"
@@ -520,25 +472,25 @@
       ],
       "sort.date.desc": [
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "descending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": "discovery_complete",
           "signal": "descending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "descending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": "discovery_complete",
           "signal": "descending sort option/state observed in evidence JSON"
@@ -546,37 +498,37 @@
       ],
       "sort.text_like.asc": [
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": "discovery_complete",
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": "discovery_complete",
           "signal": "ascending sort option/state observed in evidence JSON"
@@ -584,37 +536,37 @@
       ],
       "sort.single_select.asc": [
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": "discovery_complete",
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": "discovery_complete",
           "signal": "ascending sort option/state observed in evidence JSON"
@@ -622,37 +574,37 @@
       ],
       "sort.number.asc": [
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_discovery.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_current_sort_state.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175339Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155726Z\\Operator_Tools_Registry_WBS09_-_Validation_Due_view_discovery_report.json",
           "view_key": "Operator Tools Registry::WBS09 - Validation Due",
           "status": "discovery_complete",
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_discovery.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_current_sort_state.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": null,
           "signal": "ascending sort option/state observed in evidence JSON"
         },
         {
-          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260510T175303Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260510T175303Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
+          "path": "C:\\Users\\batch_lrjfue\\Downloads\\dcoir_wbs09_capability_map_20260512T155645Z\\ui_evidence\\dcoir_wbs09_view_discovery_20260512T155645Z\\Session_Checkpoints_WBS09_-_Needs_Review_view_discovery_report.json",
           "view_key": "Session Checkpoints::WBS09 - Needs Review",
           "status": "discovery_complete",
           "signal": "ascending sort option/state observed in evidence JSON"
@@ -663,10 +615,11 @@
   "summary": {
     "view_count": 65,
     "manifest_table_count": 21,
-    "schema_table_count": 21,
+    "schema_table_count": 22,
     "primitive_count": 16,
     "unsupported_or_gap_primitives": [
       "filter.select.multi_value.is_one_of",
+      "filter.checkbox.=",
       "filter.empty.is_not_empty",
       "filter.select.is_not_empty",
       "filter.text.contains",
@@ -803,12 +756,6 @@
       ],
       "schema_notes": [
         "schema field kind date can be sorted by Airtable UI"
-      ],
-      "validated_sample_views": [
-        "Operator Tools Registry::WBS09 - Validation Due"
-      ],
-      "validated_evidence": [
-        "dcoir_wbs09_view_panel_readback_20260511T033905Z_wrong_value_repair_v15_chatgpt.zip"
       ]
     },
     {
@@ -819,8 +766,8 @@
       "schema_supported_count": 13,
       "schema_gap_count": 0,
       "ui_discovery_supported": true,
-      "apply_supported": true,
-      "status": "validated_for_validation_due_view",
+      "apply_supported": false,
+      "status": "ui_observed_apply_not_ready",
       "example_views": [
         "Session Checkpoints::WBS09 - Needs Review",
         "Idea Inbox::WBS09 - Review Due",
@@ -831,7 +778,7 @@
         "Repo Surface Registry::WBS09 - Review Due",
         "dcoir-memory-preflight::WBS09 - Review Due"
       ],
-      "known_ui_signal_count": 13,
+      "known_ui_signal_count": 14,
       "known_ui_sample_views": [
         "Operator Tools Registry::WBS09 - Validation Due",
         "Session Checkpoints::WBS09 - Needs Review"
@@ -843,20 +790,7 @@
       ],
       "schema_notes": [
         "date field supports relative date comparison in Airtable UI"
-      ],
-      "apply_support_level": "guarded_single_target",
-      "validated_evidence": [
-        "dcoir_wbs09_apply_validation_due_view_20260511T033729Z_wrong_value_repair_v15_chatgpt.zip",
-        "dcoir_wbs09_view_panel_readback_20260511T033905Z_wrong_value_repair_v15_chatgpt.zip"
-      ],
-      "validated_sample_views": [
-        "Operator Tools Registry::WBS09 - Validation Due"
-      ],
-      "validated_failure_recovery": [
-        "wrong relative-date value -> review_after on or before today"
-      ],
-      "apply_module": "operator_tools/github_desktop_lane/ui_automation/shared/dcoir_airtable_panel_actions.mjs",
-      "apply_harness": "operator_tools/github_desktop_lane/ui_automation/airtable_wbs09_views/scripts/airtable_wbs09_apply_validation_due_view.mjs"
+      ]
     },
     {
       "primitive_id": "sort.text_like.asc",
@@ -919,8 +853,10 @@
         "Delete Queue::WBS09 - Approved Pending Deletes",
         "Admin Registry::WBS09 - Active Registry"
       ],
-      "known_ui_signal_count": 10,
-      "known_ui_sample_views": [],
+      "known_ui_signal_count": 12,
+      "known_ui_sample_views": [
+        "Operator Tools Registry::WBS09 - Validation Due"
+      ],
       "required_controls": [
         "field dropdown: status",
         "operator dropdown: =",
@@ -940,9 +876,9 @@
       "schema_supported": true,
       "schema_supported_count": 6,
       "schema_gap_count": 0,
-      "ui_discovery_supported": true,
+      "ui_discovery_supported": false,
       "apply_supported": false,
-      "status": "ui_observed_apply_not_ready",
+      "status": "schema_supported_ui_evidence_needed",
       "example_views": [
         "Validation Test Cases::WBS09 - Active Tests",
         "Gemini Research Reference::WBS09 - Active Findings",
@@ -951,7 +887,7 @@
         "Local Configuration Registry::WBS09 - Confirmed Present",
         "Operator Tools Registry::WBS09 - Active Tools"
       ],
-      "known_ui_signal_count": 5,
+      "known_ui_signal_count": 0,
       "known_ui_sample_views": [],
       "required_controls": [
         "field dropdown: Active",
@@ -3784,9 +3720,7 @@
           "discovery_complete",
           "DISCOVERY_COMPLETE"
         ],
-        "missing": [
-          "filter row not observed: field=review_after; operator=on or before; value=today"
-        ],
+        "missing": [],
         "report_count": 6
       }
     },
@@ -4111,35 +4045,8 @@
     }
   ],
   "recommendations": [
-    "Promote guarded single-target apply support for filter.relative_date.on_or_before_today based on v15 wrong-value repair plus independent panel readback evidence.",
+    "Build or harden apply primitive filter.relative_date.on_or_before_today; schema=true, ui=true, apply=false, uses=13.",
     "Keep browser actions gated by this map: schema-supported plus UI option evidence before mutation.",
-    "Do not generalize this primitive to broad rollout until additional target classes are tested beyond Operator Tools Registry::WBS09 - Validation Due."
-  ],
-  "post_generation_validation": {
-    "status": "validated_apply_supported_for_validation_due_view",
-    "validation_phase": "post-v15-wrong-value-repair",
-    "evidence": [
-      {
-        "kind": "apply",
-        "status": "validation_due_view_verified_after_refresh",
-        "tool_version": "2026-05-10.wbs09-apply-validation-due-view.4",
-        "shared_panel_actions_version": "2026-05-10.panel-actions.7",
-        "source_zip": "dcoir_wbs09_apply_validation_due_view_20260511T033729Z_wrong_value_repair_v15_chatgpt.zip",
-        "report": "Operator_Tools_Registry_WBS09_-_Validation_Due_apply_validation_due_view_report.json",
-        "mutation_types": [
-          "normalize_filter_review_after_on_or_before_today"
-        ]
-      },
-      {
-        "kind": "independent_panel_readback",
-        "status": "PASS",
-        "source_zip": "dcoir_wbs09_view_panel_readback_20260511T033905Z_wrong_value_repair_v15_chatgpt.zip",
-        "report": "Operator_Tools_Registry_WBS09_-_Validation_Due_panel_readback_report.json"
-      }
-    ],
-    "validated_target": "Operator Tools Registry::WBS09 - Validation Due",
-    "validated_primitive": "filter.relative_date.on_or_before_today",
-    "validated_recovery_case": "wrong relative-date value repaired to today after today was not initially visible",
-    "verification_method": "after-click verification plus independent refresh/reselect Filter/Sort panel readback"
-  }
+    "Do not promote validation-due apply until after-click and independent panel readback both prove review_after on or before today."
+  ]
 }
