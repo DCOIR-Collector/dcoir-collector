@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260512-gemini-generated-prime-final-validate-001",
+  "operator_approved": true,
+  "approved_command_preview": "Run final Gemini generated-prime release build validation on latest main after chunk checksum update; write build outputs to artifact readback only.",
+  "shell": "pwsh",
+  "timeout_seconds": 900,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true,
+  "command": "$ErrorActionPreference = 'Stop'\n$repo = $env:DCOIR_REPO_ROOT\n$out = Join-Path $env:DCOIR_DOWNLOADS_DIR 'gemini_generated_prime_final_validate_001'\nNew-Item -ItemType Directory -Force -Path $out | Out-Null\npython (Join-Path $repo 'project_sources/gemini/tools/build_dcoir_gemini_release.py') --source-root (Join-Path $repo 'project_sources/gemini/bundle_source') --output-dir $out\n$reportPath = Join-Path $out 'build_dcoir_gemini_release_report.json'\nif (-not (Test-Path -LiteralPath $reportPath -PathType Leaf)) { throw 'Missing Gemini build report.' }\n$report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json\nif (-not $report.success) { throw 'Gemini generated-prime final validation failed.' }\nWrite-Host 'Gemini generated-prime final validation passed.'\n"
+}
