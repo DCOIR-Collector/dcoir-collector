@@ -8,9 +8,11 @@ It is designed for schema-finalization passes where ChatGPT or an operator needs
 
 - verify that a table exists;
 - create missing API-supported fields;
+- validate readback-only native fields such as formula and autonumber fields;
 - validate expected records by a stable key;
-- produce readback evidence for field presence, row count, missing keys, and duplicate keys;
-- emit precise follow-up tasks for native Airtable features that are not safely creatable through the public API or connector lane.
+- validate generated-key parity across two fields when a manifest defines `key_match_checks`;
+- produce readback evidence for field presence, row count, missing keys, duplicate keys, and key mismatches;
+- emit precise follow-up tasks only when native Airtable work remains outside the safe API/connector lane.
 
 The first consumer is `GitHub Workflow Inventory`, but the manifest-driven design is table-agnostic.
 
@@ -20,7 +22,7 @@ Airtable remains the live schema and record authority. GitHub remains the source
 
 The tool intentionally does not delete tables, fields, or records.
 
-Native formula fields, autonumber fields, and native field defaults are handled as `ui_only_fields` / `field_defaults` tasks in the manifest. The tool does not fake those features or silently downgrade them.
+Native formula and autonumber fields should be represented as `readback_only_fields` once created in Airtable UI. The tool verifies they exist and can validate their computed output through record readback. Native field defaults may be represented as `field_defaults` only while they are still pending review; completed defaults should not stay in the manifest as perpetual tasks.
 
 ## Required local configuration
 
@@ -72,25 +74,29 @@ Each run writes:
 - `Plan` and `Validate` modes do not create, update, or delete Airtable objects.
 - `Apply` mode still requires explicit switches for write classes.
 - Duplicate key records are reported rather than mutated.
-- Unsupported native field work is reported as a UI/default task instead of attempted through an unsafe workaround.
+- Missing readback-only native fields fail validation instead of being silently recreated as a weaker field type.
+- Unsupported native field work is reported as a task only while it is actually pending.
 
-## GitHub Workflow Inventory native follow-up
+## GitHub Workflow Inventory current design
 
-For the current `GitHub Workflow Inventory` table, the remaining native Airtable UI/default tasks are:
+For the current `GitHub Workflow Inventory` table, the final key fields are:
 
-1. Add optional `workflow_seq_auto` as an Airtable Autonumber field.
-2. Add optional `workflow_key_native` as a Formula field:
+- `workflow_key` — stable primary lookup key.
+- `workflow_seq_auto` — Airtable-native autonumber sequence.
+- `workflow_key_native` — Airtable-native formula key.
+
+Current `workflow_key_native` formula:
 
 ```text
-"workflow-" & {workflow_family} & "-" & {workflow_file_stem} & "-" & RIGHT("0000" & IF({workflow_seq}, {workflow_seq}, {workflow_seq_auto}), 4)
+"workflow-" & {workflow_family} & "-" & {workflow_file_stem} & "-" & RIGHT("0000" & {workflow_seq_auto}, 4)
 ```
 
-3. Compare `workflow_key_native` to `workflow_key` and `workflow_key_formula_preview` before promoting it as the generated key reference.
-4. Configure native defaults where Airtable UI supports them:
-   - `status`: `active`
-   - `active`: checked
-   - `routing_owner_skill`: `dcoir-memory-preflight`
-   - `cache_scope`: `workflow_task_routing`
-   - `retention_class`: `operational`
+The transitional bridge fields `workflow_seq` and `workflow_key_formula_preview` were intentionally removed after validation. Do not reintroduce them.
 
-Until those UI/default tasks are complete, the current table remains usable because `workflow_key`, `workflow_seq`, and `workflow_key_formula_preview` are already populated explicitly.
+The current manifest validates:
+
+- all API-supported workflow inventory fields exist;
+- `workflow_seq_auto` and `workflow_key_native` exist as readback-only native fields;
+- all 24 expected workflow keys exist;
+- `workflow_key` equals `workflow_key_native` for every record;
+- no duplicate expected workflow keys are present.
