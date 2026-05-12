@@ -1,0 +1,15 @@
+{
+  "schema": "dcoir.chatgpt_staging.stage_out_request.v1",
+  "request_id": "stageout-20260512-prime-agent-source-readback-001",
+  "mode": "zip_first_with_chunks_fallback",
+  "allowed_roots": [
+    "project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD"
+  ],
+  "exact_paths": [
+    "project_sources/gemini/bundle_source/01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt"
+  ],
+  "search_terms": [],
+  "max_matches_per_term": 5,
+  "chunk_lines": 160,
+  "include_files_copy": true
+}
