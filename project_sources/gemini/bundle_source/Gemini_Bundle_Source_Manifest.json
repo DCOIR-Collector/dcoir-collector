@@ -63,7 +63,9 @@
     "01_GEMINI_AGENT_BUILD/Sub_Agent_08_IOC_Parsing_and_Evidence_Grounded_Public_Enrichment_Planner.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_09_Targeted_Collection_Designer_and_Evidence_Gap_Reducer.md.txt",
     "01_GEMINI_AGENT_BUILD/Sub_Agent_10_Output_Contract_Consistency_Guard_and_Report_Composer.md.txt",
-    "01_GEMINI_AGENT_BUILD/Sub_Agent_11_USB_Violations_Report_Composer.md.txt",
+    "01_GEMINI_AGENT_BUILD/Sub_Agent_11_USB_Violations_Report_Composer.md.txt"
+  ],
+  "source_required_files": [
     "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunks_Manifest.json",
     "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_00_Metadata_Description_And_Global_Opening.md.txt",
     "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunk_01_STARTUP_CHECK.md.txt",
