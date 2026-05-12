@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260512-gemini-generated-prime-migration-002",
+  "operator_approved": true,
+  "approved_command_preview": "Run corrected Gemini generated-prime migration wrapper. Reuse validated v001 patch/validation logic, then explicitly stage and commit intended repo-relative Gemini migration paths before workflow report push.",
+  "script_path": "chatgpt_staging/exec_scripts/gemini_generated_prime_migration_002.ps1",
+  "shell": "pwsh",
+  "timeout_seconds": 900,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true
+}
