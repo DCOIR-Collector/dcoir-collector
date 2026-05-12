@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260512-airtable-schema-finalizer-validate-002",
+  "operator_approved": true,
+  "approved_at_utc": "2026-05-12T06:45:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "approved_command_preview": "$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')\n$script = Join-Path $repo 'operator_tools\\github_desktop_lane\\scripts\\Invoke-DcoirAirtableSchemaFinalizer.ps1'\n$manifest = Join-Path $repo 'operator_tools\\github_desktop_lane\\manifests\\airtable_schema_finalizer.github_workflow_inventory.sample.json'\n& $script -ManifestJson $manifest -Mode Validate -StrictNativeTasks",
+  "command": "$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')\n$script = Join-Path $repo 'operator_tools\\github_desktop_lane\\scripts\\Invoke-DcoirAirtableSchemaFinalizer.ps1'\n$manifest = Join-Path $repo 'operator_tools\\github_desktop_lane\\manifests\\airtable_schema_finalizer.github_workflow_inventory.sample.json'\n& $script -ManifestJson $manifest -Mode Validate -StrictNativeTasks"
+}
