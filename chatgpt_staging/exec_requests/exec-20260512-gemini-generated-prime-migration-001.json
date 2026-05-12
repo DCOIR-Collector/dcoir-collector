@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260512-gemini-generated-prime-migration-001",
+  "operator_approved": true,
+  "approved_command_preview": "Run staged Gemini generated-prime migration script. Patch manifest, build/compile/validate scripts, and docs; validate chunk reassembly and final ZIP contract before committing generated-prime migration changes.",
+  "script_path": "chatgpt_staging/exec_scripts/gemini_generated_prime_migration_001.ps1",
+  "shell": "pwsh",
+  "timeout_seconds": 900,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true
+}
