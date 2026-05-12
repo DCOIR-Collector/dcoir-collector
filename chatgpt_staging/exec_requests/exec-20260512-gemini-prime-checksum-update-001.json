@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260512-gemini-prime-checksum-update-001",
+  "operator_approved": true,
+  "approved_command_preview": "Update only Prime_Agent_Chunks_Manifest.json reassembly.expected_sha256 from the stale original monolith checksum to the current chunk reassembly checksum observed in manual-gemini-bundle-build failure.",
+  "script_path": "chatgpt_staging/exec_scripts/update_gemini_prime_chunk_checksum_001.ps1",
+  "shell": "pwsh",
+  "timeout_seconds": 300,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true
+}
