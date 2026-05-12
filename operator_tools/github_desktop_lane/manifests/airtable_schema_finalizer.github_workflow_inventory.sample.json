@@ -9,11 +9,9 @@
   },
   "supported_fields": [
     {"name":"workflow_key","type":"singleLineText"},
-    {"name":"workflow_seq","type":"number","options":{"precision":0}},
     {"name":"workflow_file_stem","type":"singleLineText"},
     {"name":"workflow_name","type":"singleLineText"},
     {"name":"repo_path","type":"singleLineText"},
-    {"name":"workflow_key_formula_preview","type":"singleLineText"},
     {"name":"workflow_family","type":"singleSelect","options":{"choices":[{"name":"staging_lane","color":"blueLight2"},{"name":"validation","color":"greenLight2"},{"name":"build_package","color":"cyanLight2"},{"name":"ops_scaffold","color":"yellowLight2"},{"name":"maintenance","color":"purpleLight2"},{"name":"publishing","color":"tealLight2"},{"name":"dependency_security","color":"orangeLight2"}]}},
     {"name":"status","type":"singleSelect","options":{"choices":[{"name":"active","color":"greenLight2"},{"name":"scaffold","color":"yellowLight2"},{"name":"deprecated","color":"grayLight2"},{"name":"review_needed","color":"orangeLight2"},{"name":"blocked","color":"redLight2"}]}},
     {"name":"trigger_family","type":"singleSelect","options":{"choices":[{"name":"manual","color":"blueLight2"},{"name":"manual_push","color":"cyanLight2"},{"name":"manual_schedule","color":"purpleLight2"},{"name":"manual_schedule_push","color":"tealLight2"},{"name":"pull_request","color":"orangeLight2"},{"name":"workflow_run_manual","color":"greenLight2"}]}},
@@ -34,29 +32,18 @@
     {"name":"updated_at","type":"dateTime","options":{"dateFormat":{"name":"iso","format":"YYYY-MM-DD"},"timeFormat":{"name":"24hour","format":"HH:mm"},"timeZone":"utc"}},
     {"name":"review_after","type":"date","options":{"dateFormat":{"name":"iso","format":"YYYY-MM-DD"}}}
   ],
-  "ui_only_fields": [
-    {
-      "task_type": "native_autonumber_field",
-      "field_name": "workflow_seq_auto",
-      "reason": "Optional future new-row suffix. Airtable native autonumber creation is not supported by this API lane."
-    },
-    {
-      "task_type": "native_formula_field",
-      "field_name": "workflow_key_native",
-      "formula": "\"workflow-\" & {workflow_family} & \"-\" & {workflow_file_stem} & \"-\" & RIGHT(\"0000\" & IF({workflow_seq}, {workflow_seq}, {workflow_seq_auto}), 4)",
-      "reason": "Formula creation is not supported by this API lane. Compare against workflow_key_formula_preview before promotion."
-    }
+  "readback_only_fields": [
+    {"name":"workflow_seq_auto","type":"autoNumber","reason":"Airtable-native sequence field. Readback-only because native autonumber creation is not supported through the standard safe creation lane."},
+    {"name":"workflow_key_native","type":"formula","reason":"Airtable-native formula field. Readback-only because formula creation is not supported through the standard safe creation lane."}
   ],
-  "field_defaults": [
-    {"task_type":"native_default_value","field_name":"status","default_value":"active"},
-    {"task_type":"native_default_value","field_name":"active","default_value":"checked"},
-    {"task_type":"native_default_value","field_name":"routing_owner_skill","default_value":"dcoir-memory-preflight"},
-    {"task_type":"native_default_value","field_name":"cache_scope","default_value":"workflow_task_routing"},
-    {"task_type":"native_default_value","field_name":"retention_class","default_value":"operational"}
-  ],
+  "ui_only_fields": [],
+  "field_defaults": [],
   "records": {
     "key_field": "workflow_key",
     "expected_count": 24,
+    "key_match_checks": [
+      {"left_field":"workflow_key","right_field":"workflow_key_native"}
+    ],
     "expected_keys": [
       "workflow-staging_lane-chatgpt-apply-in-0001",
       "workflow-staging_lane-chatgpt-exec-0002",
