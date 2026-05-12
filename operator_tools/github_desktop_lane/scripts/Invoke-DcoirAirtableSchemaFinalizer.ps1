@@ -12,7 +12,7 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 $ToolName = 'dcoir_airtable_schema_finalizer'
-$ToolVersion = '2026-05-11.1'
+$ToolVersion = '2026-05-12.1'
 
 function New-SafeName {
   param([string]$Value)
@@ -150,13 +150,18 @@ function Write-ReportMarkdown {
   $lines.Add('- expected_count: ' + $Report.record_validation.expected_count) | Out-Null
   $lines.Add('- missing_expected_keys: ' + @($Report.record_validation.missing_expected_keys).Count) | Out-Null
   $lines.Add('- duplicate_expected_keys: ' + @($Report.record_validation.duplicate_expected_keys).Count) | Out-Null
+  $lines.Add('- key_match_mismatches: ' + @($Report.record_validation.key_match_mismatches).Count) | Out-Null
   $lines.Add('') | Out-Null
   $lines.Add('## Native UI/default tasks') | Out-Null
-  foreach ($t in @($Report.native_tasks)) {
-    $lines.Add('- ' + $t.task_type + ': ' + $t.field_name) | Out-Null
-    if ($t.PSObject.Properties['default_value']) { $lines.Add('  - default: `' + $t.default_value + '`') | Out-Null }
-    if ($t.PSObject.Properties['formula']) { $lines.Add('  - formula: `' + $t.formula + '`') | Out-Null }
-    if ($t.PSObject.Properties['reason']) { $lines.Add('  - reason: ' + $t.reason) | Out-Null }
+  if (@($Report.native_tasks).Count -eq 0) {
+    $lines.Add('- none') | Out-Null
+  } else {
+    foreach ($t in @($Report.native_tasks)) {
+      $lines.Add('- ' + $t.task_type + ': ' + $t.field_name) | Out-Null
+      if ($t.PSObject.Properties['default_value']) { $lines.Add('  - default: `' + $t.default_value + '`') | Out-Null }
+      if ($t.PSObject.Properties['formula']) { $lines.Add('  - formula: `' + $t.formula + '`') | Out-Null }
+      if ($t.PSObject.Properties['reason']) { $lines.Add('  - reason: ' + $t.reason) | Out-Null }
+    }
   }
   Write-Utf8 -Path $Path -Text (($lines -join [Environment]::NewLine) + [Environment]::NewLine)
 }
@@ -202,6 +207,14 @@ try {
       $schemaActions.Add([ordered]@{status='missing_planned_only'; field_name=[string]$f.name; field_type=[string]$f.type; field_id=$null}) | Out-Null
     }
   }
+  foreach ($f in @($manifest.readback_only_fields)) {
+    $existing = Find-Field -Table $table -FieldName ([string]$f.name)
+    if ($existing) {
+      $schemaActions.Add([ordered]@{status='present_readback_only'; field_name=[string]$f.name; field_type=[string]$existing.type; field_id=[string]$existing.id}) | Out-Null
+    } else {
+      $schemaActions.Add([ordered]@{status='missing_readback_only'; field_name=[string]$f.name; field_type=[string]$f.type; field_id=$null}) | Out-Null
+    }
+  }
 
   if ($Mode -eq 'Apply' -and $AllowUpsertRecords) {
     Write-Log 'AllowUpsertRecords was set, but this compact first version performs validation-only record readback. Use connector/import lane for new rows until row-upsert extension is promoted.'
@@ -214,6 +227,7 @@ try {
   $records = @(Get-Records -BaseId $base.Value -TableId ([string]$table.id) -Headers $headers)
   $missing = @()
   $dupes = @()
+  $mismatches = @()
   $expectedKeys = @()
   if ($manifest.records -and $manifest.records.expected_keys) { $expectedKeys = @($manifest.records.expected_keys | ForEach-Object { [string]$_ }) }
   $keyField = if ($manifest.records -and $manifest.records.key_field) { [string]$manifest.records.key_field } else { 'workflow_key' }
@@ -231,6 +245,22 @@ try {
     elseif ($byKey[$key] -gt 1) { $dupes += $key }
   }
 
+  foreach ($check in @($manifest.records.key_match_checks)) {
+    $leftName = [string]$check.left_field
+    $rightName = [string]$check.right_field
+    if (-not $fieldMap.ContainsKey($leftName)) { throw "Key match field not found: $leftName" }
+    if (-not $fieldMap.ContainsKey($rightName)) { throw "Key match field not found: $rightName" }
+    $leftId = [string]$fieldMap[$leftName]
+    $rightId = [string]$fieldMap[$rightName]
+    foreach ($r in $records) {
+      $leftValue = [string](Get-FieldValueById -Fields $r.fields -FieldId $leftId)
+      $rightValue = [string](Get-FieldValueById -Fields $r.fields -FieldId $rightId)
+      if ($leftValue -ne $rightValue) {
+        $mismatches += [ordered]@{ record_id=[string]$r.id; left_field=$leftName; left_value=$leftValue; right_field=$rightName; right_value=$rightValue }
+      }
+    }
+  }
+
   $nativeTasks = @()
   if ($manifest.ui_only_fields) { $nativeTasks += @($manifest.ui_only_fields) }
   if ($manifest.field_defaults) { $nativeTasks += @($manifest.field_defaults) }
@@ -239,6 +269,10 @@ try {
   $success = $true
   if (@($missing).Count -gt 0) { $success = $false }
   if (@($dupes).Count -gt 0) { $success = $false }
+  if (@($mismatches).Count -gt 0) { $success = $false }
+  foreach ($a in @($schemaActions.ToArray())) {
+    if ([string]$a.status -eq 'missing_readback_only' -or [string]$a.status -eq 'missing_planned_only') { $success = $false }
+  }
   $expectedCount = if ($manifest.records -and $manifest.records.expected_count) { [int]$manifest.records.expected_count } else { 0 }
   if ($expectedCount -gt 0 -and @($records).Count -lt $expectedCount) { $success = $false }
 
@@ -259,6 +293,7 @@ try {
       expected_key_count = @($expectedKeys).Count
       missing_expected_keys = @($missing)
       duplicate_expected_keys = @($dupes)
+      key_match_mismatches = @($mismatches)
     }
     output_dir = $OutputDir
     log_path = $script:LogPath
