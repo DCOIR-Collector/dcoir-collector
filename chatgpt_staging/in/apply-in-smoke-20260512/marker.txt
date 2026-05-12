@@ -1,3 +1,0 @@
-DCOIR chatgpt-apply-in smoke test marker
-request_id: applyin-smoke-20260512-nonworkflow-001
-purpose: verify single payload.zip.b64 apply-in path on harmless non-workflow target
