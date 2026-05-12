@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25721404674",
   "github_sha": "25916edf39f455f6c4d05684260281b680c25dc0",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "exec-20260512-gemini-prime-chunks-validate-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260512-gemini-prime-chunks-validate-001.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-12T07:58:44Z",
+  "updated_utc": "2026-05-12T07:58:47Z",
   "workflow": "chatgpt-exec"
 }
