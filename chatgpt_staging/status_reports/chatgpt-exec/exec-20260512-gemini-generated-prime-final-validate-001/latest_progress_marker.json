@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "25724998832",
   "github_sha": "8dd40dd3b26c671a07c47106c58570bd0ec4a3f1",
-  "phase": "harness-finished",
+  "phase": "final-readback-commit",
   "request_id": "exec-20260512-gemini-generated-prime-final-validate-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260512-gemini-generated-prime-final-validate-001.json",
   "result": "failure",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-12T09:13:39Z",
+  "updated_utc": "2026-05-12T09:13:42Z",
   "workflow": "chatgpt-exec"
 }
