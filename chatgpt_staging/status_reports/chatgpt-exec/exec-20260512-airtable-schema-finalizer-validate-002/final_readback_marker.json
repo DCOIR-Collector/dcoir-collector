@@ -1,0 +1,13 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_final_readback_marker.v1",
+  "request_id": "exec-20260512-airtable-schema-finalizer-validate-002",
+  "result": "success",
+  "exit_code": "0",
+  "artifact_name": "chatgpt-exec-exec-20260512-airtable-schema-finalizer-validate-002",
+  "artifact_readback_committed": true,
+  "github_run_id": "25718663005",
+  "github_run_attempt": "1",
+  "github_sha": "1158828ab358957d830875189a0e64ad57576102",
+  "github_ref": "refs/heads/main",
+  "created_utc": "2026-05-12T06:56:37Z"
+}
