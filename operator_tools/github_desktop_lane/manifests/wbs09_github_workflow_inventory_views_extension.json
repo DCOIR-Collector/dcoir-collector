@@ -1,0 +1,85 @@
+{
+  "schema": "dcoir.wbs09.airtable_native_views_extension.v1",
+  "extends_manifest": "operator_tools/github_desktop_lane/manifests/wbs09_airtable_native_views_manifest.json",
+  "reason": "GitHub Workflow Inventory was added to the live Airtable operational schema after the original WBS09 native view manifest was prepared.",
+  "plan_id": "PLAN-AIRTABLE-DB-REDESIGN-20260508",
+  "wbs_key": "DBREDESIGN-WBS-09",
+  "base_id": "appM4KSwnVf3G3OTK",
+  "created_utc": "2026-05-14T08:31:00Z",
+  "table_count_delta": 1,
+  "view_count_delta": 3,
+  "extended_total_view_count": 68,
+  "table": {
+    "table_id": "tblHTf5bLKGK1Yk11",
+    "table_name": "GitHub Workflow Inventory",
+    "table_role": "Workflow routing registry and safety/readback guidance for DCOIR GitHub Actions workflows",
+    "planned_view_count": 3
+  },
+  "schema_readback_basis": {
+    "workflow_key": {"field_id": "fldZz29bykYFsFzbl", "type": "singleLineText"},
+    "workflow_family": {"field_id": "flddMiMhIe5Eg4FqZ", "type": "singleSelect", "choices": ["staging_lane", "validation", "build_package", "ops_scaffold", "maintenance", "publishing", "dependency_security"]},
+    "status": {"field_id": "flder86QaKiBMy0Yg", "type": "singleSelect", "choices": ["active", "scaffold", "deprecated", "review_needed", "blocked"]},
+    "active": {"field_id": "fldeUhR746eIPzqHM", "type": "checkbox"},
+    "do_not_use_when": {"field_id": "fldNGAE9cbd9YSYzz", "type": "multilineText"},
+    "safety_notes": {"field_id": "fldFAQAmx5EiUdOAQ", "type": "multilineText"},
+    "review_after": {"field_id": "fldhfcwoRfNHkL1ya", "type": "date", "date_format": "YYYY-MM-DD"}
+  },
+  "views": [
+    {
+      "view_name": "WBS09 - Active Workflows",
+      "view_type": "grid",
+      "purpose": "Show active workflow inventory rows available for current routing.",
+      "filters": [
+        {"field": "active", "operator": "=", "value": true},
+        {"field": "status", "operator": "=", "value": "active"}
+      ],
+      "sorts": [
+        {"field": "workflow_family", "direction": "asc"},
+        {"field": "workflow_key", "direction": "asc"}
+      ],
+      "notes": "Use this for routine workflow-routing lookup. Executable workflow truth remains the YAML body; this table is routing/readback guidance.",
+      "table_id": "tblHTf5bLKGK1Yk11",
+      "table_name": "GitHub Workflow Inventory",
+      "table_role": "Workflow routing registry and safety/readback guidance for DCOIR GitHub Actions workflows",
+      "view_key": "GitHub Workflow Inventory::WBS09 - Active Workflows"
+    },
+    {
+      "view_name": "WBS09 - Routing Safety Review",
+      "view_type": "grid",
+      "purpose": "Show workflow inventory rows with do-not-use guidance requiring routing attention.",
+      "filters": [
+        {"field": "do_not_use_when", "operator": "is not empty", "value": null}
+      ],
+      "sorts": [
+        {"field": "workflow_family", "direction": "asc"},
+        {"field": "workflow_key", "direction": "asc"}
+      ],
+      "notes": "Review safety_notes alongside do_not_use_when when deciding whether a workflow lane is appropriate.",
+      "table_id": "tblHTf5bLKGK1Yk11",
+      "table_name": "GitHub Workflow Inventory",
+      "table_role": "Workflow routing registry and safety/readback guidance for DCOIR GitHub Actions workflows",
+      "view_key": "GitHub Workflow Inventory::WBS09 - Routing Safety Review"
+    },
+    {
+      "view_name": "WBS09 - Review Due",
+      "view_type": "grid",
+      "purpose": "Show workflow inventory rows due for routing or safety review.",
+      "filters": [
+        {"field": "review_after", "operator": "on or before", "value": "today"}
+      ],
+      "sorts": [
+        {"field": "review_after", "direction": "asc"}
+      ],
+      "notes": "Use when checking workflow inventory aging and review cadence.",
+      "table_id": "tblHTf5bLKGK1Yk11",
+      "table_name": "GitHub Workflow Inventory",
+      "table_role": "Workflow routing registry and safety/readback guidance for DCOIR GitHub Actions workflows",
+      "view_key": "GitHub Workflow Inventory::WBS09 - Review Due"
+    }
+  ],
+  "capability_summary": [
+    {"view_key": "GitHub Workflow Inventory::WBS09 - Active Workflows", "filter_supported": true, "sort_supported": true, "schema_supported_fields": ["active", "status", "workflow_family", "workflow_key"]},
+    {"view_key": "GitHub Workflow Inventory::WBS09 - Routing Safety Review", "filter_supported": true, "sort_supported": true, "schema_supported_fields": ["do_not_use_when", "workflow_family", "workflow_key"]},
+    {"view_key": "GitHub Workflow Inventory::WBS09 - Review Due", "filter_supported": true, "sort_supported": true, "schema_supported_fields": ["review_after"]}
+  ]
+}
