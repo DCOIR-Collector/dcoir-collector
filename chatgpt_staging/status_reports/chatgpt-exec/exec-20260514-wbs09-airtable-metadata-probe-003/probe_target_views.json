@@ -1,0 +1,1170 @@
+﻿[
+    {
+        "table_id":  "tblgsQAVWvh8K7gIR",
+        "table_name":  "Work Items",
+        "view_id":  "viwsX0pXp50ljsMa2",
+        "view_name":  "WBS09 - Active Queue",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblgsQAVWvh8K7gIR",
+        "table_name":  "Work Items",
+        "view_id":  "viwte1DfWQpKCBHYI",
+        "view_name":  "WBS09 - Blocked or Review",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblgsQAVWvh8K7gIR",
+        "table_name":  "Work Items",
+        "view_id":  "viwPbLODiDvaPSoI0",
+        "view_name":  "WBS09 - By Parent Plan",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblTe75HKZOJaPDGn",
+        "table_name":  "Session Checkpoints",
+        "view_id":  "viwDqflNknJDiy3bt",
+        "view_name":  "WBS09 - Current Resume",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblTe75HKZOJaPDGn",
+        "table_name":  "Session Checkpoints",
+        "view_id":  "viwuhYsL1XtmrdNLV",
+        "view_name":  "WBS09 - Final or Complete",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblTe75HKZOJaPDGn",
+        "table_name":  "Session Checkpoints",
+        "view_id":  "viwm2o1376jRZPDG1",
+        "view_name":  "WBS09 - Needs Review",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblWwBxwrjZF6JR3r",
+        "table_name":  "Idea Inbox",
+        "view_id":  "viwteEzE2RN0DOZGm",
+        "view_name":  "WBS09 - Open Ideas",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblWwBxwrjZF6JR3r",
+        "table_name":  "Idea Inbox",
+        "view_id":  "viw82SNOJ3EY3OtWh",
+        "view_name":  "WBS09 - Promotion Candidates",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblWwBxwrjZF6JR3r",
+        "table_name":  "Idea Inbox",
+        "view_id":  "viwbJYG7wYvTO8Gi7",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblBcp5FyMIfOm7Xe",
+        "table_name":  "Plans",
+        "view_id":  "viwMN6PXY2MUCAWMG",
+        "view_name":  "WBS09 - Active Plans",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblBcp5FyMIfOm7Xe",
+        "table_name":  "Plans",
+        "view_id":  "viwhk1kW7fvWtic0X",
+        "view_name":  "WBS09 - Paused or Blocked",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblBcp5FyMIfOm7Xe",
+        "table_name":  "Plans",
+        "view_id":  "viwnrKcDxwd2bEMPI",
+        "view_name":  "WBS09 - Resume Detail",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblnxZ3eLPT3W38wl",
+        "table_name":  "Operator Preferences",
+        "view_id":  "viwznPOtL7UKMH49q",
+        "view_name":  "WBS09 - Active Preferences",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblnxZ3eLPT3W38wl",
+        "table_name":  "Operator Preferences",
+        "view_id":  "viwN8nrSEhsLez16h",
+        "view_name":  "WBS09 - Curation Review",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblnxZ3eLPT3W38wl",
+        "table_name":  "Operator Preferences",
+        "view_id":  "viwF5sy1X5M69Ngiy",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblRnMpQUomIGyFVL",
+        "table_name":  "Validation Test Cases",
+        "view_id":  "viwIRWiKH27wHdip1",
+        "view_name":  "WBS09 - Active Tests",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblRnMpQUomIGyFVL",
+        "table_name":  "Validation Test Cases",
+        "view_id":  "viwhsCuQTf8egbLFD",
+        "view_name":  "WBS09 - Failed or Unknown",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblRnMpQUomIGyFVL",
+        "table_name":  "Validation Test Cases",
+        "view_id":  "viw8jUQLoR8OKXjce",
+        "view_name":  "WBS09 - By Execution Lane",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblf13aCslg6rJBah",
+        "table_name":  "Queue Control",
+        "view_id":  "viwf6HaZYOVqRKHTK",
+        "view_name":  "WBS09 - Active Queue Control",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblf13aCslg6rJBah",
+        "table_name":  "Queue Control",
+        "view_id":  "viwCahZT40TKenbuH",
+        "view_name":  "WBS09 - Supersession Review",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblf13aCslg6rJBah",
+        "table_name":  "Queue Control",
+        "view_id":  "viw04QxQP0QR2NTPn",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblfZnARJxcMJ0yHW",
+        "table_name":  "Gemini Research Reference",
+        "view_id":  "viwHg41kDoM7uUrK8",
+        "view_name":  "WBS09 - Active Findings",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblfZnARJxcMJ0yHW",
+        "table_name":  "Gemini Research Reference",
+        "view_id":  "viwX0iXcAsnZYcn4p",
+        "view_name":  "WBS09 - By Research Batch Select",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblfZnARJxcMJ0yHW",
+        "table_name":  "Gemini Research Reference",
+        "view_id":  "viwdN4HDsmyeL7mC2",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblDfSl29psxRnes1",
+        "table_name":  "Governance Control Plane",
+        "view_id":  "viwjGEiEO0RttUSuF",
+        "view_name":  "WBS09 - Active Governance",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblDfSl29psxRnes1",
+        "table_name":  "Governance Control Plane",
+        "view_id":  "viwPyJVceouTYBSxm",
+        "view_name":  "WBS09 - Startup Authority",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblDfSl29psxRnes1",
+        "table_name":  "Governance Control Plane",
+        "view_id":  "viwAxG8hY2t7hbBGn",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblzBiXp7kwTXM0ru",
+        "table_name":  "Repo Surface Registry",
+        "view_id":  "viwA51jQvBfIAYFHN",
+        "view_name":  "WBS09 - Governed Source Surfaces",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblzBiXp7kwTXM0ru",
+        "table_name":  "Repo Surface Registry",
+        "view_id":  "viwyW2KNaa1DZ67AK",
+        "view_name":  "WBS09 - Replacement or Retirement",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblzBiXp7kwTXM0ru",
+        "table_name":  "Repo Surface Registry",
+        "view_id":  "viw2YPInu2qcVU0LV",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblcNNuKqi8IkFsSQ",
+        "table_name":  "dcoir-memory-preflight",
+        "view_id":  "viwdEsJ3sVpDwuwMW",
+        "view_name":  "WBS09 - Active Memory",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblcNNuKqi8IkFsSQ",
+        "table_name":  "dcoir-memory-preflight",
+        "view_id":  "viwrn1brcyGc55uPz",
+        "view_name":  "WBS09 - Blocker Lessons",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblcNNuKqi8IkFsSQ",
+        "table_name":  "dcoir-memory-preflight",
+        "view_id":  "viwnjgyDG8QdLHETC",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblKHVXq16Xd5I31m",
+        "table_name":  "dcoir-decision-policy",
+        "view_id":  "viwV7a8S3ErGfN1no",
+        "view_name":  "WBS09 - Active Decision Rules",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblKHVXq16Xd5I31m",
+        "table_name":  "dcoir-decision-policy",
+        "view_id":  "viwAouYb8aC4KOPli",
+        "view_name":  "WBS09 - Approval Gate Rules",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblKHVXq16Xd5I31m",
+        "table_name":  "dcoir-decision-policy",
+        "view_id":  "viwS4zjVF1XCKOXxx",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tbls9O1B0Rs8YvTAj",
+        "table_name":  "dcoir-validation-orchestrator",
+        "view_id":  "viwCg9aswnWifbNeZ",
+        "view_name":  "WBS09 - Active Validation Gates",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tbls9O1B0Rs8YvTAj",
+        "table_name":  "dcoir-validation-orchestrator",
+        "view_id":  "viwJMCfKYCYnw0oon",
+        "view_name":  "WBS09 - Unresolved Gaps",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tbls9O1B0Rs8YvTAj",
+        "table_name":  "dcoir-validation-orchestrator",
+        "view_id":  "viw3u5gyr7zVlWQ55",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tbl1lMz5N6n7zShO0",
+        "table_name":  "Delete Queue",
+        "view_id":  "viwrro3VYvQF7Ujw9",
+        "view_name":  "WBS09 - Approved Pending Deletes",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tbl1lMz5N6n7zShO0",
+        "table_name":  "Delete Queue",
+        "view_id":  "viwCHsN8opaKfBPhe",
+        "view_name":  "WBS09 - Not Approved or Blocked",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tbl1lMz5N6n7zShO0",
+        "table_name":  "Delete Queue",
+        "view_id":  "viwCbeJT5GqmHqwDu",
+        "view_name":  "WBS09 - Verified Deletes",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblrPFQH2uZEYBYE9",
+        "table_name":  "Validation Evidence",
+        "view_id":  "viwXDjTf1qCghHuyd",
+        "view_name":  "WBS09 - Recent Evidence",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblrPFQH2uZEYBYE9",
+        "table_name":  "Validation Evidence",
+        "view_id":  "viwsXNYGax6ivst6i",
+        "view_name":  "WBS09 - Failed or Conditional",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblrPFQH2uZEYBYE9",
+        "table_name":  "Validation Evidence",
+        "view_id":  "viwODWou0aXGGUbQS",
+        "view_name":  "WBS09 - By Work Item",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblrPFQH2uZEYBYE9",
+        "table_name":  "Validation Evidence",
+        "view_id":  "viw4OkQ4jljVMrGBN",
+        "view_name":  "WBS09 - WBS09 Evidence",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblFaJW1V2DPc9css",
+        "table_name":  "Admin Registry",
+        "view_id":  "viwr8gPWrYaeNiUSH",
+        "view_name":  "WBS09 - Active Registry",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblFaJW1V2DPc9css",
+        "table_name":  "Admin Registry",
+        "view_id":  "viwAnEBiLE0Z9TdRP",
+        "view_name":  "WBS09 - Governance Matrix",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblFaJW1V2DPc9css",
+        "table_name":  "Admin Registry",
+        "view_id":  "viwZPfZJnY8mG27KE",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblNsjkGUUIdRpHuE",
+        "table_name":  "DCOIR Lifecycle Ledger",
+        "view_id":  "viwtXcZwAaryYHoOe",
+        "view_name":  "WBS09 - Recent Lifecycle Events",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblNsjkGUUIdRpHuE",
+        "table_name":  "DCOIR Lifecycle Ledger",
+        "view_id":  "viwZ4Vz66BFpGF1KP",
+        "view_name":  "WBS09 - Migration Events",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblNsjkGUUIdRpHuE",
+        "table_name":  "DCOIR Lifecycle Ledger",
+        "view_id":  "viwz21W19JUyXsU27",
+        "view_name":  "WBS09 - By Source Table",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblcJxCoYGpEda0FM",
+        "table_name":  "Local Configuration Registry",
+        "view_id":  "viwyUY9nz5gd0zZyU",
+        "view_name":  "WBS09 - Active Config Names",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblcJxCoYGpEda0FM",
+        "table_name":  "Local Configuration Registry",
+        "view_id":  "viwb0D18MXVd6j2DS",
+        "view_name":  "WBS09 - Confirmed Present",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblcJxCoYGpEda0FM",
+        "table_name":  "Local Configuration Registry",
+        "view_id":  "viwGGnclWtPMonWoy",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblF1SCJBHRFUhpzi",
+        "table_name":  "Operator Tools Registry",
+        "view_id":  "viw0JqrEes0sF5Cjt",
+        "view_name":  "WBS09 - Active Tools",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblF1SCJBHRFUhpzi",
+        "table_name":  "Operator Tools Registry",
+        "view_id":  "viwYLkcYJ5ocehyma",
+        "view_name":  "WBS09 - Blocked or Deprecated",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblF1SCJBHRFUhpzi",
+        "table_name":  "Operator Tools Registry",
+        "view_id":  "viwLrVt4J4WbRsPQ9",
+        "view_name":  "WBS09 - Validation Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblRxTmpW0VunQlUK",
+        "table_name":  "DCOIR Cleanup WBS",
+        "view_id":  "viwAdpKUFkoDKutCR",
+        "view_name":  "WBS09 - Active or Planned WBS",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblRxTmpW0VunQlUK",
+        "table_name":  "DCOIR Cleanup WBS",
+        "view_id":  "viwItFwQXcF0FNMEb",
+        "view_name":  "WBS09 - Approval Gates",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblRxTmpW0VunQlUK",
+        "table_name":  "DCOIR Cleanup WBS",
+        "view_id":  "viwwqJLIf7mfO40yU",
+        "view_name":  "WBS09 - Blocked Review",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblRxTmpW0VunQlUK",
+        "table_name":  "DCOIR Cleanup WBS",
+        "view_id":  "viwuypL2bjxhtbg09",
+        "view_name":  "WBS09 - Current Plan Rows",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblvtcId7PiFKvfKO",
+        "table_name":  "DCOIR Cleanup Scaffold Registry",
+        "view_id":  "viwLXaXugrqpFBc0D",
+        "view_name":  "WBS09 - Active Scaffolds",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblvtcId7PiFKvfKO",
+        "table_name":  "DCOIR Cleanup Scaffold Registry",
+        "view_id":  "viwNAWHbI6xWorCx3",
+        "view_name":  "WBS09 - Disposition Review",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblvtcId7PiFKvfKO",
+        "table_name":  "DCOIR Cleanup Scaffold Registry",
+        "view_id":  "viwasi2GeEKE7gDIY",
+        "view_name":  "WBS09 - Review Due",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "table_name":  "GitHub Workflow Inventory",
+        "view_id":  "viwcNzl8dA3V6WGxU",
+        "view_name":  "GVWI-01 All Workflows",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "table_name":  "GitHub Workflow Inventory",
+        "view_id":  "viw0tYPNk9W9HsIho",
+        "view_name":  "GVWI-02 Active Routing",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "table_name":  "GitHub Workflow Inventory",
+        "view_id":  "viwgIAWR2BDQ5G6mO",
+        "view_name":  "GVWI-03 Validation Workflows",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "table_name":  "GitHub Workflow Inventory",
+        "view_id":  "viwXHadiYwDC4Ri3V",
+        "view_name":  "GVWI-04 Ops and Cleanup Workflows",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "table_name":  "GitHub Workflow Inventory",
+        "view_id":  "viwVlFsB9SbNkTx4J",
+        "view_name":  "GVWI-05 By Owner Skill",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "table_name":  "GitHub Workflow Inventory",
+        "view_id":  "viwQlDF1DTjzY8O5S",
+        "view_name":  "GVWI-06 Review and Drift Watch",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "table_name":  "GitHub Workflow Inventory",
+        "view_id":  "viwBXd3o6ML7pNdC6",
+        "view_name":  "GVWI-07 Cache Contract",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    },
+    {
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "table_name":  "GitHub Workflow Inventory",
+        "view_id":  "viwj8Fh7tPWxlm9MW",
+        "view_name":  "GVWI-08 Key Integrity",
+        "view_type":  "grid",
+        "property_names":  [
+                               "id",
+                               "name",
+                               "type"
+                           ],
+        "has_visible_field_order":  false,
+        "has_filter":  false,
+        "has_sort":  false,
+        "has_group":  false
+    }
+]

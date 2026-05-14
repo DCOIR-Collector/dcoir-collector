@@ -1,0 +1,21 @@
+﻿{
+    "schema":  "dcoir.wbs09.airtable_metadata_probe.v3",
+    "request_id":  "exec-20260514-wbs09-airtable-metadata-probe-003",
+    "created_utc":  "2026-05-14T11:05:13Z",
+    "exporter_success":  true,
+    "exporter_error":  null,
+    "exporter_output_folder":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260514-wbs09-airtable-metadata-probe-003\\downloads\\wbs09_metadata_probe_003_20260514_110514",
+    "table_count":  22,
+    "total_view_count":  95,
+    "wbs09_or_gvwi_view_count":  73,
+    "view_property_names_union":  [
+                                      "id",
+                                      "name",
+                                      "type"
+                                  ],
+    "any_view_has_filter_property":  false,
+    "any_view_has_sort_property":  false,
+    "any_view_has_group_property":  false,
+    "any_view_has_visible_field_order":  false,
+    "conclusion":  "Airtable Web API-accessible metadata exposes view identity/type only for views and does not expose saved filter/sort/group configuration in this export."
+}
