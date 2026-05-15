@@ -44,8 +44,8 @@ function Invoke-DcoirNativeProcess {
     if ($exit -ne 0) { throw ($Label + ' failed with exit code ' + $exit) }
 }
 
-if ($Mode -eq 'Apply' -and $ConfirmToken -ne 'APPLY_WBS09_VIEW_REPAIR_BATCH') {
-    throw 'Apply mode requires -ConfirmToken APPLY_WBS09_VIEW_REPAIR_BATCH.'
+if ($Mode -eq 'Apply') {
+    throw 'Apply mode is disabled for this v1 repair-batch tool because the 2026-05-15 validation run failed. Do not use APPLY_WBS09_VIEW_REPAIR_BATCH. Use -Mode DryRun only until a validated v2 operation-class-specific apply tool replaces this path.'
 }
 if ($Mode -eq 'DryRun' -and -not [string]::IsNullOrWhiteSpace($ConfirmToken)) {
     throw 'DryRun mode must not be given an apply confirmation token.'

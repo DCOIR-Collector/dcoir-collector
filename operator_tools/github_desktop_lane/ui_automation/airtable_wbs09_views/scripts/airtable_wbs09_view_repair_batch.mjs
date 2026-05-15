@@ -20,7 +20,7 @@ import {
   targetKeyOfReadbackTarget
 } from '../../shared/dcoir_airtable_panel_readback.mjs';
 
-const TOOL_VERSION = '2026-05-15.wbs09-view-repair-batch.1';
+const TOOL_VERSION = '2026-05-15.wbs09-view-repair-batch.1.1-apply-disabled';
 const REQUIRED_TOKEN = 'APPLY_WBS09_VIEW_REPAIR_BATCH';
 
 function parseArgs(argv) {
@@ -115,7 +115,21 @@ if (!args.manifest) throw new Error('Missing --manifest');
 if (!args.outputDir) throw new Error('Missing --output-dir');
 if (!args.targetListFile) throw new Error('Missing --target-list-file');
 if (!['dryrun', 'apply'].includes(args.mode)) throw new Error('--mode must be dryrun or apply');
-if (args.mode === 'apply' && args.confirmToken !== REQUIRED_TOKEN) throw new Error(`Apply mode requires --confirm-token ${REQUIRED_TOKEN}`);
+if (args.mode === 'apply') {
+  ensureDir(args.outputDir);
+  const blocked = {
+    timestamp_utc: new Date().toISOString(),
+    tool_version: TOOL_VERSION,
+    status: 'apply_mode_disabled_failed_validation',
+    mode: args.mode,
+    reason: 'The v1 broad Apply path failed validation on 2026-05-15. Use DryRun only until a validated v2 operation-class-specific apply tool replaces this path.',
+    rejected_token: args.confirmToken ? 'provided' : 'missing',
+    blocked_token: REQUIRED_TOKEN
+  };
+  writeJson(path.join(args.outputDir, 'view_repair_batch_apply_disabled.json'), blocked);
+  console.error(blocked.reason);
+  process.exit(3);
+}
 if (args.mode === 'dryrun' && args.confirmToken) throw new Error('DryRun mode must not include a confirmation token.');
 assertTimeout(args.browserLaunchTimeoutMs, 'browserLaunchTimeoutMs');
 assertTimeout(args.reloadTimeoutMs, 'reloadTimeoutMs');
