@@ -1,5 +1,5 @@
 {
-  "catalog_addendum_version": "2026-05-10.readback-only.1",
+  "catalog_addendum_version": "2026-05-14.readback-structured-gap-rollup.2",
   "merge_status": "promotion_candidate_not_merged",
   "intended_merge_target": "operator_tools/github_desktop_lane/tool_catalog.json",
   "tools_additions": [
@@ -16,9 +16,16 @@
       "manifest_path": "operator_tools/github_desktop_lane/manifests/wbs09_airtable_native_views_manifest.json",
       "docs_path": "operator_tools/github_desktop_lane/docs/AIRTABLE_WBS09_VIEW_PANEL_READBACK.md",
       "output_pattern": "DCOIR_DOWNLOADS_DIR/dcoir_wbs09_view_panel_readback_*",
-      "version_or_hash": "2026-05-10.wbs09-panel-readback.1 / 2026-05-10.panel-readback.3",
-      "status": "readback_only_promotion_candidate",
-      "notes": "Read-only browser/UI evidence tool for saved Airtable native Filter/Sort panel state. Does not create or repair views. Use as verification foundation for future create/repair pipeline."
+      "version_or_hash": "2026-05-14.wbs09-panel-readback.3 / 2026-05-14.panel-readback.5",
+      "status": "readback_only_parameterized_tool",
+      "notes": "Read-only browser/UI evidence tool for saved Airtable native Filter/Sort panel state. Adds structured gap and operator-prompt categories, row-state evidence, and rollup-friendly reports. Does not create, repair, rename, delete, or modify views.",
+      "outputs": [
+        "view_panel_readback_rollup.json",
+        "per-view *_panel_readback_report.json",
+        "per-view *_row_state.json",
+        "DOM evidence JSON",
+        "optional screenshots"
+      ]
     }
   ],
   "environment_contract_additions": {
@@ -27,5 +34,12 @@
       "DCOIR_DOWNLOADS_DIR"
     ],
     "notes": "Use Local Configuration Registry names only. Do not store local path values or secrets in catalog, logs, Airtable, or evidence bundles."
-  }
+  },
+  "version_notes": [
+    "2026-05-14.wbs09-panel-readback.4 adds reload retry/backoff plus parameterized resume/target-list support for read-only all-view verification."
+  ],
+  "latest_tool_version": "2026-05-14.wbs09-panel-readback.4",
+  "read_only": true,
+  "supports_resume_targeting": true,
+  "supports_reload_retry": true
 }

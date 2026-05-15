@@ -96,3 +96,36 @@ Future create/repair automation should not click controls blindly. It should fol
 6. Package evidence.
 
 The readback module is the verification foundation for that future pipeline.
+
+## 2026-05-14 parameterized readback upgrade
+
+This pass upgrades the existing readback surface rather than adding a duplicate verifier.
+
+Reusable shared module behavior now includes:
+
+- structured gap classification for filter gaps, sort gaps, panel extraction gaps, and unknown gaps;
+- rollup-ready `gap_details` and `gap_summary` objects in each per-view report;
+- best-effort row-state evidence as `visible`, `none`, or `unknown`, written to per-target row-state JSON;
+- aggregate rollup counts for filter gaps, sort gaps, panel extraction gaps, and row-state categories.
+
+The upgrade remains read-only. It does not add create, repair, rename, delete, or mutation paths. The WBS09 script remains a thin parameterized consumer of the shared panel readback module.
+
+
+## 2026-05-14 structured-gap and operator-prompt hardening
+
+The readback tool remains read-only and now emits structured gap details in addition to the existing per-view JSON reports and rollup. The launcher supports a bounded browser launch timeout and an optional `-NoAirtableReadyPause` switch for non-interactive callers. The default operator flow opens Chrome first, then asks for a single Airtable-ready confirmation after login/MFA. Do not pipe the Node process through `Tee-Object`; use `Start-Transcript` or the provided runner so the interactive Airtable-ready prompt has a real stdin.
+
+Rollup fields include `filter_gap_count`, `sort_gap_count`, `panel_extraction_gap_count`, `row_state_counts`, and `gap_results`. The tool does not repair, create, rename, delete, or mutate Airtable views.
+
+## 2026-05-14 v4 structured readback and resume update
+
+Version `2026-05-14.wbs09-panel-readback.4` keeps this tool read-only and adds parameterized recovery behavior for long Airtable verification runs:
+
+- reload retry/backoff for transient Airtable navigation/offline pages;
+- `-StartAtTargetKey`, `-AfterTargetKey`, `-TargetListFile`, and `-MaxTargets` for resume or batch targeting;
+- selected target plan output in `selected_view_panel_readback_targets.json`;
+- rollup fields for `last_completed_target_key` and `first_failed_target_key`.
+
+Use `-TargetListFile` for a newline-delimited or JSON-array list of `Table::View` target keys. Use `-StartAtTargetKey` to include that target and everything after it in the selected set. Use `-AfterTargetKey` to resume after a completed target.
+
+This tool must not create, rename, delete, repair, or mutate Airtable views. If a future repair path is needed, it must be a separate apply tool with a dry-run plan and explicit confirmation token.

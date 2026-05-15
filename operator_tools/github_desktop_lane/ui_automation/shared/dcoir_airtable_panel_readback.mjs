@@ -2,7 +2,7 @@ import path from 'node:path';
 import { writeJson, safeName, nowIso, norm } from './dcoir_ui_common.mjs';
 import { clickAirtableToolbarButton, clickAirtableViewInSidebar, dismissTransientUi, safeMousePark, AIRTABLE_UI_GEOMETRY_VERSION } from './dcoir_airtable_ui_geometry.mjs';
 
-export const AIRTABLE_PANEL_READBACK_VERSION = '2026-05-12.panel-readback.4';
+export const AIRTABLE_PANEL_READBACK_VERSION = '2026-05-14.panel-readback.6';
 
 export function normalizeTargetKey(tableName, viewName) {
   return `${norm(tableName)}::${norm(viewName)}`;
@@ -46,6 +46,88 @@ export function selectManifestTargets(manifest, options = {}) {
   return selected.map(expectedViewStateFromManifestView);
 }
 
+export function targetKeyOfReadbackTarget(target) {
+  return normalizeTargetKey(target?.table_name || '', target?.view_name || '');
+}
+
+export function normalizeTargetKeyList(values = []) {
+  const out = [];
+  for (const value of values || []) {
+    const text = norm(value);
+    if (!text) continue;
+    if (!out.some((existing) => existing.toLowerCase() === text.toLowerCase())) out.push(text);
+  }
+  return out;
+}
+
+function findTargetIndexByKey(targets, key, label) {
+  const wanted = norm(key).toLowerCase();
+  if (!wanted) return -1;
+  const index = (targets || []).findIndex((target) => {
+    const canonical = targetKeyOfReadbackTarget(target).toLowerCase();
+    const manifestKey = norm(target?.view_key || '').toLowerCase();
+    return canonical === wanted || manifestKey === wanted;
+  });
+  if (index < 0) throw new Error(`${label} was not found in selected target set: ${key}`);
+  return index;
+}
+
+export function filterReadbackTargetsForResume(targets, options = {}) {
+  let selected = Array.isArray(targets) ? targets.slice() : [];
+  if (options.afterTargetKey) {
+    const index = findTargetIndexByKey(selected, options.afterTargetKey, '--after-target-key');
+    selected = selected.slice(index + 1);
+  }
+  if (options.startAtTargetKey) {
+    const index = findTargetIndexByKey(selected, options.startAtTargetKey, '--start-at-target-key');
+    selected = selected.slice(index);
+  }
+  if (Number.isInteger(options.maxTargets) && options.maxTargets > 0) {
+    selected = selected.slice(0, options.maxTargets);
+  }
+  if (selected.length < 1) throw new Error('Resume/target selection produced zero readback targets.');
+  return selected;
+}
+
+export async function reloadPageWithRetry(page, options = {}) {
+  const maxAttempts = Number.isInteger(options.maxAttempts) && options.maxAttempts > 0 ? options.maxAttempts : 3;
+  const reloadTimeoutMs = Number.isFinite(options.reloadTimeoutMs) ? options.reloadTimeoutMs : 30000;
+  const networkIdleTimeoutMs = Number.isFinite(options.networkIdleTimeoutMs) ? options.networkIdleTimeoutMs : 12000;
+  const settleMs = Number.isFinite(options.settleMs) ? options.settleMs : 1200;
+  const backoffMs = Number.isFinite(options.backoffMs) ? options.backoffMs : 4000;
+  const waitUntil = options.waitUntil || 'domcontentloaded';
+  const log = typeof options.log === 'function' ? options.log : null;
+  const attempts = [];
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const item = { attempt, max_attempts: maxAttempts, started_at_utc: nowIso(), ok: false, before_url: page.url() };
+    try {
+      if (log) log('Reload attempt starting.', item);
+      await page.reload({ waitUntil, timeout: reloadTimeoutMs });
+      await page.waitForLoadState('networkidle', { timeout: networkIdleTimeoutMs }).catch((error) => {
+        item.network_idle_warning = String(error?.message || error);
+      });
+      if (settleMs > 0) await page.waitForTimeout(settleMs);
+      item.ok = true;
+      item.after_url = page.url();
+      item.completed_at_utc = nowIso();
+      attempts.push(item);
+      if (log) log('Reload attempt completed.', item);
+      return { ok: true, attempts, final_url: item.after_url };
+    } catch (error) {
+      item.error = String(error?.message || error);
+      item.after_url = page.url();
+      item.completed_at_utc = nowIso();
+      attempts.push(item);
+      if (log) log('Reload attempt failed.', item);
+      if (attempt < maxAttempts && backoffMs > 0) {
+        await page.waitForTimeout(backoffMs);
+      }
+    }
+  }
+  return { ok: false, attempts, final_url: page.url(), error: attempts[attempts.length - 1]?.error || 'reload failed' };
+}
+
 export async function getVisibleElements(page, options = {}) {
   const limit = options.limit || 6000;
   return await page.evaluate((limit) => {
@@ -83,6 +165,74 @@ export async function getVisibleElements(page, options = {}) {
       .sort((a, b) => panelPriority(a) - panelPriority(b) || a.y - b.y || a.x - b.x || (a.w * a.h) - (b.w * b.h))
       .slice(0, 1600);
   }, limit);
+}
+
+
+export async function captureAirtableGridRowState(page, outputDir, target, phase = 'target_loaded') {
+  const rowState = await page.evaluate(() => {
+    const normalize = (s) => String(s || '').replace(/[\u2192\u27f6\u2794]/g, ' -> ').replace(/\s+/g, ' ').trim();
+    function visible(el) {
+      const style = window.getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 0 && box.height > 0;
+    }
+    function itemFor(el) {
+      const box = el.getBoundingClientRect();
+      return {
+        tag: el.tagName,
+        role: el.getAttribute('role') || '',
+        testid: el.getAttribute('data-testid') || '',
+        aria: normalize(el.getAttribute('aria-label') || ''),
+        text: normalize(el.innerText || el.textContent || ''),
+        x: Math.round(box.x),
+        y: Math.round(box.y),
+        w: Math.round(box.width),
+        h: Math.round(box.height)
+      };
+    }
+    const bodyText = normalize(document.body ? document.body.innerText : '').toLowerCase();
+    const noRecordsSignal = /\b(no records|no records in this view|there are no records|0 records)\b/i.test(bodyText);
+    const gridCells = Array.from(document.querySelectorAll('[role="gridcell"], [data-testid*="cell"], [data-testid*="gridCell"], [data-testid*="recordCell"]'))
+      .filter(visible)
+      .map(itemFor)
+      .filter((item) => item.y > 165 && item.w > 8 && item.h > 8 && item.x > 220)
+      .slice(0, 80);
+    const gridRows = Array.from(document.querySelectorAll('[role="row"], [data-testid*="row"], [data-rowindex]'))
+      .filter(visible)
+      .map(itemFor)
+      .filter((item) => item.y > 165 && item.w > 80 && item.h > 12)
+      .slice(0, 80);
+    const rowHeaderSignals = Array.from(document.querySelectorAll('[aria-label*="record" i], [data-testid*="record" i], button, div, span'))
+      .filter(visible)
+      .map(itemFor)
+      .filter((item) => item.y > 165 && item.x >= 0 && item.x < 360 && /record|row/i.test(`${item.aria} ${item.testid} ${item.text}`))
+      .slice(0, 40);
+    let state = 'unknown';
+    if (noRecordsSignal) state = 'none';
+    else if (gridCells.length > 0 || gridRows.length > 1 || rowHeaderSignals.length > 0) state = 'visible';
+    return {
+      ok: true,
+      row_state: state,
+      no_records_signal: noRecordsSignal,
+      visible_grid_cell_count: gridCells.length,
+      visible_grid_row_count: gridRows.length,
+      row_header_signal_count: rowHeaderSignals.length,
+      grid_cell_samples: gridCells.slice(0, 10),
+      grid_row_samples: gridRows.slice(0, 10),
+      row_header_signal_samples: rowHeaderSignals.slice(0, 10)
+    };
+  }).catch((error) => ({ ok: false, row_state: 'unknown', error: String(error?.message || error) }));
+  const payload = {
+    timestamp_utc: nowIso(),
+    tool_version: AIRTABLE_PANEL_READBACK_VERSION,
+    geometry_version: AIRTABLE_UI_GEOMETRY_VERSION,
+    target,
+    phase,
+    ...rowState
+  };
+  const statePath = path.join(outputDir, `${safeName(target.table_name)}_${safeName(target.view_name)}_${phase}_row_state.json`);
+  writeJson(statePath, payload);
+  return { ...payload, state_path: statePath };
 }
 
 export async function captureDomEvidence(page, outputDir, label, options = {}) {
@@ -481,7 +631,33 @@ function compareSortsForState(state, expectedSorts, phaseLabel) {
   return missing;
 }
 
-export function compareAirtablePanelReadback(recon) {
+function classifiedGapFromMissing(message) {
+  const text = String(message || '');
+  const phaseMatch = text.match(/^(before_refresh|after_refresh):\s*/i);
+  const phase = phaseMatch ? phaseMatch[1].toLowerCase() : 'unknown';
+  let category = 'unknown_gap';
+  if (/filter panel extraction failed/i.test(text)) category = 'panel_extraction_gap';
+  else if (/sort panel extraction failed/i.test(text)) category = 'panel_extraction_gap';
+  else if (/filter row not observed/i.test(text)) category = 'filter_gap';
+  else if (/sort row \d+ not observed/i.test(text)) category = 'sort_gap';
+  return { category, phase, message: text };
+}
+
+export function summarizeGapDetails(gapDetails = []) {
+  const summary = {
+    total: gapDetails.length,
+    filter_gap_count: gapDetails.filter((g) => g.category === 'filter_gap').length,
+    sort_gap_count: gapDetails.filter((g) => g.category === 'sort_gap').length,
+    panel_extraction_gap_count: gapDetails.filter((g) => g.category === 'panel_extraction_gap').length,
+    unknown_gap_count: gapDetails.filter((g) => g.category === 'unknown_gap').length,
+    before_refresh_count: gapDetails.filter((g) => g.phase === 'before_refresh').length,
+    after_refresh_count: gapDetails.filter((g) => g.phase === 'after_refresh').length
+  };
+  summary.categories = Array.from(new Set(gapDetails.map((g) => g.category))).sort();
+  return summary;
+}
+
+export function classifyAirtablePanelReadback(recon) {
   const expectedFilters = recon?.target?.expected_filters || [];
   const expectedSorts = recon?.target?.expected_sorts || [];
   const missing = [];
@@ -489,7 +665,16 @@ export function compareAirtablePanelReadback(recon) {
   missing.push(...compareFiltersForState(recon.after_filter, expectedFilters, 'after_refresh'));
   missing.push(...compareSortsForState(recon.before_sort, expectedSorts, 'before_refresh'));
   missing.push(...compareSortsForState(recon.after_sort, expectedSorts, 'after_refresh'));
-  return { ok: missing.length === 0, missing };
+  const gap_details = missing.map(classifiedGapFromMissing);
+  const gap_summary = summarizeGapDetails(gap_details);
+  const before_row_state = recon?.row_state_before?.row_state || recon?.row_state_initial?.row_state || null;
+  const after_row_state = recon?.row_state_after?.row_state || null;
+  const row_state = after_row_state || before_row_state || 'unknown';
+  return { ok: missing.length === 0, missing, gap_details, gap_summary, row_state, before_row_state, after_row_state };
+}
+
+export function compareAirtablePanelReadback(recon) {
+  return classifyAirtablePanelReadback(recon);
 }
 
 export const testInternals = Object.freeze({
@@ -497,5 +682,10 @@ export const testInternals = Object.freeze({
   rowMatchesFilter,
   rowMatchesSort,
   compareAirtablePanelReadback,
+  filterReadbackTargetsForResume,
+  reloadPageWithRetry,
+  targetKeyOfReadbackTarget,
+  classifyAirtablePanelReadback,
+  summarizeGapDetails,
   uniqueNonEmpty
 });
