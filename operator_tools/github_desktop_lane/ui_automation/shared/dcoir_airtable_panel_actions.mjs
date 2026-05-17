@@ -8,7 +8,7 @@ import {
   extractOpenAirtablePanel
 } from './dcoir_airtable_panel_readback.mjs';
 
-export const AIRTABLE_PANEL_ACTIONS_VERSION = '2026-05-10.panel-actions.7';
+export const AIRTABLE_PANEL_ACTIONS_VERSION = '2026-05-17.panel-actions.8-export-dropdown-scroll';
 
 function normalizeText(value) {
   return String(value || '')
@@ -543,7 +543,7 @@ async function pressTypeaheadEnterForOpenDropdown(page, query, label, steps) {
   return result;
 }
 
-async function clickOptionWithDropdownScroll(page, pattern, query, label, bounds, steps) {
+export async function clickOptionWithDropdownScroll(page, pattern, query, label, bounds, steps) {
   const attempts = [];
   let clicked = await clickVisibleOption(page, pattern, `${label}-visible`, bounds);
   attempts.push({ method: 'visible-option', clicked });
