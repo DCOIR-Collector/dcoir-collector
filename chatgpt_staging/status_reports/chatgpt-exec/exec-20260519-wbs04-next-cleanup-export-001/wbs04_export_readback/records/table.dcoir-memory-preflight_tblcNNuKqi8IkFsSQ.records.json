@@ -1,0 +1,802 @@
+{
+    "table_id":  "tblcNNuKqi8IkFsSQ",
+    "table_name":  "dcoir-memory-preflight",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  41,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  false,
+    "records":  [
+                    {
+                        "id":  "rec5BdzO8R466QMZy",
+                        "createdTime":  "2026-04-24T20:38:22.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-04-24 batch CSV import preparation",
+                                       "task_family":  "dcoir_memory_preflight_routing",
+                                       "selected_lane":  "Use memory-preflight before substantive DCOIR work and after blocker recovery.",
+                                       "memory_entry_id":  "PRE-BASE-001",
+                                       "preconditions":  "DCOIR project context present; task family classified; Airtable queue consulted after resume.",
+                                       "invocation_mode":  "session_start_and_high_friction_work",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not skip preflight; do not use stale GitHub todo as live order.",
+                                       "buffered_candidate":  "none",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "required_verification":  "Confirm relevant Airtable/skill-memory surfaces were consulted.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Queue Control; Work Items; Plans; GitHub task memory when relevant"
+                                   }
+                    },
+                    {
+                        "id":  "rec5COl6qIk0ucmxK",
+                        "createdTime":  "2026-05-03T19:13:21.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-03T20:00:00Z",
+                                       "selected_lane":  "apply-in-to-exec handoff lane",
+                                       "memory_entry_id":  "MEM-20260503-APPLY-IN-TO-EXEC-HANDOFF-LANE",
+                                       "preconditions":  "Use when direct creation of chatgpt_staging/exec_requests/\u003crequest_id\u003e.json is blocked or when a governed bundle path is preferred. Build an apply-in ZIP whose apply_manifest creates exactly one reviewed exec request JSON under chatgpt_staging/exec_requests/. Stage it as chatgpt_staging/in/\u003capply_request_id\u003e/payload.zip.b64. Verify chatgpt-apply-in report, then verify the exec request exists.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not assume the exec request created by apply-in automatically triggers chatgpt-exec. chatgpt-apply-in commits with [skip ci], so downstream push-triggered workflows may be skipped. Do not call this failure immediately; treat as pending through the wait rule.",
+                                       "buffered_candidate":  "Reusable procedure is durable: apply-in can create exec requests, but because the apply-in commit may include [skip ci], the validated trigger step was GitHub connector update_file on chatgpt_staging/exec_requests/exec-20260503-airtable-schema-hashfix-002.json with restaged_at_utc and non-[skip ci] commit 5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e. Future improvement: teach apply-in to omit [skip ci] when applied paths include chatgpt_staging/exec_requests/.",
+                                       "created_at":  "2026-05-03T19:45:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-05-03T20:00:00.000Z",
+                                       "required_verification":  "If no exec report appears after the bounded wait, use the GitHub connector update_file action on the already-created exec request JSON. Make only a metadata-only change such as adding or refreshing restaged_at_utc, preserve the exact approved command and approved_command_preview, and use a commit message without [skip ci]. Then poll chatgpt_staging/status_reports/chatgpt-exec/\u003crequest_id\u003e/workflow_report.md and verify result, artifact_name, run metadata, and output contract.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Validated sequence from WI-SIDEQUEST-GITHUB-ACTIONS-AUTOMATION-LANE-20260503: chatgpt-apply-in report apply-20260503-exec-hashfix-validation-001; exec request exec-20260503-airtable-schema-hashfix-002; restage commit 5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e; exec run 25287957928; exec report chatgpt_staging/status_reports/chatgpt-exec/exec-20260503-airtable-schema-hashfix-002/workflow_report.md."
+                                   }
+                    },
+                    {
+                        "id":  "rec7yZIWx6XpFW6vl",
+                        "createdTime":  "2026-04-30T16:44:20.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-05T08:00:00Z",
+                                       "selected_lane":  "helper-skill-router:decision-policy",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-decision-policy",
+                                       "preconditions":  "Use dcoir-decision-policy before DCOIR execution whenever proceed/ask/stop posture, authority/source drift, approval gates, destructive action safety, lane choice, persistence destination, package/release scope, validation/readiness claims, campaign cadence, or operator preference could materially affect the outcome.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not choose branches ad hoc when a default decision matrix applies. Do not persist durable preferences silently. Do not proceed with destructive/schema/repo/package/readiness claims when approval, authority, dependency order, or verification is unresolved. Do not ask when the matrix clearly resolves the choice and no red-zone condition exists.",
+                                       "buffered_candidate":  "2026-05-05 repair: strengthened task-time decision gates in dcoir-decision-policy package marker updated-skill|20260505T080000Z|task-time-decision-gate-strengthening.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify compact decision gate: authority basis, green/yellow/red autonomy zone, chosen lane, approval/hard-stop status, persistence posture, companion skills, validation/checkpoint requirement, and one best next move.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-decision-policy. Purpose: apply the operator default decision matrix for DCOIR project work, including branch choice, blocker recovery, grouped delivery posture, and governance decision surfacing."
+                                   }
+                    },
+                    {
+                        "id":  "rec8NBSEokaRDjail",
+                        "createdTime":  "2026-04-25T05:50:03.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "Loaded from latest repo snapshot 0734 during T2.0 population coverage.",
+                                       "task_family":  "git_hub_issue_mutation_and_low_level_write_recovery",
+                                       "selected_lane":  "Use fetch_issue and add_comment_to_issue for live issue-thread updates; do not assume issue close/state mutation works until validated in the current session.",
+                                       "memory_entry_id":  "PRE-GH-20260416-ISSUE-MUTATION-LANE",
+                                       "preconditions":  "GitHub issue or governed file mutation after connector inconsistency or safety block.",
+                                       "invocation_mode":  "post_blocker",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not assume update_issue or update_file is reliable without current-session readback.",
+                                       "buffered_candidate":  "Reusable lesson for GitHub mutation-lane recovery.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "required_verification":  "Confirm tool availability and read back the issue or file after mutation.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "dcoir_skill_memory/dcoir-memory-preflight/2026-04-16_github_issue_mutation_and_low_level_write_recovery.md"
+                                   }
+                    },
+                    {
+                        "id":  "rec9r3EWIwCx02fAL",
+                        "createdTime":  "2026-04-30T16:38:47.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 T6L wave C approved retirement.",
+                                       "selected_lane":  "retired:domain-guidance-native",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-triage-to-collector-escalation-designer",
+                                       "preconditions":  "Operator-approved T6L wave C retirement. Triage-to-collector escalation is domain workflow guidance, not core helper infrastructure.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not conflate triage decisions with collection execution details without handoff criteria.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify escalation criteria, collection scope, and analyst output contract.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-triage-to-collector-escalation-designer. Purpose: design and review handoff from alert triage into DCOIR collection, enrichment, and analyst follow-through."
+                                   }
+                    },
+                    {
+                        "id":  "recAO6vIn2vjIlEr2",
+                        "createdTime":  "2026-04-30T16:44:20.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 T6D complete: replaced by dcoir-session-manager; old marketplace/editor skill removed; GitHub source deleted; readback confirmed absent.",
+                                       "selected_lane":  "retired:replaced-by-dcoir-session-manager",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-session-resume",
+                                       "preconditions":  "Retired after T6D merge completion. dcoir-session-manager exists, source was added and verified, operator confirmed dcoir-session-resume was removed from marketplace/editor, and GitHub source was deleted via apply-20260504-t6d-session-old-delete-001. Startup, re-anchor, resume, Queue Control, Work Items, Plans, Session Checkpoints, Operator Preferences, and Airtable-first authority behavior are now routed to dcoir-session-manager.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not resume from old GitHub todo files when Airtable live queue authority is available.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify Governance Control Plane, Queue Control, Work Items, Plans, and checkpoints.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-session-resume. Purpose: resume the DCOIR workspace from the current Airtable-first operational authority model and current queue state."
+                                   }
+                    },
+                    {
+                        "id":  "recDVBDVYgdg7i7Eb",
+                        "createdTime":  "2026-04-26T08:05:28.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-04-26T09:41Z",
+                                       "task_family":  "legacy_git_hub_helper_memory_backfill",
+                                       "selected_lane":  "historical/source-basis only",
+                                       "memory_entry_id":  "legacy-dcoir-skill-memory-dcoir-memory-preflight-2026-04-03-github-existing-file-update-lane-and-surface-drift-md",
+                                       "preconditions":  "Do not treat this legacy row as live queue authority. Use Queue Control, Work Items, Plans, and three-division tables for live state.",
+                                       "invocation_mode":  "on_demand",
+                                       "status":  "active",
+                                       "anti_patterns":  "Relying on deleted or stale GitHub helper-memory as live authority.",
+                                       "buffered_candidate":  "Imported from GitHub helper-memory source path for preservation.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "required_verification":  "Headings: # 2026-04-03 GitHub existing-file update lane recovery and execution discipline\nExcerpt: # 2026-04-03 GitHub existing-file update lane recovery and execution discipline Purpose - Preserve the known working low-level GitHub existing-file update lane for governed readable text. - Correct the earlier 2026-04-03 helper-memory note that prematurely attributed the issue to connector surface drift before the validated lane was fully re-applied. Known working lane - For existing-file updates and grouped existing-file changes, the intended lane is the low-level git-object transaction flow. - The core sequence is: 1. read live state of every touched file 2. recover the current head commit sha 3. create blob objects for the replacement file contents",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "# 2026-04-03 GitHub existing-file update lane recovery and execution discipline\n\nPurpose\n- Preserve the known working low-level GitHub existing-file update lane for governed readable text.\n- Correct the earlier 2026-04-03 helper-memory note that prematurely attributed the issue to connector surface drift before the validated lane was fully re-applied.\n\nKnown working lane\n- For existing-file updates and grouped existing-file changes, the intended lane is the low-level git-object transaction flow.\n- The core sequence is:\n  1. read live state of every touched file\n  2. recover the current head commit sha\n  3. create blob objects for the replacement file contents\n  4. create one grouped tree using the current head sha as the accepted base-tree input\n  5. create one commit from that grouped tree with the current head as parent\n  6. move the branch ref to the new commit sha\n  7. verify every touched path by direct readback from main\n\nCanonical authority pointers\n- `knowledge/task_memory/10_domains/github/procedures/GH-PROC-001-existing-file-update.yaml`\n- `knowledge/task_memory/10_domains/github/procedures/GH-PROC-006-grouped-multi-file-transaction.yaml`\n- `knowledge/task_memory/10_domains/github/procedures/GH-PROC-007-memory-preflight-routing.yaml`\n- `knowledge/task_memory/10_domains/github/procedures/GH-PROC-005-post-write-verification.yaml`\n- `knowledge/github_connector_reference/GitHub_Connector_Execution_Guide.md`\n\nWhat went wrong in this session\n- Canonical memory with the validated low-level lane already existed.\n- The assistant did not pivot back to `GH-PROC-001` or `GH-PROC-006` quickly enough after friction appeared.\n- The assistant prematurely wrote speculative connector-limitation and surface-drift language before fully exhausting the validated lane.\n- The failure should therefore be classified as assistant procedure-recovery failure and execution-discipline failure.\n\nPractical lesson\n- Do not treat this as a connector limitation by default.\n- First re-anchor, run `GH-PROC-007`, and apply the validated low-level lane.\n- Only after a named low-level step fails should any tool limitation be considered for durable recording.\n\nOperator-facing rule\n- If GitHub existing-file update work hits friction, report the block immediately.\n- State:\n  - which canonical records were consulted\n  - which low-level step is being attempted or failed\n  - whether the failure is assistant execution failure, assistant recall failure, or a proven tool limitation\n  - whether an operator-managed lane should be offered as an option rather than assumed\n\nBest next move\n- During future GitHub-family preflight, treat `GH-PROC-001`, `GH-PROC-006`, `GH-PROC-007`, and `GH-PROC-005` as the first recovery set for existing-file update work.\n"
+                                   }
+                    },
+                    {
+                        "id":  "recED2ZlqWsXBmiOv",
+                        "createdTime":  "2026-05-02T14:38:41.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-02T22:48:00+02:00",
+                                       "task_family":  "github",
+                                       "selected_lane":  "chatgpt_staging_lane",
+                                       "memory_entry_id":  "SKILLROUTE-CHATGPT-STAGING-LANE",
+                                       "preconditions":  "Airtable Queue Control and active Work Item must identify the lane or the operator must explicitly request staging-lane or workflow-reporting work. For repo-source execution, read GitHub docs: chatgpt_staging/README.md, chatgpt_staging/SCENARIO_MATRIX.md, chatgpt_staging/RETENTION_POLICY.md, and chatgpt_staging/WORKFLOW_REPORTING_POLICY.md. Before asking the operator for screenshots, pasted logs, uploaded logs, or a SHA, check chatgpt_staging/status_reports/\u003cworkflow\u003e/\u003cid\u003e/workflow_report.md for staging workflows and chatgpt_staging/status_reports/repo-workflows/\u003cworkflow\u003e/\u003crun-id\u003e/workflow_report.md for repo-wide workflow reports.",
+                                       "invocation_mode":  "on_demand",
+                                       "status":  "pending_review",
+                                       "anti_patterns":  "Do not choose broad repo-root staging. Do not delete stage-out bundles before ChatGPT retrieves them. Do not delete inbound apply payloads before successful decode/apply/commit/push. Do not retry a failed request_id before checking status_reports and failure_reports. Do not keep staging artifacts or repo-wide workflow reports indefinitely unless retained as Airtable-backed validation evidence. Do not create paired JSON+Markdown reports for one workflow result. Do not hardcode tweakable routing policy into skills when Airtable can carry it.",
+                                       "buffered_candidate":  "Repo-wide workflow reporting implementation package being prepared. It adds shared .github/scripts/write_workflow_report.py, central .github/workflows/chatgpt-workflow-run-reporter.yml, dedicated .github/workflows/chatgpt-report-retention-cleanup.yml, report scaffolds, and WORKFLOW_REPORTING_POLICY.md. After CAP, verify manual reporter smoke report, retention dry-run report, and readback.\n\nT6 skill-creep audit note 2026-05-04T09:12:00+02:00: This row uses the SKILLROUTE namespace but does not identify an installed ChatGPT helper skill. It appears to describe a ChatGPT staging/workflow lane. Preserve the workflow reporting guidance, but move or reclassify it to an appropriate workflow/helper-memory surface before any deletion or namespace cleanup. Do not delete until the content is preserved in the correct surface.",
+                                       "created_at":  "2026-05-02T13:02:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-05-02T20:48:00.000Z",
+                                       "required_verification":  "Before closeout, verify GitHub readback, workflow_report.md behavior where applicable, cleanup marker behavior, retention cleanup behavior, scaffold preservation, and Airtable Validation Evidence. New sessions should check status_reports, repo-workflows reports, failure_reports, cleanup_requests, RETENTION_POLICY.md, and WORKFLOW_REPORTING_POLICY.md when staging-lane or workflow-reporting work is active.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Consult this row when a task mentions ChatGPT staging lane, chatgpt_staging, large-file readback, stage-out, apply-in, cleanup_requests, failure_reports, status_reports, workflow_report.md, payload.zip.b64, staging transfer, GitHub workflow staging, or automated cleanup under the staging/transfer area."
+                                   }
+                    },
+                    {
+                        "id":  "recF2mqTF5QEjUpnc",
+                        "createdTime":  "2026-04-29T06:18:20.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-04-29 operator confirmed after field-finalization v2 succeeded",
+                                       "task_family":  "airtable_schema_migration_staged_replacement",
+                                       "selected_lane":  "staged_replacement_migration",
+                                       "memory_entry_id":  "MEM-PREFLIGHT-AIRTABLE-STAGED-REPLACEMENT-PATTERN-20260429",
+                                       "preconditions":  "Use when Airtable field type conversion, field merge, table merge, table replacement, or schema authority consolidation appears blocked by direct API limits or data-loss risk. First identify source object, target object/type, data transform, dependency risks, verification checks, and cleanup/retirement path.",
+                                       "invocation_mode":  "post_blocker",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not stop at \u0027Airtable cannot in-place convert this safely\u0027 when staged replacement is available. Do not leave duplicate active authorities after a staged conversion can be finished. Do not clear DELETE-prefixed source data until replacement data has been created, formatted, and verified. Do not hard-delete tables/fields before dependency review.",
+                                       "buffered_candidate":  "Reusable blocker-recovery lesson: staged replacement pattern overcame package blocker around Airtable field-type conversion. Pattern: 1) rename old object to DELETE - \u003cname\u003e; 2) create/promote replacement object with authoritative name and correct type/shape; 3) copy/format/normalize source data into replacement; 4) verify readback; 5) clear old DELETE-prefixed source data or mark old table rows for retirement; 6) delete later only after dependency review. Applies to fields, field merges, table merges, replacement tables, and broader schema/data migrations.",
+                                       "created_at":  "2026-04-29T06:20:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-29T06:20:00.000Z",
+                                       "required_verification":  "Verify final authoritative field/table name exists with expected type/shape; verify DELETE-prefixed source exists or is intentionally retired; verify source data was copied/formatted into replacement; verify DELETE-prefixed source data is cleared only after replacement pass; verify no remaining active duplicate authority; collect raw logs and evidence ZIP.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Operator instruction 2026-04-29; Field Finalization package v1/v2 blocker recovery; Operator Preference PREF-DCOIR-AIRTABLE-STAGED-FIELD-CONVERSION-PATTERN-20260429."
+                                   }
+                    },
+                    {
+                        "id":  "recGfLMG8qacquVs3",
+                        "createdTime":  "2026-04-30T16:44:20.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-04-30 skill routing row created.",
+                                       "selected_lane":  "helper-skill-router:skill-authoring",
+                                       "memory_entry_id":  "SKILLROUTE-skill-creator",
+                                       "preconditions":  "Use whenever the operator asks to create, update, edit, improve, package, troubleshoot, or discuss Skills.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not create or update skills through ad hoc file edits without following skill-creator packaging rules.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify SKILL.md, agents/openai.yaml, package cleanliness, and skill.zip output.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: skill-creator. Purpose: create, update, package, validate, or troubleshoot ChatGPT skills, and answer conversational questions about Skills."
+                                   }
+                    },
+                    {
+                        "id":  "recI0gdvm7RCdCu8x",
+                        "createdTime":  "2026-04-30T16:38:47.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 T6L wave C approved retirement as obsolete.",
+                                       "selected_lane":  "retired:obsolete",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-structural-rename-coordinator",
+                                       "preconditions":  "Operator-approved T6L wave C retirement. Operator identified this helper as obsolete.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not rename surfaces without dependency mapping and downstream refresh plan.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify affected paths, manifests, skills, bundles, and docs.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-structural-rename-coordinator. Purpose: coordinate DCOIR structural renames and naming-model changes so dependent files, mappings, skills, delivery bundles, and release posture stay aligned."
+                                   }
+                    },
+                    {
+                        "id":  "recJTlR0Rrd7rjbbs",
+                        "createdTime":  "2026-05-02T21:22:47.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-02T23:25:00+02:00",
+                                       "task_family":  "delete_queue",
+                                       "selected_lane":  "delete_queue_cleanup",
+                                       "memory_entry_id":  "DELETEQUEUE-BATCH-INSERTS-FIRST",
+                                       "preconditions":  "When a DCOIR session is asked to remove Airtable plan/work/evidence records, it must use the Delete Queue workflow instead of direct record removal. First read live schema and active Plans/Work Items. Confirm the target plan has no remaining active required tasks before queueing related rows.",
+                                       "invocation_mode":  "automatic_startup",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not directly remove Airtable records just because a plan appears complete. Do not put cleanup instructions only in a starter prompt. Do not queue parent plan rows before child/dependent rows. Do not approve queue rows automatically unless the operator explicitly approves deletion or the row is clearly a test/scratch cleanup target.",
+                                       "buffered_candidate":  "Next-session test request: evaluate PLAN-20260501-chatgpt-github-staging-lane and associated Work Items for cleanup via Delete Queue using batch inserts. Do not assume cleanup is safe if repo-wide cleanup delete-mode validation or other follow-up tasks remain open. If remaining tasks exist, preserve the plan and queue only clearly disposable validation scratch records when approved.",
+                                       "created_at":  "2026-05-02T21:25:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-05-02T21:25:00.000Z",
+                                       "required_verification":  "Use batch inserts into Delete Queue for cleanup candidates. Queue dependent/child rows first: Validation Evidence and transient validation cases as appropriate, then Work Items, then Plan records only if no remaining tasks are active or required. Set approved_to_delete according to operator approval, set delete_stage=pending, include target_table, target_record_id, reason, requested_by, requested_at, and verification_notes. After processing, verify absence and record lifecycle/evidence notes.",
+                                       "retention_class":  "operational"
+                                   }
+                    },
+                    {
+                        "id":  "recJdftQhif3rOWf3",
+                        "createdTime":  "2026-04-30T16:38:47.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 Wave E complete: replaced by dcoir-decision-policy; marketplace/editor removed; GitHub source absent; helper-memory table pending schema delete/cleanup.",
+                                       "selected_lane":  "retired:merged-into-decision-policy",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-source-authority-auditor",
+                                       "preconditions":  "Wave E complete. dcoir-source-authority-auditor behavior was preserved into dcoir-decision-policy references/hard_stop_conditions.md and dcoir-decision-policy memory row DECISION-AUTHORITY-DRIFT-GATE-MERGED-20260504. Operator confirmed marketplace/editor removal. GitHub readback shows no tracked source files remain. Route retired; use dcoir-decision-policy for authority drift, hard-stop, and source-authority gates.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not execute through authority drift; surface exact conflict and safe next step. Do not continue if authority sources conflict.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify source basis, active authority chain, conflicting authority surfaces, and the smallest repair lane.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-source-authority-auditor. Purpose: audit whether a requested DCOIR task is grounded in current authoritative source sets, stop on unsafe authority drift, and emit paste-ready authority drift reports when report mode is needed. Also owns authority-drift-reporter behavior after T6 preservation."
+                                   }
+                    },
+                    {
+                        "id":  "recKGEO58VSQINT83",
+                        "createdTime":  "2026-04-29T11:34:45.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-04-29 operator discovery during final Airtable cleanup",
+                                       "selected_lane":  "airtable_schema_cleanup",
+                                       "memory_entry_id":  "MEM-AIRTABLE-OMNI-PLANNED-FIELD-RETIREMENT-20260429",
+                                       "preconditions":  "Use only after script verification confirms replacement fields contain correct values and staged source fields are empty or intentionally retired. Ask Omni to list exact matching fields first, then proceed only with the listed fields/tables.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not ask Omni to modify the whole base vaguely. Do not rely on Scripting Extension for field removal; it can inspect and clear records, but field removal is handled better by Omni/Builder/UI. Do not broaden beyond the initial listed fields.",
+                                       "buffered_candidate":  "Reusable Omni prompt pattern: find every field that starts with the staged retirement prefix in the entire base; list them grouped by table; build a plan; after operator approval, proceed only with the listed fields in the listed tables; report exactly what changed.",
+                                       "created_at":  "2026-04-29T11:05:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-29T11:05:00.000Z",
+                                       "required_verification":  "After Omni completes, rerun the package verifier and collect artifacts. Verify no staged-prefix fields remain before closing Airtable cleanup.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Operator tested Airtable Omni for base-wide staged field retirement after Scripting Extension could not remove fields. Omni worked when asked to first find every field beginning with the staged retirement prefix, build a plan listing exact fields by table, then proceed only with that listed plan."
+                                   }
+                    },
+                    {
+                        "id":  "recLFeDpAZHF65iVP",
+                        "createdTime":  "2026-04-30T16:31:28.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-04-30 corrected dynamic Airtable skill-routing package produced.",
+                                       "selected_lane":  "dynamic-airtable-installed-skill-routing",
+                                       "memory_entry_id":  "MEM-SKILL-ROUTING-CATALOG-20260430",
+                                       "preconditions":  "Before high-friction or ambiguous DCOIR work, search dcoir-memory-preflight for SKILLROUTE-* rows and select specialist helper skills from live Airtable rows rather than from chat memory or a packaged static catalog.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not hardcode the current installed skill list inside dcoir-memory-preflight. Do not require skill repackaging solely because a skill was added, removed, or retitled; update the Airtable SKILLROUTE rows instead.",
+                                       "buffered_candidate":  "Dynamic Airtable SKILLROUTE model is authoritative. A corrected dcoir-memory-preflight package was produced with no static installed-skill catalog; future skill add/remove/rename updates should modify SKILLROUTE rows instead of repackaging this skill solely for the list.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify dcoir-memory-preflight uses table tblcNNuKqi8IkFsSQ for helper memory and skill routing. Verify the installed skill row exists and is current before relying on routing guidance.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Operator clarified skill routing must live in Airtable, not as a hardcoded point-in-time skill list inside dcoir-memory-preflight. This row is the registry-index rule for skill routing rows in this same dcoir-memory-preflight table."
+                                   }
+                    },
+                    {
+                        "id":  "recNV9AoZxk68iVag",
+                        "createdTime":  "2026-04-30T16:44:20.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 T6L wave C approved retirement.",
+                                       "selected_lane":  "retired:documentation-native",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-knowledge-doc-maintainer",
+                                       "preconditions":  "Operator-approved T6L wave C retirement. Knowledge-doc generation is not live control-plane authority; normal repo docs/source readback or future Work Items can cover it.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not edit knowledge docs before authority is settled and dependent surfaces are known.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify source authority, doc ownership, attachments, and downstream validation.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-knowledge-doc-maintainer. Purpose: maintain and emit DCOIR supporting knowledge documents from current authoritative GitHub-primary project sources after authority is settled."
+                                   }
+                    },
+                    {
+                        "id":  "recPnER03cOf5rStt",
+                        "createdTime":  "2026-04-25T05:50:03.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "Loaded from latest repo snapshot 0734 during T2.0 population coverage.",
+                                       "task_family":  "memory_preflight_trigger_and_upgrade_requirements",
+                                       "selected_lane":  "Run memory preflight before high-friction or known-procedure work and after reusable blocker recovery.",
+                                       "memory_entry_id":  "PRE-WORKFLOW-UPGRADE-REQS",
+                                       "preconditions":  "DCOIR work with prior lessons, blocker recovery, skill routing, or task-family ambiguity.",
+                                       "invocation_mode":  "pre_execution",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not rediscover known lanes when a prior memory record should be consulted.",
+                                       "buffered_candidate":  "Core baseline memory entry for memory-preflight operations.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "required_verification":  "Classify task family and consult relevant durable memory before execution.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "dcoir_skill_memory/dcoir-memory-preflight/memory_preflight_workflow_upgrade_requirements.md"
+                                   }
+                    },
+                    {
+                        "id":  "recQ5EWFHUWIQveUH",
+                        "createdTime":  "2026-05-07T17:58:23.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-07T17:55:00Z",
+                                       "task_family":  "github_workflow",
+                                       "selected_lane":  "GitHub connector/workflow live heartbeat polling",
+                                       "memory_entry_id":  "MEM-CHATGPT-WORKFLOW-HEARTBEAT-POLLING-20260507",
+                                       "preconditions":  "When polling ChatGPT-staged workflows, use the exact status report path and also search commits for the request_id/progress commit messages before concluding missing. Allow connector visibility lag after staging.",
+                                       "invocation_mode":  "post_blocker",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not conclude heartbeat failed from early report 404 alone. Do not use completed-run summaries as the live heartbeat source. Do not blame safety filters for missing workflow reports.",
+                                       "buffered_candidate":  "Apply shared Invoke-ChatGptReportPush.ps1 helper to any future workflow that writes status/progress reports or commits staged outputs. Validate each workflow with a live smoke request before claiming ready.",
+                                       "created_at":  "2026-05-07T17:55:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-05-07T17:55:00.000Z",
+                                       "required_verification":  "Required verification: exact workflow_report.md path; request-specific progress commits; phase history; result success/failure; run_id; artifact name when present. For staged workflows, inspect request-specific commits if live path appears delayed.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "GitHub readback: chatgpt-exec progressive commits d0d12b2 request-resolved, b411957 running-harness, f41cf7b harness-finished; workflow_report result success for exec-20260507-clean-report-push-smoke-001. Affected workflows patched: .github/workflows/chatgpt-exec.yml, chatgpt-stage-out.yml, chatgpt-apply-in.yml; shared helper .github/scripts/Invoke-ChatGptReportPush.ps1."
+                                   }
+                    },
+                    {
+                        "id":  "recRb2i1XPWjiPdTP",
+                        "createdTime":  "2026-05-04T08:36:31.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04T13:00:00+02:00",
+                                       "selected_lane":  "One-bundle ChatGPT apply-in lane for governed repo updates. Build exactly one payload.zip, base64 encode it as exactly one payload.zip.b64, stage that literal text through the GitHub connector at chatgpt_staging/in/\u003crequest_id\u003e/payload.zip.b64, allow the push trigger to run automatically, then read the workflow report and target-file readback.",
+                                       "memory_entry_id":  "GH-PROC-APPLY-IN-B64-RECOVERY-20260504",
+                                       "preconditions":  "Use when chatgpt-apply-in fails during Decode ZIP payload and apply bundle with base64 invalid input or similar decode/unzip symptoms. Preconditions: keep the intended one-bundle route unless the operator approves a different route; preserve the generalized workflow behavior; do not make workflow changes specific to one request; keep payload under chatgpt_staging/in/\u003crequest_id\u003e/payload.zip.b64; know the target files and expected hashes before packaging when possible.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not drift into multipart/chunked payload staging, direct target-file writes, Git tree commits, download/upload handoffs, local path handoffs, or one-file-at-a-time updates unless the operator explicitly changes the lane. Do not ask the operator to run chatgpt-apply-in after staging because the push trigger runs automatically. Do not treat connector friction as permission to change lanes; first retry the known working method: pass the literal base64 string to GitHub create_file for one payload.zip.b64.",
+                                       "buffered_candidate":  "Reusable procedure candidate: preserve this as a known recovery path for future ChatGPT apply-in base64/unzip failures. Successful path on 2026-05-04: first single-bundle payload failed with base64 invalid input; workflow was hardened generally to use Python validation diagnostics while preserving the original one-file payload route; second single-bundle payload was rebuilt cleanly and staged at apply-20260504-t6-skill-preservation-002; workflow run 25308776171 succeeded and applied all seven source paths. If repeated, promote this procedure into governed workflow documentation or the GitHub/apply-in helper guidance.",
+                                       "review_after":  "2026-08-06",
+                                       "required_verification":  "Required verification: 1) build payload.zip from intended changed files and apply_manifest.json; 2) base64 encode as one payload.zip.b64; 3) locally verify base64 length mod 4 is 0, base64 alphabet/whitespace only, validation decode succeeds, and decoded bytes start with ZIP magic PK; 4) stage exactly one payload.zip.b64 to a new request id using GitHub connector create_file content as the literal base64 string; 5) wait for automatic chatgpt-apply-in push-trigger report; 6) require result: success and expected Applied paths; 7) read back target source files and markers from GitHub; 8) update Airtable only after readback.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "PLAN-20260503-project-health-recovery; WI-PROJECT-HEALTH-T6-SKILL-CREEP-REDUCTION-20260503; chatgpt-apply-in workflow; failed commit d4b1cb54263470cb8c187a969fd9ea7152186313; hardening commit 141fd451bf366a00a3fad686407620c8c0ef9e87; successful staging commit ef5126d5e9b18681200662f551041e335dbc0131; successful workflow run 25308776171; successful T6C singlezip staging commit bfcf13069c641cdd702b584c702c0ce9f43e959f; successful workflow run 25317513874; workflow report chatgpt_staging/status_reports/chatgpt-apply-in/apply-20260504-t6c-preservation-source-sync-singlezip-001/workflow_report.md."
+                                   }
+                    },
+                    {
+                        "id":  "recSk4M9x06HHabVI",
+                        "createdTime":  "2026-05-05T11:21:25.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-05T11:21:00Z",
+                                       "task_family":  "repo_work",
+                                       "selected_lane":  "GitHub connector/workflow apply-in lane using a single payload.zip.b64 file only.",
+                                       "memory_entry_id":  "SKILLROUTE-CHATGPT-APPLY-IN-SINGLE-PAYLOAD",
+                                       "preconditions":  "Before any DCOIR chatgpt-apply-in staging: consult this route, use the single-payload builder or equivalent validation, confirm request id safety, ZIP opens, apply_manifest.json and files/ are at archive root, base64 round trip matches ZIP SHA256, and no truncation/chunk/parts markers exist.",
+                                       "invocation_mode":  "pre_execution",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not use payload.zip.b64.parts, part files, chunk_manifest.json, chunk markers, or rediscovered chunking workarounds. Do not stop after partial chunk staging. If connector limits are hit, reduce the batch size and rebuild a smaller single payload.zip.b64.",
+                                       "buffered_candidate":  "Recurring blocker lesson captured: single payload.zip.b64 is the only supported chatgpt-apply-in staging shape. Future improvements should harden workflow/tooling rather than creating chunk transport variants.",
+                                       "created_at":  "2026-05-05T11:21:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-05-05T11:21:00.000Z",
+                                       "required_verification":  "Verify workflow_report.md under chatgpt_staging/status_reports/chatgpt-apply-in/\u003crequest_id\u003e/, verify workflow job conclusion success, then read back every target file from GitHub main before claiming success.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Operator Preferences pref-chatgpt-apply-in-single-payload-zip-b64; Operator Tools Registry DCOIR-CHATGPT-APPLY-IN-SINGLE-PAYLOAD-BUILDER; repo chatgpt_staging/in/README.md; repo tools/chatgpt_apply_in/build_payload_zip_b64.py; workflow .github/workflows/chatgpt-apply-in.yml"
+                                   }
+                    },
+                    {
+                        "id":  "recSrPD7RJmQxyAqk",
+                        "createdTime":  "2026-04-30T16:38:07.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-05T07:30:00Z",
+                                       "selected_lane":  "helper-skill-router:preflight-memory",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-memory-preflight",
+                                       "preconditions":  "Use dcoir-memory-preflight before DCOIR execution, not only during startup/re-anchor. Invoke for task-time skill applicability checks, SKILLROUTE selection, execution-lane choice, blocker recovery, reusable memory lookup, GitHub/GitHub Desktop/tooling friction, Airtable authority/schema-sensitive work, validation orchestration, local config awareness, and any case where a specialist helper skill may apply.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not skip routing because the task appears narrow. Do not answer from chat memory when live SKILLROUTE rows, operator preferences, active Plans/Work Items, Local Configuration Registry, helper-memory, validation gates, or execution lane choice could materially affect the answer. Do not execute the main change from this skill by default.",
+                                       "buffered_candidate":  "2026-05-05 repair: strengthened task-time routing in dcoir-memory-preflight package marker updated-skill|20260505T073000Z|task-time-routing-strengthening.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify the compact routing result identifies task family, consulted routing surfaces, skill(s) to invoke now, safest lane, hard stops/preconditions, required verification, checkpoint need, and best next move. If no specialist route exists, state that and continue with bounded fallback.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-memory-preflight. Purpose: consult canonical DCOIR task memory and Airtable governance/helper-memory before high-friction work and after blocker recovery to avoid rediscovering known procedures or limitations."
+                                   }
+                    },
+                    {
+                        "id":  "recSzypHwAAjmVg0X",
+                        "createdTime":  "2026-05-11T09:42:13.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-11T09:32:00Z",
+                                       "task_family":  "dcoir_memory_preflight_routing",
+                                       "selected_lane":  "Gmail connector read -\u003e Airtable dedupe/readback -\u003e review packet -\u003e approved Airtable writes only",
+                                       "memory_entry_id":  "ROUTE-DCOIR-GMAIL-INTAKE-TRIAGE-20260511",
+                                       "preconditions":  "Use when the operator asks to check Gmail for DCOIR-related items, process DCOIR Gmail intake, review DCOIR-labeled Gmail, or uses similar intent language. Exact phrase is not required. Search DCOIR-INTAKE and DCOIR-TESTING. Read messages. Dedupe against Idea Inbox, Work Items, Validation Test Cases, Validation Evidence, and Operator Preferences as relevant.",
+                                       "invocation_mode":  "pre_execution",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not auto-create Airtable rows solely because an email has a DCOIR label. Do not treat DCOIR-INTAKE as synonymous with Idea Inbox. Do not merge this with the Gmail GitHub label workflow used for workflow-execution timing/tracking.",
+                                       "buffered_candidate":  "Potential future enhancement: if intake volume grows, create a DCOIR Gmail Intake work item or automation policy. Current durable rule is human-reviewed triage first.",
+                                       "required_verification":  "Before writing records, present a triage packet with proposed classification and destination: Idea Inbox, Work Items, Validation Test Cases, Validation Evidence, Operator Preferences, duplicate/no-op, or ignore. Write only after operator approval or a later explicit durable override.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Gmail labels confirmed: DCOIR-INTAKE, DCOIR-TESTING. Removed/old labels DCOIR-IDEA and DCOIR-OBSERVATION are not current. Existing Gmail GitHub label remains separate and should not be mixed into this DCOIR intake triage lane."
+                                   }
+                    },
+                    {
+                        "id":  "recTI8s3uAp2Ndm4x",
+                        "createdTime":  "2026-05-04T16:25:48.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04T16:28:00Z",
+                                       "task_family":  "airtable_schema",
+                                       "selected_lane":  "manual-schema-table-deletion-required",
+                                       "memory_entry_id":  "LIMITATION-DELETE-QUEUE-NO-TABLE-DELETES-20260504",
+                                       "preconditions":  "Delete Queue is record-oriented. It can be used to delete Airtable records/rows, but it cannot delete Airtable schema tables. Do not create Delete Queue rows for whole-table deletion targets such as TABLE:\u003ctable_id\u003e. For retired helper-memory tables, preserve/merge any required data first, confirm the table is no longer needed, then have the operator manually delete the table in Airtable and record verification in DCOIR Lifecycle Ledger/Admin Registry.",
+                                       "invocation_mode":  "post_blocker",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not treat Delete Queue as table/schema deletion automation. Use Delete Queue for record/row deletion only; do not insert whole-table deletion requests.",
+                                       "buffered_candidate":  "Captured after dcoir-source-authority-auditor helper-memory table deletion: operator confirmed Delete Queue cannot delete tables but can delete rows; operator manually removed the table and removed the inappropriate Delete Queue table-deletion row.",
+                                       "review_after":  "2026-08-06",
+                                       "required_verification":  "For row deletion: process through Delete Queue after dependency checks and approval. For table deletion: operator manually deletes table, then verify absence through live schema readback and record evidence. Refresh schema cache/parity surfaces when the deletion affects startup or helper routing.",
+                                       "retention_class":  "operational"
+                                   }
+                    },
+                    {
+                        "id":  "recTiO4bgvegHO80o",
+                        "createdTime":  "2026-04-30T16:38:47.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 T6L wave C approved retirement.",
+                                       "selected_lane":  "retired:guidance-native",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-operator-workflow-hardener",
+                                       "preconditions":  "Operator-approved T6L wave C retirement. Project Instructions, Work Items, Validation Test Cases/Evidence, workflow reports, and ordinary guided chat replace this route.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not let operator instructions drift from the current collector/EXE behavior and command-lane discipline.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify commands against current runbooks and collector behavior.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-operator-workflow-hardener. Purpose: harden and normalize operator-facing DCOIR workflow guidance for Elastic endpoint execution, collector staging, retrieval, cleanup, and output interpretation."
+                                   }
+                    },
+                    {
+                        "id":  "recUk0O8pKVDdUT4p",
+                        "createdTime":  "2026-04-30T16:38:47.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-05T09:00:00Z",
+                                       "selected_lane":  "helper-skill-router:validation-planning",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-validation-orchestrator",
+                                       "preconditions":  "Use dcoir-validation-orchestrator before DCOIR execution whenever readiness, correctness, installability, package validity, regression, evidence, verification, post-change readback, workflow success, Airtable/GitHub readback, skill marker/readback, package cleanliness, or validation planning could materially affect the outcome.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not claim ready/validated/verified/installed/package-valid/regression-covered from inspection alone when execution, generated output, package inspection, installed-skill readback, Airtable readback, GitHub readback, workflow logs, or validation evidence can reasonably be checked. Do not treat malformed ZIPs, missing markers, stale readback, or failed workflows as chat-only notes.",
+                                       "buffered_candidate":  "2026-05-05 repair: strengthened task-time validation gates in dcoir-validation-orchestrator package marker updated-skill|20260505T090000Z|task-time-validation-gate-strengthening.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify compact validation gate: validation target, phase, evidence available, evidence missing, minimum checks, companion skills, Airtable Validation Evidence/Test Cases or helper-memory update need, and safest readiness statement allowed.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-validation-orchestrator. Purpose: build explicit validation plans for DCOIR changes and workflows with deep regression as default for testable changes."
+                                   }
+                    },
+                    {
+                        "id":  "recX5q2OjiKBW26NT",
+                        "createdTime":  "2026-05-17T09:16:57.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-17T08:35:00Z",
+                                       "task_family":  "dcoir_memory_preflight_routing",
+                                       "selected_lane":  "Every-response all-skill gate for AFRICOM_SOC_IR / DCOIR. Before every DCOIR response, invoke every currently installed dcoir-* skill in compact awareness/gate mode unless full workflow execution is required.",
+                                       "memory_entry_id":  "SKILLROUTE-DCOIR-EVERY-RESPONSE-ALL-SKILLS-20260517",
+                                       "preconditions":  "Current installed dcoir-* set to invoke before every DCOIR response: dcoir-memory-preflight, dcoir-airtable-schema-cache, dcoir-decision-policy, dcoir-local-config-registry-maintainer, dcoir-github-desktop-lane-advisor, dcoir-repo-packager, dcoir-validation-orchestrator. This is not limited to startup/re-anchor and is not limited to skills judged applicable.",
+                                       "invocation_mode":  "task_time",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not replace the every-response all-skill invocation gate with applicability-only routing. Do not say only relevant/applicable skills were invoked unless every installed dcoir-* skill was invoked first. Compact awareness/gate invocation does not authorize destructive work, Airtable mutation, repo writes, packaging, validation creation, or Apply execution without normal gates.",
+                                       "buffered_candidate":  "Persisted after operator clarification on 2026-05-17 during WBS09 filter-repair lane. Pending source update: patch Project Instructions and five DCOIR project attachments to replace \u0027invoke applicable/matching/relevant skills\u0027 task-time language with \u0027invoke every installed/current core dcoir-* skill before every DCOIR response.\u0027",
+                                       "required_verification":  "Before answering, verify every installed dcoir-* skill has been invoked or report exact unavailable/missing skill surface. Project Instructions and attachments should be updated so every source says invoke every installed/current core dcoir-* skill before every DCOIR response, with no applicability-only exception.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Operator Preferences PREF-DCOIR-EXPERTISE-BASELINE-20260517; Project Instructions and DCOIR operational attachments require clarification to remove applicability-only ambiguity."
+                                   }
+                    },
+                    {
+                        "id":  "recXUgi4C89nkEXZo",
+                        "createdTime":  "2026-04-30T16:44:20.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 T6L wave C approved retirement; GitHub workflow replacement recorded.",
+                                       "selected_lane":  "retired:github-workflow-covered",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-prompt-pack-assembler",
+                                       "preconditions":  "Operator-approved T6L wave C retirement. Prompt-pack assembly is covered by GitHub workflow now.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not manually stitch prompt packs without current validated modular source files.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify modular sources, generated output, and validation results.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-prompt-pack-assembler. Purpose: assemble and validate combined DCOIR analyst-facing master prompts from current validated modular prompt-pack source files."
+                                   }
+                    },
+                    {
+                        "id":  "recZxg0qtob5oXXOP",
+                        "createdTime":  "2026-04-30T12:44:32.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-04-30T12:07:00Z",
+                                       "task_family":  "github",
+                                       "selected_lane":  "chatgpt_github_staging_lane",
+                                       "memory_entry_id":  "MEM-GITHUB-STAGING-LANE-20260430",
+                                       "preconditions":  "Use this lane for high-friction in-session GitHub work when normal connector operations are blocked or inefficient because files are large, batch edits are needed, binary-like transport is useful, or the operator cannot download/upload. Readback starts with a request JSON under chatgpt_staging/requests/. Writeback uses payload.zip.b64 under chatgpt_staging/in/\u003crequest_id\u003e/ with apply_manifest.json inside the payload.",
+                                       "invocation_mode":  "startup",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not ask the operator to download/upload large files before considering this lane. Do not use GitHub Desktop bundle lane when the operator asked for in-session GitHub updates. Do not apply a staging payload without allowed_roots and manifest validation. Do not treat chatgpt_staging/work/ as a tracked surface.",
+                                       "buffered_candidate":  "Promote to helper-skill guidance and knowledge/Gemini docs after current plan closeout if durable workflow docs are being updated. This memory row makes the lane discoverable during preflight immediately.",
+                                       "review_after":  "2026-08-06",
+                                       "required_verification":  "Verify stage-out pass by checking chatgpt_staging/out/\u003crequest_id\u003e/manifest.md, manifest.json, staged_files.zip, and chunks/. Verify apply-in pass by checking changed target paths, apply report, and payload removal. Run chatgpt-staging-cleanup.yml or remove stale out/apply reports after evidence is no longer needed.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Operator Preferences PREF-CHATGPT-GITHUB-STAGING-LANE; GitHub workflows chatgpt-stage-out.yml, chatgpt-apply-in.yml, chatgpt-staging-cleanup.yml; repo surfaces under chatgpt_staging/."
+                                   }
+                    },
+                    {
+                        "id":  "reca3YKY7IdGbgNXp",
+                        "createdTime":  "2026-04-30T16:38:07.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 T6D complete: replaced by dcoir-session-manager; old marketplace/editor skill removed; GitHub source deleted; readback confirmed absent.",
+                                       "selected_lane":  "retired:replaced-by-dcoir-session-manager",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-session-tracker",
+                                       "preconditions":  "Retired after T6D merge completion. dcoir-session-manager exists, source was added and verified, operator confirmed dcoir-session-tracker was removed from marketplace/editor, and GitHub source was deleted via apply-20260504-t6d-session-old-delete-001. Session closeout, handoff, checkpoint, Idea Inbox, and Airtable-first carry-forward behavior are now routed to dcoir-session-manager.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not claim session-local buffered state is durable unless flushed to Airtable/GitHub or exported.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify Session Checkpoints, Idea Inbox, and relevant active plan rows.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-session-tracker. Purpose: maintain session-local DCOIR tracker state with Airtable-first durable checkpoints, idea capture, promotion candidates, and safe handoff exports."
+                                   }
+                    },
+                    {
+                        "id":  "recbnShpzOHrs9U9X",
+                        "createdTime":  "2026-04-30T16:38:07.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-05T08:30:00Z",
+                                       "selected_lane":  "Route local GitHub Desktop friction, local git state, reusable operator PowerShell helper, snapshot, repo patch/apply, ChatGPT-friendly ZIP packaging, and GitHub Actions orchestrator launcher tasks to dcoir-github-desktop-lane-advisor after general dcoir-memory-preflight context is read.",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-github-desktop-lane-advisor",
+                                       "preconditions":  "Use dcoir-github-desktop-lane-advisor before DCOIR execution whenever local Git/GitHub Desktop guidance, speed-lane/manual bundle decisions, repo snapshots, reusable PowerShell helpers, operator_tools registry/catalog lookup, GitHub Actions orchestrator launcher guidance, blocked repo-update lane recovery, local execution guidance, tool capture instead of one-off chat code, or operator_tools/github_desktop_lane alignment is involved.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not create one-off local scripts or ad hoc PowerShell when an active reusable tool or module pattern exists. Do not recommend destructive git commands, forced overwrite, stash pop, reset hard, git clean, or deletion without explicit operator intent, safety explanation, and verified recovery path.",
+                                       "buffered_candidate":  "2026-05-05 repair: strengthened task-time GitHub Desktop lane gates in package marker updated-skill|20260505T083000Z|task-time-github-desktop-lane-gate.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-05-01T12:12:00.000Z",
+                                       "required_verification":  "Verify compact GitHub Desktop lane gate: lane classification, consulted Operator Tools Registry/repo catalog surfaces, selected tool or no-tool decision, safety preconditions, local launcher/output if applicable, companion skills, verification path, checkpoint need, and best next move.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Operator Tools Registry active tool rows; operator_tools/github_desktop_lane/tool_catalog.json; operator_tools/github_desktop_lane/README.md; dcoir-github-desktop-lane-advisor governed skill source; Validation Evidence rows rec6e5CeMUXHnmYcN and recqWojLvhg6Hai3S."
+                                   }
+                    },
+                    {
+                        "id":  "recdLMkxx9wPO2tMk",
+                        "createdTime":  "2026-04-25T05:50:03.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "Loaded from latest repo snapshot 0734 during T2.0 population coverage.",
+                                       "task_family":  "git_hub_existing_file_update_lane_recovery",
+                                       "selected_lane":  "Use low-level git-object transaction flow for governed readable existing-file updates when higher-level wrappers drift.",
+                                       "memory_entry_id":  "PRE-GH-20260403-FILE-UPDATE-LANE",
+                                       "preconditions":  "Current DCOIR GitHub-primary context; existing governed readable text update; grouped existing-file changes possible.",
+                                       "invocation_mode":  "pre_execution",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not prematurely attribute failures to connector drift before reapplying the validated low-level lane.",
+                                       "buffered_candidate":  "Candidate for later canonical GitHub task-memory promotion if the write lane needs further hardening.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "required_verification":  "Verify existing-file update readback from the governed repo before treating the write as landed.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "dcoir_skill_memory/dcoir-memory-preflight/2026-04-03_github_existing_file_update_lane_and_surface_drift.md"
+                                   }
+                    },
+                    {
+                        "id":  "recgjeYfd2zJogezG",
+                        "createdTime":  "2026-04-30T16:38:07.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 T6L wave C approved retirement.",
+                                       "selected_lane":  "retired:native-intake-covered",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-artifact-intake-router",
+                                       "preconditions":  "Operator-approved T6L wave C retirement. Native file handling, GitHub staging/workflow reports, repo-packager, and targeted readback replace this route.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not perform expensive extraction or exhaustive large-file processing before bounded manifest-first inspection unless needed.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Report artifact type, file availability, size/manifest, targeted excerpts, safe next reader, and any blocked/missing content.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-artifact-intake-router. Purpose: classify and route uploaded DCOIR artifacts using bounded manifest-first inspection before expensive extraction or reading. Also owns large-file fallback / staged-intake routing after T6 preservation of dcoir-large-file-intake-manager behavior."
+                                   }
+                    },
+                    {
+                        "id":  "rechuZaWGpJ4GbhMM",
+                        "createdTime":  "2026-04-26T08:05:28.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-04-26T09:41Z",
+                                       "task_family":  "legacy_git_hub_helper_memory_backfill",
+                                       "selected_lane":  "historical/source-basis only",
+                                       "memory_entry_id":  "legacy-dcoir-skill-memory-dcoir-memory-preflight-2026-04-16-github-issue-mutation-and-low-level-write-recovery-md",
+                                       "preconditions":  "Do not treat this legacy row as live queue authority. Use Queue Control, Work Items, Plans, and three-division tables for live state.",
+                                       "invocation_mode":  "on_demand",
+                                       "status":  "active",
+                                       "anti_patterns":  "Relying on deleted or stale GitHub helper-memory as live authority.",
+                                       "buffered_candidate":  "Imported from GitHub helper-memory source path for preservation.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "required_verification":  "Headings: # 2026-04-16 GitHub issue mutation lane and low-level write recovery\nExcerpt: # 2026-04-16 GitHub issue mutation lane and low-level write recovery Purpose - Preserve the GitHub issue-thread mutation lane that was actually validated in this session. - Preserve the newly reconfirmed low-level file-write recovery details that mattered when the higher-level existing-file wrapper was inconsistent or safety-blocked. - Give `dcoir-memory-preflight` a durable helper-memory note that can later be promoted into canonical GitHub task memory if the operator wants that path hardened further. Validated in this session - `fetch_issue` worked for current issue-state readback. - `add_comment_to_issue` worked repeatedly for durable issue-thread updates on live GitHub issues. - The live tool surface exposed `update_issue` when the GitHub connector resource tree was re-listed with `only_tools=true` and `refetch_tools=true`, but invocation still behaved inconsistently in this chat. Do not assume issue close or state mutation is reliable until the exact live invocation succeeds in the current session. - `update_file` for existing governed files remained inconsistent and was sometimes safety-blocked.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "# 2026-04-16 GitHub issue mutation lane and low-level write recovery\n\nPurpose\n- Preserve the GitHub issue-thread mutation lane that was actually validated in this session.\n- Preserve the newly reconfirmed low-level file-write recovery details that mattered when the higher-level existing-file wrapper was inconsistent or safety-blocked.\n- Give `dcoir-memory-preflight` a durable helper-memory note that can later be promoted into canonical GitHub task memory if the operator wants that path hardened further.\n\nValidated in this session\n- `fetch_issue` worked for current issue-state readback.\n- `add_comment_to_issue` worked repeatedly for durable issue-thread updates on live GitHub issues.\n- The live tool surface exposed `update_issue` when the GitHub connector resource tree was re-listed with `only_tools=true` and `refetch_tools=true`, but invocation still behaved inconsistently in this chat. Do not assume issue close or state mutation is reliable until the exact live invocation succeeds in the current session.\n- `update_file` for existing governed files remained inconsistent and was sometimes safety-blocked.\n- The low-level git-object lane remained workable for governed existing-file updates: `create_blob` -\u003e `create_tree` -\u003e `create_commit` -\u003e `update_ref` -\u003e direct readback verification.\n- In this session, `create_tree` accepted the current head commit SHA as the practical `base_tree_sha` input and returned a usable replacement tree.\n\nKnown working issue lane\n1. Re-anchor and run GitHub-family preflight first.\n2. Re-list the live GitHub connector tool surface on the specific connector path when wrapper availability is uncertain.\n3. Use `fetch_issue` to confirm the current issue body and scope.\n4. Use `add_comment_to_issue` for durable status updates, validation notes, or lane-splitting notes.\n5. Treat issue close or state mutation as a separate step that still requires live proof in the current chat if the wrapper surface is inconsistent.\n6. Verify the thread update by re-reading the issue or its comments when the lane matters.\n\nKnown working existing-file recovery lane\n1. Read the live file state from `main`.\n2. Create replacement blob content with `create_blob`.\n3. Create one replacement tree with `create_tree` using the current head commit SHA as the accepted base-tree input for this connector surface.\n4. Create one commit with `create_commit`.\n5. Fast-forward `main` with `update_ref`.\n6. Verify by direct `fetch_file` readback from `main`.\n\nWhat this means for future preflight\n- For GitHub-family execution planning, preflight should distinguish among:\n  - issue-thread mutation lanes that are already validated enough for comment-based status updates\n  - issue state-mutation lanes that still need live-session proof before being treated as reliable\n  - existing-file write lanes that should prefer the low-level git-object transaction flow when the higher-level wrapper is inconsistent\n- Do not overgeneralize from tool inventory alone. Live wrapper visibility and live wrapper reliability are separate questions.\n\nPromotion recommendation\n- Classification: reusable_procedure_candidate\n- Candidate durable promotion targets:\n  - extend `GH-PROC-008` with an explicit issue-thread mutation and issue-state-mutation lane split\n  - or create a new canonical GitHub procedure record for issue-thread status mutation and live-surface verification\n  - optionally add a failure-signature or limitation record only if the issue-state mutation inconsistency reproduces again with a named failing step\n\nNext flush trigger\n- Before the next GitHub-heavy preflight refresh or the next repo update that also depends on issue tracking or closeout behavior.\n"
+                                   }
+                    },
+                    {
+                        "id":  "reclmsQ6Z03ANE08V",
+                        "createdTime":  "2026-04-30T16:44:20.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 T6L wave C approved retirement as obsolete.",
+                                       "selected_lane":  "retired:obsolete",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-change-impact-analyzer",
+                                       "preconditions":  "Operator-approved T6L wave C retirement. Operator identified dcoir-change-impact-analyzer as obsolete under current architecture.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not assume a change is isolated before impact analysis when multiple surfaces may depend on it.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify downstream files, skills, validation, packaging, and stop conditions.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-change-impact-analyzer. Purpose: analyze proposed or completed DCOIR project changes and determine downstream refresh sets, helper-skill impacts, regression requirements, delivery recommendations, and stop conditions."
+                                   }
+                    },
+                    {
+                        "id":  "recmYOIG1pVCqazlX",
+                        "createdTime":  "2026-04-30T16:38:07.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-04 T6L wave C approved retirement; GitHub workflow replacement recorded.",
+                                       "selected_lane":  "retired:github-workflow-covered",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-parity-verifier",
+                                       "preconditions":  "Operator-approved T6L wave C retirement. Skill parity verification is covered by GitHub workflow now.",
+                                       "status":  "retired",
+                                       "anti_patterns":  "Do not claim a skill package and repo source are aligned without marker/readback verification.",
+                                       "buffered_candidate":  "Dynamic routing row.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify markers, package contents, and repo source parity.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-parity-verifier. Purpose: verify governed DCOIR skill source, installed skill packages, and parity manifests for helper-skill maintenance."
+                                   }
+                    },
+                    {
+                        "id":  "recpZVK5IHUSg3ShD",
+                        "createdTime":  "2026-05-04T15:37:14.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-05T07:15:00Z",
+                                       "selected_lane":  "helper-skill-router:session-startup-resume-closeout",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-session-manager",
+                                       "preconditions":  "Use dcoir-session-manager for Airtable-first session startup, re-anchor, resume, active queue recovery, session closeout, handoff export, checkpointing, Idea Inbox capture/promotion, and cases where dcoir-session-resume or dcoir-session-tracker behavior would previously have applied. This is the consolidated replacement skill created by T6D. Invoke whenever the operator says resume, re-anchor, checkpoint, close out, handoff, starter prompt, remember, capture, park this, carry this forward, do not forget, or when task/lane/source-branch changes, blocker transitions, major milestones, bounded task completion, or long/multi-step sessions create continuity risk.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not treat closeout as a chat-only summary. Do not skip Session Checkpoints merely because the operator did not explicitly ask for one when closeout/milestone/continuity triggers are present. Do not invoke retired dcoir-session-resume or dcoir-session-tracker.",
+                                       "buffered_candidate":  "2026-05-05 repair: restored former tracker automatic checkpoint cadence in dcoir-session-manager package marker updated-skill|20260505T071500Z|automatic-checkpoint-closeout-restoration.",
+                                       "review_after":  "2026-08-06",
+                                       "required_verification":  "Verify a durable Session Checkpoint was created/read back, or emit a checkpoint-ready non-durable payload if Airtable writes are unavailable/forbidden. Confirm session-manager local Session Checkpoints cache refresh when file access exists.",
+                                       "retention_class":  "operational"
+                                   }
+                    },
+                    {
+                        "id":  "recq6dPZyuMV1smzp",
+                        "createdTime":  "2026-05-04T06:41:51.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-05T08:15:00Z",
+                                       "selected_lane":  "helper-skill-router:local-config-registry",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-local-config-registry-maintainer",
+                                       "preconditions":  "Use dcoir-local-config-registry-maintainer before DCOIR execution whenever code/codeblocks, scripts, GitHub Actions/workflows, chatgpt-exec requests, operator tools, launchers, local setup instructions, runtime references, env vars, tokens/API-key variable names, project identifier variables, local/repo paths, config defaults, connector failure triage, or Local Configuration Registry cleanup/dedupe/Delete Queue work is involved.",
+                                       "invocation_mode":  "on_demand",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not invent environment variable names or emit final runnable code as complete when required config names lack active canonical registry rows. Do not store, ask for, print, log, cache, package, or display actual secret values. Missing secret values in Airtable are correct by design; missing safe reference rows are defects or blockers.",
+                                       "buffered_candidate":  "2026-05-05 repair: strengthened task-time config gates in dcoir-local-config-registry-maintainer package marker updated-skill|20260505T081500Z|task-time-config-gate-strengthening.",
+                                       "review_after":  "2026-08-06",
+                                       "required_verification":  "Verify compact config gate: config names involved, canonical row status, missing/duplicate risk, safety flags, runtime reference pattern, live schema/readback need, write/delete gate, and safest next action.",
+                                       "retention_class":  "operational"
+                                   }
+                    },
+                    {
+                        "id":  "recsTMUGHh3W9tEeY",
+                        "createdTime":  "2026-04-30T16:38:07.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-05T07:45:00Z",
+                                       "selected_lane":  "helper-skill-router:airtable-schema",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-airtable-schema-cache",
+                                       "preconditions":  "Use dcoir-airtable-schema-cache before DCOIR Airtable work whenever table, field, select-option, linked-record, filter/sort, formula/id, naming/taxonomy, searchability, merge/dedupe, cleanup, migration, Delete Queue, validation evidence, registry, or helper-memory schema assumptions could affect correctness.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not rely on memory or stale cache for Airtable writes, deletes, schema changes, migrations, dependency-sensitive actions, Delete Queue gates, select choice IDs, linked-record targets, or failed connector-call recovery. Do not assume retired tables exist unless live schema proves it.",
+                                       "buffered_candidate":  "2026-05-05 repair: strengthened task-time schema gates in dcoir-airtable-schema-cache package marker updated-skill|20260505T074500Z|task-time-schema-gate-strengthening.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify compact schema gate: target table/id, needed field ids/types/select choices/linked targets, cache/live-readback status, schema drift or retired-table assumptions, whether fresh live schema readback is mandatory, and safest next Airtable action or stop condition.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-airtable-schema-cache. Purpose: cache, normalize, inspect, compare, and refresh DCOIR Airtable schema readback during startup, re-anchor, resume, and schema-sensitive Airtable work."
+                                   }
+                    },
+                    {
+                        "id":  "rectJ5ahjsP9aSnnp",
+                        "createdTime":  "2026-05-17T08:04:58.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-17T08:15:00Z",
+                                       "task_family":  "dcoir_memory_preflight_routing",
+                                       "selected_lane":  "Airtable-first DCOIR re-anchor/startup plus compact task-time routing. Treat approved expertise baseline as an operating posture for all DCOIR responses; still enforce authority, validation, local-config, packaging, and safety gates.",
+                                       "memory_entry_id":  "SKILLROUTE-DCOIR-EXPERTISE-BASELINE-20260517",
+                                       "preconditions":  "Consult Operator Preferences for PREF-DCOIR-EXPERTISE-BASELINE-20260517 during startup/re-anchor and whenever DCOIR task-time routing is needed. Pair with dcoir-airtable-schema-cache, dcoir-decision-policy, dcoir-local-config-registry-maintainer, dcoir-github-desktop-lane-advisor, dcoir-repo-packager, and dcoir-validation-orchestrator as task context requires.",
+                                       "invocation_mode":  "startup",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not treat the expertise baseline as permission to skip Airtable-first authority, DryRun/Apply gates, validation evidence, no-secret logging, explicit mutation tokens, or source/readback checks. Do not present local commands without using registered environment variables when available.",
+                                       "buffered_candidate":  "Approved expertise baseline was persisted after operator approval on 2026-05-17. Candidate future source update: fold this startup expertise posture into dcoir-memory-preflight and dcoir-decision-policy source when making the next governed helper-skill update batch.",
+                                       "required_verification":  "Verify live Airtable authority and relevant registry/config surfaces before DCOIR execution. For operator tools, verify exact repo-relative paths, bundle shape, Plan/DryRun before Apply, generated evidence ZIP, and independent readback before readiness or promotion claims.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Operator Preferences row PREF-DCOIR-EXPERTISE-BASELINE-20260517; applies to AFRICOM_SOC_IR / DCOIR startup and task-time routing."
+                                   }
+                    },
+                    {
+                        "id":  "recwAOVeCB3AQ7J0p",
+                        "createdTime":  "2026-04-30T16:44:20.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-05-05T08:45:00Z",
+                                       "selected_lane":  "helper-skill-router:repo-packaging",
+                                       "memory_entry_id":  "SKILLROUTE-dcoir-repo-packager",
+                                       "preconditions":  "Use dcoir-repo-packager before DCOIR execution whenever repo-layout ZIPs, GitHub-primary bootstrap/update bundles, GitHub Desktop manual repo-update bundles, skill ZIPs, outer multi-skill ZIPs, affected-file artifacts, package validity/readback claims, wrapper-root decisions, affected-path lists, or fallback manual packages after blocked connector/workflow lanes are involved.",
+                                       "status":  "active",
+                                       "anti_patterns":  "Do not package unapproved files, inferred files, missing files, wrapper roots for GitHub Desktop manual updates, .git directories, runtime residue, local caches unless explicitly approved as sanitized fixtures, or ChatGPT-only meta files. Do not put commit summaries inside manual update ZIPs unless explicitly requested as files.",
+                                       "buffered_candidate":  "2026-05-05 repair: strengthened task-time packaging gates in dcoir-repo-packager package marker updated-skill|20260505T084500Z|task-time-packaging-gate-strengthening.",
+                                       "created_at":  "2026-04-30T00:00:00.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-30T00:00:00.000Z",
+                                       "required_verification":  "Verify compact packaging gate: package mode, authority/source basis, included paths/classes, excluded paths/classes, wrapper-root rule, artifact filenames, validation/readback required, companion skills, and safest next action.",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "Skill: dcoir-repo-packager. Purpose: build strict DCOIR repo-layout zips, GitHub-primary bootstrap bundles, and GitHub Desktop manual repo-update bundles from current authoritative project files."
+                                   }
+                    },
+                    {
+                        "id":  "recyykpT2hYy2F51F",
+                        "createdTime":  "2026-04-26T08:05:28.000Z",
+                        "fields":  {
+                                       "last_confirmed_text":  "2026-04-26T09:41Z",
+                                       "task_family":  "legacy_git_hub_helper_memory_backfill",
+                                       "selected_lane":  "historical/source-basis only",
+                                       "memory_entry_id":  "legacy-dcoir-skill-memory-dcoir-memory-preflight-memory-preflight-workflow-upgrade-requirements-md",
+                                       "preconditions":  "Do not treat this legacy row as live queue authority. Use Queue Control, Work Items, Plans, and three-division tables for live state.",
+                                       "invocation_mode":  "on_demand",
+                                       "status":  "active",
+                                       "anti_patterns":  "Relying on deleted or stale GitHub helper-memory as live authority.",
+                                       "buffered_candidate":  "Imported from GitHub helper-memory source path for preservation.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "review_after":  "2026-08-06",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "required_verification":  "Headings: # DCOIR Memory Preflight Workflow Upgrade Requirements; ## Purpose; ## Approved standing rule; ## Required trigger classes; ### 1. Pre-execution trigger; ### 2. Post-blocker trigger\nExcerpt: # DCOIR Memory Preflight Workflow Upgrade Requirements ## Purpose Capture the approved upgrade requirements for `dcoir-memory-preflight` so the skill and surrounding workflow can enforce closed-loop process learning rather than acting only as a front-end lookup step. ## Approved standing rule `dcoir-memory-preflight` should help before high-friction execution and also after blockers are overcome so reusable lessons can be promoted appropriately. ## Required trigger classes ### 1. Pre-execution trigger Run before high-friction execution when the task family is likely to have reusable validated procedures, limitations, or failure signatures. ### 2. Post-blocker trigger Run again after a blocker or failed attempt is successfully overcome when the lesson could improve:",
+                                       "retention_class":  "operational",
+                                       "consulted_records":  "# DCOIR Memory Preflight Workflow Upgrade Requirements\n\n## Purpose\nCapture the approved upgrade requirements for `dcoir-memory-preflight` so the skill and surrounding workflow can enforce closed-loop process learning rather than acting only as a front-end lookup step.\n\n## Approved standing rule\n`dcoir-memory-preflight` should help before high-friction execution and also after blockers are overcome so reusable lessons can be promoted appropriately.\n\n## Required trigger classes\n\n### 1. Pre-execution trigger\nRun before high-friction execution when the task family is likely to have reusable validated procedures, limitations, or failure signatures.\n\n### 2. Post-blocker trigger\nRun again after a blocker or failed attempt is successfully overcome when the lesson could improve:\n- a repeatable workflow\n- a reusable procedure\n- a reusable limitation note\n- a reusable failure signature\n- helper-skill or process-document guidance\n\n## Required classification behavior\nAfter blocker recovery, classify the lesson as one of:\n- one-off only\n- reusable procedure candidate\n- reusable limitation candidate\n- reusable failure-signature candidate\n- reusable helper-skill or process-document candidate\n\n## Promotion behavior\n- Do not silently write every recovered lesson into canonical task memory.\n- Stage a promotion-ready candidate instead.\n- Preserve enough detail to support later promotion into:\n  - canonical task memory\n  - helper-skill guidance\n  - governed project workflow docs\n  - or an appropriate combination\n\n## Required companion routing\nThe surrounding workflow should use:\n- `dcoir-decision-policy` to invoke memory-preflight when branch choice or post-blocker learning requires it\n- `dcoir-plan-tracker` and `dcoir-session-tracker` to preserve blocker signature, failed attempt summary, successful mitigation, and reusability notes until GitHub flush time\n\n## Session-local buffer expectations\n- `dcoir-memory-preflight` should be able to participate in session-local write buffering.\n- Buffered state is session-local only until flushed to GitHub or exported in a handoff artifact.\n- Preferred flush-check trigger points are:\n  - before GitHub writes\n  - after blocker resolution\n  - at major milestones\n  - before session export or handoff\n  - when the operator asks what remains\n\n## Known limitation to preserve honestly\n- The project prefers grouped GitHub writes and minimal operation count.\n- Existing-file grouped updates still depend on a safe, reliable in-chat base-tree recovery path.\n- Until that path is fully reliable, the skill should preserve the grouped-write intent and keep the limitation explicit rather than pretending the buffer-flush lane is already complete.\n\n## Next implementation sequence\n1. Update the skill instructions so post-blocker classification is explicit.\n2. Update the decision-policy workflow so the post-blocker trigger actually fires.\n3. Update stateful helper skills so blocker-recovery details can be buffered and surfaced for promotion.\n4. After implementation, pass the updated skill through `dcoir-skill-regression-auditor`.\n"
+                                   }
+                    }
+                ]
+}

@@ -1,0 +1,139 @@
+{
+    "table_id":  "tbls9O1B0Rs8YvTAj",
+    "table_name":  "dcoir-validation-orchestrator",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  6,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  false,
+    "records":  [
+                    {
+                        "id":  "recDTdtk4314eTOpa",
+                        "createdTime":  "2026-05-08T18:23:17.000Z",
+                        "fields":  {
+                                       "validation_entry_id":  "VALRULE-CHATGPT-EXEC-SCRIPT-LEVEL-ARTIFACT-INSPECTION-20260508",
+                                       "live_readiness_gate":  "For bulk Airtable operations, use chatgpt-exec with proven operator_tools Airtable modules/exporters; stage one bounded request; preflight live readback; enforce target counts and before-values; write target_records/planned_payload/execution_summary/after_readback/error_report artifacts; upload and inspect ZIP before advancing; use connector readback to verify final Airtable state when automation is asynchronous.",
+                                       "evidence_threshold":  "Completion claim requires script-level result=success or equivalent execution_summary success, expected target/count evidence, and live/readback verification when the workflow mutates Airtable. Wrapper exit_code=0 alone is insufficient. If error_report.json exists or stdout says result=failed, do not mark complete even if exec_result says success.",
+                                       "last_confirmed_text":  "2026-05-08T18:21:00.000Z",
+                                       "retention_class":  "retain",
+                                       "next_action":  "Next database redesign session should begin with a read-only full export/profile via chatgpt-exec, then deconstruct a new plan before mutations. For the current closeout, verify whether Delete Queue automation finished removing the PLAN-AIRTABLE-CLEANUP-RESTRUCTURE rows before claiming final deletion complete.",
+                                       "unresolved_gap":  "Known failure patterns from 2026-05-08: PowerShell -f conflicts with Airtable formula braces such as {plan_key}; use concatenation or escaped braces. PowerShell single-record readbacks can become scalar under Set-StrictMode; force array wrapping before Count checks. Post-insert sample readback may fail if Delete Queue automation makes target records inaccessible while processing; separate queue-creation success from deletion-completion verification.",
+                                       "active_validation_plan":  "For chatgpt-exec workflows, validate the script payload result, not just the GitHub Actions wrapper. Required inspection order: exec_result.json for wrapper status, stdout.sanitized.txt for script-level JSON, execution_summary.json for success metrics when present, error_report.json for failures when present, and any planned_payload/target_records/readback artifacts for counts and scope.",
+                                       "status":  "active"
+                                   }
+                    },
+                    {
+                        "id":  "recLDdb6ZhFiETQ5v",
+                        "createdTime":  "2026-05-03T19:14:24.000Z",
+                        "fields":  {
+                                       "validation_entry_id":  "VAL-20260503-APPLY-IN-TO-EXEC-HANDOFF-LANE",
+                                       "live_readiness_gate":  "Do not claim exec handoff ready from apply-in success alone. Read the exec report. For hash-fallback validation, output_zip must be non-null and selected_table_count must be 24 for the Airtable schema export smoke.",
+                                       "review_after":  "2026-08-06",
+                                       "evidence_threshold":  "Pass requires: chatgpt-apply-in result=success; applied path includes chatgpt_staging/exec_requests/\u003crequest_id\u003e.json; exec request readback matches approved command; chatgpt-exec result=success or failure report exists; report includes GitHub run metadata; artifacts are named; request cleanup policy is known; if command expected output files, output contract is verified.",
+                                       "last_confirmed_text":  "2026-05-03T20:00:00Z",
+                                       "retention_class":  "core",
+                                       "next_action":  "Next when this lane recurs: preflight should recommend apply-in payload -\u003e apply-in report verification -\u003e exec request readback -\u003e GitHub connector update_file restage with restaged_at_utc and non-[skip ci] commit if needed -\u003e exec report polling -\u003e evidence/cleanup. Use the documented examples in chatgpt_staging/EXECUTION_LANE.md and operator guide.",
+                                       "updated_at":  "2026-05-03T20:00:00.000Z",
+                                       "created_at":  "2026-05-03T19:45:00.000Z",
+                                       "unresolved_gap":  "Known gap/design issue: apply-in commits reports with [skip ci], so an exec request created by apply-in may not trigger chatgpt-exec automatically. The validated workaround is GitHub connector update_file on the already-created exec request JSON, preserving the approved command fields and using a commit message without [skip ci]. Future workflow patch should conditionally omit [skip ci] when applied paths include chatgpt_staging/exec_requests/.",
+                                       "active_validation_plan":  "Validation plan/lesson for chatgpt-apply-in to chatgpt-exec handoff: verify apply-in report, exec request file existence, downstream exec report, run metadata, artifact_name, exit_code/result, and expected tool output contract. If apply-in created the exec request with [skip ci] and no exec report appears, use GitHub connector update_file on that same request JSON with a non-[skip ci] metadata-only update such as restaged_at_utc.",
+                                       "status":  "active"
+                                   }
+                    },
+                    {
+                        "id":  "recLdMIFtgmvyGEsF",
+                        "createdTime":  "2026-05-02T14:49:44.000Z",
+                        "fields":  {
+                                       "validation_entry_id":  "VALIDATION-STAGING-LANE-T2A-AUTO-CLEANUP",
+                                       "live_readiness_gate":  "Ready for CAP package review, not live-ready. After CAP, run staged validation cases and capture evidence before closing T2A.",
+                                       "review_after":  "2026-08-06",
+                                       "evidence_threshold":  "Do not claim production-ready until all new Validation Test Cases pass with GitHub readback and Validation Evidence rows. Inspection/YAML parse is only pre-CAP validation.",
+                                       "last_confirmed_text":  "2026-05-02T15:08:00+02:00",
+                                       "retention_class":  "working",
+                                       "next_action":  "After operator applies chatgpt_staging_lane_t2a_auto_cleanup_repo_update.zip, verify GitHub readback, then execute or schedule the five staging-lane validation test cases created on 2026-05-02.",
+                                       "updated_at":  "2026-05-02T13:08:00.000Z",
+                                       "created_at":  "2026-05-02T13:08:00.000Z",
+                                       "unresolved_gap":  "Live GitHub Actions behavior has not yet been run for the T2A package. Needs CAP, readback, then scenario tests.",
+                                       "active_validation_plan":  "Validate T2A ChatGPT staging-lane cleanup automation after CAP. Scope includes GitHub workflow parse/readback, failure locator creation, artifact upload pointer, cleanup marker trigger, scoped deletion, scaffold preservation, and malformed-marker fail-closed behavior.",
+                                       "validation_scope":  [
+                                                                "workflow",
+                                                                "github",
+                                                                "cleanup",
+                                                                "validation"
+                                                            ],
+                                       "status":  "active"
+                                   }
+                    },
+                    {
+                        "id":  "recW63g9ixnbp9AKb",
+                        "createdTime":  "2026-04-26T08:10:06.000Z",
+                        "fields":  {
+                                       "validation_entry_id":  "legacy-dcoir-skill-memory-dcoir-validation-orchestrator-validation-orchestrator-memory-md",
+                                       "live_readiness_gate":  "Do not claim actions are working from snapshot inspection alone. Use GitHub Actions run results and artifact inspection as source of truth after local preflight.",
+                                       "review_after":  "2026-08-06",
+                                       "evidence_threshold":  "Next session should resume with paired SessionBehavior validation first. Dispatch manual-collector-optional-exe-build.yml -f exe_validation_suite=SessionBehavior and manual-full-validation.yml -f suite=SessionBehavior, monitor both together with text-only monitor script, and accept operator GitHub website confirmation if operator explicitly asks not to inspect artifacts. Continue one mode at a time.",
+                                       "last_confirmed_text":  "2026-04-29T19:45:00Z",
+                                       "retention_class":  "core",
+                                       "next_action":  "Create/confirm Session Checkpoint for 20260429 closeout. Starter prompt should re-anchor to SESSION-CHECKPOINT-20260429-OPTIONAL-EXE-PAIRED-VALIDATION-CLOSEOUT and continue SessionBehavior paired validation.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "unresolved_gap":  "Current useful local script: 20260429T2112_Watch-DCOIRLatestActions.ps1 for monitoring one paired mode at a time with text-only upload ZIP. Avoid 20260429T2132_Run-DCOIRPairedValidationModes.ps1 unless workflow concurrency behavior is changed, because multi-mode dispatch cancels earlier same-workflow runs.",
+                                       "active_validation_plan":  "Session closeout state. Optional EXE paired validation branch remains in progress but current validated set expanded. Operator manually confirmed QuickAliases paired workflows passed in GitHub and requested no artifact ZIP review. Validated paired modes now: Core, MajorVersion, Retrieval, QuickAliases. Remaining paired modes: SessionBehavior, TargetedCollection, ChunkingOversizeArtifact, ChunkingReconstructionMetadata, FailureGates, FullRegression. Rules captured in Operator Preferences: pair every optional EXE mode with PS1 manual-full-validation using same mode; do not batch-dispatch multiple modes for same workflow because GitHub cancels earlier runs; use text-only monitor upload ZIPs by default.",
+                                       "validation_scope":  [
+                                                                "dcoir_skills",
+                                                                "validation"
+                                                            ],
+                                       "status":  "in_progress"
+                                   }
+                    },
+                    {
+                        "id":  "recZD7dLd9IFacp2D",
+                        "createdTime":  "2026-04-25T05:54:37.000Z",
+                        "fields":  {
+                                       "validation_entry_id":  "VO-MEMORY-BASELINE-20260330",
+                                       "live_readiness_gate":  "Active DCOIR validation work should consult the validation orchestrator memory before live use or promotion.",
+                                       "review_after":  "2026-08-06",
+                                       "evidence_threshold":  "Do not call testable changes ready without evidence; default to deeper regression for skill, script, prompt-pack, bundle, and workflow changes.",
+                                       "last_confirmed_text":  "Loaded from latest repo snapshot 0734 during T2.0 population coverage.",
+                                       "retention_class":  "review",
+                                       "next_action":  "Consult before T2 skill audits, packaging, and later release/readiness branches.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "unresolved_gap":  "Use this row as baseline validation memory; add specific validation rows as future test evidence is generated.",
+                                       "active_validation_plan":  "Use current validation plans, evidence thresholds, readiness gates, and unresolved-gap tracking before considering DCOIR changes ready.",
+                                       "validation_scope":  [
+                                                                "collector",
+                                                                "gemini",
+                                                                "skill"
+                                                            ],
+                                       "status":  "active"
+                                   }
+                    },
+                    {
+                        "id":  "recZUz38nvKDxqkqN",
+                        "createdTime":  "2026-04-24T20:40:22.000Z",
+                        "fields":  {
+                                       "validation_entry_id":  "VO-BASE-001",
+                                       "live_readiness_gate":  "Do not treat patched assets as live until validation/readiness gates pass.",
+                                       "review_after":  "2026-08-06",
+                                       "evidence_threshold":  "Ready claims require explicit validation evidence.",
+                                       "last_confirmed_text":  "2026-04-24 batch CSV import preparation",
+                                       "retention_class":  "review",
+                                       "next_action":  "Populate concrete validation plans as changes are made.",
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "unresolved_gap":  "none in seed row",
+                                       "active_validation_plan":  "Default to deep regression for testable changes before live use and after patches.",
+                                       "validation_scope":  [
+                                                                "dcoir_skills",
+                                                                "scripts",
+                                                                "prompt_pack",
+                                                                "bundles",
+                                                                "docs",
+                                                                "workflow_changes"
+                                                            ],
+                                       "status":  "active"
+                                   }
+                    }
+                ]
+}

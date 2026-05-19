@@ -1,0 +1,69 @@
+﻿{
+    "schema":  "dcoir.wbs04.next_cleanup_export.readback.v1",
+    "request_id":  "exec-20260519-wbs04-next-cleanup-export-001",
+    "success":  true,
+    "purpose":  "Read-only WBS04 next cleanup workflow export for Plans, Idea Inbox, Validation Test Cases, GitHub Workflow Inventory, and confirmed helper-memory tables.",
+    "table_list":  [
+                       "Plans",
+                       "Idea Inbox",
+                       "Validation Test Cases",
+                       "GitHub Workflow Inventory",
+                       "dcoir-memory-preflight",
+                       "dcoir-decision-policy",
+                       "dcoir-validation-orchestrator"
+                   ],
+    "selected_table_count":  7,
+    "export_mode":  "FullRecords",
+    "full_record_dump":  true,
+    "read_only_airtable":  true,
+    "no_airtable_writes":  true,
+    "no_delete_queue_rows":  true,
+    "no_record_deletions":  true,
+    "output_folder":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260519-wbs04-next-cleanup-export-001\\downloads\\dcoir_wbs04_next_cleanup_export_20260519_161143",
+    "output_zip":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260519-wbs04-next-cleanup-export-001\\downloads\\dcoir_wbs04_next_cleanup_export_20260519_161143.chatgpt.zip",
+    "tables":  [
+                   {
+                       "table_name":  "dcoir-decision-policy",
+                       "table_id":  "tblKHVXq16Xd5I31m",
+                       "record_count_exported":  10,
+                       "records_file":  "records/table.dcoir-decision-policy_tblKHVXq16Xd5I31m.records.json"
+                   },
+                   {
+                       "table_name":  "dcoir-memory-preflight",
+                       "table_id":  "tblcNNuKqi8IkFsSQ",
+                       "record_count_exported":  41,
+                       "records_file":  "records/table.dcoir-memory-preflight_tblcNNuKqi8IkFsSQ.records.json"
+                   },
+                   {
+                       "table_name":  "dcoir-validation-orchestrator",
+                       "table_id":  "tbls9O1B0Rs8YvTAj",
+                       "record_count_exported":  6,
+                       "records_file":  "records/table.dcoir-validation-orchestrator_tbls9O1B0Rs8YvTAj.records.json"
+                   },
+                   {
+                       "table_name":  "GitHub Workflow Inventory",
+                       "table_id":  "tblHTf5bLKGK1Yk11",
+                       "record_count_exported":  24,
+                       "records_file":  "records/table.GitHub_Workflow_Inventory_tblHTf5bLKGK1Yk11.records.json"
+                   },
+                   {
+                       "table_name":  "Idea Inbox",
+                       "table_id":  "tblWwBxwrjZF6JR3r",
+                       "record_count_exported":  19,
+                       "records_file":  "records/table.Idea_Inbox_tblWwBxwrjZF6JR3r.records.json"
+                   },
+                   {
+                       "table_name":  "Plans",
+                       "table_id":  "tblBcp5FyMIfOm7Xe",
+                       "record_count_exported":  13,
+                       "records_file":  "records/table.Plans_tblBcp5FyMIfOm7Xe.records.json"
+                   },
+                   {
+                       "table_name":  "Validation Test Cases",
+                       "table_id":  "tblRnMpQUomIGyFVL",
+                       "record_count_exported":  113,
+                       "records_file":  "records/table.Validation_Test_Cases_tblRnMpQUomIGyFVL.records.json"
+                   }
+               ],
+    "created_utc":  "2026-05-19T16:11:49Z"
+}
