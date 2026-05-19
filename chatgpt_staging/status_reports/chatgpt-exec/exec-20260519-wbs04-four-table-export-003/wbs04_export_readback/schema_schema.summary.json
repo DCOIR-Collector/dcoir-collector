@@ -1,0 +1,100 @@
+[
+    {
+        "table_id":  "tblgsQAVWvh8K7gIR",
+        "table_name":  "Work Items",
+        "field_count":  17,
+        "field_types":  {
+                            "multilineText":  1,
+                            "number":  1,
+                            "dateTime":  2,
+                            "singleSelect":  7,
+                            "singleLineText":  4,
+                            "formula":  2
+                        },
+        "linked_fields":  [
+
+                          ],
+        "select_fields":  [
+                              "Area",
+                              "Work Type",
+                              "Status",
+                              "Priority",
+                              "Authority Scope",
+                              "GitHub Promotion Need",
+                              "retention_class"
+                          ],
+        "likely_sensitive_fields":  [
+
+                                    ]
+    },
+    {
+        "table_id":  "tblTe75HKZOJaPDGn",
+        "table_name":  "Session Checkpoints",
+        "field_count":  21,
+        "field_types":  {
+                            "multilineText":  8,
+                            "date":  1,
+                            "dateTime":  3,
+                            "singleSelect":  4,
+                            "singleLineText":  3,
+                            "formula":  2
+                        },
+        "linked_fields":  [
+
+                          ],
+        "select_fields":  [
+                              "trigger",
+                              "github_promotion_status",
+                              "checkpoint_status",
+                              "retention_class"
+                          ],
+        "likely_sensitive_fields":  [
+
+                                    ]
+    },
+    {
+        "table_id":  "tblrPFQH2uZEYBYE9",
+        "table_name":  "Validation Evidence",
+        "field_count":  12,
+        "field_types":  {
+                            "multilineText":  1,
+                            "date":  1,
+                            "dateTime":  2,
+                            "singleSelect":  2,
+                            "singleLineText":  6
+                        },
+        "linked_fields":  [
+
+                          ],
+        "select_fields":  [
+                              "retention_class",
+                              "result"
+                          ],
+        "likely_sensitive_fields":  [
+
+                                    ]
+    },
+    {
+        "table_id":  "tblFaJW1V2DPc9css",
+        "table_name":  "Admin Registry",
+        "field_count":  11,
+        "field_types":  {
+                            "multilineText":  1,
+                            "date":  1,
+                            "dateTime":  3,
+                            "singleSelect":  3,
+                            "singleLineText":  3
+                        },
+        "linked_fields":  [
+
+                          ],
+        "select_fields":  [
+                              "retention_class",
+                              "object_type",
+                              "status"
+                          ],
+        "likely_sensitive_fields":  [
+
+                                    ]
+    }
+]
