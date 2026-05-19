@@ -1,15 +1,15 @@
 {
-  "artifact_name": "",
-  "exit_code": "",
+  "artifact_name": "chatgpt-exec-exec-20260519-wbs04-four-table-export-002",
+  "exit_code": "1",
   "github_ref": "refs/heads/main",
   "github_run_attempt": "1",
   "github_run_id": "26097733232",
   "github_sha": "de3bdace2ef8f1fd9b17934c55ab567f1b192bb1",
-  "phase": "running-harness",
+  "phase": "harness-finished",
   "request_id": "exec-20260519-wbs04-four-table-export-002",
   "request_path": "chatgpt_staging/exec_requests/exec-20260519-wbs04-four-table-export-002.json",
-  "result": "running",
+  "result": "failure",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-19T12:40:14Z",
+  "updated_utc": "2026-05-19T12:40:21Z",
   "workflow": "chatgpt-exec"
 }
