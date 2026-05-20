@@ -1,0 +1,103 @@
+{
+    "schema":  "dcoir.wbs06.field_rename_apply.v1",
+    "request_id":  "exec-20260520-wbs06-field-rename-apply-batch2-001",
+    "result":  "success",
+    "base_id":  "appM4KSwnVf3G3OTK",
+    "safety":  {
+                   "field_renames_requested":  5,
+                   "delete_queue_rows":  0,
+                   "type_conversions":  0,
+                   "field_renames_changed":  5,
+                   "field_deletes":  0,
+                   "field_renames_noop":  0,
+                   "record_updates":  0
+               },
+    "results":  [
+                    {
+                        "table_name":  "GitHub Workflow Inventory",
+                        "table_id":  "tblHTf5bLKGK1Yk11",
+                        "field_id":  "fldhfcwoRfNHkL1ya",
+                        "old_name":  "review_after",
+                        "new_name":  "legacy_review_after_date_review",
+                        "status":  "rename_patch_sent",
+                        "reason":  "Blank across exported rows; mark as legacy review-date field rather than current workflow guidance."
+                    },
+                    {
+                        "table_name":  "Plans",
+                        "table_id":  "tblBcp5FyMIfOm7Xe",
+                        "field_id":  "fldCC1FicmWE2pra2",
+                        "old_name":  "review_after",
+                        "new_name":  "legacy_review_after_date_review",
+                        "status":  "rename_patch_sent",
+                        "reason":  "Blank across exported rows; mark as legacy review-date field rather than current plan metadata."
+                    },
+                    {
+                        "table_name":  "Idea Inbox",
+                        "table_id":  "tblWwBxwrjZF6JR3r",
+                        "field_id":  "fldXRAz2DLHzOQmK2",
+                        "old_name":  "source_checkpoint_id",
+                        "new_name":  "legacy_source_checkpoint_id_review",
+                        "status":  "rename_patch_sent",
+                        "reason":  "Blank provenance field; mark as legacy pending a later deletion packet."
+                    },
+                    {
+                        "table_name":  "Plans",
+                        "table_id":  "tblBcp5FyMIfOm7Xe",
+                        "field_id":  "fldwS46tOH9fTVQSO",
+                        "old_name":  "created_at",
+                        "new_name":  "legacy_created_at_review",
+                        "status":  "rename_patch_sent",
+                        "reason":  "Blank text/date creation marker; mark legacy because structured/system creation metadata should carry current message."
+                    },
+                    {
+                        "table_name":  "Validation Evidence",
+                        "table_id":  "tblrPFQH2uZEYBYE9",
+                        "field_id":  "fldOIWWUP1cPo9zEb",
+                        "old_name":  "release_key",
+                        "new_name":  "legacy_release_key_review",
+                        "status":  "rename_patch_sent",
+                        "reason":  "Blank across validation evidence export; mark legacy pending dependency/deletion review."
+                    }
+                ],
+    "verification":  [
+                         {
+                             "table_name":  "GitHub Workflow Inventory",
+                             "field_id":  "fldhfcwoRfNHkL1ya",
+                             "expected_name":  "legacy_review_after_date_review",
+                             "verified_name":  "legacy_review_after_date_review",
+                             "verified":  true
+                         },
+                         {
+                             "table_name":  "Plans",
+                             "field_id":  "fldCC1FicmWE2pra2",
+                             "expected_name":  "legacy_review_after_date_review",
+                             "verified_name":  "legacy_review_after_date_review",
+                             "verified":  true
+                         },
+                         {
+                             "table_name":  "Idea Inbox",
+                             "field_id":  "fldXRAz2DLHzOQmK2",
+                             "expected_name":  "legacy_source_checkpoint_id_review",
+                             "verified_name":  "legacy_source_checkpoint_id_review",
+                             "verified":  true
+                         },
+                         {
+                             "table_name":  "Plans",
+                             "field_id":  "fldwS46tOH9fTVQSO",
+                             "expected_name":  "legacy_created_at_review",
+                             "verified_name":  "legacy_created_at_review",
+                             "verified":  true
+                         },
+                         {
+                             "table_name":  "Validation Evidence",
+                             "field_id":  "fldOIWWUP1cPo9zEb",
+                             "expected_name":  "legacy_release_key_review",
+                             "verified_name":  "legacy_release_key_review",
+                             "verified":  true
+                         }
+                     ],
+    "errors":  [
+
+               ],
+    "created_utc":  "2026-05-20T08:40:27Z"
+}

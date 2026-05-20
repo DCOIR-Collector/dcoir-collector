@@ -1,0 +1,42 @@
+[
+    {
+        "table_name":  "GitHub Workflow Inventory",
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "field_id":  "fldhfcwoRfNHkL1ya",
+        "expected":  "review_after",
+        "target":  "legacy_review_after_date_review",
+        "reason":  "Blank across exported rows; mark as legacy review-date field rather than current workflow guidance."
+    },
+    {
+        "table_name":  "Plans",
+        "table_id":  "tblBcp5FyMIfOm7Xe",
+        "field_id":  "fldCC1FicmWE2pra2",
+        "expected":  "review_after",
+        "target":  "legacy_review_after_date_review",
+        "reason":  "Blank across exported rows; mark as legacy review-date field rather than current plan metadata."
+    },
+    {
+        "table_name":  "Idea Inbox",
+        "table_id":  "tblWwBxwrjZF6JR3r",
+        "field_id":  "fldXRAz2DLHzOQmK2",
+        "expected":  "source_checkpoint_id",
+        "target":  "legacy_source_checkpoint_id_review",
+        "reason":  "Blank provenance field; mark as legacy pending a later deletion packet."
+    },
+    {
+        "table_name":  "Plans",
+        "table_id":  "tblBcp5FyMIfOm7Xe",
+        "field_id":  "fldwS46tOH9fTVQSO",
+        "expected":  "created_at",
+        "target":  "legacy_created_at_review",
+        "reason":  "Blank text/date creation marker; mark legacy because structured/system creation metadata should carry current message."
+    },
+    {
+        "table_name":  "Validation Evidence",
+        "table_id":  "tblrPFQH2uZEYBYE9",
+        "field_id":  "fldOIWWUP1cPo9zEb",
+        "expected":  "release_key",
+        "target":  "legacy_release_key_review",
+        "reason":  "Blank across validation evidence export; mark legacy pending dependency/deletion review."
+    }
+]

@@ -1,0 +1,37 @@
+[
+    {
+        "table_name":  "GitHub Workflow Inventory",
+        "field_id":  "fldhfcwoRfNHkL1ya",
+        "expected_name":  "legacy_review_after_date_review",
+        "verified_name":  "legacy_review_after_date_review",
+        "verified":  true
+    },
+    {
+        "table_name":  "Plans",
+        "field_id":  "fldCC1FicmWE2pra2",
+        "expected_name":  "legacy_review_after_date_review",
+        "verified_name":  "legacy_review_after_date_review",
+        "verified":  true
+    },
+    {
+        "table_name":  "Idea Inbox",
+        "field_id":  "fldXRAz2DLHzOQmK2",
+        "expected_name":  "legacy_source_checkpoint_id_review",
+        "verified_name":  "legacy_source_checkpoint_id_review",
+        "verified":  true
+    },
+    {
+        "table_name":  "Plans",
+        "field_id":  "fldwS46tOH9fTVQSO",
+        "expected_name":  "legacy_created_at_review",
+        "verified_name":  "legacy_created_at_review",
+        "verified":  true
+    },
+    {
+        "table_name":  "Validation Evidence",
+        "field_id":  "fldOIWWUP1cPo9zEb",
+        "expected_name":  "legacy_release_key_review",
+        "verified_name":  "legacy_release_key_review",
+        "verified":  true
+    }
+]
