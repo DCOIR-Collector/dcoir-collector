@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260520-wbs06-field-rename-apply-batch2-001",
+  "operator_approved": true,
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "script_path": "chatgpt_staging/exec_scripts/exec-20260520-wbs06-field-rename-apply-batch2-001.ps1",
+  "approved_command_preview": "Apply WBS06 non-destructive Airtable field rename batch 2 through chatgpt-exec. The script prechecks current field names by field ID, renames five selected stale/blank fields, then verifies schema readback. It performs no record updates, no field deletion, no type conversion, and no Delete Queue staging."
+}
