@@ -1,0 +1,22 @@
+{
+  "schema": "dcoir.wbs06.approved_blank_field_deletion_targets.v1",
+  "request_id": "exec-20260520-wbs06-field-delete-blank-batch1-001",
+  "base_id": "appM4KSwnVf3G3OTK",
+  "approval_basis": "operator approved WBS06.03 deletion-ready packet for 10 fully blank legacy review fields",
+  "preserve_fields": [
+    {"table_name":"Gemini Research Reference","table_id":"tblfZnARJxcMJ0yHW","field_id":"fldH0t18dHVNkfTrA","field_name":"legacy_research_batch_review","reason":"nonblank values observed"},
+    {"table_name":"Plans","table_id":"tblBcp5FyMIfOm7Xe","field_id":"fldZoUV6BFJyKuOhz","field_name":"legacy_last_updated_text_review","reason":"nonblank values observed"}
+  ],
+  "targets": [
+    {"table_name":"GitHub Workflow Inventory","table_id":"tblHTf5bLKGK1Yk11","field_id":"fldhfcwoRfNHkL1ya","field_name":"legacy_review_after_date_review","field_type":"date"},
+    {"table_name":"Idea Inbox","table_id":"tblWwBxwrjZF6JR3r","field_id":"fldXRAz2DLHzOQmK2","field_name":"legacy_source_checkpoint_id_review","field_type":"singleLineText"},
+    {"table_name":"Plans","table_id":"tblBcp5FyMIfOm7Xe","field_id":"fldvsVffETaqyuB0H","field_name":"legacy_active_plan_task_id_review","field_type":"singleLineText"},
+    {"table_name":"Plans","table_id":"tblBcp5FyMIfOm7Xe","field_id":"fldwS46tOH9fTVQSO","field_name":"legacy_created_at_review","field_type":"dateTime"},
+    {"table_name":"Plans","table_id":"tblBcp5FyMIfOm7Xe","field_id":"fldyfFi5VTw9ffaPq","field_name":"legacy_pending_plan_buffer_items_review","field_type":"multilineText"},
+    {"table_name":"Plans","table_id":"tblBcp5FyMIfOm7Xe","field_id":"fldLYnjrlPY6QfKNH","field_name":"legacy_plan_buffer_marker_review","field_type":"singleLineText"},
+    {"table_name":"Plans","table_id":"tblBcp5FyMIfOm7Xe","field_id":"fld4QqRiSFLzEvKuD","field_name":"legacy_promotion_candidates_review","field_type":"multilineText"},
+    {"table_name":"Plans","table_id":"tblBcp5FyMIfOm7Xe","field_id":"fldzT3tVTcvhSWPNa","field_name":"legacy_remain_local_notes_review","field_type":"multilineText"},
+    {"table_name":"Plans","table_id":"tblBcp5FyMIfOm7Xe","field_id":"fldCC1FicmWE2pra2","field_name":"legacy_review_after_date_review","field_type":"date"},
+    {"table_name":"Validation Evidence","table_id":"tblrPFQH2uZEYBYE9","field_id":"fldOIWWUP1cPo9zEb","field_name":"legacy_release_key_review","field_type":"singleLineText"}
+  ]
+}
