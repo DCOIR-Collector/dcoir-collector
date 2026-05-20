@@ -1,0 +1,21 @@
+{
+    "schema":  "dcoir.wbs06.final_verify_retirement_packet.v1",
+    "request_id":  "exec-20260520-wbs06-final-verify-retirement-packet-001",
+    "result":  "success",
+    "source_export_folder":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260520-wbs06-final-verify-retirement-packet-001\\downloads\\dcoir_wbs06_final_verify_retirement_packet_source_20260520_085835",
+    "selected_table_count":  21,
+    "field_count":  332,
+    "expected_rename_count":  14,
+    "expected_rename_verified_count":  14,
+    "expected_rename_failed_count":  0,
+    "retirement_candidate_count":  12,
+    "safety":  {
+                   "delete_queue_rows":  0,
+                   "field_renames":  0,
+                   "field_deletes":  0,
+                   "type_conversions":  0,
+                   "airtable_writes":  0,
+                   "record_updates":  0
+               },
+    "created_utc":  "2026-05-20T08:58:44Z"
+}
