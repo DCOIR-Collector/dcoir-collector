@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260520-wbs06-final-verify-retirement-packet-001",
+  "operator_approved": true,
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "script_path": "chatgpt_staging/exec_scripts/exec-20260520-wbs06-final-verify-retirement-packet-001.ps1",
+  "approved_command_preview": "Run WBS06 final read-only verification and retirement packet generation. Re-export 21 WBS tables, verify expected rename readback, and produce retirement candidate packet files for legacy_review fields. This request performs no Airtable writes, no field renames, no record updates, no field deletion, no type conversion, and no Delete Queue staging."
+}
