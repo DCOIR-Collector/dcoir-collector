@@ -1,0 +1,81 @@
+{
+    "tool":  "New-DcoirAirtableDatabaseHealthExport.ps1",
+    "tool_version":  "2026-05-03.5",
+    "started_at":  "2026-05-20T03:43:58.9565982+00:00",
+    "current_directory":  "D:\\a\\dcoir-collector\\dcoir-collector",
+    "script_path":  "D:\\a\\dcoir-collector\\dcoir-collector\\operator_tools\\github_desktop_lane\\scripts\\New-DcoirAirtableDatabaseHealthExport.ps1",
+    "module_path":  "D:\\a\\dcoir-collector\\dcoir-collector\\operator_tools\\github_desktop_lane\\modules\\Dcoir.Airtable\\Dcoir.Airtable.psm1",
+    "zip_script_path":  "D:\\a\\dcoir-collector\\dcoir-collector\\operator_tools\\github_desktop_lane\\scripts\\New-DcoirChatGPTFriendlyZip.ps1",
+    "output_folder":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260520-wbs04-merge-delete-batch2-export-001\\downloads\\dcoir_wbs04_merge_delete_batch2_export_20260520_034358",
+    "output_zip_target":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260520-wbs04-merge-delete-batch2-export-001\\downloads\\dcoir_wbs04_merge_delete_batch2_export_20260520_034358.chatgpt.zip",
+    "powershell":  {
+                       "version":  "5.1.26100.32684",
+                       "edition":  "Desktop",
+                       "platform":  null
+                   },
+    "machine":  {
+                    "computer_name":  "runnervmp4gaq",
+                    "user_domain":  "runnervmp4gaq",
+                    "user_name":  "runneradmin"
+                },
+    "parameters":  {
+                       "SchemaOnly":  false,
+                       "ExportMode":  "FullRecords",
+                       "FullRecordDump":  true,
+                       "SkipRecords":  false,
+                       "RedactLikelySecrets":  false,
+                       "MaxRecordsPerTable":  0,
+                       "MetadataScope":  "All",
+                       "ProbeUnsupportedMetadata":  true,
+                       "OutputNamePrefix":  "dcoir_wbs04_merge_delete_batch2_export",
+                       "TableListProvided":  true,
+                       "NoZip":  false
+                   },
+    "resolved_options":  {
+                             "export_mode":  "FullRecords",
+                             "include_records":  true,
+                             "effective_max_records_per_table":  0,
+                             "full_record_dump":  true,
+                             "bounded_record_dump":  false,
+                             "include_base_schema_file":  true,
+                             "include_schema_summary":  true,
+                             "include_table_schema_files":  true,
+                             "metadata_scope_requested":  [
+                                                              "All"
+                                                          ],
+                             "metadata_scope_effective":  [
+                                                              "all",
+                                                              "baseschema",
+                                                              "fields",
+                                                              "tables",
+                                                              "views"
+                                                          ]
+                         },
+    "environment_presence":  [
+                                 {
+                                     "name":  "DCOIR_REPO_ROOT",
+                                     "present":  true,
+                                     "value_exported":  false,
+                                     "source":  "Machine/System environment variable"
+                                 },
+                                 {
+                                     "name":  "DCOIR_DOWNLOADS_DIR",
+                                     "present":  true,
+                                     "value_exported":  false,
+                                     "source":  "Machine/System environment variable"
+                                 },
+                                 {
+                                     "name":  "DCOIR_AIRTABLE_TOKEN",
+                                     "present":  true,
+                                     "value_exported":  false,
+                                     "source":  "Machine/System environment variable"
+                                 },
+                                 {
+                                     "name":  "DCOIR_AIRTABLE_BASE_ID",
+                                     "present":  true,
+                                     "value_exported":  false,
+                                     "source":  "Machine/System environment variable"
+                                 }
+                             ],
+    "secrets_policy":  "Only environment variable presence is logged. Secret values and base identifier values are not written by this context capture."
+}
