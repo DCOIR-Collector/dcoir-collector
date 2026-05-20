@@ -1,0 +1,128 @@
+﻿[
+    {
+        "table_name":  "Admin Registry",
+        "table_id":  "tblFaJW1V2DPc9css",
+        "record_count":  127,
+        "field_count":  11
+    },
+    {
+        "table_name":  "dcoir-decision-policy",
+        "table_id":  "tblKHVXq16Xd5I31m",
+        "record_count":  10,
+        "field_count":  13
+    },
+    {
+        "table_name":  "dcoir-memory-preflight",
+        "table_id":  "tblcNNuKqi8IkFsSQ",
+        "record_count":  29,
+        "field_count":  15
+    },
+    {
+        "table_name":  "dcoir-validation-orchestrator",
+        "table_id":  "tbls9O1B0Rs8YvTAj",
+        "record_count":  6,
+        "field_count":  13
+    },
+    {
+        "table_name":  "DCOIR Cleanup Scaffold Registry",
+        "table_id":  "tblvtcId7PiFKvfKO",
+        "record_count":  0,
+        "field_count":  11
+    },
+    {
+        "table_name":  "DCOIR Cleanup WBS",
+        "table_id":  "tblRxTmpW0VunQlUK",
+        "record_count":  73,
+        "field_count":  17
+    },
+    {
+        "table_name":  "DCOIR Lifecycle Ledger",
+        "table_id":  "tblNsjkGUUIdRpHuE",
+        "record_count":  35,
+        "field_count":  13
+    },
+    {
+        "table_name":  "Gemini Research Reference",
+        "table_id":  "tblfZnARJxcMJ0yHW",
+        "record_count":  76,
+        "field_count":  16
+    },
+    {
+        "table_name":  "GitHub Workflow Inventory",
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "record_count":  24,
+        "field_count":  27
+    },
+    {
+        "table_name":  "Governance Control Plane",
+        "table_id":  "tblDfSl29psxRnes1",
+        "record_count":  1,
+        "field_count":  14
+    },
+    {
+        "table_name":  "Idea Inbox",
+        "table_id":  "tblWwBxwrjZF6JR3r",
+        "record_count":  9,
+        "field_count":  16
+    },
+    {
+        "table_name":  "Local Configuration Registry",
+        "table_id":  "tblcJxCoYGpEda0FM",
+        "record_count":  9,
+        "field_count":  14
+    },
+    {
+        "table_name":  "Operator Preferences",
+        "table_id":  "tblnxZ3eLPT3W38wl",
+        "record_count":  88,
+        "field_count":  17
+    },
+    {
+        "table_name":  "Operator Tools Registry",
+        "table_id":  "tblF1SCJBHRFUhpzi",
+        "record_count":  29,
+        "field_count":  20
+    },
+    {
+        "table_name":  "Plans",
+        "table_id":  "tblBcp5FyMIfOm7Xe",
+        "record_count":  2,
+        "field_count":  22
+    },
+    {
+        "table_name":  "Queue Control",
+        "table_id":  "tblf13aCslg6rJBah",
+        "record_count":  1,
+        "field_count":  16
+    },
+    {
+        "table_name":  "Repo Surface Registry",
+        "table_id":  "tblzBiXp7kwTXM0ru",
+        "record_count":  73,
+        "field_count":  11
+    },
+    {
+        "table_name":  "Session Checkpoints",
+        "table_id":  "tblTe75HKZOJaPDGn",
+        "record_count":  93,
+        "field_count":  21
+    },
+    {
+        "table_name":  "Validation Evidence",
+        "table_id":  "tblrPFQH2uZEYBYE9",
+        "record_count":  153,
+        "field_count":  12
+    },
+    {
+        "table_name":  "Validation Test Cases",
+        "table_id":  "tblRnMpQUomIGyFVL",
+        "record_count":  66,
+        "field_count":  16
+    },
+    {
+        "table_name":  "Work Items",
+        "table_id":  "tblgsQAVWvh8K7gIR",
+        "record_count":  80,
+        "field_count":  17
+    }
+]
