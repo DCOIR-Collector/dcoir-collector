@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "26139893338",
   "github_sha": "52a38266c7115b8f5ec9dbac599307e7e349e675",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "exec-20260520-wbs04-merge-delete-batch2-export-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260520-wbs04-merge-delete-batch2-export-001.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-20T03:43:51Z",
+  "updated_utc": "2026-05-20T03:43:55Z",
   "workflow": "chatgpt-exec"
 }
