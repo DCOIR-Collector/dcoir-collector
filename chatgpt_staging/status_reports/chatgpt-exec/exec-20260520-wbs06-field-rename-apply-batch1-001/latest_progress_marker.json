@@ -1,15 +1,15 @@
 {
-  "artifact_name": "",
-  "exit_code": "",
+  "artifact_name": "chatgpt-exec-exec-20260520-wbs06-field-rename-apply-batch1-001",
+  "exit_code": "0",
   "github_ref": "refs/heads/main",
   "github_run_attempt": "1",
   "github_run_id": "26150338165",
   "github_sha": "5225baf4d771b40f37e380224d1f35659718b0f0",
-  "phase": "running-harness",
+  "phase": "harness-finished",
   "request_id": "exec-20260520-wbs06-field-rename-apply-batch1-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260520-wbs06-field-rename-apply-batch1-001.json",
-  "result": "running",
+  "result": "success",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-20T08:18:11Z",
+  "updated_utc": "2026-05-20T08:18:19Z",
   "workflow": "chatgpt-exec"
 }

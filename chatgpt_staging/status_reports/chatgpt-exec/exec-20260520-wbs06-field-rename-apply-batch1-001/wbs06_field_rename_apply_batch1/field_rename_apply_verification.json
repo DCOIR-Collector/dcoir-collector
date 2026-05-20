@@ -1,0 +1,26 @@
+[
+    {
+        "table_name":  "Gemini Research Reference",
+        "table_id":  "tblfZnARJxcMJ0yHW",
+        "field_id":  "fldH0t18dHVNkfTrA",
+        "verified_name":  "legacy_research_batch_review",
+        "expected_name":  "legacy_research_batch_review",
+        "verified":  true
+    },
+    {
+        "table_name":  "GitHub Workflow Inventory",
+        "table_id":  "tblHTf5bLKGK1Yk11",
+        "field_id":  "fldNGAE9cbd9YSYzz",
+        "verified_name":  "avoid_when",
+        "expected_name":  "avoid_when",
+        "verified":  true
+    },
+    {
+        "table_name":  "Idea Inbox",
+        "table_id":  "tblWwBxwrjZF6JR3r",
+        "field_id":  "fldyhuC1RXb6TQBu3",
+        "verified_name":  "github_promotion_completed",
+        "expected_name":  "github_promotion_completed",
+        "verified":  true
+    }
+]
