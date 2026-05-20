@@ -1,0 +1,12 @@
+{
+    "success":  true,
+    "output_folder":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260520-wbs04-merge-delete-batch3-export-001\\downloads\\dcoir_wbs04_merge_delete_batch3_export_20260520_034704",
+    "output_zip":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\exec-20260520-wbs04-merge-delete-batch3-export-001\\downloads\\dcoir_wbs04_merge_delete_batch3_export_20260520_034704.chatgpt.zip",
+    "schema_only":  false,
+    "export_mode":  "FullRecords",
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  false,
+    "selected_table_count":  7,
+    "max_records_per_table":  0,
+    "finished_at":  "2026-05-20T03:47:07.0263443+00:00"
+}
