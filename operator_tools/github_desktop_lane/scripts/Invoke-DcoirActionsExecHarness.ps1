@@ -68,21 +68,31 @@ function Resolve-DcoirExecRequestPath {
     $json = $raw | ConvertFrom-Json
     $hasCommand = ($json.PSObject.Properties.Name -contains 'command') -and -not [string]::IsNullOrWhiteSpace([string]$json.command)
     $hasScriptPath = ($json.PSObject.Properties.Name -contains 'script_path') -and -not [string]::IsNullOrWhiteSpace([string]$json.script_path)
-    if ($hasCommand -or -not $hasScriptPath) { return $OriginalRequestPath }
+    $needsSchema = (-not ($json.PSObject.Properties.Name -contains 'schema')) -or [string]::IsNullOrWhiteSpace([string]$json.schema)
 
-    $scriptPath = [string]$json.script_path
-    if ($scriptPath -notmatch '^chatgpt_staging/exec_scripts/[A-Za-z0-9._/-]+\.ps1$') {
-        throw "script_path must point to chatgpt_staging/exec_scripts/<name>.ps1. Got: $scriptPath"
-    }
-    $fullScriptPath = Join-Path $RepoRoot ($scriptPath -replace '/', '\')
-    if (-not (Test-Path -LiteralPath $fullScriptPath -PathType Leaf)) {
-        throw "script_path file not found: $scriptPath"
+    if ($needsSchema) {
+        $json | Add-Member -NotePropertyName schema -NotePropertyValue 'dcoir.chatgpt_staging.exec_request.v1' -Force
     }
 
-    $json | Add-Member -NotePropertyName command -NotePropertyValue ("& '" + $fullScriptPath.Replace("'", "''") + "'") -Force
-    if (-not ($json.PSObject.Properties.Name -contains 'approved_command_preview') -or [string]::IsNullOrWhiteSpace([string]$json.approved_command_preview)) {
-        $json | Add-Member -NotePropertyName approved_command_preview -NotePropertyValue "Run approved repo script: $scriptPath" -Force
+    $needsPatch = $needsSchema
+    if (-not $hasCommand -and $hasScriptPath) {
+        $scriptPath = [string]$json.script_path
+        if ($scriptPath -notmatch '^chatgpt_staging/exec_scripts/[A-Za-z0-9._/-]+\.ps1$') {
+            throw "script_path must point to chatgpt_staging/exec_scripts/<name>.ps1. Got: $scriptPath"
+        }
+        $fullScriptPath = Join-Path $RepoRoot ($scriptPath -replace '/', '\')
+        if (-not (Test-Path -LiteralPath $fullScriptPath -PathType Leaf)) {
+            throw "script_path file not found: $scriptPath"
+        }
+
+        $json | Add-Member -NotePropertyName command -NotePropertyValue ("& '" + $fullScriptPath.Replace("'", "''") + "'") -Force
+        if (-not ($json.PSObject.Properties.Name -contains 'approved_command_preview') -or [string]::IsNullOrWhiteSpace([string]$json.approved_command_preview)) {
+            $json | Add-Member -NotePropertyName approved_command_preview -NotePropertyValue "Run approved repo script: $scriptPath" -Force
+        }
+        $needsPatch = $true
     }
+
+    if (-not $needsPatch) { return $OriginalRequestPath }
 
     $safeName = New-DcoirActionsExecSafeName -Value ([string]$json.request_id)
     $patchedDir = Join-Path $OutputRoot (Join-Path $safeName 'config')
@@ -151,4 +161,3 @@ catch {
     Write-GithubEnvValue -Name 'DCOIR_EXEC_CLEANUP_REQUEST_AFTER_RUN' -Value 'false'
     exit 0
 }
-
