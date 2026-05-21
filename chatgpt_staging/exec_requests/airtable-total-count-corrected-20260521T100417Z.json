@@ -2,6 +2,7 @@
   "schema": "dcoir.chatgpt_staging.exec_request.v1",
   "request_id": "airtable-total-count-corrected-20260521T100417Z",
   "operator_approved": true,
+  "shell": "powershell_5",
   "script_path": "chatgpt_staging/exec_scripts/airtable-total-count-corrected-20260521T100417Z.ps1",
   "approved_command_preview": "Run corrected read-only Airtable base count verification through the existing Airtable health export helper.",
   "cleanup_request_after_run": true,
