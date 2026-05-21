@@ -1,0 +1,31 @@
+{
+    "table_id":  "tblDfSl29psxRnes1",
+    "table_name":  "Governance Control Plane",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  1,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  false,
+    "records":  [
+                    {
+                        "id":  "rec4Dc9zqVSJOW5b1",
+                        "createdTime":  "2026-04-27T17:15:03.000Z",
+                        "fields":  {
+                                       "review_after":  "2026-04-28",
+                                       "retained_repo_surfaces":  "Retained GitHub repo surfaces remain authoritative only for source files and promoted repo history. CP-01/CP-02 are legacy/promoted-history fallback references during transition, not normal startup fetch targets once this Airtable control-plane row is available.",
+                                       "project_attachment_set":  "Project attachments remain bootstrap/runtime pointers only. They must not reintroduce Project-space readable-source duplication or override Airtable live authority.",
+                                       "startup_chain":  "Normal startup chain: 1) Use Project Instructions as first bootstrap anchor. 2) Read Project-space CP-00 only as a pointer to Airtable-first startup, not as a readable-source repository. 3) Read Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST. 4) Invoke dcoir-memory-preflight using Airtable durable state first for resume/checkpoint continuity, helper-memory lookup, active-branch recovery, dynamic skill routing, and task-time preflight. 5) Invoke dcoir-airtable-schema-cache to refresh or validate the local schema cache before broad Airtable reads. 6) During automatic startup/re-anchor, prefer compact non-display Airtable reads for Queue Control, Work Items, active Plans, Session Checkpoints, Operator Preferences, Admin Registry skill-state rows, relevant helper-memory tables, SKILLROUTE-* rows when skill routing may apply, Operator Tools Registry when reusable local tools may apply, and task-specific current tables such as Delete Queue, Validation Evidence, or DCOIR Lifecycle Ledger. 7) Read GitHub only when the immediate task specifically requires governed repo source content, source-code validation, package generation, repo promotion/readback, promoted-history comparison, or explicit repo readback. Do not fetch GitHub CP-01/CP-02 during normal startup when CONTROL-STARTUP-AIRTABLE-FIRST is present/current.",
+                                       "retention_class":  "core",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "control_key":  "CONTROL-STARTUP-AIRTABLE-FIRST",
+                                       "live_queue_authority":  true,
+                                       "workspace_model":  "AFRICOM_SOC_IR / DCOIR Airtable-first startup control plane",
+                                       "last_confirmed_text":  "2026-05-11 SideQuest drift patch: replaced retired dcoir-session-resume startup_chain reference with dcoir-memory-preflight continuity/resume/checkpoint/routing ownership; Airtable restructuring plan remains parked.",
+                                       "updated_at":  "2026-05-11T07:34:00.000Z",
+                                       "authority_order":  "Airtable is startup and load-sequence authority for resume, queue, active plans, cleanup state, operator preferences, helper-memory lookup, and administrative control. GitHub CP and old todo files are detached from normal startup and used only for governed source, promoted history, packaging, explicit repo readback, or final keep/delete review.",
+                                       "repo_role_definition":  "GitHub role after Airtable-first cutover: governed readable/source-code repository, promoted history, packaging/source-of-file truth, and repo write/readback surface. GitHub is no longer normal startup current-state authority, live todo authority, or administrative control-plane authority when equivalent Airtable rows exist.",
+                                       "status":  "active"
+                                   }
+                    }
+                ]
+}

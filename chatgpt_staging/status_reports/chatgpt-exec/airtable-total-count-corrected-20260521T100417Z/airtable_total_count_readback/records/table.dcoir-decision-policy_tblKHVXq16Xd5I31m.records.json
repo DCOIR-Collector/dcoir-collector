@@ -1,0 +1,195 @@
+{
+    "table_id":  "tblKHVXq16Xd5I31m",
+    "table_name":  "dcoir-decision-policy",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  10,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  false,
+    "records":  [
+                    {
+                        "id":  "rec3mkZaorIHwZpkz",
+                        "createdTime":  "2026-04-26T08:04:46.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "situational_rule":  "Imported from GitHub helper-memory as historical/source-basis only.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "status":  "active",
+                                       "retention_class":  "operational",
+                                       "source_basis":  "dcoir_skill_memory/dcoir-decision-policy/decision_policy_memory.md#sha16=a227676b775a0245",
+                                       "workflow_impact":  "Headings: # DCOIR Decision Policy Memory; ## Current focus; ## Approved overlay snapshot; ## Pending or situational learning; ## Airtable durable preference surface; ## Delivery and update preferences\nExcerpt: --- artifact_type: dcoir-decision-policy-memory schema_version: 1 project: AFRICOM_SOC_IR / DCOIR exported_at_utc: 2026-04-10T18:05:00Z authority_basis: - Project Instructions v17 - project_sources/CP-01_DCOIR_Version_Manifest.txt - project_sources/CP-02_DCOIR_Change_Log.txt ---",
+                                       "review_after":  "2026-08-06",
+                                       "approved_rule":  "---\nartifact_type: dcoir-decision-policy-memory\nschema_version: 1\nproject: AFRICOM_SOC_IR / DCOIR\nexported_at_utc: 2026-04-10T18:05:00Z\nauthority_basis:\n  - Project Instructions v17\n  - project_sources/CP-01_DCOIR_Version_Manifest.txt\n  - project_sources/CP-02_DCOIR_Change_Log.txt\n---\n\n# DCOIR Decision Policy Memory\n\n## Current focus\nAirtable-first durable preference continuity for DCOIR decision-policy state with GitHub-readable promoted overlays and helper-memory follow-through.\n\n## Approved overlay snapshot\n- **single bundle for multi-skill updates** (status: approved; source: operator_intent_matrix)\n  - rule: prefer one zip bundle containing the full update set and concise replacement instructions\n  - why: minimize operator downloads and manual update burden\n  - next_action: keep applying this default for multi-skill updates\n- **operator chooses repo update lane** (status: approved; source: operator_intent_matrix)\n  - rule: when repo updates could be done either in chat or through GitHub Desktop or another operator-managed lane, ask which lane the operator wants before shifting the work\n  - why: the operator may not always be on a machine where GitHub Desktop is available and wants explicit control over whether the update stays in chat\n  - next_action: apply this before suggesting or shifting to any operator-managed repo-update path\n- **github existing-file recovery comes before limitation claims** (status: approved; source: operator_intent_matrix)\n  - rule: for GitHub-family existing-file or grouped existing-file friction, re-anchor and apply GH-PROC-007 plus GH-PROC-001 or GH-PROC-006, then GH-PROC-005, before writing durable limitation or connector-failure claims\n  - why: avoid turning assistant procedure-recovery failure or execution-discipline failure into a false permanent record about capability boundaries\n  - next_action: use this as the default recovery order for GitHub-family write friction\n- **aggregate known downstream github follow-on updates** (status: approved; source: operator_intent_matrix)\n  - rule: when multiple downstream GitHub control-plane, continuity, task-memory, or helper-memory updates are already known, collect them into one bounded grouped transaction instead of serial one-off commits or repeated best-next-move nudges\n  - why: reduce churn, preserve grouped intent, and avoid forcing the operator through repeated tiny repo updates\n  - next_action: treat this as the default posture unless an unresolved dependency requires an intermediate commit\n- **airtable-first durable preference surface** (status: approved; source: operator_intent_matrix)\n  - rule: use Airtable `Operator Preferences` as the durable working-state preference surface, consult it before generic defaults when a branch is preference-sensitive, and promote matured DCOIR-facing rules into GitHub-readable policy at the next safe grouped flush point\n  - why: the operator explicitly wants durable preference continuity that does not depend only on recollection or direct skill-file edits\n  - next_action: keep Airtable and GitHub preference surfaces aligned and surface conflicts instead of silently choosing one\n- **concise operator-facing responses by default** (status: approved; source: operator_intent_matrix)\n  - rule: default to concise operator-facing responses unless extra detail materially improves continuity, validation, or maintenance quality\n  - why: the operator prefers shorter direct answers by default while still preserving the richer continuity path when it actually matters\n  - next_action: apply this in future DCOIR chat reporting while preserving detailed underlying artifacts when needed\n- **offer near-equivalent alternatives when the main path is not ideal** (status: approved; source: operator_intent_matrix)\n  - rule: when a requested or candidate path is workable but not ideal, surface the best bounded path and one or more near-equivalent alternatives when that materially helps the operator choose without expanding into a broad unfocused menu\n  - why: the operator explicitly wants alternatives that reach the same or a very similar result instead of a single-path recommendation only\n  - next_action: keep applying this in future decision branches where tradeoffs matter\n\n## Pending or situational learning\n- **GitHub-backed helper-memory rollout sequencing** (status: in_progress; source: current_chat)\n  - rule: prefer converting the highest-value helper skills before starting new net-new super-skill work\n  - why: establish a stable GitHub-primary foundation first\n  - next_action: reassess after operator verifies the manual skill updates\n\n## Airtable durable preference surface\n- Airtable table: `Operator Preferences` (`tblnxZ3eLPT3W38wl`)\n- Role: durable working-state preference capture, candidate tracking, cross-session lookup, and provenance before or alongside later GitHub promotion\n- Current posture: seeded with standing general preferences plus the repo-side decision-policy overlays mirrored from `operator_intent_matrix.md` and this helper-memory file\n- GitHub promotion rule: treat Airtable as working state and GitHub as promoted readable state; do not silently rewrite approved GitHub durable rules when the two differ\n\n## Delivery and update preferences\n- bundle multi-file skill updates into one zip when that lane is chosen\n- keep helper memory in `dcoir_skill_memory/` and separate from governed project files\n- ask before shifting repo updates to GitHub Desktop or another operator-managed lane\n- for existing-file GitHub recovery, use canonical GitHub task memory before writing any capability-boundary explanation\n- when multiple downstream GitHub updates are already known, batch them into one grouped update\n- use Airtable `Operator Preferences` as the faster durable capture surface and promote matured DCOIR-facing rules into GitHub-readable policy later\n- default to concise operator-facing responses unless extra detail materially improves continuity, validation, or maintenance quality\n- when a requested or candidate path is not ideal, include one or more near-equivalent alternatives when useful\n\n## Next actions\n- keep the Airtable preference table and the GitHub-readable decision-policy surfaces aligned after material preference changes\n- re-read Airtable `Operator Preferences`, `references/operator_intent_matrix.md`, and this file before future packaging-handoff, repo-update lane, or preference-sensitive branching decisions\n- preserve conflicts explicitly when Airtable working state and GitHub approved durable overlays diverge until the operator resolves the conflict or the next grouped promotion is complete\n\n## Provenance notes\n- Initialized during the five-skill GitHub-memory rollout.\n- Expanded on 2026-04-03 after the operator clarified that repo-update lane choice must stay under explicit operator control.\n- Expanded again on 2026-04-03 after recovery of the validated low-level git-object lane for existing-file updates.\n- Expanded again on 2026-04-03 after the operator required batching known downstream GitHub follow-on updates into one grouped change set.\n- Expanded on 2026-04-10 after the operator required `dcoir-decision-policy` to use the Airtable-backed Operator Preferences surface alongside the GitHub repo, mirroring repo-side overlays into Airtable durable working state and promoting matured DCOIR-facing rules back into the authoritative GitHub-readable surfaces at the next safe grouped flush point.\n",
+                                       "decision_entry_id":  "legacy-dcoir-skill-memory-dcoir-decision-policy-decision-policy-memory-md",
+                                       "decision_family":  "decision_policy_approved_overlay_snapshot",
+                                       "packaging_impact":  "No direct packaging impact; preserve for decision-policy history.",
+                                       "last_confirmed_text":  "2026-04-26T09:41Z"
+                                   }
+                    },
+                    {
+                        "id":  "rec7XGXiVbsCwbS2h",
+                        "createdTime":  "2026-04-25T05:53:37.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "situational_rule":  "Use when multiple reasonable execution paths exist or when operator preferences affect a branch.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "status":  "active",
+                                       "retention_class":  "operational",
+                                       "source_basis":  "dcoir_skill_memory/dcoir-decision-policy/decision_policy_memory.md",
+                                       "workflow_impact":  "Proceed with lower-friction best path while surfacing blockers and durable preference implications.",
+                                       "review_after":  "2026-08-06",
+                                       "approved_rule":  "Apply the operator decision matrix for DCOIR branching, blocker recovery, grouped updates, and approval-gated durable preference capture.",
+                                       "decision_entry_id":  "DP-MEMORY-BASELINE-20260410",
+                                       "decision_family":  "decision_policy_approved_overlay_snapshot",
+                                       "packaging_impact":  "May select local-only, targeted skill, batched skill, or repo-update bundle posture depending on scope.",
+                                       "last_confirmed_text":  "Loaded from latest repo snapshot 0734 during T2.0 population coverage."
+                                   }
+                    },
+                    {
+                        "id":  "recDTzbLvQov2SHIh",
+                        "createdTime":  "2026-05-11T09:44:51.000Z",
+                        "fields":  {
+                                       "situational_rule":  "DCOIR-INTAKE means general raw capture: ideas, requirements, prompts, workflow improvements, future-work candidates, or reference notes. DCOIR-TESTING means defect observations, malformed outputs, regression examples, failed behavior, or validation/test-case candidates. The Gmail GitHub label remains separate for GitHub/workflow timing and should not be included in DCOIR intake unless explicitly requested.",
+                                       "status":  "active",
+                                       "retention_class":  "operational",
+                                       "source_basis":  "Operator approved durable institutionalization on 2026-05-11 after renaming Gmail label DCOIR-IDEA to DCOIR-INTAKE and deleting DCOIR-OBSERVATION. Correlated preference row PREF-DCOIR-GMAIL-INTAKE-TRIAGE-20260511 and memory-preflight route ROUTE-DCOIR-GMAIL-INTAKE-TRIAGE-20260511.",
+                                       "workflow_impact":  "Adds a human-review gate to prevent mislabeled Gmail from becoming incorrect Idea Inbox, Work Item, Validation Test Case, Validation Evidence, or Operator Preference records. The operator does not need to remember an exact phrase; intent language is sufficient.",
+                                       "approved_rule":  "For DCOIR Gmail intake, Gmail labels are capture signals only, not Airtable destination commands. When the operator asks to check Gmail for DCOIR-related items using any reasonable phrasing, search DCOIR-INTAKE and DCOIR-TESTING, classify and deduplicate the messages, and present a review packet before creating or updating Airtable records.",
+                                       "decision_entry_id":  "DECISION-DCOIR-GMAIL-INTAKE-REVIEW-BEFORE-WRITE-20260511",
+                                       "decision_family":  "default_execution_branch_selection",
+                                       "packaging_impact":  "No package impact. No GitHub source impact. Airtable writes require approval after triage packet unless a later explicit durable override changes this rule.",
+                                       "last_confirmed_text":  "2026-05-11T09:32:00Z"
+                                   }
+                    },
+                    {
+                        "id":  "recDcZdhvEGkXKx9N",
+                        "createdTime":  "2026-04-26T08:04:46.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "situational_rule":  "Imported from GitHub helper-memory as historical/source-basis only.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "status":  "active",
+                                       "retention_class":  "operational",
+                                       "source_basis":  "dcoir_skill_memory/dcoir-decision-policy/2026-04-03_github_skill_source_rule.md#sha16=30d395d28ccb417b",
+                                       "workflow_impact":  "Headings: # 2026-04-03 GitHub skill-source rule\nExcerpt: # 2026-04-03 GitHub skill-source rule Purpose - Preserve the operator-approved 2026-04-03 rule that affects future DCOIR decision handling. Approved rule - All `dcoir-*` skill source should be stored in GitHub. - GitHub is the governed readable source-of-truth for DCOIR helper-skill source once landed under the approved source root. Current project anchors - `project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt` - `dcoir_skills/README.md`",
+                                       "review_after":  "2026-08-06",
+                                       "approved_rule":  "# 2026-04-03 GitHub skill-source rule\n\nPurpose\n- Preserve the operator-approved 2026-04-03 rule that affects future DCOIR decision handling.\n\nApproved rule\n- All `dcoir-*` skill source should be stored in GitHub.\n- GitHub is the governed readable source-of-truth for DCOIR helper-skill source once landed under the approved source root.\n\nCurrent project anchors\n- `project_sources/LOG-06_DCOIR_GitHub_Skill_Source_Policy_Decision_2026-04-03.txt`\n- `dcoir_skills/README.md`\n",
+                                       "decision_entry_id":  "legacy-dcoir-skill-memory-dcoir-decision-policy-2026-04-03-github-skill-source-rule-md",
+                                       "decision_family":  "git_hub_governed_helper_skill_source",
+                                       "packaging_impact":  "No direct packaging impact; preserve for decision-policy history.",
+                                       "last_confirmed_text":  "2026-04-26T09:41Z"
+                                   }
+                    },
+                    {
+                        "id":  "recNidPPOYerkTbdj",
+                        "createdTime":  "2026-05-04T16:05:38.000Z",
+                        "fields":  {
+                                       "situational_rule":  "Apply this when source authority, live-state alignment, repo cleanup, helper retirement, schema writes, destructive deletes, or Airtable-vs-GitHub precedence could materially affect the outcome. Use clear_to_proceed / proceed_bounded / hard_stop_conflict as the audit outcome set.",
+                                       "status":  "active",
+                                       "retention_class":  "operational",
+                                       "source_basis":  "GitHub apply-in request apply-20260504-t6e-decision-policy-authority-merge-001; dcoir-decision-policy/references/hard_stop_conditions.md; migrated source-authority-auditor memory row AUTH-AUDIT-T4.0-BASELINE-20260426.",
+                                       "workflow_impact":  "Wave E merge path. After the updated dcoir-decision-policy package is installed and verified, dcoir-source-authority-auditor can be removed from marketplace/editor, GitHub source can be deleted through chatgpt-apply-in, and its helper-memory table can be archived/deleted through approved cleanup workflow.",
+                                       "review_after":  "2026-08-06",
+                                       "approved_rule":  "dcoir-decision-policy now owns the hard-stop and authority-drift gate formerly handled by dcoir-source-authority-auditor. Use references/hard_stop_conditions.md for audit outcomes, drift families, severity, report fields, schema-assumption drift, GitHub promoted-history drift, repo-surface drift, Delete Queue dependency drift, and connector-failure drift.",
+                                       "decision_entry_id":  "DECISION-AUTHORITY-DRIFT-GATE-MERGED-20260504",
+                                       "packaging_impact":  "No new third skill required. Broader authority/decision behavior fits inside dcoir-decision-policy; preserve source-authority behavior as a hard-stop/reference gate rather than as a separate helper.",
+                                       "last_confirmed_text":  "2026-05-04T16:05:00Z"
+                                   }
+                    },
+                    {
+                        "id":  "recRXLgpI9csh5vas",
+                        "createdTime":  "2026-05-05T11:22:05.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-05-05T11:22:00.000Z",
+                                       "situational_rule":  "Applies when discussing chatgpt-in, chatgpt-apply-in, apply-in workflow, payload.zip.b64, GitHub connector staging, skill source parity sync, or staging/in payloads.",
+                                       "created_at":  "2026-05-05T11:22:00.000Z",
+                                       "status":  "active",
+                                       "retention_class":  "operational",
+                                       "source_basis":  "Operator correction 2026-05-05; repo workflow .github/workflows/chatgpt-apply-in.yml hardened; chatgpt_staging/in/README.md; tools/chatgpt_apply_in/build_payload_zip_b64.py; Operator Preference pref-chatgpt-apply-in-single-payload-zip-b64.",
+                                       "workflow_impact":  "Removes the ambiguous chunking fallback. Correct fallback for connector size issues is to reduce batch size and rebuild a smaller single payload.zip.b64.",
+                                       "review_after":  "2026-08-06",
+                                       "approved_rule":  "For DCOIR chatgpt-apply-in staging, the only valid staging shape is one file at chatgpt_staging/in/\u003crequest_id\u003e/payload.zip.b64. If an assistant proposes parts/chunks, payload.zip.b64.parts, part files, chunk_manifest.json, or chunk markers, stop and replace that branch with the single payload.zip.b64 lane unless the operator explicitly changes the workflow contract.",
+                                       "decision_entry_id":  "DECISION-CHATGPT-APPLY-IN-SINGLE-PAYLOAD-HARD-STOP",
+                                       "decision_family":  "execution_lane",
+                                       "packaging_impact":  "Package shape must be one ZIP with apply_manifest.json and files/ at archive root, encoded as one payload.zip.b64. Do not create .parts or chunk artifacts.",
+                                       "last_confirmed_text":  "2026-05-05T11:22:00Z"
+                                   }
+                    },
+                    {
+                        "id":  "reci9EeirEL2ZDNRt",
+                        "createdTime":  "2026-05-02T14:42:51.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-05-02T16:43:00.000Z",
+                                       "situational_rule":  "Default to the staging lane only when normal connector edits/readback are too small, fragile, or cumbersome, or when the active Airtable plan explicitly owns staging-lane work. Otherwise prefer direct GitHub connector edits or GitHub Desktop bundles as appropriate.",
+                                       "created_at":  "2026-05-02T13:03:00.000Z",
+                                       "status":  "active",
+                                       "retention_class":  "operational",
+                                       "source_basis":  "Operator guidance and T2A/T3A active plan branch, 2026-05-02. Related repo paths: chatgpt_staging/README.md; chatgpt_staging/SCENARIO_MATRIX.md; chatgpt_staging/status_reports/; operator_tools/github_desktop_lane/docs/CHATGPT_STAGING_LANE_OPERATOR_GUIDE.md.",
+                                       "workflow_impact":  "For staging-lane work, consult SKILLROUTE-CHATGPT-STAGING-LANE, chatgpt_staging/README.md, chatgpt_staging/SCENARIO_MATRIX.md, and the operator guide before choosing cleanup/retry behavior. Before asking the operator for screenshots, pasted logs, uploaded logs, or a commit SHA, inspect GitHub connector readback and any available chatgpt_staging/status_reports/\u003cworkflow\u003e/\u003cid\u003e/workflow_report.md.",
+                                       "review_after":  "2026-08-06",
+                                       "approved_rule":  "When a task involves ChatGPT staging lane, large-file readback, stage-out, apply-in, failure reports, cleanup markers, or automated staging cleanup, ChatGPT should initiate and verify while GitHub Actions performs bounded automation. Use Airtable active plan/work state as live authority and GitHub staging docs as source/readback for lane mechanics.",
+                                       "decision_entry_id":  "DECISION-CHATGPT-STAGING-LANE-DEFAULTS",
+                                       "decision_family":  "packaging",
+                                       "packaging_impact":  "Tweakable routing and lane-selection policy should remain in Airtable rows when possible. Skill updates should define lookup/enforcement behavior, not embed the full scenario matrix as static policy. Workflow status reporting should use one committed Markdown report per result unless a separate artifact is explicitly justified for large/bulky diagnostics.",
+                                       "last_confirmed_text":  "2026-05-02T18:43:00+02:00"
+                                   }
+                    },
+                    {
+                        "id":  "reciLY951roMwxqO0",
+                        "createdTime":  "2026-04-24T20:39:03.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "situational_rule":  "Use operator preferences, queue authority, validation gates, and packaging-class rules.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "status":  "active",
+                                       "retention_class":  "operational",
+                                       "source_basis":  "Project Instructions; dcoir-decision-policy; Operator Preferences",
+                                       "workflow_impact":  "Keeps work moving while preserving visibility and stop conditions.",
+                                       "review_after":  "2026-08-06",
+                                       "approved_rule":  "Proceed with the safest bounded path when multiple reasonable DCOIR execution paths exist.",
+                                       "decision_entry_id":  "DP-BASE-001",
+                                       "decision_family":  "default_execution_branch_selection",
+                                       "packaging_impact":  "Choose targeted, batched, repo-update, or full-refresh packaging after impact is known.",
+                                       "last_confirmed_text":  "2026-04-24 batch CSV import preparation"
+                                   }
+                    },
+                    {
+                        "id":  "recjJ9FHuhC8u00yM",
+                        "createdTime":  "2026-05-03T16:54:36.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-05-03T16:55:00.000Z",
+                                       "situational_rule":  "Use when repo write/update automation is blocked, partially blocked, or cannot be verified. Preserve failure evidence, update Airtable, and verify success by GitHub readback/workflow report/log/file fetch before closing the Work Item.",
+                                       "created_at":  "2026-05-03T16:55:00.000Z",
+                                       "status":  "active",
+                                       "retention_class":  "operational",
+                                       "source_basis":  "WI-20260503-BLOCKED-ACTION-RECOVERY-LADDER; dcoir_skills/dcoir-decision-policy/references/decision_matrix.md; dcoir_skills/dcoir-github-desktop-lane-advisor/SKILL.md",
+                                       "workflow_impact":  "Reduces operator friction while guaranteeing a fallback lane. Prevents blocked connector behavior from ending the workflow when apply-in or manual bundle lanes can still complete the change.",
+                                       "review_after":  "2026-08-06",
+                                       "approved_rule":  "For repo updates, a blocked direct GitHub/API/connector action must trigger a bounded recovery ladder instead of premature stop: direct connector write first, one corrected bounded retry or nearest equivalent connector operation, staged ChatGPT apply-in/GitHub Actions lane when supported and verifiable, then GitHub Desktop/manual bundle if automation is blocked or unverified.",
+                                       "decision_entry_id":  "DECISION-20260503-BLOCKED-REPO-UPDATE-RECOVERY-LADDER",
+                                       "decision_family":  "default_execution_branch_selection",
+                                       "packaging_impact":  "Manual bundles must contain only affected repo-relative files with no wrapper root and no meta/instruction files. Suggested commit summaries belong in chat/Airtable notes only.",
+                                       "last_confirmed_text":  "2026-05-03T16:55:00Z"
+                                   }
+                    },
+                    {
+                        "id":  "rectVeEGMwlAPiueH",
+                        "createdTime":  "2026-04-25T05:53:37.000Z",
+                        "fields":  {
+                                       "updated_at":  "2026-04-28T11:12:38.000Z",
+                                       "situational_rule":  "Applies to DCOIR helper-skill source layout, rollout, and future source-of-truth decisions.",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "status":  "active",
+                                       "retention_class":  "operational",
+                                       "source_basis":  "dcoir_skill_memory/dcoir-decision-policy/2026-04-03_github_skill_source_rule.md",
+                                       "workflow_impact":  "Use GitHub as source authority for helper-skill source; do not rely on project-space duplicates as authoritative editable source.",
+                                       "review_after":  "2026-08-06",
+                                       "approved_rule":  "All dcoir-* skill source should be stored in GitHub as the governed readable source once landed under the approved source root.",
+                                       "decision_entry_id":  "DP-GH-20260403-SKILL-SOURCE-RULE",
+                                       "decision_family":  "git_hub_governed_helper_skill_source",
+                                       "packaging_impact":  "Changes may require targeted or batched skill ZIP delivery after governed source updates.",
+                                       "last_confirmed_text":  "Loaded from latest repo snapshot 0734 during T2.0 population coverage."
+                                   }
+                    }
+                ]
+}

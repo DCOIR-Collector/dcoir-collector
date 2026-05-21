@@ -1,0 +1,49 @@
+{
+    "table_id":  "tblBcp5FyMIfOm7Xe",
+    "table_name":  "Plans",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  2,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  false,
+    "records":  [
+                    {
+                        "id":  "recE21cNn1Ey3VMyT",
+                        "createdTime":  "2026-05-03T08:29:21.000Z",
+                        "fields":  {
+                                       "exact_resume_goal":  "Continue tool validation, then audit the current project health surfaces and identify which Project Instructions, project attachments, helper skills, SKILLROUTE rows, Operator Preferences, Operator Tools Registry rows, and repo docs need updates so a brand-new session does the right thing when creating, suggesting, or using tools.",
+                                       "active_task_title":  "Expand from Airtable export tool into full project-health audit lane",
+                                       "scope_constraints":  "Broaden the lane from Airtable database health export only into a comprehensive AFRICOM_SOC_IR/DCOIR project-health audit. Scope now includes Airtable database health, reusable operator tools, skill contracts, startup/re-anchor behavior, project instructions and project attachments, dynamic skill routing, bundle packaging hygiene, operator preferences, and future tool engineering contracts across PowerShell, Python, Docker/container, Rust, and other languages.",
+                                       "plan_title":  "Project health and Airtable database health export/tooling audit",
+                                       "retention_class":  "operational",
+                                       "plan_id":  "PLAN-20260503-airtable-database-health-export-tool",
+                                       "active_task_id":  "project-health-audit-scope",
+                                       "next_recommended_action":  "Next step: create child Work Items for project-health audit, skill/startup routing audit, and tool-engineering contract propagation; then continue Airtable token setup/smoke once the operator sets DCOIR_AIRTABLE_API_TOKEN.",
+                                       "plan_state":  "active",
+                                       "resume_detail":  "CAP verified for commit a3d7cf6b5584b8002450b2656b1057b63c3790f2. First local smoke produced a correct diagnostic package after missing DCOIR_AIRTABLE_API_TOKEN. Operator corrected bundle hygiene rule: do not include ChatGPT-only artifacts in GitHub Desktop bundles. Operator also superseded the old no-Airtable-display preference and wants a full skill/project-health audit. Startup attachments still say automatic startup should avoid rendering Airtable UI, which remains acceptable for startup, but active execution should allow displays when useful."
+                                   }
+                    },
+                    {
+                        "id":  "reclwfiWpPHAOHImr",
+                        "createdTime":  "2026-05-08T19:59:23.000Z",
+                        "fields":  {
+                                       "exact_resume_goal":  "Decide whether to replace DCOIR Cleanup WBS with a generic WBS table model, migrate rows, update references, and later retire the cleanup-named table.",
+                                       "active_task_title":  "WBS07.01 decide generic WBS replacement table path",
+                                       "scope_constraints":  "Design and execute a fully decomposed Airtable database redesign plan that improves searchability, filtering, standardization, deduplication prevention, schema clarity, operational usefulness, and support for DCOIR collector / Gemini agent deliverables. Start from validated read-only full export/profile. Use aggressive cleanup and normalization recommendations, but pause before destructive or high-impact schema/data actions with exact approval packets. Preserve Delete Queue automation semantics and exclude Delete Queue from broad plan-scope analysis unless explicitly requested.",
+                                       "carry_forward_note":  "2026-05-20: WBS04 row cleanup complete; dedupe_signature remains review/open. Active branch moved to WBS06.01.",
+                                       "updated_at":  "2026-05-20T00:00:00.000Z",
+                                       "plan_title":  "MAKE THE AIRTABLE DATABASE BETTER DESIGNED",
+                                       "retention_class":  "working",
+                                       "plan_id":  "PLAN-AIRTABLE-DB-REDESIGN-20260508",
+                                       "active_task_id":  "DBREDESIGN-WBS-07.01",
+                                       "next_recommended_action":  "Next: WBS07.01 planning/packet for generic WBS replacement path. Start with reference inventory and migration design; do not create, replace, rename, or delete tables until exact approval packet is prepared and approved.",
+                                       "why_current_task_matters":  "This plan creates the durable execution structure for database redesign before mutations, so later batches cannot hand-wave field conversion, table replacement, select-option normalization, dedupe, backfill, or destructive approval gates.",
+                                       "Queue Control":  [
+                                                             "recW8cAlClYFEVhjF"
+                                                         ],
+                                       "plan_state":  "active",
+                                       "resume_detail":  "WBS06 field retirement/deletion cleanup completed 2026-05-20. Live Airtable schema readback found zero legacy_ fields remaining. WBS04.02 and WBS04.05 remain review/open for dedupe_signature helper-field decisions after later table/field-shape work. Active branch is now WBS07/WBS07.01 table retirement and replacement candidates."
+                                   }
+                    }
+                ]
+}
