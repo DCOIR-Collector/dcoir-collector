@@ -1,15 +1,15 @@
 {
-  "artifact_name": "chatgpt-exec-airtable-total-count-corrected-20260521T100417Z",
-  "exit_code": "1",
+  "artifact_name": "",
+  "exit_code": "",
   "github_ref": "refs/heads/main",
   "github_run_attempt": "1",
-  "github_run_id": "26221140304",
-  "github_sha": "8b4e44eedf1b033302a6e34fd436e90e0471b796",
-  "phase": "final-readback-commit",
+  "github_run_id": "26221840737",
+  "github_sha": "805dd9f1224e48852d733a71be4a12a598bb29b0",
+  "phase": "request-resolved",
   "request_id": "airtable-total-count-corrected-20260521T100417Z",
   "request_path": "chatgpt_staging/exec_requests/airtable-total-count-corrected-20260521T100417Z.json",
-  "result": "failure",
+  "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-21T10:44:24Z",
+  "updated_utc": "2026-05-21T11:00:12Z",
   "workflow": "chatgpt-exec"
 }
