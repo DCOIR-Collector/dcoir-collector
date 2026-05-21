@@ -5,7 +5,7 @@
 - safety: read-only Airtable export; no writes; no Delete Queue rows; no deletions
 - selected_table_count: 22
 - total_records_counted: 851
-- output_zip: D:\a\_temp\dcoir_chatgpt_exec\airtable-total-count-corrected-20260521T100417Z\downloads\dcoir_airtable_total_count_20260521_110450.chatgpt.zip
+- output_zip: D:\a\_temp\dcoir_chatgpt_exec\airtable-total-count-corrected-20260521T100417Z\downloads\dcoir_airtable_total_count_20260521_110544.chatgpt.zip
 
 | Table | Records exported | Readback file |
 |---|---:|---|

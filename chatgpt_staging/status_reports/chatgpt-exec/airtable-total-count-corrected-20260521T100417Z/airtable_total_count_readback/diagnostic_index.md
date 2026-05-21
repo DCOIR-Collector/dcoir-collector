@@ -1,10 +1,10 @@
 # DCOIR Airtable Database Health Export Diagnostic
 
-Created: 2026-05-21T11:04:54.1525361+00:00
+Created: 2026-05-21T11:05:48.1393131+00:00
 Tool version: 2026-05-03.5
 Success: True
-Output folder: D:\a\_temp\dcoir_chatgpt_exec\airtable-total-count-corrected-20260521T100417Z\downloads\dcoir_airtable_total_count_20260521_110450
-Output ZIP: D:\a\_temp\dcoir_chatgpt_exec\airtable-total-count-corrected-20260521T100417Z\downloads\dcoir_airtable_total_count_20260521_110450.chatgpt.zip
+Output folder: D:\a\_temp\dcoir_chatgpt_exec\airtable-total-count-corrected-20260521T100417Z\downloads\dcoir_airtable_total_count_20260521_110544
+Output ZIP: D:\a\_temp\dcoir_chatgpt_exec\airtable-total-count-corrected-20260521T100417Z\downloads\dcoir_airtable_total_count_20260521_110544.chatgpt.zip
 
 ## Fast triage files
 - run_summary.json
