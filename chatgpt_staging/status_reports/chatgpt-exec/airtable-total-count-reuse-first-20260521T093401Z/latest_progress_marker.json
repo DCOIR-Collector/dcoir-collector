@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "26222012967",
   "github_sha": "0d5fa7074a08a150bab37d5589aaff4808e62412",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "airtable-total-count-reuse-first-20260521T093401Z",
   "request_path": "chatgpt_staging/exec_requests/airtable-total-count-reuse-first-20260521T093401Z.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-21T11:03:38Z",
+  "updated_utc": "2026-05-21T11:03:41Z",
   "workflow": "chatgpt-exec"
 }
