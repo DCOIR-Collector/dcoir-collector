@@ -7,9 +7,9 @@
   "artifact_readback_committed": false,
   "artifact_readback_policy": "not_committed_for_chatgpt_exec; .gitignore intentionally excludes artifact_readback to avoid long-path checkout problems",
   "tracked_summary_policy": "requests/tools should write concise sanitized summaries beside workflow_report.md when ChatGPT connector-readable results are needed",
-  "github_run_id": "26222017208",
+  "github_run_id": "26222106602",
   "github_run_attempt": "1",
-  "github_sha": "1388a562543180de3b97a2a791b57dbb465c9bdd",
+  "github_sha": "201038b095258ebc4fda4d85f6f9cdc3bda0bb2f",
   "github_ref": "refs/heads/main",
-  "created_utc": "2026-05-21T11:04:59Z"
+  "created_utc": "2026-05-21T11:05:53Z"
 }
