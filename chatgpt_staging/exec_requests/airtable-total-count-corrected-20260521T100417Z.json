@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "airtable-total-count-corrected-20260521T100417Z",
+  "operator_approved": true,
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "script_path": "chatgpt_staging/exec_scripts/airtable-total-count-corrected-20260521T100417Z.ps1",
+  "approved_command_preview": "Run corrected read-only Airtable base count verification through the existing Airtable health export helper.",
+  "cleanup_request_after_run": true,
+  "notes": "Corrected read-only count verification through chatgpt-exec. No Airtable writes, no schema mutation, no deletes, no Supabase writes during execution. Follow the previously validated filesystem readback pattern for the Airtable health export helper."
+}
