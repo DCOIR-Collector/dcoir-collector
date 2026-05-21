@@ -270,8 +270,10 @@ function Invoke-DcoirActionsExecRequest {
     if ([string]::IsNullOrWhiteSpace($commandText)) { throw 'exec request requires non-empty command' }
     $approvedPreview = [string]$request.approved_command_preview
     if ([string]::IsNullOrWhiteSpace($approvedPreview)) { throw 'exec request requires approved_command_preview' }
-    $shell = [string]$request.shell
-    if ([string]::IsNullOrWhiteSpace($shell)) { $shell = 'powershell_5' }
+    $shell = 'powershell_5'
+    if (($request.PSObject.Properties.Name -contains 'shell') -and -not [string]::IsNullOrWhiteSpace([string]$request.shell)) {
+        $shell = [string]$request.shell
+    }
     $timeoutSeconds = 1800
     if ($request.PSObject.Properties.Name -contains 'timeout_seconds') { $timeoutSeconds = [int]$request.timeout_seconds }
     $retentionDays = 3
