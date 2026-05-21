@@ -1,15 +1,15 @@
 {
-  "artifact_name": "",
-  "exit_code": "",
+  "artifact_name": "chatgpt-exec-airtable-total-count-reuse-first-20260521T093401Z",
+  "exit_code": "1",
   "github_ref": "refs/heads/main",
   "github_run_attempt": "1",
   "github_run_id": "26217915023",
   "github_sha": "1b309c302133ccf0bd3c6cd49423b8ae2cd5062e",
-  "phase": "running-harness",
+  "phase": "harness-finished",
   "request_id": "airtable-total-count-reuse-first-20260521T093401Z",
   "request_path": "chatgpt_staging/exec_requests/airtable-total-count-reuse-first-20260521T093401Z.json",
-  "result": "running",
+  "result": "failure",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-21T09:34:54Z",
+  "updated_utc": "2026-05-21T09:34:57Z",
   "workflow": "chatgpt-exec"
 }
