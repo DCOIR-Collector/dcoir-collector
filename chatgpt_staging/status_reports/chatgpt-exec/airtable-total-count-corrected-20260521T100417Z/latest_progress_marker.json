@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "26221140304",
   "github_sha": "8b4e44eedf1b033302a6e34fd436e90e0471b796",
-  "phase": "harness-finished",
+  "phase": "final-readback-commit",
   "request_id": "airtable-total-count-corrected-20260521T100417Z",
   "request_path": "chatgpt_staging/exec_requests/airtable-total-count-corrected-20260521T100417Z.json",
   "result": "failure",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-05-21T10:44:22Z",
+  "updated_utc": "2026-05-21T10:44:24Z",
   "workflow": "chatgpt-exec"
 }
