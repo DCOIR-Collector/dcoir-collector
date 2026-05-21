@@ -1,4 +1,5 @@
 {
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
   "request_id": "airtable-total-count-reuse-first-20260521T093401Z",
   "operator_approved": true,
   "script_path": "chatgpt_staging/exec_scripts/airtable-total-count-reuse-first-20260521T093401Z.ps1",
