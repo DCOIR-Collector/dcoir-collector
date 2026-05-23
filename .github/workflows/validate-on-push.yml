@@ -159,6 +159,8 @@ jobs:
             'project_sources/gemini/tools/build_dcoir_gemini_release.py',
             'project_sources/gemini/tools/validate_dcoir_gemini_bundle.py',
             'project_sources/gemini/tools/validate_dcoir_gemini_behavior_scenarios.py',
+            'project_sources/gemini/tools/validate_dcoir_gemini_output_contract_regressions.py',
+            'project_sources/gemini/tools/fixtures/gemini_output_contract_regression_cases.json',
             'project_sources/collector/tools/compile_dcoir_collector_runtime.py',
             'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py',
             'project_sources/collector/tools/build_dcoir_collector_runtime_package.py',
@@ -193,7 +195,7 @@ jobs:
           if ($manifestMissing.Count -gt 0) {
             throw "Missing Gemini manifest-required/source-required surfaces: $($manifestMissing -join ', ')"
           }
-          $manifestSubAgents = @($geminiManifest.topology.sub_agent_files | ForEach-Object { ([string]$_).Replace('\','/') })
+          $manifestSubAgents = @($geminiManifest.topology.sub_agent_files | ForEach-Object { ([string]$_).Replace('\\','/') })
           if ($manifestSubAgents.Count -eq 0) {
             throw 'Gemini manifest topology.sub_agent_files is empty.'
           }
@@ -204,7 +206,7 @@ jobs:
           $agentBuildRoot = Join-Path $geminiBundleRoot '01_GEMINI_AGENT_BUILD'
           $bundleRootResolved = (Resolve-Path -LiteralPath $geminiBundleRoot).Path
           $discoveredSubAgents = @(Get-ChildItem -LiteralPath $agentBuildRoot -File -Filter 'Sub_Agent_*.md.txt' | ForEach-Object {
-            ($_.FullName.Substring($bundleRootResolved.Length + 1)).Replace('\','/')
+            ($_.FullName.Substring($bundleRootResolved.Length + 1)).Replace('\\','/')
           })
           $unlistedSubAgents = @($discoveredSubAgents | Where-Object { $_ -notin $manifestSubAgents })
           if ($unlistedSubAgents.Count -gt 0) {
