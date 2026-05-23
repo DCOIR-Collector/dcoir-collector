@@ -33,6 +33,19 @@ SCENARIOS = {
             ['operator', 'analyst'],
         ],
     },
+    'GeminiOutputLeakageAndDuplicateSuppression': {
+        'description': 'The stored Gemini source should explicitly block malformed preamble text, internal state leakage, duplicate final sections, and alternate draft spillover.',
+        'all_markers': [
+            'malformed preamble',
+            'duplicate final sections',
+            'routing state',
+            'exactly one final analyst-facing draft',
+        ],
+        'any_marker_groups': [
+            ['planner payloads', 'hidden diagnostics', 'yaml', 'json'],
+            ['alternate drafts', 'repeated near-identical section pairs', 'single clean final response'],
+        ],
+    },
     'GeminiSecurityProductNegativeControl': {
         'description': 'The stored Gemini source should preserve false-positive-aware handling for benign or dual-use security-product behavior.',
         'all_markers': ['false-positive-aware', 'security product'],
