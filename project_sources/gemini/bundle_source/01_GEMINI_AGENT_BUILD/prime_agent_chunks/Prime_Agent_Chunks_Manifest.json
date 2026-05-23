@@ -9,7 +9,7 @@
   "reassembly": {
     "method": "concatenate_chunks_in_manifest_order",
     "newline_policy": "preserve_chunk_text_exactly",
-    "expected_sha256": "086b9a14e33506765b5806cb9cbe7a30664ad29f35980cbcbd5dbbbc881ccb6b"
+    "expected_sha256": "338d7f471d2d89935379bedc90f158c85ebb73565b89330fc2ff98feb1fc5b9c"
   },
   "chunks": [
     {
@@ -40,8 +40,8 @@
       "chunk_id": "03",
       "title": "Response_Completeness_Tools_And_Command_Pacing",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_03_Response_Completeness_Tools_And_Command_Pacing.md.txt",
-      "sha256": "e13099ef5064577019f7af9a39c6d4fd122ddd435de41c23761e5e10759cb8e3",
-      "line_count": 56,
+      "sha256": "9f5f1c6691758ad807654c7688d9d8521324c8df9c1e30e9289de21205d50fdd",
+      "line_count": 66,
       "starts_with": "### Response completeness, tool availability, and command pacing"
     },
     {
@@ -64,8 +64,8 @@
       "chunk_id": "06",
       "title": "Zero_Result_Retrieval_Misses_And_Web_Intel",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_06_Zero_Result_Retrieval_Misses_And_Web_Intel.md.txt",
-      "sha256": "38df30018beb2b191ae0520a72525f9a27be308c99a9d457ce8b87414e772cf3",
-      "line_count": 37,
+      "sha256": "5c3c75cb6521079937f138c57d12a8a73664b60ad93eb742321c4aec09eaf8b9",
+      "line_count": 45,
       "starts_with": "### Zero-result handling, retrieval misses, and web intelligence"
     },
     {
@@ -96,8 +96,8 @@
       "chunk_id": "10",
       "title": "Tool_Rules",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_10_Tool_Rules.md.txt",
-      "sha256": "528a1df620317cb62704b0f0f08727cd5848fe7a10b000f5b85cfa5fa20d9273",
-      "line_count": 44,
+      "sha256": "e52faeb275b08e8ff15435275dd32fd35d4c76ac741f536d2a1dcdcfd6d02160",
+      "line_count": 51,
       "starts_with": "### Tool rules"
     },
     {
@@ -136,16 +136,16 @@
       "chunk_id": "15",
       "title": "Response_Behavior_And_Output_Contract",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_15_Response_Behavior_And_Output_Contract.md.txt",
-      "sha256": "37dc62501dc972b46a053282e4f7b12b620f142407707e21cc2e53ab0b4d6398",
-      "line_count": 39,
+      "sha256": "3f960bd3683f1721cecb35ced92c4a802ceb62c9c422a06f8c1e365c6cc63e59",
+      "line_count": 49,
       "starts_with": "### Response behavior and output contract"
     },
     {
       "chunk_id": "16",
       "title": "Internal_Orchestration_Model",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_16_Internal_Orchestration_Model.md.txt",
-      "sha256": "e46677cf23c2e1efb04a7464eb20b93352a67b85d03870c59d4993c049168840",
-      "line_count": 37,
+      "sha256": "fa158fb506861fcc55bc93d70f15ce83cc3342a3b4af746fb14c558473f68aec",
+      "line_count": 40,
       "starts_with": "### Internal orchestration model"
     },
     {
