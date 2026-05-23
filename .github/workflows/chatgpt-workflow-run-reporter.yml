@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not use for live polling of active request-id workflows; native staging workflows use their own request-scoped reports.
 # Trigger model:
-# - workflow_run completed for: validate-on-push, Dependency Review, Dependabot auto-merge, scheduled-health-check, collector-documentation-quality, refresh-skill-parity-surfaces, Workflow maintenance audit, manual-gemini-bundle-build, manual-collector-runtime-package-build, manual-collector-optional-exe-build, manual-test-framework-validate, manual-full-validation, Ops apply zip request, Ops dispatch request, Ops file delete request, Ops restructure map request, Publish Knowledge to Wiki, chatgpt-workflow-reporting-validation; workflow_dispatch inputs: note
+# - workflow_run completed for: validate-on-push, Dependency Review, Dependabot auto-merge, scheduled-health-check, collector-documentation-quality, Workflow maintenance audit, manual-gemini-bundle-build, manual-collector-runtime-package-build, manual-collector-optional-exe-build, manual-test-framework-validate, manual-full-validation, Ops apply zip request, Ops dispatch request, Ops file delete request, Ops restructure map request, Publish Knowledge to Wiki, chatgpt-workflow-reporting-validation; workflow_dispatch inputs: note
 # Required inputs:
 # - note: Optional operator note for manual reporter smoke checks default=manual reporter smoke check
 # Required secrets/config:
@@ -35,7 +35,6 @@ on:
       - Dependabot auto-merge
       - scheduled-health-check
       - collector-documentation-quality
-      - refresh-skill-parity-surfaces
       - Workflow maintenance audit
       - manual-gemini-bundle-build
       - manual-collector-runtime-package-build
