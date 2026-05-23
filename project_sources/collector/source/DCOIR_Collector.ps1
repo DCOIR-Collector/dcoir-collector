@@ -162,7 +162,7 @@ $Global:ErrorsLogPath = $null
 $Global:CurrentRunId = $null
 $script:ContextualHelpTopic = $null
 
-$collectorPartsRoot = Join-Path (Split-Path -Parent $ScriptFilePath) "collector_parts"
+$collectorPartsRoot = Join-Path (Split-Path -Parent $ScriptFilePath) "parts"
 $collectorPartFiles = @(
   "DCOIR_Collector.01_Core_State_And_Utilities.ps1",
   "DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1",
