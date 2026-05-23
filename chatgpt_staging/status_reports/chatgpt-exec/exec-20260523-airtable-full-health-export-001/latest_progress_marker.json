@@ -1,0 +1,15 @@
+{
+  "artifact_name": "",
+  "exit_code": "",
+  "github_ref": "refs/heads/main",
+  "github_run_attempt": "1",
+  "github_run_id": "26324820546",
+  "github_sha": "19e3b02eba55ba8ea1da217aa041db6828a398d1",
+  "phase": "request-resolved",
+  "request_id": "exec-20260523-airtable-full-health-export-001",
+  "request_path": "chatgpt_staging/exec_requests/exec-20260523-airtable-full-health-export-001.json",
+  "result": "running",
+  "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
+  "updated_utc": "2026-05-23T05:38:58Z",
+  "workflow": "chatgpt-exec"
+}
