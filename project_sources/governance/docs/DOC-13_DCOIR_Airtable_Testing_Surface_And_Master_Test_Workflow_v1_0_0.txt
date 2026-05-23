@@ -1,35 +1,8 @@
-DCOIR Airtable Testing Surface And Master Test Workflow v1.0.0
+DCOIR Testing Surface Note
 
 Purpose
-- Record the operating decision that Airtable table `Validation Test Cases` is the standard dynamic manual-testing surface for collector and Gemini sessions.
+- Preserve a narrow retained note for testing-surface expectations.
 
-Scope
-- Airtable owns repeatable manual-testing workflow state: test IDs, commands or methods, pass criteria, fail criteria, observed status, evidence, and source basis.
-- GitHub remains the authority for executable source, packaging files, workflows, governed readable docs, and engineering issues.
-- This workflow complements the existing repo-based automated validation line. It does not replace GitHub Actions or harness execution.
-
-Default session behavior
-- On future collector or Gemini testing sessions, open Airtable table `Validation Test Cases` first.
-- Select the active rows relevant to the current build or artifact.
-- Execute the rows in a bounded order rather than reconstructing the test plan from chat continuity alone.
-- Update Observed Status and Evidence / Notes during the run.
-- Add new rows for new aliases, regressions, comparison methods, or implementation boundaries.
-- Retire or narrow rows when the implementation surface changes materially.
-
-Current practical lessons from live testing
-- Repeated collect-style runs require re-staging `DCOIR_Collector.zip` because collect consumes or moves the zip and cleanup removes package state.
-- Targeted collection currently proves scope, guidance, prioritization, and targeted plan shaping, but does not yet prove true artifact-family exact filtering across the whole collector line.
-- The parallelism artifact is assessment-only in the current release; runtime remains serial by default.
-- Real oversized artifact chunking for live outputs remains an open regression candidate.
-
-Standard surfaces
-- Airtable: `Validation Test Cases`, Work Items, Session Checkpoints, Operator Preferences
-- GitHub: `project_sources/collector/source/DCOIR_Collector.ps1`, `project_sources/collector/harness/run_DCOIR_Tests.ps1`, `dcoir_skills/`, `.github/workflows/`, governed docs and logs
-
-Recommended future enforcement points
-- `dcoir-session-resume`
-- `dcoir-memory-preflight`
-- `dcoir-validation-orchestrator`
-- `dcoir-session-tracker`
-- `dcoir-collector-qa`
-- `dcoir-live-test-remediation-planner`
+Current rule
+- Do not treat removed skill-mirror paths as active GitHub testing surfaces.
+- Keep testing guidance focused on the collector, Gemini, workflows, and retained documentation that still exists.

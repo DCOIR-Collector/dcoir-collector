@@ -1,48 +1,25 @@
 ---
 name: Bug report
-about: Report a reproducible code, script, workflow, or repo behavior defect
-title: '[Bug]: '
-labels: ['bug', 'needs-triage']
+about: Report a reproducible defect in repo behavior, workflow behavior, documentation, or collector/Gemini behavior.
+title: ''
+labels: ''
 assignees: ''
-
 ---
 
-## Bug report
+## Summary
 
-### Affected surface
-- [ ] Collector source or harness
-- [ ] GitHub workflow or packaging pipeline
-- [ ] Helper-skill source or parity surface
-- [ ] Documentation build or validation script
-- [ ] Other
+## Expected behavior
 
-### Summary
-Describe the defect and the user-visible impact.
+## Actual behavior
 
-### Reproduction steps
-1.
-2.
-3.
+## Reproduction steps
 
-### Actual result
-Paste the observed behavior, error text, log excerpt, or failed command output.
+## Affected surfaces
 
-### Expected result
-Describe the expected behavior.
+- [ ] Collector/runtime
+- [ ] Gemini/runtime guidance
+- [ ] Workflow automation
+- [ ] Documentation or repository guidance
+- [ ] Operator tooling
 
-### Evidence
-Attach screenshots, logs, output files, workflow run links, issue links, or PR links.
-
-### Environment
-- OS / runner:
-- PowerShell version, if relevant:
-- Python version, if relevant:
-- Local workstation, GitHub Actions, or Elastic response-action lane:
-
-### Safety / security note
-Does this expose credentials, tokens, sensitive paths, or misleading operator instructions?
-- [ ] No
-- [ ] Yes - explain and treat as high priority
-
-### Recommended next action
-Describe the likely fix, validation, or follow-up investigation.
+## Validation or evidence

@@ -168,7 +168,6 @@ jobs:
             'project_sources/collector/tools/test_verify_collector_documentation_quality.py',
             '.github/workflows/manual-gemini-bundle-build.yml',
             '.github/workflows/manual-collector-runtime-package-build.yml',
-            'dcoir_skills/project_discovery_contract.json',
             'supporting_assets/DCOIR_Collector.zip'
           )
           $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })

@@ -1,35 +1,16 @@
-DCOIR Repo Operational Keep Map v4
+DCOIR Repo Operational Keep Map
 
 Purpose
-Use this attachment as an operational keep/source-role map for malwaredevil/dcoir-collector. Airtable registry tables now drive repo surface classification, queue state, cleanup state, and helper-skill operational state.
+- Provide high-level keep/delete guidance for active repository surfaces.
 
-Always keep unless current authority changes
-- .github/ issue templates, workflows, and GitHub repo support files.
-- .gitignore and other repository metadata files that belong in the working tree.
-- AGENTS.md when present and current.
-- README.md and current folder README surfaces.
-- Current governed source files required by active Airtable plans or Repo Surface Registry.
-- project_sources/collector/source/DCOIR_Collector.ps1 unless a source-authority review changes the collector source role.
-- project_sources prompt-pack / Gemini source folders that active plan state or source review keeps current.
-- dcoir_skills/ current governed helper-skill source folders.
-- dcoir_skills/project_discovery_contract.json when still used for repo source-role discovery.
-- dcoir_skills/skill_parity_manifest.json and dcoir_skills/skill_parity_summary.md when current.
-- knowledge/task_memory/ canonical reusable task-memory bank when still referenced by preflight/source review.
-- project_settings/ current project settings mirrors when intentionally retained.
-- release_notes/ current release notes and promoted delivery history.
-- supporting_assets/ retained assets still referenced by current workflows.
+Keep
+- source code, workflows, operator tools, durable docs, release history, and retained supporting assets that are still referenced by active repo behavior
 
-Detached from normal startup
-GitHub CP-01/CP-02 and old todo files are retained only as fallback/promoted-history/source-task inputs unless Airtable or source-authority review reclassifies them. Normal startup uses Airtable Governance Control Plane, Queue Control, Work Items, Plans, Session Checkpoints, Operator Preferences, Admin Registry, Repo Surface Registry, and helper-specific memory tables.
+Do not keep by default
+- retired skill-mirror surfaces
+- parity-refresh surfaces that exist only to maintain retired mirrors
+- duplicated operating guidance that conflicts with the current retained model
 
-Operational cleanup method
-1. Read Airtable Governance Control Plane, Queue Control, Work Items, Plans, Repo Surface Registry, Admin Registry, Delete Queue, DCOIR Lifecycle Ledger, and active plan/work state.
-2. Read GitHub CP/source files only when retained source-role or promoted-history comparison requires them.
-3. Classify each candidate file or folder against Repo Surface Registry, Admin Registry, current source-role evidence, and current live schema.
-4. Queue Airtable record deletions in Delete Queue rather than deleting directly unless immediate deletion is explicitly authorized and dependency order is safe.
-5. Package only approved affected repo-relative files for GitHub Desktop updates, with no wrapper root and no .git directory.
-6. Operator inspects in GitHub Desktop, commits, and pushes.
-7. Assistant verifies remote GitHub readback when repo readback is part of the task.
-
-Hard stop
-Do not remove a file, folder, or Airtable record solely because it looks stale. Every deletion must have a current authority basis and no remaining live dependency.
+Hard rule
+- Do not delete a path solely because it looks old.
+- Do delete or rewrite active-looking surfaces when they teach retired behavior or point to removed dependencies.

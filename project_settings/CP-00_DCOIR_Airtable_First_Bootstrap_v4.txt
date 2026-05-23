@@ -1,34 +1,10 @@
-CP-00 DCOIR Airtable-First Bootstrap
+CP-00 Bootstrap Note
 
-Purpose
-This file is a ChatGPT Project-space bootstrap pointer for AFRICOM_SOC_IR / DCOIR. It is not a governed readable-source repository and must not replace Airtable live authority or GitHub governed source files.
+This retained file is a lightweight bootstrap pointer only.
 
-Authority split
-1. Project Instructions are the first startup anchor.
-2. This CP-00 file is the second startup pointer when present.
-3. Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST is the active startup/load-sequence authority.
-4. Airtable is live operational authority for queue order, branch priority, active execution order, Plans, Work Items, Session Checkpoints, Idea Inbox, Operator Preferences, Validation Test Cases, Validation Evidence, Delete Queue, DCOIR Lifecycle Ledger, Admin Registry, Repo Surface Registry, Local Configuration Registry, Operator Tools Registry, and helper-skill durable memory where a table exists.
-5. GitHub repository malwaredevil/dcoir-collector remains governed source/readback, helper-skill source, source-code truth, reusable tool-code truth, packaging source, and promoted history only when a repository-source task requires it.
-6. GitHub CP-01/CP-02 and old GitHub todo files are detached from normal startup. They are fallback/promoted-history/source-task inputs only.
+Current posture
+- Use repository guidance plus the `ircore` operating model for current source-controlled work.
+- Do not treat this file as a full current-state control plane.
+- Do not use this file to reintroduce Airtable-first startup behavior or the retired DCOIR helper-skill gate.
 
-Required startup order
-1. Use Project Instructions.
-2. Read this CP-00 pointer when present.
-3. Read Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST.
-4. Invoke dcoir-session-resume.
-5. Invoke dcoir-memory-preflight.
-6. Invoke dcoir-airtable-schema-cache to refresh or validate the local schema cache before broad Airtable reads.
-7. During automatic startup/re-anchor, prefer compact non-display Airtable reads for Session Checkpoints, Queue Control, Work Items, active Plans, Operator Preferences, Admin Registry skill-state rows, relevant helper-memory tables, SKILLROUTE-* rows when skill routing may apply, Operator Tools Registry when reusable operator tools may apply, and task-specific current tables. During execution, audit, cleanup, duplicate comparison, or verification, Airtable embedded table display is allowed when it materially improves correctness or when the operator has approved it; summarize displayed evidence in chat.
-8. Read GitHub only when the immediate task requires governed repo source/readback, promoted-history comparison, packaging, source-code validation, GitHub Desktop bundle generation, or explicit repo readback.
-
-Schema-readback rule
-Use current Airtable schema readback before assuming any registry or task-detail table exists. Do not require Plan Tasks, Plan Checkpoints, Skill State Registry, Schema Registry, Tracking Registry, Repo File Coverage Detail, or Retained Repo Manifest unless current schema readback proves the table exists.
-
-Dynamic helper-skill routing rule
-dcoir-memory-preflight uses its own Airtable table and SKILLROUTE-* rows as the dynamic helper-skill routing catalog. Do not hardcode installed-skill inventory into CP-00 or helper-skill packages. When a skill is added, removed, renamed, or materially repurposed, update the Airtable routing rows.
-
-Project-space rule
-Project space may hold this bootstrap pointer and operator-facing attachment files. It must not become a duplicate editable readable-source repository. Durable startup/control-plane state lives in Airtable. Durable governed source files and reusable operator-tool code remain in GitHub unless an explicit source-authority decision changes that role.
-
-Schema-cache startup rule
-dcoir-airtable-schema-cache is a startup schema-readiness helper. It may cache live schema readback for fast table/field lookup, but live Airtable schema readback is still required before destructive operations, field/type changes, migrations, or dependency-sensitive Delete Queue processing.
+If a newer retained repo guidance file conflicts with this note, prefer the newer retained guidance.

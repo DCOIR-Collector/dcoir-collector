@@ -1,38 +1,9 @@
-DCOIR Skill Operational Install and Parity Order
+DCOIR Skill Transition Note
 
 Purpose
-Use this attachment to keep DCOIR helper-skill update, manual install, marker verification, Airtable operational registry updates, dynamic skill routing, and repo parity steps consistent. Skill cutover is complete; this is the operational skill-maintenance flow.
+- Record that the legacy repo-side DCOIR skill mirror and parity-refresh process have been retired.
 
-Operational skill authority rule
-Helper skills must not require GitHub CP-01/CP-02 for normal startup, resume, queue selection, active plan recovery, administrative control, helper-memory lookup, operator-preference recovery, or skill routing. Skills must use Airtable CONTROL-STARTUP-AIRTABLE-FIRST and live Airtable state first. GitHub CP/source files are allowed only for repository-source inspection, source-role resolution, packaging/readback, promoted-history comparison, explicit operator request, or source-code validation.
-
-Current schema rule
-Use Admin Registry skill-state rows and helper-specific memory tables for skill-state and parity housekeeping unless live Airtable schema readback proves a dedicated Skill State Registry exists. Do not assume a dedicated Skill State Registry table exists.
-
-dcoir-memory-preflight routing rule
-dcoir-memory-preflight must use its own Airtable table and SKILLROUTE-* rows as the dynamic installed/project helper-skill routing catalog. Do not hardcode a point-in-time installed-skill list into dcoir-memory-preflight, Project Instructions, or project attachments. When a skill is added, removed, renamed, or materially repurposed, update the SKILLROUTE rows.
-
-Manual install rule for skill updates
-1. Patch governed skill source under dcoir_skills/<skill-name>/.
-2. Ensure SKILL.md starts with YAML frontmatter. No marker or comment may appear before the opening ---.
-3. Add or update one skill-marker entry after YAML frontmatter for changed SKILL.md files.
-4. Validate SKILL.md frontmatter, agents/openai.yaml, icon presence, referenced files, file names, package size, and runtime residue.
-5. Run relevant script syntax checks and skill regression checks.
-6. Package only affected skill ZIPs.
-7. If multiple skills changed, deliver one outer ZIP containing only affected per-skill ZIPs named after live skills.
-8. Operator installs skill ZIPs manually.
-9. Verify installed markers using the skill editor as primary truth when available. Assistant readback is secondary and may lag.
-10. After install succeeds or when operator workflow requires repo-first parity, apply the matching GitHub Desktop repo parity bundle or direct GitHub update.
-11. Verify repo readback and update Admin Registry skill-state rows, helper-specific memory tables, SKILLROUTE-* rows, or current schema equivalent as needed.
-
-Known install blocker avoided
-Do not place HTML markers, comments, or any text before SKILL.md YAML frontmatter. ChatGPT skill install can reject that as malformed frontmatter.
-
-Durable memory posture
-Stateful dcoir helper skills should use Airtable durable helper-memory tables where those tables exist. GitHub dcoir_skill_memory/ is legacy/source-basis history unless Airtable or source-authority review reclassifies it.
-
-Reusable tool posture
-Reusable operator-side scripts belong in GitHub operator_tools/ and are indexed in Operator Tools Registry. The GitHub Desktop lane advisor should check that registry and the repo catalog before creating or recommending local helper scripts.
-
-Startup invocation rule
-During normal DCOIR startup/re-anchor, invoke dcoir-session-resume, dcoir-memory-preflight, and then dcoir-airtable-schema-cache before broad Airtable table reads. Keep automatic startup and schema-cache output compact/non-display by default. During execution, audit, cleanup, duplicate comparison, or verification, Airtable embedded table display is allowed when it materially improves correctness or when the operator has approved it; summarize displayed evidence in chat.
+Current rule
+- Do not require repository parity maintenance for removed `dcoir_skills/` source mirrors.
+- Use the compact `ircore` helper model for current attached-skill behavior.
+- When skill-related repo guidance must be updated, treat it like any other governed documentation or workflow change: scoped branch, validation, readback, and review.
