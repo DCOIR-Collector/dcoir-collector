@@ -1,13 +1,5 @@
-# DCOIR repository review routing.
-# Replace @malwaredevil with a narrower team or reviewer set if one is created.
-# Keep this file aligned to retained repo surfaces. Do not add cleanup-only
-# legacy folders here unless they are explicitly retained after T99.
-
 * @malwaredevil
 .github/ @malwaredevil
 project_sources/ @malwaredevil
-dcoir_skills/ @malwaredevil
 knowledge/ @malwaredevil
-project_settings/ @malwaredevil
-release_notes/ @malwaredevil
-supporting_assets/ @malwaredevil
+operator_tools/ @malwaredevil
