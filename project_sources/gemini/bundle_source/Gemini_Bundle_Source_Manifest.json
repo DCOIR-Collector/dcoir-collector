@@ -118,7 +118,8 @@
     "knowledge/Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline.md",
     "knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md",
     "knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md",
-    "knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md"
+    "knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md",
+    "knowledge/Knowledge - 18 - Gemini Research Findings and Runtime Boundaries.md"
   ],
   "prime_agent_source_mode": "chunked_reassembled",
   "prime_agent_chunk_manifest": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Chunks_Manifest.json",
