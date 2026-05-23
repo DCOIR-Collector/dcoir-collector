@@ -1,49 +1,8 @@
-DCOIR Airtable Surface Map and Startup Order
+DCOIR Legacy Airtable Surface Map
 
-Purpose
-Use this file as an operator-readable attachment that explains which Airtable tables are live authority during AFRICOM_SOC_IR / DCOIR work. Airtable is operational authority. This file supports startup and recovery and is not a second governed source repository.
+Status
+- Legacy reference for narrow migration and verification use only.
 
-Startup order
-1. Project Instructions.
-2. CP-00_DCOIR_Airtable_First_Bootstrap.txt when present, as pointer only.
-3. Airtable Governance Control Plane row CONTROL-STARTUP-AIRTABLE-FIRST.
-4. dcoir-session-resume.
-5. dcoir-memory-preflight.
-6. dcoir-airtable-schema-cache schema readiness refresh or validation.
-7. Airtable Session Checkpoints, Queue Control, Work Items, active Plans, Operator Preferences, Admin Registry skill-state rows, dcoir-memory-preflight SKILLROUTE-* rows when skill routing may apply, Operator Tools Registry when local tools may apply, and skill-specific durable memory tables.
-8. GitHub only when repository source/readback, promoted-history comparison, packaging, source-code validation, GitHub Desktop bundle generation, or explicit repo readback requires it.
-
-Live operational authority tables
-- Governance Control Plane: startup/control-plane authority and GitHub/Airtable/Project role definitions.
-- Queue Control: canonical active queue branch and resume rules.
-- Work Items: canonical executable work queue and task-level execution rows.
-- Plans: multi-step parent scope, active plan context, and resume guidance.
-- Session Checkpoints: session closeout, resume notes, and continuity checkpoints.
-- Idea Inbox: raw idea capture, deferred improvements, and promotion candidates.
-- Operator Preferences: durable operator workflow preferences and approved process rules.
-- Validation Test Cases: dynamic catalog for collector, Gemini, prompt-pack, regression, Airtable, and acceptance tests.
-- Validation Evidence: proof/readiness evidence for validation and release checks.
-- Repo Surface Registry: repo-surface classification, source role, keep/delete/replacement evidence.
-- Admin Registry: administrative registry for schema-governance, default-policy inventory, object state, cleanup evidence, and skill-state rows when no dedicated current table exists.
-- dcoir-memory-preflight: helper-memory table and SKILLROUTE-* dynamic helper-skill routing catalog.
-- Operator Tools Registry: reusable operator-side tool discovery and launcher guidance. GitHub operator_tools/ remains source of truth for tool code.
-- Delete Queue: Airtable-native deletion queue with approval and verification gates.
-- DCOIR Lifecycle Ledger: readback/history ledger for intake, promotion, planning, execution, cleanup, migration, deletion, and closeout lifecycle events.
-- Local Configuration Registry: configuration names and safe reference guidance only; not secret storage.
-
-Tables not assumed by default
-Do not assume these exist unless live schema readback proves it: Plan Tasks, Plan Checkpoints, Skill State Registry, Schema Registry, Tracking Registry, Repo File Coverage Detail, Retained Repo Manifest. Use the live operational tables above as the default replacement model.
-
-Rules
-- Prefer compact non-display Airtable reads during automatic startup/re-anchor and routine recovery.
-- During execution, audit, cleanup, duplicate comparison, or verification, Airtable embedded table display is allowed when it materially improves correctness or when the operator has approved it. Avoid unnecessary UI spam and summarize displayed evidence in chat.
-- Do not fetch GitHub CP-01/CP-02 during normal startup when CONTROL-STARTUP-AIRTABLE-FIRST is present and current.
-- Do not let stale GitHub todo files override Airtable live queue records.
-- Do not treat helper-memory tables as GitHub source authority.
-- Do not hardcode installed-skill inventory into project attachments or helper packages; use SKILLROUTE-* rows.
-- Do not store primary reusable tool code in Airtable when GitHub operator_tools/ is the source of truth.
-- Do not silently persist new durable preferences; surface them for operator approval first.
-- Do not delete Airtable records directly when Delete Queue workflow applies.
-
-Schema-cache rule
-Use dcoir-airtable-schema-cache during startup and re-anchor to reduce repeated schema-discovery roundtrips and expose current table/field metadata. Treat its cache as advisory; require fresh live schema readback before writes, deletes, migrations, or dependency-sensitive work.
+Current rule
+- Do not use this file as the active startup or authority order for current repository work.
+- Use it only when a migration or verification task explicitly requires legacy surface interpretation.
