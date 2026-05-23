@@ -131,6 +131,7 @@ function Invoke-Collector {
     StdOut = $stdout
     DisplayCommand = $invocation.DisplayCommand
     CollectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
+    CleanupStatus = Parse-OutputValue -Text $stdout -Key "CLEANUP_STATUS"
     RunId = Parse-OutputValue -Text $stdout -Key "RUN_ID"
     NextGetFile = Parse-OutputValue -Text $stdout -Key "NEXT_GET_FILE"
     CleanupCommand = Parse-OutputValue -Text $stdout -Key "CLEANUP_COMMAND"
@@ -187,16 +188,19 @@ if (@($missing).Count -gt 0) {
 $cleanupSummary = "SKIPPED"
 if (-not $SkipCleanup) {
   $cleanup = Invoke-Collector -CollectorArgs @("-Quick","cleanup")
-  if ($cleanup.ExitCode -ne 0 -or $cleanup.CollectorReportedStatus -notin @("SUCCESS","PARTIAL_SUCCESS")) {
+  $cleanupAccepted = $false
+  if ($cleanup.ExitCode -eq 0 -and $cleanup.CollectorReportedStatus -in @("SUCCESS","PARTIAL_SUCCESS")) { $cleanupAccepted = $true }
+  if ($cleanup.ExitCode -eq 0 -and $cleanup.CleanupStatus -eq "COMPLETE") { $cleanupAccepted = $true }
+  if (-not $cleanupAccepted) {
     $summary = @(
       "STATUS=FAIL",
-      ("MESSAGE=Cleanup failed after default no-flags collect. ExitCode={0}; STATUS={1}" -f $cleanup.ExitCode, $cleanup.CollectorReportedStatus),
+      ("MESSAGE=Cleanup failed after default no-flags collect. ExitCode={0}; STATUS={1}; CLEANUP_STATUS={2}" -f $cleanup.ExitCode, $cleanup.CollectorReportedStatus, $cleanup.CleanupStatus),
       ("LOG_PATH={0}" -f $LogPath)
     )
     Set-Content -Path $SummaryPath -Value $summary -Encoding UTF8
-    throw ("Cleanup failed after default no-flags collect. ExitCode={0}; STATUS={1}" -f $cleanup.ExitCode, $cleanup.CollectorReportedStatus)
+    throw ("Cleanup failed after default no-flags collect. ExitCode={0}; STATUS={1}; CLEANUP_STATUS={2}" -f $cleanup.ExitCode, $cleanup.CollectorReportedStatus, $cleanup.CleanupStatus)
   }
-  $cleanupSummary = $cleanup.CollectorReportedStatus
+  $cleanupSummary = if ($cleanup.CleanupStatus) { $cleanup.CleanupStatus } else { $cleanup.CollectorReportedStatus }
 }
 
 $summary = @(
