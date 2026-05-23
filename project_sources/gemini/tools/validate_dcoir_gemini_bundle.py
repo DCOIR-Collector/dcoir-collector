@@ -94,7 +94,7 @@ def main() -> int:
     if missing_files:
         errors.append('missing required source-root files: ' + ', '.join(missing_files))
     if missing_source_required_files:
-        errors.append('missing source-required source-root files: ' + ', '.join(missing_source_REQUIRED_files))
+        errors.append('missing source-required source-root files: ' + ', '.join(missing_source_required_files))
 
     generated_dir = manifest.get('generated_knowledge_attachment_dir', DEFAULT_GENERATED_KNOWLEDGE_DIR)
     knowledge_sources = sorted(manifest.get('knowledge_attachment_sources', []))
