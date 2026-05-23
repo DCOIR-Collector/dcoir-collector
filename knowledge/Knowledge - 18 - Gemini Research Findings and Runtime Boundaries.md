@@ -4,6 +4,8 @@ _Governed summary of post-research Gemini design findings that affect DCOIR prom
 
 **Summary:** Use this page when changing Gemini prime-agent or sub-agent source, output-contract wording, grounding claims, or runtime-validation expectations. It condenses the highest-value findings from the final Gemini research reference set so those findings do not remain trapped in a legacy Airtable export.
 
+**Packaging boundary:** This page is operator-facing maintained knowledge for future Gemini source work. It should guide how Gemini source is written and validated, but it is not part of the generated `02_PRIME_AGENT_ATTACHMENTS` runtime set.
+
 ---
 
 ## Why this page exists
