@@ -53,8 +53,6 @@ This map is intentionally explicit. It exists so the operator, the maintainer, a
 17. Knowledge - 17 - Collector Feature and Output Contract Reference
 - Purpose: preserve the canonical collector feature map and high-level output contract so feature descriptions, validation expectations, and Gemini interpretation do not drift across runbooks, troubleshooting, FAQ, and EXE guidance.
 
-18. Knowledge - 18 - Gemini Research Findings and Runtime Boundaries
-- Purpose: preserve the governed Gemini research findings that sharpen runtime truthfulness, staged execution, grounded-source boundaries, output-contract realism, and observability discipline across the current Gemini bundle source.
 ## Maintenance rule
 
-The maintained source is `knowledge/*.md`. The build process packages those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` inside the generated release ZIP by appending `.txt` to the source filename. Do not maintain duplicate Knowledge attachment source files under `bundle_source`. `DCOIR_KNOWLEDGE_INDEX.md` is a repo-level operator entry point and is not part of the Gemini attachment set unless the manifest is intentionally expanded.
+The maintained source is `knowledge/*.md`. The build process packages only the manifest-listed `knowledge_attachment_sources` directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` inside the generated release ZIP by appending `.txt` to the source filename. Do not maintain duplicate Knowledge attachment source files under `bundle_source`. Maintained knowledge pages that guide future Gemini source work but are not meant for runtime attachment must stay out of this map and be listed under `operator_only_knowledge_sources` in the manifest. `DCOIR_KNOWLEDGE_INDEX.md` is a repo-level operator entry point and is not part of the Gemini attachment set unless the manifest is intentionally expanded.
