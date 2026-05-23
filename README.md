@@ -27,4 +27,5 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 
 - Prefer one scoped branch and one reviewable PR per coherent cleanup or feature wave.
 - Keep workflow, documentation, and tooling assumptions in sync when a shared surface is removed.
+- Prefer squash merge for broad governance or cleanup PRs so the default-branch history stays readable.
 - Leave historical evidence alone unless it is actively misleading current behavior.
