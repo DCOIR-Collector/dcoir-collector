@@ -1,0 +1,151 @@
+﻿{
+    "schema":  "dcoir.airtable.final_full_export.readback.v1",
+    "request_id":  "airtable-final-full-export-20260523T085416Z",
+    "success":  true,
+    "purpose":  "Read-only final full Airtable base export before Airtable removal from the agent.",
+    "selected_table_count":  22,
+    "export_mode":  "FullRecords",
+    "full_record_dump":  true,
+    "read_only_airtable":  true,
+    "no_airtable_writes":  true,
+    "no_delete_queue_rows":  true,
+    "no_record_deletions":  true,
+    "total_records_counted":  851,
+    "output_folder":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\airtable-final-full-export-20260523T085416Z\\downloads\\dcoir_airtable_final_full_export_20260523_085535",
+    "output_zip":  "D:\\a\\_temp\\dcoir_chatgpt_exec\\airtable-final-full-export-20260523T085416Z\\downloads\\dcoir_airtable_final_full_export_20260523_085535.chatgpt.zip",
+    "tables":  [
+                   {
+                       "table_name":  "Admin Registry",
+                       "table_id":  "tblFaJW1V2DPc9css",
+                       "record_count_exported":  127,
+                       "records_file":  "records/table.Admin_Registry_tblFaJW1V2DPc9css.records.json"
+                   },
+                   {
+                       "table_name":  "DCOIR Cleanup Scaffold Registry",
+                       "table_id":  "tblvtcId7PiFKvfKO",
+                       "record_count_exported":  0,
+                       "records_file":  "records/table.DCOIR_Cleanup_Scaffold_Registry_tblvtcId7PiFKvfKO.records.json"
+                   },
+                   {
+                       "table_name":  "DCOIR Cleanup WBS",
+                       "table_id":  "tblRxTmpW0VunQlUK",
+                       "record_count_exported":  73,
+                       "records_file":  "records/table.DCOIR_Cleanup_WBS_tblRxTmpW0VunQlUK.records.json"
+                   },
+                   {
+                       "table_name":  "DCOIR Lifecycle Ledger",
+                       "table_id":  "tblNsjkGUUIdRpHuE",
+                       "record_count_exported":  1,
+                       "records_file":  "records/table.DCOIR_Lifecycle_Ledger_tblNsjkGUUIdRpHuE.records.json"
+                   },
+                   {
+                       "table_name":  "dcoir-decision-policy",
+                       "table_id":  "tblKHVXq16Xd5I31m",
+                       "record_count_exported":  10,
+                       "records_file":  "records/table.dcoir-decision-policy_tblKHVXq16Xd5I31m.records.json"
+                   },
+                   {
+                       "table_name":  "dcoir-memory-preflight",
+                       "table_id":  "tblcNNuKqi8IkFsSQ",
+                       "record_count_exported":  29,
+                       "records_file":  "records/table.dcoir-memory-preflight_tblcNNuKqi8IkFsSQ.records.json"
+                   },
+                   {
+                       "table_name":  "dcoir-validation-orchestrator",
+                       "table_id":  "tbls9O1B0Rs8YvTAj",
+                       "record_count_exported":  6,
+                       "records_file":  "records/table.dcoir-validation-orchestrator_tbls9O1B0Rs8YvTAj.records.json"
+                   },
+                   {
+                       "table_name":  "Delete Queue",
+                       "table_id":  "tbl1lMz5N6n7zShO0",
+                       "record_count_exported":  0,
+                       "records_file":  "records/table.Delete_Queue_tbl1lMz5N6n7zShO0.records.json"
+                   },
+                   {
+                       "table_name":  "Gemini Research Reference",
+                       "table_id":  "tblfZnARJxcMJ0yHW",
+                       "record_count_exported":  76,
+                       "records_file":  "records/table.Gemini_Research_Reference_tblfZnARJxcMJ0yHW.records.json"
+                   },
+                   {
+                       "table_name":  "GitHub Workflow Inventory",
+                       "table_id":  "tblHTf5bLKGK1Yk11",
+                       "record_count_exported":  24,
+                       "records_file":  "records/table.GitHub_Workflow_Inventory_tblHTf5bLKGK1Yk11.records.json"
+                   },
+                   {
+                       "table_name":  "Governance Control Plane",
+                       "table_id":  "tblDfSl29psxRnes1",
+                       "record_count_exported":  1,
+                       "records_file":  "records/table.Governance_Control_Plane_tblDfSl29psxRnes1.records.json"
+                   },
+                   {
+                       "table_name":  "Idea Inbox",
+                       "table_id":  "tblWwBxwrjZF6JR3r",
+                       "record_count_exported":  9,
+                       "records_file":  "records/table.Idea_Inbox_tblWwBxwrjZF6JR3r.records.json"
+                   },
+                   {
+                       "table_name":  "Local Configuration Registry",
+                       "table_id":  "tblcJxCoYGpEda0FM",
+                       "record_count_exported":  9,
+                       "records_file":  "records/table.Local_Configuration_Registry_tblcJxCoYGpEda0FM.records.json"
+                   },
+                   {
+                       "table_name":  "Operator Preferences",
+                       "table_id":  "tblnxZ3eLPT3W38wl",
+                       "record_count_exported":  88,
+                       "records_file":  "records/table.Operator_Preferences_tblnxZ3eLPT3W38wl.records.json"
+                   },
+                   {
+                       "table_name":  "Operator Tools Registry",
+                       "table_id":  "tblF1SCJBHRFUhpzi",
+                       "record_count_exported":  29,
+                       "records_file":  "records/table.Operator_Tools_Registry_tblF1SCJBHRFUhpzi.records.json"
+                   },
+                   {
+                       "table_name":  "Plans",
+                       "table_id":  "tblBcp5FyMIfOm7Xe",
+                       "record_count_exported":  2,
+                       "records_file":  "records/table.Plans_tblBcp5FyMIfOm7Xe.records.json"
+                   },
+                   {
+                       "table_name":  "Queue Control",
+                       "table_id":  "tblf13aCslg6rJBah",
+                       "record_count_exported":  1,
+                       "records_file":  "records/table.Queue_Control_tblf13aCslg6rJBah.records.json"
+                   },
+                   {
+                       "table_name":  "Repo Surface Registry",
+                       "table_id":  "tblzBiXp7kwTXM0ru",
+                       "record_count_exported":  73,
+                       "records_file":  "records/table.Repo_Surface_Registry_tblzBiXp7kwTXM0ru.records.json"
+                   },
+                   {
+                       "table_name":  "Session Checkpoints",
+                       "table_id":  "tblTe75HKZOJaPDGn",
+                       "record_count_exported":  94,
+                       "records_file":  "records/table.Session_Checkpoints_tblTe75HKZOJaPDGn.records.json"
+                   },
+                   {
+                       "table_name":  "Validation Evidence",
+                       "table_id":  "tblrPFQH2uZEYBYE9",
+                       "record_count_exported":  53,
+                       "records_file":  "records/table.Validation_Evidence_tblrPFQH2uZEYBYE9.records.json"
+                   },
+                   {
+                       "table_name":  "Validation Test Cases",
+                       "table_id":  "tblRnMpQUomIGyFVL",
+                       "record_count_exported":  66,
+                       "records_file":  "records/table.Validation_Test_Cases_tblRnMpQUomIGyFVL.records.json"
+                   },
+                   {
+                       "table_name":  "Work Items",
+                       "table_id":  "tblgsQAVWvh8K7gIR",
+                       "record_count_exported":  80,
+                       "records_file":  "records/table.Work_Items_tblgsQAVWvh8K7gIR.records.json"
+                   }
+               ],
+    "created_utc":  "2026-05-23T08:55:46Z"
+}

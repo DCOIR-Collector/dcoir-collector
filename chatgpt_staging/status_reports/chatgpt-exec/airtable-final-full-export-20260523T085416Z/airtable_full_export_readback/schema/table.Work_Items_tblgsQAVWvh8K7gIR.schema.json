@@ -1,0 +1,475 @@
+{
+    "id":  "tblgsQAVWvh8K7gIR",
+    "name":  "Work Items",
+    "description":  "Canonical Airtable live work queue for DCOIR priorities, active work, branch state, and resume-first execution. Discovery note: maintained for schema readback so a new/blind operator or assistant can discover table purpose quickly. Inspect field descriptions before writing records.",
+    "primaryFieldId":  "fld62VxHtbRTZhPdX",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fld62VxHtbRTZhPdX",
+                       "name":  "Work Item",
+                       "description":  "Purpose: Primary title for the work item. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldTneAArfh5yJOXi",
+                       "name":  "Item ID",
+                       "description":  "Purpose: Stable human-readable identifier when needed. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldZ922sf04D4WbvE",
+                       "name":  "Repo Path or Skill",
+                       "description":  "Purpose: Relevant repo path, skill name, or component. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldZ966uvUvaZ77dS",
+                       "name":  "Evidence / Notes",
+                       "description":  "Purpose: Supporting notes, evidence, or rationale. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "number",
+                       "options":  {
+                                       "precision":  0
+                                   },
+                       "id":  "fld3vWpcC6OfYEber",
+                       "name":  "Queue Rank",
+                       "description":  "Purpose: Explicit queue ordering for active Airtable todo authority. Lower numbers are higher priority. Type: number. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fld9Dw9YYk8DjOden",
+                       "name":  "created_at",
+                       "description":  "Purpose: Timestamp for when the row was created or first observed during cleanup. Type: date/time. Recommended default where configured: current date/time. If no Airtable default exists, scripts may set it explicitly."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldD1rwuVsNketueT",
+                       "name":  "updated_at",
+                       "description":  "Purpose: Timestamp for when the row was last updated or refreshed. Type: date/time. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldbZhaIrAX2cbHrE",
+                       "name":  "canonical_parent_plan_id",
+                       "description":  "Purpose: Stable parent plan id for Work Items after Plan Tasks retirement. Type: single-line text. Default: none; set when a Work Item belongs to a Plan."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selHhkxKT1YI99Fkg",
+                                                           "name":  "collector",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel0J1ZDccJRMz19o",
+                                                           "name":  "gemini",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selSI6SSX3FkNHyDL",
+                                                           "name":  "github",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selffsBwoaBxgKzCG",
+                                                           "name":  "airtable",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selKTk7MFTjMSLvQp",
+                                                           "name":  "skills",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel2ub86lECHG6pmd",
+                                                           "name":  "docs",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sely2xe0gLhjQhwYH",
+                                                           "name":  "validation",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel3231hVgSAU5A7a",
+                                                           "name":  "packaging",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selDmbjBNgxNK0deg",
+                                                           "name":  "workflow",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel43DmWPvB6P7zxy",
+                                                           "name":  "governance",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selfQbxUzDSN9fU7c",
+                                                           "name":  "other",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selycGlhgfoBFTvgw",
+                                                           "name":  "documentation",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldd0urjdszMBR1LU",
+                       "name":  "Area",
+                       "description":  "Purpose: DCOIR field \u0027Area\u0027 on \u0027Work Items\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "sel80ey5Oev2aziO0",
+                                                           "name":  "task",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selWaWQTtb24nwknH",
+                                                           "name":  "bug",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selkD0bpTWExgWxoN",
+                                                           "name":  "enhancement",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selA2wAlMDteGKBM2",
+                                                           "name":  "decision",
+                                                           "color":  "pinkLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selgfD7tijnqd856z",
+                                                           "name":  "validation",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selsUYoj6tGgTJfKf",
+                                                           "name":  "implementation",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selZuCAuC2HRrbIno",
+                                                           "name":  "documentation",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selelBQ59CQBH8n45",
+                                                           "name":  "observability",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldGa1GseWf6ro78L",
+                       "name":  "Work Type",
+                       "description":  "Purpose: DCOIR field \u0027Work Type\u0027 on \u0027Work Items\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selDRknHF8JFIZd0i",
+                                                           "name":  "todo",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selxfQ9kmDqEZcgga",
+                                                           "name":  "active",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selxkOZa7nBqUwiPv",
+                                                           "name":  "blocked",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selLil995P4H5h87X",
+                                                           "name":  "waiting",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel2eN4qRbJwoubxO",
+                                                           "name":  "done",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selujOb8dr0q8DJdi",
+                                                           "name":  "dropped",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selS7sEfq2nA9mtuj",
+                                                           "name":  "in_progress",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldvGbvwTx84mxtwO",
+                       "name":  "Status",
+                       "description":  "Purpose: DCOIR field \u0027Status\u0027 on \u0027Work Items\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selEC1b02NNl8etzx",
+                                                           "name":  "critical",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selQDcxLXZq2iMSKP",
+                                                           "name":  "high",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selHjSGs0IWaMjzLV",
+                                                           "name":  "medium",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selx6t3lZ2oENcZ4l",
+                                                           "name":  "low",
+                                                           "color":  "greenLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fld4XJowALSopxpnV",
+                       "name":  "Priority",
+                       "description":  "Purpose: DCOIR field \u0027Priority\u0027 on \u0027Work Items\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selmH4HKQP18WUZlj",
+                                                           "name":  "active_todo_authority",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel2Ib325bfhYEZ0I",
+                                                           "name":  "promoted_history_only",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selvdX2zv5DGTpobn",
+                                                           "name":  "working_note_only",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selrYmWxUxll38a3P",
+                                                           "name":  "airtable_first",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldQ5YKb9EuM8nqph",
+                       "name":  "Authority Scope",
+                       "description":  "Purpose: DCOIR field \u0027Authority Scope\u0027 on \u0027Work Items\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selvE0B2E7VwSTF9j",
+                                                           "name":  "none",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel2MeSPmNYsSNnum",
+                                                           "name":  "decision_only",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selIcW34WWatgwaRQ",
+                                                           "name":  "closeout_only",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selp0IRcZZAuecYAX",
+                                                           "name":  "required",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selRua9WdR7PBjyNb",
+                                                           "name":  "optional",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seln1s4GSkjwlpEwt",
+                                                           "name":  "likely_required",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selKQeDCNt8Btgvz7",
+                                                           "name":  "not_required_now",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldATbftmJ4UQ8Flk",
+                       "name":  "GitHub Promotion Need",
+                       "description":  "Purpose: DCOIR field \u0027GitHub Promotion Need\u0027 on \u0027Work Items\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "sel7vpIcQ6lsQCZ4I",
+                                                           "name":  "retain",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selqAYtW92RM9RbEt",
+                                                           "name":  "review",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selURLOdOtwyGy2w3",
+                                                           "name":  "archive",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selDA0v8OtdY0x5vs",
+                                                           "name":  "delete_candidate",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selWFo3KNKmmIU8JP",
+                                                           "name":  "working",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel4ZXvGy9XhKvchd",
+                                                           "name":  "core",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selL4EmQGgZukEIKt",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sely7aljy8oHIlhzT",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selAUQM88WlaBRUXY",
+                                                           "name":  "operational",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selzwpxGPLfVcterW",
+                                                           "name":  "parked",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldX9vydvQqreL4cF",
+                       "name":  "retention_class",
+                       "description":  "Purpose: DCOIR field \u0027retention_class\u0027 on \u0027Work Items\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "formula",
+                       "options":  {
+                                       "isValid":  true,
+                                       "formula":  "IF({fldTneAArfh5yJOXi}, {fldTneAArfh5yJOXi} \u0026 \" | \", \"\") \u0026 {fld62VxHtbRTZhPdX}",
+                                       "referencedFieldIds":  [
+                                                                  "fldTneAArfh5yJOXi",
+                                                                  "fld62VxHtbRTZhPdX"
+                                                              ],
+                                       "result":  {
+                                                      "type":  "singleLineText"
+                                                  }
+                                   },
+                       "id":  "fldwGVzEqnvgqzsT1",
+                       "name":  "display_label",
+                       "description":  "WBS09.03 helper formula. Human-readable display label combining stable Item ID and Work Item title. Does not replace or alter the primary field."
+                   },
+                   {
+                       "type":  "formula",
+                       "options":  {
+                                       "isValid":  true,
+                                       "formula":  "LOWER(IF({fldTneAArfh5yJOXi}, {fldTneAArfh5yJOXi} \u0026 \" | \", \"\") \u0026 IF({fld62VxHtbRTZhPdX}, {fld62VxHtbRTZhPdX} \u0026 \" | \", \"\") \u0026 IF({fldbZhaIrAX2cbHrE}, {fldbZhaIrAX2cbHrE} \u0026 \" | \", \"\") \u0026 IF({fldZ922sf04D4WbvE}, {fldZ922sf04D4WbvE} \u0026 \" | \", \"\") \u0026 IF({fldd0urjdszMBR1LU}, {fldd0urjdszMBR1LU} \u0026 \" | \", \"\") \u0026 IF({fldGa1GseWf6ro78L}, {fldGa1GseWf6ro78L} \u0026 \" | \", \"\") \u0026 IF({fldvGbvwTx84mxtwO}, {fldvGbvwTx84mxtwO} \u0026 \" | \", \"\") \u0026 IF({fld4XJowALSopxpnV}, {fld4XJowALSopxpnV} \u0026 \" | \", \"\") \u0026 IF({fldQ5YKb9EuM8nqph}, {fldQ5YKb9EuM8nqph} \u0026 \" | \", \"\") \u0026 IF({fldATbftmJ4UQ8Flk}, {fldATbftmJ4UQ8Flk} \u0026 \" | \", \"\"))",
+                                       "referencedFieldIds":  [
+                                                                  "fldTneAArfh5yJOXi",
+                                                                  "fld62VxHtbRTZhPdX",
+                                                                  "fldbZhaIrAX2cbHrE",
+                                                                  "fldZ922sf04D4WbvE",
+                                                                  "fldd0urjdszMBR1LU",
+                                                                  "fldGa1GseWf6ro78L",
+                                                                  "fldvGbvwTx84mxtwO",
+                                                                  "fld4XJowALSopxpnV",
+                                                                  "fldQ5YKb9EuM8nqph",
+                                                                  "fldATbftmJ4UQ8Flk"
+                                                              ],
+                                       "result":  {
+                                                      "type":  "singleLineText"
+                                                  }
+                                   },
+                       "id":  "fldTYwdv6tCZypXk5",
+                       "name":  "search_text",
+                       "description":  "WBS09.03 helper formula. Lowercase searchable text combining stable ID, title, parent plan, repo/skill, area/type/status/priority/authority, and GitHub promotion need. Does not replace or alter the primary field."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viwt1AjbFtPbUMgiL",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwsX0pXp50ljsMa2",
+                      "name":  "WBS09 - Active Queue",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwte1DfWQpKCBHYI",
+                      "name":  "WBS09 - Blocked or Review",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwPbLODiDvaPSoI0",
+                      "name":  "WBS09 - By Parent Plan",
+                      "type":  "grid"
+                  }
+              ]
+}

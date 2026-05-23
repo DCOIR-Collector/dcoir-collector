@@ -1,0 +1,30 @@
+{
+    "table_id":  "tblNsjkGUUIdRpHuE",
+    "table_name":  "DCOIR Lifecycle Ledger",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  1,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  false,
+    "records":  [
+                    {
+                        "id":  "rec60QWQvcIqjLhR4",
+                        "createdTime":  "2026-05-11T07:04:06.000Z",
+                        "fields":  {
+                                       "event_at":  "2026-05-11T06:52:00.000Z",
+                                       "source_table":  "Queue Control; Plans; Work Items",
+                                       "event_title":  "Administrative reconciliation aligned active DCOIR branch to WBS09",
+                                       "event_summary":  "Queue Control was stale on WBS22. Administrative cleanup aligned Queue Control, active Plan, and active Work Item to PLAN-AIRTABLE-DB-REDESIGN-20260508 / DBREDESIGN-WBS-09.04. No WBS09 capability-map/apply execution was performed. Next technical work is gated on operator instruction and should start with capability-map/discovery before any primitive broadening.",
+                                       "migration_status":  "verified",
+                                       "created_at":  "2026-05-11T06:52:00.000Z",
+                                       "payload_json":  "{\"reconciled_from\":\"PLAN-AIRTABLE-CLEANUP-RESTRUCTURE / CLEANUP-WBS-22-04\",\"reconciled_to\":\"PLAN-AIRTABLE-DB-REDESIGN-20260508 / DBREDESIGN-WBS-09.04\",\"checkpoint_basis\":\"CHK-20260511-WBS09-V15-CLOSEOUT\",\"validation_basis\":\"VE-20260511-WBS09-VALIDATION-DUE-V15-PROMOTION-PASS\",\"github_commit\":\"65b6740\",\"technical_execution_performed\":false,\"stop_after_admin\":true}",
+                                       "source_record_id":  "recW8cAlClYFEVhjF; reclwfiWpPHAOHImr; recIu6XxETKmcPei5",
+                                       "event_key":  "LEDGER-20260511-WBS09-ADMIN-RECONCILIATION",
+                                       "retention_class":  "operational",
+                                       "lifecycle_stage":  "updated",
+                                       "lifecycle_object_type":  "queue_control",
+                                       "source_primary_key":  "QUEUE-CONTROL-20260415-active-authority / PLAN-AIRTABLE-DB-REDESIGN-20260508 / DBREDESIGN-WBS-09.04-WBS09-VIEW-FILTER-VERIFY-CONTINUE-20260511"
+                                   }
+                    }
+                ]
+}

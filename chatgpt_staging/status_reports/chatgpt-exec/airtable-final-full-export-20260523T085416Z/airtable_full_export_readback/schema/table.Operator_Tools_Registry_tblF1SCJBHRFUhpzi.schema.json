@@ -1,0 +1,320 @@
+{
+    "id":  "tblF1SCJBHRFUhpzi",
+    "name":  "Operator Tools Registry",
+    "description":  "Live registry of reusable operator-side helper tools for DCOIR workflows. GitHub repo remains source of truth for tool code; this table stores discoverability, trigger conditions, launcher guidance, safety preconditions, validation state, and notes so skills and future sessions can select tools dynamically without skill repackaging. Discovery note: maintained for schema readback so a new/blind operator or assistant can discover table purpose quickly. Inspect field descriptions before writing records. Scripts should set tool_id, tool_name, tool_family, repo_path, status, active, created_at, retention_class, and updated_at explicitly when creating or refreshing rows.",
+    "primaryFieldId":  "fld4eAc1IEWYtOJpO",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fld4eAc1IEWYtOJpO",
+                       "name":  "tool_id",
+                       "description":  "Purpose: Stable unique identifier for the reusable operator tool. Type: single-line text. Default: none; set explicitly."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldcf2EIjZGqaLTcb",
+                       "name":  "tool_name",
+                       "description":  "Purpose: Human-readable tool name. Type: single-line text. Default: none; set explicitly."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selbEDjXBsrKnrwYN",
+                                                           "name":  "github_desktop_lane",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selU98LhD1b6VsV5H",
+                                                           "name":  "git_diagnostics",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selnwJPtTLE8HH0j8",
+                                                           "name":  "snapshot_bundle",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selVyDEsiPuX33m11",
+                                                           "name":  "repo_recovery",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selcHKvDq8YQswwja",
+                                                           "name":  "validation",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selH98PQPxgiHUTmN",
+                                                           "name":  "other",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selEX87Zj9MP2aLnH",
+                                                           "name":  "upload_packaging",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sellAjj0Hme5aKOEI",
+                                                           "name":  "github_actions_orchestration",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selAsPPBmZzJUJdAZ",
+                                                           "name":  "operator_tool_standard",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldXiTxXPVOHnc3N3",
+                       "name":  "tool_family",
+                       "description":  "Functional family for routing and filtering."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldjkzxBAty8ueGuI",
+                       "name":  "repo_path",
+                       "description":  "Repo-relative path to the script or tool source. GitHub is source of truth for code."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldRyccDc3UOBrKKR",
+                       "name":  "trigger_conditions",
+                       "description":  "Natural-language conditions or keywords that should cause the advisor skill to suggest this tool."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldTq4aJ6AoIFqJUo",
+                       "name":  "input_contract",
+                       "description":  "Expected operator input, parameters, manifest format, or preconditions required to run the tool."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldjo5ToZNd2xbPz2",
+                       "name":  "output_contract",
+                       "description":  "Expected output files, terminal output, logs, or artifacts produced by the tool."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldZJMzV36nMy81kl",
+                       "name":  "safety_preconditions",
+                       "description":  "Safety checks and stop conditions before use, such as clean tree, no stash pop, no destructive actions, or branch requirements."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldeoMJdznlVHdSdx",
+                       "name":  "launcher_command",
+                       "description":  "Preferred PowerShell launcher command or command template."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selR9oZREPNhiyMCv",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selgWW7q0LljQlu4A",
+                                                           "name":  "draft",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selKyfMRdzjSILfLL",
+                                                           "name":  "deprecated",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selx94xwbH81NFBKC",
+                                                           "name":  "blocked",
+                                                           "color":  "redLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldrAntwrkqI3gzWF",
+                       "name":  "status",
+                       "description":  "Purpose: Lifecycle status of the tool registry row. Type: single select. Known native Airtable default: active, configured by operator. Values/options should remain lowercase canonical forms; set explicitly for draft, deprecated, or blocked rows."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldxx6kWXejTnqv9t",
+                       "name":  "version_or_hash",
+                       "description":  "Version marker, checksum, commit hash, or tool revision hint."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldkY92DvuarDvIxq",
+                       "name":  "last_validated_at",
+                       "description":  "Date/time when the tool was last validated."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldE1WGFFYzxSlHU1",
+                       "name":  "notes",
+                       "description":  "Supporting notes, caveats, examples, or maintenance guidance."
+                   },
+                   {
+                       "type":  "checkbox",
+                       "options":  {
+                                       "icon":  "check",
+                                       "color":  "greenBright"
+                                   },
+                       "id":  "fld9l7TFNXFZcWY97",
+                       "name":  "active",
+                       "description":  "Purpose: Whether this tool should be considered available for current advisor routing. Type: checkbox. Known native Airtable default: checked, configured by operator for new active-tool rows. Set false explicitly for draft, blocked, deprecated, archived, or unavailable tools."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fld0FvxXYwKco9hwl",
+                       "name":  "created_at",
+                       "description":  "Purpose: Timestamp for when the tool registry row was created or first observed. Type: date/time. Known native Airtable default: current date/time in UTC, configured by operator. Scripts may still set explicitly when deterministic backfill or imported historical rows need a non-current value."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fld3bZnCqS36T6aBA",
+                       "name":  "updated_at",
+                       "description":  "Purpose: Timestamp for when the tool registry row was last refreshed or materially updated. Type: date/time. Default: none; scripts should set explicitly."
+                   },
+                   {
+                       "type":  "date",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      }
+                                   },
+                       "id":  "fldg7aD6owbd4gr0P",
+                       "name":  "review_after",
+                       "description":  "Purpose: Review-after date for registry aging and cleanup. Type: date. Default: none; set explicitly when a review cycle applies."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selrkFdSZZy0G2f7z",
+                                                           "name":  "operational",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel0Co4Vu7gw74ZAE",
+                                                           "name":  "reference",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel0pxwJCL4nC19MG",
+                                                           "name":  "temporary",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seldnW5qwftAlox7X",
+                                                           "name":  "archive",
+                                                           "color":  "grayLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fld0zaaaSQs7eWiKE",
+                       "name":  "retention_class",
+                       "description":  "Purpose: Retention class for registry row lifecycle and cleanup handling. Type: single select. Known native Airtable default: operational, configured by operator. Values/options should remain lowercase canonical forms; set explicitly only when creating reference, temporary, or archive rows."
+                   },
+                   {
+                       "type":  "formula",
+                       "options":  {
+                                       "isValid":  true,
+                                       "formula":  "IF({fldcf2EIjZGqaLTcb}, {fldcf2EIjZGqaLTcb} \u0026 \" | \", \"\") \u0026 {fld4eAc1IEWYtOJpO}",
+                                       "referencedFieldIds":  [
+                                                                  "fldcf2EIjZGqaLTcb",
+                                                                  "fld4eAc1IEWYtOJpO"
+                                                              ],
+                                       "result":  {
+                                                      "type":  "singleLineText"
+                                                  }
+                                   },
+                       "id":  "fldxyzoUqJ5RvKbvu",
+                       "name":  "display_label",
+                       "description":  "WBS09.03 helper formula. Human-readable display label combining tool_name and stable tool_id. Does not replace or alter the primary field."
+                   },
+                   {
+                       "type":  "formula",
+                       "options":  {
+                                       "isValid":  true,
+                                       "formula":  "LOWER(IF({fld4eAc1IEWYtOJpO}, {fld4eAc1IEWYtOJpO} \u0026 \" | \", \"\") \u0026 IF({fldcf2EIjZGqaLTcb}, {fldcf2EIjZGqaLTcb} \u0026 \" | \", \"\") \u0026 IF({fldXiTxXPVOHnc3N3}, {fldXiTxXPVOHnc3N3} \u0026 \" | \", \"\") \u0026 IF({fldjkzxBAty8ueGuI}, {fldjkzxBAty8ueGuI} \u0026 \" | \", \"\") \u0026 IF({fldRyccDc3UOBrKKR}, {fldRyccDc3UOBrKKR} \u0026 \" | \", \"\") \u0026 IF({fldTq4aJ6AoIFqJUo}, {fldTq4aJ6AoIFqJUo} \u0026 \" | \", \"\") \u0026 IF({fldjo5ToZNd2xbPz2}, {fldjo5ToZNd2xbPz2} \u0026 \" | \", \"\") \u0026 IF({fldrAntwrkqI3gzWF}, {fldrAntwrkqI3gzWF} \u0026 \" | \", \"\") \u0026 IF({fldxx6kWXejTnqv9t}, {fldxx6kWXejTnqv9t} \u0026 \" | \", \"\") \u0026 IF({fld9l7TFNXFZcWY97}, \"active true | \", \"active false | \"))",
+                                       "referencedFieldIds":  [
+                                                                  "fld4eAc1IEWYtOJpO",
+                                                                  "fldcf2EIjZGqaLTcb",
+                                                                  "fldXiTxXPVOHnc3N3",
+                                                                  "fldjkzxBAty8ueGuI",
+                                                                  "fldRyccDc3UOBrKKR",
+                                                                  "fldTq4aJ6AoIFqJUo",
+                                                                  "fldjo5ToZNd2xbPz2",
+                                                                  "fldrAntwrkqI3gzWF",
+                                                                  "fldxx6kWXejTnqv9t",
+                                                                  "fld9l7TFNXFZcWY97"
+                                                              ],
+                                       "result":  {
+                                                      "type":  "singleLineText"
+                                                  }
+                                   },
+                       "id":  "fldNE78U8iUhbnxkn",
+                       "name":  "search_text",
+                       "description":  "WBS09.03 helper formula. Lowercase searchable text combining tool id/name/family, repo path, trigger/input/output context, status, version/hash, and active flag. Does not replace or alter the primary field."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viw4Iwj4geNPTFjNd",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viw0JqrEes0sF5Cjt",
+                      "name":  "WBS09 - Active Tools",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwYLkcYJ5ocehyma",
+                      "name":  "WBS09 - Blocked or Deprecated",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwLrVt4J4WbRsPQ9",
+                      "name":  "WBS09 - Validation Due",
+                      "type":  "grid"
+                  }
+              ]
+}

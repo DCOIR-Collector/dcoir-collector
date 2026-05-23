@@ -1,0 +1,253 @@
+{
+    "id":  "tblKHVXq16Xd5I31m",
+    "name":  "dcoir-decision-policy",
+    "description":  "Helper-memory table for DCOIR decision rules, default branch handling, packaging impacts, and source basis. Discovery note: maintained for schema readback so a new/blind operator or assistant can discover table purpose quickly. Inspect field descriptions before writing records.",
+    "primaryFieldId":  "fldo00PUkXIaZY7uW",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldo00PUkXIaZY7uW",
+                       "name":  "decision_entry_id",
+                       "description":  "Purpose: Stable identifier used for lookup, deduplication, resume, and cross-table references. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldaI0qVtfNZqfXNe",
+                       "name":  "approved_rule",
+                       "description":  "Purpose: DCOIR field \u0027approved_rule\u0027 used by the \u0027dcoir-decision-policy\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fld664vtczpgPDTcD",
+                       "name":  "situational_rule",
+                       "description":  "Purpose: DCOIR field \u0027situational_rule\u0027 used by the \u0027dcoir-decision-policy\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldHsGII6M314rMo3",
+                       "name":  "workflow_impact",
+                       "description":  "Purpose: DCOIR field \u0027workflow_impact\u0027 used by the \u0027dcoir-decision-policy\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldv90HCZZxBtf1h9",
+                       "name":  "packaging_impact",
+                       "description":  "Purpose: DCOIR field \u0027packaging_impact\u0027 used by the \u0027dcoir-decision-policy\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldHSC3jjNb79NBfO",
+                       "name":  "source_basis",
+                       "description":  "Purpose: Pointer to a repo path, skill, source, or external locator that grounds the row. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldyDa0iTDGtNaM8g",
+                       "name":  "last_confirmed_text",
+                       "description":  "Purpose: DCOIR field \u0027last_confirmed_text\u0027 used by the \u0027dcoir-decision-policy\u0027 table. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fld8KpTjiymqouo9I",
+                       "name":  "created_at",
+                       "description":  "Purpose: DCOIR aging field. Existing rows may be backfilled with the date/time the cleanup pass first saw them. Type: date/time. Recommended default where configured: current date/time. If no Airtable default exists, scripts may set it explicitly."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fld2RX09cikd9yAgR",
+                       "name":  "updated_at",
+                       "description":  "Purpose: DCOIR aging field. Existing rows may be backfilled with the date/time the cleanup pass first saw them. Type: date/time. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "date",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      }
+                                   },
+                       "id":  "fldYK2cbss0i0yLOr",
+                       "name":  "review_after",
+                       "description":  "Purpose: DCOIR manual cleanup review date. Rows on or before this date are candidates for human review. Type: date. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selC4vQZErdrSniJU",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selOYOzE6PS22BtzT",
+                                                           "name":  "implemented",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selEgGPcEr3J693nt",
+                                                           "name":  "candidate",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selX23vMbF8dOllSI",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selv0oslIkwNdamvT",
+                                                           "name":  "superseded",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selSYv8xcMyt72YWy",
+                                                           "name":  "complete",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selGvqofZlbxPdDwU",
+                                                           "name":  "in_progress",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selWqODDFrLVixOH4",
+                                                           "name":  "blocked",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selLaRH4i4s8SV6JC",
+                                                           "name":  "pending_review",
+                                                           "color":  "yellowLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldBSLZkxHkvdWfs3",
+                       "name":  "status",
+                       "description":  "Purpose: DCOIR field \u0027status\u0027 on \u0027dcoir-decision-policy\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selDk1In0HKChUmfk",
+                                                           "name":  "retain",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selNuwKygM6qFaCdt",
+                                                           "name":  "review",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selSnQZwlmyUfTDTC",
+                                                           "name":  "archive",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selEigyY3g47QijgI",
+                                                           "name":  "delete_candidate",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selT301ZxeNTf2vLQ",
+                                                           "name":  "working",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selomCuCD8zfkQdIZ",
+                                                           "name":  "core",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selMjGBMeAAx4fVTk",
+                                                           "name":  "operational",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldH6sRkVniEBFlv4",
+                       "name":  "retention_class",
+                       "description":  "Purpose: DCOIR field \u0027retention_class\u0027 on \u0027dcoir-decision-policy\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "sel92UnMZC8gr1bor",
+                                                           "name":  "decision_policy_approved_overlay_snapshot",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "self3rsCBPQWrBbWr",
+                                                           "name":  "default_execution_branch_selection",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seluvdZli0xdkXiyw",
+                                                           "name":  "git_hub_governed_helper_skill_source",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selViTKZgW2N8aTT4",
+                                                           "name":  "packaging",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selWmuSyy0u02rjCM",
+                                                           "name":  "execution_lane",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldoBBSWp7jVlY4mv",
+                       "name":  "decision_family",
+                       "description":  "Purpose: DCOIR field \u0027decision_family\u0027 on \u0027dcoir-decision-policy\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viwmb83JZNWT4fZD9",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwV7a8S3ErGfN1no",
+                      "name":  "WBS09 - Active Decision Rules",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwAouYb8aC4KOPli",
+                      "name":  "WBS09 - Approval Gate Rules",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwS4zjVF1XCKOXxx",
+                      "name":  "WBS09 - Review Due",
+                      "type":  "grid"
+                  }
+              ]
+}

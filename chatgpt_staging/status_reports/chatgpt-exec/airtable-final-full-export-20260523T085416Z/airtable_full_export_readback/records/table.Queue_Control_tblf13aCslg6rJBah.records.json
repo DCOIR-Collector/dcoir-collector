@@ -1,0 +1,35 @@
+{
+    "table_id":  "tblf13aCslg6rJBah",
+    "table_name":  "Queue Control",
+    "export_mode":  "FullRecords",
+    "record_count_exported":  1,
+    "max_records_per_table":  0,
+    "full_record_dump":  true,
+    "redacted_likely_secrets":  false,
+    "records":  [
+                    {
+                        "id":  "recW8cAlClYFEVhjF",
+                        "createdTime":  "2026-04-15T15:39:27.000Z",
+                        "fields":  {
+                                       "branch_decision":  "2026-05-20: WBS06 field retirement/deletion cleanup complete. Live schema readback found zero legacy_ fields. Active branch moved to WBS07.01 generic WBS replacement table path planning. WBS04.02/WBS04.05 dedupe_signature helper-field decisions remain review/open.",
+                                       "retention_class":  "active",
+                                       "branch_summary":  "Active branch: PLAN-AIRTABLE-DB-REDESIGN-20260508 / DBREDESIGN-WBS-07.01.",
+                                       "updated_at":  "2026-05-20T00:00:00.000Z",
+                                       "control_key":  "QUEUE-CONTROL-20260415-active-authority",
+                                       "review_after":  "2026-04-28",
+                                       "created_at":  "2026-04-28T11:12:38.000Z",
+                                       "last_confirmed_text":  "2026-05-20T00:00:00Z: branch transitioned to WBS07.01 after WBS06 completion.",
+                                       "superseded_github_surfaces":  "Older WBS22 branch text in this Queue Control row is superseded by PLAN-AIRTABLE-DB-REDESIGN-20260508, DBREDESIGN-WBS-09.04, CHK-20260511-WBS09-V15-CLOSEOUT, VE-20260511-WBS09-VALIDATION-DUE-V15-PROMOTION-PASS, and GitHub commit 65b6740. GitHub remains governed source/readback/tooling authority only; Airtable remains live queue/plan/work authority.",
+                                       "status":  "active",
+                                       "next_revalidation_trigger":  "After WBS06 final live schema readback; before WBS07.01 table replacement decision packet.",
+                                       "active_plans":  [
+                                                            "reclwfiWpPHAOHImr"
+                                                        ],
+                                       "notes":  "WBS06 complete: no legacy_ fields remain. Next branch is WBS07/WBS07.01. Keep WBS04.02 and WBS04.05 open/review for dedupe_signature helper-field decision after later table/field-shape work.",
+                                       "search_text":  "queue-control-20260415-active-authority | active branch: plan-airtable-db-redesign-20260508 / dbredesign-wbs-07.01. | 2026-05-20: wbs06 field retirement/deletion cleanup complete. live schema readback found zero legacy_ fields. active branch moved to wbs07.01 generic wbs replacement table path planning. wbs04.02/wbs04.05 dedupe_signature helper-field decisions remain review/open. | resume at wbs07.01. prepare planning/approval packet for generic wbs replacement path: inventory references to dcoir cleanup wbs, design replacement/migration, update reference plan, and old-table retirement approach. do not create, replace, rename, or delete tables before exact approval. | after wbs06 final live schema readback; before wbs07.01 table replacement decision packet. | active | active | ",
+                                       "display_label":  "QUEUE-CONTROL-20260415-active-authority | active | Active branch: PLAN-AIRTABLE-DB-REDESIGN-20260508 / DBREDESIGN-WBS-07.01.",
+                                       "resume_rule":  "Resume at WBS07.01. Prepare planning/approval packet for generic WBS replacement path: inventory references to DCOIR Cleanup WBS, design replacement/migration, update reference plan, and old-table retirement approach. Do not create, replace, rename, or delete tables before exact approval."
+                                   }
+                    }
+                ]
+}

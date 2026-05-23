@@ -1,0 +1,332 @@
+{
+    "id":  "tblnxZ3eLPT3W38wl",
+    "name":  "Operator Preferences",
+    "description":  "Durable operator preferences that guide response style, package behavior, and DCOIR workflow defaults. Discovery note: maintained for schema readback so a new/blind operator or assistant can discover table purpose quickly. Inspect field descriptions before writing records.",
+    "primaryFieldId":  "fld98q4UIZsPdPN7s",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fld98q4UIZsPdPN7s",
+                       "name":  "preference_key",
+                       "description":  "Purpose: Stable preference identifier. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldPJYR8l2121YWnU",
+                       "name":  "preference_statement",
+                       "description":  "Purpose: Plain-language statement of the preference. Type: long text. Default: use the table workflow standard where configured; otherwise scripts should set this explicitly."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldrn5iy2nP2Cl4O8",
+                       "name":  "effective_behavior",
+                       "description":  "Purpose: How the assistant should behave when applying the preference. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fld7Rft4ETD9YEhWd",
+                       "name":  "source_session_id",
+                       "description":  "Purpose: Source session or branch identifier when known. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldfczItHTqUBD8Uz",
+                       "name":  "source_checkpoint_id",
+                       "description":  "Purpose: Checkpoint that established or carried the preference when known. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldM4hPeocI2HBD7B",
+                       "name":  "source_idea_id",
+                       "description":  "Purpose: Idea Inbox source identifier when the preference came from an idea-capture item. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldUfJqMMZgXsQHEA",
+                       "name":  "last_confirmed_text",
+                       "description":  "Purpose: ISO timestamp or text for the latest confirmation or carry-forward use. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldNyvY56RV3t2rZg",
+                       "name":  "notes",
+                       "description":  "Purpose: Supporting context, caveats, or implementation notes. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "flduNdYW7z4hgyuNl",
+                       "name":  "created_at",
+                       "description":  "Purpose: Timestamp for when the row was created or first observed during cleanup. Type: date/time. Recommended default where configured: current date/time. If no Airtable default exists, scripts may set it explicitly."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldIVBjuvRHaRzDqL",
+                       "name":  "updated_at",
+                       "description":  "Purpose: Timestamp for when the row was last updated or refreshed. Type: date/time. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "date",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      }
+                                   },
+                       "id":  "fldS4T6aYkTENvulz",
+                       "name":  "review_after",
+                       "description":  "Purpose: Review-after date for aging and cleanup. Type: date. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldkFCZZlgt4hV2xR",
+                       "name":  "curation_reason",
+                       "description":  "Reason for the curation decision."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fld6iiOZDc1wcZPzc",
+                       "name":  "curated_at",
+                       "description":  "UTC timestamp when the preference row was curated."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "sel0nGQuAupMMt6u5",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selLoy51Po8dXauKa",
+                                                           "name":  "implemented",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selWxKUOyc1sWwcGB",
+                                                           "name":  "candidate",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selhPNvnfpYI0OuDj",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selRLzfyL7ZxvzSum",
+                                                           "name":  "superseded",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel4oUwtmC6aFdsD7",
+                                                           "name":  "complete",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selCNXHuxNnxH4Mvp",
+                                                           "name":  "in_progress",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selP0ndDQC2qZtohK",
+                                                           "name":  "blocked",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selk8rGe0UxwXFilp",
+                                                           "name":  "pending_review",
+                                                           "color":  "yellowLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fld3GxPPZx9t0LwR1",
+                       "name":  "status",
+                       "description":  "Purpose: DCOIR field \u0027status\u0027 on \u0027Operator Preferences\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selxlbcu90S6BIAm5",
+                                                           "name":  "project",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selUmI51qPIMCgv9p",
+                                                           "name":  "dcoir_workspace",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selGVf7CH80xeF3Pe",
+                                                           "name":  "both",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selkYLDeIQZGEawhb",
+                                                           "name":  "general_chat",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel9vAcvZ9s11woT5",
+                                                           "name":  "workflow",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldcEvgLB2voXRa1K",
+                       "name":  "scope",
+                       "description":  "Purpose: DCOIR field \u0027scope\u0027 on \u0027Operator Preferences\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selrxKo6AIZI9BP7F",
+                                                           "name":  "retain",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel7yT78Ku2pjiRj3",
+                                                           "name":  "review",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel8RZMYUZyVazoY2",
+                                                           "name":  "archive",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selhdxc7VVToMvie7",
+                                                           "name":  "delete_candidate",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selhcFfRUx7odzKnK",
+                                                           "name":  "working",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selb33WEmzz6oMmTE",
+                                                           "name":  "core",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selLpdjGxT0TyToGz",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selmQ52LnaFah52tp",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel9Km6DCC6UEIz2w",
+                                                           "name":  "operational",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldXlU3Or0pyldt6n",
+                       "name":  "retention_class",
+                       "description":  "Purpose: DCOIR field \u0027retention_class\u0027 on \u0027Operator Preferences\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selgaVzFvUAlpa7EY",
+                                                           "name":  "promote_to_implemented",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selPpo86TeAnLM1Q2",
+                                                           "name":  "delete_non_preference",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selTABds6rHueZPdC",
+                                                           "name":  "archive_helper_memory",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selinLZBETdvtMKpS",
+                                                           "name":  "dedupe_delete",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selO6UpNogfqLmsO4",
+                                                           "name":  "approved",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sellBkw0VlWYdLfg1",
+                                                           "name":  "keep",
+                                                           "color":  "blueLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldl00PpLV23gcxfJ",
+                       "name":  "curation_decision",
+                       "description":  "Purpose: DCOIR field \u0027curation_decision\u0027 on \u0027Operator Preferences\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viwQTvsQ8DY8bRIYh",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwznPOtL7UKMH49q",
+                      "name":  "WBS09 - Active Preferences",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwN8nrSEhsLez16h",
+                      "name":  "WBS09 - Curation Review",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwF5sy1X5M69Ngiy",
+                      "name":  "WBS09 - Review Due",
+                      "type":  "grid"
+                  }
+              ]
+}

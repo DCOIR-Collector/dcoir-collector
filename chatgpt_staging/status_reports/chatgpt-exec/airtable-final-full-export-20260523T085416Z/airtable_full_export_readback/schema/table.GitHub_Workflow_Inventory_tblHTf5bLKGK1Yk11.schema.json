@@ -1,0 +1,454 @@
+{
+    "id":  "tblHTf5bLKGK1Yk11",
+    "name":  "GitHub Workflow Inventory",
+    "description":  "Routing registry for DCOIR GitHub Actions workflows. This table owns general workflow task-routing guidance, cache-routing hints, and workflow inventory readback. Workflow-specific execution guidance belongs in the corresponding .github/workflows/*.yml header, and executable truth remains the workflow YAML body. Discovery note: maintained for schema readback so a new/blind operator or assistant can discover table purpose quickly. Inspect field descriptions before writing records.",
+    "primaryFieldId":  "fldZz29bykYFsFzbl",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldZz29bykYFsFzbl",
+                       "name":  "workflow_key",
+                       "description":  "Stable workflow registry identifier."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldtAGFwU8MfEzfNI",
+                       "name":  "workflow_file_stem",
+                       "description":  "Repo workflow filename without extension, normalized for display and generated-key formulas."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldIgvJQIXXc2f22j",
+                       "name":  "workflow_name",
+                       "description":  "GitHub Actions workflow display name from YAML name or filename fallback."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldA6O7FlW9tUEFW5",
+                       "name":  "repo_path",
+                       "description":  "Repo-relative path to the workflow YAML file."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selqnHM8mZnM57a1D",
+                                                           "name":  "staging_lane",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selcVaN4c7cLtOlan",
+                                                           "name":  "validation",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selYSFHTeOc6ApuX3",
+                                                           "name":  "build_package",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selMJPeRY8lggO4xN",
+                                                           "name":  "ops_scaffold",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selcVGZJXCDQzHsMZ",
+                                                           "name":  "maintenance",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selduRUGrLLh81Uo3",
+                                                           "name":  "publishing",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel82BnZQ7BR9W3P9",
+                                                           "name":  "dependency_security",
+                                                           "color":  "orangeLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "flddMiMhIe5Eg4FqZ",
+                       "name":  "workflow_family",
+                       "description":  "Controlled workflow family used for routing and filtering."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selq2Vcql5qJ6q7tp",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selrhyCajmNYAeNii",
+                                                           "name":  "scaffold",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selxlsU0S52Vu1O0x",
+                                                           "name":  "deprecated",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selLYcFRotACklpVu",
+                                                           "name":  "review_needed",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel3gVgEY7QiVbDMP",
+                                                           "name":  "blocked",
+                                                           "color":  "redLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "flder86QaKiBMy0Yg",
+                       "name":  "status",
+                       "description":  "Lifecycle or routing status for this workflow row."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selTqss5ktn4Flzyq",
+                                                           "name":  "manual",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selNSS4e5tyYglchs",
+                                                           "name":  "manual_push",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel95n8RXwHc0XG1x",
+                                                           "name":  "manual_schedule",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selhPrvlZbrmt9PrD",
+                                                           "name":  "manual_schedule_push",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selmNR50mJOawWMSD",
+                                                           "name":  "pull_request",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seljD9GSv5QsxPJPR",
+                                                           "name":  "workflow_run_manual",
+                                                           "color":  "greenLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fld2RN9svVJSSOLsv",
+                       "name":  "trigger_family",
+                       "description":  "Compact trigger category for routing and filtering."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "seliIQXLTn7l7myIY",
+                                                           "name":  "dcoir-memory-preflight",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel0oIPFw66hJ9rOb",
+                                                           "name":  "dcoir-decision-policy",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel9Rhih4XrfQvvve",
+                                                           "name":  "dcoir-validation-orchestrator",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selvMWXDvgbL5OOJx",
+                                                           "name":  "dcoir-github-desktop-lane-advisor",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selMgDPzUgODs3Fud",
+                                                           "name":  "manual_review",
+                                                           "color":  "grayLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldr293ymxflSjihZ",
+                       "name":  "routing_owner_skill",
+                       "description":  "Primary helper skill expected to consult this row for routing decisions."
+                   },
+                   {
+                       "type":  "checkbox",
+                       "options":  {
+                                       "icon":  "check",
+                                       "color":  "greenBright"
+                                   },
+                       "id":  "fldeUhR746eIPzqHM",
+                       "name":  "active",
+                       "description":  "Whether this workflow should be considered active for current routing."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldzzEs07tV97F4Mb",
+                       "name":  "use_when",
+                       "description":  "General task-routing guidance for when a session should use this workflow."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldNGAE9cbd9YSYzz",
+                       "name":  "avoid_when",
+                       "description":  "General anti-routing guidance and cases where another lane is safer."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldcHZ83PpVZ3CH3x",
+                       "name":  "dispatch_inputs_summary",
+                       "description":  "Human-readable summary of workflow_dispatch inputs or request-file contract."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "flddbLErdH4zmhVoq",
+                       "name":  "trigger_summary",
+                       "description":  "Human-readable summary of workflow triggers. Executable truth remains the YAML body."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldWNrJxYDysrEvAP",
+                       "name":  "runtime_dependencies",
+                       "description":  "Scripts, manifests, repo files, or request contracts this workflow calls or validates."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldyltqpE8yeCz5sX",
+                       "name":  "readback_summary",
+                       "description":  "Where to inspect reports, artifacts, generated files, commits, or outcome evidence."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldFAQAmx5EiUdOAQ",
+                       "name":  "safety_notes",
+                       "description":  "Safety posture, stop conditions, path restrictions, cleanup behavior, and cautions."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldnGuhX7a0PUSRWc",
+                       "name":  "maintenance_notes",
+                       "description":  "How to keep this row aligned with workflow headers and YAML behavior."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "sel7TGfbP8Du02N9c",
+                                                           "name":  "workflow_task_routing",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selyqeQkYUWLx7A23",
+                                                           "name":  "workflow_validation",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selClCUxnk40TqL4j",
+                                                           "name":  "workflow_source_cleanup",
+                                                           "color":  "purpleLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldo3dDxCj99CX9cT",
+                       "name":  "cache_scope",
+                       "description":  "Cache inclusion category for helper-skill workflow routing."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selI09hnbO6fiJGqR",
+                                                           "name":  "operational",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selnmxcCeeSy2ZrSK",
+                                                           "name":  "reference",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selIFIDWAIpTkZ2nv",
+                                                           "name":  "temporary",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selX00v9lBbfIXE2b",
+                                                           "name":  "archive",
+                                                           "color":  "grayLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldN6NFgv7HUCROH0",
+                       "name":  "retention_class",
+                       "description":  "Retention class for registry lifecycle and cleanup handling."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldxcTxDPU87CjhCI",
+                       "name":  "source_snapshot",
+                       "description":  "Snapshot or source package identifier used to seed or refresh the row."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fld01gNq1B7F12kdh",
+                       "name":  "created_at",
+                       "description":  "Timestamp when this workflow inventory row was created or first observed."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldZLqo3NADSTBSeI",
+                       "name":  "updated_at",
+                       "description":  "Timestamp when this workflow inventory row was last refreshed or materially updated."
+                   },
+                   {
+                       "type":  "autoNumber",
+                       "id":  "fldpCWeBP7ZEstDnm",
+                       "name":  "workflow_seq_auto",
+                       "description":  "Purpose: Airtable-native autonumber used as a collision-resistant sequence source for future generated workflow keys. Type: autonumber. Default: Airtable assigns automatically for each new record; do not edit manually."
+                   },
+                   {
+                       "type":  "formula",
+                       "options":  {
+                                       "isValid":  true,
+                                       "formula":  "\"workflow-\" \u0026 {flddMiMhIe5Eg4FqZ} \u0026 \"-\" \u0026 {fldtAGFwU8MfEzfNI} \u0026 \"-\" \u0026 RIGHT(\"0000\" \u0026 {fldpCWeBP7ZEstDnm}, 4)",
+                                       "referencedFieldIds":  [
+                                                                  "flddMiMhIe5Eg4FqZ",
+                                                                  "fldtAGFwU8MfEzfNI",
+                                                                  "fldpCWeBP7ZEstDnm"
+                                                              ],
+                                       "result":  {
+                                                      "type":  "singleLineText"
+                                                  }
+                                   },
+                       "id":  "fldMKLP7OraKLpuC4",
+                       "name":  "workflow_key_native",
+                       "description":  "Purpose: Airtable-native generated workflow key used to compare generated key output against the stable primary workflow_key. Type: formula. Default: computed from workflow_family, workflow_file_stem, and workflow_seq_auto; do not edit manually."
+                   },
+                   {
+                       "type":  "formula",
+                       "options":  {
+                                       "isValid":  true,
+                                       "formula":  "IF({fldIgvJQIXXc2f22j}, {fldIgvJQIXXc2f22j} \u0026 \" | \", \"\") \u0026 {fldZz29bykYFsFzbl}",
+                                       "referencedFieldIds":  [
+                                                                  "fldIgvJQIXXc2f22j",
+                                                                  "fldZz29bykYFsFzbl"
+                                                              ],
+                                       "result":  {
+                                                      "type":  "singleLineText"
+                                                  }
+                                   },
+                       "id":  "fldZ3VbrmXoyD616A",
+                       "name":  "display_label",
+                       "description":  "WBS09.03 helper formula. Human-readable display label combining workflow_name and stable workflow_key. Does not replace or alter the primary field."
+                   },
+                   {
+                       "type":  "formula",
+                       "options":  {
+                                       "isValid":  true,
+                                       "formula":  "LOWER(IF({fldZz29bykYFsFzbl}, {fldZz29bykYFsFzbl} \u0026 \" | \", \"\") \u0026 IF({fldMKLP7OraKLpuC4}, {fldMKLP7OraKLpuC4} \u0026 \" | \", \"\") \u0026 IF({fldtAGFwU8MfEzfNI}, {fldtAGFwU8MfEzfNI} \u0026 \" | \", \"\") \u0026 IF({fldIgvJQIXXc2f22j}, {fldIgvJQIXXc2f22j} \u0026 \" | \", \"\") \u0026 IF({fldA6O7FlW9tUEFW5}, {fldA6O7FlW9tUEFW5} \u0026 \" | \", \"\") \u0026 IF({flddMiMhIe5Eg4FqZ}, {flddMiMhIe5Eg4FqZ} \u0026 \" | \", \"\") \u0026 IF({fld2RN9svVJSSOLsv}, {fld2RN9svVJSSOLsv} \u0026 \" | \", \"\") \u0026 IF({fldr293ymxflSjihZ}, {fldr293ymxflSjihZ} \u0026 \" | \", \"\") \u0026 IF({flder86QaKiBMy0Yg}, {flder86QaKiBMy0Yg} \u0026 \" | \", \"\") \u0026 IF({fldo3dDxCj99CX9cT}, {fldo3dDxCj99CX9cT} \u0026 \" | \", \"\") \u0026 IF({fldeUhR746eIPzqHM}, \"active true | \", \"active false | \"))",
+                                       "referencedFieldIds":  [
+                                                                  "fldZz29bykYFsFzbl",
+                                                                  "fldMKLP7OraKLpuC4",
+                                                                  "fldtAGFwU8MfEzfNI",
+                                                                  "fldIgvJQIXXc2f22j",
+                                                                  "fldA6O7FlW9tUEFW5",
+                                                                  "flddMiMhIe5Eg4FqZ",
+                                                                  "fld2RN9svVJSSOLsv",
+                                                                  "fldr293ymxflSjihZ",
+                                                                  "flder86QaKiBMy0Yg",
+                                                                  "fldo3dDxCj99CX9cT",
+                                                                  "fldeUhR746eIPzqHM"
+                                                              ],
+                                       "result":  {
+                                                      "type":  "singleLineText"
+                                                  }
+                                   },
+                       "id":  "fldjIJZE5k5m95Jug",
+                       "name":  "search_text",
+                       "description":  "WBS09.03 helper formula. Lowercase searchable text combining workflow key/native key, file stem, name, repo path, family, trigger, owner skill, status, cache scope, and active flag. Does not replace or alter the primary field."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viw7gwrFRdgVy4kjp",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwcNzl8dA3V6WGxU",
+                      "name":  "GVWI-01 All Workflows",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viw0tYPNk9W9HsIho",
+                      "name":  "GVWI-02 Active Routing",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwgIAWR2BDQ5G6mO",
+                      "name":  "GVWI-03 Validation Workflows",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwXHadiYwDC4Ri3V",
+                      "name":  "GVWI-04 Ops and Cleanup Workflows",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwVlFsB9SbNkTx4J",
+                      "name":  "GVWI-05 By Owner Skill",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwQlDF1DTjzY8O5S",
+                      "name":  "GVWI-06 Review and Drift Watch",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwBXd3o6ML7pNdC6",
+                      "name":  "GVWI-07 Cache Contract",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwj8Fh7tPWxlm9MW",
+                      "name":  "GVWI-08 Key Integrity",
+                      "type":  "grid"
+                  }
+              ]
+}

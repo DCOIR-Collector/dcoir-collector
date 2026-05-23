@@ -1,0 +1,244 @@
+{
+    "id":  "tblDfSl29psxRnes1",
+    "name":  "Governance Control Plane",
+    "description":  "Airtable-first startup and governance authority that defines queue authority, repo role, and live workspace model. Discovery note: maintained for schema readback so a new/blind operator or assistant can discover table purpose quickly. Inspect field descriptions before writing records.",
+    "primaryFieldId":  "fldQhD5Vd3e85yFbX",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldQhD5Vd3e85yFbX",
+                       "name":  "control_key",
+                       "description":  "Purpose: Stable control-plane key. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldaFox5zRxkvWPyJ",
+                       "name":  "workspace_model",
+                       "description":  "Purpose: DCOIR field \u0027workspace_model\u0027 used by the \u0027Governance Control Plane\u0027 table. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldjYqVrXghZjwS5P",
+                       "name":  "authority_order",
+                       "description":  "Purpose: DCOIR field \u0027authority_order\u0027 used by the \u0027Governance Control Plane\u0027 table. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldLdEs3aHXu2NNMT",
+                       "name":  "startup_chain",
+                       "description":  "Purpose: DCOIR field \u0027startup_chain\u0027 used by the \u0027Governance Control Plane\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "checkbox",
+                       "options":  {
+                                       "icon":  "check",
+                                       "color":  "greenBright"
+                                   },
+                       "id":  "fldRk2eHMppnDB4SV",
+                       "name":  "live_queue_authority",
+                       "description":  "Purpose: DCOIR field \u0027live_queue_authority\u0027 used by the \u0027Governance Control Plane\u0027 table. Type: checkbox. Default/omitted behavior: unchecked unless an Airtable field default says otherwise."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldoXEqxa7iGIVJBM",
+                       "name":  "repo_role_definition",
+                       "description":  "Purpose: DCOIR field \u0027repo_role_definition\u0027 used by the \u0027Governance Control Plane\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldKQR9N2GJoE0K5O",
+                       "name":  "retained_repo_surfaces",
+                       "description":  "Purpose: DCOIR field \u0027retained_repo_surfaces\u0027 used by the \u0027Governance Control Plane\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldKuMS6GRkwO4JVP",
+                       "name":  "project_attachment_set",
+                       "description":  "Purpose: DCOIR field \u0027project_attachment_set\u0027 used by the \u0027Governance Control Plane\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldgvNVrcuzz15G2K",
+                       "name":  "last_confirmed_text",
+                       "description":  "Purpose: DCOIR field \u0027last_confirmed_text\u0027 used by the \u0027Governance Control Plane\u0027 table. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldQY0mU3gCwbH1Kz",
+                       "name":  "created_at",
+                       "description":  "Purpose: Timestamp for when the row was created or first observed during cleanup. Type: date/time. Recommended default where configured: current date/time. If no Airtable default exists, scripts may set it explicitly."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldifX7PSJntG1BzN",
+                       "name":  "updated_at",
+                       "description":  "Purpose: Timestamp for when the row was last updated or refreshed. Type: date/time. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "date",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      }
+                                   },
+                       "id":  "fld1xDqO9JORIhus0",
+                       "name":  "review_after",
+                       "description":  "Purpose: Review-after date for aging and cleanup. Type: date. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selp8pTNiPcs3lZ2c",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selNgZaEP3y8OUhCE",
+                                                           "name":  "implemented",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selTNo4dGUM6T9VtD",
+                                                           "name":  "candidate",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selTGfQRLo2lii5ga",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selzNDYXm00gAPhDL",
+                                                           "name":  "superseded",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selkpVZOPWuedSpF8",
+                                                           "name":  "complete",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selBF15AgAH7sL6Kb",
+                                                           "name":  "in_progress",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selbwzGlvHmKDmsUe",
+                                                           "name":  "blocked",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seliNP0Ubw5Nj7UPH",
+                                                           "name":  "pending_review",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selertaMHNWJVak04",
+                                                           "name":  "planned",
+                                                           "color":  "cyanLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldtR5RIhapElNHkL",
+                       "name":  "status",
+                       "description":  "Purpose: DCOIR field \u0027status\u0027 on \u0027Governance Control Plane\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selemyVJ005c0AmD5",
+                                                           "name":  "retain",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel6W8fq5l5JAmqsD",
+                                                           "name":  "review",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selzrfVCHlPccW0iE",
+                                                           "name":  "archive",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selHNCpNUkd7PZsGa",
+                                                           "name":  "delete_candidate",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selj9swtuHzBsBXHp",
+                                                           "name":  "working",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selYg78MTn6VD8O6h",
+                                                           "name":  "core",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selg0pZJ4aJrlc59F",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selNjpYSkYgOysa6k",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldNUBsJEAEIjydC9",
+                       "name":  "retention_class",
+                       "description":  "Purpose: DCOIR field \u0027retention_class\u0027 on \u0027Governance Control Plane\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viwEQRcL4B6UCjGA3",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwjGEiEO0RttUSuF",
+                      "name":  "WBS09 - Active Governance",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwPyJVceouTYBSxm",
+                      "name":  "WBS09 - Startup Authority",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwAxG8hY2t7hbBGn",
+                      "name":  "WBS09 - Review Due",
+                      "type":  "grid"
+                  }
+              ]
+}

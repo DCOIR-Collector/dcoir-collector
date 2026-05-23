@@ -1,0 +1,331 @@
+{
+    "id":  "tblzBiXp7kwTXM0ru",
+    "name":  "Repo Surface Registry",
+    "description":  "Registry of governed repository surfaces, file roles, keep/delete state, and replacement surfaces. Discovery note: maintained for schema readback so a new/blind operator or assistant can discover table purpose quickly. Inspect field descriptions before writing records.",
+    "primaryFieldId":  "fldE1hjOJ1eOZLH63",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldE1hjOJ1eOZLH63",
+                       "name":  "surface_key",
+                       "description":  "Purpose: Stable repo surface key. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldU5YTbImSH6zWS2",
+                       "name":  "locator",
+                       "description":  "Purpose: Pointer to a repo path, skill, source, or external locator that grounds the row. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldSr0DgSKklJ6vw2",
+                       "name":  "role",
+                       "description":  "Purpose: DCOIR field \u0027role\u0027 used by the \u0027Repo Surface Registry\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldul8StVD1eEqjCW",
+                       "name":  "replacement_surface",
+                       "description":  "Purpose: DCOIR field \u0027replacement_surface\u0027 used by the \u0027Repo Surface Registry\u0027 table. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fld5Rty9QHMGhcU9T",
+                       "name":  "notes",
+                       "description":  "Purpose: Supporting context that makes the row understandable without relying on chat memory. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fld3XSLf0FMeUfH42",
+                       "name":  "created_at",
+                       "description":  "Purpose: Timestamp for when the row was created or first observed during cleanup. Type: date/time. Recommended default where configured: current date/time. If no Airtable default exists, scripts may set it explicitly."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldCNmW0WGiUtR1dE",
+                       "name":  "updated_at",
+                       "description":  "Purpose: Timestamp for when the row was last updated or refreshed. Type: date/time. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "date",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      }
+                                   },
+                       "id":  "fldISYgFQ2z1yfJHq",
+                       "name":  "review_after",
+                       "description":  "Purpose: Review-after date for aging and cleanup. Type: date. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selEVnwykJe7Tx18u",
+                                                           "name":  "repo_file",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selOcJzkXDZun3AmZ",
+                                                           "name":  "repo_folder",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selhuGn7nPOJLwwxM",
+                                                           "name":  "project_source_set",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selg6z47a1evbjFOW",
+                                                           "name":  "repo_source_set",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selU1EtybwMuVvl20",
+                                                           "name":  "supporting_asset",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selW702LjzKRydw50",
+                                                           "name":  "retired_surface_group",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selpu99nmlHUTyyZS",
+                                                           "name":  "governed_source",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seloOcit0Gy0L2UxT",
+                                                           "name":  "promoted_history",
+                                                           "color":  "pinkLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selFwaq28RpUh3fp8",
+                                                           "name":  "skill_memory",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selOPmZvfuTE4Vqmj",
+                                                           "name":  "governance_doc",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selraorF46MM22BBg",
+                                                           "name":  "control_plane",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selgMjSL8aOADOzQ8",
+                                                           "name":  "file",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selcRzT3AoRmQDgge",
+                                                           "name":  "folder",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selyy2uPJ0qM6gV2z",
+                                                           "name":  "governed_snapshot",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selgDeZ4VRE0e90bB",
+                                                           "name":  "root_policy",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selsXKAQCZVMpssUl",
+                                                           "name":  "runtime_source",
+                                                           "color":  "redLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldf9XZtW8mD80sYP",
+                       "name":  "surface_type",
+                       "description":  "Purpose: DCOIR field \u0027surface_type\u0027 on \u0027Repo Surface Registry\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selbxK6H73KpeMKoe",
+                                                           "name":  "retained",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selrjHjvVTp11lbyE",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selqMInioY2yjvb1D",
+                                                           "name":  "retained_reference",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selHJnse0FFzsWnO8",
+                                                           "name":  "current_github_authority",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seljUrsxjZOSx2IXf",
+                                                           "name":  "historical_only",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel88R5VBQAscZSRE",
+                                                           "name":  "promoted_history",
+                                                           "color":  "pinkLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selrpsv1dnnNwDWwH",
+                                                           "name":  "bootstrap_pointer",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seln1zYYi4wxSVgXK",
+                                                           "name":  "repo_support",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selNMxvvZKSjI5X8U",
+                                                           "name":  "workflow",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selwmbxuDtoTaizpd",
+                                                           "name":  "support_asset",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selPngiRT3vdf3Cby",
+                                                           "name":  "helper_skill_source",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seltENUl0zEAug1xr",
+                                                           "name":  "runtime_source",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selkvJcVrr7F4ZXR9",
+                                                           "name":  "validation_support",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seloE0RDMHEK30BeA",
+                                                           "name":  "issue_template",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selSo8G3rz1gk5Lh2",
+                                                           "name":  "current_source",
+                                                           "color":  "redLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldDapSojEOYFOtsW",
+                       "name":  "authority_status",
+                       "description":  "Purpose: DCOIR field \u0027authority_status\u0027 on \u0027Repo Surface Registry\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "sel2tJSAPyrEkQ0o2",
+                                                           "name":  "retain",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel0IkBKku2zJxViE",
+                                                           "name":  "review",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selin1SC2PpzSXFrz",
+                                                           "name":  "archive",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selv2k3QZYXPNqV3s",
+                                                           "name":  "delete_candidate",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selI8aUtYVZxRlQFe",
+                                                           "name":  "working",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selrO2bqvjmQ1ePDd",
+                                                           "name":  "core",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selkUqNciquMku9es",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selfJq3qjHY115Ydf",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldcKXlu9JyXcrRyr",
+                       "name":  "retention_class",
+                       "description":  "Purpose: DCOIR field \u0027retention_class\u0027 on \u0027Repo Surface Registry\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viwSTRFHko6hp3J73",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwA51jQvBfIAYFHN",
+                      "name":  "WBS09 - Governed Source Surfaces",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwyW2KNaa1DZ67AK",
+                      "name":  "WBS09 - Replacement or Retirement",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viw2YPInu2qcVU0LV",
+                      "name":  "WBS09 - Review Due",
+                      "type":  "grid"
+                  }
+              ]
+}

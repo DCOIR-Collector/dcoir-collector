@@ -1,0 +1,209 @@
+{
+    "id":  "tblvtcId7PiFKvfKO",
+    "name":  "DCOIR Cleanup Scaffold Registry",
+    "description":  "Registry of plan-scoped scaffold objects created to support the DCOIR Airtable Cleanup and Restructuring Plan. Tracks purpose, source surface, lifecycle state, and final disposition review so temporary support objects do not become untracked project bloat.",
+    "primaryFieldId":  "fldaBJ8P6m2ARMoLz",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldaBJ8P6m2ARMoLz",
+                       "name":  "scaffold_key",
+                       "description":  "Stable key for the scaffold object."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldR2HGAtC55Ss4Ri",
+                       "name":  "plan_key",
+                       "description":  "Plan this scaffold object supports."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fld45yLe1QIoXgZE3",
+                       "name":  "scaffold_name",
+                       "description":  "Human-readable scaffold object name."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selr3l1gub54b8bKO",
+                                                           "name":  "airtable_table",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selAUvmPSn7xcTOVd",
+                                                           "name":  "skill",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selFbAqrtdMy2mwRF",
+                                                           "name":  "github_file",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selgCX7y4NlGEH4qo",
+                                                           "name":  "workflow",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selgFs3jejNowqeUi",
+                                                           "name":  "automation",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seloXOvcEqjsSNKKk",
+                                                           "name":  "source",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selIgzn7d2yltFRNr",
+                                                           "name":  "other",
+                                                           "color":  "tealLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldIHPy7ApnjSCeIl",
+                       "name":  "scaffold_type",
+                       "description":  "Kind of scaffold object."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selwWVmEZMozkbzKQ",
+                                                           "name":  "active_scaffold",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel5v7z5tHkNamoYV",
+                                                           "name":  "planned",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selmAN8r2ynUZoPGn",
+                                                           "name":  "blocked",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selPL1SGBsEYWKCz6",
+                                                           "name":  "ready_for_review",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel6XiT7JUuu7CzuV",
+                                                           "name":  "integrated",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selBKjOMBPdZJ9H20",
+                                                           "name":  "left_temporarily",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel5pwLp7UrOX2aOp",
+                                                           "name":  "retired",
+                                                           "color":  "purpleLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldfAXpeTuN5M2QRS",
+                       "name":  "status",
+                       "description":  "Lifecycle state for this scaffold object."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "flddBvbBqkOZeymHo",
+                       "name":  "purpose",
+                       "description":  "Why this scaffold object exists and how it supports the plan."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldypiTz3N1dBIfk9",
+                       "name":  "created_surface",
+                       "description":  "Where the scaffold object exists, such as Airtable, GitHub, skill, workflow, or project configuration."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldkqvHbdb30pCPJb",
+                       "name":  "created_locator",
+                       "description":  "Pointer to the created object, table, file, workflow, or skill."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "sel0A7xyH6VgtRMgC",
+                                                           "name":  "pending",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selps23AkNh6JpYkU",
+                                                           "name":  "integrate",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selLbgostGsIFhJBQ",
+                                                           "name":  "leave_temporarily",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selHcNCcJk6ojVrif",
+                                                           "name":  "retire",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selHNySWqddHS7lfX",
+                                                           "name":  "not_applicable",
+                                                           "color":  "grayLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "flduyr5lvHAtwhrJd",
+                       "name":  "final_disposition",
+                       "description":  "Required plan-conclusion decision."
+                   },
+                   {
+                       "type":  "date",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      }
+                                   },
+                       "id":  "fldLxQJcSQCwuw6O0",
+                       "name":  "review_after",
+                       "description":  "Review date for this scaffold object."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldkYJX6QGOrpPR7K",
+                       "name":  "notes",
+                       "description":  "Context, constraints, and disposition notes."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viwtJRcQojzKadcUs",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwLXaXugrqpFBc0D",
+                      "name":  "WBS09 - Active Scaffolds",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwNAWHbI6xWorCx3",
+                      "name":  "WBS09 - Disposition Review",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwasi2GeEKE7gDIY",
+                      "name":  "WBS09 - Review Due",
+                      "type":  "grid"
+                  }
+              ]
+}

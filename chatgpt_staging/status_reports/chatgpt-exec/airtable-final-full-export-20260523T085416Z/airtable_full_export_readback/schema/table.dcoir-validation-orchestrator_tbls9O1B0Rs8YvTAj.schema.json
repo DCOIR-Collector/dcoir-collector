@@ -1,0 +1,303 @@
+{
+    "id":  "tbls9O1B0Rs8YvTAj",
+    "name":  "dcoir-validation-orchestrator",
+    "description":  "Helper-memory table for DCOIR validation plans, evidence thresholds, unresolved gaps, and readiness gates. Discovery note: maintained for schema readback so a new/blind operator or assistant can discover table purpose quickly. Inspect field descriptions before writing records.",
+    "primaryFieldId":  "fld3zLfGs468eOrai",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fld3zLfGs468eOrai",
+                       "name":  "validation_entry_id",
+                       "description":  "Purpose: Stable identifier used for lookup, deduplication, resume, and cross-table references. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldu90QetmVAGMPg7",
+                       "name":  "active_validation_plan",
+                       "description":  "Purpose: DCOIR field \u0027active_validation_plan\u0027 used by the \u0027dcoir-validation-orchestrator\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldM9FoBQuFxkRtke",
+                       "name":  "evidence_threshold",
+                       "description":  "Purpose: DCOIR field \u0027evidence_threshold\u0027 used by the \u0027dcoir-validation-orchestrator\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldl8hJwbfTd6CIqf",
+                       "name":  "unresolved_gap",
+                       "description":  "Purpose: DCOIR field \u0027unresolved_gap\u0027 used by the \u0027dcoir-validation-orchestrator\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldJoGbCSFMhaJcXm",
+                       "name":  "live_readiness_gate",
+                       "description":  "Purpose: DCOIR field \u0027live_readiness_gate\u0027 used by the \u0027dcoir-validation-orchestrator\u0027 table. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldcowj0yJ4FehXvs",
+                       "name":  "next_action",
+                       "description":  "Purpose: Immediate next step or recommended follow-up for this row. Type: long text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldUda6eDNofM1uJz",
+                       "name":  "last_confirmed_text",
+                       "description":  "Purpose: DCOIR field \u0027last_confirmed_text\u0027 used by the \u0027dcoir-validation-orchestrator\u0027 table. Type: single-line text. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldkHJlkJs4ayOjH2",
+                       "name":  "created_at",
+                       "description":  "Purpose: DCOIR aging field. Existing rows may be backfilled with the date/time the cleanup pass first saw them. Type: date/time. Recommended default where configured: current date/time. If no Airtable default exists, scripts may set it explicitly."
+                   },
+                   {
+                       "type":  "dateTime",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      },
+                                       "timeFormat":  {
+                                                          "name":  "24hour",
+                                                          "format":  "HH:mm"
+                                                      },
+                                       "timeZone":  "utc"
+                                   },
+                       "id":  "fldk4YCtGhqG7WSXX",
+                       "name":  "updated_at",
+                       "description":  "Purpose: DCOIR aging field. Existing rows may be backfilled with the date/time the cleanup pass first saw them. Type: date/time. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "date",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      }
+                                   },
+                       "id":  "fldKlyzAcj7Q5kEI4",
+                       "name":  "review_after",
+                       "description":  "Purpose: DCOIR manual cleanup review date. Rows on or before this date are candidates for human review. Type: date. Default: none documented here; set explicitly when required."
+                   },
+                   {
+                       "type":  "multipleSelects",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "sel9vCN6mBl9N6cft",
+                                                           "name":  "dcoir_skills",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel0FDxab645RBa9S",
+                                                           "name":  "scripts",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selUavLd6ye4iwpeC",
+                                                           "name":  "prompt_pack",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selyxznYNZneeTWCI",
+                                                           "name":  "bundles",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selxlvfjam5VEIrzd",
+                                                           "name":  "docs",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selY0yQ3Uhplu3Zkv",
+                                                           "name":  "and_workflow_changes",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seltuXhKyhIMmNzgK",
+                                                           "name":  "workflow_changes",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seljXVX0v9DN9b3Jj",
+                                                           "name":  "collector",
+                                                           "color":  "pinkLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seldhrBa7dHQ3oeNQ",
+                                                           "name":  "gemini",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selD8KrWBHGUL49RH",
+                                                           "name":  "skill",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selbiILXmMw49Qz6n",
+                                                           "name":  "validation_scope",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selJ4BHwwqW3kdYrc",
+                                                           "name":  "legacy_source_basis",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selZpbyrAECY4gfee",
+                                                           "name":  "workflow",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selRm9XMF3cmMDtCc",
+                                                           "name":  "github",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selPPy38KpbNqxq1i",
+                                                           "name":  "cleanup",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selB0wWAit1ohsJ2T",
+                                                           "name":  "validation",
+                                                           "color":  "greenLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldyAQecWjCgKB2ix",
+                       "name":  "validation_scope",
+                       "description":  "Purpose: DCOIR field \u0027validation_scope\u0027 on \u0027dcoir-validation-orchestrator\u0027. Type: multipleSelects. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "sel5S8H45zBEaBQNu",
+                                                           "name":  "active",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selMRmehfgZLRhEEL",
+                                                           "name":  "implemented",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selPphbpR0p7BVGZ7",
+                                                           "name":  "candidate",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel9AB9WQx3bxMu2B",
+                                                           "name":  "retired",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selZ6O6ZDjhp2S6yY",
+                                                           "name":  "superseded",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selD4JkpdERUQAw0s",
+                                                           "name":  "complete",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selCEUyshE3SNjXRr",
+                                                           "name":  "in_progress",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel182ryncJVlHzKA",
+                                                           "name":  "blocked",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selcyAlyWBIzHZCYd",
+                                                           "name":  "pending_review",
+                                                           "color":  "yellowLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldzOLipJQKiCcW4m",
+                       "name":  "status",
+                       "description":  "Purpose: DCOIR field \u0027status\u0027 on \u0027dcoir-validation-orchestrator\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selEnnYDCRAc1TXp5",
+                                                           "name":  "retain",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selraXoH8mhYNPm5a",
+                                                           "name":  "review",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel9xNwQWizyVWaCH",
+                                                           "name":  "archive",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel6N2Tn6GTdiRk7D",
+                                                           "name":  "delete_candidate",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel9w3jH6oyAPWxP7",
+                                                           "name":  "working",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sela2vefXKnOlEIgA",
+                                                           "name":  "core",
+                                                           "color":  "orangeLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldbRVqoWt9fjR7o5",
+                       "name":  "retention_class",
+                       "description":  "Purpose: DCOIR field \u0027retention_class\u0027 on \u0027dcoir-validation-orchestrator\u0027. Type: singleSelect. Default: see Admin Registry/manual checklist for native default policy. Values/options should be lowercase canonical forms where applicable."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viwYdIowI5n5xUgTo",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwCg9aswnWifbNeZ",
+                      "name":  "WBS09 - Active Validation Gates",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwJMCfKYCYnw0oon",
+                      "name":  "WBS09 - Unresolved Gaps",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viw3u5gyr7zVlWQ55",
+                      "name":  "WBS09 - Review Due",
+                      "type":  "grid"
+                  }
+              ]
+}

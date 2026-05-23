@@ -1,0 +1,334 @@
+{
+    "id":  "tblRxTmpW0VunQlUK",
+    "name":  "DCOIR Cleanup WBS",
+    "description":  "Plan-scoped WBS table for the DCOIR Airtable Cleanup and Restructuring Plan. Stores ordered hierarchy, target surface, completion criteria, validation notes, and future-session context.",
+    "primaryFieldId":  "fldxysOTwPhA0fk9b",
+    "fields":  [
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldxysOTwPhA0fk9b",
+                       "name":  "wbs_key",
+                       "description":  "Stable unique WBS key such as CLEANUP-WBS-04-02-01."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldKoseZ9P1hPUzgh",
+                       "name":  "plan_key",
+                       "description":  "Parent plan key."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldUcO6yamUW9Yr0R",
+                       "name":  "wbs_path",
+                       "description":  "Ordered work-breakdown path such as 04, 04.02, or 04.02.01."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldxbbxdH7Mdishkr",
+                       "name":  "parent_wbs_key",
+                       "description":  "Parent WBS key for nested tasks."
+                   },
+                   {
+                       "type":  "number",
+                       "options":  {
+                                       "precision":  0
+                                   },
+                       "id":  "fldykxehl6sMTigk4",
+                       "name":  "rank",
+                       "description":  "Numeric order within the parent scope."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldjutcnESO7o1XQv",
+                       "name":  "title",
+                       "description":  "Human-readable work item title."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selRqRsRmPe5PJJ3x",
+                                                           "name":  "workstream",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sela4wUiku0EjpftU",
+                                                           "name":  "task",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selpEPAD4WZoKyAGk",
+                                                           "name":  "subtask",
+                                                           "color":  "tealLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selX6UwermCA11QA5",
+                                                           "name":  "atomic",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selXqJLzMAvYaxzgT",
+                                                           "name":  "check",
+                                                           "color":  "purpleLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldf9wxS1NQ4zETgi",
+                       "name":  "level",
+                       "description":  "Hierarchy level."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selEUY3ySCSVVT0H5",
+                                                           "name":  "airtable",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seluJStAuzWEB9naI",
+                                                           "name":  "skill",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selE8yJmcbPnUo7EW",
+                                                           "name":  "project_config",
+                                                           "color":  "pinkLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selSu1GzjludSybxm",
+                                                           "name":  "source",
+                                                           "color":  "cyanLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel8xG9gX2im3VTjf",
+                                                           "name":  "github",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selhE9p5TJ1z4CFES",
+                                                           "name":  "workflow",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selcro7zFP65f58az",
+                                                           "name":  "automation",
+                                                           "color":  "yellowLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selpMCRWwVsTRXHdU",
+                                                           "name":  "validation",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel6u66nYyVg8VV9f",
+                                                           "name":  "governance",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selCMwi8ew36VgvQ4",
+                                                           "name":  "mixed",
+                                                           "color":  "tealLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldLu2C5uWd7yYEb4",
+                       "name":  "surface",
+                       "description":  "Primary project surface."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selFpnwu05Q9sEyQB",
+                                                           "name":  "planned",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selL6VGsJgThsjkHY",
+                                                           "name":  "active",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sellgdEXIyKKGoLK7",
+                                                           "name":  "blocked",
+                                                           "color":  "redLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel6mgLVwmSKB81OR",
+                                                           "name":  "review",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "seluaq9OBGbYMpx51",
+                                                           "name":  "complete",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selMZeQykejXRuGEI",
+                                                           "name":  "skipped",
+                                                           "color":  "yellowLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fld627GL9W2hnoDa5",
+                       "name":  "state",
+                       "description":  "Current state."
+                   },
+                   {
+                       "type":  "singleSelect",
+                       "options":  {
+                                       "choices":  [
+                                                       {
+                                                           "id":  "selpaqdJQvCnMFLok",
+                                                           "name":  "planning_only",
+                                                           "color":  "greenLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selqnBk5TRh5rEE5H",
+                                                           "name":  "airtable_write",
+                                                           "color":  "blueLight2"
+                                                       },
+                                                       {
+                                                           "id":  "sel1fI0Aj62t95V3o",
+                                                           "name":  "schema_change",
+                                                           "color":  "orangeLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selOc8hcCGrTmUa5o",
+                                                           "name":  "skill_change",
+                                                           "color":  "purpleLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selPk8sPeZrIDHvkD",
+                                                           "name":  "github_change",
+                                                           "color":  "grayLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selSnjVHuDmBLZ6kM",
+                                                           "name":  "config_change",
+                                                           "color":  "pinkLight2"
+                                                       },
+                                                       {
+                                                           "id":  "selubqPB3QyFEQr1d",
+                                                           "name":  "operator_review",
+                                                           "color":  "yellowLight2"
+                                                       }
+                                                   ]
+                                   },
+                       "id":  "fldW9aLKqVnENDY4Q",
+                       "name":  "gate",
+                       "description":  "Approval or review gate for this item."
+                   },
+                   {
+                       "type":  "singleLineText",
+                       "id":  "fldXVwq1qFrDeK4eO",
+                       "name":  "target",
+                       "description":  "Specific table, field, skill, file, workflow, source, tool, or object."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldkRdSblu5KLeqch",
+                       "name":  "done_criteria",
+                       "description":  "Exact conditions required before this item can be marked complete."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fldBWgf90H3Ja8kQU",
+                       "name":  "validation_notes",
+                       "description":  "Readback, evidence, dependency, or searchability proof required."
+                   },
+                   {
+                       "type":  "multilineText",
+                       "id":  "fld3IwH6VYmFqnywU",
+                       "name":  "context",
+                       "description":  "Self-contained context for future sessions."
+                   },
+                   {
+                       "type":  "date",
+                       "options":  {
+                                       "dateFormat":  {
+                                                          "name":  "iso",
+                                                          "format":  "YYYY-MM-DD"
+                                                      }
+                                   },
+                       "id":  "flds2ogisonqEFdwd",
+                       "name":  "review_after",
+                       "description":  "Review date for open or unresolved items."
+                   },
+                   {
+                       "type":  "formula",
+                       "options":  {
+                                       "isValid":  true,
+                                       "formula":  "IF({fldUcO6yamUW9Yr0R}, {fldUcO6yamUW9Yr0R} \u0026 \" | \", \"\") \u0026 IF({fldjutcnESO7o1XQv}, {fldjutcnESO7o1XQv} \u0026 \" | \", \"\") \u0026 {fldxysOTwPhA0fk9b}",
+                                       "referencedFieldIds":  [
+                                                                  "fldUcO6yamUW9Yr0R",
+                                                                  "fldjutcnESO7o1XQv",
+                                                                  "fldxysOTwPhA0fk9b"
+                                                              ],
+                                       "result":  {
+                                                      "type":  "singleLineText"
+                                                  }
+                                   },
+                       "id":  "fldNRKXl6S4DtQYl9",
+                       "name":  "display_label",
+                       "description":  "WBS09.03 pilot helper formula. Human-readable display label combining WBS path, title, and stable wbs_key. Does not replace or alter the primary field."
+                   },
+                   {
+                       "type":  "formula",
+                       "options":  {
+                                       "isValid":  true,
+                                       "formula":  "LOWER(IF({fldxysOTwPhA0fk9b}, {fldxysOTwPhA0fk9b} \u0026 \" | \", \"\") \u0026 IF({fldKoseZ9P1hPUzgh}, {fldKoseZ9P1hPUzgh} \u0026 \" | \", \"\") \u0026 IF({fldUcO6yamUW9Yr0R}, {fldUcO6yamUW9Yr0R} \u0026 \" | \", \"\") \u0026 IF({fldxbbxdH7Mdishkr}, {fldxbbxdH7Mdishkr} \u0026 \" | \", \"\") \u0026 IF({fldjutcnESO7o1XQv}, {fldjutcnESO7o1XQv} \u0026 \" | \", \"\") \u0026 IF({fldf9wxS1NQ4zETgi}, {fldf9wxS1NQ4zETgi} \u0026 \" | \", \"\") \u0026 IF({fldLu2C5uWd7yYEb4}, {fldLu2C5uWd7yYEb4} \u0026 \" | \", \"\") \u0026 IF({fld627GL9W2hnoDa5}, {fld627GL9W2hnoDa5} \u0026 \" | \", \"\") \u0026 IF({fldW9aLKqVnENDY4Q}, {fldW9aLKqVnENDY4Q} \u0026 \" | \", \"\") \u0026 IF({fldXVwq1qFrDeK4eO}, {fldXVwq1qFrDeK4eO} \u0026 \" | \", \"\") \u0026 IF({fld3IwH6VYmFqnywU}, {fld3IwH6VYmFqnywU} \u0026 \" | \", \"\"))",
+                                       "referencedFieldIds":  [
+                                                                  "fldxysOTwPhA0fk9b",
+                                                                  "fldKoseZ9P1hPUzgh",
+                                                                  "fldUcO6yamUW9Yr0R",
+                                                                  "fldxbbxdH7Mdishkr",
+                                                                  "fldjutcnESO7o1XQv",
+                                                                  "fldf9wxS1NQ4zETgi",
+                                                                  "fldLu2C5uWd7yYEb4",
+                                                                  "fld627GL9W2hnoDa5",
+                                                                  "fldW9aLKqVnENDY4Q",
+                                                                  "fldXVwq1qFrDeK4eO",
+                                                                  "fld3IwH6VYmFqnywU"
+                                                              ],
+                                       "result":  {
+                                                      "type":  "singleLineText"
+                                                  }
+                                   },
+                       "id":  "fldBlzFZdvzMsovDJ",
+                       "name":  "search_text",
+                       "description":  "WBS09.03 pilot helper formula. Lowercase searchable text combining stable keys, path, title, state/gate/target/context. Does not replace or alter the primary field."
+                   }
+               ],
+    "views":  [
+                  {
+                      "id":  "viwUj0D2mnsrzmmeI",
+                      "name":  "Grid view",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwAdpKUFkoDKutCR",
+                      "name":  "WBS09 - Active or Planned WBS",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwItFwQXcF0FNMEb",
+                      "name":  "WBS09 - Approval Gates",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwwqJLIf7mfO40yU",
+                      "name":  "WBS09 - Blocked Review",
+                      "type":  "grid"
+                  },
+                  {
+                      "id":  "viwuypL2bjxhtbg09",
+                      "name":  "WBS09 - Current Plan Rows",
+                      "type":  "grid"
+                  }
+              ]
+}
