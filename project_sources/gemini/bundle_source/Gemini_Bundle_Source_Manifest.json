@@ -118,7 +118,9 @@
     "knowledge/Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline.md",
     "knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md",
     "knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md",
-    "knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md",
+    "knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md"
+  ],
+  "operator_only_knowledge_sources": [
     "knowledge/Knowledge - 18 - Gemini Research Findings and Runtime Boundaries.md"
   ],
   "prime_agent_source_mode": "chunked_reassembled",
@@ -152,6 +154,6 @@
     "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_17_DCOIR_Branch_Ownership_Collector_And_USB.md.txt",
     "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_18_IOC_Parsing_Public_Enrichment_And_Mixed_Format_Input.md.txt",
     "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_19_Host_Network_Forensics_And_IR_Discipline.md.txt",
-    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_20_Routing_Request_Coverage_Tool_Access_And_Memory.md.txt"
+    "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_20_Routing_Request_CoverAGE_Tool_Access_And_Memory.md.txt"
   ]
 }
