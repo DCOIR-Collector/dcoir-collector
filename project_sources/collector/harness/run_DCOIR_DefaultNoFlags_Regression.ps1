@@ -5,12 +5,15 @@ Runs a focused regression check for default no-flags collector execution.
 .DESCRIPTION
 Invokes the collector with no explicit arguments, verifies that the collect output
 contract is emitted, and optionally runs cleanup to confirm the default lane leaves a
-normal cleanup path behind.
+normal cleanup path behind. When a master runtime ZIP is supplied, the harness restores
+that ZIP beside the collector before the no-flags invocation, matching the workflow
+runtime-package pattern used by the core collector harness.
 #>
 
 param(
   [string]$CollectorPath = ".\DCOIR_Collector.ps1",
   [string]$OutputRoot = ".\TestResults",
+  [string]$MasterZipPath,
   [switch]$SkipCleanup,
   [ValidateSet("Auto","PowerShellFile","Executable")]
   [string]$CollectorInvocationMode = "Auto"
@@ -29,6 +32,12 @@ if ($ResolvedInvocationMode -eq "Auto") {
     $ResolvedInvocationMode = "PowerShellFile"
   }
 }
+
+$MasterZipFullPath = $null
+if (-not [string]::IsNullOrWhiteSpace($MasterZipPath)) {
+  $MasterZipFullPath = (Resolve-Path -LiteralPath $MasterZipPath).Path
+}
+$WorkingZipPath = Join-Path $ProjectRoot "DCOIR_Collector.zip"
 
 $Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $OutputRootFullPath = if ([System.IO.Path]::IsPathRooted($OutputRoot)) {
@@ -71,6 +80,14 @@ function Build-ArgumentString {
     [void]$parts.Add((Quote-Arg -Value $a))
   }
   return ($parts -join ' ')
+}
+
+function Restore-WorkingZip {
+  if ([string]::IsNullOrWhiteSpace($MasterZipFullPath)) { return }
+  if (-not (Test-Path -LiteralPath $MasterZipFullPath)) {
+    throw "Master runtime ZIP not found: $MasterZipFullPath"
+  }
+  Copy-Item -LiteralPath $MasterZipFullPath -Destination $WorkingZipPath -Force
 }
 
 function New-CollectorInvocation {
@@ -124,6 +141,7 @@ function Invoke-Collector {
 }
 
 Ensure-Directory -Path $RunOutputRoot
+Restore-WorkingZip
 
 $collect = Invoke-Collector -CollectorArgs @()
 $missing = New-Object System.Collections.ArrayList
@@ -140,6 +158,8 @@ if ($collect.CollectorReportedStatus -notin @("SUCCESS","PARTIAL_SUCCESS")) {
 
 $logLines = @(
   ("COMMAND={0}" -f $collect.DisplayCommand),
+  ("MASTER_ZIP={0}" -f $MasterZipFullPath),
+  ("WORKING_ZIP={0}" -f $WorkingZipPath),
   ("EXIT_CODE={0}" -f $collect.ExitCode),
   ("STATUS={0}" -f $collect.CollectorReportedStatus),
   ("RUN_ID={0}" -f $collect.RunId),
