@@ -94,26 +94,38 @@ def main() -> int:
     if missing_files:
         errors.append('missing required source-root files: ' + ', '.join(missing_files))
     if missing_source_required_files:
-        errors.append('missing source-required source-root files: ' + ', '.join(missing_source_required_files))
+        errors.append('missing source-required source-root files: ' + ', '.join(missing_source_REQUIRED_files))
 
     generated_dir = manifest.get('generated_knowledge_attachment_dir', DEFAULT_GENERATED_KNOWLEDGE_DIR)
     knowledge_sources = sorted(manifest.get('knowledge_attachment_sources', []))
+    operator_only_knowledge_sources = sorted(manifest.get('operator_only_knowledge_sources', []))
     discovered_sources = sorted(
         p.relative_to(repo_root).as_posix()
         for p in (repo_root / 'knowledge').glob('Knowledge - *.md')
         if p.is_file()
     )
+    expected_sources = sorted(set(knowledge_sources + operator_only_knowledge_sources))
     missing_sources = [rel for rel in knowledge_sources if not (repo_root / rel).exists()]
-    unlisted_sources = [rel for rel in discovered_sources if rel not in knowledge_sources]
+    missing_operator_only_sources = [rel for rel in operator_only_knowledge_sources if not (repo_root / rel).exists()]
+    unlisted_sources = [rel for rel in discovered_sources if rel not in expected_sources]
     stale_sources = [rel for rel in knowledge_sources if rel not in discovered_sources]
+    stale_operator_only_sources = [rel for rel in operator_only_knowledge_sources if rel not in discovered_sources]
+    overlapping_source_roles = sorted(set(knowledge_sources).intersection(operator_only_knowledge_sources))
     checks['knowledge_attachment_sources'] = knowledge_sources
+    checks['operator_only_knowledge_sources'] = operator_only_knowledge_sources
     checks['discovered_knowledge_sources'] = discovered_sources
-    checks['knowledge_source_inventory_exact_match'] = not missing_sources and not unlisted_sources and not stale_sources
+    checks['expected_knowledge_sources'] = expected_sources
+    checks['knowledge_source_inventory_exact_match'] = not missing_sources and not missing_operator_only_sources and not unlisted_sources and not stale_sources and not stale_operator_only_sources and not overlapping_source_roles
     checks['missing_knowledge_sources'] = missing_sources
+    checks['missing_operator_only_knowledge_sources'] = missing_operator_only_sources
     checks['unlisted_knowledge_sources'] = unlisted_sources
     checks['stale_manifest_knowledge_sources'] = stale_sources
-    if missing_sources or unlisted_sources or stale_sources:
+    checks['stale_manifest_operator_only_knowledge_sources'] = stale_operator_only_sources
+    checks['overlapping_manifest_knowledge_source_roles'] = overlapping_source_roles
+    if missing_sources or missing_operator_only_sources or unlisted_sources or stale_sources or stale_operator_only_sources:
         errors.append('knowledge source inventory drift detected between manifest and knowledge/')
+    if overlapping_source_roles:
+        errors.append('knowledge sources cannot be listed as both bundle-facing and operator-only in the manifest')
 
     generated_dupes = [rel for rel in required_files if rel.startswith(f'{generated_dir}/Knowledge - ')]
     source_duplicate_files = sorted(
@@ -233,7 +245,7 @@ def main() -> int:
     if map_missing_titles:
         errors.append('attachment map does not mention every manifest-listed knowledge source file')
 
-    combined_paths = list((source_root / AGENT_DIR).glob('*.txt')) + [source_root / QUICK_START] + [repo_root / rel for rel in knowledge_sources]
+    combined_paths = list((source_root / AGENT_DIR).glob('*.txt')) + [source_root / QUICK_START] + [repo_root / rel for rel in expected_sources]
     combined = gather_text(combined_paths).lower()
     for key, needles in VISIBILITY_CHECKS.items():
         present = all(needle in combined for needle in needles)
