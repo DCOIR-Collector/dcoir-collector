@@ -1,2 +1,0 @@
-Skill parity refresh trigger.
-Initial trigger surface created by ChatGPT on 2026-04-24.
