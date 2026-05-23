@@ -46,6 +46,19 @@ SCENARIOS = {
             ['alternate drafts', 'repeated near-identical section pairs', 'single clean final response'],
         ],
     },
+    'GeminiStagedExecutionAndGroundedBoundary': {
+        'description': 'The stored Gemini source should preserve decide-then-execute-then-narrate behavior and bounded grounded-source-family wording.',
+        'all_markers': [
+            'decide then execute then narrate',
+            'progress or planner wording is not proof of execution',
+            'uploaded files, connector-backed enterprise retrieval, public web grounding, custom search, or returned runtime tool results',
+            'not verified from configured sources',
+        ],
+        'any_marker_groups': [
+            ['requested action', 'planned action', 'executed action', 'returned result'],
+            ['connector and indexing limits', 'searchable-text extraction limits', 'file-size or indexing ceilings'],
+        ],
+    },
     'GeminiSecurityProductNegativeControl': {
         'description': 'The stored Gemini source should preserve false-positive-aware handling for benign or dual-use security-product behavior.',
         'all_markers': ['false-positive-aware', 'security product'],
