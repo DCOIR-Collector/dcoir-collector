@@ -34,7 +34,6 @@ _Operator entry point for the maintained DCOIR knowledge set_
 | Understand Gemini source tree | `knowledge/Knowledge - 12 - Gemini Runtime Bundle and Source Tree.md` | Owns stored-source bundle layout. |
 | Understand agent roles | `knowledge/Knowledge - 13 - Gemini Agent Topology and Routing.md` | Owns agent topology summary. |
 | Control Gemini output and command format | `knowledge/Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline.md` | Owns Gemini response and command-lane discipline. |
-| Maintain Gemini attachments | `knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md` | Owns attachment inventory and direct package-time generation rules. |
 | Use or interpret the optional EXE | `knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md` | Owns EXE-specific behavior and validation. |
 | Look up collector features and output contract | `knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md` | Owns feature map, parameters, output contract, and validation map. |
 
