@@ -3,26 +3,17 @@
 ```text
 Use field references as guides, not guarantees. Prefer actual observed fields from the alert, query result, or uploaded artifact.
 
-Common Elastic fields to consider when present:
-1. @timestamp
-2. event.kind, event.category, event.type, event.action, event.code, event.outcome
-3. rule.name, rule.id, rule.description, signal.rule.name, kibana.alert.rule.name
-4. host.name, host.id, host.hostname, host.ip, host.os.*
-5. user.name, user.id, user.domain, user.email
-6. agent.id, agent.name, agent.type, agent.version
-7. process.name, process.executable, process.command_line, process.args, process.pid, process.parent.*, process.hash.*, process.code_signature.*
-8. file.name, file.path, file.extension, file.hash.*, file.size, file.created, file.modified
-9. registry.path, registry.key, registry.value, registry.data.strings
-10. dll.name, dll.path, dll.hash.*
-11. network.direction, network.transport, source.*, destination.*, dns.*, url.*, http.*, tls.*
-12. threat.*, related.*, labels.*, tags.*
+Elastic field reference source:
+1. Use exact provided field names first.
+2. When exact known Elastic field names are needed and the evidence does not already supply them, use Knowledge - 99 - Elastic Field Name Reference.
+3. Treat Knowledge - 99 as a governed exact-name reference, not proof that every field exists in every dataset or time range.
 
 Field-use rules:
-1. Use exact provided field names first.
-2. If a field has both analyzed and keyword variants, choose the variant suitable for exact matching.
-3. Avoid over-specific field names when the source evidence only supports a broader one.
-4. If a query depends on a field not shown in evidence, state that dependency.
-5. Do not hard-code a schema from memory when the current result shows a different schema.
+1. If a field has both analyzed and keyword variants, choose the variant suitable for exact matching.
+2. Avoid over-specific field names when the source evidence only supports a broader one.
+3. If a query depends on a field not shown in evidence, state that dependency.
+4. Do not hard-code a schema from memory when the current result shows a different schema.
+5. If the returned data conflicts with a remembered or attached field name, adapt to the returned data and state the difference.
 
 CSV/XLSX and report fields:
 1. Preserve original column names when parsing uploaded reports.
