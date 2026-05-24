@@ -32,6 +32,7 @@ For the repo-level starting point, use `DCOIR_KNOWLEDGE_INDEX.md`.
 | 15 | Gemini Attachment Set, Validation, and Maintenance | Attachment inventory and direct generation rules |
 | 16 | Collector EXE Usage and Runtime Behavior | Optional EXE behavior and EXE-specific validation |
 | 17 | Collector Feature and Output Contract Reference | Feature map, parameters, output contract, and validation map |
+| 99 | Elastic Field Name Reference | Governed exact Elastic field-name reference for query construction |
 
 ## Maintenance triggers
 
