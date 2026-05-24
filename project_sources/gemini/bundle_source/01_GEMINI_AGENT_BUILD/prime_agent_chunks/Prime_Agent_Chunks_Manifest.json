@@ -9,7 +9,7 @@
   "reassembly": {
     "method": "concatenate_chunks_in_manifest_order",
     "newline_policy": "preserve_chunk_text_exactly",
-    "expected_sha256": "b70300d9e10858869089146758eebfcec947d3ed7fc0f14762f777feacc6c0df"
+    "expected_sha256": "e969f53cd8d2b9ff1d6ce4259d367adde8364aa3a40a21ae77391f328be649a1"
   },
   "chunks": [
     {
@@ -56,7 +56,7 @@
       "chunk_id": "05",
       "title": "Query_Objectives_Field_Discovery_And_Syntax_Guards",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_05_Query_Objectives_Field_Discovery_And_Syntax_Guards.md.txt",
-      "sha256": "c21cc9f4df04ee3dd4fbcd3c9492baf2bfc07db5e8b65f0838773d85594548e5",
+      "sha256": "e3aa1d0217ad0b2293796dfa3c8fb1fe575b3a66f6f411ed788615025f0c8478",
       "line_count": 39,
       "starts_with": "### Query objectives, field discovery, and syntax guards"
     },
@@ -96,7 +96,7 @@
       "chunk_id": "10",
       "title": "Tool_Rules",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_10_Tool_Rules.md.txt",
-      "sha256": "e52faeb275b08e8ff15435275dd32fd35d4c76ac741f536d2a1dcdcfd6d02160",
+      "sha256": "a9d51c9a53a2fba2566fd103883fbc2b490cc85841b546e46d62d65ab23ea6b7",
       "line_count": 51,
       "starts_with": "### Tool rules"
     },
@@ -120,7 +120,7 @@
       "chunk_id": "13",
       "title": "Data_Schema_And_Field_Reference",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_13_Data_Schema_And_Field_Reference.md.txt",
-      "sha256": "07d61c8da30ab70704ee91c8e421d39734b71ecaf05d142fbeade1c1f3ddc170",
+      "sha256": "e03b9ce564f279788fcbe7957e3d39a0561a2ec246059f6a6f1c8eaaa9991fea",
       "line_count": 37,
       "starts_with": "### Data schema and field reference"
     },
@@ -182,4 +182,3 @@
     }
   ]
 }
-
