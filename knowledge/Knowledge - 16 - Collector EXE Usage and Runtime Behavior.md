@@ -1,36 +1,14 @@
 # Knowledge - 16 - Collector EXE Usage and Runtime Behavior
 
-_Optional EXE execution, validation, and PS1 behavior differences_
+_Optional EXE execution and PS1 behavior differences_
 
-**Summary:** Use this page when building, running, or interpreting the optional DCOIR Collector EXE.
+**Summary:** Use this page when running or interpreting the optional DCOIR Collector EXE.
 
 ---
 
 ## What the EXE is
 
-The optional EXE is a packaged execution form of the same maintained collector source. It is built by GitHub Actions from the collector runtime and embedded support-tool payload.
-
-The EXE is not a separate product line and is not the editing surface. Source changes belong in the collector source and harness files.
-
----
-
-## Build workflow
-
-Use GitHub Actions workflow:
-
-```text
-manual-collector-optional-exe-build
-```
-
-Key input:
-
-```text
-exe_validation_suite
-```
-
-Supported suites include Core, MajorVersion, Retrieval, QuickAliases, SessionBehavior, TargetedCollection, ChunkingOversizeArtifact, ChunkingReconstructionMetadata, FailureGates, and FullRegression.
-
-Run one suite at a time.
+The optional EXE is a packaged execution form of the same collector behavior. It is useful when the operator intends to run the collector as an executable rather than as a PowerShell script.
 
 ---
 
@@ -91,23 +69,10 @@ When an EXE run fails, Gemini should classify the failure before recommending a 
 
 ---
 
-## Validation expectations
+## Related pages
 
-After EXE-facing changes, verify:
-
-- optional EXE workflow still builds;
-- selected harness suite passes;
-- FailureGates and FullRegression remain EXE-aware;
-- Knowledge 03, 08, 09, and 15 remain aligned if behavior changed.
-
----
-
-## Cross-reference boundaries
-
-- Use this page for optional EXE behavior and EXE-specific validation interpretation.
-- Use Knowledge 03 for broader validation-lane selection.
-- Use Knowledge 17 for collector features, parameters, and output contract.
-- Use runbooks only for procedure, not EXE behavior ownership.
+- Use this page for optional EXE behavior and EXE-specific interpretation.
+- Use Knowledge 17 for collector features, parameters, and output-contract expectations.
 
 ---
 
