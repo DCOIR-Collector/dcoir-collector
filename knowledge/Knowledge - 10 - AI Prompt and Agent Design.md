@@ -1,21 +1,8 @@
 # Knowledge - 10 - AI Prompt and Agent Design
 
-_DCOIR prompt-pack and Gemini agent design boundaries_
+_Gemini runtime design principles for routing, grounding, and output behavior_
 
-**Summary:** Use this page to distinguish prompt-pack authority, stored-source Gemini runtime files, grounding limits, and agent-routing expectations.
-
----
-
-## Runtime source model
-
-Gemini agent behavior must come from maintained source files in the repo, not one-off generated text that is never promoted back.
-
-Current source classes:
-
-- prompt-pack files define analyst-facing reasoning and output behavior;
-- Gemini bundle source defines agent files and runtime attachments;
-- knowledge docs provide supporting context;
-- generated artifacts are delivery outputs, not editing authority.
+**Summary:** Use this page to keep Gemini routing, grounding, action-state honesty, and output behavior clear during live operator use.
 
 ---
 
@@ -23,9 +10,9 @@ Current source classes:
 
 | Field | Purpose |
 | --- | --- |
-| Description | Routing: when this agent should be selected and what it owns |
+| Description | Routing: when the agent or sub-agent should be used and what it owns |
 | Instructions | Behavior: what the agent must do, avoid, and output |
-| Attachments | Context: stable reference material for workflow, collector behavior, and interpretation |
+| Attachments | Context: stable reference material that helps the agent interpret evidence and explain next steps |
 
 A short slogan is not enough for routing. Excessive repetition is also not useful.
 
@@ -70,14 +57,8 @@ Prefer enforceable output structures over large schemas that are hard to satisfy
 - thinning agent instructions until routing becomes vague;
 - repeating the same rule in multiple words to create artificial verbosity;
 - claiming unavailable search or connector access;
-- allowing generated bundle output to drift from stored source;
-- changing attachments without updating the manifest and attachment map.
-
----
-
-## Manual validation alignment
-
-Use Airtable `Validation Test Cases` for dynamic manual test state. Keep durable source changes in GitHub.
+- describing planned or requested actions as completed actions;
+- letting routing language become so broad that the wrong specialist branch is chosen.
 
 ---
 

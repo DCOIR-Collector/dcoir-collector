@@ -49,7 +49,6 @@ Do not emit alternate command drafts or repeated command sections.
 | Elastic native response action | Native response-action syntax |
 | Elastic shell execution | `execute --command "powershell.exe ..." --comment "..."` |
 | Local workstation | Direct PowerShell command |
-| GitHub Actions | Workflow name and inputs |
 
 Do not wrap native Elastic response actions in shell syntax for visual consistency. Do not paste local commands into endpoint guidance without the response-action wrapper.
 
@@ -110,27 +109,11 @@ If overlapping branch drafts exist internally, reconcile them silently and retur
 
 ---
 
-## Validation expectations
-
-Output-contract validation should check:
-
-- exact final structure;
-- one-command pacing;
-- command-lane rendering;
-- no scaffold leakage;
-- no duplicate final sections or alternate drafts;
-- no malformed preamble before the first required section;
-- grounding/support proof;
-- action-state truthfulness.
-
----
-
-## Cross-reference boundaries
+## Related pages
 
 - Use this page for Gemini user-visible response and command-lane discipline.
 - Use Knowledge 17 for collector output-contract details.
 - Use Knowledge 02 for Elastic endpoint quick-start command examples.
-- Use Knowledge 15 for attachment maintenance.
 
 ---
 
