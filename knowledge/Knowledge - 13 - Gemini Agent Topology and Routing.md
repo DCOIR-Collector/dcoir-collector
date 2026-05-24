@@ -29,7 +29,7 @@ The prime should not duplicate every specialist's job.
 | 03 Alert Family Classifier | alert-family classification and benign-technology differentiation |
 | 04 Evidence and Provenance Analyst | source labels, proof boundaries, provenance |
 | 05 Query Planner and Syntax Guard | one best query/command and syntax correctness |
-| 06 Collector Execution and Bundle Workflow Orchestrator | collector justification, execution lane, bundle workflow |
+| 06 Collector Execution and Bundle Workflow Orchestrator | collector justification, execution lane, retrieval, cleanup, and collection sequencing |
 | 07 Collector Artifact Interpreter | collector output meaning and artifact priority |
 | 08 IOC Parsing and Public Enrichment Planner | indicator parsing and bounded public enrichment |
 | 09 Targeted Collection Designer | narrow evidence-gap reduction and targeted collection design |
@@ -55,25 +55,10 @@ Routing text must not imply that a search, connector lookup, retrieval action, c
 
 ---
 
-## Validation surfaces
-
-Topology changes should be checked against:
-
-- manifest topology inventory;
-- generated agent index;
-- prime-agent routing text;
-- sub-agent descriptions/instructions;
-- behavior scenario validation;
-- scenario validation rows in Airtable.
-
----
-
-## Cross-reference boundaries
+## Related pages
 
 - Use this page for agent topology and routing summary.
-- Use stored-source agent files for full runtime instructions.
-- Use Knowledge 14 for output-contract and command-lane behavior.
-- Use Knowledge 15 for attachment inventory.
+- Use Knowledge 14 for response-structure and command-lane behavior.
 
 ---
 
