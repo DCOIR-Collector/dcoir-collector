@@ -57,7 +57,7 @@
       "title": "Query_Objectives_Field_Discovery_And_Syntax_Guards",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_05_Query_Objectives_Field_Discovery_And_Syntax_Guards.md.txt",
       "sha256": "c21cc9f4df04ee3dd4fbcd3c9492baf2bfc07db5e8b65f0838773d85594548e5",
-      "line_count": 39,
+      "line_count": 40,
       "starts_with": "### Query objectives, field discovery, and syntax guards"
     },
     {
@@ -96,7 +96,7 @@
       "chunk_id": "10",
       "title": "Tool_Rules",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_10_Tool_Rules.md.txt",
-      "sha256": "a9d51c9a53a2fba2566fd103883fbc2b490cc85841b546e46d62d65ab23ea6b7",
+      "sha256": "0ae08440d769e0463353f9b6325134233eaea64b4767c0abc3d70ad7ffa4c867",
       "line_count": 51,
       "starts_with": "### Tool rules"
     },
@@ -121,7 +121,7 @@
       "title": "Data_Schema_And_Field_Reference",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_13_Data_Schema_And_Field_Reference.md.txt",
       "sha256": "07d61c8da30ab70704ee91c8e421d39734b71ecaf05d142fbeade1c1f3ddc170",
-      "line_count": 37,
+      "line_count": 28,
       "starts_with": "### Data schema and field reference"
     },
     {
