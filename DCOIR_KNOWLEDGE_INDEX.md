@@ -36,6 +36,7 @@ _Operator entry point for the maintained DCOIR knowledge set_
 | Control Gemini output and command format | `knowledge/Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline.md` | Owns Gemini response and command-lane discipline. |
 | Use or interpret the optional EXE | `knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md` | Owns EXE-specific behavior and validation. |
 | Look up collector features and output contract | `knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md` | Owns feature map, parameters, output contract, and validation map. |
+| Look up exact Elastic field names | `knowledge/Knowledge - 99 - Elastic Field Name Reference.md` | Owns the governed exact field-name reference used for KQL and ESQL construction. |
 
 ---
 
