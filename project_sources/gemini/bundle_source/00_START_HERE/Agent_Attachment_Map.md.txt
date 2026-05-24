@@ -53,6 +53,39 @@ This map is intentionally explicit. It exists so the operator, the maintainer, a
 17. Knowledge - 99 - Elastic Field Name Reference
 - Purpose: preserve the governed exact Elastic field-name reference so Gemini can use a maintained attachment for exact KQL and ESQL field-name construction instead of relying on hard-coded prompt lists or memory.
 
+18. Knowledge - 99A - Elastic Response Actions Reference
+- Purpose: preserve the governed native Elastic response-action command reference so Gemini can distinguish native response actions from execute-wrapped shell commands without relying on memory.
+
+19. Knowledge - 99B - OSQuery Reference Index
+- Purpose: preserve the routing map that tells Gemini which sharded OSQuery reference page to consult first by investigative objective.
+
+20. Knowledge - 99C - OSQuery Process and Execution Tables
+- Purpose: preserve the exact OSQuery process, execution, handle, and runtime-artifact table reference.
+
+21. Knowledge - 99D - OSQuery File and Filesystem Tables
+- Purpose: preserve the exact OSQuery file, hash, filesystem, mount, and file-event table reference.
+
+22. Knowledge - 99E - OSQuery Network and Connection Tables
+- Purpose: preserve the exact OSQuery network, DNS, interface, route, and socket table reference.
+
+23. Knowledge - 99F - OSQuery User, Auth, and Account Tables
+- Purpose: preserve the exact OSQuery user, auth, login, SSH, and account-context table reference.
+
+24. Knowledge - 99G - OSQuery Persistence and Startup Tables
+- Purpose: preserve the exact OSQuery persistence, startup, service, scheduled-task, and shim table reference.
+
+25. Knowledge - 99H - OSQuery System, Hardware, and Platform Tables
+- Purpose: preserve the exact OSQuery system, hardware, memory, uptime, USB, and platform table reference.
+
+26. Knowledge - 99I - OSQuery Security, Detection, and Event Tables
+- Purpose: preserve the exact OSQuery security, firewall, audit, YARA, and event table reference.
+
+27. Knowledge - 99J - OSQuery Application, Package, and Extension Tables
+- Purpose: preserve the exact OSQuery application, package, browser-extension, and program-inventory table reference.
+
+28. Knowledge - 99K - OSQuery Virtualization, Cloud, and Container Tables
+- Purpose: preserve the exact OSQuery container, virtualization, cloud-metadata, and OSQuery self-state table reference.
+
 ## Maintenance rule
 
 The maintained source is `knowledge/*.md`. The build process packages those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` inside the generated release ZIP by appending `.txt` to the source filename. Do not maintain duplicate Knowledge attachment source files under `bundle_source`. `DCOIR_KNOWLEDGE_INDEX.md` is a repo-level operator entry point and is not part of the Gemini attachment set unless the manifest is intentionally expanded.
