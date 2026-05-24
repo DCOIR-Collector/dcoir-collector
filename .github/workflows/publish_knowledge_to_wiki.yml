@@ -69,11 +69,16 @@ jobs:
           set -euo pipefail
           test -d knowledge
           test -f knowledge/README.md
-          knowledge_count=$(find knowledge -maxdepth 1 -type f -name 'Knowledge - *.md' | wc -l | tr -d ' ')
-          if [ "$knowledge_count" -lt 17 ]; then
-            echo "Expected at least 17 maintained Knowledge pages, found $knowledge_count."
-            exit 1
-          fi
+
+      - name: Validate maintained knowledge inventory with Gemini validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          validator_output_dir="$RUNNER_TEMP/publish_knowledge_to_wiki_validator"
+          mkdir -p "$validator_output_dir"
+          python3 project_sources/gemini/tools/validate_dcoir_gemini_bundle.py \
+            --source-root project_sources/gemini/bundle_source \
+            --output-dir "$validator_output_dir"
 
       - name: Pull content from wiki
         shell: bash
