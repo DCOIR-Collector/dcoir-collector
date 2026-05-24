@@ -95,6 +95,7 @@ jobs:
             'project_sources/gemini/prompt_pack/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt',
             'project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json',
             'knowledge/README.md',
+            'knowledge/Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance.md',
             'knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md',
             'knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md',
             'project_sources/gemini/tools/validate_dcoir_gemini_bundle.py',
@@ -146,8 +147,8 @@ jobs:
           }
           Write-Host "Gemini manifest surfaces validated: required=$($manifestRequired.Count); source-required=$($manifestSourceRequired.Count); sub-agents=$($manifestSubAgents.Count)."
           $knowledgeFiles = Get-ChildItem -LiteralPath knowledge -File -Filter 'Knowledge - *.md'
-          if ($knowledgeFiles.Count -lt 16) {
-            throw "Maintained knowledge set is smaller than expected. Found $($knowledgeFiles.Count) files; expected at least 16."
+          if ($knowledgeFiles.Count -lt 17) {
+            throw "Maintained knowledge set is smaller than expected. Found $($knowledgeFiles.Count) files; expected at least 17."
           }
 
       - name: Create output directory
