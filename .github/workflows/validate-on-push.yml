@@ -215,8 +215,8 @@ jobs:
           Write-Host "Gemini manifest surfaces validated: required=$($manifestRequired.Count); source-required=$($manifestSourceRequired.Count); sub-agents=$($manifestSubAgents.Count)."
 
           $knowledgeFiles = Get-ChildItem -LiteralPath knowledge -File -Filter 'Knowledge - *.md'
-          if ($knowledgeFiles.Count -lt 16) {
-            throw "Maintained knowledge set is smaller than expected. Found $($knowledgeFiles.Count) files; expected at least 16."
+          if ($knowledgeFiles.Count -lt 17) {
+            throw "Maintained knowledge set is smaller than expected. Found $($knowledgeFiles.Count) files; expected at least 17."
           }
 
       - name: Run validate_DCOIR_Run fixture tests
