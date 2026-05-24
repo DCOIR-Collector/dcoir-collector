@@ -44,17 +44,12 @@ This map is intentionally explicit. It exists so the operator, the maintainer, a
 14. Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline
 - Purpose: preserve final response-structure rules, decision-state discipline, singular-command behavior, and endpoint-versus-local command-lane separation.
 
-15. Knowledge - 15 - Gemini Attachment Set, Validation, and Maintenance
-- Purpose: preserve attachment-inventory logic, map and manifest refresh rules, validation expectations, and the maintenance rhythm for the shared Gemini knowledge set.
-
-16. Knowledge - 16 - Collector EXE Usage and Runtime Behavior
+15. Knowledge - 16 - Collector EXE Usage and Runtime Behavior
 - Purpose: preserve optional EXE usage, GitHub Actions build-and-validation flow, EXE-versus-PS1 runtime differences, and EXE-aware FailureGates behavior so Gemini and operators do not misread wrapper-limited behavior as a collector regression.
 
-17. Knowledge - 17 - Collector Feature and Output Contract Reference
+16. Knowledge - 17 - Collector Feature and Output Contract Reference
 - Purpose: preserve the canonical collector feature map and high-level output contract so feature descriptions, validation expectations, and Gemini interpretation do not drift across runbooks, troubleshooting, FAQ, and EXE guidance.
 
-18. Knowledge - 18 - Gemini Research Findings and Runtime Boundaries
-- Purpose: preserve the governed Gemini research findings that sharpen runtime truthfulness, staged execution, grounded-source boundaries, output-contract realism, and observability discipline across the current Gemini bundle source.
 ## Maintenance rule
 
 The maintained source is `knowledge/*.md`. The build process packages those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` inside the generated release ZIP by appending `.txt` to the source filename. Do not maintain duplicate Knowledge attachment source files under `bundle_source`. `DCOIR_KNOWLEDGE_INDEX.md` is a repo-level operator entry point and is not part of the Gemini attachment set unless the manifest is intentionally expanded.
