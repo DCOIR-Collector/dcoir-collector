@@ -9,7 +9,7 @@
   "reassembly": {
     "method": "concatenate_chunks_in_manifest_order",
     "newline_policy": "preserve_chunk_text_exactly",
-    "expected_sha256": "e969f53cd8d2b9ff1d6ce4259d367adde8364aa3a40a21ae77391f328be649a1"
+    "expected_sha256": "8c0cbd91893f567ee40a23fd7b2360e9d4b0a54274e70056036a9830af05910e"
   },
   "chunks": [
     {
@@ -56,7 +56,7 @@
       "chunk_id": "05",
       "title": "Query_Objectives_Field_Discovery_And_Syntax_Guards",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_05_Query_Objectives_Field_Discovery_And_Syntax_Guards.md.txt",
-      "sha256": "e3aa1d0217ad0b2293796dfa3c8fb1fe575b3a66f6f411ed788615025f0c8478",
+      "sha256": "c21cc9f4df04ee3dd4fbcd3c9492baf2bfc07db5e8b65f0838773d85594548e5",
       "line_count": 39,
       "starts_with": "### Query objectives, field discovery, and syntax guards"
     },
@@ -120,7 +120,7 @@
       "chunk_id": "13",
       "title": "Data_Schema_And_Field_Reference",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_13_Data_Schema_And_Field_Reference.md.txt",
-      "sha256": "e03b9ce564f279788fcbe7957e3d39a0561a2ec246059f6a6f1c8eaaa9991fea",
+      "sha256": "07d61c8da30ab70704ee91c8e421d39734b71ecaf05d142fbeade1c1f3ddc170",
       "line_count": 37,
       "starts_with": "### Data schema and field reference"
     },
