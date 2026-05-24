@@ -37,6 +37,9 @@ _Operator entry point for the maintained DCOIR knowledge set_
 | Use or interpret the optional EXE | `knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md` | Owns EXE-specific behavior and validation. |
 | Look up collector features and output contract | `knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md` | Owns feature map, parameters, output contract, and validation map. |
 | Look up exact Elastic field names | `knowledge/Knowledge - 99 - Elastic Field Name Reference.md` | Owns the governed exact field-name reference used for KQL and ESQL construction. |
+| Look up native Elastic response-action syntax | `knowledge/Knowledge - 99A - Elastic Response Actions Reference.md` | Owns governed native response-action command syntax, parameters, and privilege notes. |
+| Route an OSQuery lookup to the correct shard | `knowledge/Knowledge - 99B - OSQuery Reference Index.md` | Owns the start-here map for the sharded exact OSQuery schema set. |
+| Look up exact OSQuery table and field names | `knowledge/Knowledge - 99C - OSQuery Process and Execution Tables.md` and related `99D-99K` pages | Owns the sharded governed exact OSQuery schema reference. |
 
 ---
 
