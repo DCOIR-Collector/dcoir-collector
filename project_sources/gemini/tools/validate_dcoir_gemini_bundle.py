@@ -106,14 +106,26 @@ def main() -> int:
     missing_sources = [rel for rel in knowledge_sources if not (repo_root / rel).exists()]
     unlisted_sources = [rel for rel in discovered_sources if rel not in knowledge_sources]
     stale_sources = [rel for rel in knowledge_sources if rel not in discovered_sources]
+    knowledge_inventory_exact_match = not missing_sources and not unlisted_sources and not stale_sources
+    checks['knowledge_manifest_source_field'] = 'knowledge_attachment_sources'
+    checks['knowledge_manifest_source_count'] = len(knowledge_sources)
+    checks['knowledge_discovered_source_count'] = len(discovered_sources)
     checks['knowledge_attachment_sources'] = knowledge_sources
     checks['discovered_knowledge_sources'] = discovered_sources
-    checks['knowledge_source_inventory_exact_match'] = not missing_sources and not unlisted_sources and not stale_sources
+    checks['knowledge_source_inventory_exact_match'] = knowledge_inventory_exact_match
+    checks['knowledge_inventory_authority_check'] = {
+        'success': knowledge_inventory_exact_match,
+        'manifest_field': 'knowledge_attachment_sources',
+        'expected_glob': 'knowledge/Knowledge - *.md',
+        'missing_knowledge_sources': missing_sources,
+        'unlisted_knowledge_sources': unlisted_sources,
+        'stale_manifest_knowledge_sources': stale_sources,
+    }
     checks['missing_knowledge_sources'] = missing_sources
     checks['unlisted_knowledge_sources'] = unlisted_sources
     checks['stale_manifest_knowledge_sources'] = stale_sources
-    if missing_sources or unlisted_sources or stale_sources:
-        errors.append('knowledge source inventory drift detected between manifest and knowledge/')
+    if not knowledge_inventory_exact_match:
+        errors.append('gemini knowledge-set authority check failed: manifest knowledge_attachment_sources must exactly match knowledge/Knowledge - *.md inventory')
 
     generated_dupes = [rel for rel in required_files if rel.startswith(f'{generated_dir}/Knowledge - ')]
     source_duplicate_files = sorted(
