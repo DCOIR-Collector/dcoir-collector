@@ -33,6 +33,17 @@ For the repo-level starting point, use `DCOIR_KNOWLEDGE_INDEX.md`.
 | 16 | Collector EXE Usage and Runtime Behavior | Optional EXE behavior and EXE-specific validation |
 | 17 | Collector Feature and Output Contract Reference | Feature map, parameters, output contract, and validation map |
 | 99 | Elastic Field Name Reference | Governed exact Elastic field-name reference for query construction |
+| 99A | Elastic Response Actions Reference | Governed native response-action syntax and parameters |
+| 99B | OSQuery Reference Index | Routing index for the sharded OSQuery schema set |
+| 99C | OSQuery Process and Execution Tables | Exact process and execution table reference |
+| 99D | OSQuery File and Filesystem Tables | Exact file and filesystem table reference |
+| 99E | OSQuery Network and Connection Tables | Exact network and connection table reference |
+| 99F | OSQuery User, Auth, and Account Tables | Exact user, auth, and account table reference |
+| 99G | OSQuery Persistence and Startup Tables | Exact persistence and startup table reference |
+| 99H | OSQuery System, Hardware, and Platform Tables | Exact system and hardware table reference |
+| 99I | OSQuery Security, Detection, and Event Tables | Exact security and event table reference |
+| 99J | OSQuery Application, Package, and Extension Tables | Exact application and package table reference |
+| 99K | OSQuery Virtualization, Cloud, and Container Tables | Exact container and cloud table reference |
 
 ## Maintenance triggers
 
