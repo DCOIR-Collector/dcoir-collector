@@ -14,17 +14,17 @@
 - source_event: push
 - workflow_run_id: 26371909825
 - workflow_run_number: 396
-- workflow_run_attempt: 1
+- workflow_run_attempt: 2
 - workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/26371909825
 - repository: malwaredevil/dcoir-collector
 - head_branch: codex/issue-65-elastic-field-reference-20260524
 - head_sha: 8341a928ec4e50fb465100db7762ee0196ebc429
 - actor: malwaredevil
 - source_created_at: 2026-05-24T20:26:58Z
-- source_updated_at: 2026-05-24T20:29:50Z
-- reporter_run_id: 26371973584
-- reporter_sha: 3bdb567fcb2c1256545a2b30afbdd8fd334c2150
-- report_created_utc: 2026-05-24T20:30:04Z
+- source_updated_at: 2026-05-24T20:42:33Z
+- reporter_run_id: 26372255316
+- reporter_sha: ea986c51072b4482fbda0b9ee14b9205c3debf46
+- report_created_utc: 2026-05-24T20:42:42Z
 
 ## Report routing
 
@@ -41,269 +41,269 @@ The report includes bounded log context when GitHub log retrieval succeeded. Use
 [truncated: showing final 265 of 537 log lines]
 [truncated to final bounded excerpt]
 lidate_on_push_validate_dcoir_run_fixtures
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:20.9356742Z ^[[36;1mpowershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\tools\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\collector\harness\validate_DCOIR_Run.ps1 -OutputRoot .\validation\out_validate_on_push_validate_dcoir_run_fixtures^[[0m
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:20.9407746Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:20.9407996Z env:
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:20.9408193Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:20.9408515Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:20.9408828Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:20.9409114Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:20.9409430Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:20.9409654Z ##[endgroup]
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:27.8008882Z VALIDATOR_FIXTURE_TESTS=PASS
-validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:27:27.8018753Z SUMMARY_PATH=.\validation\out_validate_on_push_validate_dcoir_run_fixtures\summary.json
-validate	Run collector documentation quality gate	﻿2026-05-24T20:27:27.9225345Z ##[group]Run Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_documentation_quality -ErrorAction SilentlyContinue
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9226656Z ^[[36;1mRemove-Item -Recurse -Force project_sources/validation/out_validate_on_push_documentation_quality -ErrorAction SilentlyContinue^[[0m
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9227774Z ^[[36;1mNew-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_documentation_quality | Out-Null^[[0m
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9229573Z ^[[36;1mpython project_sources/collector/tools/verify_collector_documentation_quality.py --repo-root . --output-json project_sources/validation/out_validate_on_push_documentation_quality/collector_documentation_quality.json --fail-on-missing-file-help --fail-on-undocumented-functions^[[0m
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9231070Z ^[[36;1mif ($LASTEXITCODE -ne 0) {^[[0m
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9231549Z ^[[36;1m  throw 'Collector documentation quality gate failed before collector build.'^[[0m
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9232015Z ^[[36;1m}^[[0m
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9289135Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9289532Z env:
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9289814Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9290332Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9290859Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9291312Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9291781Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run collector documentation quality gate	2026-05-24T20:27:27.9292147Z ##[endgroup]
-validate	Run collector documentation quality gate	2026-05-24T20:27:28.4485451Z DOCUMENTATION_AUDIT_STATUS=PASS
-validate	Run collector documentation quality gate	2026-05-24T20:27:28.4486614Z OUTPUT_JSON=D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_documentation_quality\collector_documentation_quality.json
-validate	Build fresh collector runtime zip for harness	﻿2026-05-24T20:27:28.4747015Z ##[group]Run Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_collector -ErrorAction SilentlyContinue
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4748467Z ^[[36;1mRemove-Item -Recurse -Force project_sources/validation/out_validate_on_push_collector -ErrorAction SilentlyContinue^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4749468Z ^[[36;1mNew-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_collector | Out-Null^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4750525Z ^[[36;1mpython project_sources/collector/tools/build_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/validation/out_validate_on_push_collector^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4751064Z ^[[36;1mif ($LASTEXITCODE -ne 0) {^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4751547Z ^[[36;1m  throw 'Collector delivery package smoke test failed.'^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4751774Z ^[[36;1m}^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4752370Z ^[[36;1m$deliveryZip = Get-ChildItem -Path project_sources/validation/out_validate_on_push_collector -File -Filter 'DCOIR_Collector_Delivery_Package_*.zip' | Sort-Object LastWriteTime -Descending | Select-Object -First 1^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4753035Z ^[[36;1mif (-not $deliveryZip) {^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4753272Z ^[[36;1m  throw 'Collector delivery package zip was not produced.'^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4753505Z ^[[36;1m}^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4754342Z ^[[36;1mpython project_sources/collector/tools/restore_dcoir_collector_runtime_zip.py --delivery-package-zip $deliveryZip.FullName --base-runtime-zip supporting_assets/DCOIR_Collector.zip --output-dir project_sources/validation/out_validate_on_push_collector --output-name DCOIR_Collector_runtime_for_harness.zip^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4771586Z ^[[36;1mif ($LASTEXITCODE -ne 0) {^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4771985Z ^[[36;1m  throw 'Collector runtime zip restore bridge failed.'^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4772336Z ^[[36;1m}^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4772770Z ^[[36;1m$extractDir = 'project_sources/validation/out_validate_on_push_collector/runtime_harness'^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4773444Z ^[[36;1mRemove-Item -Recurse -Force $extractDir -ErrorAction SilentlyContinue^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4774043Z ^[[36;1mNew-Item -ItemType Directory -Force -Path $extractDir | Out-Null^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4774967Z ^[[36;1mExpand-Archive -LiteralPath project_sources/validation/out_validate_on_push_collector/DCOIR_Collector_runtime_for_harness.zip -DestinationPath $extractDir -Force^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4776445Z ^[[36;1m"HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/validation/out_validate_on_push_collector/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4777987Z ^[[36;1m"HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/validation/out_validate_on_push_collector/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV^[[0m
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4832835Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4833092Z env:
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4833297Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4833628Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4833942Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4834218Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4834505Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:28.4834730Z ##[endgroup]
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0856579Z {
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0856791Z   "success": true,
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0857014Z   "stage": "complete",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0857214Z   "steps": [
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0857369Z     {
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0857545Z       "name": "validate",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0857765Z       "cmd": [
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0858048Z         "C:\\hostedtoolcache\\windows\\Python\\3.11.9\\x64\\python.exe",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0859115Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\collector\\tools\\validate_dcoir_collector_runtime_package.py",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0863171Z         "--source-dir",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0863460Z         "D:\\a\\dcoir-collector\\dcoir-collector",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0863785Z         "--output-dir",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0864290Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector"
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0864793Z       ],
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0864971Z       "returncode": 0,
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0867681Z       "stdout": "{\n  \"success\": true,\n  \"source_dir\": \"D:\\\\a\\\\dcoir-collector\\\\dcoir-collector\",\n  \"bundle_name\": \"DCOIR_Collector_Delivery_Package\",\n  \"bundle_version\": \"4_0_6\",\n  \"checks\": {\n    \"source_strategy\": \"compile_single_runtime_then_package\",\n    \"required_files_present\": true,\n    \"missing_required_files\": [],\n    \"collector_part_count\": 11,\n    \"missing_collector_part_files\": [],\n    \"delivery_entry_count\": 2,\n    \"expected_delivery_names_present\": true,\n    \"actual_delivery_names\": [\n      \"DCOIR_Collector.ps1.txt\",\n      \"run_DCOIR_Tests.ps1.txt\"\n    ],\n    \"transport_safe_suffix_required_for_scripts\": true,\n    \"non_txt_delivery_entries\": []\n  },\n  \"warnings\": [],\n  \"errors\": []\n}\n",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0870829Z       "stderr": ""
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0871021Z     },
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0871185Z     {
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0871374Z       "name": "compile_single_runtime",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0871665Z       "cmd": [
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0871982Z         "C:\\hostedtoolcache\\windows\\Python\\3.11.9\\x64\\python.exe",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0872718Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\collector\\tools\\compile_dcoir_collector_runtime.py",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0873338Z         "--source-dir",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0873649Z         "D:\\a\\dcoir-collector\\dcoir-collector",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0873967Z         "--output-dir",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0874455Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector"
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0875021Z       ],
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0875205Z       "returncode": 0,
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0880784Z       "stdout": "{\n  \"success\": true,\n  \"source_dir\": \"D:\\\\a\\\\dcoir-collector\\\\dcoir-collector\",\n  \"compiled_collector_path\": \"D:\\\\a\\\\dcoir-collector\\\\dcoir-collector\\\\project_sources\\\\validation\\\\out_validate_on_push_collector\\\\compiled_runtime\\\\DCOIR_Collector.ps1\",\n  \"compiled_harness_path\": \"D:\\\\a\\\\dcoir-collector\\\\dcoir-collector\\\\project_sources\\\\validation\\\\out_validate_on_push_collector\\\\compiled_runtime\\\\run_DCOIR_Tests.ps1\",\n  \"compiled_runtime_name\": \"DCOIR_Collector.ps1\",\n  \"collector_part_count\": 11,\n  \"collector_part_files\": [\n    \"DCOIR_Collector.01_Core_State_And_Utilities.ps1\",\n    \"DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1\",\n    \"DCOIR_Collector.03A_Enrich_Session_State.ps1\",\n    \"DCOIR_Collector.03B_Enrich_Actions_Review.ps1\",\n    \"DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1\",\n    \"DCOIR_Collector.04_Quick_Interface_And_Output.ps1\",\n    \"DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1\",\n    \"DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1\",\n    \"DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1\",\n    \"DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1\",\n    \"DCOIR_Collector.05_Main_Entry.ps1\"\n  ],\n  \"source_strategy\": \"compile_single_runtime_then_package\"\n}\n",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0886368Z       "stderr": ""
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0886580Z     }
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0886758Z   ],
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0887487Z   "zip_path": "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector\\DCOIR_Collector_Delivery_Package_4_0_6.zip",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0888356Z   "bundle_name": "DCOIR_Collector_Delivery_Package",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0888701Z   "bundle_version": "4_0_6",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0888955Z   "collector_version": "4.0.6",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0889306Z   "top_level_folder": "DCOIR_Collector_Delivery_Package_4_0_6",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0890433Z   "file_count": 2,
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0890626Z   "emitted_files": [
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0890821Z     {
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0891010Z       "source_kind": "compiled_collector",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0891762Z       "source": "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector\\compiled_runtime\\DCOIR_Collector.ps1",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0892541Z       "zip_path": "DCOIR_Collector.ps1.txt"
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0892759Z     },
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0892870Z     {
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0892986Z       "source_kind": "source",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0893321Z       "source": "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\collector\\harness\\run_DCOIR_Tests.ps1",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0894421Z       "zip_path": "run_DCOIR_Tests.ps1.txt"
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0894589Z     }
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0894699Z   ],
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0894899Z   "retained_supporting_asset_path": "supporting_assets/DCOIR_Collector.zip"
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.0895161Z }
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9110852Z {
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9133446Z   "success": true,
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9163921Z   "stage": "complete",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9185153Z   "delivery_package_zip": "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector\\DCOIR_Collector_Delivery_Package_4_0_6.zip",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9206369Z   "base_runtime_zip": "D:\\a\\dcoir-collector\\dcoir-collector\\supporting_assets\\DCOIR_Collector.zip",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9212615Z   "output_zip": "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector\\DCOIR_Collector_runtime_for_harness.zip",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9215468Z   "restored_files": [
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9216473Z     {
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9217209Z       "from": "DCOIR_Collector_Delivery_Package_4_0_6\\DCOIR_Collector.ps1.txt",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9217910Z       "to": "DCOIR_Collector.ps1"
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9230043Z     },
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9230461Z     {
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9230941Z       "from": "DCOIR_Collector_Delivery_Package_4_0_6\\run_DCOIR_Tests.ps1.txt",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9231503Z       "to": "run_DCOIR_Tests.ps1"
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9231859Z     }
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9232132Z   ],
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9232422Z   "restored_file_count": 2,
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9232775Z   "notes": [
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9233354Z     "This bridge restores transport-safe delivery filenames back to native runtime names for harness testing.",
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9234348Z     "It overlays the restored collector and harness files onto the retained tool-bearing runtime zip contents."
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9234933Z   ]
-validate	Build fresh collector runtime zip for harness	2026-05-24T20:27:29.9235183Z }
-validate	Run collector core pre-live suite	﻿2026-05-24T20:27:31.2728882Z ##[group]Run powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2730095Z ^[[36;1mpowershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP^[[0m
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2730694Z ^[[36;1mif ($LASTEXITCODE -ne 0) {^[[0m
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2730919Z ^[[36;1m  throw 'Collector harness suite failed: Core'^[[0m
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2731117Z ^[[36;1m}^[[0m
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2780207Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2780456Z env:
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2780647Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2780967Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2781293Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2781639Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2781923Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2782431Z   HARNESS_RUNTIME_ZIP: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\DCOIR_Collector_runtime_for_harness.zip
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2783167Z   HARNESS_COLLECTOR_PATH: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\runtime_harness\DCOIR_Collector.ps1
-validate	Run collector core pre-live suite	2026-05-24T20:27:31.2783614Z ##[endgroup]
-validate	Smoke-test Gemini bundle build algorithm	﻿2026-05-24T20:29:38.6974494Z ##[group]Run Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_gemini -ErrorAction SilentlyContinue
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.6975700Z ^[[36;1mRemove-Item -Recurse -Force project_sources/validation/out_validate_on_push_gemini -ErrorAction SilentlyContinue^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.6976655Z ^[[36;1mNew-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_gemini | Out-Null^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.6978146Z ^[[36;1mpython project_sources/gemini/tools/build_dcoir_gemini_release.py --source-root project_sources/gemini/bundle_source --output-dir project_sources/validation/out_validate_on_push_gemini^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.6979113Z ^[[36;1mif ($LASTEXITCODE -ne 0) {^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.6979448Z ^[[36;1m  throw 'Gemini bundle smoke test failed.'^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.6979777Z ^[[36;1m}^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.7033202Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.7033578Z env:
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.7033870Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.7034437Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.7034952Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.7035430Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.7035889Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.7036732Z   HARNESS_RUNTIME_ZIP: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\DCOIR_Collector_runtime_for_harness.zip
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.7038027Z   HARNESS_COLLECTOR_PATH: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\runtime_harness\DCOIR_Collector.ps1
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:38.7038806Z ##[endgroup]
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7987509Z {
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7987968Z   "success": false,
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7988309Z   "stage": "reassemble_prime_agent",
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7988693Z   "steps": [
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7988923Z     {
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7989205Z       "name": "reassemble_prime_agent",
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7989508Z       "cmd": [
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7989848Z         "C:\\hostedtoolcache\\windows\\Python\\3.11.9\\x64\\python.exe",
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7990565Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\gemini\\tools\\reassemble_dcoir_gemini_prime_agent.py",
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7991221Z         "--source-root",
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7991658Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\gemini\\bundle_source",
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7992129Z         "--output-dir",
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7992612Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_gemini"
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7993132Z       ],
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7993355Z       "returncode": 1,
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7993603Z       "stdout": "",
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7994988Z       "stderr": "Chunk sha256 mismatch for 01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_05_Query_Objectives_Field_Discovery_And_Syntax_Guards.md.txt: expected e3aa1d0217ad0b2293796dfa3c8fb1fe575b3a66f6f411ed788615025f0c8478, got c21cc9f4df04ee3dd4fbcd3c9492baf2bfc07db5e8b65f0838773d85594548e5\n"
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7996496Z     }
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7996695Z   ]
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:40.7996898Z }
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:41.0675906Z ^[[31;1mException: ^[[0mD:\a\_temp\ef777b0d-b3a1-4430-b3b7-22432c182e40.ps1:6^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:41.0676883Z ^[[31;1m^[[0m^[[36;1mLine |^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:41.0677572Z ^[[31;1m^[[0m^[[36;1m^[[36;1m   6 | ^[[0m   ^[[36;1mthrow 'Gemini bundle smoke test failed.'^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:41.0678173Z ^[[31;1m^[[0m^[[36;1m^[[36;1m^[[0m^[[36;1m^[[0m^[[36;1m     | ^[[31;1m   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:41.0678916Z ^[[31;1m^[[0m^[[36;1m^[[36;1m^[[0m^[[36;1m^[[0m^[[36;1m^[[31;1m^[[31;1m^[[36;1m     | ^[[31;1mGemini bundle smoke test failed.^[[0m
-validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:29:41.1142642Z ##[error]Process completed with exit code 1.
-validate	Upload validation artifacts	﻿2026-05-24T20:29:41.1297148Z ##[group]Run actions/upload-artifact@v7
-validate	Upload validation artifacts	2026-05-24T20:29:41.1297523Z with:
-validate	Upload validation artifacts	2026-05-24T20:29:41.1297681Z   name: validate-on-push-results
-validate	Upload validation artifacts	2026-05-24T20:29:41.1298714Z   path: project_sources/TestResults/**
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:32.0746758Z ^[[36;1mpowershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\tools\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\collector\harness\validate_DCOIR_Run.ps1 -OutputRoot .\validation\out_validate_on_push_validate_dcoir_run_fixtures^[[0m
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:32.0842892Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:32.0843459Z env:
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:32.0843867Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:32.0844617Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:32.0845373Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:32.0846040Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:32.0846785Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:32.0847313Z ##[endgroup]
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:42.9763474Z VALIDATOR_FIXTURE_TESTS=PASS
+validate	Run validate_DCOIR_Run fixture tests	2026-05-24T20:39:42.9764805Z SUMMARY_PATH=.\validation\out_validate_on_push_validate_dcoir_run_fixtures\summary.json
+validate	Run collector documentation quality gate	﻿2026-05-24T20:39:43.4700669Z ##[group]Run Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_documentation_quality -ErrorAction SilentlyContinue
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4702474Z ^[[36;1mRemove-Item -Recurse -Force project_sources/validation/out_validate_on_push_documentation_quality -ErrorAction SilentlyContinue^[[0m
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4704084Z ^[[36;1mNew-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_documentation_quality | Out-Null^[[0m
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4706688Z ^[[36;1mpython project_sources/collector/tools/verify_collector_documentation_quality.py --repo-root . --output-json project_sources/validation/out_validate_on_push_documentation_quality/collector_documentation_quality.json --fail-on-missing-file-help --fail-on-undocumented-functions^[[0m
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4709023Z ^[[36;1mif ($LASTEXITCODE -ne 0) {^[[0m
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4709696Z ^[[36;1m  throw 'Collector documentation quality gate failed before collector build.'^[[0m
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4710365Z ^[[36;1m}^[[0m
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4805144Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4806055Z env:
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4806477Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4807229Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4807985Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4808636Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4809315Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run collector documentation quality gate	2026-05-24T20:39:43.4809838Z ##[endgroup]
+validate	Run collector documentation quality gate	2026-05-24T20:39:44.7409173Z DOCUMENTATION_AUDIT_STATUS=PASS
+validate	Run collector documentation quality gate	2026-05-24T20:39:44.7413360Z OUTPUT_JSON=D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_documentation_quality\collector_documentation_quality.json
+validate	Build fresh collector runtime zip for harness	﻿2026-05-24T20:39:44.8677011Z ##[group]Run Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_collector -ErrorAction SilentlyContinue
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8678718Z ^[[36;1mRemove-Item -Recurse -Force project_sources/validation/out_validate_on_push_collector -ErrorAction SilentlyContinue^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8680135Z ^[[36;1mNew-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_collector | Out-Null^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8681838Z ^[[36;1mpython project_sources/collector/tools/build_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/validation/out_validate_on_push_collector^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8683126Z ^[[36;1mif ($LASTEXITCODE -ne 0) {^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8683661Z ^[[36;1m  throw 'Collector delivery package smoke test failed.'^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8684444Z ^[[36;1m}^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8685827Z ^[[36;1m$deliveryZip = Get-ChildItem -Path project_sources/validation/out_validate_on_push_collector -File -Filter 'DCOIR_Collector_Delivery_Package_*.zip' | Sort-Object LastWriteTime -Descending | Select-Object -First 1^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8687423Z ^[[36;1mif (-not $deliveryZip) {^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8687944Z ^[[36;1m  throw 'Collector delivery package zip was not produced.'^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8688487Z ^[[36;1m}^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8690516Z ^[[36;1mpython project_sources/collector/tools/restore_dcoir_collector_runtime_zip.py --delivery-package-zip $deliveryZip.FullName --base-runtime-zip supporting_assets/DCOIR_Collector.zip --output-dir project_sources/validation/out_validate_on_push_collector --output-name DCOIR_Collector_runtime_for_harness.zip^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8692731Z ^[[36;1mif ($LASTEXITCODE -ne 0) {^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8693245Z ^[[36;1m  throw 'Collector runtime zip restore bridge failed.'^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8693780Z ^[[36;1m}^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8694404Z ^[[36;1m$extractDir = 'project_sources/validation/out_validate_on_push_collector/runtime_harness'^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8695398Z ^[[36;1mRemove-Item -Recurse -Force $extractDir -ErrorAction SilentlyContinue^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8696614Z ^[[36;1mNew-Item -ItemType Directory -Force -Path $extractDir | Out-Null^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8698085Z ^[[36;1mExpand-Archive -LiteralPath project_sources/validation/out_validate_on_push_collector/DCOIR_Collector_runtime_for_harness.zip -DestinationPath $extractDir -Force^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8700230Z ^[[36;1m"HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/validation/out_validate_on_push_collector/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8702439Z ^[[36;1m"HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/validation/out_validate_on_push_collector/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV^[[0m
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8798492Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8799071Z env:
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8799487Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8800253Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8801006Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8801688Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8802341Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:44.8802863Z ##[endgroup]
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8404433Z {
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8407762Z   "success": true,
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8411300Z   "stage": "complete",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8428409Z   "steps": [
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8441857Z     {
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8451335Z       "name": "validate",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8452415Z       "cmd": [
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8453450Z         "C:\\hostedtoolcache\\windows\\Python\\3.11.9\\x64\\python.exe",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8454978Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\collector\\tools\\validate_dcoir_collector_runtime_package.py",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8701699Z         "--source-dir",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8702738Z         "D:\\a\\dcoir-collector\\dcoir-collector",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8703809Z         "--output-dir",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8706794Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector"
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8707946Z       ],
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8709294Z       "returncode": 0,
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8715250Z       "stdout": "{\n  \"success\": true,\n  \"source_dir\": \"D:\\\\a\\\\dcoir-collector\\\\dcoir-collector\",\n  \"bundle_name\": \"DCOIR_Collector_Delivery_Package\",\n  \"bundle_version\": \"4_0_6\",\n  \"checks\": {\n    \"source_strategy\": \"compile_single_runtime_then_package\",\n    \"required_files_present\": true,\n    \"missing_required_files\": [],\n    \"collector_part_count\": 11,\n    \"missing_collector_part_files\": [],\n    \"delivery_entry_count\": 2,\n    \"expected_delivery_names_present\": true,\n    \"actual_delivery_names\": [\n      \"DCOIR_Collector.ps1.txt\",\n      \"run_DCOIR_Tests.ps1.txt\"\n    ],\n    \"transport_safe_suffix_required_for_scripts\": true,\n    \"non_txt_delivery_entries\": []\n  },\n  \"warnings\": [],\n  \"errors\": []\n}\n",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8767545Z       "stderr": ""
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8768204Z     },
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8768654Z     {
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8769300Z       "name": "compile_single_runtime",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8828805Z       "cmd": [
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8853401Z         "C:\\hostedtoolcache\\windows\\Python\\3.11.9\\x64\\python.exe",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8854848Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\collector\\tools\\compile_dcoir_collector_runtime.py",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8855978Z         "--source-dir",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8856710Z         "D:\\a\\dcoir-collector\\dcoir-collector",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8876569Z         "--output-dir",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8877642Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector"
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8878724Z       ],
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8879162Z       "returncode": 0,
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8889518Z       "stdout": "{\n  \"success\": true,\n  \"source_dir\": \"D:\\\\a\\\\dcoir-collector\\\\dcoir-collector\",\n  \"compiled_collector_path\": \"D:\\\\a\\\\dcoir-collector\\\\dcoir-collector\\\\project_sources\\\\validation\\\\out_validate_on_push_collector\\\\compiled_runtime\\\\DCOIR_Collector.ps1\",\n  \"compiled_harness_path\": \"D:\\\\a\\\\dcoir-collector\\\\dcoir-collector\\\\project_sources\\\\validation\\\\out_validate_on_push_collector\\\\compiled_runtime\\\\run_DCOIR_Tests.ps1\",\n  \"compiled_runtime_name\": \"DCOIR_Collector.ps1\",\n  \"collector_part_count\": 11,\n  \"collector_part_files\": [\n    \"DCOIR_Collector.01_Core_State_And_Utilities.ps1\",\n    \"DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1\",\n    \"DCOIR_Collector.03A_Enrich_Session_State.ps1\",\n    \"DCOIR_Collector.03B_Enrich_Actions_Review.ps1\",\n    \"DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1\",\n    \"DCOIR_Collector.04_Quick_Interface_And_Output.ps1\",\n    \"DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1\",\n    \"DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1\",\n    \"DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1\",\n    \"DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1\",\n    \"DCOIR_Collector.05_Main_Entry.ps1\"\n  ],\n  \"source_strategy\": \"compile_single_runtime_then_package\"\n}\n",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8899744Z       "stderr": ""
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8900215Z     }
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8900722Z   ],
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8901977Z   "zip_path": "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector\\DCOIR_Collector_Delivery_Package_4_0_6.zip",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8903541Z   "bundle_name": "DCOIR_Collector_Delivery_Package",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8904225Z   "bundle_version": "4_0_6",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8904786Z   "collector_version": "4.0.6",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8905466Z   "top_level_folder": "DCOIR_Collector_Delivery_Package_4_0_6",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8907608Z   "file_count": 2,
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8908081Z   "emitted_files": [
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8908529Z     {
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8909007Z       "source_kind": "compiled_collector",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8910403Z       "source": "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector\\compiled_runtime\\DCOIR_Collector.ps1",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8911777Z       "zip_path": "DCOIR_Collector.ps1.txt"
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8912364Z     },
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8912804Z     {
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8913239Z       "source_kind": "source",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8914251Z       "source": "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\collector\\harness\\run_DCOIR_Tests.ps1",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8916743Z       "zip_path": "run_DCOIR_Tests.ps1.txt"
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8917384Z     }
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8917810Z   ],
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8918500Z   "retained_supporting_asset_path": "supporting_assets/DCOIR_Collector.zip"
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:45.8919406Z }
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2734191Z {
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2737277Z   "success": true,
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2984559Z   "stage": "complete",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2986829Z   "delivery_package_zip": "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector\\DCOIR_Collector_Delivery_Package_4_0_6.zip",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2988600Z   "base_runtime_zip": "D:\\a\\dcoir-collector\\dcoir-collector\\supporting_assets\\DCOIR_Collector.zip",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2990237Z   "output_zip": "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_collector\\DCOIR_Collector_runtime_for_harness.zip",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2991504Z   "restored_files": [
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2991945Z     {
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2992544Z       "from": "DCOIR_Collector_Delivery_Package_4_0_6\\DCOIR_Collector.ps1.txt",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2993685Z       "to": "DCOIR_Collector.ps1"
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2994180Z     },
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2994551Z     {
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2995145Z       "from": "DCOIR_Collector_Delivery_Package_4_0_6\\run_DCOIR_Tests.ps1.txt",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2995958Z       "to": "run_DCOIR_Tests.ps1"
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2996618Z     }
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2996977Z   ],
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2997374Z   "restored_file_count": 2,
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2997825Z   "notes": [
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.2998640Z     "This bridge restores transport-safe delivery filenames back to native runtime names for harness testing.",
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.3000022Z     "It overlays the restored collector and harness files onto the retained tool-bearing runtime zip contents."
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.3000950Z   ]
+validate	Build fresh collector runtime zip for harness	2026-05-24T20:39:48.3001317Z }
+validate	Run collector core pre-live suite	﻿2026-05-24T20:39:48.3253324Z ##[group]Run powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3256248Z ^[[36;1mpowershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP^[[0m
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3257698Z ^[[36;1mif ($LASTEXITCODE -ne 0) {^[[0m
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3258174Z ^[[36;1m  throw 'Collector harness suite failed: Core'^[[0m
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3258633Z ^[[36;1m}^[[0m
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3352033Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3352574Z env:
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3352987Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3353731Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3354470Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3355184Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3355826Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3357076Z   HARNESS_RUNTIME_ZIP: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\DCOIR_Collector_runtime_for_harness.zip
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3358906Z   HARNESS_COLLECTOR_PATH: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\runtime_harness\DCOIR_Collector.ps1
+validate	Run collector core pre-live suite	2026-05-24T20:39:48.3360000Z ##[endgroup]
+validate	Smoke-test Gemini bundle build algorithm	﻿2026-05-24T20:42:23.7495422Z ##[group]Run Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_gemini -ErrorAction SilentlyContinue
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7497206Z ^[[36;1mRemove-Item -Recurse -Force project_sources/validation/out_validate_on_push_gemini -ErrorAction SilentlyContinue^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7498722Z ^[[36;1mNew-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_gemini | Out-Null^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7500944Z ^[[36;1mpython project_sources/gemini/tools/build_dcoir_gemini_release.py --source-root project_sources/gemini/bundle_source --output-dir project_sources/validation/out_validate_on_push_gemini^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7502441Z ^[[36;1mif ($LASTEXITCODE -ne 0) {^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7502988Z ^[[36;1m  throw 'Gemini bundle smoke test failed.'^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7503513Z ^[[36;1m}^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7597472Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7598135Z env:
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7598642Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7599578Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7600418Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7601183Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7601974Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7603346Z   HARNESS_RUNTIME_ZIP: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\DCOIR_Collector_runtime_for_harness.zip
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7606369Z   HARNESS_COLLECTOR_PATH: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\runtime_harness\DCOIR_Collector.ps1
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:23.7607615Z ##[endgroup]
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1486349Z {
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1489405Z   "success": false,
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1491969Z   "stage": "reassemble_prime_agent",
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1493860Z   "steps": [
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1516901Z     {
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1528063Z       "name": "reassemble_prime_agent",
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1529310Z       "cmd": [
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1617460Z         "C:\\hostedtoolcache\\windows\\Python\\3.11.9\\x64\\python.exe",
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1618916Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\gemini\\tools\\reassemble_dcoir_gemini_prime_agent.py",
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1620173Z         "--source-root",
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1652057Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\gemini\\bundle_source",
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1653112Z         "--output-dir",
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1654007Z         "D:\\a\\dcoir-collector\\dcoir-collector\\project_sources\\validation\\out_validate_on_push_gemini"
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1654941Z       ],
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1655432Z       "returncode": 1,
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1655982Z       "stdout": "",
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1658334Z       "stderr": "Chunk sha256 mismatch for 01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_05_Query_Objectives_Field_Discovery_And_Syntax_Guards.md.txt: expected e3aa1d0217ad0b2293796dfa3c8fb1fe575b3a66f6f411ed788615025f0c8478, got c21cc9f4df04ee3dd4fbcd3c9492baf2bfc07db5e8b65f0838773d85594548e5\n"
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1660855Z     }
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1661326Z   ]
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.1661772Z }
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.5400929Z ^[[31;1mException: ^[[0mD:\a\_temp\8d1706b5-7c03-4a52-9c48-213567e3b32d.ps1:6^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.5402347Z ^[[31;1m^[[0m^[[36;1mLine |^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.5691512Z ^[[31;1m^[[0m^[[36;1m^[[36;1m   6 | ^[[0m   ^[[36;1mthrow 'Gemini bundle smoke test failed.'^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.5696377Z ^[[31;1m^[[0m^[[36;1m^[[36;1m^[[0m^[[36;1m^[[0m^[[36;1m     | ^[[31;1m   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.5698954Z ^[[31;1m^[[0m^[[36;1m^[[36;1m^[[0m^[[36;1m^[[0m^[[36;1m^[[31;1m^[[31;1m^[[36;1m     | ^[[31;1mGemini bundle smoke test failed.^[[0m
+validate	Smoke-test Gemini bundle build algorithm	2026-05-24T20:42:25.5933437Z ##[error]Process completed with exit code 1.
+validate	Upload validation artifacts	﻿2026-05-24T20:42:25.6239676Z ##[group]Run actions/upload-artifact@v7
+validate	Upload validation artifacts	2026-05-24T20:42:25.6240174Z with:
+validate	Upload validation artifacts	2026-05-24T20:42:25.6240481Z   name: validate-on-push-results
+validate	Upload validation artifacts	2026-05-24T20:42:25.6242999Z   path: project_sources/TestResults/**
 validate	Upload validation artifacts	project_sources/validation/out_validate_on_push_gemini/**
 validate	Upload validation artifacts	project_sources/validation/out_validate_on_push_collector/**
 validate	Upload validation artifacts	project_sources/validation/out_validate_on_push_validate_dcoir_run_fixtures/**
 validate	Upload validation artifacts	project_sources/validation/out_preflight_documentation_quality/**
 validate	Upload validation artifacts	project_sources/validation/out_validate_on_push_documentation_quality/**
 validate	Upload validation artifacts	
-validate	Upload validation artifacts	2026-05-24T20:29:41.1300152Z   if-no-files-found: warn
-validate	Upload validation artifacts	2026-05-24T20:29:41.1300315Z   retention-days: 14
-validate	Upload validation artifacts	2026-05-24T20:29:41.1300458Z   compression-level: 6
-validate	Upload validation artifacts	2026-05-24T20:29:41.1300613Z   overwrite: false
-validate	Upload validation artifacts	2026-05-24T20:29:41.1300756Z   include-hidden-files: false
-validate	Upload validation artifacts	2026-05-24T20:29:41.1300922Z   archive: true
-validate	Upload validation artifacts	2026-05-24T20:29:41.1301047Z env:
-validate	Upload validation artifacts	2026-05-24T20:29:41.1301236Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Upload validation artifacts	2026-05-24T20:29:41.1301554Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
-validate	Upload validation artifacts	2026-05-24T20:29:41.1301907Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Upload validation artifacts	2026-05-24T20:29:41.1302192Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Upload validation artifacts	2026-05-24T20:29:41.1302475Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
-validate	Upload validation artifacts	2026-05-24T20:29:41.1302993Z   HARNESS_RUNTIME_ZIP: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\DCOIR_Collector_runtime_for_harness.zip
-validate	Upload validation artifacts	2026-05-24T20:29:41.1303751Z   HARNESS_COLLECTOR_PATH: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\runtime_harness\DCOIR_Collector.ps1
-validate	Upload validation artifacts	2026-05-24T20:29:41.1304229Z ##[endgroup]
-validate	Upload validation artifacts	2026-05-24T20:29:42.2929580Z Multiple search paths detected. Calculating the least common ancestor of all paths
-validate	Upload validation artifacts	2026-05-24T20:29:42.2934899Z The least common ancestor is D:\a\dcoir-collector\dcoir-collector\project_sources. This will be the root directory of the artifact
-validate	Upload validation artifacts	2026-05-24T20:29:42.2935838Z With the provided path, there will be 90 files uploaded
-validate	Upload validation artifacts	2026-05-24T20:29:42.2940800Z Artifact name is valid!
-validate	Upload validation artifacts	2026-05-24T20:29:42.2941185Z Root directory input is valid!
-validate	Upload validation artifacts	2026-05-24T20:29:42.7477296Z Uploading artifact: validate-on-push-results.zip
-validate	Upload validation artifacts	2026-05-24T20:29:42.7520068Z Beginning upload of artifact content to blob storage
-validate	Upload validation artifacts	2026-05-24T20:29:44.3360343Z Uploaded bytes 8388608
-validate	Upload validation artifacts	2026-05-24T20:29:44.4503266Z Uploaded bytes 9094620
-validate	Upload validation artifacts	2026-05-24T20:29:44.5120968Z Finished uploading artifact content to blob storage!
-validate	Upload validation artifacts	2026-05-24T20:29:44.5122175Z SHA256 digest of uploaded artifact is 50d87417b7967c771d6a20f1d533218f322a9dd6c7e5e41e2fc6bc8d3fe08d92
-validate	Upload validation artifacts	2026-05-24T20:29:44.5122934Z Finalizing artifact upload
-validate	Upload validation artifacts	2026-05-24T20:29:44.8012777Z Artifact validate-on-push-results successfully finalized. Artifact ID 7188142293
-validate	Upload validation artifacts	2026-05-24T20:29:44.8013786Z Artifact validate-on-push-results has been successfully uploaded! Final size is 9094620 bytes. Artifact ID is 7188142293
-validate	Upload validation artifacts	2026-05-24T20:29:44.8014769Z Artifact download URL: https://github.com/malwaredevil/dcoir-collector/actions/runs/26371909825/artifacts/7188142293
-validate	Post Checkout repository	﻿2026-05-24T20:29:44.8346806Z Post job cleanup.
-validate	Post Checkout repository	2026-05-24T20:29:45.0106270Z [command]"C:\Program Files\Git\bin\git.exe" version
-validate	Post Checkout repository	2026-05-24T20:29:45.1117570Z git version 2.54.0.windows.1
-validate	Post Checkout repository	2026-05-24T20:29:45.1187699Z Temporarily overriding HOME='D:\a\_temp\583a6c88-427f-4883-a55e-12e41aa9f381' before making global git config changes
-validate	Post Checkout repository	2026-05-24T20:29:45.1188657Z Adding repository directory to the temporary git global config as a safe directory
-validate	Post Checkout repository	2026-05-24T20:29:45.1196889Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\dcoir-collector\dcoir-collector
-validate	Post Checkout repository	2026-05-24T20:29:45.1505573Z Removing SSH command configuration
-validate	Post Checkout repository	2026-05-24T20:29:45.1516298Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
-validate	Post Checkout repository	2026-05-24T20:29:45.1792505Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
-validate	Post Checkout repository	2026-05-24T20:29:45.7881380Z Removing HTTP extra header
-validate	Post Checkout repository	2026-05-24T20:29:45.7893054Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-validate	Post Checkout repository	2026-05-24T20:29:45.8222423Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
-validate	Post Checkout repository	2026-05-24T20:29:46.3045782Z Removing includeIf entries pointing to credentials config files
-validate	Post Checkout repository	2026-05-24T20:29:46.3056964Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
-validate	Post Checkout repository	2026-05-24T20:29:46.3282754Z includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git.path
-validate	Post Checkout repository	2026-05-24T20:29:46.3284320Z includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git/worktrees/*.path
-validate	Post Checkout repository	2026-05-24T20:29:46.3284900Z includeif.gitdir:/github/workspace/.git.path
-validate	Post Checkout repository	2026-05-24T20:29:46.3285383Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
-validate	Post Checkout repository	2026-05-24T20:29:46.3320542Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git.path
-validate	Post Checkout repository	2026-05-24T20:29:46.3544303Z D:\a\_temp\git-credentials-681c59a6-e6b7-47b0-9059-eb404a2511dd.config
-validate	Post Checkout repository	2026-05-24T20:29:46.3585257Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git.path D:\a\_temp\git-credentials-681c59a6-e6b7-47b0-9059-eb404a2511dd.config
-validate	Post Checkout repository	2026-05-24T20:29:46.3850703Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git/worktrees/*.path
-validate	Post Checkout repository	2026-05-24T20:29:46.4073656Z D:\a\_temp\git-credentials-681c59a6-e6b7-47b0-9059-eb404a2511dd.config
-validate	Post Checkout repository	2026-05-24T20:29:46.4112532Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git/worktrees/*.path D:\a\_temp\git-credentials-681c59a6-e6b7-47b0-9059-eb404a2511dd.config
-validate	Post Checkout repository	2026-05-24T20:29:46.4384863Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
-validate	Post Checkout repository	2026-05-24T20:29:46.4606337Z /github/runner_temp/git-credentials-681c59a6-e6b7-47b0-9059-eb404a2511dd.config
-validate	Post Checkout repository	2026-05-24T20:29:46.4643671Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-681c59a6-e6b7-47b0-9059-eb404a2511dd.config
-validate	Post Checkout repository	2026-05-24T20:29:46.4898180Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
-validate	Post Checkout repository	2026-05-24T20:29:46.5120268Z /github/runner_temp/git-credentials-681c59a6-e6b7-47b0-9059-eb404a2511dd.config
-validate	Post Checkout repository	2026-05-24T20:29:46.5159880Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-681c59a6-e6b7-47b0-9059-eb404a2511dd.config
-validate	Post Checkout repository	2026-05-24T20:29:46.5429765Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
-validate	Post Checkout repository	2026-05-24T20:29:47.0477033Z Removing credentials config 'D:\a\_temp\git-credentials-681c59a6-e6b7-47b0-9059-eb404a2511dd.config'
-validate	Complete job	﻿2026-05-24T20:29:47.0654354Z Cleaning up orphan processes
+validate	Upload validation artifacts	2026-05-24T20:42:25.6245856Z   if-no-files-found: warn
+validate	Upload validation artifacts	2026-05-24T20:42:25.6246214Z   retention-days: 14
+validate	Upload validation artifacts	2026-05-24T20:42:25.6246538Z   compression-level: 6
+validate	Upload validation artifacts	2026-05-24T20:42:25.6246865Z   overwrite: false
+validate	Upload validation artifacts	2026-05-24T20:42:25.6247184Z   include-hidden-files: false
+validate	Upload validation artifacts	2026-05-24T20:42:25.6247547Z   archive: true
+validate	Upload validation artifacts	2026-05-24T20:42:25.6247821Z env:
+validate	Upload validation artifacts	2026-05-24T20:42:25.6248219Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Upload validation artifacts	2026-05-24T20:42:25.6248970Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+validate	Upload validation artifacts	2026-05-24T20:42:25.6249762Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Upload validation artifacts	2026-05-24T20:42:25.6250437Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Upload validation artifacts	2026-05-24T20:42:25.6251116Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+validate	Upload validation artifacts	2026-05-24T20:42:25.6252404Z   HARNESS_RUNTIME_ZIP: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\DCOIR_Collector_runtime_for_harness.zip
+validate	Upload validation artifacts	2026-05-24T20:42:25.6254277Z   HARNESS_COLLECTOR_PATH: D:\a\dcoir-collector\dcoir-collector\project_sources\validation\out_validate_on_push_collector\runtime_harness\DCOIR_Collector.ps1
+validate	Upload validation artifacts	2026-05-24T20:42:25.6255417Z ##[endgroup]
+validate	Upload validation artifacts	2026-05-24T20:42:26.4755868Z Multiple search paths detected. Calculating the least common ancestor of all paths
+validate	Upload validation artifacts	2026-05-24T20:42:26.4760165Z The least common ancestor is D:\a\dcoir-collector\dcoir-collector\project_sources. This will be the root directory of the artifact
+validate	Upload validation artifacts	2026-05-24T20:42:26.4761769Z With the provided path, there will be 90 files uploaded
+validate	Upload validation artifacts	2026-05-24T20:42:26.4763352Z Artifact name is valid!
+validate	Upload validation artifacts	2026-05-24T20:42:26.4763916Z Root directory input is valid!
+validate	Upload validation artifacts	2026-05-24T20:42:26.6660011Z Uploading artifact: validate-on-push-results.zip
+validate	Upload validation artifacts	2026-05-24T20:42:26.6661202Z Beginning upload of artifact content to blob storage
+validate	Upload validation artifacts	2026-05-24T20:42:28.0447645Z Uploaded bytes 8388608
+validate	Upload validation artifacts	2026-05-24T20:42:28.0757305Z Uploaded bytes 9094632
+validate	Upload validation artifacts	2026-05-24T20:42:28.0876302Z Finished uploading artifact content to blob storage!
+validate	Upload validation artifacts	2026-05-24T20:42:28.0877834Z SHA256 digest of uploaded artifact is 3396796eddd3c31f5fd66df698a0cd440d5a3c7a4d96296a84dfb6065b63e55c
+validate	Upload validation artifacts	2026-05-24T20:42:28.0878896Z Finalizing artifact upload
+validate	Upload validation artifacts	2026-05-24T20:42:28.2114981Z Artifact validate-on-push-results successfully finalized. Artifact ID 7188222520
+validate	Upload validation artifacts	2026-05-24T20:42:28.2117030Z Artifact validate-on-push-results has been successfully uploaded! Final size is 9094632 bytes. Artifact ID is 7188222520
+validate	Upload validation artifacts	2026-05-24T20:42:28.2118689Z Artifact download URL: https://github.com/malwaredevil/dcoir-collector/actions/runs/26371909825/artifacts/7188222520
+validate	Post Checkout repository	﻿2026-05-24T20:42:28.2606104Z Post job cleanup.
+validate	Post Checkout repository	2026-05-24T20:42:28.6575455Z [command]"C:\Program Files\Git\bin\git.exe" version
+validate	Post Checkout repository	2026-05-24T20:42:28.7731562Z git version 2.54.0.windows.1
+validate	Post Checkout repository	2026-05-24T20:42:28.8281806Z Temporarily overriding HOME='D:\a\_temp\34b90fc3-298b-43a4-9e1d-88a4b80b38a9' before making global git config changes
+validate	Post Checkout repository	2026-05-24T20:42:28.8283925Z Adding repository directory to the temporary git global config as a safe directory
+validate	Post Checkout repository	2026-05-24T20:42:28.8291679Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\dcoir-collector\dcoir-collector
+validate	Post Checkout repository	2026-05-24T20:42:28.8604684Z Removing SSH command configuration
+validate	Post Checkout repository	2026-05-24T20:42:28.8830792Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+validate	Post Checkout repository	2026-05-24T20:42:28.9070130Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+validate	Post Checkout repository	2026-05-24T20:42:29.8529210Z Removing HTTP extra header
+validate	Post Checkout repository	2026-05-24T20:42:29.8771598Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+validate	Post Checkout repository	2026-05-24T20:42:29.9372620Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+validate	Post Checkout repository	2026-05-24T20:42:30.7177671Z Removing includeIf entries pointing to credentials config files
+validate	Post Checkout repository	2026-05-24T20:42:30.7196689Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+validate	Post Checkout repository	2026-05-24T20:42:30.7425233Z includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git.path
+validate	Post Checkout repository	2026-05-24T20:42:30.7429183Z includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git/worktrees/*.path
+validate	Post Checkout repository	2026-05-24T20:42:30.7432390Z includeif.gitdir:/github/workspace/.git.path
+validate	Post Checkout repository	2026-05-24T20:42:30.7450166Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+validate	Post Checkout repository	2026-05-24T20:42:30.7652443Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git.path
+validate	Post Checkout repository	2026-05-24T20:42:30.7883385Z D:\a\_temp\git-credentials-18c2502f-dd99-46d1-a30f-e595ea5953ea.config
+validate	Post Checkout repository	2026-05-24T20:42:30.8106660Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git.path D:\a\_temp\git-credentials-18c2502f-dd99-46d1-a30f-e595ea5953ea.config
+validate	Post Checkout repository	2026-05-24T20:42:30.8555598Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git/worktrees/*.path
+validate	Post Checkout repository	2026-05-24T20:42:30.8786145Z D:\a\_temp\git-credentials-18c2502f-dd99-46d1-a30f-e595ea5953ea.config
+validate	Post Checkout repository	2026-05-24T20:42:30.9006892Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/dcoir-collector/dcoir-collector/.git/worktrees/*.path D:\a\_temp\git-credentials-18c2502f-dd99-46d1-a30f-e595ea5953ea.config
+validate	Post Checkout repository	2026-05-24T20:42:30.9464752Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+validate	Post Checkout repository	2026-05-24T20:42:30.9710784Z /github/runner_temp/git-credentials-18c2502f-dd99-46d1-a30f-e595ea5953ea.config
+validate	Post Checkout repository	2026-05-24T20:42:30.9931437Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-18c2502f-dd99-46d1-a30f-e595ea5953ea.config
+validate	Post Checkout repository	2026-05-24T20:42:31.0379710Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+validate	Post Checkout repository	2026-05-24T20:42:31.0606973Z /github/runner_temp/git-credentials-18c2502f-dd99-46d1-a30f-e595ea5953ea.config
+validate	Post Checkout repository	2026-05-24T20:42:31.0840410Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-18c2502f-dd99-46d1-a30f-e595ea5953ea.config
+validate	Post Checkout repository	2026-05-24T20:42:31.1291181Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+validate	Post Checkout repository	2026-05-24T20:42:31.9509438Z Removing credentials config 'D:\a\_temp\git-credentials-18c2502f-dd99-46d1-a30f-e595ea5953ea.config'
+validate	Complete job	﻿2026-05-24T20:42:31.9692535Z Cleaning up orphan processes
 ```
 
 ## Next ChatGPT action
