@@ -1,4 +1,4 @@
-# AGENTS.md
+﻿# AGENTS.md
 
 ## Purpose
 This repository is the governed GitHub source for the DCOIR collector, Gemini-related source surfaces, workflows, operator tooling, and durable documentation.
@@ -19,6 +19,11 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 - Canonical GitHub repo URL: `https://github.com/malwaredevil/dcoir-collector/`
 - Default Supabase `project_id` for `ircore` operational work here: `kdhkhyksdzjbajavsoxa`
 - Unless the operator explicitly directs otherwise, use those exact connector-friendly values for GitHub and Supabase readback and mutation lanes tied to this repository.
+
+
+## Gemini Builder Governance Rule
+- For Gemini builder governance, consult the governed `ircore` Gemini research surfaces before Gemini source, validation, or readback changes.
+- Do not treat repo runtime files as the source of those governance findings.
 
 ## Bootstrap contract
 - For substantive `ircore` work that depends on Supabase bootstrap, materialize `/workspace/.ircore-bootstrap.json` with `{"supabase_project_id":"kdhkhyksdzjbajavsoxa"}` before querying `ircore.get_agent_bootstrap_v1(...)`.
@@ -42,3 +47,4 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 ## Cleanup posture
 - Historical artifacts may remain when they are clearly evidence or release history.
 - Active guidance, workflow validation, and support files must not depend on retired parity or skill-mirror surfaces.
+
