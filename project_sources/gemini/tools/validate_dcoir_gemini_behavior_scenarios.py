@@ -18,19 +18,17 @@ SCENARIOS = {
             ['attachment budget manifest', 'collection scope', 'targeted collection plan', 'representative final_artifacts'],
         ],
     },
-    'GeminiEvidenceDecodingSupport': {
-        'description': 'The stored Gemini source should support bounded decoding of relevant encoded alert content while preserving provenance and distinguishing transformed context from execution proof.',
+    'GeminiConclusionStageReportOffer': {
+        'description': 'The stored Gemini source should offer conclusion-stage report exports only after a supported final conclusion, preserve the executive-summary report option, and keep the compact export plain-text and optional.',
         'all_markers': [
-            'relevant base64 or similar encoded content',
-            'preserve the original value',
-            'label the decoded content as a transformed view',
-            'do not auto-decode when the content is ambiguous',
-            'treat decoded content as additional context, not proof',
+            'offer report output only after the conclusion is supported',
+            'executive-summary style final report',
+            'compact plain-text conclusion summary',
+            'do not auto-generate either export unless the analyst asks for it',
         ],
         'any_marker_groups': [
-            ['decode it', 'decoding fails or is incomplete'],
-            ['ask first', 'require non-obvious transformation choices', 'materially widen scope'],
-            ['base64-decoded command line', 'decoded script fragment', 'decoded configuration block'],
+            ['attachment or printing', 'operator-facing reuse'],
+            ['concluded benign, malicious, or unresolved final conclusion', 'singular next-query lane is still active', 'investigation is still active'],
         ],
     },
     'GeminiIOCEnrichmentTrigger': {
@@ -72,20 +70,6 @@ SCENARIOS = {
         'any_marker_groups': [
             ['requested action', 'planned action', 'executed action', 'returned result'],
             ['connector and indexing limits', 'searchable-text extraction limits', 'file-size or indexing ceilings'],
-        ],
-    },
-    'GeminiNegativeResultEvidenceBounded': {
-        'description': 'The stored Gemini source should keep negative-result reasoning evidence-bounded, preserve lane and coverage limits, and block maliciousness escalation from absent corroboration alone.',
-        'all_markers': [
-            'no result in the reviewed lane',
-            'not verified from configured sources',
-            'do not convert a miss into proof of stealth, benignity, or maliciousness by itself',
-            'do not force benign or malicious from a search miss',
-        ],
-        'any_marker_groups': [
-            ['query shape', 'time range', 'fields', 'source scope', 'limitation'],
-            ['field mismatch', 'index pattern mismatch', 'connector and indexing limits', 'searchable-text extraction limits'],
-            ['smallest broadening step', 'what additional result would move the case toward benign or malicious'],
         ],
     },
     'GeminiSecurityProductNegativeControl': {
