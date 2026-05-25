@@ -96,7 +96,7 @@
       "chunk_id": "10",
       "title": "Tool_Rules",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_10_Tool_Rules.md.txt",
-      "sha256": "0ae08440d769e0463353f9b6325134233eaea64b4767c0abc3d70ad7ffa4c867",
+      "sha256": "fc11466a39818eb0ca0899b91e03bd23b62c98d1791b0262aaad848abf551d62",
       "line_count": 51,
       "starts_with": "### Tool rules"
     },
@@ -120,7 +120,7 @@
       "chunk_id": "13",
       "title": "Data_Schema_And_Field_Reference",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_13_Data_Schema_And_Field_Reference.md.txt",
-      "sha256": "07d61c8da30ab70704ee91c8e421d39734b71ecaf05d142fbeade1c1f3ddc170",
+      "sha256": "f6500e5f05a6b90f5206236a7987482d1dd9a5d7fb973fd7c7f9786e8b66ffc8",
       "line_count": 28,
       "starts_with": "### Data schema and field reference"
     },
