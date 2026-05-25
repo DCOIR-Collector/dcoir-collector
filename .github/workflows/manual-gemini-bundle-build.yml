@@ -126,7 +126,7 @@ jobs:
           if ($manifestMissing.Count -gt 0) {
             throw "Missing Gemini manifest-required/source-required surfaces: $($manifestMissing -join ', ')"
           }
-          $manifestSubAgents = @($geminiManifest.topology.sub_agent_files | ForEach-Object { ([string]$_).Replace('\','/') })
+          $manifestSubAgents = @($geminiManifest.topology.sub_agent_files | ForEach-Object { ([string]$_).Replace([string][IO.Path]::DirectorySeparatorChar,'/') })
           if ($manifestSubAgents.Count -eq 0) {
             throw 'Gemini manifest topology.sub_agent_files is empty.'
           }
@@ -137,7 +137,7 @@ jobs:
           $agentBuildRoot = Join-Path $geminiBundleRoot '01_GEMINI_AGENT_BUILD'
           $bundleRootResolved = (Resolve-Path -LiteralPath $geminiBundleRoot).Path
           $discoveredSubAgents = @(Get-ChildItem -LiteralPath $agentBuildRoot -File -Filter 'Sub_Agent_*.md.txt' | ForEach-Object {
-            ($_.FullName.Substring($bundleRootResolved.Length + 1)).Replace('\','/')
+            ($_.FullName.Substring($bundleRootResolved.Length + 1)).Replace([string][IO.Path]::DirectorySeparatorChar,'/')
           })
           $unlistedSubAgents = @($discoveredSubAgents | Where-Object { $_ -notin $manifestSubAgents })
           if ($unlistedSubAgents.Count -gt 0) {
