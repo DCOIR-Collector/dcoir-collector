@@ -31,6 +31,21 @@ SCENARIOS = {
             ['concluded benign, malicious, or unresolved final conclusion', 'singular next-query lane is still active', 'investigation is still active'],
         ],
     },
+    'GeminiEvidenceDecodingSupport': {
+        'description': 'The stored Gemini source should support bounded decoding of relevant encoded alert content while preserving provenance and distinguishing transformed context from execution proof.',
+        'all_markers': [
+            'relevant base64 or similar encoded content',
+            'preserve the original value',
+            'label the decoded content as a transformed view',
+            'do not auto-decode when the content is ambiguous',
+            'treat decoded content as additional context, not proof',
+        ],
+        'any_marker_groups': [
+            ['decode it', 'decoding fails or is incomplete'],
+            ['ask first', 'require non-obvious transformation choices', 'materially widen scope'],
+            ['base64-decoded command line', 'decoded script fragment', 'decoded configuration block'],
+        ],
+    },
     'GeminiIOCEnrichmentTrigger': {
         'description': 'The stored Gemini source should make mixed-format IOC intake and downstream tool routing explicit.',
         'all_markers': ['ioc', 'csv', 'pdf', 'docx'],
@@ -70,6 +85,20 @@ SCENARIOS = {
         'any_marker_groups': [
             ['requested action', 'planned action', 'executed action', 'returned result'],
             ['connector and indexing limits', 'searchable-text extraction limits', 'file-size or indexing ceilings'],
+        ],
+    },
+    'GeminiNegativeResultEvidenceBounded': {
+        'description': 'The stored Gemini source should keep negative-result reasoning evidence-bounded, preserve lane and coverage limits, and block maliciousness escalation from absent corroboration alone.',
+        'all_markers': [
+            'no result in the reviewed lane',
+            'not verified from configured sources',
+            'do not convert a miss into proof of stealth, benignity, or maliciousness by itself',
+            'do not force benign or malicious from a search miss',
+        ],
+        'any_marker_groups': [
+            ['query shape', 'time range', 'fields', 'source scope', 'limitation'],
+            ['field mismatch', 'index pattern mismatch', 'connector and indexing limits', 'searchable-text extraction limits'],
+            ['smallest broadening step', 'what additional result would move the case toward benign or malicious'],
         ],
     },
     'GeminiSecurityProductNegativeControl': {
