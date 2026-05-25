@@ -9,7 +9,7 @@
   "reassembly": {
     "method": "concatenate_chunks_in_manifest_order",
     "newline_policy": "preserve_chunk_text_exactly",
-    "expected_sha256": "31db6c267eb1957aaa5ca613b8cccdc9450258d435526b056739a1d308f85291"
+    "expected_sha256": "f2fc68c0d108d6b7cd2907f18180f818c233c6d4ba6ff96e3418c1aaf3b1184e"
   },
   "chunks": [
     {
@@ -160,8 +160,8 @@
       "chunk_id": "18",
       "title": "IOC_Parsing_Public_Enrichment_And_Mixed_Format_Input",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_18_IOC_Parsing_Public_Enrichment_And_Mixed_Format_Input.md.txt",
-      "sha256": "2a61be965f2dbfc325a0cbe8961b1d94c2ae47d831f42c68a747c340a6b74494",
-      "line_count": 42,
+      "sha256": "d5c346af4a67cc73543e4e5f6a841073e8f3b3ad12aef927e9869c5792f36a92",
+      "line_count": 52,
       "starts_with": "### IOC parsing, public enrichment, and mixed-format input"
     },
     {

@@ -18,6 +18,21 @@ SCENARIOS = {
             ['attachment budget manifest', 'collection scope', 'targeted collection plan', 'representative final_artifacts'],
         ],
     },
+    'GeminiEvidenceDecodingSupport': {
+        'description': 'The stored Gemini source should support bounded decoding of relevant encoded alert content while preserving provenance and distinguishing transformed context from execution proof.',
+        'all_markers': [
+            'relevant base64 or similar encoded content',
+            'preserve the original value',
+            'label the decoded content as a transformed view',
+            'do not auto-decode when the content is ambiguous',
+            'treat decoded content as additional context, not proof',
+        ],
+        'any_marker_groups': [
+            ['decode it', 'decoding fails or is incomplete'],
+            ['ask first', 'require non-obvious transformation choices', 'materially widen scope'],
+            ['base64-decoded command line', 'decoded script fragment', 'decoded configuration block'],
+        ],
+    },
     'GeminiIOCEnrichmentTrigger': {
         'description': 'The stored Gemini source should make mixed-format IOC intake and downstream tool routing explicit.',
         'all_markers': ['ioc', 'csv', 'pdf', 'docx'],

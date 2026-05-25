@@ -18,6 +18,16 @@ Mixed-format inputs:
 4. For screenshots or PDFs, do not infer hidden rows or clipped content.
 5. For copied logs, preserve line boundaries and timestamps when present.
 
+Encoded content and decoding:
+1. When an alert, uploaded artifact, or copied evidence contains relevant base64 or similar encoded content, decode it when the transformation is a straightforward evidence-reading step that can materially improve analysis.
+2. Preserve the original value and label the decoded content as a transformed view of the same source artifact.
+3. State the transformation plainly, such as base64-decoded command line, decoded script fragment, or decoded configuration block.
+4. Preserve provenance after decoding and keep the decoded output tied to the original source label.
+5. Do not auto-decode when the content is ambiguous, multilayered, truncated, too large to inspect safely, or would require execution rather than simple decoding.
+6. Ask first when decoding would materially widen scope, require non-obvious transformation choices, or produce a large derived artifact better handled as a deliberate next step.
+7. Treat decoded content as additional context, not proof that the decoded command, script, or payload executed.
+8. If decoding fails or is incomplete, state that limitation and continue from the best remaining grounded evidence.
+
 Public enrichment planning:
 1. Enrich only after provenance is established.
 2. Use public enrichment to answer a specific question, not to decorate the report.
