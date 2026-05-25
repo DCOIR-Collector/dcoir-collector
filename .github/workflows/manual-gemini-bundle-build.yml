@@ -92,7 +92,6 @@ jobs:
             'project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt',
             'project_sources/gemini/docs/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt',
             'project_sources/gemini/docs/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
-            'project_sources/gemini/prompt_pack/PP-09_Gemini_Enterprise_Agent_Designer_Generator_Workflow_v1_0_0.txt',
             'project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json',
             'knowledge/README.md',
             'knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md',
@@ -127,7 +126,7 @@ jobs:
           if ($manifestMissing.Count -gt 0) {
             throw "Missing Gemini manifest-required/source-required surfaces: $($manifestMissing -join ', ')"
           }
-          $manifestSubAgents = @($geminiManifest.topology.sub_agent_files | ForEach-Object { ([string]$_).Replace('\','/') })
+          $manifestSubAgents = @($geminiManifest.topology.sub_agent_files | ForEach-Object { ([string]$_).Replace('\\','/') })
           if ($manifestSubAgents.Count -eq 0) {
             throw 'Gemini manifest topology.sub_agent_files is empty.'
           }
@@ -138,7 +137,7 @@ jobs:
           $agentBuildRoot = Join-Path $geminiBundleRoot '01_GEMINI_AGENT_BUILD'
           $bundleRootResolved = (Resolve-Path -LiteralPath $geminiBundleRoot).Path
           $discoveredSubAgents = @(Get-ChildItem -LiteralPath $agentBuildRoot -File -Filter 'Sub_Agent_*.md.txt' | ForEach-Object {
-            ($_.FullName.Substring($bundleRootResolved.Length + 1)).Replace('\','/')
+            ($_.FullName.Substring($bundleRootResolved.Length + 1)).Replace('\\','/')
           })
           $unlistedSubAgents = @($discoveredSubAgents | Where-Object { $_ -notin $manifestSubAgents })
           if ($unlistedSubAgents.Count -gt 0) {
