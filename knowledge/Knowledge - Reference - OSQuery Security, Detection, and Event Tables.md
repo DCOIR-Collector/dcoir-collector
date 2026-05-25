@@ -1,4 +1,4 @@
-# Knowledge - 99I - OSQuery Security, Detection, and Event Tables
+# Knowledge - Reference - OSQuery Security, Detection, and Event Tables
 
 _Exact OSQuery security, detection, audit, firewall, and event reference tables._
 

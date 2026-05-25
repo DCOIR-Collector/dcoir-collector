@@ -1,4 +1,4 @@
-# Knowledge - 13 - Gemini Agent Topology and Routing
+# Knowledge - Gemini - Agent Topology and Routing
 
 _Gemini prime-agent and sub-agent routing model_
 
@@ -58,7 +58,7 @@ Routing text must not imply that a search, connector lookup, retrieval action, c
 ## Related pages
 
 - Use this page for agent topology and routing summary.
-- Use Knowledge 14 for response-structure and command-lane behavior.
+- Use Knowledge - Gemini - Output Contract and Command-Lane Discipline for response-structure and command-lane behavior.
 
 ---
 

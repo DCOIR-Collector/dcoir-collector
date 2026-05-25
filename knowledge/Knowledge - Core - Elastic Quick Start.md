@@ -1,4 +1,4 @@
-# Knowledge - 02 - Elastic Quick Start
+# Knowledge - Core - Elastic Quick Start
 
 _Endpoint response-console execution versus local workstation execution_
 
@@ -56,7 +56,7 @@ Confirm:
 
 ## EXE note
 
-The optional EXE lane is documented in Knowledge 16. Do not substitute EXE commands into endpoint guidance unless the EXE artifact is the intended staged runtime and the operator has selected that execution form.
+The optional EXE lane is documented in Knowledge - Collector - EXE Usage and Runtime Behavior. Do not substitute EXE commands into endpoint guidance unless the EXE artifact is the intended staged runtime and the operator has selected that execution form.
 
 ---
 

@@ -77,17 +77,17 @@ Gemini bundle
   - `Sub_Agent_07_Decision_and_Report_Composer.md.txt`
   - `Generated_DCOIR_Gemini_Agent_Index.md.txt`
 - Preferred `02_PRIME_AGENT_ATTACHMENTS/` baseline attachment set:
-  - `Knowledge - 01 - Overview and About.md.txt`
-  - `Knowledge - 02 - Elastic Quick Start.md.txt`
-  - `Knowledge - 03 - Local Test and Regression.md.txt`
-  - `Knowledge - 04 - Tier 1 Collect Runbook.md.txt`
-  - `Knowledge - 05 - Tier 2 Collect Runbook.md.txt`
-  - `Knowledge - 06 - Enrichment Actions.md.txt`
-  - `Knowledge - 07 - Artifact Review Guide.md.txt`
-  - `Knowledge - 08 - Troubleshooting.md.txt`
-  - `Knowledge - 09 - FAQ.md.txt`
-  - `Knowledge - 10 - AI Prompt and Agent Design.md.txt`
-  - `Knowledge - 11 - IOC Enrichment and Public Sources.md.txt`
+  - `Knowledge - Core - Overview and About.md.txt`
+  - `Knowledge - Core - Elastic Quick Start.md.txt`
+  - `Knowledge - Collector - Local Test and Regression.md.txt`
+  - `Knowledge - Core - Tier 1 Collect Runbook.md.txt`
+  - `Knowledge - Core - Tier 2 Collect Runbook.md.txt`
+  - `Knowledge - Core - Enrichment Actions.md.txt`
+  - `Knowledge - Core - Artifact Review Guide.md.txt`
+  - `Knowledge - Core - Troubleshooting.md.txt`
+  - `Knowledge - Core - FAQ.md.txt`
+  - `Knowledge - Gemini - AI Prompt and Agent Design.md.txt`
+  - `Knowledge - Core - IOC Enrichment and Public Sources.md.txt`
 
 Standalone prompt bundle
 - Top-level folder name pattern:
@@ -103,7 +103,7 @@ Standalone prompt bundle
 - Preferred `01_STANDALONE_PROMPT/` file:
   - `AFRICOM_SOC_DCOIR_Standalone_Master_Prompt_Full_Assembly.txt`
 - Preferred `02_PROMPT_ATTACHMENTS/` baseline attachment set:
-  - the same Knowledge 01 through Knowledge 11 files listed above unless a later bounded generation round explicitly changes that attachment baseline
+  - the same baseline knowledge files listed above unless a later bounded generation round explicitly changes that attachment baseline
 
 Packaging and clarity rules
 - Keep the shipped test-facing bundles minimal and operator-facing.

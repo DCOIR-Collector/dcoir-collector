@@ -1,4 +1,4 @@
-# Knowledge - 12 - Gemini Runtime Bundle and Source Tree
+# Knowledge - Gemini - Runtime Bundle and Source Tree
 
 _Gemini runtime capability and attachment boundaries_
 

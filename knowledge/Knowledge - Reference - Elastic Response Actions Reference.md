@@ -1,4 +1,4 @@
-# Knowledge - 99A - Elastic Response Actions Reference
+# Knowledge - Reference - Elastic Response Actions Reference
 
 _Governed reference for native Elastic response-action syntax_
 

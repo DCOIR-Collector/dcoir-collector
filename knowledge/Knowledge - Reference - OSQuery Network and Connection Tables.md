@@ -1,4 +1,4 @@
-# Knowledge - 99E - OSQuery Network and Connection Tables
+# Knowledge - Reference - OSQuery Network and Connection Tables
 
 _Exact OSQuery network, DNS, interface, route, and socket reference tables._
 

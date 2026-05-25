@@ -17,7 +17,7 @@ The workflow:
 
 1. Checks out the normal code repository.
 2. Verifies that `knowledge/README.md` exists.
-3. Verifies that at least 17 maintained `Knowledge - *.md` files exist.
+3. Verifies that maintained `Knowledge - *.md` files exist.
 4. Clones the separate wiki repository into `tmp_wiki`.
 5. Mirrors `knowledge/` into the wiki repository.
 6. Copies `knowledge/README.md` to `Home.md` for the wiki landing page.

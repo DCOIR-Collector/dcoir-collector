@@ -1,4 +1,4 @@
-# Knowledge - 09 - FAQ
+# Knowledge - Core - FAQ
 
 _Short answers to recurring DCOIR operator questions_
 

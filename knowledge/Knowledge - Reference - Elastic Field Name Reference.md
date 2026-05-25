@@ -1,4 +1,4 @@
-# Knowledge - 99 - Elastic Field Name Reference
+# Knowledge - Reference - Elastic Field Name Reference
 
 _Exact Elastic field-name reference for governed Gemini query construction_
 

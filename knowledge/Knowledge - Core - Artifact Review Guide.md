@@ -1,4 +1,4 @@
-# Knowledge - 07 - Artifact Review Guide
+# Knowledge - Core - Artifact Review Guide
 
 _Evidence-first review of baseline, enrichment, and retrieved artifacts_
 
@@ -79,9 +79,9 @@ Do not upload broad low-value output before high-signal evidence.
 ## Cross-reference boundaries
 
 - Use this page for evidence review order and upload priority.
-- Use Knowledge 14 for Gemini response and command-lane discipline.
-- Use Knowledge 15 for Gemini attachment inventory and maintenance.
-- Use Knowledge 17 for collector output-contract expectations.
+- Use Knowledge - Gemini - Output Contract and Command-Lane Discipline for Gemini response and command-lane discipline.
+- Use Knowledge - Gemini - Runtime Bundle and Source Tree for Gemini attachment inventory and maintenance.
+- Use Knowledge - Collector - Feature and Output Contract Reference for collector output-contract expectations.
 
 ---
 

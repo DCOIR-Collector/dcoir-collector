@@ -2,88 +2,88 @@
 
 This map is intentionally explicit. It exists so the operator, the maintainer, and the future validation workflow can see exactly which shared knowledge files feed the prime-agent attachment set and why they matter.
 
-1. Knowledge - 01 - Overview and About
+1. Knowledge - Core - Overview and About
 - Purpose: define current DCOIR posture, source classes, governance boundaries, and the working relationship between the collector line, the Gemini line, and the maintained knowledge set.
 
-2. Knowledge - 02 - Elastic Quick Start
+2. Knowledge - Core - Elastic Quick Start
 - Purpose: preserve endpoint response-console usage, local-versus-endpoint command-lane separation, quick-start action patterns, and endpoint-side guardrails.
 
-3. Knowledge - 03 - Local Test and Regression
+3. Knowledge - Collector - Local Test and Regression
 - Purpose: preserve local harness philosophy, suite selection, restaging behavior, manual validation standards, and practical regression use from the current repo-style layout.
 
-4. Knowledge - 04 - Tier 1 Collect Runbook
+4. Knowledge - Core - Tier 1 Collect Runbook
 - Purpose: preserve first-pass baseline collection posture, outputs, review order, and escalation logic from baseline into narrower next steps.
 
-5. Knowledge - 05 - Tier 2 Collect Runbook
+5. Knowledge - Core - Tier 2 Collect Runbook
 - Purpose: preserve deeper-collection logic, persistence-and-configuration context, and decision rules for when deeper context is justified.
 
-6. Knowledge - 06 - Enrichment Actions
+6. Knowledge - Core - Enrichment Actions
 - Purpose: preserve the one-action-at-a-time enrich model, action-family selection, finalize behavior, retrieval expectations, and tool-backed action discipline.
 
-7. Knowledge - 07 - Artifact Review Guide
+7. Knowledge - Core - Artifact Review Guide
 - Purpose: preserve evidence-first artifact review order, wrapper-versus-evidence-carrier distinctions, upload priority logic, and retrieved-artifact interpretation discipline.
 
-8. Knowledge - 08 - Troubleshooting
+8. Knowledge - Core - Troubleshooting
 - Purpose: preserve bounded troubleshooting rules, lane-specific failure diagnosis, packaging and runtime triage habits, and non-overreach behavior.
 
-9. Knowledge - 09 - FAQ
+9. Knowledge - Core - FAQ
 - Purpose: preserve repeated operator answers about workflow, packaging, authority, command lanes, and runtime-maintenance habits in a fast-reference format.
 
-10. Knowledge - 10 - AI Prompt and Agent Design
+10. Knowledge - Gemini - AI Prompt and Agent Design
 - Purpose: preserve the current prompt-pack and Gemini design posture, including description-field routing quality, instruction density, comparative-reference usage, and stored-source compile rules.
 
-11. Knowledge - 11 - IOC Enrichment and Public Sources
+11. Knowledge - Core - IOC Enrichment and Public Sources
 - Purpose: preserve evidence-grounded IOC enrichment policy, source-tier distinctions, public-corroboration boundaries, and per-indicator-type guidance.
 
-12. Knowledge - 12 - Gemini Runtime Bundle and Source Tree
+12. Knowledge - Gemini - Runtime Bundle and Source Tree
 - Purpose: preserve stored-source compile behavior, source-tree layout, manifest-driven inventory thinking, and the practical rules for keeping the runtime bundle coherent.
 
-13. Knowledge - 13 - Gemini Agent Topology and Routing
+13. Knowledge - Gemini - Agent Topology and Routing
 - Purpose: preserve the current one-prime-plus-eleven-sub-agent runtime topology, the ownership of each sub-agent, and the routing rules that keep responsibilities explicit.
 
-14. Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline
+14. Knowledge - Gemini - Output Contract and Command-Lane Discipline
 - Purpose: preserve final response-structure rules, decision-state discipline, singular-command behavior, and endpoint-versus-local command-lane separation.
 
-15. Knowledge - 16 - Collector EXE Usage and Runtime Behavior
+15. Knowledge - Collector - EXE Usage and Runtime Behavior
 - Purpose: preserve optional EXE usage, GitHub Actions build-and-validation flow, EXE-versus-PS1 runtime differences, and EXE-aware FailureGates behavior so Gemini and operators do not misread wrapper-limited behavior as a collector regression.
 
-16. Knowledge - 17 - Collector Feature and Output Contract Reference
+16. Knowledge - Collector - Feature and Output Contract Reference
 - Purpose: preserve the canonical collector feature map and high-level output contract so feature descriptions, validation expectations, and Gemini interpretation do not drift across runbooks, troubleshooting, FAQ, and EXE guidance.
 
-17. Knowledge - 99 - Elastic Field Name Reference
+17. Knowledge - Reference - Elastic Field Name Reference
 - Purpose: preserve the governed exact Elastic field-name reference so Gemini can use a maintained attachment for exact KQL and ESQL field-name construction instead of relying on hard-coded prompt lists or memory.
 
-18. Knowledge - 99A - Elastic Response Actions Reference
+18. Knowledge - Reference - Elastic Response Actions Reference
 - Purpose: preserve the governed native Elastic response-action command reference so Gemini can distinguish native response actions from execute-wrapped shell commands without relying on memory.
 
-19. Knowledge - 99B - OSQuery Reference Index
+19. Knowledge - Reference - OSQuery Reference Index
 - Purpose: preserve the routing map that tells Gemini which sharded OSQuery reference page to consult first by investigative objective.
 
-20. Knowledge - 99C - OSQuery Process and Execution Tables
+20. Knowledge - Reference - OSQuery Process and Execution Tables
 - Purpose: preserve the exact OSQuery process, execution, handle, and runtime-artifact table reference.
 
-21. Knowledge - 99D - OSQuery File and Filesystem Tables
+21. Knowledge - Reference - OSQuery File and Filesystem Tables
 - Purpose: preserve the exact OSQuery file, hash, filesystem, mount, and file-event table reference.
 
-22. Knowledge - 99E - OSQuery Network and Connection Tables
+22. Knowledge - Reference - OSQuery Network and Connection Tables
 - Purpose: preserve the exact OSQuery network, DNS, interface, route, and socket table reference.
 
-23. Knowledge - 99F - OSQuery User, Auth, and Account Tables
+23. Knowledge - Reference - OSQuery User, Auth, and Account Tables
 - Purpose: preserve the exact OSQuery user, auth, login, SSH, and account-context table reference.
 
-24. Knowledge - 99G - OSQuery Persistence and Startup Tables
+24. Knowledge - Reference - OSQuery Persistence and Startup Tables
 - Purpose: preserve the exact OSQuery persistence, startup, service, scheduled-task, and shim table reference.
 
-25. Knowledge - 99H - OSQuery System, Hardware, and Platform Tables
+25. Knowledge - Reference - OSQuery System, Hardware, and Platform Tables
 - Purpose: preserve the exact OSQuery system, hardware, memory, uptime, USB, and platform table reference.
 
-26. Knowledge - 99I - OSQuery Security, Detection, and Event Tables
+26. Knowledge - Reference - OSQuery Security, Detection, and Event Tables
 - Purpose: preserve the exact OSQuery security, firewall, audit, YARA, and event table reference.
 
-27. Knowledge - 99J - OSQuery Application, Package, and Extension Tables
+27. Knowledge - Reference - OSQuery Application, Package, and Extension Tables
 - Purpose: preserve the exact OSQuery application, package, browser-extension, and program-inventory table reference.
 
-28. Knowledge - 99K - OSQuery Virtualization, Cloud, and Container Tables
+28. Knowledge - Reference - OSQuery Virtualization, Cloud, and Container Tables
 - Purpose: preserve the exact OSQuery container, virtualization, cloud-metadata, and OSQuery self-state table reference.
 
 ## Maintenance rule

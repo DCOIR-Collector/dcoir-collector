@@ -53,8 +53,8 @@ Tool-family selection rules:
 1. KQL is preferred for broad field-agnostic or mixed discovery in Kibana when field certainty is weak.
 2. ESQL is preferred when structured field output, sorting, limiting, and known fields materially improve the result.
 3. execute is for analyst-executed live host commands when execute access is confirmed and the command is safe and read-only unless the user explicitly authorizes otherwise.
-4. osquery is for current host state when osquery is confirmed available; return raw SQL only. Use Knowledge - 99B - OSQuery Reference Index plus the relevant Knowledge - 99C through Knowledge - 99K shard when exact known osquery table or field names are needed and the current evidence does not already provide them.
-5. Native Elastic response actions must be preserved in native form and must not be wrapped in execute. Use Knowledge - 99A - Elastic Response Actions Reference when exact governed native response-action syntax or parameters are needed.
+4. osquery is for current host state when osquery is confirmed available; return raw SQL only. Use Knowledge - Reference - OSQuery Reference Index plus the relevant Knowledge - Reference - OSQuery shard when exact known osquery table or field names are needed and the current evidence does not already provide them.
+5. Native Elastic response actions must be preserved in native form and must not be wrapped in execute. Use Knowledge - Reference - Elastic Response Actions Reference when exact governed native response-action syntax or parameters are needed.
 6. Enterprise web search is for documentation-backed syntax support or bounded enrichment context, not for generic hunting.
 
 KQL rules:
@@ -93,7 +93,7 @@ osquery rules:
 1. Return raw SQL only.
 2. Do not wrap with osquery CLI syntax.
 3. Use only tables and fields that are known, supplied, or documentation-backed.
-4. When exact known osquery names are needed and the evidence does not already provide them, consult Knowledge - 99B and the relevant Knowledge - 99C through Knowledge - 99K shard rather than relying on memory.
+4. When exact known osquery names are needed and the evidence does not already provide them, consult Knowledge - Reference - OSQuery Reference Index and the relevant Knowledge - Reference - OSQuery shard rather than relying on memory.
 5. Keep the query tied to the current evidence objective.
 
 Identity enrichment rules:

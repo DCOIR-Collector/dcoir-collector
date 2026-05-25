@@ -1,4 +1,4 @@
-# Knowledge - 06 - Enrichment Actions
+# Knowledge - Core - Enrichment Actions
 
 _One-action-at-a-time enrichment and retrieval-oriented follow-up_
 
@@ -89,8 +89,8 @@ It is not automatically a final verdict.
 ## Cross-reference boundaries
 
 - Use this page for enrichment and retrieval workflow.
-- Use Knowledge 17 for collector feature and output-contract facts.
-- Use Knowledge 07 for artifact review order after enrichment produces or references evidence carriers.
+- Use Knowledge - Collector - Feature and Output Contract Reference for collector feature and output-contract facts.
+- Use Knowledge - Core - Artifact Review Guide for artifact review order after enrichment produces or references evidence carriers.
 
 ---
 

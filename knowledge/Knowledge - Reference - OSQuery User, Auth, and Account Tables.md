@@ -1,4 +1,4 @@
-# Knowledge - 99F - OSQuery User, Auth, and Account Tables
+# Knowledge - Reference - OSQuery User, Auth, and Account Tables
 
 _Exact OSQuery user, account, login, SSH, and auth-policy reference tables._
 

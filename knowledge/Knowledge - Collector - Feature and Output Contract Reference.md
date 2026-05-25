@@ -1,4 +1,4 @@
-# Knowledge - 17 - Collector Feature and Output Contract Reference
+# Knowledge - Collector - Feature and Output Contract Reference
 
 _Collector feature map and output contract reference_
 
@@ -72,16 +72,16 @@ Console text alone is not proof. Referenced artifacts must exist when the run cl
 
 ## Failure behavior
 
-PS1 and EXE can render failure surfaces differently. Use Knowledge 16 for EXE-specific interpretation when wrapper behavior affects how a failure should be understood.
+PS1 and EXE can render failure surfaces differently. Use Knowledge - Collector - EXE Usage and Runtime Behavior for EXE-specific interpretation when wrapper behavior affects how a failure should be understood.
 
 ---
 
 ## Related pages
 
 - Use this page for feature families, common parameters, output contract, and failure behavior.
-- Use Knowledge 04 and 05 for collection procedure.
-- Use Knowledge 06 for enrichment workflow.
-- Use Knowledge 16 for optional EXE behavior.
+- Use Knowledge - Core - Tier 1 Collect Runbook and 05 for collection procedure.
+- Use Knowledge - Core - Enrichment Actions for enrichment workflow.
+- Use Knowledge - Collector - EXE Usage and Runtime Behavior for optional EXE behavior.
 
 ---
 

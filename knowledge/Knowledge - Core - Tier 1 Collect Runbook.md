@@ -1,4 +1,4 @@
-# Knowledge - 04 - Tier 1 Collect Runbook
+# Knowledge - Core - Tier 1 Collect Runbook
 
 _Baseline collection workflow for first-pass host evidence_
 
@@ -27,7 +27,7 @@ Do not run Tier 1 only because the collector is available.
 | Local explicit form | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T1 -Hours 24` |
 | Elastic endpoint form | `execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick collect-t1" --comment "Run DCOIR Tier 1 collect"` |
 
-For optional EXE usage, use Knowledge 16.
+For optional EXE usage, use Knowledge - Collector - EXE Usage and Runtime Behavior.
 
 ---
 
@@ -122,8 +122,8 @@ A very large monolithic output should be handled as an implementation or retriev
 ## Cross-reference boundaries
 
 - Use this page for Tier 1 procedure.
-- Use Knowledge 17 for collector feature families, parameter reference, and output contract.
-- Use Knowledge 16 for optional EXE command form and EXE-specific interpretation.
+- Use Knowledge - Collector - Feature and Output Contract Reference for collector feature families, parameter reference, and output contract.
+- Use Knowledge - Collector - EXE Usage and Runtime Behavior for optional EXE command form and EXE-specific interpretation.
 
 ---
 
