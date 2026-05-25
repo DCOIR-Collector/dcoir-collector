@@ -59,6 +59,20 @@ SCENARIOS = {
             ['connector and indexing limits', 'searchable-text extraction limits', 'file-size or indexing ceilings'],
         ],
     },
+    'GeminiNegativeResultEvidenceBounded': {
+        'description': 'The stored Gemini source should keep negative-result reasoning evidence-bounded, preserve lane and coverage limits, and block maliciousness escalation from absent corroboration alone.',
+        'all_markers': [
+            'no result in the reviewed lane',
+            'not verified from configured sources',
+            'do not convert a miss into proof of stealth, benignity, or maliciousness by itself',
+            'do not force benign or malicious from a search miss',
+        ],
+        'any_marker_groups': [
+            ['query shape', 'time range', 'fields', 'source scope', 'limitation'],
+            ['field mismatch', 'index pattern mismatch', 'connector and indexing limits', 'searchable-text extraction limits'],
+            ['smallest broadening step', 'what additional result would move the case toward benign or malicious'],
+        ],
+    },
     'GeminiSecurityProductNegativeControl': {
         'description': 'The stored Gemini source should preserve false-positive-aware handling for benign or dual-use security-product behavior.',
         'all_markers': ['false-positive-aware', 'security product'],
