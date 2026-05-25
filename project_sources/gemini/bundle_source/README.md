@@ -23,10 +23,12 @@ Current major-version focus
 
 When changing the attachment set
 1. Edit the maintained `knowledge/*.md` files.
-2. Let the governed build path package those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` in the release ZIP.
-3. Update `00_START_HERE/Agent_Attachment_Map.md.txt`.
-4. Update `Gemini_Bundle_Source_Manifest.json.txt` when the required attachment inventory changed.
-5. Re-run validation and build.
+2. Keep `knowledge/README.md` appropriate as the maintained-knowledge landing page rather than a builder/operator maintenance surface.
+3. Let the governed build path package those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` in the release ZIP.
+4. Update `00_START_HERE/Agent_Attachment_Map.md.txt`.
+5. Update `Gemini_Bundle_Source_Manifest.json.txt` when the required attachment inventory changed.
+6. Update workflow required-surface checks when the governed required-file contract changed.
+7. Re-run validation and build.
 
 What not to do
 - Do not treat file drop alone as a topology or attachment-inventory change.
