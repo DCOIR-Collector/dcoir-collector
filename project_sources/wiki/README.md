@@ -29,3 +29,9 @@ The workflow:
 - The repository secret name must be exactly `DCOIR_WIKI_PUSH_TOKEN`.
 - The wiki must be initialized with at least one page before the workflow runs.
 - The wiki is intended to mirror the maintained `knowledge/` folder. Do not manually maintain separate wiki-only operational guidance unless that is an intentional exception.
+
+## Landing-page boundary rule
+
+`knowledge/README.md` is mirrored to the wiki `Home.md` page and should stay focused on maintained-knowledge orientation.
+
+Do not place builder/operator maintenance checklists or synchronization instructions in `knowledge/README.md`. Keep those instructions in operator/build-facing GitHub docs such as this file and `project_sources/gemini/bundle_source/README.md`.

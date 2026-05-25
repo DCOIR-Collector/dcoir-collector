@@ -45,13 +45,3 @@ The maintained knowledge set currently uses four stable groups instead of a renu
 | Reference | OSQuery Security, Detection, and Event Tables | Exact security and event table reference |
 | Reference | OSQuery Application, Package, and Extension Tables | Exact application and package table reference |
 | Reference | OSQuery Virtualization, Cloud, and Container Tables | Exact container and cloud table reference |
-
-## Maintenance triggers
-
-When the page list, attachment set, collector behavior, EXE behavior, Gemini agent behavior, or workflow validation coverage changes, update these surfaces together:
-
-- maintained `knowledge/*.md` source files;
-- generated Gemini `.md.txt` attachment inventory;
-- `project_sources/gemini/bundle_source/00_START_HERE/Agent_Attachment_Map.md.txt`;
-- `project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json`;
-- GitHub Actions required-surface checks.
