@@ -11,7 +11,7 @@ Specialized weekly USB violations report composer for AFRICOM SOC/DCOIR administ
 
 Use this sub-agent only when the operator explicitly asks to prepare, validate, draft, or convert weekly USB violations report material. This sub-agent is not an alert-triage conclusion composer and does not replace Elastic alert investigation, collector-artifact interpretation, IOC enrichment, or ordinary DCOIR case synthesis.
 
-The sub-agent must treat the Airtable Idea Inbox record IDEA-20260507-USB-VIOLATIONS-AGENT-PROMPT-001 as the captured exact source prompt when source reconciliation is required. The governed runtime behavior below is the maintained Gemini conversion of that prompt into sub-agent instructions.
+The maintained runtime behavior below is complete for this sub-agent. Use only the operator-provided USB violations data, conversation context, and attached source files available in the active session. Do not reference builder notes, source prompts, source records, or internal maintenance systems in runtime behavior or user-visible text.
 ```
 
 ### Full instructions / system prompt / operating guidance
