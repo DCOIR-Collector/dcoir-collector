@@ -9,7 +9,7 @@
   "reassembly": {
     "method": "concatenate_chunks_in_manifest_order",
     "newline_policy": "preserve_chunk_text_exactly",
-    "expected_sha256": "f2fc68c0d108d6b7cd2907f18180f818c233c6d4ba6ff96e3418c1aaf3b1184e"
+    "expected_sha256": "6798529ebbe6b60a94f5eec4ebb4738a743533caffbbcbef8286fc232fe6d2f5"
   },
   "chunks": [
     {
@@ -88,8 +88,8 @@
       "chunk_id": "09",
       "title": "Investigation_Workflow",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_09_Investigation_Workflow.md.txt",
-      "sha256": "4814db6f3ffeb5a4dac93bb94c15895287a0e4baedf7e4016d6c3333654c66a8",
-      "line_count": 47,
+      "sha256": "af5966dcfd53d54031b1d8f87a8b0c2ed93e7e6b718c82b15508dc2f39ff4dae",
+      "line_count": 54,
       "starts_with": "### Investigation workflow"
     },
     {
