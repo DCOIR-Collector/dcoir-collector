@@ -1,4 +1,4 @@
-# Knowledge - 99J - OSQuery Application, Package, and Extension Tables
+# Knowledge - Reference - OSQuery Application, Package, and Extension Tables
 
 _Exact OSQuery application, package, browser-extension, and program-inventory reference tables._
 

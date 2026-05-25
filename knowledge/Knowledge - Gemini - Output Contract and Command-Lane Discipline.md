@@ -1,4 +1,4 @@
-# Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline
+# Knowledge - Gemini - Output Contract and Command-Lane Discipline
 
 _Gemini final structure, decision states, and command-lane separation_
 
@@ -112,8 +112,8 @@ If overlapping branch drafts exist internally, reconcile them silently and retur
 ## Related pages
 
 - Use this page for Gemini user-visible response and command-lane discipline.
-- Use Knowledge 17 for collector output-contract details.
-- Use Knowledge 02 for Elastic endpoint quick-start command examples.
+- Use Knowledge - Collector - Feature and Output Contract Reference for collector output-contract details.
+- Use Knowledge - Core - Elastic Quick Start for Elastic endpoint quick-start command examples.
 
 ---
 

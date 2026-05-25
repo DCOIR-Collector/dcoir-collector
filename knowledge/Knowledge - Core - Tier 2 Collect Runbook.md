@@ -1,4 +1,4 @@
-# Knowledge - 05 - Tier 2 Collect Runbook
+# Knowledge - Core - Tier 2 Collect Runbook
 
 _Deeper collection workflow for persistence and configuration context_
 
@@ -26,7 +26,7 @@ Do not use Tier 2 as a generic “do more” button.
 | Local explicit form | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T2 -Hours 72` |
 | Elastic endpoint form | `execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick collect-t2" --comment "Run DCOIR Tier 2 collect"` |
 
-For optional EXE usage, use Knowledge 16.
+For optional EXE usage, use Knowledge - Collector - EXE Usage and Runtime Behavior.
 
 ---
 
@@ -89,8 +89,8 @@ Ask:
 ## Cross-reference boundaries
 
 - Use this page for Tier 2 procedure and decision criteria.
-- Use Knowledge 17 for collector feature families, parameter reference, and output contract.
-- Use Knowledge 16 for optional EXE command form and EXE-specific interpretation.
+- Use Knowledge - Collector - Feature and Output Contract Reference for collector feature families, parameter reference, and output contract.
+- Use Knowledge - Collector - EXE Usage and Runtime Behavior for optional EXE command form and EXE-specific interpretation.
 
 ---
 

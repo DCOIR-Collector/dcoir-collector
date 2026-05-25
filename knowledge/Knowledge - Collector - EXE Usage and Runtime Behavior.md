@@ -1,4 +1,4 @@
-# Knowledge - 16 - Collector EXE Usage and Runtime Behavior
+# Knowledge - Collector - EXE Usage and Runtime Behavior
 
 _Optional EXE execution and PS1 behavior differences_
 
@@ -72,7 +72,7 @@ When an EXE run fails, Gemini should classify the failure before recommending a 
 ## Related pages
 
 - Use this page for optional EXE behavior and EXE-specific interpretation.
-- Use Knowledge 17 for collector features, parameters, and output-contract expectations.
+- Use Knowledge - Collector - Feature and Output Contract Reference for collector features, parameters, and output-contract expectations.
 
 ---
 

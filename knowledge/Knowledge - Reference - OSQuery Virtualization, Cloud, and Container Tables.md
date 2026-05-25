@@ -1,4 +1,4 @@
-# Knowledge - 99K - OSQuery Virtualization, Cloud, and Container Tables
+# Knowledge - Reference - OSQuery Virtualization, Cloud, and Container Tables
 
 _Exact OSQuery container, virtualization, cloud-metadata, and OSQuery self-state reference tables._
 

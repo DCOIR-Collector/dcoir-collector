@@ -1,4 +1,4 @@
-# Knowledge - 99D - OSQuery File and Filesystem Tables
+# Knowledge - Reference - OSQuery File and Filesystem Tables
 
 _Exact OSQuery file, hash, filesystem, mount, and file-event reference tables._
 

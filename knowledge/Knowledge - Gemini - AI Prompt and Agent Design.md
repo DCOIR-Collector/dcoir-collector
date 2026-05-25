@@ -1,4 +1,4 @@
-# Knowledge - 10 - AI Prompt and Agent Design
+# Knowledge - Gemini - AI Prompt and Agent Design
 
 _Gemini runtime design principles for routing, grounding, and output behavior_
 

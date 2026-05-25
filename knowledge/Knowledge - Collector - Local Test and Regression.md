@@ -1,8 +1,8 @@
-# Knowledge - 03 - Local Test and Regression
+# Knowledge - Collector - Local Test and Regression
 
 _How to run and interpret collector validation locally across PS1 and EXE modes_
 
-**Summary:** Defines the local validation model, harness usage, suite intent, and how to interpret results without duplication or drift. Aligns with Knowledge 16 (EXE behavior) and Knowledge 17 (feature/output contract).
+**Summary:** Defines the local validation model, harness usage, suite intent, and how to interpret results without duplication or drift. Aligns with Knowledge - Collector - EXE Usage and Runtime Behavior (EXE behavior) and Knowledge - Collector - Feature and Output Contract Reference (feature/output contract).
 
 ---
 
@@ -30,7 +30,7 @@ All validation must map back to:
 ### EXE (packaged behavior)
 - Wrapper-limited diagnostics
 - May not surface native PowerShell bind-reject errors
-- Requires EXE-aware interpretation (see Knowledge 16)
+- Requires EXE-aware interpretation (see Knowledge - Collector - EXE Usage and Runtime Behavior)
 
 **Rule:**
 - Do not treat EXE diagnostic differences as regressions unless output contract or runtime behavior is actually broken
@@ -161,9 +161,9 @@ After every run ask:
 
 ## Relationship to other docs
 
-- EXE behavior → Knowledge 16
-- Features/contract → Knowledge 17
-- Troubleshooting → Knowledge 08
+- EXE behavior → Knowledge - Collector - EXE Usage and Runtime Behavior
+- Features/contract → Knowledge - Collector - Feature and Output Contract Reference
+- Troubleshooting → Knowledge - Core - Troubleshooting
 
 ---
 

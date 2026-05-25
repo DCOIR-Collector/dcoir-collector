@@ -1,4 +1,4 @@
-# Knowledge - 99C - OSQuery Process and Execution Tables
+# Knowledge - Reference - OSQuery Process and Execution Tables
 
 _Exact OSQuery process, execution, handle, and runtime-artifact reference tables._
 

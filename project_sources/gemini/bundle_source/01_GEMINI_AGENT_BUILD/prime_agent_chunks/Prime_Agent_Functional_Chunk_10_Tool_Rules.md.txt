@@ -16,8 +16,8 @@ Elastic command lanes:
 1. KQL is for indexed event filtering.
 2. ESQL is for tabular query, transformation, grouping, sorting, and aggregation.
 3. execute is for host command execution through an approved Elastic response action surface.
-4. osquery is for endpoint state queries through an approved osquery surface; when exact osquery table or field names are needed, use Knowledge - 99B plus the relevant Knowledge - 99C through Knowledge - 99K shard as the governed exact-name reference.
-5. Native Elastic response actions must retain native syntax and should not be wrapped in execute; when exact native response-action syntax or parameters are needed, use Knowledge - 99A as the governed reference.
+4. osquery is for endpoint state queries through an approved osquery surface; when exact osquery table or field names are needed, use Knowledge - Reference - OSQuery Reference Index plus the relevant Knowledge - Reference - OSQuery shard as the governed exact-name reference.
+5. Native Elastic response actions must retain native syntax and should not be wrapped in execute; when exact native response-action syntax or parameters are needed, use Knowledge - Reference - Elastic Response Actions Reference as the governed reference.
 
 Analyst copy-paste assumption:
 1. Treat Elastic commands as analyst copy-paste recommendations unless current-session execution is explicitly available.

@@ -20,26 +20,26 @@ _Operator entry point for the maintained DCOIR knowledge set_
 
 | Need | Start here | Why |
 | --- | --- | --- |
-| Understand authority and source classes | `knowledge/Knowledge - 01 - Overview and About.md` | Defines the model and common boundaries. |
-| Run an endpoint command | `knowledge/Knowledge - 02 - Elastic Quick Start.md` | Owns endpoint-vs-local command lane guidance. |
-| Validate locally or in CI | `knowledge/Knowledge - 03 - Local Test and Regression.md` | Owns harness and validation interpretation. |
-| Run first-pass collection | `knowledge/Knowledge - 04 - Tier 1 Collect Runbook.md` | Owns Tier 1 procedure. |
-| Run deeper collection | `knowledge/Knowledge - 05 - Tier 2 Collect Runbook.md` | Owns Tier 2 procedure. |
-| Continue enrichment or retrieve artifacts | `knowledge/Knowledge - 06 - Enrichment Actions.md` | Owns enrichment and retrieval lifecycle. |
-| Decide what artifact to review or upload | `knowledge/Knowledge - 07 - Artifact Review Guide.md` | Owns evidence-review order and upload priority. |
-| Troubleshoot failure | `knowledge/Knowledge - 08 - Troubleshooting.md` | Owns failure classification and recovery patterns. |
-| Answer a common operator question | `knowledge/Knowledge - 09 - FAQ.md` | Fast answers only; not a second source of truth. |
-| Understand Gemini design | `knowledge/Knowledge - 10 - AI Prompt and Agent Design.md` | Owns high-level AI/Gemini design posture. |
-| Handle IOC enrichment | `knowledge/Knowledge - 11 - IOC Enrichment and Public Sources.md` | Owns public-enrichment boundaries. |
-| Understand Gemini source tree | `knowledge/Knowledge - 12 - Gemini Runtime Bundle and Source Tree.md` | Owns stored-source bundle layout. |
-| Understand agent roles | `knowledge/Knowledge - 13 - Gemini Agent Topology and Routing.md` | Owns agent topology summary. |
-| Control Gemini output and command format | `knowledge/Knowledge - 14 - Gemini Output Contract and Command-Lane Discipline.md` | Owns Gemini response and command-lane discipline. |
-| Use or interpret the optional EXE | `knowledge/Knowledge - 16 - Collector EXE Usage and Runtime Behavior.md` | Owns EXE-specific behavior and validation. |
-| Look up collector features and output contract | `knowledge/Knowledge - 17 - Collector Feature and Output Contract Reference.md` | Owns feature map, parameters, output contract, and validation map. |
-| Look up exact Elastic field names | `knowledge/Knowledge - 99 - Elastic Field Name Reference.md` | Owns the governed exact field-name reference used for KQL and ESQL construction. |
-| Look up native Elastic response-action syntax | `knowledge/Knowledge - 99A - Elastic Response Actions Reference.md` | Owns governed native response-action command syntax, parameters, and privilege notes. |
-| Route an OSQuery lookup to the correct shard | `knowledge/Knowledge - 99B - OSQuery Reference Index.md` | Owns the start-here map for the sharded exact OSQuery schema set. |
-| Look up exact OSQuery table and field names | `knowledge/Knowledge - 99C - OSQuery Process and Execution Tables.md` and related `99D-99K` pages | Owns the sharded governed exact OSQuery schema reference. |
+| Understand authority and source classes | `knowledge/Knowledge - Core - Overview and About.md` | Defines the model and common boundaries. |
+| Run an endpoint command | `knowledge/Knowledge - Core - Elastic Quick Start.md` | Owns endpoint-vs-local command lane guidance. |
+| Validate locally or in CI | `knowledge/Knowledge - Collector - Local Test and Regression.md` | Owns harness and validation interpretation. |
+| Run first-pass collection | `knowledge/Knowledge - Core - Tier 1 Collect Runbook.md` | Owns Tier 1 procedure. |
+| Run deeper collection | `knowledge/Knowledge - Core - Tier 2 Collect Runbook.md` | Owns Tier 2 procedure. |
+| Continue enrichment or retrieve artifacts | `knowledge/Knowledge - Core - Enrichment Actions.md` | Owns enrichment and retrieval lifecycle. |
+| Decide what artifact to review or upload | `knowledge/Knowledge - Core - Artifact Review Guide.md` | Owns evidence-review order and upload priority. |
+| Troubleshoot failure | `knowledge/Knowledge - Core - Troubleshooting.md` | Owns failure classification and recovery patterns. |
+| Answer a common operator question | `knowledge/Knowledge - Core - FAQ.md` | Fast answers only; not a second source of truth. |
+| Understand Gemini design | `knowledge/Knowledge - Gemini - AI Prompt and Agent Design.md` | Owns high-level AI/Gemini design posture. |
+| Handle IOC enrichment | `knowledge/Knowledge - Core - IOC Enrichment and Public Sources.md` | Owns public-enrichment boundaries. |
+| Understand Gemini source tree | `knowledge/Knowledge - Gemini - Runtime Bundle and Source Tree.md` | Owns stored-source bundle layout. |
+| Understand agent roles | `knowledge/Knowledge - Gemini - Agent Topology and Routing.md` | Owns agent topology summary. |
+| Control Gemini output and command format | `knowledge/Knowledge - Gemini - Output Contract and Command-Lane Discipline.md` | Owns Gemini response and command-lane discipline. |
+| Use or interpret the optional EXE | `knowledge/Knowledge - Collector - EXE Usage and Runtime Behavior.md` | Owns EXE-specific behavior and validation. |
+| Look up collector features and output contract | `knowledge/Knowledge - Collector - Feature and Output Contract Reference.md` | Owns feature map, parameters, output contract, and validation map. |
+| Look up exact Elastic field names | `knowledge/Knowledge - Reference - Elastic Field Name Reference.md` | Owns the governed exact field-name reference used for KQL and ESQL construction. |
+| Look up native Elastic response-action syntax | `knowledge/Knowledge - Reference - Elastic Response Actions Reference.md` | Owns governed native response-action command syntax, parameters, and privilege notes. |
+| Route an OSQuery lookup to the correct shard | `knowledge/Knowledge - Reference - OSQuery Reference Index.md` | Owns the start-here map for the sharded exact OSQuery schema set. |
+| Look up exact OSQuery table and field names | `knowledge/Knowledge - Reference - OSQuery Process and Execution Tables.md` and the related OSQuery reference pages | Owns the sharded governed exact OSQuery schema reference. |
 
 ---
 

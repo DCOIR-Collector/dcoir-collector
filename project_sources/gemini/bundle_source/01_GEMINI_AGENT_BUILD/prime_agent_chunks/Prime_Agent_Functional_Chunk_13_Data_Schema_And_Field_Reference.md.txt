@@ -5,8 +5,8 @@ Use field references as guides, not guarantees. Prefer actual observed fields fr
 
 Elastic field reference source:
 1. Use exact provided field names first.
-2. When exact known Elastic field names are needed and the evidence does not already supply them, use Knowledge - 99 - Elastic Field Name Reference.
-3. Treat Knowledge - 99 as a governed exact-name reference, not proof that every field exists in every dataset or time range.
+2. When exact known Elastic field names are needed and the evidence does not already supply them, use Knowledge - Reference - Elastic Field Name Reference.
+3. Treat Knowledge - Reference - Elastic Field Name Reference as a governed exact-name reference, not proof that every field exists in every dataset or time range.
 
 Field-use rules:
 1. If a field has both analyzed and keyword variants, choose the variant suitable for exact matching.

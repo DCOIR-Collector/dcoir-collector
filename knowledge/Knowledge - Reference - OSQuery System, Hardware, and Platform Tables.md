@@ -1,4 +1,4 @@
-# Knowledge - 99H - OSQuery System, Hardware, and Platform Tables
+# Knowledge - Reference - OSQuery System, Hardware, and Platform Tables
 
 _Exact OSQuery system, OS, hardware, memory, uptime, and platform reference tables._
 

@@ -1,4 +1,4 @@
-# Knowledge - 08 - Troubleshooting
+# Knowledge - Core - Troubleshooting
 
 _Common DCOIR execution, packaging, validation, and interpretation failures_
 
@@ -27,7 +27,7 @@ Before editing source or rerunning broad validation, confirm:
 | Endpoint command pasted locally | Response-action syntax used in wrong lane |
 | Valid command gives unexpected context | Wrong runtime path or working directory |
 
-Use Knowledge 02 for endpoint command syntax.
+Use Knowledge - Core - Elastic Quick Start for endpoint command syntax.
 
 ---
 
@@ -53,7 +53,7 @@ Expected EXE differences may include:
 - different exit-code behavior;
 - wrapper-limited failure output.
 
-Do not treat those as collector defects unless the output contract, artifact creation, or functional behavior is wrong. Use Knowledge 16 for EXE-specific interpretation.
+Do not treat those as collector defects unless the output contract, artifact creation, or functional behavior is wrong. Use Knowledge - Collector - EXE Usage and Runtime Behavior for EXE-specific interpretation.
 
 ---
 
@@ -114,9 +114,9 @@ Common causes:
 ## Cross-reference boundaries
 
 - Use this page for failure classification and recovery patterns.
-- Use Knowledge 03 for validation-lane selection and harness interpretation.
-- Use Knowledge 16 for EXE-specific wrapper limitations.
-- Use Knowledge 17 for collector feature and output-contract expectations.
+- Use Knowledge - Collector - Local Test and Regression for validation-lane selection and harness interpretation.
+- Use Knowledge - Collector - EXE Usage and Runtime Behavior for EXE-specific wrapper limitations.
+- Use Knowledge - Collector - Feature and Output Contract Reference for collector feature and output-contract expectations.
 
 ---
 

@@ -1,4 +1,4 @@
-# Knowledge - 99G - OSQuery Persistence and Startup Tables
+# Knowledge - Reference - OSQuery Persistence and Startup Tables
 
 _Exact OSQuery persistence, startup, scheduled-task, service, and shim reference tables._
 

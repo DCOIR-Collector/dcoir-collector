@@ -1,4 +1,4 @@
-# Knowledge - 11 - IOC Enrichment and Public Sources
+# Knowledge - Core - IOC Enrichment and Public Sources
 
 _Public-source context for evidence-grounded indicators_
 
