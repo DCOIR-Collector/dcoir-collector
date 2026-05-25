@@ -9,6 +9,14 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 - Legacy DCOIR helper-skill mirror and parity-maintenance surfaces have been retired from the active repository model.
 - DCOIR naming remains valid where it identifies the collector, repo, product lineage, or historical artifacts.
 
+## Connector anchors
+
+- GitHub `repository_full_name`: `malwaredevil/dcoir-collector`
+- Canonical repository URL: `https://github.com/malwaredevil/dcoir-collector/`
+- Supabase `project_id` for `ircore` operational readback: `kdhkhyksdzjbajavsoxa`
+- For governed startup, materialize `/workspace/.ircore-bootstrap.json` from that canonical project ID before running bootstrap queries.
+- Do not rely on memory-folder continuity as the sole startup source when the workspace bootstrap file can be created from the canonical project ID.
+
 ## What this repo is for
 
 - collector source and packaging
