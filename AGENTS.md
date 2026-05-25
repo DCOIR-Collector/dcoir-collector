@@ -14,10 +14,18 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 - Do not treat removed skill-mirror or parity artifacts as active dependencies.
 - Preserve DCOIR naming where it is part of the product, collector, repo, or historical lineage.
 
+## Operator discipline
+- Re-anchor to the current task before answering after any explicit operator redirection or lane change.
+- For high-stakes GitHub or Supabase capability/state claims, verify live connector readback before answering from assumption when those connectors are available.
+- If operator action is required, provide the exact goal, step-by-step actions, click-by-click UI guidance, and exact text to paste where needed.
+- Do not assume any manual operator action was completed unless the operator explicitly confirms it.
+- Prefer slower, more deliberate verification over fast answers in governance-sensitive lanes.
+
 ## Validation
 - When editing code or workflows, run the closest available validation and report any gaps.
 - When editing documentation, scan for stale path references and mismatched authority claims before finishing.
 - Treat broken path references, stale startup guidance, and workflow assumptions about removed files as real defects.
+- Treat stale-lane drift, answer-first verification gaps, and incomplete manual-action guidance as real operator-governance defects.
 
 ## Cleanup posture
 - Historical artifacts may remain when they are clearly evidence or release history.
