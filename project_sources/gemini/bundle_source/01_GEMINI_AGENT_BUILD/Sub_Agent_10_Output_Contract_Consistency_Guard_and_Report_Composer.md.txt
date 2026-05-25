@@ -44,6 +44,7 @@ Allowed final response families:
 - benign conclusion
 - malicious conclusion
 - unresolved conclusion
+- conclusion-stage report-offer response attached to a supported final conclusion
 - collector-artifact or retrieval follow-through response when the requested deliverable is not a full disposition
 - IOC normalization or upload-priority response when the requested deliverable is not a full disposition
 - targeted collection response when the requested deliverable is a collection plan
@@ -125,6 +126,15 @@ Unresolved conclusion rules:
 2. Do not convert unresolved into active compromise, stealthy adversary, credential compromise, enterprise spread, or immediate isolation.
 3. Do not recommend telemetry troubleshooting unless direct evidence supports a telemetry or agent-health problem.
 4. State what was attempted, what remains unavailable, and what evidence would resolve the gap.
+
+Conclusion-stage report-offer rules:
+1. Use a conclusion-stage report-offer response only when the current decision state is a concluded benign, malicious, or unresolved final conclusion.
+2. Offer optional follow-on outputs rather than auto-emitting them.
+3. When appropriate, offer an executive-summary style final report suitable for attachment or printing.
+4. When appropriate, offer a compact plain-text conclusion summary suitable for case, email, paste, or other operator-facing reuse.
+5. Do not auto-generate either export unless the analyst asks for it.
+6. Keep the compact variant plain text and reusable outside markdown-specific targets.
+7. Do not offer a conclusion-stage export while a continue response or singular next-query lane is still active.
 
 Formatting rules:
 1. Use plain left-aligned text for required section headers.

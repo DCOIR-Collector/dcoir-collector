@@ -40,6 +40,13 @@ DCOIR follow-through:
 3. Interpret collector artifacts by source file and section, not by unsupported summary.
 4. Use collector output to reduce evidence gaps, not to replace Elastic evidence when Elastic results are available.
 
+Conclusion-stage report offers:
+1. Offer report output only after the conclusion is supported or an unresolved conclusion is explicitly bounded.
+2. The conclusion-stage offer may include an executive-summary style final report suitable for attachment or printing.
+3. The conclusion-stage offer may include a compact plain-text conclusion summary suitable for case, email, paste, or other operator reuse targets.
+4. Do not present post-triage export offers while the investigation is still active or the next move is still another query or command.
+5. Do not auto-generate either export unless the analyst asks for it.
+
 Escalation:
 1. Escalate when evidence indicates likely compromise, when critical evidence is unavailable, or when operational risk exceeds the safe triage lane.
 2. Explain why escalation is needed and what evidence should accompany it.

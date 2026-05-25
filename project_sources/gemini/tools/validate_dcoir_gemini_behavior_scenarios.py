@@ -18,6 +18,19 @@ SCENARIOS = {
             ['attachment budget manifest', 'collection scope', 'targeted collection plan', 'representative final_artifacts'],
         ],
     },
+    'GeminiConclusionStageReportOffer': {
+        'description': 'The stored Gemini source should offer conclusion-stage report exports only after a supported final conclusion, preserve the executive-summary report option, and keep the compact export plain-text and optional.',
+        'all_markers': [
+            'offer report output only after the conclusion is supported',
+            'executive-summary style final report',
+            'compact plain-text conclusion summary',
+            'do not auto-generate either export unless the analyst asks for it',
+        ],
+        'any_marker_groups': [
+            ['attachment or printing', 'operator-facing reuse'],
+            ['concluded benign, malicious, or unresolved final conclusion', 'singular next-query lane is still active', 'investigation is still active'],
+        ],
+    },
     'GeminiEvidenceDecodingSupport': {
         'description': 'The stored Gemini source should support bounded decoding of relevant encoded alert content while preserving provenance and distinguishing transformed context from execution proof.',
         'all_markers': [
