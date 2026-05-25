@@ -12,6 +12,13 @@ AGENT_DIR = '01_GEMINI_AGENT_BUILD'
 QUICK_START = '00_START_HERE/Gemini_Build_Quick_Start.md.txt'
 ATTACHMENT_MAP = '00_START_HERE/Agent_Attachment_Map.md.txt'
 DEFAULT_GENERATED_KNOWLEDGE_DIR = '02_PRIME_AGENT_ATTACHMENTS'
+RUNTIME_GOVERNANCE_LEAK_PATTERNS = {
+    'gemini_research_reference': r'\bGemini Research Reference\b',
+    'airtable_idea_inbox': r'\bAirtable Idea Inbox\b',
+    'source_prompt_record': r'\bIDEA-[0-9]{8}-[A-Z0-9-]+\b',
+    'ircore_gemini_research_surface': r'\bircore\.(?:gemini_research_findings|gemini_research_consultation_receipts|get_gemini_research_consultation_v1|get_gemini_research_receipt_v1)\b',
+    'gemini_builder_governance': r'\bGemini Builder Governance Rule\b',
+}
 VISIBILITY_CHECKS = {
     'collector_artifact_interpretation_visibility': ['collector artifact', 'upload summary'],
     'collector_pivot_visibility': ['targeted collection', 'collector'],
@@ -244,6 +251,30 @@ def main() -> int:
     checks['attachment_map_missing_titles'] = map_missing_titles
     if map_missing_titles:
         errors.append('attachment map does not mention every manifest-listed knowledge source file')
+
+    runtime_source_rels = []
+    if prime_rel:
+        runtime_source_rels.append(prime_rel)
+    runtime_source_rels.extend(sub_rel_list)
+    runtime_source_rels.append(topology.get('generated_index_file', ''))
+    runtime_source_rels.append(topology.get('quick_start_file', QUICK_START))
+    runtime_source_rels.append(ATTACHMENT_MAP)
+    runtime_source_paths = [source_root / rel for rel in runtime_source_rels if rel]
+    runtime_governance_leaks = []
+    for path in runtime_source_paths:
+        if not path.exists() or not path.is_file():
+            continue
+        text = path.read_text(encoding='utf-8', errors='ignore')
+        for name, pattern in RUNTIME_GOVERNANCE_LEAK_PATTERNS.items():
+            if re.search(pattern, text):
+                runtime_governance_leaks.append({
+                    'file': rel_posix(path, source_root),
+                    'pattern': name,
+                })
+    checks['runtime_governance_leak_check'] = len(runtime_governance_leaks) == 0
+    checks['runtime_governance_leaks'] = runtime_governance_leaks
+    if runtime_governance_leaks:
+        errors.append('runtime-facing Gemini files contain builder/governance source references: ' + json.dumps(runtime_governance_leaks, sort_keys=True))
 
     combined_paths = list((source_root / AGENT_DIR).glob('*.txt')) + [source_root / QUICK_START] + [repo_root / rel for rel in knowledge_sources]
     combined = gather_text(combined_paths).lower()
