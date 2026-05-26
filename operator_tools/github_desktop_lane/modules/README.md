@@ -46,9 +46,6 @@ Logs must not print secret environment values. Log variable presence, source, sa
 | `Dcoir.GitHub` | GitHub CLI availability, `gh api` JSON/text wrappers, Actions workflow run lookup, run lookup, and job lookup. |
 | `Dcoir.Packaging` | ChatGPT-friendly ZIP invocation and reusable packaging entrypoints. |
 | `Dcoir.Actions` | Manifest parsing, dispatch guardrails, workflow dispatch, monitoring, fail-fast gates, evidence capture, summaries, cleanup, and exit codes. |
-| `Dcoir.Airtable` | Airtable API helpers for base schema, table/field/view metadata, full or bounded record export, table selection, redaction, and database-health export support. |
-| `Dcoir.AirtableBulk` | Reusable Airtable bulk-create helpers: root JSON array parsing, field-id readback under `Set-StrictMode`, batch create, create-missing-by-key, duplicate/missing after-readback verification, and reusable planning/execution/readback result structures. |
-| `Dcoir.AirtableBulkUpdate` | Reusable Airtable update helpers: exact before-value gates, single-select alias normalization by choice name, PATCH batching, after-readback verification, and mismatch reporting. |
 | `DcoirActionsOrchestrator` | Compatibility facade preserving the existing public orchestrator entrypoint. |
 
 ## Harness boundary
@@ -56,10 +53,6 @@ Logs must not print secret environment values. Log variable presence, source, sa
 Harness scripts should only create reviewed JSON configuration and execute the orchestrator or module-owned engine. Shared patterns used by multiple tools belong in these modules rather than inside wrappers.
 
 Logging is a shared pattern. Do not create new ad hoc logging helpers when `Dcoir.Logging` can be imported.
-
-Airtable insert/readback patterns that are reused or discovered during `chatgpt-exec` work should be promoted into `Dcoir.AirtableBulk` or another durable module/script rather than left in one-off staging code.
-
-Airtable update/readback patterns with before-value gates should be promoted into `Dcoir.AirtableBulkUpdate` or another durable module/script rather than left in one-off staging code.
 
 ## Compatibility
 
