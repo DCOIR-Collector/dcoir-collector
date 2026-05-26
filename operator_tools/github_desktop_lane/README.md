@@ -59,10 +59,9 @@ The toolset is split into reusable modules under `modules/`:
 | `Dcoir.Actions` | Manifest parsing, dispatch, monitor, fail-fast gates, parallel workflow execution throttle, capture, cleanup, summaries, and exit codes. | Preferred Actions orchestrator lane. |
 | `Dcoir.Snapshot` | Repo-relative path safety, safe names, path normalization, under-root checks, text-file filtering, binary sniffing, targeted staging, and UTF-8 logging. | Validated by text-only and targeted snapshot smoke tests. |
 | `Dcoir.RepoPatch` | Repo patch path safety, payload-root resolution, allowed target roots, hashing, and UTF-8 logging. | Validated by WhatIfOnly and real fixture apply smoke tests. |
-| `Dcoir.Airtable` | Airtable API helpers for base schema, table/field/view metadata, full or bounded record export, table selection, redaction, and database-health export support. | Validated by schema-only, bounded live, and full-record export runs on 2026-05-03. |
 | `DcoirActionsOrchestrator` | Compatibility facade preserving the stable public entrypoint. | Preserves existing public entrypoint. |
 
-Harnesses/wrappers should only create reviewed JSON configuration and execute the orchestrator or module-owned engine. Shared functions used by two or more tools should move into the reusable module ecosystem. Git-facing scripts should use `Dcoir.Git`; snapshot scripts should use `Dcoir.Snapshot`; repo patch/apply scripts should use `Dcoir.RepoPatch`; Airtable database inventory scripts should use `Dcoir.Airtable`. Temporary wrapper-side diagnostic shims are allowed only to isolate failures and must be replaced by module/tool fixes before promotion.
+Harnesses and wrappers should only create reviewed JSON configuration and execute the orchestrator or module-owned engine. Shared functions used by two or more tools should move into the reusable module ecosystem. Git-facing scripts should use `Dcoir.Git`; snapshot scripts should use `Dcoir.Snapshot`; repo patch/apply scripts should use `Dcoir.RepoPatch`.
 
 ## Environment variables
 
@@ -74,13 +73,6 @@ DCOIR operator tools resolve local configuration from **Machine/System** environ
 ```
 
 `DCOIR_REPO_ROOT` should point to the local `dcoir-collector` repository root. `DCOIR_DOWNLOADS_DIR` should point to the folder where logs and ZIP outputs should be written.
-
-Airtable inventory/export tools additionally use these machine-scope environment variables:
-
-```powershell
-[Environment]::GetEnvironmentVariable('DCOIR_AIRTABLE_TOKEN','Machine')
-[Environment]::GetEnvironmentVariable('DCOIR_AIRTABLE_BASE_ID','Machine')
-```
 
 Operator tools reject placeholder paths such as `C:\path\to\dcoir-collector` and should not trust process-scoped placeholder values from a polluted terminal session. Generated ChatGPT codeblocks for local tools should use the documented canonical environment variable names, maximize Machine/System environment variables, fail fast on missing variables, and never print secret values.
 
@@ -98,62 +90,6 @@ Operator tools reject placeholder paths such as `C:\path\to\dcoir-collector` and
 | `scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1` | Watch, capture, or dispatch GitHub Actions workflow runs from a manifest, monitor them, collect evidence, and produce a ChatGPT-friendly ZIP. | `Dcoir.Actions`, `Dcoir.GitHub`, `Dcoir.Packaging`, `Dcoir.Common` |
 | `scripts/Invoke-DcoirActionsValidationSmoke.ps1` | Harness that creates guarded smoke manifests and executes the orchestrator. | `Dcoir.Common`, Actions orchestrator |
 | `scripts/Invoke-DcoirActionsModeLadder.ps1` | Harness that creates a fail-fast sequential ladder manifest and executes the orchestrator. | `Dcoir.Common`, Actions orchestrator |
-| `scripts/New-DcoirAirtableDatabaseHealthExport.ps1` | Export Airtable base schema, table/field/view metadata, and bounded or full records into a ChatGPT-friendly ZIP for DCOIR database health, plan-state, registry, retention, and cleanup analysis. | `Dcoir.Airtable`, ZIP helper |
-
-## Airtable database health exporter
-
-Use `scripts/New-DcoirAirtableDatabaseHealthExport.ps1` when a session needs to inspect Airtable operational state outside the live connector, reproduce schema/readback state, share a ChatGPT-friendly Airtable snapshot, or give another session enough context to analyze queue, plan, registry, helper-memory, validation, retention, or cleanup state.
-
-Supported export modes:
-
-```powershell
--ExportMode Auto|SchemaOnly|BoundedRecords|FullRecords
--FullRecordDump
--SkipRecords
--MaxRecordsPerTable <int>
--MetadataScope 'BaseSchema,Tables,Fields,Views'   # or 'All'
--ProbeUnsupportedMetadata
--RedactLikelySecrets
--TableList '<comma-separated table names or IDs>'
--NoZip
-```
-
-Validated launchers:
-
-Schema-only smoke:
-
-```powershell
-$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
-$script = Join-Path $repo 'operator_tools\github_desktop_lane\scripts\New-DcoirAirtableDatabaseHealthExport.ps1'
-& $script -ExportMode SchemaOnly -RedactLikelySecrets
-```
-
-Bounded live export:
-
-```powershell
-$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
-$script = Join-Path $repo 'operator_tools\github_desktop_lane\scripts\New-DcoirAirtableDatabaseHealthExport.ps1'
-& $script -ExportMode BoundedRecords -MaxRecordsPerTable 25 -MetadataScope 'All' -RedactLikelySecrets -ProbeUnsupportedMetadata
-```
-
-Full record snapshot:
-
-```powershell
-$repo = [Environment]::GetEnvironmentVariable('DCOIR_REPO_ROOT','Machine')
-$script = Join-Path $repo 'operator_tools\github_desktop_lane\scripts\New-DcoirAirtableDatabaseHealthExport.ps1'
-& $script -ExportMode FullRecords -FullRecordDump -MetadataScope 'All' -RedactLikelySecrets -ProbeUnsupportedMetadata
-```
-
-Current supported metadata/values:
-
-- base tables schema
-- table id/name/description/primaryFieldId
-- field id/name/type/description/options where Airtable returns them
-- view id/name/type
-- record id/createdTime/fields
-- run manifest, command context, transcript, log, ZIP manifest, and coverage notes
-
-Current unsupported or not-yet-implemented metadata surfaces are recorded in `metadata/metadata_coverage.json` in each ZIP. As of 2026-05-03, automations, extensions/apps, interfaces, scripting extension code, and certain workspace/base admin surfaces are not exported unless a supported Airtable API endpoint and token scope are added.
 
 ## ChatGPT-friendly ZIP launcher
 
