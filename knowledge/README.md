@@ -9,7 +9,7 @@ For the repo-level starting point, use `DCOIR_KNOWLEDGE_INDEX.md`.
 - `knowledge/*.md` files are the editable maintained source.
 - Gemini attachment files are generated at package time from `knowledge/Knowledge - *.md` and written into the release ZIP under `02_PRIME_AGENT_ATTACHMENTS/*.md.txt`.
 - The attachment files are generated from this folder at release package time and should not be treated as a primary editing surface.
-- Knowledge docs support operators and Gemini, but they do not override Airtable live state, Project Instructions, or governed GitHub source.
+- Knowledge docs support operators and Gemini, but they do not override Project Instructions, governed GitHub source, implemented source behavior, or Supabase `ircore` operational records.
 
 ## Current pages and owners
 
