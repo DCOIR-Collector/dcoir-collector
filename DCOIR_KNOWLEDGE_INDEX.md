@@ -8,11 +8,11 @@ _Operator entry point for the maintained DCOIR knowledge set_
 
 ## Authority boundary
 
-- Airtable live state controls current queue, work items, plans, checkpoints, and resume order.
 - GitHub is governed source/readback for collector, harness, Gemini bundle, workflow, and promoted repository history.
+- Supabase `ircore` stores operational routing, retrieval profiles, validation rules, receipts, preferences, reusable lessons, and active session state.
 - `knowledge/*.md` files are maintained human-readable guidance.
 - `project_sources/gemini/bundle_source/02_PRIME_AGENT_ATTACHMENTS/*.md.txt` files are generated runtime files created from `knowledge/*.md` during release packaging.
-- Knowledge docs do not override Project Instructions, Airtable control-plane rows, or implemented source behavior.
+- Knowledge docs do not override Project Instructions, governed GitHub source, Supabase `ircore` operational records, or implemented source behavior.
 
 ---
 
