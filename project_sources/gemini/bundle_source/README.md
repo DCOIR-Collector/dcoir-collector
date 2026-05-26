@@ -6,14 +6,14 @@ Purpose
 - Compile the bundle from this tree after the maintained knowledge, validation, and direct package-time attachment generation checks run.
 
 Major-version topology rule
-- `Gemini_Bundle_Source_Manifest.json.txt` is the explicit source of topology truth.
-- The manifest governs one prime agent plus ten verbose sub-agents.
+- `Gemini_Bundle_Source_Manifest.json` is the explicit source of topology truth.
+- The manifest governs one prime agent plus eleven verbose sub-agents.
 - Validation must compare the manifest topology against the discovered source-tree files and fail on drift.
 
 Knowledge-attachment rule
 - The manifest also governs the required shared knowledge attachment set.
 - The maintained `knowledge/*.md` working set is the editable source of truth for those attachments.
-- The attachment set now includes seventeen knowledge pages that must stay aligned with the attachment map, the maintained knowledge set, and the validator surfaces.
+- The attachment set now includes twenty-eight knowledge pages that must stay aligned with the attachment map, the maintained knowledge set, and the validator surfaces.
 - Ordinary shipment should fail if the maintained knowledge set, the generated attachment inventory, and the manifest inventory drift apart.
 
 Current major-version focus
@@ -26,7 +26,7 @@ When changing the attachment set
 2. Keep `knowledge/README.md` appropriate as the maintained-knowledge landing page rather than a builder/operator maintenance surface.
 3. Let the governed build path package those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` in the release ZIP.
 4. Update `00_START_HERE/Agent_Attachment_Map.md.txt`.
-5. Update `Gemini_Bundle_Source_Manifest.json.txt` when the required attachment inventory changed.
+5. Update `Gemini_Bundle_Source_Manifest.json` when the required attachment inventory changed.
 6. Update workflow required-surface checks when the governed required-file contract changed.
 7. Re-run validation and build.
 
