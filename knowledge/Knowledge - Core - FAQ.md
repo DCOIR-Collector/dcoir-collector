@@ -10,7 +10,7 @@ _Short answers to recurring DCOIR operator questions_
 
 | Question | Answer |
 | --- | --- |
-| Are knowledge docs authoritative? | No. They support operators and Gemini but do not override Airtable live state, Project Instructions, or governed GitHub source. |
+| Are knowledge docs authoritative? | No. They support operators and Gemini but do not override Project Instructions, governed GitHub source, implemented source behavior, or Supabase `ircore` operational records. |
 | Which files should be edited? | Edit `knowledge/*.md` as the maintained source. Gemini `.md.txt` attachment files are generated runtime surfaces inside the release ZIP. |
 | Why do old references mention `.ps1.txt` or `.cmd.txt`? | Older bundle/readable-text surfaces used suffixes more heavily. Current governed runtime files use native repo paths. |
 | Is `DCOIR_Collector.zip` source of truth? | No. It is a retained supporting asset for delivery/execution support. |
@@ -21,7 +21,7 @@ _Short answers to recurring DCOIR operator questions_
 
 | Question | Answer |
 | --- | --- |
-| When do I use Elastic `execute --command`? | Use it only for endpoint response-console execution. |
+| When do I use Elastic endpoint shell execution? | Use it only for endpoint response-console execution. |
 | When do I use local PowerShell? | Use it for workstation testing, harness runs, and repo-local validation. |
 | What is the biggest command mistake? | Mixing endpoint response syntax with local PowerShell syntax. |
 | Is there a default CMD harness wrapper? | No current default CMD wrapper is part of the governed guidance. Use `run_DCOIR_Tests.ps1`. |
@@ -55,7 +55,7 @@ _Short answers to recurring DCOIR operator questions_
 | --- | --- |
 | Why does Gemini need knowledge attachments? | They provide stable operational context for routing, output interpretation, and command-lane discipline. |
 | What happens when attachment files change? | Update maintained source, attachment map, manifest, and workflow checks together; release packaging regenerates attachment files from `knowledge/*.md`. |
-| Where does manual testing state belong? | Airtable Validation Test Cases tracks dynamic manual testing. GitHub remains source and packaging authority. |
+| Where does validation and receipt state belong? | Supabase `ircore` stores operational validation rules, consultation receipts, and readback state. GitHub remains source and packaging authority. |
 
 ---
 
