@@ -1,5 +1,5 @@
 {
-  "catalog_version": "2026-05-10.2",
+  "catalog_version": "2026-05-26.1",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/ and tools/chatgpt_apply_in/",
     "registry_source": "repo-governed tool_catalog.json and linked operator docs",
@@ -11,7 +11,7 @@
       "DCOIR_REPO_ROOT",
       "DCOIR_DOWNLOADS_DIR"
     ],
-    "notes": "Operator tools should resolve DCOIR local configuration from Machine/System environment scope. Process-scope placeholders such as C:\\path\\to\\dcoir-collector are invalid and should be rejected. Shared environment/path helpers live in modules/Dcoir.Common and git-lane self-contained helpers live in modules/Dcoir.Git. Tool-specific variables should use the documented canonical environment variable names; Airtable tools use DCOIR_AIRTABLE_TOKEN and DCOIR_AIRTABLE_BASE_ID."
+    "notes": "Operator tools should resolve DCOIR local configuration from Machine/System environment scope. Process-scope placeholders such as C:\\path\\to\\dcoir-collector are invalid and should be rejected. Shared environment and path helpers live in modules/Dcoir.Common and git-lane self-contained helpers live in modules/Dcoir.Git."
   },
   "module_ecosystem": [
     {
@@ -54,40 +54,10 @@
       "validated_status": "validated by WhatIfOnly and real fixture apply smoke tests"
     },
     {
-      "module_id": "DCOIR-AIRTABLE",
-      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Airtable/Dcoir.Airtable.psm1",
-      "role": "Airtable API helpers for schema export, full or bounded record export, table selection, optional likely-secret field protection/redaction, configuration validation, and database-health export support",
-      "validated_status": "validated through schema-only, bounded live, and full-record export runs; latest module version 2026-05-03.5 fixes record pagination, URL construction, missing offset handling, and repo_path redaction precision"
-    },
-    {
-      "module_id": "DCOIR-AIRTABLE-BULK",
-      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.AirtableBulk/Dcoir.AirtableBulk.psm1",
-      "role": "Airtable bulk-create helpers: root JSON array parsing, field-id readback under Set-StrictMode, create-missing-by-key, batching, duplicate/missing after-readback verification, and reusable planning/execution/readback structures",
-      "validated_status": "validated by dcoir-db-redesign-wbs-scaffold-run3-20260508-2025z; created 52 missing WBS rows, skipped existing keys safely, and passed after-readback verification with no missing or duplicate expected keys"
-    },
-    {
-      "module_id": "DCOIR-AIRTABLE-BULK-UPDATE",
-      "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.AirtableBulkUpdate/Dcoir.AirtableBulkUpdate.psm1",
-      "role": "Airtable bulk-update helpers: field-id based update payloads, choice-name select handling, after-readback verification, and reusable planned/execution/readback structures.",
-      "validated_status": "validated by WBS02/WBS cleanup branch; version 2026-05-08.2 compares and writes Airtable select choice names while retaining choice IDs as metadata only"
-    },
-    {
       "module_id": "DCOIR-OPERATOR-LOGGING",
       "module_path": "operator_tools/github_desktop_lane/modules/Dcoir.Logging/Dcoir.Logging.psm1",
       "role": "Reusable operator-tool logging default: one uploadable log path, UTF-8 logging, phase transitions, error detail, safe configuration presence/source, and secret-safe output discipline.",
       "validated_status": "CAP/readback verified for operator logging default; referenced by tool_catalog_operator_logging_policy.json"
-    },
-    {
-      "module_id": "DCOIR-AIRTABLE-UI-GEOMETRY",
-      "module_path": "operator_tools/github_desktop_lane/ui_automation/shared/dcoir_airtable_ui_geometry.mjs",
-      "role": "Reusable Airtable browser/UI geometry helpers for toolbar targeting, left-sidebar view selection, transient UI dismissal, and safe mouse parking to avoid metadata tooltip hot zones.",
-      "validated_status": "validated through WBS09 panel readback representative runs; readback-only promotion commit 2beb3e7a6367c24185da284b34e1fa7d595fa9ae"
-    },
-    {
-      "module_id": "DCOIR-AIRTABLE-PANEL-READBACK",
-      "module_path": "operator_tools/github_desktop_lane/ui_automation/shared/dcoir_airtable_panel_readback.mjs",
-      "role": "Reusable browser/UI Filter/Sort panel extraction and comparison primitives for Airtable native saved view state, including before/after refresh/reselect verification.",
-      "validated_status": "validated through WBS09 representative readback evidence; intentionally read-only and not a create/repair action module"
     }
   ],
   "tools": [
@@ -98,7 +68,7 @@
       "repo_path": "tools/chatgpt_apply_in/build_payload_zip_b64.py",
       "output_pattern": "payload.zip; payload.zip.b64; payload_report.json",
       "version_or_hash": "2026-05-05.1",
-      "notes": "Preferred builder/validator for chatgpt-apply-in staging. Builds one ZIP with root apply_manifest.json and files/, base64 encodes it as exactly payload.zip.b64, validates ZIP open, manifest, files/, safe request id, no truncation marker, no parts/chunks, and base64 round trip. This tool intentionally does not support payload.zip.b64.parts, part files, chunk manifests, or chunk markers. If connector limits are hit, reduce the batch size and rebuild a smaller single payload.zip.b64."
+      "notes": "Preferred builder and validator for chatgpt-apply-in staging. Builds one ZIP with root apply_manifest.json and files/, base64 encodes it as exactly payload.zip.b64, validates ZIP open, manifest, files/, safe request id, no truncation marker, no parts or chunks, and base64 round trip. If connector limits are hit, reduce the batch size and rebuild a smaller single payload.zip.b64."
     },
     {
       "tool_id": "DCOIR-GIT-DIAGNOSTIC",
@@ -125,7 +95,7 @@
       "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirTargetedSnapshot.ps1",
       "output_pattern": "*_snapshot_*.zip; *_snapshot_*.log.txt",
       "version_or_hash": "2026-05-01.3",
-      "notes": "Validated. Uses Dcoir.Git for git freshness/clean-tree checks and Dcoir.Snapshot for repo-relative path safety, targeted copy, and UTF-8 logging. Missing requested paths are hard failures."
+      "notes": "Validated. Uses Dcoir.Git for git freshness and clean-tree checks and Dcoir.Snapshot for repo-relative path safety, targeted copy, and UTF-8 logging. Missing requested paths are hard failures."
     },
     {
       "tool_id": "DCOIR-TEXT-ONLY-REPO-SNAPSHOT",
@@ -143,7 +113,7 @@
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirRepoPatchApply.ps1",
       "output_pattern": "dcoir_repo_patch_apply_*.log.txt; dcoir_repo_patch_apply_*.result.json",
       "version_or_hash": "2026-05-01.4",
-      "notes": "Validated. Manifest-driven repo patch/apply helper using Dcoir.Git and Dcoir.RepoPatch. Supports payload root detection, wrapper-root stripping, explicit repo-relative copy maps, git rm deletion lists, allowed target roots, pre/post hash checks, PowerShell 5.1 compatibility, logs, and result JSON. WhatIfOnly and real fixture apply smokes passed."
+      "notes": "Validated. Manifest-driven repo patch and apply helper using Dcoir.Git and Dcoir.RepoPatch. Supports payload root detection, wrapper-root stripping, explicit repo-relative copy maps, git rm deletion lists, allowed target roots, pre/post hash checks, PowerShell 5.1 compatibility, logs, and result JSON. WhatIfOnly and real fixture apply smokes passed."
     },
     {
       "tool_id": "DCOIR-CHATGPT-FRIENDLY-ZIP",
@@ -170,7 +140,7 @@
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsValidationSmoke.ps1",
       "output_pattern": "dcoir_actions_workflow_orchestrator_sample.chatgpt.zip; dcoir_actions_watch_sample.chatgpt.zip; dcoir_actions_live_dispatch_test.chatgpt.zip",
       "version_or_hash": "2026-05-01.4",
-      "notes": "Harness-only wrapper. Imports Dcoir.Common for shared env/JSON/logging helpers, creates dry-run/watch/live guarded manifests, and executes the Actions Workflow Orchestrator."
+      "notes": "Harness-only wrapper. Imports Dcoir.Common for shared env, JSON, and logging helpers, creates dry-run, watch, and live guarded manifests, and executes the Actions Workflow Orchestrator."
     },
     {
       "tool_id": "DCOIR-ACTIONS-MODE-LADDER",
@@ -179,51 +149,16 @@
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsModeLadder.ps1",
       "output_pattern": "dcoir_actions_ladder-*.chatgpt.zip; dcoir_actions_mode_ladder_result.json",
       "version_or_hash": "2026-05-01.4",
-      "notes": "Harness-only fail-fast same-workflow mode/suite ladder runner. Imports Dcoir.Common for shared env/JSON/safe-name helpers, creates a sequential ladder manifest, and executes the orchestrator."
-    },
-    {
-      "tool_id": "DCOIR-AIRTABLE-DB-HEALTH-EXPORT",
-      "tool_name": "DCOIR Airtable Database Health Export",
-      "tool_family": "airtable_database_health",
-      "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirAirtableDatabaseHealthExport.ps1",
-      "output_pattern": "dcoir_airtable_health_export_*.chatgpt.zip; dcoir_airtable_health_export_* folder",
-      "version_or_hash": "2026-05-03.5 script + 2026-05-03.5 module; commits 1918ff57fc3ecc0da36c34da17d30f2cb0c28382, 0ba54d64ea3d72c7c71491bdb7cae521b86c7c1c, and 16747b8581f466b264986ff19cb642073c578f02",
-      "notes": "Read-only Airtable schema, metadata, and record export tool. Requires DCOIR_AIRTABLE_TOKEN and DCOIR_AIRTABLE_BASE_ID in Machine/System environment scope. Uses Dcoir.Airtable and the ChatGPT-friendly ZIP helper. Captures base schema, table metadata, field metadata/options, view metadata, records, manifests, command context, transcripts, and metadata coverage notes. Keep environment token/base values non-disclosed. Automations, extensions/apps, interfaces, scripting extension code, and workspace admin inventory are explicitly marked unsupported unless a future Airtable API endpoint and token scope are added. First diagnostic can use -ExportMode SchemaOnly -ProbeUnsupportedMetadata; full DCOIR snapshot should use -ExportMode FullRecords -FullRecordDump -MetadataScope All -ProbeUnsupportedMetadata. Use -RedactLikelySecrets only when explicitly requested.",
-      "parameters": {
-        "ExportMode": [
-          "Auto",
-          "SchemaOnly",
-          "BoundedRecords",
-          "FullRecords"
-        ],
-        "FullRecordDump": "switch for explicit unbounded records",
-        "SkipRecords": "switch for schema/metadata-only collection",
-        "RedactLikelySecrets": "optional switch for explicitly requested redacted samples or unknown/non-DCOIR Airtable bases; not the DCOIR full-export default",
-        "MaxRecordsPerTable": "integer cap; 0 means unbounded in FullRecords mode",
-        "MetadataScope": "comma-separated BaseSchema,Tables,Fields,Views or All",
-        "ProbeUnsupportedMetadata": "writes metadata coverage/unsupported-surface notes",
-        "TableList": "optional comma-separated table names or table IDs"
-      },
-      "validated_status": "validated by 2026-05-03 schema-only smoke, bounded live export, and full-record export artifacts. Latest unredacted full export produced 24 table schemas, 24 record files, and 1134 records. Operator policy update: DCOIR Airtable contents are scrubbed upstream; future DCOIR full exports should run unredacted unless operator requests a redacted sample."
-    },
-    {
-      "tool_id": "DCOIR-AIRTABLE-BULK-MODULE",
-      "tool_name": "DCOIR Airtable Bulk Create Module",
-      "tool_family": "airtable_bulk_create_module",
-      "repo_path": "operator_tools/github_desktop_lane/modules/Dcoir.AirtableBulk/Dcoir.AirtableBulk.psm1",
-      "output_pattern": "caller-owned target_records.json; planned_payload.json; execution_summary.json; after_readback_verification.json; error_report.json on failure",
-      "version_or_hash": "2026-05-08.1; commits 6a4674ff76c94e267bd7febaf35817b9ee5eedeb, bb92a4b4344f8927e7c22591096f86c216fa2f2f, and 01c2c67d3bb86225b5cb17a33ce6a980a971fd67",
-      "notes": "Reusable module for scripts that need Airtable record inserts through chatgpt-exec or operator-side PowerShell. Provides root JSON array parsing, field-id readback under Set-StrictMode, create-missing-by-key semantics, Airtable batch create with max batch size 10, duplicate/missing expected-key after-readback verification, and reusable planned_payload/execution/readback result structures. It does not update, delete, merge, or enqueue Delete Queue rows. Use when chatgpt-exec work discovers a reusable Airtable insert/readback pattern instead of leaving it as one-off staging code.",
-      "validated_status": "validated by dcoir-db-redesign-wbs-scaffold-run3-20260508-2025z artifact: 52 rows created, 72 plan records after readback, zero missing expected keys, zero duplicate expected keys, empty stderr, script-level success."
+      "notes": "Harness-only fail-fast same-workflow mode and suite ladder runner. Imports Dcoir.Common for shared env, JSON, and safe-name helpers, creates a sequential ladder manifest, and executes the orchestrator."
     },
     {
       "tool_id": "DCOIR-CHATGPT-APPLY-IN-PAYLOAD-STAGER",
       "tool_name": "DCOIR ChatGPT Apply-In Payload Stager",
       "tool_family": "github_actions_orchestration",
       "repo_path": "operator_tools/github_desktop_lane/scripts/New-DcoirApplyInPayload.ps1",
-      "output_pattern": "ChatGPT apply-in payload staging folder/ZIP and payload report under DCOIR_DOWNLOADS_DIR",
+      "output_pattern": "ChatGPT apply-in payload staging folder and ZIP plus payload report under DCOIR_DOWNLOADS_DIR",
       "version_or_hash": "registry: 2026-05-03.1; commits 4196648f857744ed9576b9d749019ae21fa31dd4 and cec00dfb2254c702ec481aefc383990ea673d803",
-      "notes": "Active apply-in staging helper. Use for GitHub Actions apply-in payload preparation. Core skill parity runbook prefers bounded batches; if a four-skill batch fails, retry 2+2; one-skill payload only for natural final remainder or explicit operator-approved test/retry."
+      "notes": "Active apply-in staging helper. Use for GitHub Actions apply-in payload preparation. Core skill parity runbook prefers bounded batches; if a four-skill batch fails, retry 2+2; one-skill payload only for natural final remainder or explicit operator-approved test or retry."
     },
     {
       "tool_id": "DCOIR-OPERATOR-TOOL-LOGGING",
@@ -232,91 +167,34 @@
       "repo_path": "operator_tools/github_desktop_lane/modules/Dcoir.Logging/Dcoir.Logging.psm1",
       "output_pattern": "caller-owned uploadable log path returned on success and failure",
       "version_or_hash": "2026-05-03.1",
-      "notes": "Module-level logging standard for operator tools. New/reworked local tools should prefer this module over ad hoc logging and should return an uploadable log path."
-    },
-    {
-      "tool_id": "DCOIR-WBS09-MANIFEST-SCHEMA-AUDIT",
-      "tool_name": "DCOIR WBS09 Manifest Schema Audit",
-      "tool_family": "validation",
-      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirWbs09ManifestSchemaAudit.ps1",
-      "output_pattern": "WBS09 schema-audit JSON/report under DCOIR_DOWNLOADS_DIR",
-      "version_or_hash": "2026-05-09.draft1-schema-gate",
-      "notes": "Active schema-backed WBS09 manifest audit gate. Use before broad view configuration or any manifest-driven Airtable UI pass; source/schema freshness belongs with dcoir-airtable-schema-cache and validation readiness with dcoir-validation-orchestrator."
+      "notes": "Module-level logging standard for operator tools. New or reworked local tools should prefer this module over ad hoc logging and should return an uploadable log path."
     },
     {
       "tool_id": "DCOIR-CLOSE-GITHUB-ISSUES",
       "tool_name": "DCOIR Close GitHub Issues Tool",
       "tool_family": "github_actions_orchestration",
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirCloseGitHubIssues.ps1",
-      "output_pattern": "dry-run/apply issue close logs and summaries",
+      "output_pattern": "dry-run or apply issue close logs and summaries",
       "version_or_hash": "2026-05-01.1 pending CAP",
-      "notes": "Guarded bulk issue closure helper. Dry-run first; use only with explicit operator intent and token/config preconditions satisfied."
+      "notes": "Guarded bulk issue closure helper. Dry-run first; use only with explicit operator intent and token and config preconditions satisfied."
     },
     {
       "tool_id": "DCOIR-CHATGPT-EXEC-LANE",
       "tool_name": "DCOIR ChatGPT Exec Lane Harness",
       "tool_family": "github_actions_orchestration",
       "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsExecHarness.ps1",
-      "output_pattern": "chatgpt exec request/report artifacts and output ZIPs",
+      "output_pattern": "chatgpt exec request or report artifacts and output ZIPs",
       "version_or_hash": "validated exec lane; example restage commit 5fdfe97b6f4296de2048a6330a9f8fb76d2b4a5e",
       "notes": "Active ChatGPT exec lane harness. Validated sequence: create apply-in payload that writes one exec request JSON, verify apply-in report and exec request readback, then restage the already-created request JSON without [skip ci] if needed to trigger exec."
-    },
-    {
-      "tool_id": "DCOIR-AIRTABLE-BULK-UPDATE-MODULE",
-      "tool_name": "DCOIR Airtable Bulk Update Module",
-      "tool_family": "github_desktop_lane",
-      "repo_path": "operator_tools/github_desktop_lane/modules/Dcoir.AirtableBulkUpdate/Dcoir.AirtableBulkUpdate.psm1",
-      "output_pattern": "caller-owned planned_payload.json; execution_summary.json; after_readback_verification.json; error_report.json on failure",
-      "version_or_hash": "2026-05-08.2 / commit b388f0cc9c4d480ba3e6d3614d6b4db994484dcf",
-      "notes": "Reusable Airtable update helper module. Uses choice names for Airtable select readback/write comparison and keeps choice IDs as metadata only. Use when a branch discovers reusable update/readback behavior rather than one-off staging code."
-    },
-    {
-      "tool_id": "TOOL-AIRTABLE-WORK-ITEMS-SCHEMA-CLEANUP",
-      "tool_name": "DCOIR Work Items Schema Cleanup Tool",
-      "tool_family": "other",
-      "repo_path": "operator_tools/airtable_work_items_schema_cleanup/",
-      "output_pattern": "cleanup dry-run/apply/verify logs and config-driven output artifacts",
-      "version_or_hash": "v7 pending CAP",
-      "notes": "Table-cleanup support tool. Current Work Items cleanup no longer expects retired DELETE-prefixed fields or Queue Control active_work_items link. Future generic cleanup should use config files rather than table-specific environment variables."
-    },
-    {
-      "tool_id": "DCOIR-AIRTABLE-WBS09-UI-VIEW-CREATOR",
-      "tool_name": "DCOIR Airtable WBS09 UI Native View Creator/Configurator",
-      "tool_family": "airtable_ui_automation",
-      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirAirtableWbs09UiViewTool.ps1",
-      "installer_path": "operator_tools/github_desktop_lane/scripts/Install-DcoirAirtableWbs09UiViewPrereqs.ps1",
-      "engine_path": "operator_tools/github_desktop_lane/ui_automation/airtable_wbs09_views/scripts/airtable_wbs09_ui_views.mjs",
-      "manifest_path": "operator_tools/github_desktop_lane/manifests/wbs09_airtable_native_views_manifest.json",
-      "output_pattern": "DCOIR_DOWNLOADS_DIR/dcoir_wbs09_airtable_ui_views_*",
-      "version_or_hash": "last good configure source commit 9b423f84cae47c094a5c6f9af8f0bde8d37fba76; view-readback foundation commit 2beb3e7a6367c24185da284b34e1fa7d595fa9ae",
-      "status": "draft_limited_do_not_use_for_broad_repair",
-      "notes": "Browser/Playwright WBS09 native view creation/configuration tool. Creation and some one-view configure paths have passed earlier bounded smoke tests, but repair/configure action primitives failed on checkbox filters, relative-date dropdowns, and second-sort insertion during 2026-05-10 recovery. Do not run broad rollout or represent repair automation as ready until redesigned around discover -> plan -> execute -> verify."
-    },
-    {
-      "tool_id": "DCOIR-AIRTABLE-WBS09-VIEW-PANEL-READBACK",
-      "tool_name": "DCOIR Airtable WBS09 Native View Panel Readback",
-      "tool_family": "airtable_ui_automation",
-      "repo_path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirAirtableWbs09ViewPanelReadback.ps1",
-      "engine_path": "operator_tools/github_desktop_lane/ui_automation/airtable_wbs09_views/scripts/airtable_wbs09_view_panel_readback.mjs",
-      "shared_modules": [
-        "operator_tools/github_desktop_lane/ui_automation/shared/dcoir_airtable_panel_readback.mjs",
-        "operator_tools/github_desktop_lane/ui_automation/shared/dcoir_airtable_ui_geometry.mjs"
-      ],
-      "manifest_path": "operator_tools/github_desktop_lane/manifests/wbs09_airtable_native_views_manifest.json",
-      "docs_path": "operator_tools/github_desktop_lane/docs/AIRTABLE_WBS09_VIEW_PANEL_READBACK.md",
-      "output_pattern": "DCOIR_DOWNLOADS_DIR/dcoir_wbs09_view_panel_readback_*",
-      "version_or_hash": "2026-05-10.wbs09-panel-readback.1 / 2026-05-10.panel-readback.3 / commit 2beb3e7a6367c24185da284b34e1fa7d595fa9ae",
-      "status": "active_readback_only",
-      "notes": "Read-only browser/UI evidence tool for saved Airtable native Filter/Sort panel state. Does not create or repair views. Use as verification foundation for future create/repair pipeline."
     }
   ],
   "sweep_notes": {
-    "updated_at": "2026-05-10T14:50:00Z",
-    "source_snapshot": "20260510T164209_operator_tools.chatgpt.zip",
-    "purpose": "Merged discoverability gaps found between local operator_tools snapshot and the GitHub catalog. Added current WBS09 readback/create-configure surfaces to the main catalog so fresh sessions do not need chat context.",
+    "updated_at": "2026-05-26T11:45:00Z",
+    "source_snapshot": "20260526_operator_tools_airtable_retirement_review",
+    "purpose": "Retired obsolete Airtable-only operator tooling and pruned the main catalog back to GitHub Desktop lane surfaces that still support the current Supabase, GitHub, and ChatGPT Agent construct.",
     "known_limitations": [
-      "Some historical addendum files still reflect legacy Airtable registry staging and should not be treated as current authority.",
-      "WBS09 create/configure automation is documented as draft_limited_do_not_use_for_broad_repair until redesigned around discover -> plan -> execute -> verify."
+      "Historical Airtable exports and status reports under chatgpt_staging are intentionally out of scope for this operator_tools retirement bundle.",
+      "A separate follow-on PR may remove now-unneeded staging inputs and outputs after workflow-path review confirms the required scaffolding to keep."
     ]
   }
 }
