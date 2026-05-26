@@ -21,8 +21,6 @@ Add repository secrets for the DCOIR variables that the runner should be able to
 4. Click **Actions**.
 5. Click **New repository secret**.
 6. Add the needed names exactly, for example:
-   - `DCOIR_AIRTABLE_TOKEN`
-   - `DCOIR_AIRTABLE_BASE_ID`
    - `DCOIR_GITHUB_FG_TOKEN`
    - `DCOIR_GITHUB_CL_TOKEN`
    - `DCOIR_OPENAI_API_KEY`
@@ -41,7 +39,7 @@ Optional GitHub Environment protection means putting secrets in a named environm
 5. The workflow writes a status report under `chatgpt_staging/status_reports/chatgpt-exec/`.
 6. The workflow uploads a short-retention artifact containing logs and outputs.
 7. ChatGPT reads the status report and downloads the artifact if needed.
-8. ChatGPT records Airtable evidence and cleans the status report when safe.
+8. ChatGPT records repo, issue, PR, and workflow evidence and cleans the status report when safe.
 
 ## Apply-in to exec handoff
 
@@ -94,7 +92,7 @@ After ChatGPT stages an exec request, an immediate missing workflow report means
 
 Default behavior:
 
-1. Confirm the request commit/file exists.
+1. Confirm the request commit and file exist.
 2. Wait roughly 60-90 seconds before the first no-report conclusion when the runtime allows it.
 3. Poll for the workflow report and workflow-generated commit for a bounded window, normally up to about 3-5 minutes.
 4. If no report appears, tell the operator the request has not produced a report yet and ask whether to continue checking or inspect Actions manually.
@@ -102,11 +100,11 @@ Default behavior:
 
 ## Failure handling
 
-If the workflow starts and reaches the harness/reporting path, command failures should still produce a status report and sanitized artifact. ChatGPT should inspect:
+If the workflow starts and reaches the harness or reporting path, command failures should still produce a status report and sanitized artifact. ChatGPT should inspect:
 
 - `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`
 - GitHub Actions artifact `chatgpt-exec-<request_id>`
-- the Actions run log only if the report/artifact are insufficient
+- the Actions run log only if the report or artifact are insufficient
 
 A status report might not appear if the workflow never starts, the push trigger does not fire, Actions are disabled, the workflow YAML is invalid before the job starts, checkout fails before the harness runs, commit permissions fail, or GitHub is delayed. In those cases, use the Actions tab or manually dispatch `chatgpt-exec` with the same `request_path`.
 
