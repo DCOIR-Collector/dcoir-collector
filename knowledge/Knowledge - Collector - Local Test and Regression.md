@@ -115,7 +115,7 @@ If results differ across runs:
 
 ## Manual validation pattern (condensed)
 
-1. Define objective (from Airtable test case)
+1. Define objective from the governed issue, validation rule, or Supabase `ircore` test/readback record
 2. Run one bounded command
 3. Verify output contract
 4. Verify artifacts exist
