@@ -2,7 +2,7 @@
   "catalog_version": "2026-05-10.2",
   "authority": {
     "code_source": "github repo operator_tools/github_desktop_lane/ and tools/chatgpt_apply_in/",
-    "registry_source": "airtable Operator Tools Registry",
+    "registry_source": "repo-governed tool_catalog.json and linked operator docs",
     "advisor_skill": "dcoir-github-desktop-lane-advisor"
   },
   "environment_contract": {
@@ -11,7 +11,7 @@
       "DCOIR_REPO_ROOT",
       "DCOIR_DOWNLOADS_DIR"
     ],
-    "notes": "Operator tools should resolve DCOIR local configuration from Machine/System environment scope. Process-scope placeholders such as C:\\path\\to\\dcoir-collector are invalid and should be rejected. Shared environment/path helpers live in modules/Dcoir.Common and git-lane self-contained helpers live in modules/Dcoir.Git. Tool-specific variables must use Local Configuration Registry canonical names; Airtable tools use DCOIR_AIRTABLE_TOKEN and DCOIR_AIRTABLE_BASE_ID."
+    "notes": "Operator tools should resolve DCOIR local configuration from Machine/System environment scope. Process-scope placeholders such as C:\\path\\to\\dcoir-collector are invalid and should be rejected. Shared environment/path helpers live in modules/Dcoir.Common and git-lane self-contained helpers live in modules/Dcoir.Git. Tool-specific variables should use the documented canonical environment variable names; Airtable tools use DCOIR_AIRTABLE_TOKEN and DCOIR_AIRTABLE_BASE_ID."
   },
   "module_ecosystem": [
     {
@@ -313,9 +313,9 @@
   "sweep_notes": {
     "updated_at": "2026-05-10T14:50:00Z",
     "source_snapshot": "20260510T164209_operator_tools.chatgpt.zip",
-    "purpose": "Merged discoverability gaps found between local operator_tools snapshot, GitHub catalog, and Airtable Operator Tools Registry. Added current registry-only tools and WBS09 readback/create-configure surfaces to the main catalog so fresh sessions do not need chat context.",
+    "purpose": "Merged discoverability gaps found between local operator_tools snapshot and the GitHub catalog. Added current WBS09 readback/create-configure surfaces to the main catalog so fresh sessions do not need chat context.",
     "known_limitations": [
-      "Airtable Operator Tools Registry select field does not currently include airtable_ui_automation; Airtable rows use the nearest existing select value and preserve the original family in notes when needed.",
+      "Some historical addendum files still reflect legacy Airtable registry staging and should not be treated as current authority.",
       "WBS09 create/configure automation is documented as draft_limited_do_not_use_for_broad_repair until redesigned around discover -> plan -> execute -> verify."
     ]
   }

@@ -4,9 +4,9 @@ Reusable operator-side helper tools for AFRICOM_SOC_IR / DCOIR manual GitHub Des
 
 ## Authority model
 
-- GitHub repo is source of truth for tool code.
-- Airtable `Operator Tools Registry` is the live discovery index.
-- The DCOIR GitHub Desktop Lane Advisor skill selects tools and generates launcher commands.
+- GitHub repo is the source of truth for tool code, operator guidance, and governed discovery for this lane.
+- `tool_catalog.json` is the repo-side machine-readable discovery catalog for these tools.
+- The DCOIR GitHub Desktop Lane Advisor skill selects tools and generates launcher commands from repo-governed sources.
 - The operator runs these scripts locally in PowerShell and uploads logs or ZIP outputs when a local lane is required.
 - ChatGPT connector apply-in work uses the repo-side single-payload contract under `chatgpt_staging/in/README.md`.
 
@@ -32,7 +32,7 @@ That helper builds one ZIP with root `apply_manifest.json` and `files/`, encodes
 
 Use [`docs/OPERATOR_GUIDE.md`](docs/OPERATOR_GUIDE.md) as the wiki/operator runbook for this tool lane. It covers tool selection, normal run flow, CAP logging expectations, GitHub Desktop bundle application, safety stop conditions, evidence to preserve, and the maintainer checklist.
 
-Keep this README as the landing page, `tool_catalog.json` as the machine-readable repo catalog, `modules/README.md` as the module role index, and Airtable `Operator Tools Registry` as the live discovery/routing index.
+Keep this README as the landing page, `tool_catalog.json` as the machine-readable repo catalog, and `modules/README.md` as the module role index and linked discovery surface for this lane.
 
 ## Safety defaults
 
@@ -75,14 +75,14 @@ DCOIR operator tools resolve local configuration from **Machine/System** environ
 
 `DCOIR_REPO_ROOT` should point to the local `dcoir-collector` repository root. `DCOIR_DOWNLOADS_DIR` should point to the folder where logs and ZIP outputs should be written.
 
-Airtable inventory/export tools additionally use these Local Configuration Registry canonical names:
+Airtable inventory/export tools additionally use these machine-scope environment variables:
 
 ```powershell
 [Environment]::GetEnvironmentVariable('DCOIR_AIRTABLE_TOKEN','Machine')
 [Environment]::GetEnvironmentVariable('DCOIR_AIRTABLE_BASE_ID','Machine')
 ```
 
-Operator tools reject placeholder paths such as `C:\path\to\dcoir-collector` and should not trust process-scoped placeholder values from a polluted terminal session. Generated ChatGPT codeblocks for local tools should consult Local Configuration Registry canonical names, maximize Machine/System environment variables, fail fast on missing variables, and never print secret values.
+Operator tools reject placeholder paths such as `C:\path\to\dcoir-collector` and should not trust process-scoped placeholder values from a polluted terminal session. Generated ChatGPT codeblocks for local tools should use the documented canonical environment variable names, maximize Machine/System environment variables, fail fast on missing variables, and never print secret values.
 
 ## Tools
 
@@ -211,7 +211,6 @@ Set `allow_multiple_live_dispatches=true` only after reviewing the plan and inte
 
 ## Manifest examples
 
-- Targeted snapshot: `manifests/docs_impl_snapshot.sample.json`
 - Repo patch/apply: `manifests/repo_patch_apply.sample.json`
 - Actions orchestrator dispatch: `manifests/actions_workflow_orchestrator.dispatch.sample.json`
 - Actions orchestrator watch: `manifests/actions_workflow_orchestrator.watch.sample.json`
