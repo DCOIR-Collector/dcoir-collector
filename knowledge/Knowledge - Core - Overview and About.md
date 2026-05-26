@@ -8,18 +8,17 @@ _AFRICOM_SOC_IR / DCOIR project context and maintained knowledge-doc charter_
 
 ## Current authority model
 
-DCOIR uses an Airtable-first operational model with GitHub as governed source/readback for repository files.
+DCOIR uses GitHub as governed source/readback for repository files and Supabase `ircore` as the operational routing, validation, and receipt surface.
 
 | Surface | Role |
 | --- | --- |
 | Project Instructions | First bootstrap anchor |
-| Airtable Governance Control Plane | Startup/load-sequence authority |
-| Airtable Plans / Work Items / Session Checkpoints | Live execution and resume state |
 | GitHub repo | Source/readback for collector, harness, Gemini bundle, workflows, and promoted history |
+| Supabase `ircore` | Operational routing, retrieval profiles, validation rules, receipts, preferences, and active session state |
 | `knowledge/*.md` | Maintained human-readable knowledge source |
 | Gemini `.md.txt` attachments | Runtime attachment files generated in the release ZIP from `knowledge/*.md` |
 
-Knowledge docs explain the system. They do not override Airtable live state, Project Instructions, or governed GitHub source.
+Knowledge docs explain the system. They do not override Project Instructions, governed GitHub source, implemented source behavior, or Supabase `ircore` operational records.
 
 ---
 
@@ -60,7 +59,7 @@ Use one owner per topic to avoid duplicate guidance.
 
 | Class | Examples | How to use it |
 | --- | --- | --- |
-| Operational control | Airtable Governance Control Plane, Queue Control, Plans, Work Items, Session Checkpoints | Determines current work state and execution order |
+| Operational state and validation records | Supabase `ircore` routing, retrieval profiles, validation rules, receipts, preferences, and active session state | Supports current routing, readback, validation, and receipt evidence |
 | Governed source | Collector source, harness, workflows, Gemini bundle source | Determines implemented behavior |
 | Supporting assets | Runtime ZIPs, delivery bundles, retained generated artifacts | Delivery or execution aids, not source of truth |
 | Knowledge docs | `knowledge/Knowledge - <Group> - *.md` | Human/Gemini guidance only |
