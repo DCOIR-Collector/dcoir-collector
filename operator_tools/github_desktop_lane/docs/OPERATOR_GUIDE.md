@@ -5,10 +5,9 @@ This guide is the operator-facing wiki page for the GitHub Desktop lane tools an
 ## Authority model
 
 - GitHub `operator_tools/github_desktop_lane/` is the source of truth for reusable operator-side tool code and documentation.
-- Airtable `Operator Tools Registry` is the live discovery and routing index for tools.
-- `tool_catalog.json` is the repo-side machine-readable catalog that mirrors the validated tool/module ecosystem.
+- `tool_catalog.json` is the repo-side machine-readable catalog for this tool lane.
 - `README.md` is the landing page. This guide is the operator runbook. `modules/README.md` documents reusable module roles.
-- The DCOIR GitHub Desktop Lane Advisor skill should select tools from the registry/catalog instead of inventing one-off scripts.
+- The DCOIR GitHub Desktop Lane Advisor skill should select tools from repo-governed docs and catalog surfaces instead of inventing one-off scripts.
 
 ## Environment readiness
 
@@ -48,7 +47,7 @@ Stop if either variable is missing, points at a placeholder such as `C:\path\to\
 4. Run the tool from PowerShell.
 5. Keep the timestamped log/result JSON/ZIP in `DCOIR_DOWNLOADS_DIR`.
 6. Upload the log/ZIP back to ChatGPT when readback or validation is needed.
-7. Do not close Airtable work records until repo readback, validation evidence, and intended closeout targets have been reviewed.
+7. Do not mark a tools-lane task complete until repo readback, validation evidence, and intended closeout targets have been reviewed.
 
 ## CAP logging pattern
 
@@ -127,8 +126,8 @@ For a successful tools-lane change, keep or upload:
 - GitHub Desktop changed-file review notes when useful.
 - Tool smoke-test logs or result JSON when scripts/modules changed.
 - `tool_catalog.json` diff when tools/modules changed.
-- Operator Tools Registry refresh evidence when registry routing changed.
 - GitHub remote readback evidence after CAP.
+- Related issue or PR traceability when governance-facing guidance changed.
 
 Documentation-only updates normally require Markdown review and repo readback after CAP. Tool/module behavior changes require script-level regression evidence before closeout.
 
@@ -140,7 +139,7 @@ When adding or materially changing a tool/module:
 2. Keep harnesses/wrappers thin.
 3. Update `tool_catalog.json`.
 4. Update `README.md`, this operator guide, and `modules/README.md` if the operator-facing behavior or module ecosystem changed.
-5. Refresh the Airtable `Operator Tools Registry` row for the affected tool.
+5. Refresh any repo-governed documentation or issue/PR traceability tied to the affected tool.
 6. Run the smallest meaningful smoke/regression test.
 7. Package only affected repo-relative files in a GitHub Desktop bundle unless direct commit is approved.
 8. After CAP, verify remote GitHub readback and then update validation/closeout records.
