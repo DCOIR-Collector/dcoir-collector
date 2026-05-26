@@ -8,9 +8,9 @@ These contracts apply when creating or suggesting reusable DCOIR operator tools 
 2. Put shared behavior in modules, not wrappers.
 3. Wrappers may collect parameters, create reviewed config, tee logs, and call a module-owned engine.
 4. Use Machine/System environment variables for local paths, tokens, base IDs, repo roots, and downloads folders.
-5. Never hardcode or print secrets. Store only variable names and safe references in Airtable Local Configuration Registry.
+5. Never hardcode or print secrets. Store only canonical environment-variable names and safe references in repo-governed documentation when needed.
 6. Produce ChatGPT-friendly ZIP outputs with manifest, index, logs, transcript or tee-equivalent terminal capture, and machine-readable result JSON.
-7. Make every tool discoverable in `tool_catalog.json`, README/docs, and Airtable Operator Tools Registry.
+7. Make every tool discoverable in `tool_catalog.json` and linked repo docs.
 8. Add a sample manifest or first-run launcher for every recurring-use tool.
 9. Include stop conditions and safe first-run mode.
 11. Create a timestamped run folder and uploadable diagnostic ZIP even when early configuration validation fails, unless no writable output folder can be found.
@@ -77,8 +77,7 @@ For every new recurring tool, update:
 
 - `operator_tools/github_desktop_lane/tool_catalog.json`
 - `operator_tools/github_desktop_lane/README.md` or a linked doc
-- Airtable `Operator Tools Registry`
-- Airtable `Local Configuration Registry` for required environment variables
-- Active Work Item / Plan status
+- documented canonical environment-variable names for required local configuration
+- Active Work Item / Plan status or related issue/PR traceability
 
 If a new language or architecture is introduced, extend this contract document in the same bundle.
