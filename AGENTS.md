@@ -24,8 +24,25 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 - For Gemini builder governance, consult the governed `ircore` Gemini research surfaces before Gemini source, validation, or readback changes.
 - Do not treat repo runtime files as the source of those governance findings.
 
-## Bootstrap contract
-- For substantive `ircore` work that depends on Supabase bootstrap, materialize `/workspace/.ircore-bootstrap.json` with the current canonical bootstrap-target shape:
+## Startup contract
+- For substantive `ircore` work, materialize `/workspace/.ircore-startup-pack.json` with the current canonical startup-pack target shape:
+
+```json
+{
+  "schema_version": "ircore_startup_pack_target_v1",
+  "github_repository_full_name": "malwaredevil/dcoir-collector",
+  "github_repository_url": "https://github.com/malwaredevil/dcoir-collector/",
+  "supabase_project_id": "kdhkhyksdzjbajavsoxa",
+  "supabase_startup_pack_function": "ircore.get_agent_startup_pack",
+  "fallback_bootstrap_pointer_file": "/workspace/.ircore-bootstrap.json",
+  "fallback_bootstrap_function": "ircore.get_agent_bootstrap",
+  "active_continuity_file": "/workspace/memory/agent-redesign/ACTIVE-CONTINUITY.md",
+  "materialize_workspace_startup_pointer_if_missing": true,
+  "function_versioning_policy": "use_unversioned_canonical_names"
+}
+```
+
+- Materialize `/workspace/.ircore-bootstrap.json` only as the fallback pointer, with the current canonical fallback shape:
 
 ```json
 {
@@ -33,16 +50,18 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
   "github_repository_full_name": "malwaredevil/dcoir-collector",
   "github_repository_url": "https://github.com/malwaredevil/dcoir-collector/",
   "supabase_project_id": "kdhkhyksdzjbajavsoxa",
-  "supabase_bootstrap_function": "ircore.get_agent_bootstrap_v1",
+  "supabase_bootstrap_function": "ircore.get_agent_bootstrap",
   "active_continuity_file": "/workspace/memory/agent-redesign/ACTIVE-CONTINUITY.md",
   "materialize_workspace_bootstrap_if_missing": true
 }
 ```
 
-- If the workspace bootstrap file is missing but those canonical startup targets are still in force, create or refresh the workspace bootstrap file from those exact values before treating startup as blocked.
-- Query `select ircore.get_agent_bootstrap_v1('<task_family>', '<task_class>');` using `supabase_project_id` from the workspace bootstrap file.
-- `/workspace/memory/agent-redesign/.ircore-bootstrap.json` is continuity only. It may be used for cross-check or recovery, but it is not the sole startup authority when the workspace bootstrap file can be materialized from the canonical startup targets above.
-- Treat bootstrap as blocked only when the canonical `supabase_project_id` is missing or overridden without a replacement, the workspace file cannot be created or refreshed, the file is malformed, or the Supabase bootstrap query fails or returns unusable output.
+- If `/workspace/.ircore-startup-pack.json` is missing and those canonical startup targets are still in force, create or refresh it from those exact values before treating startup as blocked.
+- Query `select ircore.get_agent_startup_pack('<task_family_slug>', '<task_class>', '<scenario_slug>');` first and follow the returned authority, retrieval, validation, workflow-readback, alias-resolution, scenario-matrix, skill-trigger, and continuity guidance.
+- Use `/workspace/.ircore-bootstrap.json` and `select ircore.get_agent_bootstrap('<task_family_slug>', '<task_class>');` only when the startup-pack query fails and fallback is required.
+- `/workspace/.ircore-preferences.json` and `/workspace/.ircore-lane-matrix.json` are optional direct-loader files. Do not treat them as mandatory startup files unless a separate design decision explicitly promotes them.
+- `/workspace/memory/agent-redesign/.ircore-bootstrap.json` is continuity only. It may help with cross-check or recovery, but it is not the primary startup authority when the workspace-local startup pointers can be materialized from the canonical startup targets above.
+- Treat startup as blocked only when the canonical `supabase_project_id` is missing or overridden without a replacement, a required workspace pointer cannot be created or refreshed, a required pointer file is malformed, or both the startup-pack and fallback bootstrap queries fail or return unusable output.
 
 ## Operator discipline
 - Re-anchor to the current task before answering after any explicit operator redirection or lane change.
