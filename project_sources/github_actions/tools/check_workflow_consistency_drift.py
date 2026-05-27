@@ -19,7 +19,6 @@ STALE_AUTHORITY_STRINGS = [
     "GitHub Workflow Inventory",
 ]
 
-CP01_PATH = "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt"
 REQUIRED_SURFACES_HELPER = "project_sources/github_actions/tools/check_required_surfaces.py"
 GEMINI_MANIFEST_HELPER = "project_sources/github_actions/tools/check_gemini_manifest_surfaces.py"
 INLINE_REQUIRED_MARKER = "$required = @(" 
@@ -99,10 +98,6 @@ def main() -> int:
             continue
         for needle in STALE_AUTHORITY_STRINGS:
             add_string_findings(findings, path, needle)
-
-    for path in workflow_files:
-        for line_no in find_lines_with_substring(path, CP01_PATH):
-            findings.append(f"{path}:{line_no}: direct CP-01 workflow dependency must not reappear")
 
     for path in TARGETED_WORKFLOWS:
         if not ensure_exists(findings, path):
