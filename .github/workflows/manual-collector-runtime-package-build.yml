@@ -1,6 +1,6 @@
 # DCOIR WORKFLOW OPERATOR NOTES
 # Workflow key:
-# - workflow-build_package-manual-collector-runtime-package-build-0012 (Airtable formula preview; final key may use table autonumber suffix)
+# - workflow-build_package-manual-collector-runtime-package-build-0012
 # Purpose:
 # - Build the standard DCOIR Collector runtime package from repo source.
 # Use when:
@@ -21,10 +21,11 @@
 # - Package validity requires artifact inspection and downstream validation, not workflow completion alone.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
-# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
-# Airtable routing:
-# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
-# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
+# - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
 name: manual-collector-runtime-package-build
 
 on:
