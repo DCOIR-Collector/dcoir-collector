@@ -35,7 +35,7 @@ Editing model
 - If a new sub-agent is intentionally added, add its source file here first, update the index, update the manifest, and then compile.
 
 Compile workflow
-1. Confirm the current control plane.
+1. Confirm the current startup-pack-first operating contract and authority surfaces.
 2. Confirm the desired Gemini source tree under `project_sources/gemini/bundle_source/`.
 3. Edit the source files that need changing.
 4. Update `Gemini_Bundle_Source_Manifest.json.txt` when the version, required files, or topology changed.
@@ -64,4 +64,3 @@ Prime-agent chunk source and generated runtime note
 - `01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt` is a generated runtime artifact assembled from the chunk manifest before validation and compile.
 - The generated runtime prime-agent file must appear in the final Gemini Enterprise bundle as one coherent prompt file. Source-only chunk files and the chunk manifest must not ship in the final Gemini delivery ZIP.
 - Build and validation lanes must reassemble before judging the Gemini agent and must inspect the final ZIP for source-only leakage.
-
