@@ -61,6 +61,20 @@ SCENARIOS = {
             ['operator', 'analyst'],
         ],
     },
+    'GeminiCollectorCommandContractGrounding': {
+        'description': 'The stored Gemini source should anchor collector command guidance to governed source evidence, preserve the canonical runtime filename, and block fabricated wrappers, switches, and overclaimed targeted semantics.',
+        'all_markers': [
+            'anchor exact script name, quick alias, switch set, and parameter model to governed collector source or governed collector knowledge',
+            'canonical runtime filename dcoir_collector.ps1',
+            'do not invent wrappers such as invoke-dcoir',
+            'do not invent unsupported switches such as -artifacts',
+            'do not claim that -targeted or windowstart/windowend guarantee exact filtering semantics',
+        ],
+        'any_marker_groups': [
+            ['endpoint response-console syntax versus local powershell syntax', 'do not mix endpoint and local command lanes'],
+            ['if the current repo evidence for the collector contract has not been read back', 'if exact collector contract support is uncertain, return the source-readback gap'],
+        ],
+    },
     'GeminiOutputLeakageAndDuplicateSuppression': {
         'description': 'The stored Gemini source should explicitly block malformed preamble text, internal state leakage, duplicate final sections, and alternate draft spillover.',
         'all_markers': [
