@@ -81,11 +81,14 @@ Do not treat a wrapper or orientation file as proof when it is pointing you to t
 For enrich output, start with the session and action surfaces before jumping into staged content.
 
 1. `ENRICH_REPORT_PATH`
-2. `ACTION_ARTIFACT_PATH`
+2. optional `ACTION_ARTIFACT_PATH` when an action ran
 3. `SESSION_RESOLUTION_MODE`
 4. `SESSION_STATUS`
 5. optional `STAGED_PATH` when a retrieval-style action staged evidence
 6. optional `ENRICH_BUNDLE_PATH` after finalization
+
+A finalize-only enrich path is still a normal outcome.
+When the operator runs `enrich-finalize` without a new action, the current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`.
 
 ### Practical enrich interpretation rule
 
