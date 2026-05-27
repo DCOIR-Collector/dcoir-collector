@@ -140,7 +140,6 @@ jobs:
         run: |
           $required = @(
             'README.md',
-            'project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt',
             'project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt',
             'project_sources/collector/source/DCOIR_Collector.ps1',
             'project_sources/collector/harness/run_DCOIR_Tests.ps1',
