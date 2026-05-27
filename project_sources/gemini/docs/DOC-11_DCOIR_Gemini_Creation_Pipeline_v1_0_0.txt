@@ -29,7 +29,7 @@ Required behavior when adding or removing sub-agents
 6. Do not treat a new source file as active topology until the manifest and index both reflect it.
 
 Workflow
-1. Confirm the current control plane.
+1. Confirm the current startup-pack-first operating contract and authority surfaces.
 2. Edit the affected source files in `project_sources/gemini/bundle_source/`.
 3. Update the manifest topology and required-file contract when the topology changed.
 4. Run `validate_dcoir_gemini_bundle.py`.
@@ -51,4 +51,3 @@ Prime-agent generated runtime topology note
 - `01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt` is a generated runtime artifact assembled from the chunk manifest before validation and compile.
 - The generated runtime prime-agent file must appear in the final Gemini Enterprise bundle as one coherent prompt file. Source-only chunk files and the chunk manifest must not ship in the final Gemini delivery ZIP.
 - Build and validation lanes must reassemble before judging the Gemini agent and must inspect the final ZIP for source-only leakage.
-
