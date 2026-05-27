@@ -41,7 +41,7 @@
       "title": "Response_Completeness_Tools_And_Command_Pacing",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_03_Response_Completeness_Tools_And_Command_Pacing.md.txt",
       "sha256": "fcc1e5519bb1457d21ca196f66f6d6d892b51fed11f3867be0616578ea5a9141",
-      "line_count": 66,
+      "line_count": 73,
       "starts_with": "### Response completeness, tool availability, and command pacing"
     },
     {
