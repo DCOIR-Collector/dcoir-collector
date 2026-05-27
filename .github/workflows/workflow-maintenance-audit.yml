@@ -2,23 +2,23 @@
 # Workflow key:
 # - workflow-maintenance-workflow-maintenance-audit-0024
 # Purpose:
-# - Audit GitHub Actions references and workflow-maintenance surfaces for stale action versions.
+# - Audit GitHub Action version posture, workflow consistency drift, and the repo-local workflow maintenance contract.
 # Use when:
-# - Use after workflow/dependabot/tooling changes or on the weekly schedule to catch stale action-version references.
+# - Use after workflow, dependabot, guidance, or workflow-tooling changes and on the weekly schedule to catch workflow-maintenance regressions.
 # Do not use when:
-# - Do not use as workflow behavior validation; it checks maintenance hygiene.
+# - Do not use as behavioral workflow validation or release-readiness proof; it checks maintenance drift and hygiene.
 # Trigger model:
-# - workflow_dispatch; schedule: 17 6 * * 1; push branches: main paths: .github/workflows/**, .github/dependabot.yml, project_sources/github_actions/tools/check_workflow_action_versions.py
+# - workflow_dispatch; schedule: 17 6 * * 1; push branches: main paths: .github/workflows/**, .github/dependabot.yml, project_sources/github_actions/**, AGENTS.md, .github/README.md
 # Required inputs:
 # - none
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses project_sources/github_actions/tools/check_workflow_action_versions.py.
+# - Uses project_sources/github_actions/tools/check_workflow_action_versions.py and project_sources/github_actions/tools/check_workflow_consistency_drift.py.
 # Expected outputs/readback:
-# - Audit result and repo-workflows report.
+# - Maintenance audit result and repo-workflows report.
 # Safety notes:
-# - Failures indicate workflow dependency hygiene issues to repair before relying on updated workflows.
+# - Failures indicate workflow maintenance drift or dependency hygiene issues to repair before relying on changed workflow governance.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
 # - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
@@ -38,7 +38,9 @@ on:
     paths:
       - '.github/workflows/**'
       - '.github/dependabot.yml'
-      - 'project_sources/github_actions/tools/check_workflow_action_versions.py'
+      - 'project_sources/github_actions/**'
+      - 'AGENTS.md'
+      - '.github/README.md'
 
 permissions:
   contents: read
@@ -59,3 +61,9 @@ jobs:
         run: |
           set -euo pipefail
           python3 project_sources/github_actions/tools/check_workflow_action_versions.py
+
+      - name: Check workflow consistency drift
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/check_workflow_consistency_drift.py
