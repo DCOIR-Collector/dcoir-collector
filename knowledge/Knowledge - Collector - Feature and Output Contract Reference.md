@@ -376,12 +376,15 @@ A successful enrich run also emits more than one meaningful surface.
 | `ENRICH_SESSION_ID` | Session anchor |
 | `SESSION_RESOLUTION_MODE` | Tells you whether the session was created, reused, or explicitly targeted |
 | `ENRICH_REPORT_PATH` | Session summary/report surface |
-| `ACTION_ARTIFACT_PATH` | Per-action artifact surface |
+| optional `ACTION_ARTIFACT_PATH` | Per-action artifact surface when an action ran |
 | optional `STAGED_PATH` | Retrieval-ready staged artifact |
 | `SESSION_STATUS` | Whether the session remains open or has been finalized |
 | optional `ENRICH_BUNDLE_PATH` | Finalized enrich bundle |
 | `NEXT_GET_FILE` | Retrieval handoff when finalized |
 | `DELETE_SCRIPT_COMMAND` | Script-removal handoff |
+
+A finalize-only enrich path is still a normal success path.
+When the operator runs `enrich-finalize` without a new action, current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`.
 
 Review-style enrich actions often answer the next question directly.
 Retrieval-style enrich actions often exist to hand you the next evidence carrier to inspect offline.

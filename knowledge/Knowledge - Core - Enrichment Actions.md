@@ -191,17 +191,20 @@ Important enrich output surfaces visible in current source include:
 - `ENRICH_SESSION_ID`
 - `SESSION_RESOLUTION_MODE`
 - `ENRICH_REPORT_PATH`
-- `ACTION_ARTIFACT_PATH`
+- optional `ACTION_ARTIFACT_PATH` when an enrich action ran
 - optional `STAGED_PATH`
 - `SESSION_STATUS`
 - optional `ENRICH_BUNDLE_PATH`
 - `NEXT_GET_FILE` when finalized
 - `DELETE_SCRIPT_COMMAND`
 
+A finalize-only path is still a normal enrich outcome.
+When the operator runs `enrich-finalize` without a new action, the current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`.
+
 ### Practical enrich review order
 
 1. `ENRICH_REPORT_PATH`
-2. `ACTION_ARTIFACT_PATH`
+2. optional `ACTION_ARTIFACT_PATH` when an action ran
 3. `SESSION_RESOLUTION_MODE`
 4. `SESSION_STATUS`
 5. optional `STAGED_PATH` when retrieval occurred
