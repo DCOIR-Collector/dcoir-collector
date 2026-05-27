@@ -1,6 +1,6 @@
 # DCOIR WORKFLOW OPERATOR NOTES
 # Workflow key:
-# - workflow-staging_lane-chatgpt-staging-cleanup-0005 (Airtable formula preview; final key may use table autonumber suffix)
+# - workflow-staging_lane-chatgpt-staging-cleanup-0005
 # Purpose:
 # - Clean selected ChatGPT staging request, inbound, outbound, apply, failure, and status-report surfaces.
 # Use when:
@@ -21,10 +21,11 @@
 # - Manual inputs are deletion controls. Use request_id_filter for bounded cleanup and keep status report deletion off unless readback evidence is no longer needed.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
-# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
-# Airtable routing:
-# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
-# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
+# - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
 name: chatgpt-staging-cleanup
 
 on:
