@@ -1,8 +1,0 @@
-DCOIR Testing Surface Note
-
-Purpose
-- Preserve a narrow retained note for testing-surface expectations.
-
-Current rule
-- Do not treat removed skill-mirror paths as active GitHub testing surfaces.
-- Keep testing guidance focused on the collector, Gemini, workflows, and retained documentation that still exists.
