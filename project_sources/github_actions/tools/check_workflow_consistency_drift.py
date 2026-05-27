@@ -6,7 +6,10 @@ import sys
 from pathlib import Path
 
 WORKFLOW_DIR = Path(".github/workflows")
-WORKFLOW_GUIDANCE_PATH = Path("project_sources/github_actions/README.md")
+WORKFLOW_GUIDANCE_PATHS = [
+    Path("project_sources/github_actions/README.md"),
+    Path(".github/README.md"),
+]
 
 STALE_AUTHORITY_STRINGS = [
     "Airtable formula preview",
@@ -19,7 +22,7 @@ STALE_AUTHORITY_STRINGS = [
 CP01_PATH = "project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt"
 REQUIRED_SURFACES_HELPER = "project_sources/github_actions/tools/check_required_surfaces.py"
 GEMINI_MANIFEST_HELPER = "project_sources/github_actions/tools/check_gemini_manifest_surfaces.py"
-INLINE_REQUIRED_MARKER = "$required = @("
+INLINE_REQUIRED_MARKER = "$required = @(" 
 INLINE_GEMINI_MARKERS = [
     "Missing Gemini manifest-required/source-required surfaces",
     "Gemini manifest topology.sub_agent_files is empty.",
@@ -90,7 +93,7 @@ def main() -> int:
     for contract_path in SHARED_CONTRACT_FILES:
         ensure_exists(findings, contract_path)
 
-    authority_scan_paths = workflow_files + [WORKFLOW_GUIDANCE_PATH]
+    authority_scan_paths = workflow_files + WORKFLOW_GUIDANCE_PATHS
     for path in authority_scan_paths:
         if not ensure_exists(findings, path):
             continue
@@ -126,7 +129,8 @@ def main() -> int:
 
     print(
         "Workflow consistency drift audit passed for "
-        f"{len(workflow_files)} workflow files and {WORKFLOW_GUIDANCE_PATH.as_posix()}."
+        f"{len(workflow_files)} workflow files and "
+        f"{', '.join(path.as_posix() for path in WORKFLOW_GUIDANCE_PATHS)}."
     )
     return 0
 
