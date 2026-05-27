@@ -1,9 +1,0 @@
-DCOIR Legacy Airtable Runbook
-
-Purpose
-- Preserve narrow Airtable-oriented guidance only for migration, verification, and historical recovery scenarios.
-
-Rules
-- Do not use this file as the default startup authority for current repository work.
-- Do not use this file to justify the retired always-on `dcoir-*` helper-skill gate.
-- If Airtable lookup is required, keep the lookup narrowly scoped to the active migration or verification task.

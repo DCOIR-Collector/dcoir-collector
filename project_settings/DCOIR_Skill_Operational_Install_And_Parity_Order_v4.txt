@@ -1,9 +1,0 @@
-DCOIR Skill Transition Note
-
-Purpose
-- Record that the legacy repo-side DCOIR skill mirror and parity-refresh process have been retired.
-
-Current rule
-- Do not require repository parity maintenance for removed `dcoir_skills/` source mirrors.
-- Use the compact `ircore` helper model for current attached-skill behavior.
-- When skill-related repo guidance must be updated, treat it like any other governed documentation or workflow change: scoped branch, validation, readback, and review.

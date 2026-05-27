@@ -1,8 +1,0 @@
-DCOIR Legacy Airtable Surface Map
-
-Status
-- Legacy reference for narrow migration and verification use only.
-
-Current rule
-- Do not use this file as the active startup or authority order for current repository work.
-- Use it only when a migration or verification task explicitly requires legacy surface interpretation.
