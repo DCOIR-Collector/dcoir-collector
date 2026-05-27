@@ -18,7 +18,7 @@
 # Expected outputs/readback:
 # - PR validation artifacts and repo-workflows report.
 # Safety notes:
-# - Skip heavy execution while the pull request is still draft; run when the pull request becomes ready or later meaningful sync events occur.
+# - Skip heavy execution while the pull request is still draft; run when the PR becomes ready or later meaningful sync events occur.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
 # - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
@@ -142,84 +142,14 @@ jobs:
       - name: Verify required governed surfaces
         shell: pwsh
         run: |
-          $required = @(
-            'README.md',
-            'project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt',
-            'project_sources/collector/source/DCOIR_Collector.ps1',
-            'project_sources/collector/harness/run_DCOIR_Tests.ps1',
-            'project_sources/collector/harness/validate_DCOIR_Run.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.03A_Enrich_Session_State.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1',
-            'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1',
-            'project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json',
-            'project_sources/gemini/docs/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
-            'project_sources/collector/docs/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt',
-            'project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json',
-            'project_sources/gemini/tools/build_dcoir_gemini_release.py',
-            'project_sources/gemini/tools/validate_dcoir_gemini_bundle.py',
-            'project_sources/gemini/tools/validate_dcoir_gemini_behavior_scenarios.py',
-            'project_sources/gemini/tools/validate_dcoir_gemini_output_contract_regressions.py',
-            'project_sources/gemini/tools/fixtures/gemini_output_contract_regression_cases.json',
-            'project_sources/collector/tools/compile_dcoir_collector_runtime.py',
-            'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py',
-            'project_sources/collector/tools/build_dcoir_collector_runtime_package.py',
-            'project_sources/collector/tools/restore_dcoir_collector_runtime_zip.py',
-            'project_sources/collector/tools/run_validate_dcoir_run_fixture_tests.ps1',
-            'project_sources/collector/tools/verify_collector_documentation_quality.py',
-            'project_sources/collector/tools/test_verify_collector_documentation_quality.py',
-            '.github/workflows/manual-gemini-bundle-build.yml',
-            '.github/workflows/manual-collector-runtime-package-build.yml',
-            'supporting_assets/DCOIR_Collector.zip'
-          )
-          $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
-          if ($missing.Count -gt 0) {
-            throw "Missing required governed surfaces: $($missing -join ', ')"
+          python project_sources/github_actions/tools/check_required_surfaces.py --profile validate_on_pr
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Required surface validation failed.'
           }
-
-          $geminiBundleRoot = 'project_sources/gemini/bundle_source'
-          $geminiManifestPath = Join-Path $geminiBundleRoot 'Gemini_Bundle_Source_Manifest.json'
-          if (-not (Test-Path -LiteralPath $geminiManifestPath -PathType Leaf)) {
-            throw "Gemini manifest missing: $geminiManifestPath"
+          python project_sources/github_actions/tools/check_gemini_manifest_surfaces.py --source-root project_sources/gemini/bundle_source
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Gemini manifest surface validation failed.'
           }
-          $geminiManifest = Get-Content -LiteralPath $geminiManifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
-          if (-not $geminiManifest.topology -or $geminiManifest.topology.topology_source_of_truth -ne 'manifest') {
-            throw 'Gemini topology source of truth must be manifest.'
-          }
-          $manifestRequired = @($geminiManifest.required_files | ForEach-Object { Join-Path $geminiBundleRoot ([string]$_) })
-          if ($manifestRequired.Count -eq 0) {
-            throw 'Gemini manifest required_files is empty.'
-          }
-          $manifestSourceRequired = @($geminiManifest.source_required_files | ForEach-Object { Join-Path $geminiBundleRoot ([string]$_) })
-          $manifestMissing = @(($manifestRequired + $manifestSourceRequired) | Where-Object { -not (Test-Path -LiteralPath $_) })
-          if ($manifestMissing.Count -gt 0) {
-            throw "Missing Gemini manifest-required/source-required surfaces: $($manifestMissing -join ', ')"
-          }
-          $manifestSubAgents = @($geminiManifest.topology.sub_agent_files | ForEach-Object { ([string]$_).Replace('\','/') })
-          if ($manifestSubAgents.Count -eq 0) {
-            throw 'Gemini manifest topology.sub_agent_files is empty.'
-          }
-          $missingSubAgents = @($manifestSubAgents | Where-Object { -not (Test-Path -LiteralPath (Join-Path $geminiBundleRoot $_)) })
-          if ($missingSubAgents.Count -gt 0) {
-            throw "Missing Gemini manifest-listed sub-agent files: $($missingSubAgents -join ', ')"
-          }
-          $agentBuildRoot = Join-Path $geminiBundleRoot '01_GEMINI_AGENT_BUILD'
-          $bundleRootResolved = (Resolve-Path -LiteralPath $geminiBundleRoot).Path
-          $discoveredSubAgents = @(Get-ChildItem -LiteralPath $agentBuildRoot -File -Filter 'Sub_Agent_*.md.txt' | ForEach-Object {
-            ($_.FullName.Substring($bundleRootResolved.Length + 1)).Replace('\','/')
-          })
-          $unlistedSubAgents = @($discoveredSubAgents | Where-Object { $_ -notin $manifestSubAgents })
-          if ($unlistedSubAgents.Count -gt 0) {
-            throw "Discovered Gemini sub-agent files not listed in manifest topology: $($unlistedSubAgents -join ', ')"
-          }
-          Write-Host "Gemini manifest surfaces validated: required=$($manifestRequired.Count); source-required=$($manifestSourceRequired.Count); sub-agents=$($manifestSubAgents.Count)."
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh

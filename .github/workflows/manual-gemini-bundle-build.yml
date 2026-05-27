@@ -88,62 +88,14 @@ jobs:
       - name: Verify Gemini bundle required surfaces
         shell: pwsh
         run: |
-          $required = @(
-            'project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt',
-            'project_sources/gemini/docs/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt',
-            'project_sources/gemini/docs/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt',
-            'project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json',
-            'knowledge/README.md',
-            'knowledge/Knowledge - Collector - EXE Usage and Runtime Behavior.md',
-            'knowledge/Knowledge - Collector - Feature and Output Contract Reference.md',
-            'project_sources/gemini/tools/validate_dcoir_gemini_bundle.py',
-            'project_sources/gemini/tools/validate_dcoir_gemini_behavior_scenarios.py',
-            'project_sources/gemini/tools/validate_dcoir_gemini_output_contract_regressions.py',
-            'project_sources/gemini/tools/fixtures/gemini_output_contract_regression_cases.json',
-            'project_sources/gemini/tools/compile_dcoir_gemini_bundle.py',
-            'project_sources/gemini/tools/build_dcoir_gemini_release.py'
-          )
-          $missing = @($required | Where-Object { -not (Test-Path -LiteralPath $_) })
-          if ($missing.Count -gt 0) {
-            throw "Missing required Gemini bundle surfaces: $($missing -join ', ')"
+          python project_sources/github_actions/tools/check_required_surfaces.py --profile manual_gemini_bundle_build
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Required surface validation failed.'
           }
-
-          $geminiBundleRoot = 'project_sources/gemini/bundle_source'
-          $geminiManifestPath = Join-Path $geminiBundleRoot 'Gemini_Bundle_Source_Manifest.json'
-          if (-not (Test-Path -LiteralPath $geminiManifestPath -PathType Leaf)) {
-            throw "Gemini manifest missing: $geminiManifestPath"
+          python project_sources/github_actions/tools/check_gemini_manifest_surfaces.py --source-root project_sources/gemini/bundle_source
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Gemini manifest surface validation failed.'
           }
-          $geminiManifest = Get-Content -LiteralPath $geminiManifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
-          if (-not $geminiManifest.topology -or $geminiManifest.topology.topology_source_of_truth -ne 'manifest') {
-            throw 'Gemini topology source of truth must be manifest.'
-          }
-          $manifestRequired = @($geminiManifest.required_files | ForEach-Object { Join-Path $geminiBundleRoot ([string]$_) })
-          if ($manifestRequired.Count -eq 0) {
-            throw 'Gemini manifest required_files is empty.'
-          }
-          $manifestSourceRequired = @($geminiManifest.source_required_files | ForEach-Object { Join-Path $geminiBundleRoot ([string]$_) })
-          $manifestMissing = @(($manifestRequired + $manifestSourceRequired) | Where-Object { -not (Test-Path -LiteralPath $_) })
-          if ($manifestMissing.Count -gt 0) {
-            throw "Missing Gemini manifest-required/source-required surfaces: $($manifestMissing -join ', ')"
-          }
-          $manifestSubAgents = @($geminiManifest.topology.sub_agent_files | ForEach-Object { ([string]$_).Replace([string][IO.Path]::DirectorySeparatorChar,'/') })
-          if ($manifestSubAgents.Count -eq 0) {
-            throw 'Gemini manifest topology.sub_agent_files is empty.'
-          }
-          $missingSubAgents = @($manifestSubAgents | Where-Object { -not (Test-Path -LiteralPath (Join-Path $geminiBundleRoot $_)) })
-          if ($missingSubAgents.Count -gt 0) {
-            throw "Missing Gemini manifest-listed sub-agent files: $($missingSubAgents -join ', ')"
-          }
-          $agentBuildRoot = Join-Path $geminiBundleRoot '01_GEMINI_AGENT_BUILD'
-          $bundleRootResolved = (Resolve-Path -LiteralPath $geminiBundleRoot).Path
-          $discoveredSubAgents = @(Get-ChildItem -LiteralPath $agentBuildRoot -File -Filter 'Sub_Agent_*.md.txt' | ForEach-Object {
-            ($_.FullName.Substring($bundleRootResolved.Length + 1)).Replace([string][IO.Path]::DirectorySeparatorChar,'/')
-          })
-          $unlistedSubAgents = @($discoveredSubAgents | Where-Object { $_ -notin $manifestSubAgents })
-          if ($unlistedSubAgents.Count -gt 0) {
-            throw "Discovered Gemini sub-agent files not listed in manifest topology: $($unlistedSubAgents -join ', ')"
-          }
-          Write-Host "Gemini manifest surfaces validated: required=$($manifestRequired.Count); source-required=$($manifestSourceRequired.Count); sub-agents=$($manifestSubAgents.Count)."
 
       - name: Create output directory
         shell: pwsh
