@@ -1,12 +1,11 @@
-# Superseded workflow guidance pointer
+# GitHub workflow authority pointer
 
-Status: retained pointer/stub. This file is no longer the authoritative source for current workflow routing or workflow execution guidance.
+This folder holds repo-native GitHub workflow support surfaces.
 
-Current source-of-truth model:
+Current authority model:
 
-- Airtable table `GitHub Workflow Inventory` owns general GitHub Actions workflow routing guidance.
+- The workflow YAML body is the executable source of truth.
 - The top comment block in each `.github/workflows/*.yml` file owns workflow-specific execution guidance.
-- The workflow YAML body remains the executable source of truth.
-- Workflow status reports under `chatgpt_staging/status_reports/` are readback/evidence surfaces, not durable workflow-use documentation.
-
-Use this file only as a historical locator. Do not update it with new workflow-use instructions. Update the relevant workflow header and Airtable row instead.
+- GitHub is canonical for workflow and source truth.
+- Supabase `ircore` is the operational routing, validation, lessons, and active-state surface.
+- Legacy Airtable may still exist for migration or historical lookup, but it is not the active default workflow-routing authority.
