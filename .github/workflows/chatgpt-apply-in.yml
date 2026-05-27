@@ -1,6 +1,6 @@
 # DCOIR WORKFLOW OPERATOR NOTES
 # Workflow key:
-# - workflow-staging_lane-chatgpt-apply-in-0001 (Airtable formula preview; final key may use table autonumber suffix)
+# - workflow-staging_lane-chatgpt-apply-in-0001
 # Purpose:
 # - Apply an operator-approved single base64 ZIP payload from chatgpt_staging/in into governed repo paths with manifest, hash, and path-safety checks.
 # Use when:
@@ -36,10 +36,11 @@
 # - ChatGPT must verify the exact staged GitHub copy before relying on this workflow. Local-only verification is insufficient because connector/UI staging can alter or truncate large text payloads.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
-# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
-# Airtable routing:
-# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
-# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
+# - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
 name: chatgpt-apply-in
 
 on:
