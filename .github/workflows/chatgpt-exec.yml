@@ -1,6 +1,6 @@
 # DCOIR WORKFLOW OPERATOR NOTES
 # Workflow key:
-# - workflow-staging_lane-chatgpt-exec-0002 (Airtable formula preview; final key may use table autonumber suffix)
+# - workflow-staging_lane-chatgpt-exec-0002
 # Purpose:
 # - Run a reviewed operator-approved command request on a Windows GitHub Actions runner and commit ChatGPT-readable execution reports.
 # Use when:
@@ -21,10 +21,11 @@
 # - Request path must match chatgpt_staging/exec_requests/<safe-id>.json; approved command preview and operator_approved=true must be in the request; secrets are bridged by name only.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
-# - Keep the Airtable GitHub Workflow Inventory row aligned when general routing guidance changes.
-# Airtable routing:
-# - General task-routing guidance belongs in Airtable table `GitHub Workflow Inventory`.
-# - This header owns workflow-specific execution guidance; the workflow body remains the executable behavior.
+# - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
 name: chatgpt-exec
 
 on:
