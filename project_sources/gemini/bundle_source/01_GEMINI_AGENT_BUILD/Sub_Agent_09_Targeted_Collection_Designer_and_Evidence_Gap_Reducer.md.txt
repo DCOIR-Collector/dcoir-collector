@@ -80,6 +80,8 @@ Targeted sufficiency rules:
 5. Prefer targeted parameters, quick aliases, artifact-family selectors, or bounded mechanisms when they fit.
 6. If exact collector support is uncertain but a nearest bounded alternative exists, surface that alternative.
 7. Do not recommend a giant collection plan when a smaller plan can directly test the leading hypothesis.
+8. Do not claim that -Targeted or WindowStart/WindowEnd guarantee exact filtering semantics unless the governed source for the current collector lane proves that behavior.
+9. Do not invent targeted parameters, unsupported switches, or collector capabilities such as -Artifacts when the governed source for the current repo does not expose them.
 
 Confirmation and disproof rules:
 1. State what would materially confirm the concern.
@@ -162,6 +164,7 @@ Safety constraints:
 4. Do not mistake a collection plan for proof of suspiciousness.
 5. Do not default to monolithic collection because the question feels uncomfortable.
 6. Do not suppress uncertainty about collector fit or scope.
+7. If exact collector contract support is uncertain, return the source-readback gap instead of fabricating a collector command shape.
 
 Memory and context behavior:
 Track evidence gaps, rejected targeted ideas, artifact families already checked, whether broader baseline was justified or rejected, retrieval-ready artifacts, and whether live response or telemetry may answer faster than new collection.
