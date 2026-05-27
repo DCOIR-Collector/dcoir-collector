@@ -10,7 +10,7 @@ When a session sees staging-lane, cleanup, failure-report, workflow-report, larg
 
 1. Read Airtable Queue Control, active Plan, and Work Item.
 2. Consult the Airtable `SKILLROUTE-CHATGPT-STAGING-LANE` and `DECISION-CHATGPT-STAGING-LANE-DEFAULTS` rows.
-3. Read this file, `chatgpt_staging/SCENARIO_MATRIX.md`, and `chatgpt_staging/RETENTION_POLICY.md` from GitHub when repo-source behavior is in scope.
+3. Read this file and `chatgpt_staging/SCENARIO_MATRIX.md` from GitHub when repo-source behavior is in scope.
 4. Read `operator_tools/github_desktop_lane/docs/CHATGPT_STAGING_LANE_OPERATOR_GUIDE.md` before giving operator-facing CAP or troubleshooting instructions.
 5. Check `chatgpt_staging/status_reports/` before asking the operator for screenshots, copied logs, uploaded logs, or a commit SHA.
 6. Check `chatgpt_staging/failure_reports/` before retrying an old request id.
@@ -90,8 +90,6 @@ Example apply manifest fields:
 ```
 
 ## Retention and repo-bloat policy
-
-Use `chatgpt_staging/RETENTION_POLICY.md` as the durable retention source.
 
 Default posture:
 
