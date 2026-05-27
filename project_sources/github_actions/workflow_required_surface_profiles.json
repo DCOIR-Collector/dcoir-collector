@@ -1,7 +1,6 @@
 {
   "validate_on_push": [
     "README.md",
-    "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
     "project_sources/collector/source/DCOIR_Collector.ps1",
     "project_sources/collector/harness/run_DCOIR_Tests.ps1",
     "project_sources/collector/harness/validate_DCOIR_Run.ps1",
@@ -38,7 +37,6 @@
   ],
   "validate_on_pr": [
     "README.md",
-    "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
     "project_sources/collector/source/DCOIR_Collector.ps1",
     "project_sources/collector/harness/run_DCOIR_Tests.ps1",
     "project_sources/collector/harness/validate_DCOIR_Run.ps1",
@@ -75,7 +73,6 @@
   ],
   "manual_full_validation": [
     "README.md",
-    "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
     "project_sources/collector/source/DCOIR_Collector.ps1",
     "project_sources/collector/harness/run_DCOIR_Tests.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1",
@@ -138,7 +135,6 @@
     ".github/dependabot.yml"
   ],
   "manual_gemini_bundle_build": [
-    "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
     "project_sources/gemini/docs/DOC-10_DCOIR_Gemini_Stored_Source_And_Compile_Strategy_v1_0_0.txt",
     "project_sources/gemini/docs/DOC-11_DCOIR_Gemini_Creation_Pipeline_v1_0_0.txt",
     "project_sources/gemini/bundle_source/Gemini_Bundle_Source_Manifest.json",
@@ -153,7 +149,6 @@
     "project_sources/gemini/tools/build_dcoir_gemini_release.py"
   ],
   "manual_collector_runtime_package_build": [
-    "project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt",
     "project_sources/collector/docs/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt",
     "project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json",
     "project_sources/collector/source/DCOIR_Collector.ps1",

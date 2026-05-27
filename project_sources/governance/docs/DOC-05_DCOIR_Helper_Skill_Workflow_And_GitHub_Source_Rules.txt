@@ -1,9 +1,0 @@
-DCOIR Helper Guidance And GitHub Source Rules
-
-Purpose
-- Preserve durable repository rules without reviving the retired DCOIR helper-skill maintenance model.
-
-Rules
-- GitHub remains the canonical source for repo content and durable guidance.
-- Do not describe retired helper-skill parity sync as an active required workflow.
-- Treat helper-related guidance changes like any other governed repo change: scoped branch, validation, readback, and review.
