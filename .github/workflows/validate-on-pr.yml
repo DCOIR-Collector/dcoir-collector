@@ -18,7 +18,7 @@
 # Expected outputs/readback:
 # - PR validation artifacts and repo-workflows report.
 # Safety notes:
-# - Skip heavy execution while the pull request is still draft; run when the PR becomes ready or later meaningful sync events occur.
+# - Skip heavy execution while the pull request is still draft; run when the pull request becomes ready or later meaningful sync events occur.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
 # - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
@@ -144,7 +144,6 @@ jobs:
         run: |
           $required = @(
             'README.md',
-            'project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt',
             'project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt',
             'project_sources/collector/source/DCOIR_Collector.ps1',
             'project_sources/collector/harness/run_DCOIR_Tests.ps1',
