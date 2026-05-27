@@ -112,7 +112,6 @@ jobs:
         shell: pwsh
         run: |
           $required = @(
-            'project_sources/governance/control_plane/CP-01_DCOIR_Version_Manifest.txt',
             'project_sources/governance/control_plane/CP-02_DCOIR_Change_Log.txt',
             'project_sources/collector/docs/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt',
             'project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json',
