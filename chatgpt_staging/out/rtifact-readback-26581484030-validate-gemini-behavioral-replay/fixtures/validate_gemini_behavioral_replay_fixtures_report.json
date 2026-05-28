@@ -1,0 +1,18 @@
+{
+  "success": true,
+  "fixture_family": "gemini_behavioral_replay",
+  "fixture_count": 1,
+  "model_split": {
+    "reference_baseline": "gemini-3.1-pro-preview",
+    "simulated_production": "gemini-3.5-flash"
+  },
+  "rows": [
+    {
+      "fixture_id": "dcoir_operator_state_first_issue_124",
+      "path": "/home/runner/work/dcoir-collector/dcoir-collector/project_sources/gemini/fixtures/behavioral_replay/dcoir_operator_state_first_issue_124.json",
+      "messages": [],
+      "success": true
+    }
+  ],
+  "errors": []
+}
