@@ -1,24 +1,24 @@
 # DCOIR WORKFLOW OPERATOR NOTES
 # Workflow key:
-# - workflow-staging_lane-chatgpt-report-retention-cleanup-0003
+# - workflow-staging_lane-chatgpt-report-retention-cleanup-0004
 # Purpose:
-# - Clean old ChatGPT workflow status reports according to success, failure, and cleanup retention windows.
+# - Clean old ChatGPT workflow status reports, stale staged request JSON files, and aged staged output bundles according to retention windows.
 # Use when:
-# - Use for scheduled or manual cleanup of status reports after ChatGPT has consumed needed readback evidence.
+# - Use for scheduled or manual cleanup of status reports, staged requests, and staged output bundles after ChatGPT has consumed needed readback evidence.
 # Do not use when:
-# - Do not use to delete source files, active evidence that must be retained, or reports that have not been reviewed.
+# - Do not use to delete source files, active evidence that must be retained, or reports/bundles that have not been reviewed.
 # Trigger model:
-# - schedule: 0 22 * * *, 0 23 * * *; workflow_dispatch inputs: dry_run, success_days, failure_days, cleanup_days, workflow_filter
+# - schedule: 0 22 * * *, 0 23 * * *; workflow_dispatch inputs: dry_run, success_days, failure_days, cleanup_days, request_days, bundle_days, workflow_filter
 # Required inputs:
-# - dry_run: Preview cleanup without deleting reports default=false; success_days: Delete success reports at or above this age in days default=1; failure_days: Delete failure reports at or above this age in days default=7; cleanup_days: Delete cleanup reports at or above this age in days default=2; workflow_filter: Optional path/name filter; leave blank for all reports default=
+# - dry_run: Preview cleanup without deleting paths default=false; success_days: Delete success reports at or above this age in days default=1; failure_days: Delete failure reports at or above this age in days default=7; cleanup_days: Delete cleanup reports at or above this age in days default=2; request_days: Delete stale staged request JSON files at or above this age in days default=1; bundle_days: Delete stale staged output bundles at or above this age in days default=2; workflow_filter: Optional path/name filter; leave blank for all cleanup-managed paths default=
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses repository status report folders under chatgpt_staging/status_reports/.
+# - Uses repository status report folders under chatgpt_staging/status_reports/, staged request folders under chatgpt_staging/requests/, and staged output bundles under chatgpt_staging/out/.
 # Expected outputs/readback:
 # - Cleanup commits and cleanup status reports under chatgpt_staging/status_reports/retention-cleanup/<run-id>/.
 # Safety notes:
-# - Cleanup must stay under chatgpt_staging/status_reports, preserve latest reports by policy, and use dry_run=true when previewing.
+# - Cleanup must stay under chatgpt_staging/status_reports, chatgpt_staging/requests, and chatgpt_staging/out, preserve latest workflow-run reports by policy, and use dry_run=true when previewing.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
 # - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
@@ -38,7 +38,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Preview cleanup without deleting reports"
+        description: "Preview cleanup without deleting paths"
         required: true
         default: false
         type: boolean
@@ -57,8 +57,18 @@ on:
         required: true
         default: 2
         type: number
+      request_days:
+        description: "Delete staged request JSON files at or above this age in days"
+        required: true
+        default: 1
+        type: number
+      bundle_days:
+        description: "Delete staged output bundles at or above this age in days"
+        required: true
+        default: 2
+        type: number
       workflow_filter:
-        description: "Optional path/name filter; leave blank for all reports"
+        description: "Optional path/name filter; leave blank for all cleanup-managed paths"
         required: false
         default: ""
         type: string
@@ -72,7 +82,7 @@ concurrency:
 
 jobs:
   cleanup-reports:
-    name: Cleanup ChatGPT workflow reports
+    name: Cleanup ChatGPT staging retention surfaces
     runs-on: ubuntu-latest
     steps:
       - name: Check Stuttgart midnight gate
@@ -115,22 +125,26 @@ jobs:
           SUCCESS_DAYS="1"
           FAILURE_DAYS="7"
           CLEANUP_DAYS="2"
+          REQUEST_DAYS="1"
+          BUNDLE_DAYS="2"
           WORKFLOW_FILTER=""
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             DRY_RUN="${{ inputs.dry_run }}"
             SUCCESS_DAYS="${{ inputs.success_days }}"
             FAILURE_DAYS="${{ inputs.failure_days }}"
             CLEANUP_DAYS="${{ inputs.cleanup_days }}"
+            REQUEST_DAYS="${{ inputs.request_days }}"
+            BUNDLE_DAYS="${{ inputs.bundle_days }}"
             WORKFLOW_FILTER="${{ inputs.workflow_filter }}"
           fi
           mkdir -p .github/tmp
-          ARGS=(cleanup --success-days "$SUCCESS_DAYS" --failure-days "$FAILURE_DAYS" --cleanup-days "$CLEANUP_DAYS" --workflow-filter "$WORKFLOW_FILTER" --removed-paths-file .github/tmp/chatgpt_report_cleanup_removed.txt --report-id "retention-cleanup-${GITHUB_RUN_ID}")
+          ARGS=(cleanup --success-days "$SUCCESS_DAYS" --failure-days "$FAILURE_DAYS" --cleanup-days "$CLEANUP_DAYS" --request-days "$REQUEST_DAYS" --bundle-days "$BUNDLE_DAYS" --workflow-filter "$WORKFLOW_FILTER" --removed-paths-file .github/tmp/chatgpt_report_cleanup_removed.txt --report-id "retention-cleanup-${GITHUB_RUN_ID}")
           if [[ "$DRY_RUN" == "true" ]]; then
             ARGS+=(--dry-run)
           fi
           python .github/scripts/write_workflow_report.py "${ARGS[@]}"
 
-      - name: Remove expired reports from cleanup plan
+      - name: Remove expired staged paths from cleanup plan
         if: ${{ steps.midnight_gate.outputs.should_run == 'true' }}
         shell: bash
         run: |
@@ -141,6 +155,17 @@ jobs:
               case "$path" in
                 chatgpt_staging/status_reports/*/workflow_report.md|chatgpt_staging/status_reports/*/*/workflow_report.md|chatgpt_staging/status_reports/*/*/*/workflow_report.md)
                   git rm -f "$path" || true
+                  ;;
+                chatgpt_staging/requests/*.json|chatgpt_staging/requests/*/*.json|chatgpt_staging/requests/*/*/*.json)
+                  git rm -f "$path" || true
+                  ;;
+                chatgpt_staging/out/*)
+                  if [[ -d "$path" ]]; then
+                    git rm -r -f "$path" || true
+                  else
+                    echo "Refusing to remove unexpected non-directory staged output path: $path" >&2
+                    exit 1
+                  fi
                   ;;
                 *)
                   echo "Refusing to remove unexpected path: $path" >&2
@@ -158,6 +183,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add chatgpt_staging/status_reports/retention-cleanup || true
-          git add -u chatgpt_staging/status_reports || true
-          git commit -m "Clean ChatGPT workflow reports by retention policy [skip ci]" || exit 0
+          git add -u chatgpt_staging/status_reports chatgpt_staging/requests chatgpt_staging/out || true
+          git commit -m "Clean ChatGPT staging retention surfaces by policy [skip ci]" || exit 0
           git push
