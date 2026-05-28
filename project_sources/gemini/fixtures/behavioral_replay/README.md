@@ -65,7 +65,7 @@ This fixture family may include governed supporting artifacts alongside the fixt
 The first deterministic lane uses:
 
 - a known-good response pack that should pass
-- a known-bad response pack that should fail
+- known-bad response pack coverage that should fail, including targeted regression cases for scorer edge conditions
 
 Keep those artifacts behaviorally faithful to the governed scenario rather than turning them into synthetic filler.
 
