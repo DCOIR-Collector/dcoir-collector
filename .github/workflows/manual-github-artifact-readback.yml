@@ -1,6 +1,6 @@
 # DCOIR WORKFLOW OPERATOR NOTES
 # Workflow key:
-# - workflow-staging_lane-chatgpt-github-artifact-readback-0003
+# - workflow-staging_lane-chatgpt-github-artifact-readback-0004
 # Purpose:
 # - Download a bounded GitHub Actions artifact from a specified workflow run, extract it into a cleanup-managed repo path, and commit a ChatGPT-readable status report.
 # Use when:
@@ -176,6 +176,16 @@ with out.open('a', encoding='utf-8') as fh:
     fh.write(f'request_id={request_id}\n')
     fh.write(f'artifact_subpath={artifact_subpath}\n')
 PY
+            extract_output_value() {
+              local key="$1"
+              awk -F= -v wanted="$key" '$1 == wanted { value = substr($0, index($0, "=") + 1) } END { print value }' "$GITHUB_OUTPUT"
+            }
+            REQUEST_PATH="$(extract_output_value request_path)"
+            SOURCE_RUN_ID="$(extract_output_value source_run_id)"
+            ARTIFACT_NAME="$(extract_output_value artifact_name)"
+            ARTIFACT_ID="$(extract_output_value artifact_id)"
+            REQUEST_ID="$(extract_output_value request_id)"
+            ARTIFACT_SUBPATH="$(extract_output_value artifact_subpath)"
           else
             [[ -n "$SOURCE_RUN_ID" && "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]] || { echo "source_run_id must be numeric" >&2; exit 1; }
             if [[ -z "$ARTIFACT_NAME" && -z "$ARTIFACT_ID" ]]; then
