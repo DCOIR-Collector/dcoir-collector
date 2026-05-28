@@ -7,6 +7,7 @@ Status: active companion guide for the GitHub Desktop lane and GitHub Actions st
 - `chatgpt-exec`
 - `chatgpt-apply-in` / `chatgpt-in`
 - `chatgpt-stage-out`
+- `manual-github-artifact-readback`
 
 ## What ChatGPT should read first
 
@@ -34,6 +35,14 @@ For `chatgpt-stage-out`, the primary unzipped readback path is:
 ```text
 chatgpt_staging/out/<request_id>/
 ```
+
+For `manual-github-artifact-readback`, the primary extracted artifact path is also:
+
+```text
+chatgpt_staging/out/<request_id>/
+```
+
+Read `artifact_manifest.md` there first, then inspect the staged files it lists.
 
 ## Current exec-lane implementation
 
