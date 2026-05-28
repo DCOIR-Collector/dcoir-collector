@@ -301,7 +301,7 @@ jobs:
           NEXT_REQUEST_PATH: ${{ steps.plan.outputs.next_request_path }}
         run: |
           set -euo pipefail
-          PAYLOAD="$(python -c "import json, os; print(json.dumps({'ref': os.environ['GITHUB_REF_NAME'], 'inputs': {'request_path': os.environ['NEXT_REQUEST_PATH'], 'source_run_id': '', 'artifact_name': '', 'artifact_id': '', 'request_id': '', 'artifact_subpath': '', 'commit_outputs': True}}))")"
+          PAYLOAD="$(python -c "import json, os; print(json.dumps({'ref': os.environ['GITHUB_REF_NAME'], 'inputs': {'request_path': os.environ['NEXT_REQUEST_PATH'], 'source_run_id': '', 'artifact_name': '', 'artifact_id': '', 'request_id': '', 'artifact_subpath': '', 'commit_outputs': 'true'}}))")"
           curl --fail-with-body -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
