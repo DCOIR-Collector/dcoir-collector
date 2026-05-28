@@ -1,0 +1,147 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-evaluation-manual-gemini-model-comparison-0001
+# Purpose:
+# - Run the Phase 1 Gemini model-comparison harness against transcript-derived fixtures, using Gemini 3.1 Pro as the reference baseline and ranking candidates by behavioral closeness plus operational fit.
+# Use when:
+# - Use when selecting the best live Gemini API model for the simulated agent environment or when re-checking model drift after rate-limit, billing-tier, or prompt-shape changes.
+# Do not use when:
+# - Do not treat this as a replacement for validate-on-push, validate-on-pr, or the broader Phase 2 behavioral replay harness.
+# Trigger model:
+# - workflow_dispatch inputs: reference_model, candidate_models, fixture_path, model_profile_path, repeat_count, max_cases, inter_request_delay_seconds
+# Required inputs:
+# - reference_model: reference baseline model id default=gemini-3.1-pro-preview
+# - candidate_models: comma-separated candidate list default=gemini-3.1-pro-preview,gemini-3-flash-preview,gemini-3.5-flash,gemini-2.5-pro,gemini-2.5-flash
+# - fixture_path: default project_sources/gemini/tools/fixtures/gemini_phase1_model_comparison_cases.json
+# - model_profile_path: default project_sources/gemini/tools/fixtures/gemini_model_candidate_profiles.json
+# - repeat_count: default 1
+# - max_cases: default 0 meaning all cases
+# - inter_request_delay_seconds: default 3
+# Required secrets/config:
+# - DCOIR_GEMINI_API
+# Runtime dependencies:
+# - Uses project_sources/gemini/tools/run_gemini_model_comparison.py plus transcript-derived fixtures and candidate-profile hints.
+# Expected outputs/readback:
+# - Uploaded model-comparison artifacts and repo-workflows report.
+# Safety notes:
+# - Keep concurrency low, pin explicit model ids where practical, and preserve bounded backoff on 429s.
+# - This workflow evaluates governed behavior themes but does not claim parity with the full Gemini Enterprise wrapper.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
+name: manual-gemini-model-comparison
+
+on:
+  workflow_dispatch:
+    inputs:
+      reference_model:
+        description: Reference baseline model id
+        required: true
+        default: gemini-3.1-pro-preview
+        type: string
+      candidate_models:
+        description: Comma-separated candidate model ids
+        required: true
+        default: gemini-3.1-pro-preview,gemini-3-flash-preview,gemini-3.5-flash,gemini-2.5-pro,gemini-2.5-flash
+        type: string
+      fixture_path:
+        description: Repo-relative Phase 1 fixture JSON
+        required: true
+        default: project_sources/gemini/tools/fixtures/gemini_phase1_model_comparison_cases.json
+        type: string
+      model_profile_path:
+        description: Repo-relative candidate profile JSON
+        required: true
+        default: project_sources/gemini/tools/fixtures/gemini_model_candidate_profiles.json
+        type: string
+      repeat_count:
+        description: Number of repeats per model/case
+        required: true
+        default: "1"
+        type: string
+      max_cases:
+        description: Limit number of cases (0 means all)
+        required: true
+        default: "0"
+        type: string
+      inter_request_delay_seconds:
+        description: Delay between model calls
+        required: true
+        default: "3"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: manual-gemini-model-comparison-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  compare_models:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DCOIR_GEMINI_API: ${{ secrets.DCOIR_GEMINI_API }}
+      REFERENCE_MODEL: ${{ github.event.inputs.reference_model }}
+      CANDIDATE_MODELS: ${{ github.event.inputs.candidate_models }}
+      FIXTURE_PATH: ${{ github.event.inputs.fixture_path }}
+      MODEL_PROFILE_PATH: ${{ github.event.inputs.model_profile_path }}
+      REPEAT_COUNT: ${{ github.event.inputs.repeat_count }}
+      MAX_CASES: ${{ github.event.inputs.max_cases }}
+      INTER_REQUEST_DELAY_SECONDS: ${{ github.event.inputs.inter_request_delay_seconds }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Validate Python syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile project_sources/gemini/tools/run_gemini_model_comparison.py
+
+      - name: Verify required governed surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          python project_sources/github_actions/tools/check_required_surfaces.py --profile manual_gemini_model_comparison
+
+      - name: Create output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p project_sources/validation/out_manual_gemini_model_comparison
+
+      - name: Run Gemini model comparison
+        shell: bash
+        run: |
+          set -euo pipefail
+          python project_sources/gemini/tools/run_gemini_model_comparison.py \
+            --fixtures "$FIXTURE_PATH" \
+            --output-dir project_sources/validation/out_manual_gemini_model_comparison \
+            --model-profile-path "$MODEL_PROFILE_PATH" \
+            --reference-model "$REFERENCE_MODEL" \
+            --candidate-models "$CANDIDATE_MODELS" \
+            --repeat-count "$REPEAT_COUNT" \
+            --max-cases "$MAX_CASES" \
+            --inter-request-delay-seconds "$INTER_REQUEST_DELAY_SECONDS"
+
+      - name: Upload model comparison artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: manual-gemini-model-comparison
+          path: |
+            project_sources/validation/out_manual_gemini_model_comparison/**
+          if-no-files-found: warn
+          retention-days: 21
