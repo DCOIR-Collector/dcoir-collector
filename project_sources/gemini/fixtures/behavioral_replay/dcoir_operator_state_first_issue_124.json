@@ -129,6 +129,7 @@
       ],
       "forbidden_markers": [
         "guarantee exact filtering",
+        "guarantees exact filtering",
         "definitely produce"
       ],
       "anomaly_checks": [
@@ -235,6 +236,7 @@
     "definitely finished",
     "this exact command will work",
     "guarantee exact filtering",
+    "guarantees exact filtering",
     "definitely produce",
     "send the next chunk"
   ],
@@ -258,8 +260,7 @@
   },
   "report_expectations": {
     "require_json_summary": true,
-    "require_markdown_operator_report": true,
-    "require_per_turn_findings": true,
-    "require_mode_label": true
+    "require_markdown_report": true,
+    "report_name": "gemini_behavioral_replay_run_report"
   }
 }
