@@ -1,0 +1,6 @@
+﻿# Google AI Studio Gemini smoke test
+
+- endpoint: https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent
+- model_requested: gemini-flash-latest
+- first_candidate_text: **AI finds patterns in data to make decisions and predictions.**
+- created_utc: 2026-05-28T11:11:32Z
