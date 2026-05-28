@@ -19,6 +19,7 @@
 # - Reports under chatgpt_staging/status_reports/repo-workflows/<workflow-name>/<run-id>/workflow_report.md.
 # Safety notes:
 # - Do not add the reporter itself or retention cleanup to the allowlist. Update the allowlist when new report-worthy workflows are added.
+# - For pull_request-sourced runs, do not embed failed source-workflow logs into committed reports; use the workflow summary and workflow_run_url instead.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
 # - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
@@ -82,8 +83,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Fetch source workflow logs for failed runs
-        if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' }}
+      - name: Fetch source workflow logs for failed non-PR runs
+        if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' && github.event.workflow_run.event != 'pull_request' }}
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
