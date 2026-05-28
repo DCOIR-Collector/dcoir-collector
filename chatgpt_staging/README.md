@@ -59,10 +59,12 @@ The staging workflows keep narrow `push` triggers so ChatGPT can initiate work b
 
 - push triggers are limited to `main` and only these paths:
   - `chatgpt_staging/requests/*.json` for stage-out
+  - `chatgpt_staging/requests/github_artifact_readback/*.json` for artifact readback
   - `chatgpt_staging/in/*/payload.zip.b64` for apply-in
   - `chatgpt_staging/cleanup_requests/*.json` for cleanup
 - workflow-generated commits use GitHub-recognized `[skip ci]` so cleanup/output/report commits do not retrigger push workflows unnecessarily
 - stage-out request files require `schema: dcoir.chatgpt_staging.stage_out_request.v1`
+- artifact-readback request files require `schema: dcoir.chatgpt_staging.github_artifact_readback_request.v1`
 - apply manifests require `schema: dcoir.chatgpt_staging.apply_manifest.v1`
 - cleanup markers require `schema: dcoir.chatgpt_staging.cleanup_request.v1`
 - `.github/workflows/` targets require `allow_workflow_changes: true` and `workflow_change_reason` in the apply manifest
@@ -75,6 +77,17 @@ Example stage-out request:
   "request_id": "example-request",
   "allowed_roots": ["chatgpt_staging"],
   "exact_paths": ["chatgpt_staging/README.md"]
+}
+```
+
+Example artifact-readback request:
+
+```json
+{
+  "schema": "dcoir.chatgpt_staging.github_artifact_readback_request.v1",
+  "request_id": "example-artifact-readback",
+  "source_run_id": "1234567890",
+  "artifact_name": "artifact-name"
 }
 ```
 
@@ -94,13 +107,15 @@ Example apply manifest fields:
 Default posture:
 
 - keep stage-out bundles only until ChatGPT retrieves the needed files or records evidence
-- keep manually extracted artifact readback bundles only until ChatGPT retrieves the needed files or records evidence
+- keep extracted artifact readback bundles only until ChatGPT retrieves the needed files or records evidence
 - delete inbound apply payloads after successful apply/commit/push unless explicit validation evidence requires temporary retention
 - keep status reports only until ChatGPT reads them and records any needed Airtable evidence
 - keep failure evidence until the failure is diagnosed and retry/stop decision is recorded
 - keep GitHub Actions artifacts for short-lived diagnostics only; current workflow retention is 7 days where configured
 - never delete `.gitkeep` scaffolds
-- use cleanup markers for scoped cleanup; do not perform broad/manual deletion casually
+- use cleanup markers for scoped cleanup when ChatGPT has already consumed a specific request id and wants bounded immediate removal
+- scheduled `chatgpt-report-retention-cleanup` is the automatic fallback cleanup owner for stale status reports, stale staged request JSON files, and aged staged output bundles
+- cleanup requests may target top-level stage-out requests and nested request families such as `chatgpt_staging/requests/github_artifact_readback/`
 
 A cleanup run may leave its own final `chatgpt-staging-cleanup/.../workflow_report.md` as proof of what was removed. That report should be cleaned by a later cleanup marker after ChatGPT reads and records it.
 
@@ -108,9 +123,9 @@ A cleanup run may leave its own final `chatgpt-staging-cleanup/.../workflow_repo
 
 ```text
 chatgpt_staging/
-  requests/          # ChatGPT-created stage-out requests
+  requests/          # ChatGPT-created stage-out requests and artifact-readback requests
   in/                # ChatGPT-created apply-in payloads
-  out/               # GitHub-created stage-out bundles and artifact readback bundles retained until ChatGPT cleanup
+  out/               # GitHub-created stage-out bundles and artifact readback bundles retained until scoped or retention cleanup
   work/              # transient workflow work area; never intentionally committed
   apply_reports/     # apply-in reports when retained
   failure_reports/   # legacy/special failure locators; use status_reports for new workflow result reports

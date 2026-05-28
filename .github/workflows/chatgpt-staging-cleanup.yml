@@ -1,6 +1,6 @@
 # DCOIR WORKFLOW OPERATOR NOTES
 # Workflow key:
-# - workflow-staging_lane-chatgpt-staging-cleanup-0005
+# - workflow-staging_lane-chatgpt-staging-cleanup-0006
 # Purpose:
 # - Clean selected ChatGPT staging request, inbound, outbound, apply, failure, and status-report surfaces.
 # Use when:
@@ -10,7 +10,7 @@
 # Trigger model:
 # - workflow_dispatch inputs: cleanup_requests, cleanup_in_payloads, cleanup_out_bundles, cleanup_apply_reports, cleanup_failure_reports, cleanup_status_reports, request_id_filter; push branches: main paths: chatgpt_staging/cleanup_requests/*.json
 # Required inputs:
-# - cleanup_requests: Delete consumed request JSON files default=true; cleanup_in_payloads: Delete inbound payload folders under chatgpt_staging/in/ default=true; cleanup_out_bundles: Delete staged output bundles under chatgpt_staging/out/ default=false; cleanup_apply_reports: Delete apply reports under chatgpt_staging/apply_reports/ default=false; cleanup_failure_reports: Delete committed failure reports under chatgpt_staging/failure_reports/ default=false; cleanup_status_reports: Delete ChatGPT-readable workflow status reports under chatgpt_staging/status_reports/ default=false; request_id_filter: Optional request id or prefix to clean. Leave blank to clean all selected surfaces. default=
+# - cleanup_requests: Delete consumed request JSON files under chatgpt_staging/requests/ including nested request families default=true; cleanup_in_payloads: Delete inbound payload folders under chatgpt_staging/in/ default=true; cleanup_out_bundles: Delete staged output bundles under chatgpt_staging/out/ default=false; cleanup_apply_reports: Delete apply reports under chatgpt_staging/apply_reports/ default=false; cleanup_failure_reports: Delete committed failure reports under chatgpt_staging/failure_reports/ default=false; cleanup_status_reports: Delete ChatGPT-readable workflow status reports under chatgpt_staging/status_reports/ default=false; request_id_filter: Optional request id or prefix to clean. Leave blank to clean all selected surfaces. default=
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
@@ -191,6 +191,7 @@ jobs:
             local p="$1"
             case "$p" in
               chatgpt_staging/requests/.gitkeep|\
+              chatgpt_staging/requests/github_artifact_readback/.gitkeep|\
               chatgpt_staging/in/.gitkeep|\
               chatgpt_staging/out/.gitkeep|\
               chatgpt_staging/apply_reports/.gitkeep|\
@@ -239,11 +240,11 @@ jobs:
           }
 
           if [[ '${{ steps.plan.outputs.cleanup_requests }}' == 'true' ]]; then
-            for f in chatgpt_staging/requests/*.json; do
+            while IFS= read -r f; do
               [[ -e "$f" ]] || continue
               stem="$(basename "$f" .json)"
               if match_filter "$stem"; then rm_path "$f"; fi
-            done
+            done < <(find chatgpt_staging/requests -type f -name '*.json' | sort)
           fi
           if [[ '${{ steps.plan.outputs.cleanup_in_payloads }}' == 'true' ]]; then
             for d in chatgpt_staging/in/*; do
