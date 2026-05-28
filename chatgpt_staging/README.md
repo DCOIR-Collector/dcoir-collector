@@ -113,7 +113,8 @@ Default posture:
 - keep failure evidence until the failure is diagnosed and retry/stop decision is recorded
 - keep GitHub Actions artifacts for short-lived diagnostics only; current workflow retention is 7 days where configured
 - never delete `.gitkeep` scaffolds
-- use cleanup markers for scoped cleanup; do not perform broad/manual deletion casually
+- use cleanup markers for scoped cleanup when ChatGPT has already consumed a specific request id and wants bounded immediate removal
+- scheduled `chatgpt-report-retention-cleanup` is the automatic fallback cleanup owner for stale status reports, stale staged request JSON files, and aged staged output bundles
 - cleanup requests may target top-level stage-out requests and nested request families such as `chatgpt_staging/requests/github_artifact_readback/`
 
 A cleanup run may leave its own final `chatgpt-staging-cleanup/.../workflow_report.md` as proof of what was removed. That report should be cleaned by a later cleanup marker after ChatGPT reads and records it.
@@ -124,7 +125,7 @@ A cleanup run may leave its own final `chatgpt-staging-cleanup/.../workflow_repo
 chatgpt_staging/
   requests/          # ChatGPT-created stage-out requests and artifact-readback requests
   in/                # ChatGPT-created apply-in payloads
-  out/               # GitHub-created stage-out bundles and artifact readback bundles retained until ChatGPT cleanup
+  out/               # GitHub-created stage-out bundles and artifact readback bundles retained until scoped or retention cleanup
   work/              # transient workflow work area; never intentionally committed
   apply_reports/     # apply-in reports when retained
   failure_reports/   # legacy/special failure locators; use status_reports for new workflow result reports
