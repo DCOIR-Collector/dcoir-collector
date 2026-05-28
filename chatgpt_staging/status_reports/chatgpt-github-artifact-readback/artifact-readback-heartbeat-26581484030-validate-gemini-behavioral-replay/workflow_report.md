@@ -10,7 +10,7 @@
 - poll_until_result: success_or_failure
 - do_not_use_repo_workflows_for_live_polling: true
 - result: running
-- phase: downloading-artifact
+- phase: artifact-downloaded
 - request_id: artifact-readback-heartbeat-26581484030-validate-gemini-behavioral-replay
 - request_path: chatgpt_staging/requests/github_artifact_readback/artifact-readback-heartbeat-26581484030-validate-gemini-behavioral-replay.json
 - github_run_id: 26597897521
@@ -18,12 +18,10 @@
 - github_sha: 1ae5199a9b22a83466efbe7dee9b8a4b3e37492d
 - github_ref: refs/heads/main
 - workflow_run_url: https://github.com/malwaredevil/dcoir-collector/actions/runs/26597897521
-- report_updated_utc: 2026-05-28T19:41:12Z
+- report_updated_utc: 2026-05-28T19:41:15Z
 - progress_history_path: chatgpt_staging/status_reports/chatgpt-github-artifact-readback/artifact-readback-heartbeat-26581484030-validate-gemini-behavioral-replay/progress_history.jsonl
 - latest_progress_marker_path: chatgpt_staging/status_reports/chatgpt-github-artifact-readback/artifact-readback-heartbeat-26581484030-validate-gemini-behavioral-replay/latest_progress_marker.json
 - artifact_name: validate-gemini-behavioral-replay-results
-- source_run_id: 26581484030
-- artifact_id:
 
 ## Report routing
 
@@ -31,12 +29,13 @@ This is the live heartbeat report for an active ChatGPT-staged job. Poll this ex
 
 ## Current status
 
-The bounded GitHub Actions artifact download is starting.
+The artifact download completed. Extraction and manifest staging are next.
 
 ## Phase history
 
 - 2026-05-28T19:41:06Z | phase=request-resolved | result=running | Artifact readback inputs resolved. Artifact download is next.
 - 2026-05-28T19:41:12Z | phase=downloading-artifact | result=running | The bounded GitHub Actions artifact download is starting.
+- 2026-05-28T19:41:15Z | phase=artifact-downloaded | result=running | The artifact download completed. Extraction and manifest staging are next.
 
 ## Next ChatGPT action
 
