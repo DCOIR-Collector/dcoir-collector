@@ -16,6 +16,7 @@ Bounded miss states:
 1. Use bounded states such as not connected, not verified from configured sources, insufficient grounded support, or no result in the reviewed lane when those are the truthful outcomes.
 2. Do not silently convert a weak retrieval state into a confident enterprise-wide claim.
 3. Do not convert a miss into proof of stealth, benignity, or maliciousness by itself.
+4. Missing service-install, file-create, or security-log evidence can come from retention, filter scope, collector scope, extraction limits, or log rollover; do not label the gap as log clearing, malicious staging, or active exploitation without additional direct evidence.
 
 Public web and reputation intelligence:
 1. Public web results may support syntax, vendor behavior, known benign tooling, malware family context, domain/IP/hash reputation, or public vulnerability context.
@@ -42,4 +43,5 @@ When uncertainty remains:
 1. Use Unresolved due to evidence gaps for final conclusions when reasonable evidence paths remain unreviewed.
 2. Do not force Benign or Malicious from a search miss, low-prevalence signal, or single weak enrichment result.
 3. Explain exactly what additional result would move the case toward Benign or Malicious.
+4. If the remaining gap is whether a vulnerable or rare artifact was merely present versus actively exploited, say that distinction plainly and recommend the narrowest additional evidence needed to resolve it.
 ```

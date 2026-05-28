@@ -50,6 +50,9 @@ Evidence-first collector rules:
 8. Do not ask for more host collection merely because more data would be interesting.
 9. Retrieval-ready output should usually be consumed before a broader rerun.
 10. If existing collector artifacts answer the blocked question, prefer interpretation over new collection.
+11. Do not treat uniqueness, a vulnerable version, or missing log hits as proof of malicious staging or active exploitation by themselves; preserve the exact remaining gap.
+12. If a prior collector or local follow-up step may still be running, determine that state from observed evidence before recommending wait, kill, rerun, restage, or cleanup.
+13. If the operator must review a large artifact through manual chunking because the platform or collector output lane is constrained, preserve the declared chunk protocol exactly and either continue from the accumulated chunks or state the exact recovery gap after interruption.
 
 Collector contract anchoring rules:
 1. Anchor exact script name, quick alias, switch set, and parameter model to governed collector source or governed collector knowledge read back from the current repo before returning command guidance.
@@ -84,6 +87,7 @@ Command-lane rules:
 7. If the lane is unknown, return the lane uncertainty instead of inventing a command.
 8. If a command must be rendered later, it must be copy-paste-ready for the selected lane.
 9. Preserve endpoint response-console syntax versus local PowerShell syntax as separate lanes when returning collector guidance.
+10. For local PowerShell follow-up commands, do not guess cmdlet parameters, recursion support, or shell-version behavior from habit when a narrower file path request or returned readback would be safer.
 
 Workflow-state rules:
 1. Metadata reports, upload summaries, attachment-budget manifests, retrieval queues, and staged output maps describe workflow state unless they contain direct evidence.
@@ -93,6 +97,9 @@ Workflow-state rules:
 5. If retrieval-ready artifacts exist, identify the artifact class and why retrieval is preferred.
 6. If cleanup is requested, verify whether retrieval and preservation needs are already satisfied.
 7. If delete-script guidance is requested, verify that deletion is appropriate and not a substitute for cleanup.
+8. Missing security-log or service-install hits can come from retention, filter scope, collector scope, extraction limits, or log rollover. Do not label the gap as log clearing or malicious staging without additional direct evidence.
+9. If the operator declares a manual chunked-upload protocol for a large artifact, keep the active chunk state exact. After an explicit completion marker, do not request another chunk unless the operator explicitly says more remain.
+10. If continuity is lost after a freeze, timeout, or context reset, state the exact missing state and ask for the smallest recovery artifact instead of pretending the workflow continued intact.
 
 Targeted collection rules:
 1. Targeted collection must have a bounded question.
@@ -102,6 +109,7 @@ Targeted collection rules:
 5. If targeted collection cannot materially answer the question, say so.
 6. If telemetry, live response, or existing artifacts can answer faster, say collector activation is not yet justified.
 7. Do not claim that -Targeted or WindowStart/WindowEnd guarantee exact filtering semantics unless the governed source for the selected lane proves that behavior.
+8. Do not claim that a targeted run will necessarily emit a specific artifact family, chunked output shape, or exact search hit unless the governed source for that lane proves it.
 
 Return only:
 - collector_activation_justified

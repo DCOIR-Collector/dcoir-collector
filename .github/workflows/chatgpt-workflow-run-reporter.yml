@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not use for live polling of active request-id workflows; native staging workflows use their own request-scoped reports.
 # Trigger model:
-# - workflow_run completed for: validate-on-push, Dependency Review, Dependabot auto-merge, scheduled-health-check, collector-documentation-quality, Workflow maintenance audit, manual-gemini-bundle-build, manual-collector-runtime-package-build, manual-collector-optional-exe-build, manual-test-framework-validate, manual-full-validation, Ops apply zip request, Ops dispatch request, Ops file delete request, Ops restructure map request, Publish Knowledge to Wiki, chatgpt-workflow-reporting-validation; workflow_dispatch inputs: note
+# - workflow_run completed for: validate-on-push, validate-on-pr, Dependency Review, Dependabot auto-merge, scheduled-health-check, collector-documentation-quality, Workflow maintenance audit, manual-gemini-bundle-build, manual-collector-runtime-package-build, manual-collector-optional-exe-build, manual-test-framework-validate, manual-full-validation, Ops apply zip request, Ops dispatch request, Ops file delete request, Ops restructure map request, Publish Knowledge to Wiki, chatgpt-workflow-reporting-validation; workflow_dispatch inputs: note
 # Required inputs:
 # - note: Optional operator note for manual reporter smoke checks default=manual reporter smoke check
 # Required secrets/config:
@@ -19,6 +19,7 @@
 # - Reports under chatgpt_staging/status_reports/repo-workflows/<workflow-name>/<run-id>/workflow_report.md.
 # Safety notes:
 # - Do not add the reporter itself or retention cleanup to the allowlist. Update the allowlist when new report-worthy workflows are added.
+# - For pull_request-sourced runs, do not embed failed source-workflow logs into committed reports; use the workflow summary and workflow_run_url instead.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
 # - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
@@ -32,6 +33,7 @@ on:
   workflow_run:
     workflows:
       - validate-on-push
+      - validate-on-pr
       - Dependency Review
       - Dependabot auto-merge
       - scheduled-health-check
@@ -81,8 +83,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Fetch source workflow logs for failed runs
-        if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' }}
+      - name: Fetch source workflow logs for failed non-PR runs
+        if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' && github.event.workflow_run.event != 'pull_request' }}
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
