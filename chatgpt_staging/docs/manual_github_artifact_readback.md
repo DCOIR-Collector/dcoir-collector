@@ -1,25 +1,43 @@
-# Manual GitHub Artifact Readback
+# ChatGPT GitHub Artifact Readback
 
 Use this workflow when ChatGPT needs connector-readable access to a GitHub Actions artifact without asking the operator to download and re-upload the ZIP manually.
 
 ## Workflow
 
-- workflow name: `manual-github-artifact-readback`
+- workflow name: `chatgpt-github-artifact-readback`
 - workflow file: `.github/workflows/manual-github-artifact-readback.yml`
 
-## Inputs
+## Trigger options
 
-- `source_run_id`: GitHub Actions run id that owns the artifact
-- `artifact_name` or `artifact_id`: bounded artifact selector
-- `request_id`: optional safe override for the staged output folder
-- `artifact_subpath`: optional relative path inside the extracted artifact when only one file or folder should be staged
+Preferred automatic trigger:
+
+- commit a bounded request JSON under `chatgpt_staging/requests/github_artifact_readback/`
+- schema: `dcoir.chatgpt_staging.github_artifact_readback_request.v1`
+
+Fallback manual trigger:
+
+- use `workflow_dispatch` with either `request_path` or the direct bounded inputs
+
+## Request JSON shape
+
+```json
+{
+  "schema": "dcoir.chatgpt_staging.github_artifact_readback_request.v1",
+  "request_id": "artifact-readback-26581484030-validate-gemini-behavioral-replay",
+  "source_run_id": "26581484030",
+  "artifact_name": "validate-gemini-behavioral-replay-results",
+  "artifact_subpath": ""
+}
+```
+
+Use `artifact_id` instead of `artifact_name` when the artifact id is the safer selector.
 
 ## Readback paths
 
 Successful runs write:
 
 ```text
-chatgpt_staging/status_reports/manual-github-artifact-readback/<request_id>/workflow_report.md
+chatgpt_staging/status_reports/chatgpt-github-artifact-readback/<request_id>/workflow_report.md
 chatgpt_staging/out/<request_id>/artifact_manifest.json
 chatgpt_staging/out/<request_id>/artifact_manifest.md
 chatgpt_staging/out/<request_id>/...
@@ -31,7 +49,7 @@ The staged output under `chatgpt_staging/out/<request_id>/` is the primary ChatG
 
 1. Read the source workflow report first.
 2. Confirm the source run id and artifact name or id.
-3. Run `manual-github-artifact-readback` with bounded inputs.
+3. Prefer a request JSON under `chatgpt_staging/requests/github_artifact_readback/`.
 4. Read `artifact_manifest.md` and the staged files under `chatgpt_staging/out/<request_id>/`.
 5. After evidence is recorded, clean the bundle with `chatgpt-staging-cleanup` using `cleanup_out_bundles=true` and `cleanup_status_reports=true`.
 
