@@ -1,0 +1,15 @@
+{
+  "artifact_name": "validate-gemini-behavioral-replay-results",
+  "exit_code": "",
+  "github_ref": "refs/heads/main",
+  "github_run_attempt": "1",
+  "github_run_id": "26597897521",
+  "github_sha": "1ae5199a9b22a83466efbe7dee9b8a4b3e37492d",
+  "phase": "request-resolved",
+  "request_id": "artifact-readback-heartbeat-26581484030-validate-gemini-behavioral-replay",
+  "request_path": "chatgpt_staging/requests/github_artifact_readback/artifact-readback-heartbeat-26581484030-validate-gemini-behavioral-replay.json",
+  "result": "running",
+  "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
+  "updated_utc": "2026-05-28T19:41:06Z",
+  "workflow": "chatgpt-github-artifact-readback"
+}
