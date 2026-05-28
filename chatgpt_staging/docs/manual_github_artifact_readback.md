@@ -51,7 +51,8 @@ The staged output under `chatgpt_staging/out/<request_id>/` is the primary ChatG
 2. Confirm the source run id and artifact name or id.
 3. Prefer a request JSON under `chatgpt_staging/requests/github_artifact_readback/`.
 4. Read `artifact_manifest.md` and the staged files under `chatgpt_staging/out/<request_id>/`.
-5. After evidence is recorded, clean the bundle with `chatgpt-staging-cleanup` using `cleanup_out_bundles=true` and `cleanup_status_reports=true`.
+5. Prefer a scoped `chatgpt-staging-cleanup` marker when the readback is complete and you want immediate bounded cleanup.
+6. If scoped cleanup is not requested first, `chatgpt-report-retention-cleanup` is the automatic fallback that prunes stale request JSON files, staged output bundles, and status reports by policy.
 
 ## Safety notes
 
