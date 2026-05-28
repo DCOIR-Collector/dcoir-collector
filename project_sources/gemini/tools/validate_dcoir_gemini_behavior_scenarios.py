@@ -208,6 +208,9 @@ def main() -> int:
     source_paths.append(source_root / QUICK_START)
     if topology.get('prime_agent_file'):
         source_paths.append(source_root / topology['prime_agent_file'])
+    if topology.get('prime_agent_runtime_mode') == 'generated_from_chunks':
+        for rel in topology.get('prime_agent_chunk_sources', []):
+            source_paths.append(source_root / rel)
     for rel in topology.get('sub_agent_files', []):
         source_paths.append(source_root / rel)
     repo_root = source_root.parent.parent.parent
