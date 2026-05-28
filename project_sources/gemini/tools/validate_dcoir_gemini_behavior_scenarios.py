@@ -75,6 +75,20 @@ SCENARIOS = {
             ['if the current repo evidence for the collector contract has not been read back', 'if exact collector contract support is uncertain, return the source-readback gap'],
         ],
     },
+    'GeminiCollectorOperatorGuidanceStateFirst': {
+        'description': 'The stored Gemini source should keep collector and recovery guidance state-first, lane-correct, and evidence-bounded during failed runs, local follow-up, and large-artifact recovery.',
+        'all_markers': [
+            'anchor the next move to observed workflow state before recommending wait, kill, rerun, restage, cleanup, or upload instructions',
+            'do not guess cmdlet parameters, recursion flags, or object pipelines from memory',
+            'do not treat uniqueness, a vulnerable version, or missing log hits as proof of malicious staging or active exploitation by themselves',
+        ],
+        'any_marker_groups': [
+            ['state that state gap instead of guessing', 'return that state gap instead of guessing'],
+            ['explicit completion marker such as chunks complete', 'chunks complete'],
+            ['do not request another chunk unless the operator explicitly says more chunks remain', 'ask for the smallest recovery artifact instead of pretending the workflow continued intact'],
+            ['retention', 'filter scope', 'collector scope', 'log rollover', 'extraction limits'],
+        ],
+    },
     'GeminiOutputLeakageAndDuplicateSuppression': {
         'description': 'The stored Gemini source should explicitly block malformed preamble text, internal state leakage, duplicate final sections, and alternate draft spillover.',
         'all_markers': [
