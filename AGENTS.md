@@ -69,12 +69,16 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 - If operator action is required, provide the exact goal, step-by-step actions, click-by-click UI guidance, and exact text to paste where needed.
 - Do not assume any manual operator action was completed unless the operator explicitly confirms it.
 - Prefer slower, more deliberate verification over fast answers in governance-sensitive lanes.
+- For code, workflow, and review work, prefer correctness and completeness over speed; perform end-to-end review, proactively fix adjacent real defects you find, and treat shell quoting, YAML and JSON shape, GitHub Actions expression surfaces, and workflow-runner assumptions as first-class review areas.
+- When a governed workflow liveness check uses Gmail, use the human-facing search label `label:GitHub`; connector metadata and returned message labels may show the same mailbox label as `Label_125`. Treat Gmail as an early signal only, and use request-scoped heartbeat files, workflow reports, status summaries, and artifacts as the actual execution evidence.
+- When requesting another Codex PR review in the same thread, vary the wording instead of repeating the exact same sentence each round.
 
 ## Validation
 - When editing code or workflows, run the closest available validation and report any gaps.
 - When editing documentation, scan for stale path references and mismatched authority claims before finishing.
 - Treat broken path references, stale startup guidance, and workflow assumptions about removed files as real defects.
 - Treat stale-lane drift, answer-first verification gaps, incomplete manual-action guidance, and contradictory bootstrap-path guidance as real operator-governance defects.
+- For consequential code and workflow changes, perform an end-to-end review that covers input validation, quoting and interpolation boundaries, YAML block-scalar safety, JSON shape handling, GitHub Actions expression-surface behavior, downstream cleanup or retention implications, and defense-in-depth checks before declaring the change ready.
 
 ## Cleanup posture
 - Historical artifacts may remain when they are clearly evidence or release history.
