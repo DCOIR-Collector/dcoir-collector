@@ -1,6 +1,6 @@
 # DCOIR WORKFLOW OPERATOR NOTES
 # Workflow key:
-# - workflow-staging_lane-chatgpt-github-artifact-readback-0002
+# - workflow-staging_lane-chatgpt-github-artifact-readback-0003
 # Purpose:
 # - Download a bounded GitHub Actions artifact from a specified workflow run, extract it into a cleanup-managed repo path, and commit a ChatGPT-readable status report.
 # Use when:
@@ -110,14 +110,24 @@ jobs:
           REQUEST_PATH=''
 
           if [[ "${{ github.event_name }}" == "push" ]]; then
-            while IFS= read -r p; do
-              if [[ "$p" == chatgpt_staging/requests/github_artifact_readback/*.json && -f "$p" ]]; then
-                REQUEST_PATH="$p"
-                break
-              fi
-            done < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")
+            BEFORE_SHA='${{ github.event.before }}'
+            if [[ -n "$BEFORE_SHA" && "$BEFORE_SHA" != '0000000000000000000000000000000000000000' ]]; then
+              while IFS= read -r p; do
+                if [[ "$p" == chatgpt_staging/requests/github_artifact_readback/*.json && -f "$p" ]]; then
+                  REQUEST_PATH="$p"
+                  break
+                fi
+              done < <(git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA")
+            else
+              while IFS= read -r p; do
+                if [[ "$p" == chatgpt_staging/requests/github_artifact_readback/*.json && -f "$p" ]]; then
+                  REQUEST_PATH="$p"
+                  break
+                fi
+              done < <(git ls-tree -r --name-only "$GITHUB_SHA")
+            fi
             if [[ -z "$REQUEST_PATH" ]]; then
-              echo "No artifact-readback request JSON found in triggering commit; exiting successfully."
+              echo "No artifact-readback request JSON found in pushed range; exiting successfully."
               echo "skip=true" >> "$GITHUB_OUTPUT"
               exit 0
             fi
@@ -127,17 +137,25 @@ jobs:
           fi
 
           if [[ -n "$REQUEST_PATH" ]]; then
-            python - "$REQUEST_PATH" <<'PY'
-import json, pathlib, re, sys
+            GITHUB_OUTPUT_PATH="$GITHUB_OUTPUT" python - "$REQUEST_PATH" <<'PY'
+import json, os, pathlib, re, sys
+
 path = pathlib.Path(sys.argv[1])
 payload = json.loads(path.read_text(encoding='utf-8'))
 if payload.get('schema') != 'dcoir.chatgpt_staging.github_artifact_readback_request.v1':
     raise SystemExit('artifact readback request schema must be dcoir.chatgpt_staging.github_artifact_readback_request.v1')
-request_id = str(payload.get('request_id', '')).strip()
-source_run_id = str(payload.get('source_run_id', '')).strip()
-artifact_name = str(payload.get('artifact_name', '')).strip()
-artifact_id = str(payload.get('artifact_id', '')).strip()
-artifact_subpath = str(payload.get('artifact_subpath', '')).strip()
+
+def clean(name: str) -> str:
+    value = str(payload.get(name, '')).strip()
+    if '\n' in value or '\r' in value:
+        raise SystemExit(f'{name} must not contain newlines')
+    return value
+
+request_id = clean('request_id')
+source_run_id = clean('source_run_id')
+artifact_name = clean('artifact_name')
+artifact_id = clean('artifact_id')
+artifact_subpath = clean('artifact_subpath')
 if not re.fullmatch(r'[A-Za-z0-9._-]+', request_id):
     raise SystemExit(f'Unsafe request_id: {request_id!r}')
 if not re.fullmatch(r'[0-9]+', source_run_id):
@@ -149,31 +167,15 @@ if artifact_id and not re.fullmatch(r'[0-9]+', artifact_id):
 if artifact_subpath:
     if artifact_subpath.startswith('/') or '..' in pathlib.PurePosixPath(artifact_subpath).parts:
         raise SystemExit('artifact_subpath must be relative and must not contain parent traversal')
-print('REQUEST_ID=' + request_id)
-print('SOURCE_RUN_ID=' + source_run_id)
-print('ARTIFACT_NAME=' + artifact_name)
-print('ARTIFACT_ID=' + artifact_id)
-print('ARTIFACT_SUBPATH=' + artifact_subpath)
+out = pathlib.Path(os.environ['GITHUB_OUTPUT_PATH'])
+with out.open('a', encoding='utf-8') as fh:
+    fh.write(f'request_path={path.as_posix()}\n')
+    fh.write(f'source_run_id={source_run_id}\n')
+    fh.write(f'artifact_name={artifact_name}\n')
+    fh.write(f'artifact_id={artifact_id}\n')
+    fh.write(f'request_id={request_id}\n')
+    fh.write(f'artifact_subpath={artifact_subpath}\n')
 PY
-            while IFS='=' read -r key value; do
-              case "$key" in
-                REQUEST_ID) REQUEST_ID="$value" ;;
-                SOURCE_RUN_ID) SOURCE_RUN_ID="$value" ;;
-                ARTIFACT_NAME) ARTIFACT_NAME="$value" ;;
-                ARTIFACT_ID) ARTIFACT_ID="$value" ;;
-                ARTIFACT_SUBPATH) ARTIFACT_SUBPATH="$value" ;;
-              esac
-            done < <(python - "$REQUEST_PATH" <<'PY'
-import json, pathlib, sys
-path = pathlib.Path(sys.argv[1])
-payload = json.loads(path.read_text(encoding='utf-8'))
-print('REQUEST_ID=' + str(payload.get('request_id', '')).strip())
-print('SOURCE_RUN_ID=' + str(payload.get('source_run_id', '')).strip())
-print('ARTIFACT_NAME=' + str(payload.get('artifact_name', '')).strip())
-print('ARTIFACT_ID=' + str(payload.get('artifact_id', '')).strip())
-print('ARTIFACT_SUBPATH=' + str(payload.get('artifact_subpath', '')).strip())
-PY
-)
           else
             [[ -n "$SOURCE_RUN_ID" && "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]] || { echo "source_run_id must be numeric" >&2; exit 1; }
             if [[ -z "$ARTIFACT_NAME" && -z "$ARTIFACT_ID" ]]; then
@@ -186,6 +188,12 @@ PY
               [[ "$ARTIFACT_SUBPATH" != /* ]] || { echo "artifact_subpath must be relative" >&2; exit 1; }
               [[ "$ARTIFACT_SUBPATH" != *..* ]] || { echo "artifact_subpath must not contain parent traversal" >&2; exit 1; }
             fi
+            echo "request_path=" >> "$GITHUB_OUTPUT"
+            echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"
+            echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+            echo "artifact_id=$ARTIFACT_ID" >> "$GITHUB_OUTPUT"
+            echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
+            echo "artifact_subpath=$ARTIFACT_SUBPATH" >> "$GITHUB_OUTPUT"
           fi
 
           if [[ -z "$REQUEST_ID" ]]; then
@@ -193,14 +201,9 @@ PY
             SAFE_ID="$(printf '%s' "$RAW_ID" | tr ' ' '-' | tr -cd 'A-Za-z0-9._-')"
             [[ -n "$SAFE_ID" ]] || SAFE_ID="artifact"
             REQUEST_ID="artifact-readback-${SOURCE_RUN_ID}-${SAFE_ID}"
+            echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
           fi
 
-          echo "request_path=$REQUEST_PATH" >> "$GITHUB_OUTPUT"
-          echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"
-          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
-          echo "artifact_id=$ARTIFACT_ID" >> "$GITHUB_OUTPUT"
-          echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
-          echo "artifact_subpath=$ARTIFACT_SUBPATH" >> "$GITHUB_OUTPUT"
           echo "commit_outputs=$COMMIT_OUTPUTS" >> "$GITHUB_OUTPUT"
           echo "download_dir=$RUNNER_TEMP/chatgpt_github_artifact_readback_download" >> "$GITHUB_OUTPUT"
           echo "out_dir=chatgpt_staging/out/$REQUEST_ID" >> "$GITHUB_OUTPUT"
