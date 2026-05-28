@@ -23,7 +23,10 @@
     "project_sources/gemini/tools/validate_dcoir_gemini_bundle.py",
     "project_sources/gemini/tools/validate_dcoir_gemini_behavior_scenarios.py",
     "project_sources/gemini/tools/validate_dcoir_gemini_output_contract_regressions.py",
+    "project_sources/gemini/tools/run_gemini_model_comparison.py",
     "project_sources/gemini/tools/fixtures/gemini_output_contract_regression_cases.json",
+    "project_sources/gemini/tools/fixtures/gemini_phase1_model_comparison_cases.json",
+    "project_sources/gemini/tools/fixtures/gemini_model_candidate_profiles.json",
     "project_sources/collector/tools/compile_dcoir_collector_runtime.py",
     "project_sources/collector/tools/validate_dcoir_collector_runtime_package.py",
     "project_sources/collector/tools/build_dcoir_collector_runtime_package.py",
@@ -32,7 +35,9 @@
     "project_sources/collector/tools/verify_collector_documentation_quality.py",
     "project_sources/collector/tools/test_verify_collector_documentation_quality.py",
     ".github/workflows/manual-gemini-bundle-build.yml",
+    ".github/workflows/manual-gemini-model-comparison.yml",
     ".github/workflows/manual-collector-runtime-package-build.yml",
+    ".github/workflows/chatgpt-workflow-run-reporter.yml",
     "supporting_assets/DCOIR_Collector.zip"
   ],
   "validate_on_pr": [
@@ -59,7 +64,10 @@
     "project_sources/gemini/tools/validate_dcoir_gemini_bundle.py",
     "project_sources/gemini/tools/validate_dcoir_gemini_behavior_scenarios.py",
     "project_sources/gemini/tools/validate_dcoir_gemini_output_contract_regressions.py",
+    "project_sources/gemini/tools/run_gemini_model_comparison.py",
     "project_sources/gemini/tools/fixtures/gemini_output_contract_regression_cases.json",
+    "project_sources/gemini/tools/fixtures/gemini_phase1_model_comparison_cases.json",
+    "project_sources/gemini/tools/fixtures/gemini_model_candidate_profiles.json",
     "project_sources/collector/tools/compile_dcoir_collector_runtime.py",
     "project_sources/collector/tools/validate_dcoir_collector_runtime_package.py",
     "project_sources/collector/tools/build_dcoir_collector_runtime_package.py",
@@ -68,7 +76,9 @@
     "project_sources/collector/tools/verify_collector_documentation_quality.py",
     "project_sources/collector/tools/test_verify_collector_documentation_quality.py",
     ".github/workflows/manual-gemini-bundle-build.yml",
+    ".github/workflows/manual-gemini-model-comparison.yml",
     ".github/workflows/manual-collector-runtime-package-build.yml",
+    ".github/workflows/chatgpt-workflow-run-reporter.yml",
     "supporting_assets/DCOIR_Collector.zip"
   ],
   "manual_full_validation": [
@@ -147,6 +157,14 @@
     "project_sources/gemini/tools/fixtures/gemini_output_contract_regression_cases.json",
     "project_sources/gemini/tools/compile_dcoir_gemini_bundle.py",
     "project_sources/gemini/tools/build_dcoir_gemini_release.py"
+  ],
+  "manual_gemini_model_comparison": [
+    "project_sources/gemini/tools/run_gemini_model_comparison.py",
+    "project_sources/gemini/tools/fixtures/gemini_phase1_model_comparison_cases.json",
+    "project_sources/gemini/tools/fixtures/gemini_model_candidate_profiles.json",
+    "project_sources/github_actions/tools/check_required_surfaces.py",
+    "project_sources/github_actions/workflow_required_surface_profiles.json",
+    ".github/workflows/manual-gemini-model-comparison.yml"
   ],
   "manual_collector_runtime_package_build": [
     "project_sources/collector/docs/DOC-12_DCOIR_Collector_Runtime_Packaging_Pipeline_v1_0_0.txt",
