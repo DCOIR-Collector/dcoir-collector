@@ -9,7 +9,7 @@
   "reassembly": {
     "method": "concatenate_chunks_in_manifest_order",
     "newline_policy": "preserve_chunk_text_exactly",
-    "expected_sha256": "1b95599f6cc7b3ce66e845350e4ef9d9411b137d5db36bcd01188efde598dc66"
+    "expected_sha256": "8352d26561eea3bce10a57be45e16b8aac707190405863133f134897135e64d6"
   },
   "chunks": [
     {
