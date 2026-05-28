@@ -1,0 +1,7 @@
+{
+  "schema": "dcoir.chatgpt_staging.github_artifact_readback_request.v1",
+  "request_id": "artifact-readback-staging-26581484030-validate-gemini-behavioral-replay",
+  "source_run_id": "26581484030",
+  "artifact_name": "validate-gemini-behavioral-replay-results",
+  "artifact_subpath": ""
+}
