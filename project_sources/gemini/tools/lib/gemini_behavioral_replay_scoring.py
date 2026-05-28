@@ -26,7 +26,7 @@ CONTRADICTION_PAIRS = [
 ]
 
 NEGATION_PATTERN = re.compile(
-    r"(?:do not|don't|dont|never|avoid|must not|should not|cannot|can't|can not)\s+$"
+    r"(?:do not|don't|dont|never|avoid|must not|should not|cannot|can't|can not|not|isn't|isnt|wasn't|wasnt|aren't|arent|weren't|werent)\s+$"
 )
 
 QUOTE_CHARS = {'"', "'", '`'}
@@ -48,6 +48,12 @@ def score_marker_presence(response_text: str, markers: List[str]) -> Dict[str, A
     }
 
 
+def _iter_term_occurrences(text: str, term: str):
+    normalized_term = normalize_text(term)
+    pattern = re.compile(rf"(?<![a-z0-9]){re.escape(normalized_term)}(?![a-z0-9])")
+    yield from pattern.finditer(text)
+
+
 def _occurrence_is_quoted(text: str, start: int, end: int) -> bool:
     if start <= 0 or end >= len(text):
         return False
@@ -61,15 +67,34 @@ def _occurrence_is_negated(text: str, start: int) -> bool:
     return bool(NEGATION_PATTERN.search(context))
 
 
+def _find_contextual_term_hits(
+    text: str,
+    terms: List[str],
+    *,
+    skip_negated: bool = False,
+    skip_quoted: bool = False,
+) -> List[str]:
+    hits: List[str] = []
+    for term in terms:
+        for match in _iter_term_occurrences(text, term):
+            if skip_quoted and _occurrence_is_quoted(text, match.start(), match.end()):
+                continue
+            if skip_negated and _occurrence_is_negated(text, match.start()):
+                continue
+            hits.append(term)
+            break
+    return hits
+
+
 def _marker_has_forbidden_hit(text: str, marker: str) -> bool:
-    pattern = re.escape(normalize_text(marker))
-    for match in re.finditer(pattern, text):
-        if _occurrence_is_quoted(text, match.start(), match.end()):
-            continue
-        if _occurrence_is_negated(text, match.start()):
-            continue
-        return True
-    return False
+    return bool(
+        _find_contextual_term_hits(
+            text,
+            [marker],
+            skip_negated=True,
+            skip_quoted=True,
+        )
+    )
 
 
 def score_forbidden_markers(response_text: str, markers: List[str]) -> Dict[str, Any]:
@@ -86,7 +111,12 @@ def detect_anomalies(response_text: str, requested_checks: List[str]) -> List[Di
     anomalies: List[Dict[str, str]] = []
 
     if "unsupported_certainty_claims" in requested_checks:
-        hits = [term for term in UNSUPPORTED_CERTAINTY_TERMS if term in lowered]
+        hits = _find_contextual_term_hits(
+            lowered,
+            UNSUPPORTED_CERTAINTY_TERMS,
+            skip_negated=True,
+            skip_quoted=True,
+        )
         for hit in hits:
             anomalies.append({"type": "unsupported_certainty_claims", "detail": hit})
 
