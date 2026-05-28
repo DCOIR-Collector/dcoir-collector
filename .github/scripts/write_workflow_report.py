@@ -3,7 +3,7 @@
 
 Modes:
 - workflow-run: read a GitHub workflow_run event payload and write one workflow_report.md.
-- cleanup: scan committed workflow_report.md files and create an age/status-based cleanup plan.
+- cleanup: scan committed workflow_report.md files plus cleanup-managed staging paths and create an age-based cleanup plan.
 
 Design rule: failure reports must include bounded diagnostic excerpts when log data is available,
 so ChatGPT can troubleshoot without operator screenshots, pasted logs, or uploaded logs.
@@ -24,6 +24,8 @@ from pathlib import Path
 from typing import Iterable
 
 REPORT_ROOT = Path("chatgpt_staging/status_reports")
+REQUEST_ROOT = Path("chatgpt_staging/requests")
+OUT_ROOT = Path("chatgpt_staging/out")
 SAFE_SEGMENT_RE = re.compile(r"[^A-Za-z0-9._-]+")
 
 
@@ -109,7 +111,7 @@ def parse_report_result(path: Path) -> str:
     return "unknown"
 
 
-def report_age_days(path: Path, now: dt.datetime) -> float:
+def path_age_days(path: Path, now: dt.datetime) -> float:
     epoch = git_commit_epoch(path)
     if epoch is None:
         return 0.0
@@ -242,7 +244,7 @@ def make_workflow_report(args: argparse.Namespace) -> int:
         "",
         "## Cleanup guidance",
         "",
-        "This report is managed by chatgpt-report-retention-cleanup. Success reports normally expire sooner than failure reports.",
+        "This report is managed by chatgpt-report-retention-cleanup. Success reports, stale staged requests, and aged staged output bundles normally expire by policy.",
     ]
     report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(report_path)
@@ -254,6 +256,8 @@ def make_cleanup_plan(args: argparse.Namespace) -> int:
     root = REPORT_ROOT
     root.mkdir(parents=True, exist_ok=True)
     reports = sorted(root.glob("**/workflow_report.md"))
+    request_files = sorted(p for p in REQUEST_ROOT.glob("**/*.json") if p.is_file())
+    out_dirs = sorted(p for p in OUT_ROOT.iterdir() if p.is_dir()) if OUT_ROOT.exists() else []
     current_run = safe_segment(os.environ.get("GITHUB_RUN_ID", "manual"))
     report_id = safe_segment(args.report_id or f"retention-cleanup-{current_run}")
     cleanup_dir = root / "retention-cleanup" / report_id
@@ -266,24 +270,44 @@ def make_cleanup_plan(args: argparse.Namespace) -> int:
 
     for path in reports:
         if path == cleanup_report or cleanup_dir in path.parents:
-            keep.append((path, "cleanup", 0.0, "current cleanup report"))
+            keep.append((path, "cleanup_report", 0.0, "current cleanup report"))
             continue
         if any(part == ".gitkeep" for part in path.parts):
             keep.append((path, "scaffold", 0.0, "scaffold"))
             continue
+        age = path_age_days(path, now)
         if args.workflow_filter and args.workflow_filter not in str(path):
-            keep.append((path, "filtered", report_age_days(path, now), "workflow_filter did not match"))
+            keep.append((path, "filtered", age, "workflow_filter did not match"))
             continue
         if path in newest_keep:
-            keep.append((path, parse_report_result(path), report_age_days(path, now), "latest report for workflow"))
+            keep.append((path, parse_report_result(path), age, "latest report for workflow"))
             continue
         result = parse_report_result(path)
-        age = report_age_days(path, now)
         threshold = args.failure_days if result == "failure" else args.cleanup_days if "cleanup" in str(path) else args.success_days
         if age >= threshold:
             remove.append((path, result, age, f"age {age:.1f}d >= {threshold}d"))
         else:
             keep.append((path, result, age, f"age {age:.1f}d < {threshold}d"))
+
+    for path in request_files:
+        age = path_age_days(path, now)
+        if args.workflow_filter and args.workflow_filter not in str(path):
+            keep.append((path, "request", age, "workflow_filter did not match"))
+            continue
+        if age >= args.request_days:
+            remove.append((path, "request", age, f"age {age:.1f}d >= {args.request_days}d"))
+        else:
+            keep.append((path, "request", age, f"age {age:.1f}d < {args.request_days}d"))
+
+    for path in out_dirs:
+        age = path_age_days(path, now)
+        if args.workflow_filter and args.workflow_filter not in str(path):
+            keep.append((path, "bundle", age, "workflow_filter did not match"))
+            continue
+        if age >= args.bundle_days:
+            remove.append((path, "bundle", age, f"age {age:.1f}d >= {args.bundle_days}d"))
+        else:
+            keep.append((path, "bundle", age, f"age {age:.1f}d < {args.bundle_days}d"))
 
     removed_file = Path(args.removed_paths_file)
     removed_file.parent.mkdir(parents=True, exist_ok=True)
@@ -308,6 +332,8 @@ def make_cleanup_plan(args: argparse.Namespace) -> int:
         f"- success_retention_days: {args.success_days}",
         f"- failure_retention_days: {args.failure_days}",
         f"- cleanup_retention_days: {args.cleanup_days}",
+        f"- request_retention_days: {args.request_days}",
+        f"- bundle_retention_days: {args.bundle_days}",
         f"- keep_latest_per_workflow: {str(args.keep_latest).lower()}",
         f"- workflow_filter: {args.workflow_filter or ''}",
         f"- candidate_count: {len(remove)}",
@@ -316,19 +342,19 @@ def make_cleanup_plan(args: argparse.Namespace) -> int:
         f"- github_sha: {os.environ.get('GITHUB_SHA', 'unknown')}",
         f"- report_created_utc: {iso(now)}",
         "",
-        "## Reports selected for cleanup" if not args.dry_run else "## Reports that would be cleaned",
+        "## Paths selected for cleanup" if not args.dry_run else "## Paths that would be cleaned",
     ]
     if remove:
-        for path, result, age, reason in remove:
-            lines.append(f"- `{path}` | result={result} | age_days={age:.1f} | reason={reason}")
+        for path, kind, age, reason in remove:
+            lines.append(f"- `{path}` | kind={kind} | age_days={age:.1f} | reason={reason}")
     else:
         lines.append("- none")
-    lines += ["", "## Reports retained or skipped"]
+    lines += ["", "## Paths retained or skipped"]
     if keep:
-        for path, result, age, reason in keep[:200]:
-            lines.append(f"- `{path}` | result={result} | age_days={age:.1f} | reason={reason}")
+        for path, kind, age, reason in keep[:200]:
+            lines.append(f"- `{path}` | kind={kind} | age_days={age:.1f} | reason={reason}")
         if len(keep) > 200:
-            lines.append(f"- ... {len(keep) - 200} additional retained reports omitted from summary")
+            lines.append(f"- ... {len(keep) - 200} additional retained paths omitted from summary")
     else:
         lines.append("- none")
     lines += [
@@ -360,6 +386,8 @@ def main(argv: list[str] | None = None) -> int:
     cl.add_argument("--success-days", type=int, default=1)
     cl.add_argument("--failure-days", type=int, default=7)
     cl.add_argument("--cleanup-days", type=int, default=2)
+    cl.add_argument("--request-days", type=int, default=1)
+    cl.add_argument("--bundle-days", type=int, default=2)
     cl.add_argument("--workflow-filter", default="")
     cl.add_argument("--report-id", default="")
     cl.add_argument("--removed-paths-file", default=".github/tmp/chatgpt_report_cleanup_removed.txt")
