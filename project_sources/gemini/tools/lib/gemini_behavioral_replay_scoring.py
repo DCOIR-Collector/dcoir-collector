@@ -8,6 +8,7 @@ UNSUPPORTED_CERTAINTY_TERMS = [
     "definitely",
     "guarantee",
     "guaranteed",
+    "guarantees",
     "certainly",
     "confirmed",
 ]
