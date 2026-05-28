@@ -7,6 +7,7 @@ import sys
 
 SCHEMA = "dcoir.chatgpt_staging.github_artifact_readback_request.v1"
 SAFE_REQUEST_ID = re.compile(r"[A-Za-z0-9._-]+")
+INVALID_REQUEST_IDS = {".", ".."}
 NUMERIC = re.compile(r"[0-9]+")
 
 
@@ -15,6 +16,11 @@ def clean(payload: dict[str, object], name: str) -> str:
     if "\n" in value or "\r" in value:
         raise SystemExit(f"{name} must not contain newlines")
     return value
+
+
+def validate_request_id(request_id: str) -> None:
+    if not SAFE_REQUEST_ID.fullmatch(request_id) or request_id in INVALID_REQUEST_IDS:
+        raise SystemExit(f"Unsafe request_id: {request_id!r}")
 
 
 def main() -> int:
@@ -38,8 +44,7 @@ def main() -> int:
         raise SystemExit("request_id field is required in the request JSON")
     if not source_run_id:
         raise SystemExit("source_run_id field is required in the request JSON")
-    if not SAFE_REQUEST_ID.fullmatch(request_id):
-        raise SystemExit(f"Unsafe request_id: {request_id!r}")
+    validate_request_id(request_id)
     if not NUMERIC.fullmatch(source_run_id):
         raise SystemExit("source_run_id must be numeric")
     if not artifact_name and not artifact_id:
