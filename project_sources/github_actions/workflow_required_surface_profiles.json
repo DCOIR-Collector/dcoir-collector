@@ -35,9 +35,7 @@
     "project_sources/collector/tools/verify_collector_documentation_quality.py",
     "project_sources/collector/tools/test_verify_collector_documentation_quality.py",
     ".github/workflows/manual-gemini-bundle-build.yml",
-    ".github/workflows/manual-gemini-model-comparison.yml",
     ".github/workflows/manual-collector-runtime-package-build.yml",
-    ".github/workflows/chatgpt-workflow-run-reporter.yml",
     "supporting_assets/DCOIR_Collector.zip"
   ],
   "validate_on_pr": [
@@ -76,9 +74,7 @@
     "project_sources/collector/tools/verify_collector_documentation_quality.py",
     "project_sources/collector/tools/test_verify_collector_documentation_quality.py",
     ".github/workflows/manual-gemini-bundle-build.yml",
-    ".github/workflows/manual-gemini-model-comparison.yml",
     ".github/workflows/manual-collector-runtime-package-build.yml",
-    ".github/workflows/chatgpt-workflow-run-reporter.yml",
     "supporting_assets/DCOIR_Collector.zip"
   ],
   "manual_full_validation": [
