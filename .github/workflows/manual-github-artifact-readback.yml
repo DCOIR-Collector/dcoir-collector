@@ -121,6 +121,18 @@ jobs:
             printf '%s=%s\n' "$1" "$2" >> "$GITHUB_OUTPUT"
           }
 
+          validate_request_id() {
+            local request_id="$1"
+            if [[ -n "$request_id" && ( "$request_id" == '.' || "$request_id" == '..' ) ]]; then
+              echo "request_id must not be . or .." >&2
+              exit 1
+            fi
+            if [[ -n "$request_id" && ! "$request_id" =~ ^[A-Za-z0-9._-]+$ ]]; then
+              echo "Unsafe request_id: $request_id" >&2
+              exit 1
+            fi
+          }
+
           REQUEST_PATH_INPUT="${INPUT_REQUEST_PATH}"
           SOURCE_RUN_ID="${INPUT_SOURCE_RUN_ID}"
           ARTIFACT_NAME="${INPUT_ARTIFACT_NAME}"
@@ -182,7 +194,7 @@ jobs:
               exit 1
             fi
             [[ -z "$ARTIFACT_ID" || "$ARTIFACT_ID" =~ ^[0-9]+$ ]] || { echo "artifact_id must be numeric when provided" >&2; exit 1; }
-            [[ -z "$REQUEST_ID" || "$REQUEST_ID" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "Unsafe request_id: $REQUEST_ID" >&2; exit 1; }
+            validate_request_id "$REQUEST_ID"
             if [[ -n "$ARTIFACT_SUBPATH" ]]; then
               [[ "$ARTIFACT_SUBPATH" != /* ]] || { echo "artifact_subpath must be relative" >&2; exit 1; }
               [[ "$ARTIFACT_SUBPATH" != *..* ]] || { echo "artifact_subpath must not contain parent traversal" >&2; exit 1; }
@@ -194,6 +206,8 @@ jobs:
             append_output request_id "$REQUEST_ID"
             append_output artifact_subpath "$ARTIFACT_SUBPATH"
           fi
+
+          validate_request_id "$REQUEST_ID"
 
           if [[ -z "$REQUEST_ID" ]]; then
             RAW_ID="${ARTIFACT_NAME:-artifact-$ARTIFACT_ID}"
