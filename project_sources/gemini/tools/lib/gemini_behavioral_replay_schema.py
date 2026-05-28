@@ -37,6 +37,27 @@ REQUIRED_TURN_KEYS = [
     "scoring_notes",
 ]
 
+REQUIRED_RESPONSE_PACK_KEYS = [
+    "schema_version",
+    "fixture_id",
+    "mode",
+    "model_name",
+    "turns",
+]
+
+REQUIRED_RESPONSE_TURN_KEYS = [
+    "turn_id",
+    "assistant_response",
+]
+
+ALLOWED_RESPONSE_MODES = {
+    "deterministic",
+    "live_gemini",
+    "fallback_emulation",
+}
+
+EXPECTED_RESPONSE_PACK_SCHEMA_VERSION = "gemini_behavioral_replay_response_pack_v1"
+
 
 @dataclass(frozen=True)
 class ValidationMessage:
@@ -123,5 +144,102 @@ def validate_fixture_shape(fixture: Dict[str, Any]) -> List[ValidationMessage]:
                 f"fixture {fixture.get('fixture_id', '<missing-fixture-id>')} has no required_markers",
             )
         )
+
+    return messages
+
+
+def validate_response_turn(turn: Dict[str, Any]) -> List[ValidationMessage]:
+    messages: List[ValidationMessage] = []
+    missing = missing_keys(turn, REQUIRED_RESPONSE_TURN_KEYS)
+    if missing:
+        messages.append(
+            ValidationMessage(
+                "error",
+                f"response turn {turn.get('turn_id', '<missing-turn-id>')} is missing keys: {', '.join(missing)}",
+            )
+        )
+    assistant_response = str(turn.get("assistant_response", "")).strip()
+    if "assistant_response" in turn and not assistant_response:
+        messages.append(
+            ValidationMessage(
+                "error",
+                f"response turn {turn.get('turn_id', '<missing-turn-id>')} must not have an empty assistant_response",
+            )
+        )
+    return messages
+
+
+def validate_response_pack_shape(response_pack: Dict[str, Any], fixture: Dict[str, Any] | None = None) -> List[ValidationMessage]:
+    messages: List[ValidationMessage] = []
+    missing = missing_keys(response_pack, REQUIRED_RESPONSE_PACK_KEYS)
+    if missing:
+        messages.append(
+            ValidationMessage(
+                "error",
+                f"response pack is missing keys: {', '.join(missing)}",
+            )
+        )
+
+    schema_version = response_pack.get("schema_version")
+    if schema_version is not None and schema_version != EXPECTED_RESPONSE_PACK_SCHEMA_VERSION:
+        messages.append(
+            ValidationMessage(
+                "error",
+                f"response pack schema_version {schema_version!r} does not match expected {EXPECTED_RESPONSE_PACK_SCHEMA_VERSION!r}",
+            )
+        )
+
+    mode = response_pack.get("mode")
+    if mode is not None and mode not in ALLOWED_RESPONSE_MODES:
+        messages.append(
+            ValidationMessage(
+                "error",
+                f"response pack mode {mode!r} is not allowed; expected one of {sorted(ALLOWED_RESPONSE_MODES)}",
+            )
+        )
+
+    turns = response_pack.get("turns", [])
+    if not isinstance(turns, list) or not turns:
+        messages.append(
+            ValidationMessage(
+                "error",
+                "response pack must define at least one turn",
+            )
+        )
+    else:
+        seen_turn_ids = set()
+        for turn in turns:
+            for message in validate_response_turn(turn):
+                messages.append(message)
+            turn_id = turn.get("turn_id")
+            if turn_id in seen_turn_ids:
+                messages.append(
+                    ValidationMessage(
+                        "error",
+                        f"response pack repeats turn_id {turn_id}",
+                    )
+                )
+            seen_turn_ids.add(turn_id)
+
+    if fixture is not None:
+        fixture_id = fixture.get("fixture_id")
+        if response_pack.get("fixture_id") != fixture_id:
+            messages.append(
+                ValidationMessage(
+                    "error",
+                    f"response pack fixture_id {response_pack.get('fixture_id')!r} does not match fixture {fixture_id!r}",
+                )
+            )
+
+        fixture_turn_ids = [turn.get("turn_id") for turn in fixture.get("turns", [])]
+        response_turn_ids = [turn.get("turn_id") for turn in turns if isinstance(turns, list)]
+        for turn_id in response_turn_ids:
+            if turn_id not in fixture_turn_ids:
+                messages.append(
+                    ValidationMessage(
+                        "error",
+                        f"response pack includes unknown turn_id {turn_id!r} for fixture {fixture_id!r}",
+                    )
+                )
 
     return messages

@@ -35,6 +35,40 @@ The first governed fixture covers the `#124` failure family around:
 - chunk continuity and artifact recovery
 - partial-evidence handling
 
+## Response-pack contract
+
+Deterministic replay uses a response pack that mirrors one replay attempt against one fixture.
+
+At minimum it must include:
+
+- `schema_version`
+- `fixture_id`
+- `mode`
+- `model_name`
+- `turns`
+
+Each response-pack turn must include:
+
+- `turn_id`
+- `assistant_response`
+
+Allowed replay modes are:
+
+- `deterministic`
+- `live_gemini`
+- `fallback_emulation`
+
+## Supporting artifacts
+
+This fixture family may include governed supporting artifacts alongside the fixtures themselves.
+
+The first deterministic lane uses:
+
+- a known-good response pack that should pass
+- known-bad response pack coverage that should fail, including targeted regression cases for scorer edge conditions
+
+Keep those artifacts behaviorally faithful to the governed scenario rather than turning them into synthetic filler.
+
 ## Registry
 
 Use `index.json` as the family registry.

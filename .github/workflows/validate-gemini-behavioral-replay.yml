@@ -1,0 +1,151 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-validation-validate-gemini-behavioral-replay-0001
+# Purpose:
+# - Automatic deterministic validation for Gemini behavioral replay fixtures, response-pack regression checks, and replay reporting surfaces.
+# Use when:
+# - Use as the normal deterministic replay gate when replay tools, replay fixtures, or replay reporting surfaces change.
+# Do not use when:
+# - Do not treat this as the live Gemini replay lane; that remains separate from deterministic validation.
+# Trigger model:
+# - push/pull_request paths: behavioral replay tools, fixtures, and this workflow definition; workflow_dispatch
+# Required inputs:
+# - none
+# Required secrets/config:
+# - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
+# Runtime dependencies:
+# - Uses validate_gemini_behavioral_replay_fixtures.py, score_gemini_behavioral_replay.py, run_gemini_behavioral_replay.py, and render_gemini_behavioral_replay_report.py.
+# Expected outputs/readback:
+# - Deterministic replay artifacts and repo-workflows report.
+# Safety notes:
+# - Keep this lane deterministic; do not add live Gemini API calls here.
+# - Preserve explicit good-pack pass and bad-pack rejection checks so regressions stay bounded.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
+name: validate-gemini-behavioral-replay
+
+on:
+  push:
+    paths:
+      - 'project_sources/gemini/tools/run_gemini_behavioral_replay.py'
+      - 'project_sources/gemini/tools/score_gemini_behavioral_replay.py'
+      - 'project_sources/gemini/tools/render_gemini_behavioral_replay_report.py'
+      - 'project_sources/gemini/tools/validate_gemini_behavioral_replay_fixtures.py'
+      - 'project_sources/gemini/tools/lib/gemini_behavioral_replay_*.py'
+      - 'project_sources/gemini/fixtures/behavioral_replay/**'
+      - '.github/workflows/validate-gemini-behavioral-replay.yml'
+  pull_request:
+    paths:
+      - 'project_sources/gemini/tools/run_gemini_behavioral_replay.py'
+      - 'project_sources/gemini/tools/score_gemini_behavioral_replay.py'
+      - 'project_sources/gemini/tools/render_gemini_behavioral_replay_report.py'
+      - 'project_sources/gemini/tools/validate_gemini_behavioral_replay_fixtures.py'
+      - 'project_sources/gemini/tools/lib/gemini_behavioral_replay_*.py'
+      - 'project_sources/gemini/fixtures/behavioral_replay/**'
+      - '.github/workflows/validate-gemini-behavioral-replay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-gemini-behavioral-replay-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate_replay:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Validate Python syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            project_sources/gemini/tools/run_gemini_behavioral_replay.py \
+            project_sources/gemini/tools/score_gemini_behavioral_replay.py \
+            project_sources/gemini/tools/render_gemini_behavioral_replay_report.py \
+            project_sources/gemini/tools/validate_gemini_behavioral_replay_fixtures.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_schema.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_runner.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_scoring.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_reporting.py
+
+      - name: Create output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p project_sources/validation/out_validate_gemini_behavioral_replay
+
+      - name: Validate replay fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python project_sources/gemini/tools/validate_gemini_behavioral_replay_fixtures.py \
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
+            --output-dir project_sources/validation/out_validate_gemini_behavioral_replay/fixtures
+
+      - name: Validate known-good deterministic response pack
+        shell: bash
+        run: |
+          set -euo pipefail
+          python project_sources/gemini/tools/run_gemini_behavioral_replay.py \
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
+            --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_operator_state_first_issue_124_known_good_response_pack.json \
+            --output-dir project_sources/validation/out_validate_gemini_behavioral_replay/run_good
+
+      - name: Render standalone replay report
+        shell: bash
+        run: |
+          set -euo pipefail
+          python project_sources/gemini/tools/render_gemini_behavioral_replay_report.py \
+            --results-json project_sources/validation/out_validate_gemini_behavioral_replay/run_good/gemini_behavioral_replay_run_report.json \
+            --output-path project_sources/validation/out_validate_gemini_behavioral_replay/run_good/gemini_behavioral_replay_rendered_report.md
+
+      - name: Ensure known-bad deterministic response pack fails
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python project_sources/gemini/tools/score_gemini_behavioral_replay.py \
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
+            --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_operator_state_first_issue_124_known_bad_response_pack.json \
+            --fixture-id dcoir_operator_state_first_issue_124; then
+            echo "Known-bad response pack unexpectedly passed."
+            exit 1
+          fi
+
+      - name: Ensure anomaly-only known-bad deterministic response pack fails
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python project_sources/gemini/tools/score_gemini_behavioral_replay.py \
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
+            --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_operator_state_first_issue_124_known_bad_anomaly_only_response_pack.json \
+            --fixture-id dcoir_operator_state_first_issue_124; then
+            echo "Anomaly-only known-bad response pack unexpectedly passed."
+            exit 1
+          fi
+
+      - name: Upload deterministic replay artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: validate-gemini-behavioral-replay-results
+          path: |
+            project_sources/validation/out_validate_gemini_behavioral_replay/**
+          if-no-files-found: warn
+          retention-days: 14
