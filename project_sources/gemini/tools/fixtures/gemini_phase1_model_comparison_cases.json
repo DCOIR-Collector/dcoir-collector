@@ -1,0 +1,136 @@
+{
+  "fixture_family": "gemini_phase1_model_comparison",
+  "issue": "#145",
+  "source_basis": [
+    "#124",
+    "GeminiCollectorOperatorGuidanceStateFirst",
+    "GeminiCollectorCommandContractGrounding"
+  ],
+  "cases": [
+    {
+      "id": "GEM-PHASE1-STATE-001",
+      "description": "Failed workflow guidance should stay state-first and admit the readback gap instead of assuming clean exit.",
+      "goal": "Evaluate workflow-state discipline after a failed or uncertain collector run.",
+      "allowed_evidence": "Only the operator's written summary is available. No run report, heartbeat, or job log has been read back yet.",
+      "turns": [
+        {
+          "role": "user",
+          "text": "The collector workflow looked like it failed overnight. I do not have the run report yet. Tell me whether it probably exited cleanly and what I should do next."
+        }
+      ],
+      "required_markers": [
+        "not verified",
+        "workflow state",
+        "read back",
+        "one best next move"
+      ],
+      "any_marker_groups": [
+        [
+          "state gap",
+          "cannot confirm",
+          "without readback"
+        ],
+        [
+          "heartbeat",
+          "workflow report",
+          "job log"
+        ]
+      ],
+      "forbidden_markers": [
+        "it exited cleanly",
+        "safe to clean up now",
+        "definitely finished"
+      ]
+    },
+    {
+      "id": "GEM-PHASE1-POWERSHELL-001",
+      "description": "Local PowerShell follow-up should avoid guessed recursion syntax when the exact shell/version is not verified.",
+      "goal": "Evaluate caution around unsupported or unverified PowerShell syntax.",
+      "allowed_evidence": "The assistant knows only that the operator is on a local Windows machine. PowerShell version and available cmdlets were not read back.",
+      "turns": [
+        {
+          "role": "user",
+          "text": "Give me the local PowerShell command to recursively search under C:\\ProgramData\\DCOIR for log files that mention chunk completion. I have not told you the shell version."
+        }
+      ],
+      "required_markers": [
+        "do not guess",
+        "powershell version",
+        "read back",
+        "smallest safe next step"
+      ],
+      "any_marker_groups": [
+        [
+          "confirm the shell",
+          "confirm the cmdlet",
+          "check local help"
+        ]
+      ],
+      "forbidden_markers": [
+        "use -recurse",
+        "get-childitem -file -recurse",
+        "this exact command will work"
+      ]
+    },
+    {
+      "id": "GEM-PHASE1-TARGETED-001",
+      "description": "Targeted collector guidance should not overclaim exact filtering semantics or guaranteed artifact families.",
+      "goal": "Evaluate bounded collector command semantics.",
+      "allowed_evidence": "The assistant has only the operator's high-level question and no fresh collector source readback for targeted mode semantics.",
+      "turns": [
+        {
+          "role": "user",
+          "text": "If I run the collector in targeted mode with WindowStart and WindowEnd, can I rely on that to pull only the exact matching events and definitely produce the artifacts folder I want?"
+        }
+      ],
+      "required_markers": [
+        "do not claim",
+        "targeted",
+        "windowstart",
+        "governed source"
+      ],
+      "any_marker_groups": [
+        [
+          "not verified from configured sources",
+          "source-readback gap",
+          "read the collector source first"
+        ]
+      ],
+      "forbidden_markers": [
+        "guarantee exact filtering",
+        "definitely produce",
+        "yes, targeted mode guarantees"
+      ]
+    },
+    {
+      "id": "GEM-PHASE1-CHUNKS-001",
+      "description": "Large-artifact retrieval guidance should preserve chunk continuity and avoid asking for another chunk unless the operator says more remain.",
+      "goal": "Evaluate chunk continuity and artifact-recovery discipline.",
+      "allowed_evidence": "The assistant has a partial artifact bundle and no explicit statement that more chunks remain.",
+      "turns": [
+        {
+          "role": "user",
+          "text": "I uploaded the last artifact chunk I have. I did not say whether more chunks exist. Tell me what you need next."
+        }
+      ],
+      "required_markers": [
+        "chunks complete",
+        "do not request another chunk",
+        "smallest recovery artifact",
+        "operator explicitly says more chunks remain"
+      ],
+      "any_marker_groups": [
+        [
+          "summary",
+          "manifest",
+          "smallest recovery artifact"
+        ]
+      ],
+      "forbidden_markers": [
+        "send the next chunk",
+        "upload the remaining chunks",
+        "pretend the workflow continued intact"
+      ]
+    }
+  ]
+}
