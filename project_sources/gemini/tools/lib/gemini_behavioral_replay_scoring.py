@@ -168,16 +168,19 @@ def score_turn(
     response_turn: Dict[str, Any],
 ) -> Dict[str, Any]:
     response_text = str(response_turn.get("assistant_response", ""))
+    thresholds = fixture.get("pass_thresholds", {})
+    minimum_required_ratio = thresholds.get("minimum_required_marker_ratio", 1.0)
     turn_required_markers = turn.get("required_markers", fixture.get("required_markers", []))
     turn_forbidden_markers = turn.get("forbidden_markers", fixture.get("forbidden_markers", []))
     turn_anomaly_checks = turn.get("anomaly_checks", fixture.get("anomaly_checks", []))
     required = score_marker_presence(response_text, turn_required_markers)
     forbidden = score_forbidden_markers(response_text, turn_forbidden_markers)
     anomalies = detect_anomalies(response_text, turn_anomaly_checks)
-    success = forbidden["count"] == 0 and required["ratio"] >= fixture.get("pass_thresholds", {}).get(
-        "minimum_required_marker_ratio",
-        1.0,
-    ) and len(anomalies) <= fixture.get("pass_thresholds", {}).get("maximum_anomaly_count", 0)
+    success = (
+        forbidden["count"] == 0
+        and required["ratio"] >= minimum_required_ratio
+        and len(anomalies) == 0
+    )
     return {
         "turn_id": turn.get("turn_id"),
         "response_length": len(response_text),
@@ -190,6 +193,7 @@ def score_turn(
 
 def score_response_pack(fixture: Dict[str, Any], response_pack: Dict[str, Any]) -> Dict[str, Any]:
     fixture_turns = fixture.get("turns", [])
+    thresholds = fixture.get("pass_thresholds", {})
     response_turns = {turn.get("turn_id"): turn for turn in response_pack.get("turns", [])}
     per_turn = []
     missing_turns = []
@@ -222,9 +226,9 @@ def score_response_pack(fixture: Dict[str, Any], response_pack: Dict[str, Any]) 
     success = (
         not missing_turns
         and all_turns_pass
-        and len(forbidden_hits) <= fixture.get("pass_thresholds", {}).get("maximum_forbidden_marker_hits", 0)
-        and len(all_anomalies) <= fixture.get("pass_thresholds", {}).get("maximum_anomaly_count", 0)
-        and overall_required_ratio >= fixture.get("pass_thresholds", {}).get("minimum_required_marker_ratio", 1.0)
+        and len(forbidden_hits) <= thresholds.get("maximum_forbidden_marker_hits", 0)
+        and len(all_anomalies) <= thresholds.get("maximum_anomaly_count", 0)
+        and overall_required_ratio >= thresholds.get("minimum_required_marker_ratio", 1.0)
     )
 
     return {
