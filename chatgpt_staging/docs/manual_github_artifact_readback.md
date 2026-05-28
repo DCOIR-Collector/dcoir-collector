@@ -34,25 +34,35 @@ Use `artifact_id` instead of `artifact_name` when the artifact id is the safer s
 
 ## Readback paths
 
-Successful runs write:
+Live polling during execution:
 
 ```text
 chatgpt_staging/status_reports/chatgpt-github-artifact-readback/<request_id>/workflow_report.md
+chatgpt_staging/status_reports/chatgpt-github-artifact-readback/<request_id>/progress_history.jsonl
+chatgpt_staging/status_reports/chatgpt-github-artifact-readback/<request_id>/latest_progress_marker.json
+```
+
+Successful runs also write:
+
+```text
 chatgpt_staging/out/<request_id>/artifact_manifest.json
 chatgpt_staging/out/<request_id>/artifact_manifest.md
 chatgpt_staging/out/<request_id>/...
 ```
 
-The staged output under `chatgpt_staging/out/<request_id>/` is the primary ChatGPT-readable surface.
+The staged output under `chatgpt_staging/out/<request_id>/` is the primary ChatGPT-readable surface after the heartbeat report reaches `result: success`.
 
 ## Use pattern
 
-1. Read the source workflow report first.
-2. Confirm the source run id and artifact name or id.
-3. Prefer a request JSON under `chatgpt_staging/requests/github_artifact_readback/`.
-4. Read `artifact_manifest.md` and the staged files under `chatgpt_staging/out/<request_id>/`.
-5. Prefer a scoped `chatgpt-staging-cleanup` marker when the readback is complete and you want immediate bounded cleanup.
-6. If scoped cleanup is not requested first, `chatgpt-report-retention-cleanup` is the automatic fallback that prunes stale request JSON files, staged output bundles, and status reports by policy.
+1. Check Gmail `Label_125` with the GitHub subject prefix `[malwaredevil/dcoir-collector]` as an early liveness signal only.
+2. Poll `chatgpt_staging/status_reports/chatgpt-github-artifact-readback/<request_id>/workflow_report.md` until `result` becomes `success` or `failure`.
+3. Do not use `repo-workflows/.../workflow_report.md` completed-run summaries for live polling.
+4. Read the source workflow report first.
+5. Confirm the source run id and artifact name or id.
+6. Prefer a request JSON under `chatgpt_staging/requests/github_artifact_readback/`.
+7. After success, read `artifact_manifest.md` and the staged files under `chatgpt_staging/out/<request_id>/`.
+8. Prefer a scoped `chatgpt-staging-cleanup` marker when the readback is complete and you want immediate bounded cleanup.
+9. If scoped cleanup is not requested first, `chatgpt-report-retention-cleanup` is the automatic fallback that prunes stale request JSON files, staged output bundles, and status reports by policy.
 
 ## Safety notes
 
