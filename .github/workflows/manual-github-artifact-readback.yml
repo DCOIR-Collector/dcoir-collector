@@ -109,7 +109,6 @@ jobs:
           COMMIT_OUTPUTS='${{ inputs.commit_outputs }}'
           REQUEST_PATH=''
           NEXT_REQUEST_PATH=''
-          COMMIT_MESSAGE='Stage GitHub artifact readback bundle and report [skip ci]'
 
           if [[ "${{ github.event_name }}" == "push" ]]; then
             consider_changed_request_path() {
@@ -133,16 +132,18 @@ jobs:
               echo "skip=true" >> "$GITHUB_OUTPUT"
               exit 0
             fi
-            while IFS= read -r p; do
-              if [[ "$p" != "$REQUEST_PATH" ]]; then
-                NEXT_REQUEST_PATH="$p"
-                COMMIT_MESSAGE='Stage GitHub artifact readback bundle and report'
-                break
-              fi
-            done < <(find chatgpt_staging/requests/github_artifact_readback -maxdepth 1 -type f -name '*.json' | sort)
             COMMIT_OUTPUTS='true'
           elif [[ -n "$REQUEST_PATH_INPUT" && -f "$REQUEST_PATH_INPUT" ]]; then
             REQUEST_PATH="$REQUEST_PATH_INPUT"
+          fi
+
+          if [[ -n "$REQUEST_PATH" ]]; then
+            while IFS= read -r p; do
+              if [[ "$p" != "$REQUEST_PATH" ]]; then
+                NEXT_REQUEST_PATH="$p"
+                break
+              fi
+            done < <(find chatgpt_staging/requests/github_artifact_readback -maxdepth 1 -type f -name '*.json' | sort)
           fi
 
           if [[ -n "$REQUEST_PATH" ]]; then
@@ -224,7 +225,6 @@ PY
           fi
 
           echo "commit_outputs=$COMMIT_OUTPUTS" >> "$GITHUB_OUTPUT"
-          echo "commit_message=$COMMIT_MESSAGE" >> "$GITHUB_OUTPUT"
           echo "next_request_path=$NEXT_REQUEST_PATH" >> "$GITHUB_OUTPUT"
           echo "download_dir=$RUNNER_TEMP/chatgpt_github_artifact_readback_download" >> "$GITHUB_OUTPUT"
           echo "out_dir=chatgpt_staging/out/$REQUEST_ID" >> "$GITHUB_OUTPUT"
@@ -393,13 +393,8 @@ PY
         run: |
           set -euo pipefail
           REQUEST_PATH='${{ steps.plan.outputs.request_path }}'
-          NEXT_REQUEST_PATH='${{ steps.plan.outputs.next_request_path }}'
-          COMMIT_MESSAGE='${{ steps.plan.outputs.commit_message }}'
           if [[ -n "$REQUEST_PATH" ]]; then
             rm -f "$REQUEST_PATH" || true
-          fi
-          if [[ -n "$NEXT_REQUEST_PATH" && -f "$NEXT_REQUEST_PATH" ]]; then
-            printf '\n' >> "$NEXT_REQUEST_PATH"
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -407,11 +402,36 @@ PY
           if [[ -n "$REQUEST_PATH" ]]; then
             git add -u -- "$REQUEST_PATH" || true
           fi
-          if [[ -n "$NEXT_REQUEST_PATH" && -f "$NEXT_REQUEST_PATH" ]]; then
-            git add -- "$NEXT_REQUEST_PATH"
-          fi
-          git commit -m "$COMMIT_MESSAGE" || exit 0
+          git commit -m "Stage GitHub artifact readback bundle and report [skip ci]" || exit 0
           git push
+
+      - name: Dispatch next queued artifact readback request
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.next_request_path != ''
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          curl --fail-with-body -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/manual-github-artifact-readback.yml/dispatches" \
+            -d @- <<EOF
+          {
+            "ref": "${GITHUB_REF_NAME}",
+            "inputs": {
+              "request_path": "${{ steps.plan.outputs.next_request_path }}",
+              "source_run_id": "",
+              "artifact_name": "",
+              "artifact_id": "",
+              "request_id": "",
+              "artifact_subpath": "",
+              "commit_outputs": "true"
+            }
+          }
+          EOF
 
       - name: Capture failure report
         if: failure() && steps.plan.outputs.skip != 'true'
