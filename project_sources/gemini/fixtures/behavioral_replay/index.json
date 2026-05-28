@@ -1,0 +1,25 @@
+{
+  "schema_version": "gemini_behavioral_replay_index_v1",
+  "fixture_family": "gemini_behavioral_replay",
+  "issue": "#145",
+  "model_split": {
+    "reference_baseline": "gemini-3.1-pro-preview",
+    "simulated_production": "gemini-3.5-flash"
+  },
+  "fixtures": [
+    {
+      "fixture_id": "dcoir_operator_state_first_issue_124",
+      "path": "project_sources/gemini/fixtures/behavioral_replay/dcoir_operator_state_first_issue_124.json",
+      "source_issue_numbers": [
+        124,
+        145
+      ],
+      "status": "active",
+      "mode_support": [
+        "deterministic",
+        "live_gemini",
+        "fallback_emulation"
+      ]
+    }
+  ]
+}
