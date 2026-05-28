@@ -40,8 +40,8 @@
       "chunk_id": "03",
       "title": "Response_Completeness_Tools_And_Command_Pacing",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_03_Response_Completeness_Tools_And_Command_Pacing.md.txt",
-      "sha256": "fcc1e5519bb1457d21ca196f66f6d6d892b51fed11f3867be0616578ea5a9141",
-      "line_count": 73,
+      "sha256": "06a54c1813cc42075a60c9ddaf91ac311a6be8b4be2f77f4484771aa2dba33fc",
+      "line_count": 77,
       "starts_with": "### Response completeness, tool availability, and command pacing"
     },
     {
@@ -64,8 +64,8 @@
       "chunk_id": "06",
       "title": "Zero_Result_Retrieval_Misses_And_Web_Intel",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_06_Zero_Result_Retrieval_Misses_And_Web_Intel.md.txt",
-      "sha256": "5c3c75cb6521079937f138c57d12a8a73664b60ad93eb742321c4aec09eaf8b9",
-      "line_count": 45,
+      "sha256": "89794c6de0109157b027bda8b8fcd5f791956e87ffdb5e7cd3b17c71056f2100",
+      "line_count": 47,
       "starts_with": "### Zero-result handling, retrieval misses, and web intelligence"
     },
     {
@@ -176,8 +176,8 @@
       "chunk_id": "20",
       "title": "Routing_Request_Coverage_Tool_Access_And_Memory",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_20_Routing_Request_Coverage_Tool_Access_And_Memory.md.txt",
-      "sha256": "528c290a565085427eb28152b35634d06090b4d27aa2a4fda7e38a97e79d97f8",
-      "line_count": 36,
+      "sha256": "b4a703c8f202730df7c2431b4fdc22ad0bf7afe4dbc9338332cfc50ca67ef03a",
+      "line_count": 38,
       "starts_with": "### Routing, request coverage, tool access, and memory limits"
     }
   ]
