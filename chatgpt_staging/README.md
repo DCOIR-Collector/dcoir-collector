@@ -2,11 +2,11 @@
 
 Status: active safety and operations contract for `PLAN-20260501-chatgpt-github-staging-lane`.
 
-This folder supports the ChatGPT GitHub staging lane: a controlled path for large-file readback, stage-out bundles, reviewed apply-in bundles, cleanup markers, and workflow status reports when normal connector edits or readback are too small, fragile, or cumbersome.
+This folder supports the ChatGPT GitHub staging lane: a controlled path for large-file readback, stage-out bundles, reviewed apply-in bundles, cleanup markers, workflow status reports, and bounded artifact extraction when normal connector edits or readback are too small, fragile, or cumbersome.
 
 ## New-session rule
 
-When a session sees staging-lane, cleanup, failure-report, workflow-report, large-file readback, or batch-apply work:
+When a session sees staging-lane, cleanup, failure-report, workflow-report, large-file readback, artifact extraction, or batch-apply work:
 
 1. Read Airtable Queue Control, active Plan, and Work Item.
 2. Consult the Airtable `SKILLROUTE-CHATGPT-STAGING-LANE` and `DECISION-CHATGPT-STAGING-LANE-DEFAULTS` rows.
@@ -94,6 +94,7 @@ Example apply manifest fields:
 Default posture:
 
 - keep stage-out bundles only until ChatGPT retrieves the needed files or records evidence
+- keep manually extracted artifact readback bundles only until ChatGPT retrieves the needed files or records evidence
 - delete inbound apply payloads after successful apply/commit/push unless explicit validation evidence requires temporary retention
 - keep status reports only until ChatGPT reads them and records any needed Airtable evidence
 - keep failure evidence until the failure is diagnosed and retry/stop decision is recorded
@@ -109,7 +110,7 @@ A cleanup run may leave its own final `chatgpt-staging-cleanup/.../workflow_repo
 chatgpt_staging/
   requests/          # ChatGPT-created stage-out requests
   in/                # ChatGPT-created apply-in payloads
-  out/               # GitHub-created stage-out bundles retained until ChatGPT cleanup
+  out/               # GitHub-created stage-out bundles and artifact readback bundles retained until ChatGPT cleanup
   work/              # transient workflow work area; never intentionally committed
   apply_reports/     # apply-in reports when retained
   failure_reports/   # legacy/special failure locators; use status_reports for new workflow result reports
