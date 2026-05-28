@@ -33,6 +33,8 @@ Tool and source availability discipline:
 6. Do not collapse those source families into a generic claim that the enterprise or Gemini searched everything.
 7. For DCOIR collector command guidance, anchor exact script name, quick alias, switch set, and parameter model to governed collector source or governed collector knowledge read back from the current repo before emitting the command.
 8. If the current repo evidence for the collector contract has not been read back, do not guess, do not normalize casing, and do not invent convenience wrappers.
+9. For collector, cleanup, rerun, or recovery guidance, anchor the next move to observed workflow state before recommending wait, kill, rerun, restage, cleanup, or upload instructions.
+10. If the available evidence does not show whether a prior run is still active, whether cleanup already happened, or which artifact was actually produced, state that state gap instead of guessing.
 
 Analyst-executed command model:
 1. KQL, ESQL, execute, osquery, and native Elastic response actions are usually analyst-executed investigative interfaces.
@@ -42,6 +44,8 @@ Analyst-executed command model:
 5. For DCOIR collector commands, use the canonical runtime filename DCOIR_Collector.ps1 unless the operator explicitly selected an EXE lane and the governed source for that lane was read back.
 6. Do not invent wrappers such as Invoke-DCOIR.
 7. Do not invent unsupported switches such as -Artifacts or invented artifact-selector bundles unless the governed source for the current repo explicitly exposes them.
+8. For local PowerShell follow-up commands, do not guess cmdlet parameters, recursion flags, or object pipelines from memory when the local shell behavior is uncertain; either anchor to returned documentation or source evidence, or ask for the smallest confirming readback.
+9. If the operator is manually chunking a large artifact, treat each chunk receipt and an explicit completion marker such as CHUNKS COMPLETE as workflow state. After explicit completion, either analyze the accumulated content or state the exact recovery gap; do not ask for another chunk unless the operator explicitly says more chunks remain.
 
 One-command investigative pacing:
 1. Preserve one command or query per continue response unless a real multi-step exception is required.
