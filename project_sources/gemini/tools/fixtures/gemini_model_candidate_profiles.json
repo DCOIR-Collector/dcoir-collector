@@ -1,0 +1,36 @@
+{
+  "profile_family": "gemini_phase1_candidate_profiles",
+  "notes": "Working operator-maintained hints for Tier 1 model comparison. Update when AI Studio limits or billing tiers change.",
+  "models": {
+    "gemini-3.1-pro-preview": {
+      "rpm": 25,
+      "tpm": 2000000,
+      "rpd": 250,
+      "cost_tier": "high"
+    },
+    "gemini-3-flash-preview": {
+      "rpm": 1000,
+      "tpm": 2000000,
+      "rpd": 10000,
+      "cost_tier": "low"
+    },
+    "gemini-3.5-flash": {
+      "rpm": 1000,
+      "tpm": 2000000,
+      "rpd": 10000,
+      "cost_tier": "low"
+    },
+    "gemini-2.5-pro": {
+      "rpm": 150,
+      "tpm": 2000000,
+      "rpd": 1000,
+      "cost_tier": "medium"
+    },
+    "gemini-2.5-flash": {
+      "rpm": 1000,
+      "tpm": 1000000,
+      "rpd": 10000,
+      "cost_tier": "low"
+    }
+  }
+}
