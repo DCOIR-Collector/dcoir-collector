@@ -66,8 +66,6 @@ on:
       - 'supporting_assets/DCOIR_Collector.zip'
       - '.github/workflows/validate-on-push.yml'
       - '.github/workflows/validate-on-pr.yml'
-      - '.github/workflows/manual-gemini-model-comparison.yml'
-      - '.github/workflows/chatgpt-workflow-run-reporter.yml'
 
 concurrency:
   group: validate-on-pr-${{ github.event.pull_request.number }}
