@@ -104,27 +104,40 @@ jobs:
       - name: Resolve artifact readback plan
         id: plan
         shell: bash
+        env:
+          INPUT_REQUEST_PATH: ${{ inputs.request_path }}
+          INPUT_SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+          INPUT_ARTIFACT_NAME: ${{ inputs.artifact_name }}
+          INPUT_ARTIFACT_ID: ${{ inputs.artifact_id }}
+          INPUT_REQUEST_ID: ${{ inputs.request_id }}
+          INPUT_ARTIFACT_SUBPATH: ${{ inputs.artifact_subpath }}
+          INPUT_COMMIT_OUTPUTS: ${{ inputs.commit_outputs }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
 
-          REQUEST_PATH_INPUT='${{ inputs.request_path }}'
-          SOURCE_RUN_ID='${{ inputs.source_run_id }}'
-          ARTIFACT_NAME='${{ inputs.artifact_name }}'
-          ARTIFACT_ID='${{ inputs.artifact_id }}'
-          REQUEST_ID='${{ inputs.request_id }}'
-          ARTIFACT_SUBPATH='${{ inputs.artifact_subpath }}'
-          COMMIT_OUTPUTS='${{ inputs.commit_outputs }}'
-          REQUEST_PATH=''
-          NEXT_REQUEST_PATH=''
+          append_output() {
+            printf '%s=%s\n' "$1" "$2" >> "$GITHUB_OUTPUT"
+          }
 
-          if [[ "${{ github.event_name }}" == "push" ]]; then
+          REQUEST_PATH_INPUT="${INPUT_REQUEST_PATH}"
+          SOURCE_RUN_ID="${INPUT_SOURCE_RUN_ID}"
+          ARTIFACT_NAME="${INPUT_ARTIFACT_NAME}"
+          ARTIFACT_ID="${INPUT_ARTIFACT_ID}"
+          REQUEST_ID="${INPUT_REQUEST_ID}"
+          ARTIFACT_SUBPATH="${INPUT_ARTIFACT_SUBPATH}"
+          COMMIT_OUTPUTS="${INPUT_COMMIT_OUTPUTS}"
+          REQUEST_PATH=""
+          NEXT_REQUEST_PATH=""
+
+          if [[ "$EVENT_NAME" == "push" ]]; then
             consider_changed_request_path() {
               local p="$1"
               if [[ -z "$REQUEST_PATH" && "$p" == chatgpt_staging/requests/github_artifact_readback/*.json && -f "$p" ]]; then
                 REQUEST_PATH="$p"
               fi
             }
-            BEFORE_SHA='${{ github.event.before }}'
             if [[ -n "$BEFORE_SHA" && "$BEFORE_SHA" != '0000000000000000000000000000000000000000' ]]; then
               while IFS= read -r p; do
                 consider_changed_request_path "$p"
@@ -136,7 +149,7 @@ jobs:
             fi
             if [[ -z "$REQUEST_PATH" ]]; then
               echo "No artifact-readback request JSON found in pushed range; exiting successfully."
-              echo "skip=true" >> "$GITHUB_OUTPUT"
+              append_output skip true
               exit 0
             fi
             COMMIT_OUTPUTS='true'
@@ -174,28 +187,28 @@ jobs:
               [[ "$ARTIFACT_SUBPATH" != /* ]] || { echo "artifact_subpath must be relative" >&2; exit 1; }
               [[ "$ARTIFACT_SUBPATH" != *..* ]] || { echo "artifact_subpath must not contain parent traversal" >&2; exit 1; }
             fi
-            echo "request_path=" >> "$GITHUB_OUTPUT"
-            echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"
-            echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
-            echo "artifact_id=$ARTIFACT_ID" >> "$GITHUB_OUTPUT"
-            echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
-            echo "artifact_subpath=$ARTIFACT_SUBPATH" >> "$GITHUB_OUTPUT"
+            append_output request_path ""
+            append_output source_run_id "$SOURCE_RUN_ID"
+            append_output artifact_name "$ARTIFACT_NAME"
+            append_output artifact_id "$ARTIFACT_ID"
+            append_output request_id "$REQUEST_ID"
+            append_output artifact_subpath "$ARTIFACT_SUBPATH"
           fi
 
           if [[ -z "$REQUEST_ID" ]]; then
             RAW_ID="${ARTIFACT_NAME:-artifact-$ARTIFACT_ID}"
             SAFE_ID="$(printf '%s' "$RAW_ID" | tr ' ' '-' | tr -cd 'A-Za-z0-9._-')"
-            [[ -n "$SAFE_ID" ]] || SAFE_ID="artifact"
+            [[ -n "$SAFE_ID" ]] || SAFE_ID='artifact'
             REQUEST_ID="artifact-readback-${SOURCE_RUN_ID}-${SAFE_ID}"
-            echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
+            append_output request_id "$REQUEST_ID"
           fi
 
-          echo "commit_outputs=$COMMIT_OUTPUTS" >> "$GITHUB_OUTPUT"
-          echo "next_request_path=$NEXT_REQUEST_PATH" >> "$GITHUB_OUTPUT"
-          echo "download_dir=$RUNNER_TEMP/chatgpt_github_artifact_readback_download" >> "$GITHUB_OUTPUT"
-          echo "out_dir=chatgpt_staging/out/$REQUEST_ID" >> "$GITHUB_OUTPUT"
-          echo "report_dir=chatgpt_staging/status_reports/chatgpt-github-artifact-readback/$REQUEST_ID" >> "$GITHUB_OUTPUT"
-          echo "skip=false" >> "$GITHUB_OUTPUT"
+          append_output commit_outputs "$COMMIT_OUTPUTS"
+          append_output next_request_path "$NEXT_REQUEST_PATH"
+          append_output download_dir "$RUNNER_TEMP/chatgpt_github_artifact_readback_download"
+          append_output out_dir "chatgpt_staging/out/$REQUEST_ID"
+          append_output report_dir "chatgpt_staging/status_reports/chatgpt-github-artifact-readback/$REQUEST_ID"
+          append_output skip false
 
       - name: Download artifact by id
         if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.artifact_id != ''
@@ -218,27 +231,41 @@ jobs:
       - name: Stage extracted artifact into cleanup-managed path
         if: steps.plan.outputs.skip != 'true'
         shell: bash
+        env:
+          DOWNLOAD_DIR: ${{ steps.plan.outputs.download_dir }}
+          OUT_DIR: ${{ steps.plan.outputs.out_dir }}
+          REPORT_DIR: ${{ steps.plan.outputs.report_dir }}
+          REQUEST_ID: ${{ steps.plan.outputs.request_id }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+          ARTIFACT_NAME: ${{ steps.plan.outputs.artifact_name }}
+          ARTIFACT_ID: ${{ steps.plan.outputs.artifact_id }}
+          ARTIFACT_SUBPATH: ${{ steps.plan.outputs.artifact_subpath }}
         run: |
           set -euo pipefail
           python .github/scripts/stage_github_artifact_readback.py \
-            --download-dir '${{ steps.plan.outputs.download_dir }}' \
-            --out-dir '${{ steps.plan.outputs.out_dir }}' \
-            --report-dir '${{ steps.plan.outputs.report_dir }}' \
-            --request-id '${{ steps.plan.outputs.request_id }}' \
-            --source-run-id '${{ steps.plan.outputs.source_run_id }}' \
-            --artifact-name '${{ steps.plan.outputs.artifact_name }}' \
-            --artifact-id '${{ steps.plan.outputs.artifact_id }}' \
-            --artifact-subpath '${{ steps.plan.outputs.artifact_subpath }}'
+            --download-dir "$DOWNLOAD_DIR" \
+            --out-dir "$OUT_DIR" \
+            --report-dir "$REPORT_DIR" \
+            --request-id "$REQUEST_ID" \
+            --source-run-id "$SOURCE_RUN_ID" \
+            --artifact-name "$ARTIFACT_NAME" \
+            --artifact-id "$ARTIFACT_ID" \
+            --artifact-subpath "$ARTIFACT_SUBPATH"
 
       - name: Write workflow report
         if: steps.plan.outputs.skip != 'true'
         shell: bash
+        env:
+          REPORT_PATH: ${{ steps.plan.outputs.report_dir }}/workflow_report.md
+          OUT_DIR: ${{ steps.plan.outputs.out_dir }}
+          REQUEST_ID: ${{ steps.plan.outputs.request_id }}
+          REQUEST_PATH: ${{ steps.plan.outputs.request_path }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+          ARTIFACT_NAME: ${{ steps.plan.outputs.artifact_name }}
+          ARTIFACT_ID: ${{ steps.plan.outputs.artifact_id }}
+          ARTIFACT_SUBPATH: ${{ steps.plan.outputs.artifact_subpath }}
         run: |
           set -euo pipefail
-          REPORT_PATH='${{ steps.plan.outputs.report_dir }}/workflow_report.md'
-          OUT_DIR='${{ steps.plan.outputs.out_dir }}'
-          REQUEST_ID='${{ steps.plan.outputs.request_id }}'
-          REQUEST_PATH='${{ steps.plan.outputs.request_path }}'
           {
             echo "# ChatGPT workflow report"
             echo
@@ -249,10 +276,10 @@ jobs:
             echo "- phase: artifact-staged"
             echo "- request_id: $REQUEST_ID"
             echo "- request_path: ${REQUEST_PATH:-'(direct dispatch inputs)'}"
-            echo "- source_run_id: ${{ steps.plan.outputs.source_run_id }}"
-            echo "- artifact_name: ${{ steps.plan.outputs.artifact_name }}"
-            echo "- artifact_id: ${{ steps.plan.outputs.artifact_id }}"
-            echo "- artifact_subpath: ${{ steps.plan.outputs.artifact_subpath }}"
+            echo "- source_run_id: $SOURCE_RUN_ID"
+            echo "- artifact_name: $ARTIFACT_NAME"
+            echo "- artifact_id: $ARTIFACT_ID"
+            echo "- artifact_subpath: $ARTIFACT_SUBPATH"
             echo "- out_dir: $OUT_DIR"
             echo "- github_run_id: $GITHUB_RUN_ID"
             echo "- github_run_attempt: $GITHUB_RUN_ATTEMPT"
@@ -278,15 +305,18 @@ jobs:
       - name: Commit staged artifact readback and report
         if: steps.plan.outputs.skip != 'true' && (github.event_name == 'push' || steps.plan.outputs.commit_outputs == 'true')
         shell: bash
+        env:
+          REQUEST_PATH: ${{ steps.plan.outputs.request_path }}
+          OUT_DIR: ${{ steps.plan.outputs.out_dir }}
+          REPORT_DIR: ${{ steps.plan.outputs.report_dir }}
         run: |
           set -euo pipefail
-          REQUEST_PATH='${{ steps.plan.outputs.request_path }}'
           if [[ -n "$REQUEST_PATH" ]]; then
             rm -f "$REQUEST_PATH" || true
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add '${{ steps.plan.outputs.out_dir }}' '${{ steps.plan.outputs.report_dir }}'
+          git add "$OUT_DIR" "$REPORT_DIR"
           if [[ -n "$REQUEST_PATH" ]]; then
             git add -u -- "$REQUEST_PATH" || true
           fi
@@ -294,14 +324,15 @@ jobs:
           git push
 
       - name: Dispatch next queued artifact readback request
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.next_request_path != ''
+        if: steps.plan.outputs.skip != 'true' && (github.event_name == 'push' || steps.plan.outputs.commit_outputs == 'true') && steps.plan.outputs.next_request_path != ''
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXT_REQUEST_PATH: ${{ steps.plan.outputs.next_request_path }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          PAYLOAD="$(python -c "import json, os; print(json.dumps({'ref': os.environ['GITHUB_REF_NAME'], 'inputs': {'request_path': os.environ['NEXT_REQUEST_PATH'], 'source_run_id': '', 'artifact_name': '', 'artifact_id': '', 'request_id': '', 'artifact_subpath': '', 'commit_outputs': 'true'}}))")"
+          PAYLOAD="$(python -c "import json, os; print(json.dumps({'ref': os.environ['REF_NAME'], 'inputs': {'request_path': os.environ['NEXT_REQUEST_PATH'], 'source_run_id': '', 'artifact_name': '', 'artifact_id': '', 'request_id': '', 'artifact_subpath': '', 'commit_outputs': 'true'}}))")"
           curl --fail-with-body -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
@@ -313,10 +344,18 @@ jobs:
       - name: Capture failure report
         if: failure() && steps.plan.outputs.skip != 'true'
         shell: bash
+        env:
+          REQUEST_ID: ${{ steps.plan.outputs.request_id }}
+          REQUEST_PATH: ${{ steps.plan.outputs.request_path }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+          ARTIFACT_NAME: ${{ steps.plan.outputs.artifact_name }}
+          ARTIFACT_ID: ${{ steps.plan.outputs.artifact_id }}
+          ARTIFACT_SUBPATH: ${{ steps.plan.outputs.artifact_subpath }}
         run: |
           set -euo pipefail
-          REQUEST_ID='${{ steps.plan.outputs.request_id }}'
-          [[ -n "$REQUEST_ID" ]] || REQUEST_ID="artifact_readback_failure_$GITHUB_RUN_ID"
+          if [[ -z "$REQUEST_ID" ]]; then
+            REQUEST_ID="artifact_readback_failure_$GITHUB_RUN_ID"
+          fi
           REPORT_DIR="chatgpt_staging/status_reports/chatgpt-github-artifact-readback/$REQUEST_ID"
           REPORT_PATH="$REPORT_DIR/workflow_report.md"
           mkdir -p "$REPORT_DIR"
@@ -329,11 +368,11 @@ jobs:
             echo "- result: failure"
             echo "- phase: artifact-readback"
             echo "- request_id: $REQUEST_ID"
-            echo "- request_path: ${{ steps.plan.outputs.request_path }}"
-            echo "- source_run_id: ${{ steps.plan.outputs.source_run_id }}"
-            echo "- artifact_name: ${{ steps.plan.outputs.artifact_name }}"
-            echo "- artifact_id: ${{ steps.plan.outputs.artifact_id }}"
-            echo "- artifact_subpath: ${{ steps.plan.outputs.artifact_subpath }}"
+            echo "- request_path: $REQUEST_PATH"
+            echo "- source_run_id: $SOURCE_RUN_ID"
+            echo "- artifact_name: $ARTIFACT_NAME"
+            echo "- artifact_id: $ARTIFACT_ID"
+            echo "- artifact_subpath: $ARTIFACT_SUBPATH"
             echo "- github_run_id: $GITHUB_RUN_ID"
             echo "- github_run_attempt: $GITHUB_RUN_ATTEMPT"
             echo "- github_sha: $GITHUB_SHA"
