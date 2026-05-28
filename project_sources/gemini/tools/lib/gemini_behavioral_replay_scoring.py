@@ -181,6 +181,7 @@ def score_response_pack(fixture: Dict[str, Any], response_pack: Dict[str, Any]) 
         per_turn.append(score_turn(fixture, turn, response_turn))
 
     turn_successes = sum(1 for row in per_turn if row["success"])
+    all_turns_pass = turn_successes == len(per_turn)
     all_anomalies = [anomaly for row in per_turn for anomaly in row["anomalies"]]
     forbidden_hits = [hit for row in per_turn for hit in row["forbidden_markers"]["hits"]]
     overall_required_ratio = round(
@@ -189,6 +190,7 @@ def score_response_pack(fixture: Dict[str, Any], response_pack: Dict[str, Any]) 
     )
     success = (
         not missing_turns
+        and all_turns_pass
         and len(forbidden_hits) <= fixture.get("pass_thresholds", {}).get("maximum_forbidden_marker_hits", 0)
         and len(all_anomalies) <= fixture.get("pass_thresholds", {}).get("maximum_anomaly_count", 0)
         and overall_required_ratio >= fixture.get("pass_thresholds", {}).get("minimum_required_marker_ratio", 1.0)
