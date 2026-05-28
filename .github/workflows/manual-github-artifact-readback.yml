@@ -1,41 +1,50 @@
 # DCOIR WORKFLOW OPERATOR NOTES
 # Workflow key:
-# - workflow-staging_lane-manual-github-artifact-readback-0001
+# - workflow-staging_lane-chatgpt-github-artifact-readback-0002
 # Purpose:
-# - Download a GitHub Actions artifact from a specified workflow run, extract it into a cleanup-managed repo path, and commit a ChatGPT-readable status report.
+# - Download a bounded GitHub Actions artifact from a specified workflow run, extract it into a cleanup-managed repo path, and commit a ChatGPT-readable status report.
 # Use when:
 # - Use when ChatGPT needs connector-readable access to a workflow artifact's extracted contents without asking the operator to download and re-upload the ZIP manually.
+# - Prefer the request-file trigger by committing chatgpt_staging/requests/github_artifact_readback/<request_id>.json on main.
 # Do not use when:
 # - Do not use for broad repo cleanup, unbounded artifact scraping, or as a replacement for the normal heartbeat/report-first readback order.
 # Trigger model:
-# - workflow_dispatch inputs: source_run_id, artifact_name, artifact_id, request_id, artifact_subpath
+# - workflow_dispatch inputs: request_path, source_run_id, artifact_name, artifact_id, request_id, artifact_subpath, commit_outputs; push branches: main paths: chatgpt_staging/requests/github_artifact_readback/*.json
 # Required inputs:
-# - source_run_id: GitHub Actions run id that owns the artifact.
-# - artifact_name or artifact_id: identify the artifact to download.
+# - request_path: optional repo-relative request JSON under chatgpt_staging/requests/github_artifact_readback/
+# - source_run_id: GitHub Actions run id that owns the artifact when using direct dispatch fallback.
+# - artifact_name or artifact_id: bounded artifact selector.
 # - request_id: optional safe request id override; default derives from source_run_id plus artifact identifier.
-# - artifact_subpath: optional relative path within the artifact to copy instead of the full extracted artifact.
+# - artifact_subpath: optional relative path within the extracted artifact to stage instead of the full extracted artifact.
 # Required secrets/config:
 # - Uses only the repository GITHUB_TOKEN.
 # Runtime dependencies:
 # - Uses actions/download-artifact plus repo-local manifest/report generation.
 # Expected outputs/readback:
-# - Extracted files under chatgpt_staging/out/<request_id>/ and workflow report under chatgpt_staging/status_reports/manual-github-artifact-readback/<request_id>/workflow_report.md.
+# - Extracted files under chatgpt_staging/out/<request_id>/ and workflow report under chatgpt_staging/status_reports/chatgpt-github-artifact-readback/<request_id>/workflow_report.md.
 # Safety notes:
 # - Inputs must be bounded; absolute paths and parent traversal are rejected.
+# - Request JSON schema must be dcoir.chatgpt_staging.github_artifact_readback_request.v1.
 # - The extracted bundle is staged for ChatGPT readback and should later be removed with chatgpt-staging-cleanup.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, reports, artifacts, permissions, or cleanup behavior change.
 # Authority routing:
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
-name: manual-github-artifact-readback
+name: chatgpt-github-artifact-readback
 
 on:
   workflow_dispatch:
     inputs:
+      request_path:
+        description: Repo-relative request JSON under chatgpt_staging/requests/github_artifact_readback/
+        required: false
+        default: ""
+        type: string
       source_run_id:
         description: GitHub Actions run id that owns the artifact
-        required: true
+        required: false
+        default: ""
         type: string
       artifact_name:
         description: Artifact name to download
@@ -57,13 +66,23 @@ on:
         required: false
         default: ""
         type: string
+      commit_outputs:
+        description: Commit generated output bundle and report
+        required: true
+        default: true
+        type: boolean
+  push:
+    branches:
+      - main
+    paths:
+      - "chatgpt_staging/requests/github_artifact_readback/*.json"
 
 permissions:
   contents: write
   actions: read
 
 concurrency:
-  group: manual-github-artifact-readback-${{ github.ref }}
+  group: chatgpt-github-artifact-readback-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -80,22 +99,93 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
+          REQUEST_PATH_INPUT='${{ inputs.request_path }}'
           SOURCE_RUN_ID='${{ inputs.source_run_id }}'
           ARTIFACT_NAME='${{ inputs.artifact_name }}'
           ARTIFACT_ID='${{ inputs.artifact_id }}'
           REQUEST_ID='${{ inputs.request_id }}'
           ARTIFACT_SUBPATH='${{ inputs.artifact_subpath }}'
+          COMMIT_OUTPUTS='${{ inputs.commit_outputs }}'
+          REQUEST_PATH=''
 
-          [[ "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]] || { echo "source_run_id must be numeric" >&2; exit 1; }
-          if [[ -z "$ARTIFACT_NAME" && -z "$ARTIFACT_ID" ]]; then
-            echo "artifact_name or artifact_id is required" >&2
-            exit 1
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            while IFS= read -r p; do
+              if [[ "$p" == chatgpt_staging/requests/github_artifact_readback/*.json && -f "$p" ]]; then
+                REQUEST_PATH="$p"
+                break
+              fi
+            done < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")
+            if [[ -z "$REQUEST_PATH" ]]; then
+              echo "No artifact-readback request JSON found in triggering commit; exiting successfully."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            COMMIT_OUTPUTS='true'
+          elif [[ -n "$REQUEST_PATH_INPUT" && -f "$REQUEST_PATH_INPUT" ]]; then
+            REQUEST_PATH="$REQUEST_PATH_INPUT"
           fi
-          [[ -z "$ARTIFACT_ID" || "$ARTIFACT_ID" =~ ^[0-9]+$ ]] || { echo "artifact_id must be numeric when provided" >&2; exit 1; }
-          [[ -z "$REQUEST_ID" || "$REQUEST_ID" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "Unsafe request_id: $REQUEST_ID" >&2; exit 1; }
-          if [[ -n "$ARTIFACT_SUBPATH" ]]; then
-            [[ "$ARTIFACT_SUBPATH" != /* ]] || { echo "artifact_subpath must be relative" >&2; exit 1; }
-            [[ "$ARTIFACT_SUBPATH" != *..* ]] || { echo "artifact_subpath must not contain parent traversal" >&2; exit 1; }
+
+          if [[ -n "$REQUEST_PATH" ]]; then
+            python - "$REQUEST_PATH" <<'PY'
+import json, pathlib, re, sys
+path = pathlib.Path(sys.argv[1])
+payload = json.loads(path.read_text(encoding='utf-8'))
+if payload.get('schema') != 'dcoir.chatgpt_staging.github_artifact_readback_request.v1':
+    raise SystemExit('artifact readback request schema must be dcoir.chatgpt_staging.github_artifact_readback_request.v1')
+request_id = str(payload.get('request_id', '')).strip()
+source_run_id = str(payload.get('source_run_id', '')).strip()
+artifact_name = str(payload.get('artifact_name', '')).strip()
+artifact_id = str(payload.get('artifact_id', '')).strip()
+artifact_subpath = str(payload.get('artifact_subpath', '')).strip()
+if not re.fullmatch(r'[A-Za-z0-9._-]+', request_id):
+    raise SystemExit(f'Unsafe request_id: {request_id!r}')
+if not re.fullmatch(r'[0-9]+', source_run_id):
+    raise SystemExit('source_run_id must be numeric')
+if not artifact_name and not artifact_id:
+    raise SystemExit('artifact_name or artifact_id is required')
+if artifact_id and not re.fullmatch(r'[0-9]+', artifact_id):
+    raise SystemExit('artifact_id must be numeric when provided')
+if artifact_subpath:
+    if artifact_subpath.startswith('/') or '..' in pathlib.PurePosixPath(artifact_subpath).parts:
+        raise SystemExit('artifact_subpath must be relative and must not contain parent traversal')
+print('REQUEST_ID=' + request_id)
+print('SOURCE_RUN_ID=' + source_run_id)
+print('ARTIFACT_NAME=' + artifact_name)
+print('ARTIFACT_ID=' + artifact_id)
+print('ARTIFACT_SUBPATH=' + artifact_subpath)
+PY
+            while IFS='=' read -r key value; do
+              case "$key" in
+                REQUEST_ID) REQUEST_ID="$value" ;;
+                SOURCE_RUN_ID) SOURCE_RUN_ID="$value" ;;
+                ARTIFACT_NAME) ARTIFACT_NAME="$value" ;;
+                ARTIFACT_ID) ARTIFACT_ID="$value" ;;
+                ARTIFACT_SUBPATH) ARTIFACT_SUBPATH="$value" ;;
+              esac
+            done < <(python - "$REQUEST_PATH" <<'PY'
+import json, pathlib, sys
+path = pathlib.Path(sys.argv[1])
+payload = json.loads(path.read_text(encoding='utf-8'))
+print('REQUEST_ID=' + str(payload.get('request_id', '')).strip())
+print('SOURCE_RUN_ID=' + str(payload.get('source_run_id', '')).strip())
+print('ARTIFACT_NAME=' + str(payload.get('artifact_name', '')).strip())
+print('ARTIFACT_ID=' + str(payload.get('artifact_id', '')).strip())
+print('ARTIFACT_SUBPATH=' + str(payload.get('artifact_subpath', '')).strip())
+PY
+)
+          else
+            [[ -n "$SOURCE_RUN_ID" && "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]] || { echo "source_run_id must be numeric" >&2; exit 1; }
+            if [[ -z "$ARTIFACT_NAME" && -z "$ARTIFACT_ID" ]]; then
+              echo "artifact_name or artifact_id is required" >&2
+              exit 1
+            fi
+            [[ -z "$ARTIFACT_ID" || "$ARTIFACT_ID" =~ ^[0-9]+$ ]] || { echo "artifact_id must be numeric when provided" >&2; exit 1; }
+            [[ -z "$REQUEST_ID" || "$REQUEST_ID" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "Unsafe request_id: $REQUEST_ID" >&2; exit 1; }
+            if [[ -n "$ARTIFACT_SUBPATH" ]]; then
+              [[ "$ARTIFACT_SUBPATH" != /* ]] || { echo "artifact_subpath must be relative" >&2; exit 1; }
+              [[ "$ARTIFACT_SUBPATH" != *..* ]] || { echo "artifact_subpath must not contain parent traversal" >&2; exit 1; }
+            fi
           fi
 
           if [[ -z "$REQUEST_ID" ]]; then
@@ -105,17 +195,20 @@ jobs:
             REQUEST_ID="artifact-readback-${SOURCE_RUN_ID}-${SAFE_ID}"
           fi
 
+          echo "request_path=$REQUEST_PATH" >> "$GITHUB_OUTPUT"
           echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"
           echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
           echo "artifact_id=$ARTIFACT_ID" >> "$GITHUB_OUTPUT"
           echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
           echo "artifact_subpath=$ARTIFACT_SUBPATH" >> "$GITHUB_OUTPUT"
-          echo "download_dir=$RUNNER_TEMP/manual_github_artifact_readback_download" >> "$GITHUB_OUTPUT"
+          echo "commit_outputs=$COMMIT_OUTPUTS" >> "$GITHUB_OUTPUT"
+          echo "download_dir=$RUNNER_TEMP/chatgpt_github_artifact_readback_download" >> "$GITHUB_OUTPUT"
           echo "out_dir=chatgpt_staging/out/$REQUEST_ID" >> "$GITHUB_OUTPUT"
-          echo "report_dir=chatgpt_staging/status_reports/manual-github-artifact-readback/$REQUEST_ID" >> "$GITHUB_OUTPUT"
+          echo "report_dir=chatgpt_staging/status_reports/chatgpt-github-artifact-readback/$REQUEST_ID" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: Download artifact by id
-        if: steps.plan.outputs.artifact_id != ''
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.artifact_id != ''
         uses: actions/download-artifact@v5
         with:
           run-id: ${{ steps.plan.outputs.source_run_id }}
@@ -124,7 +217,7 @@ jobs:
           path: ${{ steps.plan.outputs.download_dir }}
 
       - name: Download artifact by name
-        if: steps.plan.outputs.artifact_id == ''
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.artifact_id == ''
         uses: actions/download-artifact@v5
         with:
           run-id: ${{ steps.plan.outputs.source_run_id }}
@@ -133,95 +226,8 @@ jobs:
           path: ${{ steps.plan.outputs.download_dir }}
 
       - name: Stage extracted artifact into cleanup-managed path
+        if: steps.plan.outputs.skip != 'true'
         shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import hashlib
-          import json
-          import os
-          import pathlib
-          import shutil
-
-          download_dir = pathlib.Path(os.environ['DOWNLOAD_DIR'])
-          out_dir = pathlib.Path(os.environ['OUT_DIR'])
-          report_dir = pathlib.Path(os.environ['REPORT_DIR'])
-          request_id = os.environ['REQUEST_ID']
-          source_run_id = os.environ['SOURCE_RUN_ID']
-          artifact_name = os.environ.get('ARTIFACT_NAME', '')
-          artifact_id = os.environ.get('ARTIFACT_ID', '')
-          artifact_subpath = os.environ.get('ARTIFACT_SUBPATH', '')
-
-          if not download_dir.exists():
-              raise SystemExit(f"Downloaded artifact path not found: {download_dir}")
-
-          source_root = download_dir / artifact_subpath if artifact_subpath else download_dir
-          if not source_root.exists():
-              raise SystemExit(f"artifact_subpath not found inside artifact: {artifact_subpath}")
-
-          if out_dir.exists():
-              shutil.rmtree(out_dir)
-          out_dir.mkdir(parents=True, exist_ok=True)
-          report_dir.mkdir(parents=True, exist_ok=True)
-
-          files = []
-          if source_root.is_file():
-              rel = pathlib.Path(source_root.name)
-              target = out_dir / rel
-              target.parent.mkdir(parents=True, exist_ok=True)
-              shutil.copy2(source_root, target)
-              data = target.read_bytes()
-              files.append({
-                  'path': rel.as_posix(),
-                  'bytes': len(data),
-                  'sha256': hashlib.sha256(data).hexdigest(),
-              })
-          else:
-              for src in sorted(source_root.rglob('*')):
-                  if src.is_dir():
-                      continue
-                  rel = src.relative_to(source_root)
-                  target = out_dir / rel
-                  target.parent.mkdir(parents=True, exist_ok=True)
-                  shutil.copy2(src, target)
-                  data = target.read_bytes()
-                  files.append({
-                      'path': rel.as_posix(),
-                      'bytes': len(data),
-                      'sha256': hashlib.sha256(data).hexdigest(),
-                  })
-
-          if not files:
-              raise SystemExit('Artifact extraction produced no files to stage')
-
-          manifest = {
-              'schema': 'dcoir.chatgpt_staging.manual_github_artifact_readback_manifest.v1',
-              'request_id': request_id,
-              'source_run_id': source_run_id,
-              'artifact_name': artifact_name,
-              'artifact_id': artifact_id,
-              'artifact_subpath': artifact_subpath,
-              'file_count': len(files),
-              'files': files,
-          }
-          (out_dir / 'artifact_manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
-          lines = [
-              '# GitHub artifact readback manifest',
-              '',
-              f'- request_id: `{request_id}`',
-              f'- source_run_id: `{source_run_id}`',
-              f'- artifact_name: `{artifact_name or "(downloaded by id)"}`',
-              f'- artifact_id: `{artifact_id or "(downloaded by name)"}`',
-              f'- artifact_subpath: `{artifact_subpath or "."}`',
-              f'- file_count: `{len(files)}`',
-              '',
-              '## Files',
-              '',
-          ]
-          for entry in files:
-              lines.append(f"- `{entry['path']}` | bytes={entry['bytes']} | sha256=`{entry['sha256']}`")
-          (out_dir / 'artifact_manifest.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
-          PY
         env:
           DOWNLOAD_DIR: ${{ steps.plan.outputs.download_dir }}
           OUT_DIR: ${{ steps.plan.outputs.out_dir }}
@@ -231,23 +237,106 @@ jobs:
           ARTIFACT_NAME: ${{ steps.plan.outputs.artifact_name }}
           ARTIFACT_ID: ${{ steps.plan.outputs.artifact_id }}
           ARTIFACT_SUBPATH: ${{ steps.plan.outputs.artifact_subpath }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+import hashlib
+import json
+import os
+import pathlib
+import shutil
+
+download_dir = pathlib.Path(os.environ['DOWNLOAD_DIR'])
+out_dir = pathlib.Path(os.environ['OUT_DIR'])
+report_dir = pathlib.Path(os.environ['REPORT_DIR'])
+request_id = os.environ['REQUEST_ID']
+source_run_id = os.environ['SOURCE_RUN_ID']
+artifact_name = os.environ.get('ARTIFACT_NAME', '')
+artifact_id = os.environ.get('ARTIFACT_ID', '')
+artifact_subpath = os.environ.get('ARTIFACT_SUBPATH', '')
+
+if not download_dir.exists():
+    raise SystemExit(f'Downloaded artifact path not found: {download_dir}')
+
+source_root = download_dir / artifact_subpath if artifact_subpath else download_dir
+if not source_root.exists():
+    raise SystemExit(f'artifact_subpath not found inside artifact: {artifact_subpath}')
+
+if out_dir.exists():
+    shutil.rmtree(out_dir)
+out_dir.mkdir(parents=True, exist_ok=True)
+report_dir.mkdir(parents=True, exist_ok=True)
+
+files = []
+if source_root.is_file():
+    rel = pathlib.Path(source_root.name)
+    target = out_dir / rel
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source_root, target)
+    data = target.read_bytes()
+    files.append({'path': rel.as_posix(), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()})
+else:
+    for src in sorted(source_root.rglob('*')):
+        if src.is_dir():
+            continue
+        rel = src.relative_to(source_root)
+        target = out_dir / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, target)
+        data = target.read_bytes()
+        files.append({'path': rel.as_posix(), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()})
+
+if not files:
+    raise SystemExit('Artifact extraction produced no files to stage')
+
+manifest = {
+    'schema': 'dcoir.chatgpt_staging.github_artifact_readback_manifest.v1',
+    'request_id': request_id,
+    'source_run_id': source_run_id,
+    'artifact_name': artifact_name,
+    'artifact_id': artifact_id,
+    'artifact_subpath': artifact_subpath,
+    'file_count': len(files),
+    'files': files,
+}
+(out_dir / 'artifact_manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+lines = [
+    '# GitHub artifact readback manifest',
+    '',
+    f'- request_id: `{request_id}`',
+    f'- source_run_id: `{source_run_id}`',
+    f'- artifact_name: `{artifact_name or "(downloaded by id)"}`',
+    f'- artifact_id: `{artifact_id or "(downloaded by name)"}`',
+    f'- artifact_subpath: `{artifact_subpath or "."}`',
+    f'- file_count: `{len(files)}`',
+    '',
+    '## Files',
+    '',
+]
+for entry in files:
+    lines.append(f"- `{entry['path']}` | bytes={entry['bytes']} | sha256=`{entry['sha256']}`")
+(out_dir / 'artifact_manifest.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+PY
 
       - name: Write workflow report
+        if: steps.plan.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
           REPORT_PATH='${{ steps.plan.outputs.report_dir }}/workflow_report.md'
           OUT_DIR='${{ steps.plan.outputs.out_dir }}'
           REQUEST_ID='${{ steps.plan.outputs.request_id }}'
+          REQUEST_PATH='${{ steps.plan.outputs.request_path }}'
           {
             echo "# ChatGPT workflow report"
             echo
             echo "## Result"
             echo
-            echo "- workflow: manual-github-artifact-readback"
+            echo "- workflow: chatgpt-github-artifact-readback"
             echo "- result: success"
             echo "- phase: artifact-staged"
             echo "- request_id: $REQUEST_ID"
+            echo "- request_path: ${REQUEST_PATH:-'(direct dispatch inputs)'}"
             echo "- source_run_id: ${{ steps.plan.outputs.source_run_id }}"
             echo "- artifact_name: ${{ steps.plan.outputs.artifact_name }}"
             echo "- artifact_id: ${{ steps.plan.outputs.artifact_id }}"
@@ -275,23 +364,31 @@ jobs:
           } > "$REPORT_PATH"
 
       - name: Commit staged artifact readback and report
+        if: steps.plan.outputs.skip != 'true' && (github.event_name == 'push' || steps.plan.outputs.commit_outputs == 'true')
         shell: bash
         run: |
           set -euo pipefail
+          REQUEST_PATH='${{ steps.plan.outputs.request_path }}'
+          if [[ -n "$REQUEST_PATH" ]]; then
+            rm -f "$REQUEST_PATH" || true
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add '${{ steps.plan.outputs.out_dir }}' '${{ steps.plan.outputs.report_dir }}'
+          if [[ -n "$REQUEST_PATH" ]]; then
+            git add -u -- "$REQUEST_PATH" || true
+          fi
           git commit -m "Stage GitHub artifact readback bundle and report [skip ci]" || exit 0
           git push
 
       - name: Capture failure report
-        if: failure()
+        if: failure() && steps.plan.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
           REQUEST_ID='${{ steps.plan.outputs.request_id }}'
           [[ -n "$REQUEST_ID" ]] || REQUEST_ID="artifact_readback_failure_$GITHUB_RUN_ID"
-          REPORT_DIR="chatgpt_staging/status_reports/manual-github-artifact-readback/$REQUEST_ID"
+          REPORT_DIR="chatgpt_staging/status_reports/chatgpt-github-artifact-readback/$REQUEST_ID"
           REPORT_PATH="$REPORT_DIR/workflow_report.md"
           mkdir -p "$REPORT_DIR"
           {
@@ -299,14 +396,15 @@ jobs:
             echo
             echo "## Result"
             echo
-            echo "- workflow: manual-github-artifact-readback"
+            echo "- workflow: chatgpt-github-artifact-readback"
             echo "- result: failure"
             echo "- phase: artifact-readback"
             echo "- request_id: $REQUEST_ID"
-            echo "- source_run_id: ${{ inputs.source_run_id }}"
-            echo "- artifact_name: ${{ inputs.artifact_name }}"
-            echo "- artifact_id: ${{ inputs.artifact_id }}"
-            echo "- artifact_subpath: ${{ inputs.artifact_subpath }}"
+            echo "- request_path: ${{ steps.plan.outputs.request_path }}"
+            echo "- source_run_id: ${{ steps.plan.outputs.source_run_id }}"
+            echo "- artifact_name: ${{ steps.plan.outputs.artifact_name }}"
+            echo "- artifact_id: ${{ steps.plan.outputs.artifact_id }}"
+            echo "- artifact_subpath: ${{ steps.plan.outputs.artifact_subpath }}"
             echo "- github_run_id: $GITHUB_RUN_ID"
             echo "- github_run_attempt: $GITHUB_RUN_ATTEMPT"
             echo "- github_sha: $GITHUB_SHA"
@@ -315,7 +413,7 @@ jobs:
             echo
             echo "## Troubleshooting notes"
             echo
-            echo "The artifact could not be downloaded, validated, or staged into chatgpt_staging/out. Common causes include wrong run id, wrong artifact name/id, missing artifact_subpath, or a permissions/download failure."
+            echo "The artifact could not be downloaded, validated, or staged into chatgpt_staging/out. Common causes include wrong run id, wrong artifact name/id, missing artifact_subpath, malformed request JSON, or a permissions/download failure."
             echo
             echo "## Next ChatGPT action"
             echo
