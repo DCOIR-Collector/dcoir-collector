@@ -128,6 +128,18 @@ jobs:
             exit 1
           fi
 
+      - name: Ensure anomaly-only known-bad deterministic response pack fails
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python project_sources/gemini/tools/score_gemini_behavioral_replay.py \
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
+            --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_operator_state_first_issue_124_known_bad_anomaly_only_response_pack.json \
+            --fixture-id dcoir_operator_state_first_issue_124; then
+            echo "Anomaly-only known-bad response pack unexpectedly passed."
+            exit 1
+          fi
+
       - name: Upload deterministic replay artifacts
         if: always()
         uses: actions/upload-artifact@v7
