@@ -6,7 +6,7 @@
   "turns": [
     {
       "turn_id": "turn-001",
-      "assistant_response": "This is not verified from checked evidence. The workflow state still needs to be read back, and the one best next move is to read back the workflow report or job log before cleanup."
+      "assistant_response": "This is not verified and not confirmed from checked evidence. The workflow state still needs to be read back, and the one best next move is to read back the workflow report or job log before cleanup."
     },
     {
       "turn_id": "turn-002",
@@ -14,7 +14,7 @@
     },
     {
       "turn_id": "turn-003",
-      "assistant_response": "Do not claim targeted mode semantics without governed source readback. WindowStart and WindowEnd need governed source confirmation before you claim exact filtering or artifact behavior."
+      "assistant_response": "Do not claim targeted mode semantics without governed source readback. WindowStart and WindowEnd are not guaranteed to give exact filtering or artifact behavior until governed source confirmation exists."
     },
     {
       "turn_id": "turn-004",
