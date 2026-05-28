@@ -23,6 +23,7 @@ Add repository secrets for the DCOIR variables that the runner should be able to
 6. Add the needed names exactly, for example:
    - `DCOIR_GITHUB_FG_TOKEN`
    - `DCOIR_GITHUB_CL_TOKEN`
+   - `DCOIR_GEMINI_API`
    - `DCOIR_OPENAI_API_KEY`
    - `DCOIR_OPENAI_PROJECT_ID`
    - `OPENAI_API_KEY`
@@ -73,6 +74,8 @@ Use `operator_tools/github_desktop_lane/manifests/chatgpt_exec_request.sample.js
 ## Environment bridge
 
 The workflow receives secrets as process environment variables. The reusable harness writes them into Machine-scope environment variables in the Windows runner before invoking the command. That lets existing tools keep using the same Machine-scope environment lookup that they use locally.
+
+Only secret names that are explicitly bridged by the workflow body and harness are available to exec requests. Adding a repository secret alone does not automatically expose it to the runner command environment.
 
 The workflow generates runner-local values for `DCOIR_REPO_ROOT`, `DCOIR_DOWNLOADS_DIR`, and `DCOIR_CONFIG_DIR`. Do not use local workstation path values for those inside GitHub Actions.
 
