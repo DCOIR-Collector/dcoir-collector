@@ -7,6 +7,33 @@ import shutil
 import sys
 
 SCHEMA = "dcoir.chatgpt_staging.github_artifact_readback_manifest.v1"
+INVALID_REQUEST_IDS = {".", ".."}
+OUT_ROOT = pathlib.Path("chatgpt_staging/out")
+REPORT_ROOT = pathlib.Path("chatgpt_staging/status_reports/chatgpt-github-artifact-readback")
+
+
+def validate_request_id(request_id: str) -> None:
+    if request_id in INVALID_REQUEST_IDS:
+        raise SystemExit(f"Unsafe request_id: {request_id!r}")
+
+
+def validate_artifact_subpath(artifact_subpath: str) -> None:
+    if artifact_subpath:
+        pure = pathlib.PurePosixPath(artifact_subpath)
+        if artifact_subpath.startswith("/") or ".." in pure.parts:
+            raise SystemExit("artifact_subpath must be relative and must not contain parent traversal")
+
+
+def validate_stage_paths(request_id: str, out_dir: pathlib.Path, report_dir: pathlib.Path) -> None:
+    validate_request_id(request_id)
+    expected_out_root = OUT_ROOT.resolve(strict=False)
+    expected_report_root = REPORT_ROOT.resolve(strict=False)
+    resolved_out_dir = out_dir.resolve(strict=False)
+    resolved_report_dir = report_dir.resolve(strict=False)
+    if resolved_out_dir.parent != expected_out_root or resolved_out_dir.name != request_id:
+        raise SystemExit(f"Refusing unsafe out_dir outside {OUT_ROOT}: {out_dir}")
+    if resolved_report_dir.parent != expected_report_root or resolved_report_dir.name != request_id:
+        raise SystemExit(f"Refusing unsafe report_dir outside {REPORT_ROOT}: {report_dir}")
 
 
 def main() -> int:
@@ -24,6 +51,9 @@ def main() -> int:
     download_dir = pathlib.Path(args.download_dir)
     out_dir = pathlib.Path(args.out_dir)
     report_dir = pathlib.Path(args.report_dir)
+
+    validate_artifact_subpath(args.artifact_subpath)
+    validate_stage_paths(args.request_id, out_dir, report_dir)
 
     if not download_dir.exists():
         raise SystemExit(f"Downloaded artifact path not found: {download_dir}")
