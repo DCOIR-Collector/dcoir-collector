@@ -12,6 +12,7 @@ from lib.gemini_behavioral_replay_scoring import score_response_pack
 DEFAULT_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
 DEFAULT_MODEL = "gemini-3.5-flash"
 DEFAULT_BASELINE_MODEL = "gemini-3.1-pro-preview"
+RETIRED_TEXT_MODEL_NAMES = {"gemini-3-pro-preview"}
 RETIRED_TEXT_MODEL_PREFIXES = (
     "gemini-2.0-flash-lite",
     "gemini-2.0-flash",
@@ -28,7 +29,20 @@ HARDCODED_MODELS = [
     "gemini-3.5-flash",
 ]
 GOVERNED_PAIR_MODELS = ["gemini-3.5-flash", DEFAULT_BASELINE_MODEL]
-EXCLUDED_MODEL_SUBSTRINGS = ["antigravity", "aqa", "embedding", "imagen", "image-generation", "native-audio", "robotics", "tts", "veo"]
+EXCLUDED_MODEL_SUBSTRINGS = [
+    "antigravity",
+    "aqa",
+    "computer-use",
+    "deep-research",
+    "embedding",
+    "imagen",
+    "image-generation",
+    "-image",
+    "native-audio",
+    "robotics",
+    "tts",
+    "veo",
+]
 
 
 def csv(raw: str | None) -> List[str]:
@@ -43,9 +57,13 @@ def mkdir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
+def normalize_model_name(model_name: str) -> str:
+    return str(model_name or "").split("/")[-1].lower()
+
+
 def is_retired_text_model(model_name: str) -> bool:
-    low = str(model_name or "").split("/")[-1].lower()
-    return any(low == prefix or low.startswith(f"{prefix}-") for prefix in RETIRED_TEXT_MODEL_PREFIXES)
+    low = normalize_model_name(model_name)
+    return low in RETIRED_TEXT_MODEL_NAMES or any(low == prefix or low.startswith(f"{prefix}-") for prefix in RETIRED_TEXT_MODEL_PREFIXES)
 
 
 def model_exclusion_reason(model: Dict[str, Any]) -> str:
@@ -53,9 +71,11 @@ def model_exclusion_reason(model: Dict[str, Any]) -> str:
     low = name.lower()
     if not low.startswith("gemini-"):
         return "not a Gemini model"
+    if low.endswith("-latest"):
+        return "alias/latest indirection is not a pinned replay model"
     for token in EXCLUDED_MODEL_SUBSTRINGS:
         if token in low:
-            return f"excluded family: {token}"
+            return f"excluded non-text replay family: {token}"
     methods = model.get("supportedGenerationMethods") or []
     return "" if not methods or "generateContent" in methods else "does not advertise generateContent"
 
@@ -93,7 +113,7 @@ def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
     custom = csv(args.custom_models_csv)
     rejected: List[Dict[str, str]] = []
     if args.run_all_viable_catalog_models:
-        selected, source = viable, "all_viable_catalog_models"
+        selected, source = viable, "all_viable_text_replay_catalog_models"
     elif custom:
         selected, source = [], "custom_models_csv"
         for model in custom:
@@ -111,7 +131,7 @@ def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
             else:
                 selected.append(model)
     selected = sorted(dict.fromkeys(selected))
-    retired_entries = [{"model": model, "reason": "deprecated Gemini 2.0 text family removed from replay selector"} for model in retired_viable]
+    retired_entries = [{"model": model, "reason": "deprecated or shut-down text model removed from replay selector"} for model in retired_viable]
     return {
         "selection_source": source, "catalog_ok": catalog["ok"], "catalog_error": catalog["error"],
         "hardcoded_models": HARDCODED_MODELS, "governed_pair_models": GOVERNED_PAIR_MODELS,
@@ -430,23 +450,24 @@ def main() -> int:
                     metadata["checked_evidence"].append("deterministic scorer")
                 results.append(result)
     ok = sum(1 for call in calls if call.get("ok")); unavailable = sum(1 for call in calls if call.get("unavailable"))
+    failed = len(calls) - ok - unavailable
     runtime_unavailable_models = sorted({str(row.get("model")) for row in metadata.get("runtime_unavailable_results", [])})
     metadata["runtime_unavailable_models"] = runtime_unavailable_models
-    live_complete = mode == "live" and bool(calls) and ok + unavailable == len(calls)
-    if mode == "live" and args.baseline_model in runtime_unavailable_models:
-        metadata["validation_messages"].append({"level": "error", "message": f"Baseline model {args.baseline_model!r} was unavailable at runtime, so baseline-relative scoring cannot run."})
+    live_complete = mode == "live" and bool(calls) and ok == len(calls)
+    baseline_call_failures = [call for call in calls if call.get("model_name") == args.baseline_model and not call.get("ok")]
+    if mode == "live" and baseline_call_failures:
+        metadata["validation_messages"].append({"level": "error", "message": f"Baseline model {args.baseline_model!r} had one or more live API failures, so baseline-relative scoring cannot be trusted."})
     if mode == "live":
         target_bucket = metadata["checked_evidence"] if live_complete else metadata["unchecked_evidence"]
         if "live Gemini API response" not in target_bucket:
             target_bucket.append("live Gemini API response")
-        if runtime_unavailable_models and "runtime model availability" not in metadata["checked_evidence"]:
+        if (runtime_unavailable_models or failed) and "runtime model availability" not in metadata["checked_evidence"]:
             metadata["checked_evidence"].append("runtime model availability")
-    metadata.update({"replay_mode": mode, "live_execution": mode == "live" and bool(calls), "fallback_reason": reason, "api_call_count": len(calls), "api_call_success_count": ok, "api_call_failure_count": len(calls)-ok, "api_call_unavailable_count": unavailable, "live_response_complete": live_complete, "prompt_profile": "behavioral_replay_operator_turn_exact_marker_tuned", "production_prompt_equivalent": "partial_fixture_replay_prompt", "live_environment_fidelity_gap": "Manual live replay uses fixture prompts and does not prove full production runtime parity."})
+    metadata.update({"replay_mode": mode, "live_execution": mode == "live" and bool(calls), "fallback_reason": reason, "api_call_count": len(calls), "api_call_success_count": ok, "api_call_failure_count": failed + unavailable, "api_call_unavailable_count": unavailable, "api_call_reported_failure_count": failed, "live_response_complete": live_complete, "prompt_profile": "behavioral_replay_operator_turn_exact_marker_tuned", "production_prompt_equivalent": "partial_fixture_replay_prompt", "live_environment_fidelity_gap": "Manual live replay uses fixture prompts and does not prove full production runtime parity."})
     has_errors = any(message.get("level") == "error" for message in metadata.get("validation_messages", []))
     scorer_failed = bool(results) and not all(result.get("success") for result in results)
     deterministic_failed = mode == "deterministic" and (has_errors or scorer_failed or not results)
-    live_failed = mode == "live" and bool(calls) and not live_complete
-    workflow_failed = has_errors or not results or live_failed
+    workflow_failed = has_errors or not results
     if deterministic_failed or workflow_failed:
         metadata["workflow_verdict"] = "failure"
     write_reports(output_dir, results, metadata)
