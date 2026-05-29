@@ -1,0 +1,318 @@
+# ChatGPT workflow report
+
+## Result
+
+- workflow: chatgpt-report-retention-cleanup
+- report_scope: retention-cleanup
+- report_family: retention-cleanup-summary
+- assistant_polling_target: false
+- identifier_type: cleanup_run_id
+- do_not_use_for_live_polling: true
+- result: success
+- mode: delete
+- success_retention_days: 1
+- failure_retention_days: 7
+- cleanup_retention_days: 2
+- request_retention_days: 1
+- bundle_retention_days: 2
+- keep_latest_per_workflow: true
+- workflow_filter: 
+- candidate_count: 85
+- retained_count: 220
+- github_run_id: 26665445680
+- github_sha: 2e84aec23f9b12a2d70fc1b4600dbe85d96d776b
+- report_created_utc: 2026-05-29T22:29:21Z
+
+## Paths selected for cleanup
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260528-google-ai-studio-gemini-smoke-003/workflow_report.md` | kind=success | age_days=1.5 | reason=age 1.5d >= 1d
+- `chatgpt_staging/status_reports/manual-github-artifact-readback/artifact-readback-26574890838-manual-gemini-model-comparison/workflow_report.md` | kind=success | age_days=1.4 | reason=age 1.4d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26561993563/workflow_report.md` | kind=cleanup | age_days=1.6 | reason=age 1.6d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26562381724/workflow_report.md` | kind=cleanup | age_days=1.6 | reason=age 1.6d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26563433172/workflow_report.md` | kind=cleanup | age_days=1.6 | reason=age 1.6d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26563450905/workflow_report.md` | kind=cleanup | age_days=1.6 | reason=age 1.6d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26563787656/workflow_report.md` | kind=cleanup | age_days=1.6 | reason=age 1.6d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26580880611/workflow_report.md` | kind=cleanup | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26582891081/workflow_report.md` | kind=cleanup | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26583682440/workflow_report.md` | kind=cleanup | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26583710420/workflow_report.md` | kind=cleanup | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26583736593/workflow_report.md` | kind=cleanup | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26583809086/workflow_report.md` | kind=cleanup | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26584479274/workflow_report.md` | kind=cleanup | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26584511096/workflow_report.md` | kind=cleanup | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26584933460/workflow_report.md` | kind=cleanup | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26584992739/workflow_report.md` | kind=cleanup | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26589563162/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26589989400/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26591120523/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26591209437/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26591943655/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26592492072/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26592810358/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26593180681/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26593716548/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26594156625/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26594494788/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26594510511/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26594573724/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26594668442/workflow_report.md` | kind=cleanup | age_days=1.2 | reason=age 1.2d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26595651200/workflow_report.md` | kind=cleanup | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26595998250/workflow_report.md` | kind=cleanup | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26596014242/workflow_report.md` | kind=cleanup | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26596070878/workflow_report.md` | kind=cleanup | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26596475801/workflow_report.md` | kind=cleanup | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26600977660/workflow_report.md` | kind=cleanup | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26601951023/workflow_report.md` | kind=cleanup | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26602946480/workflow_report.md` | kind=cleanup | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26603166853/workflow_report.md` | kind=cleanup | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26603510821/workflow_report.md` | kind=cleanup | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26603781528/workflow_report.md` | kind=cleanup | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26604338253/workflow_report.md` | kind=cleanup | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26604347789/workflow_report.md` | kind=cleanup | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26604369705/workflow_report.md` | kind=cleanup | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26583749273/workflow_report.md` | kind=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26585024656/workflow_report.md` | kind=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26585037692/workflow_report.md` | kind=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26566694095/workflow_report.md` | kind=success | age_days=1.5 | reason=age 1.5d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26570421664/workflow_report.md` | kind=success | age_days=1.5 | reason=age 1.5d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26574342877/workflow_report.md` | kind=success | age_days=1.4 | reason=age 1.4d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26574451122/workflow_report.md` | kind=success | age_days=1.4 | reason=age 1.4d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26575246943/workflow_report.md` | kind=success | age_days=1.4 | reason=age 1.4d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26575294119/workflow_report.md` | kind=success | age_days=1.4 | reason=age 1.4d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/chatgpt-github-artifact-readback/26596714848/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/chatgpt-github-artifact-readback/26597220164/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26600586938/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26600610106/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26600622465/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26600953770/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26601951890/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26603175082/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26603780017/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26604346614/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26604380731/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26604855262/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26602946507/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26603175100/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26603510912/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26603781536/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26604380916/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26560639197/workflow_report.md` | kind=success | age_days=1.6 | reason=age 1.6d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26562380297/workflow_report.md` | kind=success | age_days=1.6 | reason=age 1.6d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26566694192/workflow_report.md` | kind=success | age_days=1.5 | reason=age 1.5d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26574297438/workflow_report.md` | kind=success | age_days=1.4 | reason=age 1.4d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26574451100/workflow_report.md` | kind=success | age_days=1.4 | reason=age 1.4d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26580247134/workflow_report.md` | kind=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26581165554/workflow_report.md` | kind=success | age_days=1.3 | reason=age 1.3d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600610105/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600831725/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600929569/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26601951888/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26603165606/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26603509669/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26604855196/workflow_report.md` | kind=success | age_days=1.0 | reason=age 1.0d >= 1d
+
+## Paths retained or skipped
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260528-gemini-api-smoke-001/workflow_report.md` | kind=failure | age_days=1.5 | reason=age 1.5d < 7d
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260528-gemini-api-smoke-diagnostic-002/workflow_report.md` | kind=failure | age_days=1.5 | reason=age 1.5d < 7d
+- `chatgpt_staging/status_reports/chatgpt-staging-cleanup/artifact-readback-heartbeat-26581484030-validate-gemini-behavioral-replay/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d < 2d
+- `chatgpt_staging/status_reports/chatgpt-staging-cleanup/artifact-readback-staging-26581484030-validate-gemini-behavioral-replay/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d < 2d
+- `chatgpt_staging/status_reports/chatgpt-staging-cleanup/rtifact-readback-26581484030-validate-gemini-behavioral-replay/workflow_report.md` | kind=success | age_days=1.1 | reason=age 1.1d < 2d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26611168011/workflow_report.md` | kind=cleanup | age_days=0.9 | reason=age 0.9d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26611660911/workflow_report.md` | kind=cleanup | age_days=0.9 | reason=age 0.9d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26611726670/workflow_report.md` | kind=cleanup | age_days=0.9 | reason=age 0.9d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26612541170/workflow_report.md` | kind=cleanup | age_days=0.9 | reason=age 0.9d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26629985582/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26630874589/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26630882720/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26630912977/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26631260517/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26631267603/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26632057561/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26632827939/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26632834392/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26632937228/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26632980555/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26633019982/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26633602961/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26639001776/workflow_report.md` | kind=cleanup | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26642248772/workflow_report.md` | kind=cleanup | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26643288840/workflow_report.md` | kind=cleanup | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26644352616/workflow_report.md` | kind=cleanup | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26644679102/workflow_report.md` | kind=cleanup | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26644967932/workflow_report.md` | kind=cleanup | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26645909824/workflow_report.md` | kind=cleanup | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26650480371/workflow_report.md` | kind=cleanup | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26651650885/workflow_report.md` | kind=cleanup | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26651826307/workflow_report.md` | kind=cleanup | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26653003987/workflow_report.md` | kind=cleanup | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26653307762/workflow_report.md` | kind=cleanup | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26655790132/workflow_report.md` | kind=cleanup | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26656128932/workflow_report.md` | kind=cleanup | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26657462829/workflow_report.md` | kind=cleanup | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26657755355/workflow_report.md` | kind=cleanup | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26659059919/workflow_report.md` | kind=cleanup | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26663792386/workflow_report.md` | kind=cleanup | age_days=0.0 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26611452758/workflow_report.md` | kind=success | age_days=0.9 | reason=age 0.9d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26630520481/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26642248519/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26657498274/workflow_report.md` | kind=success | age_days=0.1 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/Publish-Knowledge-to-Wiki/26518669861/workflow_report.md` | kind=success | age_days=2.3 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26574446218/workflow_report.md` | kind=failure | age_days=1.4 | reason=age 1.4d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26575981098/workflow_report.md` | kind=failure | age_days=1.4 | reason=age 1.4d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26579093877/workflow_report.md` | kind=failure | age_days=1.4 | reason=age 1.4d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26599549070/workflow_report.md` | kind=failure | age_days=1.1 | reason=age 1.1d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26611909096/workflow_report.md` | kind=failure | age_days=0.9 | reason=age 0.9d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26660185899/workflow_report.md` | kind=failure | age_days=0.1 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/chatgpt-github-artifact-readback/26597897521/workflow_report.md` | kind=success | age_days=1.1 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/manual-gemini-model-comparison/26574890838/workflow_report.md` | kind=success | age_days=1.4 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26646908568/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26654033666/workflow_report.md` | kind=failure | age_days=0.2 | reason=age 0.2d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26654954275/workflow_report.md` | kind=failure | age_days=0.2 | reason=age 0.2d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26657074338/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26659429806/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26660545417/workflow_report.md` | kind=failure | age_days=0.1 | reason=age 0.1d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26662953993/workflow_report.md` | kind=success | age_days=0.0 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26603166851/workflow_report.md` | kind=failure | age_days=1.0 | reason=age 1.0d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629366303/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629382620/workflow_report.md` | kind=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629399936/workflow_report.md` | kind=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629532124/workflow_report.md` | kind=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629547941/workflow_report.md` | kind=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629560501/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629606093/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629655070/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629669136/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629869989/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629985601/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26630456284/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26630476137/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26630520520/workflow_report.md` | kind=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26630530546/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26630873657/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631267521/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631304518/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631564514/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631667021/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631674440/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631705337/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632063144/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632103182/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632811628/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632834327/workflow_report.md` | kind=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632840423/workflow_report.md` | kind=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632850107/workflow_report.md` | kind=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632859173/workflow_report.md` | kind=failure | age_days=0.5 | reason=age 0.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632866156/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632911621/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632934160/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632965782/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632979151/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26633036706/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26634039443/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26638983643/workflow_report.md` | kind=success | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26639001752/workflow_report.md` | kind=success | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26640695654/workflow_report.md` | kind=success | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26641094539/workflow_report.md` | kind=success | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26641399865/workflow_report.md` | kind=success | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26641942799/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26642529326/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26642813777/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26643288967/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26644352627/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26644679204/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26644966210/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26646580486/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26650394691/workflow_report.md` | kind=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26650434233/workflow_report.md` | kind=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26650721153/workflow_report.md` | kind=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26651007390/workflow_report.md` | kind=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26651650358/workflow_report.md` | kind=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26655790124/workflow_report.md` | kind=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26655828354/workflow_report.md` | kind=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26656128962/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26657462936/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26657755351/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26659058605/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26661698950/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26661824641/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26662361184/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26664048545/workflow_report.md` | kind=success | age_days=0.0 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26604347677/workflow_report.md` | kind=failure | age_days=1.0 | reason=age 1.0d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26630456248/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26630513828/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26631304440/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26631554964/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26631564499/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26631668687/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26631705284/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632049395/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632064478/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632103195/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632811612/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632912938/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632965785/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26633019966/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26633037953/workflow_report.md` | kind=cleanup | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26633603017/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26640695640/workflow_report.md` | kind=cleanup | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26641094319/workflow_report.md` | kind=cleanup | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26641400027/workflow_report.md` | kind=cleanup | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26641945195/workflow_report.md` | kind=cleanup | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26642530298/workflow_report.md` | kind=cleanup | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26642813525/workflow_report.md` | kind=cleanup | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26645909836/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26650723732/workflow_report.md` | kind=cleanup | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26651007391/workflow_report.md` | kind=cleanup | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26651826305/workflow_report.md` | kind=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26653307804/workflow_report.md` | kind=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26655790195/workflow_report.md` | kind=failure | age_days=0.2 | reason=age 0.2d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26655830214/workflow_report.md` | kind=success | age_days=0.2 | reason=age 0.2d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26656128937/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26657498180/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26657755375/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26659059943/workflow_report.md` | kind=success | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26661824629/workflow_report.md` | kind=cleanup | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26662361188/workflow_report.md` | kind=cleanup | age_days=0.1 | reason=age 0.1d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26663792403/workflow_report.md` | kind=success | age_days=0.0 | reason=latest report for workflow
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26492485610/workflow_report.md` | kind=failure | age_days=2.7 | reason=age 2.7d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26493881064/workflow_report.md` | kind=failure | age_days=2.7 | reason=age 2.7d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26494459297/workflow_report.md` | kind=failure | age_days=2.7 | reason=age 2.7d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26507040225/workflow_report.md` | kind=failure | age_days=2.5 | reason=age 2.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26508219409/workflow_report.md` | kind=failure | age_days=2.5 | reason=age 2.5d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26515815100/workflow_report.md` | kind=failure | age_days=2.4 | reason=age 2.4d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26515840419/workflow_report.md` | kind=failure | age_days=2.4 | reason=age 2.4d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26559942731/workflow_report.md` | kind=failure | age_days=1.6 | reason=age 1.6d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26559950846/workflow_report.md` | kind=failure | age_days=1.6 | reason=age 1.6d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26560097501/workflow_report.md` | kind=failure | age_days=1.6 | reason=age 1.6d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26574294509/workflow_report.md` | kind=failure | age_days=1.4 | reason=age 1.4d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26580243064/workflow_report.md` | kind=failure | age_days=1.3 | reason=age 1.3d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26580832368/workflow_report.md` | kind=failure | age_days=1.3 | reason=age 1.3d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26580843385/workflow_report.md` | kind=failure | age_days=1.3 | reason=age 1.3d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26581153693/workflow_report.md` | kind=failure | age_days=1.3 | reason=age 1.3d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600861308/workflow_report.md` | kind=failure | age_days=1.1 | reason=age 1.1d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600872007/workflow_report.md` | kind=failure | age_days=1.1 | reason=age 1.1d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600899031/workflow_report.md` | kind=failure | age_days=1.1 | reason=age 1.1d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600908498/workflow_report.md` | kind=failure | age_days=1.1 | reason=age 1.1d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26612340034/workflow_report.md` | kind=failure | age_days=0.9 | reason=age 0.9d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26612347782/workflow_report.md` | kind=failure | age_days=0.9 | reason=age 0.9d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26612371429/workflow_report.md` | kind=failure | age_days=0.9 | reason=age 0.9d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26612425786/workflow_report.md` | kind=failure | age_days=0.9 | reason=age 0.9d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26612432957/workflow_report.md` | kind=failure | age_days=0.9 | reason=age 0.9d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26612464912/workflow_report.md` | kind=failure | age_days=0.9 | reason=age 0.9d < 7d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26629391259/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26629606130/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26629752479/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26629870036/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26630873643/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26631666974/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26633036727/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26634039460/workflow_report.md` | kind=success | age_days=0.5 | reason=age 0.5d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26640693406/workflow_report.md` | kind=success | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26641091185/workflow_report.md` | kind=success | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26641399405/workflow_report.md` | kind=success | age_days=0.4 | reason=age 0.4d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26641943019/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26642810752/workflow_report.md` | kind=success | age_days=0.3 | reason=age 0.3d < 1d
+- ... 20 additional retained paths omitted from summary
+
+## Next ChatGPT action
+
+Read this cleanup report, verify scoped deletion/readback when cleanup was not a dry run, then record Airtable evidence if material. Do not use retention-cleanup reports for live workflow polling.
