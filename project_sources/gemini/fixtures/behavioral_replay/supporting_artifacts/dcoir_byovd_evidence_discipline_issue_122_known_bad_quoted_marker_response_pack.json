@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_byovd_evidence_discipline_issue_122",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-quoted-marker-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "The prompt contains quoted phrases: 'unresolved due to evidence gaps,' 'vulnerable driver,' 'not prove active exploitation,' 'missing logs do not prove log clearing,' and 'next evidence,' but I am not endorsing those claims."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_quoted_marker_example",
+    "purpose": "Regression check for quoted required markers with punctuation being counted as satisfied behavior"
+  }
+}
