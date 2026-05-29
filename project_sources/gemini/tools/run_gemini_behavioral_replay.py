@@ -258,6 +258,9 @@ def main() -> int:
     if args.selection_report_only:
         write_reports(output_dir, [], metadata); return 0
     mode, reason = args.mode, ""
+    if args.mode == "fallback":
+        reason = "fallback mode requested"
+        metadata["unchecked_evidence"].append("live Gemini API response")
     if args.mode == "live" and not api_key:
         reason = f"missing API key env {args.api_key_env}"
         if args.allow_fallback:
@@ -282,10 +285,12 @@ def main() -> int:
                 suffix = "live" if mode == "live" else "fallback"
                 (output_dir / f"{safe(fixture.get('fixture_id'))}_{safe(model)}_{suffix}_response_pack.json").write_text(json.dumps(pack, indent=2), encoding="utf-8")
             result, messages = score_pack(pack, fixture); metadata["validation_messages"].extend(messages)
-            for evidence_item in ("response-pack schema", "deterministic scorer"):
-                if evidence_item not in metadata["checked_evidence"]:
-                    metadata["checked_evidence"].append(evidence_item)
-            if result is not None: results.append(result)
+            if "response-pack schema" not in metadata["checked_evidence"]:
+                metadata["checked_evidence"].append("response-pack schema")
+            if result is not None:
+                if "deterministic scorer" not in metadata["checked_evidence"]:
+                    metadata["checked_evidence"].append("deterministic scorer")
+                results.append(result)
     ok = sum(1 for call in calls if call.get("ok"))
     live_complete = mode == "live" and bool(calls) and ok == len(calls)
     if mode == "live":
@@ -296,10 +301,11 @@ def main() -> int:
     has_errors = any(message.get("level") == "error" for message in metadata.get("validation_messages", []))
     scorer_failed = bool(results) and not all(result.get("success") for result in results)
     deterministic_failed = mode == "deterministic" and (has_errors or scorer_failed or not results)
-    if deterministic_failed:
+    workflow_failed = has_errors or not results
+    if deterministic_failed or workflow_failed:
         metadata["workflow_verdict"] = "failure"
     write_reports(output_dir, results, metadata)
-    if deterministic_failed:
+    if deterministic_failed or workflow_failed:
         return 1
     return 0
 
