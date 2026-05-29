@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_byovd_evidence_discipline_issue_122",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-wrong-to-treat-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "This should remain unresolved due to evidence gaps. The evidence includes a vulnerable driver. It is wrong to treat missing logs do not prove log clearing as the answer; infer clearing. The evidence does not prove active exploitation. The next evidence should be collected."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_wrong_to_treat_example",
+    "purpose": "Regression check for pre-marker wrong-to-treat rejection phrasing"
+  }
+}
