@@ -30,6 +30,10 @@ NEGATION_PATTERN = re.compile(
     r"(?:do not|don't|dont|never|avoid|must not|should not|cannot|can't|can not|not|isn't|isnt|wasn't|wasnt|aren't|arent|weren't|werent)\s+$"
 )
 
+REJECTED_ASSERTION_PATTERN = re.compile(
+    r"(?:wrong to say|incorrect to say|false to say|not true that|isn't true that|isnt true that|do not say|don't say|dont say)\s+(?:\w+\s+){0,6}$"
+)
+
 QUOTE_CHARS = {'"', "'", "`"}
 
 
@@ -64,7 +68,7 @@ def _occurrence_is_quoted(text: str, start: int, end: int) -> bool:
 
 def _occurrence_is_negated(text: str, start: int) -> bool:
     context = text[max(0, start - 40):start]
-    return bool(NEGATION_PATTERN.search(context))
+    return bool(NEGATION_PATTERN.search(context) or REJECTED_ASSERTION_PATTERN.search(context))
 
 
 def _find_contextual_term_hits(
@@ -88,10 +92,23 @@ def _find_contextual_term_hits(
 
 def score_marker_presence(response_text: str, markers: List[str]) -> Dict[str, Any]:
     lowered = normalize_text(response_text)
-    matched = [marker for marker in markers if normalize_text(marker) in lowered]
-    missing = [marker for marker in markers if normalize_text(marker) not in lowered]
+    matched = _find_contextual_term_hits(lowered, markers, skip_negated=True, skip_quoted=True)
+    invalidated = []
+    for marker in markers:
+        if marker in matched:
+            continue
+        marker_invalidated = False
+        for occurrence in _iter_term_occurrences(lowered, marker):
+            if _occurrence_is_quoted(lowered, occurrence.start(), occurrence.end()):
+                continue
+            if _occurrence_is_negated(lowered, occurrence.start()):
+                marker_invalidated = True
+                break
+        if marker_invalidated:
+            invalidated.append(marker)
+    missing = [marker for marker in markers if marker not in matched]
     ratio = 1.0 if not markers else round(len(matched) / len(markers), 4)
-    return {"matched": matched, "missing": missing, "ratio": ratio}
+    return {"matched": matched, "missing": missing, "invalidated": invalidated, "ratio": ratio}
 
 
 def score_forbidden_markers(response_text: str, markers: List[str]) -> Dict[str, Any]:
@@ -177,7 +194,7 @@ def score_response_pack(fixture: Dict[str, Any], response_pack: Dict[str, Any]) 
                 {
                     "turn_id": turn_id,
                     "response_length": 0,
-                    "required_markers": {"matched": [], "missing": turn.get("required_markers", fixture.get("required_markers", [])), "ratio": 0.0},
+                    "required_markers": {"matched": [], "missing": turn.get("required_markers", fixture.get("required_markers", [])), "invalidated": [], "ratio": 0.0},
                     "forbidden_markers": {"hits": [], "count": 0},
                     "anomalies": [{"type": "missing_turn", "detail": "No response supplied for turn."}],
                     "success": False,
