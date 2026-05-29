@@ -34,6 +34,10 @@ REJECTED_ASSERTION_PATTERN = re.compile(
     r"(?:wrong to say|incorrect to say|false to say|not true that|isn't true that|isnt true that|do not say|don't say|dont say)\s+(?:\w+\s+){0,6}$"
 )
 
+POST_MARKER_REJECTION_PATTERN = re.compile(
+    r"^\s*(?:is|are|was|were)?\s*(?:the\s+)?(?:wrong framing|wrong frame|incorrect framing|incorrect frame|false framing|false frame|wrong conclusion|incorrect conclusion|false conclusion|not enough|insufficient|unsupported|unfounded|overstated|should be ignored|should be discarded|can be ignored|can be discarded|does not matter|doesn't matter|doesnt matter)"
+)
+
 QUOTE_CHARS = {'"', "'", "`"}
 
 
@@ -71,6 +75,11 @@ def _occurrence_is_negated(text: str, start: int) -> bool:
     return bool(NEGATION_PATTERN.search(context) or REJECTED_ASSERTION_PATTERN.search(context))
 
 
+def _occurrence_is_rejected_after(text: str, end: int) -> bool:
+    context = text[end:min(len(text), end + 90)]
+    return bool(POST_MARKER_REJECTION_PATTERN.search(context))
+
+
 def _find_contextual_term_hits(
     text: str,
     terms: List[str],
@@ -84,6 +93,8 @@ def _find_contextual_term_hits(
             if skip_quoted and _occurrence_is_quoted(text, match.start(), match.end()):
                 continue
             if skip_negated and _occurrence_is_negated(text, match.start()):
+                continue
+            if skip_negated and _occurrence_is_rejected_after(text, match.end()):
                 continue
             hits.append(term)
             break
@@ -102,6 +113,9 @@ def score_marker_presence(response_text: str, markers: List[str]) -> Dict[str, A
             if _occurrence_is_quoted(lowered, occurrence.start(), occurrence.end()):
                 continue
             if _occurrence_is_negated(lowered, occurrence.start()):
+                marker_invalidated = True
+                break
+            if _occurrence_is_rejected_after(lowered, occurrence.end()):
                 marker_invalidated = True
                 break
         if marker_invalidated:
