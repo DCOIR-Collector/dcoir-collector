@@ -453,7 +453,7 @@ def main() -> int:
     failed = len(calls) - ok - unavailable
     runtime_unavailable_models = sorted({str(row.get("model")) for row in metadata.get("runtime_unavailable_results", [])})
     metadata["runtime_unavailable_models"] = runtime_unavailable_models
-    live_complete = mode == "live" and bool(calls) and ok + unavailable + failed == len(calls)
+    live_complete = mode == "live" and bool(calls) and ok == len(calls)
     baseline_call_failures = [call for call in calls if call.get("model_name") == args.baseline_model and not call.get("ok")]
     if mode == "live" and baseline_call_failures:
         metadata["validation_messages"].append({"level": "error", "message": f"Baseline model {args.baseline_model!r} had one or more live API failures, so baseline-relative scoring cannot be trusted."})
@@ -467,8 +467,7 @@ def main() -> int:
     has_errors = any(message.get("level") == "error" for message in metadata.get("validation_messages", []))
     scorer_failed = bool(results) and not all(result.get("success") for result in results)
     deterministic_failed = mode == "deterministic" and (has_errors or scorer_failed or not results)
-    live_failed = mode == "live" and bool(calls) and not live_complete
-    workflow_failed = has_errors or not results or live_failed
+    workflow_failed = has_errors or not results
     if deterministic_failed or workflow_failed:
         metadata["workflow_verdict"] = "failure"
     write_reports(output_dir, results, metadata)
