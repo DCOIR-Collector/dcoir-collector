@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_long_transcript_continuity_issue_123",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-suffix-marker-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "This is only a latest acknowledged state-like label, with CHUNKS COMPLETE-ish wording, an operator correction-adjacent note, do not replay conclusion A-ish phrasing, and a smallest recovery artifact-shaped phrase; it is not actually committing to the required behavior."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_suffix_marker_example",
+    "purpose": "Regression check for hyphenated marker suffixes being counted as exact marker hits"
+  }
+}
