@@ -35,7 +35,7 @@ REJECTED_ASSERTION_PATTERN = re.compile(
 )
 
 POST_MARKER_REJECTION_PATTERN = re.compile(
-    r"^\s*(?:[,;:.!?]\s*)?(?:(?:but|however|though|although|yet|nevertheless|even so)\s+)?(?:(?:that|this)\s+(?:is|was)\s+(?:an?\s+)?)?(?:is|are|was|were)?\s*(?:the\s+)?(?:wrong framing|wrong frame|incorrect framing|incorrect frame|false framing|false frame|wrong conclusion|incorrect conclusion|false conclusion|not enough|insufficient|unsupported|unfounded|overstated|should be ignored|should be discarded|can be ignored|can be discarded|does not matter|doesn't matter|doesnt matter)"
+    r"^\s*(?:[,;:.!?]\s*)?(?:(?:but|however|though|although|yet|nevertheless|even so)\s+)?(?:(?:that|this|it|which)\s+)?(?:(?:is|are|was|were)\s+(?:an?\s+)?)?(?:the\s+)?(?:wrong framing|wrong frame|incorrect framing|incorrect frame|false framing|false frame|wrong conclusion|incorrect conclusion|false conclusion|not enough|insufficient|unsupported|unfounded|overstated|should be ignored|should be discarded|can be ignored|can be discarded|does not matter|doesn't matter|doesnt matter)"
 )
 
 QUOTE_CHARS = {'"', "'", "`"}
