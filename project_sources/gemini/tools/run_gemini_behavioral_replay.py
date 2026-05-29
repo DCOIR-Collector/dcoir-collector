@@ -268,7 +268,7 @@ def row_counts(result: Dict[str, Any]) -> tuple[int, int, int]:
 
 
 def absolute_gate_pass(result: Dict[str, Any]) -> bool:
-    return not result.get("missing_turns") and not result.get("forbidden_marker_hits") and int(result.get("anomaly_count", 0)) == 0
+    return bool(result.get("success"))
 
 
 def apply_baseline_comparisons(results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> Dict[str, Any]:
