@@ -149,14 +149,19 @@ jobs:
           REPORT
             echo "$report_path" > .github/tmp/chatgpt_workflow_report_path.txt
           else
-            python .github/scripts/write_workflow_report.py workflow-run \
+            report_path="$(python .github/scripts/write_workflow_report.py workflow-run \
               --event-json "$GITHUB_EVENT_PATH" \
               --log-file .github/tmp/source_workflow.log \
               --log-error-file .github/tmp/source_workflow_log_fetch_error.txt \
-              --custom-markdown-file "${CUSTOM_MARKDOWN_FILE:-}" \
-              --report-path-output .github/tmp/chatgpt_workflow_report_path.txt \
               --max-log-lines 300 \
-              --max-log-chars 40000
+              --max-log-chars 40000 | tail -n 1)"
+            echo "$report_path" > .github/tmp/chatgpt_workflow_report_path.txt
+            if [[ -n "${CUSTOM_MARKDOWN_FILE:-}" && -f "${CUSTOM_MARKDOWN_FILE:-}" ]]; then
+              {
+                echo ""
+                cat "$CUSTOM_MARKDOWN_FILE"
+              } >> "$report_path"
+            fi
           fi
 
       - name: Commit workflow report
