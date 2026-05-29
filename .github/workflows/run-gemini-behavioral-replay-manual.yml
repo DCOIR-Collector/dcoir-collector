@@ -59,11 +59,6 @@ on:
         required: true
         default: false
         type: boolean
-      run_gemini_3_pro_preview:
-        description: Include gemini-3-pro-preview
-        required: true
-        default: false
-        type: boolean
       run_gemini_3_1_flash_lite:
         description: Include gemini-3.1-flash-lite
         required: true
@@ -189,7 +184,6 @@ jobs:
           if [[ "${{ github.event.inputs.run_gemini_2_5_flash_lite }}" == "true" ]]; then selected_models+=("gemini-2.5-flash-lite"); fi
           if [[ "${{ github.event.inputs.run_gemini_2_5_pro }}" == "true" ]]; then selected_models+=("gemini-2.5-pro"); fi
           if [[ "${{ github.event.inputs.run_gemini_3_flash_preview }}" == "true" ]]; then selected_models+=("gemini-3-flash-preview"); fi
-          if [[ "${{ github.event.inputs.run_gemini_3_pro_preview }}" == "true" ]]; then selected_models+=("gemini-3-pro-preview"); fi
           if [[ "${{ github.event.inputs.run_gemini_3_1_flash_lite }}" == "true" ]]; then selected_models+=("gemini-3.1-flash-lite"); fi
           if [[ "${{ github.event.inputs.run_gemini_3_1_flash_lite_preview }}" == "true" ]]; then selected_models+=("gemini-3.1-flash-lite-preview"); fi
           if [[ "${{ github.event.inputs.run_gemini_3_1_pro_preview }}" == "true" ]]; then selected_models+=("gemini-3.1-pro-preview"); fi
