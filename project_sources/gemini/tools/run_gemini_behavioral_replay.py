@@ -345,7 +345,9 @@ def main() -> int:
     fixtures, fixture_resolution = resolve_fixtures(args, fixtures_root)
     metadata: Dict[str, Any] = {"workflow_verdict": "success", "replay_mode": args.mode, "model_name": ",".join(models["selected_models_to_run"]), "baseline_model": args.baseline_model, "fixture_count": len(fixtures), "model_resolution": models, "fixture_resolution": fixture_resolution, "validation_messages": [], "checked_evidence": ["fixture index", "fixture definitions"], "unchecked_evidence": []}
     if models["rejected_selected_models"]:
-        metadata["validation_messages"].append({"level": "warning", "message": "One or more selected models were rejected and skipped; see model_resolution.rejected_selected_models."})
+        metadata["validation_messages"].append({"level": "error", "message": "One or more selected models were rejected; see model_resolution.rejected_selected_models."})
+    if args.mode != "deterministic" and args.baseline_model not in models["selected_models_to_run"]:
+        metadata["validation_messages"].append({"level": "error", "message": f"Baseline model {args.baseline_model!r} is not selected for replay, so baseline-relative scoring cannot run."})
     if fixture_resolution["rejected_selected_fixtures"]:
         metadata["validation_messages"].append({"level": "error", "message": "One or more selected fixtures were rejected."})
     if not models["selected_models_to_run"]:
