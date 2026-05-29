@@ -157,6 +157,13 @@ jobs:
           fi
           if python project_sources/gemini/tools/score_gemini_behavioral_replay.py \
             --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
+            --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_byovd_evidence_discipline_issue_122_known_bad_modifier_rejection_response_pack.json \
+            --fixture-id dcoir_byovd_evidence_discipline_issue_122; then
+            echo "Issue 122 modifier rejection known-bad response pack unexpectedly passed."
+            exit 1
+          fi
+          if python project_sources/gemini/tools/score_gemini_behavioral_replay.py \
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
             --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_long_transcript_continuity_issue_123_known_bad_response_pack.json \
             --fixture-id dcoir_long_transcript_continuity_issue_123; then
             echo "Issue 123 known-bad response pack unexpectedly passed."
@@ -174,6 +181,13 @@ jobs:
             --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_long_transcript_continuity_issue_123_known_bad_article_negation_response_pack.json \
             --fixture-id dcoir_long_transcript_continuity_issue_123; then
             echo "Issue 123 article-negation known-bad response pack unexpectedly passed."
+            exit 1
+          fi
+          if python project_sources/gemini/tools/score_gemini_behavioral_replay.py \
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
+            --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_long_transcript_continuity_issue_123_known_bad_request_rejection_response_pack.json \
+            --fixture-id dcoir_long_transcript_continuity_issue_123; then
+            echo "Issue 123 request-rejection known-bad response pack unexpectedly passed."
             exit 1
           fi
 
