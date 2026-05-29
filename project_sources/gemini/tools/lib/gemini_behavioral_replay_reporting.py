@@ -13,11 +13,21 @@ def write_json(path: Path, payload: Dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
-def render_markdown_report(results: List[Dict[str, Any]]) -> str:
-    lines = [
-        "# Gemini Behavioral Replay Report",
-        "",
-    ]
+def render_markdown_report(results: List[Dict[str, Any]], metadata: Dict[str, Any] | None = None) -> str:
+    metadata = metadata or {}
+    lines = ["# Gemini Behavioral Replay Report", ""]
+    if metadata:
+        lines.extend(["## Execution", ""])
+        for key in ("replay_mode", "model_name", "live_execution", "fallback_reason", "fixture_count"):
+            if key in metadata:
+                lines.append(f"- {key}: `{metadata[key]}`")
+        if metadata.get("checked_evidence"):
+            lines.append(f"- checked_evidence: {', '.join(metadata['checked_evidence'])}")
+        if metadata.get("unchecked_evidence"):
+            lines.append(f"- unchecked_evidence: {', '.join(metadata['unchecked_evidence'])}")
+        if metadata.get("live_environment_fidelity_gap"):
+            lines.append(f"- live_environment_fidelity_gap: {metadata['live_environment_fidelity_gap']}")
+        lines.append("")
     for result in results:
         lines.extend(
             [
@@ -40,6 +50,7 @@ def render_markdown_report(results: List[Dict[str, Any]]) -> str:
         for turn in result.get("per_turn", []):
             lines.append(f"- `{turn['turn_id']}` success=`{str(turn['success']).lower()}`")
             lines.append(f"  required matched: {', '.join(turn['required_markers']['matched']) or 'none'}")
+            lines.append(f"  required missing: {', '.join(turn['required_markers']['missing']) or 'none'}")
             lines.append(f"  forbidden hits: {', '.join(turn['forbidden_markers']['hits']) or 'none'}")
             anomaly_details = ", ".join(f"{row['type']}: {row['detail']}" for row in turn.get("anomalies", []))
             lines.append(f"  anomalies: {anomaly_details or 'none'}")
@@ -47,13 +58,15 @@ def render_markdown_report(results: List[Dict[str, Any]]) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
-def write_reports(output_dir: Path, report_name: str, results: List[Dict[str, Any]]) -> Dict[str, str]:
+def write_reports(
+    output_dir: Path,
+    report_name: str,
+    results: List[Dict[str, Any]],
+    metadata: Dict[str, Any] | None = None,
+) -> Dict[str, str]:
     ensure_dir(output_dir)
     json_path = output_dir / f"{report_name}.json"
     markdown_path = output_dir / f"{report_name}.md"
-    write_json(json_path, {"results": results})
-    markdown_path.write_text(render_markdown_report(results), encoding="utf-8")
-    return {
-        "json_report": str(json_path),
-        "markdown_report": str(markdown_path),
-    }
+    write_json(json_path, {"metadata": metadata or {}, "results": results})
+    markdown_path.write_text(render_markdown_report(results, metadata), encoding="utf-8")
+    return {"json_report": str(json_path), "markdown_report": str(markdown_path)}
