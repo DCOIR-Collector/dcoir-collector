@@ -114,6 +114,8 @@ def resolve_fixtures(args: argparse.Namespace, fixtures_root: Path) -> tuple[Lis
                 selected.append(fid)
             else:
                 rejected.append({"fixture_id": fid, "reason": "not in active fixture index"})
+    elif args.mode == "deterministic" and not checked:
+        selected, source = active, "deterministic_response_pack_default"
     else:
         selected, source = [], "checkbox_fixtures"
         for fid in checked:
