@@ -6,7 +6,7 @@
   "turns": [
     {
       "turn_id": "turn-001",
-      "assistant_response": "This should remain unresolved due to evidence gaps. The evidence includes a vulnerable driver. It is fair to mention not prove active exploitation, but that is an incorrect conclusion because the exploit should be treated as active. Missing logs do not prove log clearing. The next evidence should be collected before final closure."
+      "assistant_response": "This should remain unresolved due to evidence gaps. The evidence includes a vulnerable driver. It is fair to mention not prove active exploitation, but this should be ignored because the exploit should be treated as active. Missing logs do not prove log clearing. The next evidence should be collected before final closure."
     }
   ],
   "metadata": {
