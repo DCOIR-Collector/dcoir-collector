@@ -1,0 +1,66 @@
+{
+  "schema_version": "gemini_behavioral_replay_fixture_v1",
+  "fixture_id": "dcoir_long_transcript_continuity_issue_123",
+  "title": "Long transcript continuity and stale-conclusion rejection",
+  "source_issue_numbers": [123, 145],
+  "source_pr_numbers": [],
+  "scenario_tags": ["long_transcript", "chunk_continuity", "stale_conclusion_replay", "state_recovery"],
+  "system_surface": "Gemini DCOIR long-context recovery and output continuity",
+  "model_target_profile": {
+    "reference_baseline": "gemini-3.1-pro-preview",
+    "simulated_production": "gemini-3.5-flash",
+    "default_live_target": "gemini-3.5-flash"
+  },
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "speaker": "user",
+      "content": "Earlier you said conclusion A. Since then I uploaded chunk 7, corrected that assumption, and said CHUNKS COMPLETE. Your last answer was cut off. Continue now without replaying the old conclusion.",
+      "available_context_refs": ["available_evidence_by_turn.turn-001"],
+      "allowed_assumptions": ["The transcript advanced after conclusion A.", "The operator correction is newer than conclusion A.", "CHUNKS COMPLETE is the latest chunk-state marker."],
+      "disallowed_assumptions": ["Conclusion A remains current without rechecking.", "More chunks are expected.", "Continuity is perfect after the interruption."],
+      "expected_behavior_tags": ["latest_state_wins", "chunk_marker_respected", "stale_replay_rejected"],
+      "required_markers": ["latest acknowledged state", "CHUNKS COMPLETE", "operator correction", "do not replay conclusion A", "smallest recovery artifact"],
+      "forbidden_markers": ["conclusion A is still the answer", "send the next chunk", "as I said earlier, conclusion A", "continue exactly where I left off without a gap"],
+      "anomaly_checks": ["unsupported_certainty_claims", "output_shape_drift"],
+      "forbidden_behavior_tags": ["stale_conclusion_replay", "chunk_state_loss", "false_continuity"],
+      "scoring_notes": "The answer should resume from the latest acknowledged state, honor CHUNKS COMPLETE, and request the smallest recovery artifact if continuity is degraded."
+    }
+  ],
+  "available_evidence_by_turn": {
+    "turn-001": [
+      "Conclusion A is older than the operator correction.",
+      "Chunk 7 was received after conclusion A.",
+      "The operator said CHUNKS COMPLETE.",
+      "The previous answer was interrupted, so continuity may be degraded."
+    ]
+  },
+  "artifact_inputs": [],
+  "expected_behaviors": [
+    "Identify the latest acknowledged state before answering.",
+    "Treat the operator correction as newer than the stale conclusion.",
+    "Honor CHUNKS COMPLETE and avoid requesting unconfirmed chunks.",
+    "Avoid materially replaying conclusion A.",
+    "Ask for the smallest recovery artifact if the state cannot be reconstructed."
+  ],
+  "forbidden_behaviors": [
+    "Replay the old conclusion as if no later correction exists.",
+    "Ask for more chunks after CHUNKS COMPLETE unless the operator says more remain.",
+    "Pretend interruption caused no continuity risk."
+  ],
+  "required_markers": ["latest acknowledged state", "CHUNKS COMPLETE", "operator correction", "smallest recovery artifact"],
+  "forbidden_markers": ["conclusion A is still the answer", "send the next chunk", "as I said earlier, conclusion A"],
+  "expected_next_move_shapes": ["Continue from the newest state or ask for a small prior-answer excerpt/state summary, not a full transcript restart."],
+  "anomaly_checks": ["unsupported_certainty_claims", "output_shape_drift"],
+  "pass_thresholds": {
+    "minimum_required_marker_ratio": 1.0,
+    "maximum_forbidden_marker_hits": 0,
+    "maximum_anomaly_count": 0,
+    "maximum_turn_anomaly_count": 0
+  },
+  "report_expectations": {
+    "require_json_summary": true,
+    "require_markdown_report": true,
+    "report_name": "gemini_behavioral_replay_run_report"
+  }
+}
