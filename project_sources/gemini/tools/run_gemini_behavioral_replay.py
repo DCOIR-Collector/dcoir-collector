@@ -256,6 +256,9 @@ def main() -> int:
     if not fixtures:
         metadata["validation_messages"].append({"level": "error", "message": "No active fixtures selected for replay."})
     if args.selection_report_only:
+        if any(message.get("level") == "error" for message in metadata.get("validation_messages", [])):
+            metadata["workflow_verdict"] = "failure"
+            write_reports(output_dir, [], metadata); return 1
         write_reports(output_dir, [], metadata); return 0
     mode, reason = args.mode, ""
     if args.mode == "fallback":
@@ -301,7 +304,8 @@ def main() -> int:
     has_errors = any(message.get("level") == "error" for message in metadata.get("validation_messages", []))
     scorer_failed = bool(results) and not all(result.get("success") for result in results)
     deterministic_failed = mode == "deterministic" and (has_errors or scorer_failed or not results)
-    workflow_failed = has_errors or not results
+    live_failed = mode == "live" and bool(calls) and not live_complete
+    workflow_failed = has_errors or not results or live_failed
     if deterministic_failed or workflow_failed:
         metadata["workflow_verdict"] = "failure"
     write_reports(output_dir, results, metadata)
