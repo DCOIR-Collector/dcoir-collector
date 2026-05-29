@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import argparse, json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
+import argparse, json, os, re, time, urllib.error, urllib.parse, urllib.request
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -21,7 +21,6 @@ HARDCODED_MODELS = [
     "gemini-2.5-flash-lite",
     "gemini-2.5-pro",
     "gemini-3-flash-preview",
-    "gemini-3-pro-preview",
     "gemini-3.1-flash-lite",
     "gemini-3.1-flash-lite-preview",
     "gemini-3.1-pro-preview",
@@ -108,8 +107,8 @@ def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
     return {
         "selection_source": source, "catalog_ok": catalog["ok"], "catalog_error": catalog["error"],
         "hardcoded_models": HARDCODED_MODELS, "governed_pair_models": GOVERNED_PAIR_MODELS,
-        "baseline_model": args.baseline_model,
-        "selected_models_to_run": selected, "rejected_selected_models": rejected,
+        "baseline_model": args.baseline_model, "selected_models_to_run": selected,
+        "rejected_selected_models": rejected,
         "hardcoded_and_viable": sorted(set(HARDCODED_MODELS).intersection(viable)),
         "viable_missing_from_hardcoded": sorted(set(viable).difference(HARDCODED_MODELS)),
         "hardcoded_not_currently_viable": sorted(set(HARDCODED_MODELS).difference(viable)) if catalog["ok"] else [],
@@ -170,7 +169,7 @@ def live_prompt(fixture: Dict[str, Any], turn: Dict[str, Any]) -> str:
 
 
 def extract_text(payload: Dict[str, Any]) -> str:
-    out = []
+    out: List[str] = []
     for candidate in payload.get("candidates", []):
         for part in candidate.get("content", {}).get("parts", []):
             if "text" in part:
@@ -204,22 +203,55 @@ def call_gemini(api_key: str, args: argparse.Namespace, model: str, prompt: str)
     return {"ok": False, "attempts": attempts, "error": "unknown"}
 
 
+def runtime_unavailable_reason(call: Dict[str, Any]) -> str:
+    text_parts = [str(call.get("error", "")), str(call.get("error_body", ""))]
+    for attempt in call.get("attempts", []):
+        text_parts.append(str(attempt.get("error_body_excerpt", "")))
+    text = "\n".join(part for part in text_parts if part)
+    low = text.lower()
+    markers = ("no longer available", '"status": "not_found"', "not_found", "not found", "model not found", "not available to new users")
+    if call.get("ok"):
+        return ""
+    if call.get("error") == "http_404" and any(marker in low for marker in markers):
+        return text.strip()[:500] or "model unavailable at runtime"
+    return ""
+
+
+def unavailable_matrix_row(pack: Dict[str, Any]) -> Dict[str, Any]:
+    calls = pack.get("metadata", {}).get("turn_calls", [])
+    reason = next((str(call.get("unavailable_reason", "")) for call in calls if call.get("unavailable_reason")), "model unavailable at runtime")
+    reason = re.sub(r"\s+", " ", reason).replace("|", "/")[:240]
+    return {
+        "model": pack.get("model_name"), "fixture_id": pack.get("fixture_id"), "mode": pack.get("mode"),
+        "api_ok": f"0/{len(calls)}", "turns": f"0/{len(pack.get('turns', []))}", "required_ratio": "unavailable",
+        "forbidden_hits": 0, "anomalies": 0, "absolute_gate": "unavailable", "validation_errors": 0,
+        "scorer": "unavailable", "baseline_relative": "unavailable", "workflow": "success", "meaning": f"Unavailable: {reason}",
+    }
+
+
 def make_pack(fixture: Dict[str, Any], args: argparse.Namespace, model: str, mode: str, api_key: str, reason: str) -> Dict[str, Any]:
     turns, calls = [], []
     for turn in fixture.get("turns", []):
         if mode == "live":
             call = call_gemini(api_key, args, model, live_prompt(fixture, turn))
-            response = call.get("response_text") if call.get("ok") else f"LIVE_REPLAY_CALL_FAILED: {call.get('error', 'unknown')}"
-            calls.append({"turn_id": turn.get("turn_id"), "ok": call.get("ok"), "attempts": call.get("attempts", []), "error": call.get("error")})
+            unavailable_reason = runtime_unavailable_reason(call)
+            if call.get("ok"):
+                response = call.get("response_text")
+            elif unavailable_reason:
+                response = f"MODEL_UNAVAILABLE: {model} is unavailable for live replay. {unavailable_reason}"
+            else:
+                response = f"LIVE_REPLAY_CALL_FAILED: {call.get('error', 'unknown')}"
+            calls.append({
+                "fixture_id": fixture.get("fixture_id"), "model_name": model, "turn_id": turn.get("turn_id"),
+                "ok": call.get("ok"), "attempts": call.get("attempts", []), "error": call.get("error"),
+                "unavailable": bool(unavailable_reason), "unavailable_reason": unavailable_reason,
+            })
         else:
             response = f"Live Gemini replay evidence was not produced because {reason}. Rerun with live API access and read back the generated artifacts."
         turns.append({"turn_id": turn.get("turn_id"), "assistant_response": response})
     return {
-        "schema_version": EXPECTED_RESPONSE_PACK_SCHEMA_VERSION,
-        "fixture_id": fixture.get("fixture_id"),
-        "mode": "live_gemini" if mode == "live" else "fallback_emulation",
-        "model_name": model,
-        "turns": turns,
+        "schema_version": EXPECTED_RESPONSE_PACK_SCHEMA_VERSION, "fixture_id": fixture.get("fixture_id"),
+        "mode": "live_gemini" if mode == "live" else "fallback_emulation", "model_name": model, "turns": turns,
         "metadata": {"live_execution": mode == "live", "fallback_reason": reason if mode != "live" else "", "turn_calls": calls},
     }
 
@@ -247,9 +279,7 @@ def apply_baseline_comparisons(results: List[Dict[str, Any]], metadata: Dict[str
         baseline = baseline_by_fixture.get(result.get("fixture_id"))
         absolute_pass = absolute_gate_pass(result)
         if not baseline:
-            verdict = "no_baseline"
-            delta = None
-            turn_delta = None
+            verdict = "no_baseline"; delta = None; turn_delta = None
         else:
             delta = round(float(result.get("overall_required_marker_ratio", 0.0)) - float(baseline.get("overall_required_marker_ratio", 0.0)), 4)
             turn_delta = int(result.get("turn_success_count", 0)) - int(baseline.get("turn_success_count", 0))
@@ -265,11 +295,8 @@ def apply_baseline_comparisons(results: List[Dict[str, Any]], metadata: Dict[str
                 verdict = "worse"
         result["absolute_safety_evidence_pass"] = absolute_pass
         result["baseline_relative"] = {
-            "baseline_model": baseline_model,
-            "baseline_present": bool(baseline),
-            "verdict": verdict,
-            "required_marker_ratio_delta": delta,
-            "turn_success_count_delta": turn_delta,
+            "baseline_model": baseline_model, "baseline_present": bool(baseline), "verdict": verdict,
+            "required_marker_ratio_delta": delta, "turn_success_count_delta": turn_delta,
             "candidate_absolute_safety_evidence_pass": absolute_pass,
             "baseline_absolute_success": baseline.get("success") if baseline else None,
             "baseline_required_marker_ratio": baseline.get("overall_required_marker_ratio") if baseline else None,
@@ -279,9 +306,9 @@ def apply_baseline_comparisons(results: List[Dict[str, Any]], metadata: Dict[str
 
 
 def matrix_rows(results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
-    if not results:
+    rows = [dict(row, workflow=metadata.get("workflow_verdict", "success")) for row in metadata.get("runtime_unavailable_results", [])]
+    if not results and not rows:
         return [{"model": metadata.get("model_name", ""), "fixture_id": "", "mode": metadata.get("replay_mode", "unknown"), "api_ok": "0/0", "turns": "0/0", "required_ratio": 0, "forbidden_hits": 0, "anomalies": 0, "absolute_gate": "not_scored", "validation_errors": len([m for m in metadata.get("validation_messages", []) if m.get("level") == "error"]), "scorer": "not_scored", "baseline_relative": "not_scored", "workflow": metadata.get("workflow_verdict", "success"), "meaning": "Diagnostic report produced."}]
-    rows = []
     for result in results:
         count, ok, _ = row_counts(result)
         baseline_relative = result.get("baseline_relative", {})
@@ -292,10 +319,10 @@ def matrix_rows(results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> List
 def write_reports(output_dir: Path, results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> None:
     metadata["baseline_relative_summary"] = apply_baseline_comparisons(results, metadata)
     rows = matrix_rows(results, metadata)
-    summary = {"workflow_success": metadata.get("workflow_verdict", "success") == "success", "scorer_success": bool(results) and all(r.get("success") for r in results), "absolute_safety_evidence_success": bool(results) and all(r.get("absolute_safety_evidence_pass") for r in results), "result_count": len(results), "matrix": rows, "baseline_relative_summary": metadata["baseline_relative_summary"]}
+    summary = {"workflow_success": metadata.get("workflow_verdict", "success") == "success", "scorer_success": bool(results) and all(r.get("success") for r in results), "absolute_safety_evidence_success": bool(results) and all(r.get("absolute_safety_evidence_pass") for r in results), "result_count": len(results), "runtime_unavailable_count": len(metadata.get("runtime_unavailable_results", [])), "runtime_unavailable_models": metadata.get("runtime_unavailable_models", []), "matrix": rows, "baseline_relative_summary": metadata["baseline_relative_summary"]}
     payload = {"summary": summary, "metadata": metadata, "results": results}
     (output_dir / "gemini_behavioral_replay_run_report.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    lines = ["# Gemini Behavioral Replay Report", "", "## Summary", "", f"- workflow_verdict: `{metadata.get('workflow_verdict', 'success')}`", f"- aggregate_scorer_success: `{str(summary['scorer_success']).lower()}`", f"- absolute_safety_evidence_success: `{str(summary['absolute_safety_evidence_success']).lower()}`", f"- baseline_model: `{metadata.get('baseline_model')}`", f"- baseline_relative_summary: `{metadata.get('baseline_relative_summary')}`", f"- result_count: `{len(results)}`", f"- live_execution: `{metadata.get('live_execution')}`", f"- fallback_reason: `{metadata.get('fallback_reason', '')}`", "", "## Evidence Buckets", "", f"- checked_evidence: `{metadata.get('checked_evidence', [])}`", f"- unchecked_evidence: `{metadata.get('unchecked_evidence', [])}`", "", "## Viable Model Check", ""]
+    lines = ["# Gemini Behavioral Replay Report", "", "## Summary", "", f"- workflow_verdict: `{metadata.get('workflow_verdict', 'success')}`", f"- aggregate_scorer_success: `{str(summary['scorer_success']).lower()}`", f"- absolute_safety_evidence_success: `{str(summary['absolute_safety_evidence_success']).lower()}`", f"- baseline_model: `{metadata.get('baseline_model')}`", f"- baseline_relative_summary: `{metadata.get('baseline_relative_summary')}`", f"- result_count: `{len(results)}`", f"- runtime_unavailable_count: `{summary['runtime_unavailable_count']}`", f"- runtime_unavailable_models: `{summary['runtime_unavailable_models']}`", f"- live_execution: `{metadata.get('live_execution')}`", f"- fallback_reason: `{metadata.get('fallback_reason', '')}`", "", "## Evidence Buckets", "", f"- checked_evidence: `{metadata.get('checked_evidence', [])}`", f"- unchecked_evidence: `{metadata.get('unchecked_evidence', [])}`", "", "## Viable Model Check", ""]
     mr = metadata["model_resolution"]
     for key in ("selection_source", "catalog_ok", "catalog_error", "hardcoded_models", "governed_pair_models", "baseline_model", "selected_models_to_run", "rejected_selected_models", "hardcoded_and_viable", "viable_missing_from_hardcoded", "hardcoded_not_currently_viable"):
         lines.append(f"- {key}: `{mr.get(key)}`")
@@ -310,6 +337,10 @@ def write_reports(output_dir: Path, results: List[Dict[str, Any]], metadata: Dic
         lines += ["", "## Baseline-Relative Details", ""]
         for result in results:
             lines.append(f"- `{result.get('model_name')}` / `{result.get('fixture_id')}`: `{result.get('baseline_relative')}`")
+    if metadata.get("runtime_unavailable_results"):
+        lines += ["", "## Runtime Unavailable Models", ""]
+        for row in metadata["runtime_unavailable_results"]:
+            lines.append(f"- `{row.get('model')}` / `{row.get('fixture_id')}`: Unavailable at runtime; skipped scoring for this fixture.")
     if metadata.get("validation_messages"):
         lines += ["", "## Validation Messages", ""] + [f"- `{m.get('level')}`: {m.get('message')}" for m in metadata["validation_messages"]]
     markdown = "\n".join(lines).rstrip() + "\n"
@@ -330,24 +361,11 @@ def main() -> int:
     output_dir = Path(args.output_dir).resolve(); mkdir(output_dir)
     fixtures_root = Path(args.fixtures_root).resolve(); api_key = os.environ.get(args.api_key_env, "").strip()
     if args.mode == "deterministic":
-        models = {
-            "selection_source": "deterministic_response_pack",
-            "catalog_ok": False,
-            "catalog_error": "catalog not consulted for deterministic mode",
-            "hardcoded_models": HARDCODED_MODELS,
-            "governed_pair_models": GOVERNED_PAIR_MODELS,
-            "baseline_model": args.baseline_model,
-            "selected_models_to_run": [args.model],
-            "rejected_selected_models": [],
-            "hardcoded_and_viable": [],
-            "viable_missing_from_hardcoded": [],
-            "hardcoded_not_currently_viable": [],
-            "excluded_catalog_models": [],
-        }
+        models = {"selection_source": "deterministic_response_pack", "catalog_ok": False, "catalog_error": "catalog not consulted for deterministic mode", "hardcoded_models": HARDCODED_MODELS, "governed_pair_models": GOVERNED_PAIR_MODELS, "baseline_model": args.baseline_model, "selected_models_to_run": [args.model], "rejected_selected_models": [], "hardcoded_and_viable": [], "viable_missing_from_hardcoded": [], "hardcoded_not_currently_viable": [], "excluded_catalog_models": []}
     else:
         models = resolve_models(args, api_key)
     fixtures, fixture_resolution = resolve_fixtures(args, fixtures_root)
-    metadata: Dict[str, Any] = {"workflow_verdict": "success", "replay_mode": args.mode, "model_name": ",".join(models["selected_models_to_run"]), "baseline_model": args.baseline_model, "fixture_count": len(fixtures), "model_resolution": models, "fixture_resolution": fixture_resolution, "validation_messages": [], "checked_evidence": ["fixture index", "fixture definitions"], "unchecked_evidence": []}
+    metadata: Dict[str, Any] = {"workflow_verdict": "success", "replay_mode": args.mode, "model_name": ",".join(models["selected_models_to_run"]), "baseline_model": args.baseline_model, "fixture_count": len(fixtures), "model_resolution": models, "fixture_resolution": fixture_resolution, "validation_messages": [], "checked_evidence": ["fixture index", "fixture definitions"], "unchecked_evidence": [], "runtime_unavailable_results": []}
     if models["rejected_selected_models"]:
         metadata["validation_messages"].append({"level": "error", "message": "One or more selected models were rejected; see model_resolution.rejected_selected_models."})
     if args.mode != "deterministic" and args.baseline_model not in models["selected_models_to_run"]:
@@ -360,13 +378,11 @@ def main() -> int:
         metadata["validation_messages"].append({"level": "error", "message": "No active fixtures selected for replay."})
     if args.selection_report_only:
         if any(message.get("level") == "error" for message in metadata.get("validation_messages", [])):
-            metadata["workflow_verdict"] = "failure"
-            write_reports(output_dir, [], metadata); return 1
+            metadata["workflow_verdict"] = "failure"; write_reports(output_dir, [], metadata); return 1
         write_reports(output_dir, [], metadata); return 0
     mode, reason = args.mode, ""
     if args.mode == "fallback":
-        reason = "fallback mode requested"
-        metadata["unchecked_evidence"].append("live Gemini API response")
+        reason = "fallback mode requested"; metadata["unchecked_evidence"].append("live Gemini API response")
     if args.mode == "live" and not api_key:
         reason = f"missing API key env {args.api_key_env}"
         if args.allow_fallback:
@@ -395,6 +411,9 @@ def main() -> int:
                 calls.extend(pack.get("metadata", {}).get("turn_calls", []))
                 suffix = "live" if mode == "live" else "fallback"
                 (output_dir / f"{safe(fixture.get('fixture_id'))}_{safe(model)}_{suffix}_response_pack.json").write_text(json.dumps(pack, indent=2), encoding="utf-8")
+                pack_calls = pack.get("metadata", {}).get("turn_calls", [])
+                if mode == "live" and pack_calls and all(call.get("unavailable") for call in pack_calls):
+                    metadata["runtime_unavailable_results"].append(unavailable_matrix_row(pack)); continue
             result, messages = score_pack(pack, fixture); metadata["validation_messages"].extend(messages)
             if "response-pack schema" not in metadata["checked_evidence"]:
                 metadata["checked_evidence"].append("response-pack schema")
@@ -402,13 +421,19 @@ def main() -> int:
                 if "deterministic scorer" not in metadata["checked_evidence"]:
                     metadata["checked_evidence"].append("deterministic scorer")
                 results.append(result)
-    ok = sum(1 for call in calls if call.get("ok"))
-    live_complete = mode == "live" and bool(calls) and ok == len(calls)
+    ok = sum(1 for call in calls if call.get("ok")); unavailable = sum(1 for call in calls if call.get("unavailable"))
+    runtime_unavailable_models = sorted({str(row.get("model")) for row in metadata.get("runtime_unavailable_results", [])})
+    metadata["runtime_unavailable_models"] = runtime_unavailable_models
+    live_complete = mode == "live" and bool(calls) and ok + unavailable == len(calls)
+    if mode == "live" and args.baseline_model in runtime_unavailable_models:
+        metadata["validation_messages"].append({"level": "error", "message": f"Baseline model {args.baseline_model!r} was unavailable at runtime, so baseline-relative scoring cannot run."})
     if mode == "live":
         target_bucket = metadata["checked_evidence"] if live_complete else metadata["unchecked_evidence"]
         if "live Gemini API response" not in target_bucket:
             target_bucket.append("live Gemini API response")
-    metadata.update({"replay_mode": mode, "live_execution": mode == "live" and bool(calls), "fallback_reason": reason, "api_call_count": len(calls), "api_call_success_count": ok, "api_call_failure_count": len(calls)-ok, "live_response_complete": live_complete, "prompt_profile": "behavioral_replay_operator_turn_exact_marker_tuned", "production_prompt_equivalent": "partial_fixture_replay_prompt", "live_environment_fidelity_gap": "Manual live replay uses fixture prompts and does not prove full production runtime parity."})
+        if runtime_unavailable_models and "runtime model availability" not in metadata["checked_evidence"]:
+            metadata["checked_evidence"].append("runtime model availability")
+    metadata.update({"replay_mode": mode, "live_execution": mode == "live" and bool(calls), "fallback_reason": reason, "api_call_count": len(calls), "api_call_success_count": ok, "api_call_failure_count": len(calls)-ok, "api_call_unavailable_count": unavailable, "live_response_complete": live_complete, "prompt_profile": "behavioral_replay_operator_turn_exact_marker_tuned", "production_prompt_equivalent": "partial_fixture_replay_prompt", "live_environment_fidelity_gap": "Manual live replay uses fixture prompts and does not prove full production runtime parity."})
     has_errors = any(message.get("level") == "error" for message in metadata.get("validation_messages", []))
     scorer_failed = bool(results) and not all(result.get("success") for result in results)
     deterministic_failed = mode == "deterministic" and (has_errors or scorer_failed or not results)
@@ -420,6 +445,7 @@ def main() -> int:
     if deterministic_failed or workflow_failed:
         return 1
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())
