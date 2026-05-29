@@ -12,12 +12,10 @@ from lib.gemini_behavioral_replay_scoring import score_response_pack
 DEFAULT_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
 DEFAULT_MODEL = "gemini-3.5-flash"
 DEFAULT_BASELINE_MODEL = "gemini-3.1-pro-preview"
-RETIRED_TEXT_MODELS = {
-    "gemini-2.0-flash",
-    "gemini-2.0-flash-001",
+RETIRED_TEXT_MODEL_PREFIXES = (
     "gemini-2.0-flash-lite",
-    "gemini-2.0-flash-lite-001",
-}
+    "gemini-2.0-flash",
+)
 HARDCODED_MODELS = [
     "gemini-2.5-flash",
     "gemini-2.5-flash-lite",
@@ -43,6 +41,11 @@ def safe(value: object) -> str:
 
 def mkdir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
+
+
+def is_retired_text_model(model_name: str) -> bool:
+    low = str(model_name or "").split("/")[-1].lower()
+    return any(low == prefix or low.startswith(f"{prefix}-") for prefix in RETIRED_TEXT_MODEL_PREFIXES)
 
 
 def model_exclusion_reason(model: Dict[str, Any]) -> str:
@@ -82,8 +85,8 @@ def fetch_catalog(api_key: str, api_base: str) -> Dict[str, Any]:
 def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
     catalog = fetch_catalog(api_key, args.api_base)
     catalog_viable = catalog["viable_models"]
-    viable = [model for model in catalog_viable if model not in RETIRED_TEXT_MODELS]
-    retired_viable = sorted(set(catalog_viable).intersection(RETIRED_TEXT_MODELS))
+    viable = [model for model in catalog_viable if not is_retired_text_model(model)]
+    retired_viable = sorted(model for model in catalog_viable if is_retired_text_model(model))
     checked = csv(args.models_csv)
     if args.models_csv is None and not checked:
         checked = [args.model] if args.model else []
@@ -318,7 +321,7 @@ def matrix_rows(results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> List
         count, ok, _ = row_counts(result)
         baseline_relative = result.get("baseline_relative", {})
         rows.append({"model": result.get("model_name"), "fixture_id": result.get("fixture_id"), "mode": result.get("mode"), "api_ok": f"{ok}/{count}", "turns": f"{result.get('turn_success_count')}/{result.get('turn_count')}", "required_ratio": result.get("overall_required_marker_ratio"), "forbidden_hits": len(result.get("forbidden_marker_hits", [])), "anomalies": result.get("anomaly_count"), "absolute_gate": "pass" if result.get("absolute_safety_evidence_pass") else "fail", "validation_errors": 0, "scorer": "pass" if result.get("success") else "fail", "baseline_relative": baseline_relative.get("verdict", "not_scored"), "workflow": metadata.get("workflow_verdict", "success"), "meaning": "Absolute safety/evidence gates remain binding; baseline-relative verdict compares coverage/style dimensions."})
-    return rows
+    return sorted(rows, key=lambda row: (str(row.get("model") or ""), str(row.get("fixture_id") or ""), str(row.get("mode") or "")))
 
 
 def write_reports(output_dir: Path, results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> None:
