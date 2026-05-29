@@ -15,7 +15,9 @@ def write_json(path: Path, payload: Dict[str, Any]) -> None:
 
 def render_markdown_report(results: List[Dict[str, Any]], metadata: Dict[str, Any] | None = None) -> str:
     metadata = metadata or {}
-    aggregate_success = bool(results) and all(result.get("success") for result in results)
+    validation_messages = metadata.get("validation_messages", [])
+    validation_error_count = sum(1 for message in validation_messages if message.get("level") == "error")
+    aggregate_success = bool(results) and all(result.get("success") for result in results) and validation_error_count == 0
     turn_count = sum(int(result.get("turn_count", 0)) for result in results)
     turn_success_count = sum(int(result.get("turn_success_count", 0)) for result in results)
     lines = ["# Gemini Behavioral Replay Report", ""]
@@ -26,12 +28,13 @@ def render_markdown_report(results: List[Dict[str, Any]], metadata: Dict[str, An
             f"- aggregate_success: `{str(aggregate_success).lower()}`",
             f"- result_count: `{len(results)}`",
             f"- turns passed: `{turn_success_count}/{turn_count}`",
+            f"- validation errors: `{validation_error_count}`",
             "",
         ]
     )
     if metadata:
         lines.extend(["## Execution", ""])
-        for key in ("replay_mode", "model_name", "live_execution", "fallback_reason", "fixture_count"):
+        for key in ("replay_mode", "model_name", "live_execution", "fallback_reason", "fixture_count", "prompt_profile", "production_prompt_equivalent", "api_call_count", "api_call_success_count", "api_call_failure_count", "live_response_complete"):
             if key in metadata:
                 lines.append(f"- {key}: `{metadata[key]}`")
         if metadata.get("checked_evidence"):
@@ -81,12 +84,16 @@ def write_reports(
     ensure_dir(output_dir)
     json_path = output_dir / f"{report_name}.json"
     markdown_path = output_dir / f"{report_name}.md"
+    metadata = metadata or {}
+    validation_messages = metadata.get("validation_messages", [])
+    validation_error_count = sum(1 for message in validation_messages if message.get("level") == "error")
     aggregate = {
-        "success": bool(results) and all(result.get("success") for result in results),
+        "success": bool(results) and all(result.get("success") for result in results) and validation_error_count == 0,
         "result_count": len(results),
         "turn_count": sum(int(result.get("turn_count", 0)) for result in results),
         "turn_success_count": sum(int(result.get("turn_success_count", 0)) for result in results),
+        "validation_error_count": validation_error_count,
     }
-    write_json(json_path, {"summary": aggregate, "metadata": metadata or {}, "results": results})
+    write_json(json_path, {"summary": aggregate, "metadata": metadata, "results": results})
     markdown_path.write_text(render_markdown_report(results, metadata), encoding="utf-8")
     return {"json_report": str(json_path), "markdown_report": str(markdown_path)}
