@@ -187,6 +187,7 @@ def main() -> int:
     fallback_reason = ""
     checked_evidence = ["fixture index", "fixture definitions", "response-pack schema", "deterministic scorer"]
     unchecked_evidence: List[str] = []
+    live_turn_calls: List[Dict[str, Any]] = []
 
     deterministic_pack = load_response_pack(Path(args.response_pack).resolve()) if args.response_pack else None
     api_key = os.environ.get(args.api_key_env, "").strip()
@@ -205,10 +206,13 @@ def main() -> int:
                 raise SystemExit("--response-pack is required in deterministic mode")
             if deterministic_pack.get("fixture_id") and deterministic_pack.get("fixture_id") != fixture.get("fixture_id"):
                 continue
+            if deterministic_pack.get("mode") != "deterministic":
+                validation_messages.append({"level": "error", "message": f"Deterministic mode requires a deterministic response pack, got {deterministic_pack.get('mode')!r}."})
+                continue
             response_pack = deterministic_pack
         elif effective_mode == "live":
-            checked_evidence.append("live Gemini API response")
             response_pack = make_live_response_pack(fixture, api_key, args.api_base, args.model, args.temperature, args.max_retries, args.retry_base_seconds)
+            live_turn_calls.extend(response_pack.get("metadata", {}).get("turn_calls", []))
             pack_path = output_dir / f"{fixture.get('fixture_id')}_live_response_pack.json"
             pack_path.write_text(json.dumps(response_pack, indent=2), encoding="utf-8")
             generated_pack_paths.append(str(pack_path))
@@ -228,6 +232,19 @@ def main() -> int:
     if not results and not validation_messages:
         raise SystemExit("No response packs matched selected fixtures.")
 
+    api_call_count = len(live_turn_calls)
+    api_call_success_count = sum(1 for call in live_turn_calls if call.get("ok"))
+    api_call_failure_count = api_call_count - api_call_success_count
+    live_response_complete = effective_mode == "live" and api_call_count > 0 and api_call_failure_count == 0
+    if effective_mode == "live":
+        if api_call_failure_count:
+            unchecked_evidence.append("one or more live Gemini API responses")
+            live_environment_fidelity_gap = "One or more live Gemini API calls failed; live behavior evidence is partial."
+        else:
+            checked_evidence.append("live Gemini API response")
+            live_environment_fidelity_gap = "Harness-scaffolded prompt; production prompt equivalence was not measured."
+    else:
+        live_environment_fidelity_gap = "Live Gemini API behavior was not measured in this run."
     metadata = {
         "replay_mode": effective_mode,
         "model_name": args.model,
@@ -236,7 +253,13 @@ def main() -> int:
         "fixture_count": len(results),
         "checked_evidence": checked_evidence,
         "unchecked_evidence": unchecked_evidence,
-        "live_environment_fidelity_gap": "none" if effective_mode == "live" else "Live Gemini API behavior was not measured in this run.",
+        "live_environment_fidelity_gap": live_environment_fidelity_gap,
+        "prompt_profile": "harness_scaffolded" if effective_mode == "live" else None,
+        "production_prompt_equivalent": False if effective_mode == "live" else None,
+        "api_call_count": api_call_count,
+        "api_call_success_count": api_call_success_count,
+        "api_call_failure_count": api_call_failure_count,
+        "live_response_complete": live_response_complete,
         "generated_response_packs": generated_pack_paths,
         "validation_messages": validation_messages,
     }
