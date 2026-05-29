@@ -13,10 +13,6 @@ DEFAULT_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
 DEFAULT_MODEL = "gemini-3.5-flash"
 DEFAULT_BASELINE_MODEL = "gemini-3.1-pro-preview"
 HARDCODED_MODELS = [
-    "gemini-2.0-flash",
-    "gemini-2.0-flash-001",
-    "gemini-2.0-flash-lite",
-    "gemini-2.0-flash-lite-001",
     "gemini-2.5-flash",
     "gemini-2.5-flash-lite",
     "gemini-2.5-pro",
