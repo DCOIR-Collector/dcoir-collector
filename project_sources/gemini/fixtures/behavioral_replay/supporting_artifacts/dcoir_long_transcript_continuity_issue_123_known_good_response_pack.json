@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_long_transcript_continuity_issue_123",
+  "mode": "deterministic",
+  "model_name": "governed-known-good-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "I need to anchor on the latest acknowledged state: chunk 7 was received, your operator correction supersedes the earlier conclusion, and you said CHUNKS COMPLETE. I should do not replay conclusion A as if nothing changed. If my interrupted answer lost state, the smallest recovery artifact is a short excerpt of the last accepted state or my cut-off answer, not another chunk unless you explicitly says more chunks remain."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_good_example",
+    "purpose": "Long-transcript continuity deterministic acceptance example"
+  }
+}

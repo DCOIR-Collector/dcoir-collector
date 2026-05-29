@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_byovd_evidence_discipline_issue_122",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-question-reversal-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "This should remain unresolved due to evidence gaps. The evidence includes a vulnerable driver. Not prove active exploitation? No, they prove it. Missing logs do not prove log clearing. The next evidence should be collected before final closure."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_question_reversal_example",
+    "purpose": "Regression check for question-plus-reversal after required marker phrases"
+  }
+}

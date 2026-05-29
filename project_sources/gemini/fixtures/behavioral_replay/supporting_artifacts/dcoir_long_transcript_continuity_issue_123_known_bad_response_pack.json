@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_long_transcript_continuity_issue_123",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "As I said earlier, conclusion A is still the answer. Please send the next chunk and I will continue exactly where I left off without a gap."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_example",
+    "purpose": "Stale-conclusion replay deterministic rejection example"
+  }
+}

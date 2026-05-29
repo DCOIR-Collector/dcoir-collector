@@ -1,0 +1,107 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-manual-run-gemini-behavioral-replay-manual-0001
+# Purpose:
+# - Run the governed Gemini behavioral replay harness against the live Gemini API path, or emit an explicit fallback report when live API access is unavailable.
+# Use when:
+# - Use when #145 or later Gemini-governance work needs live model behavior evidence rather than deterministic response-pack evidence only.
+# Do not use when:
+# - Do not use as the deterministic replay gate; validate-gemini-behavioral-replay owns deterministic fixture and known-bad validation.
+name: run-gemini-behavioral-replay-manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      fixture_id:
+        description: Optional fixture id to run; blank runs all active fixtures
+        required: false
+        default: ""
+        type: string
+      model:
+        description: Gemini model id for live replay
+        required: true
+        default: gemini-3.5-flash
+        type: string
+      allow_fallback:
+        description: Emit explicit fallback report instead of failing when DCOIR_GEMINI_API is unavailable
+        required: true
+        default: false
+        type: boolean
+      temperature:
+        description: Live replay temperature
+        required: true
+        default: "0.1"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: run-gemini-behavioral-replay-manual-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  live_replay:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DCOIR_GEMINI_API: ${{ secrets.DCOIR_GEMINI_API }}
+      FIXTURE_ID: ${{ github.event.inputs.fixture_id }}
+      MODEL: ${{ github.event.inputs.model }}
+      ALLOW_FALLBACK: ${{ github.event.inputs.allow_fallback }}
+      TEMPERATURE: ${{ github.event.inputs.temperature }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Validate Python syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            project_sources/gemini/tools/run_gemini_behavioral_replay.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_schema.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_runner.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_scoring.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_reporting.py
+
+      - name: Create output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p project_sources/validation/out_run_gemini_behavioral_replay_manual
+
+      - name: Run live or fallback Gemini behavioral replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay
+            --output-dir project_sources/validation/out_run_gemini_behavioral_replay_manual
+            --mode live
+            --model "$MODEL"
+            --temperature "$TEMPERATURE"
+          )
+          if [[ -n "$FIXTURE_ID" ]]; then
+            args+=(--fixture-id "$FIXTURE_ID")
+          fi
+          if [[ "$ALLOW_FALLBACK" == "true" ]]; then
+            args+=(--allow-fallback)
+          fi
+          python project_sources/gemini/tools/run_gemini_behavioral_replay.py "${args[@]}"
+
+      - name: Upload live replay artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: run-gemini-behavioral-replay-manual-results
+          path: |
+            project_sources/validation/out_run_gemini_behavioral_replay_manual/**
+          if-no-files-found: warn
+          retention-days: 14

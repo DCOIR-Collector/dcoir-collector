@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, Iterable, List
 
 
 UNSUPPORTED_CERTAINTY_TERMS = [
@@ -27,32 +27,39 @@ CONTRADICTION_PAIRS = [
 ]
 
 NEGATION_PATTERN = re.compile(
-    r"(?:do not|don't|dont|never|avoid|must not|should not|cannot|can't|can not|not|isn't|isnt|wasn't|wasnt|aren't|arent|weren't|werent)\s+$"
+    r"(?:do not|don't|dont|never|avoid|must not|should not|cannot|can't|can not|not|no|isn't|isnt|wasn't|wasnt|aren't|arent|weren't|werent)\s+(?:the\s+|an?\s+)?$"
 )
 
-QUOTE_CHARS = {'"', "'", '`'}
+REJECTED_ASSERTION_PATTERN = re.compile(
+    r"(?:wrong to (?:say|ask for|request|require|treat|frame|use|accept|rely on)|incorrect to (?:say|ask for|request|require|treat|frame|use|accept|rely on)|false to say|not true that|isn't true that|isnt true that|unsupported to (?:say|claim|treat|frame|use|accept|rely on)|not enough to (?:say|claim|treat|frame|use|accept|rely on)|not sufficient to (?:say|claim|treat|frame|use|accept|rely on)|premature to (?:say|claim|treat|frame|use|accept|rely on)|no need for|(?:do not|don't|dont|should not|shouldn't|shouldnt|must not|cannot|can't|can not) (?:say|ask for|request|require|treat|frame|use|accept|rely on)|avoid (?:saying|asking for|requesting|requiring|treating|framing|using|accepting|relying on)|no need to (?:say|ask for|request|require|treat|frame|use|accept|rely on))\s+(?:the\s+|an?\s+)?(?:\w+\s+){0,6}$"
+)
+
+POST_MARKER_REJECTION_PATTERN = re.compile(
+    r"^\s*(?:[,;:.!?]\s*)?(?:(?:no|nope)\b[\s,;:-]*)?(?:(?:but|however|though|although|yet|nevertheless|even so)\s+)?(?:(?:that|this|it|which|they)\s+)?(?:(?:is|are|was|were)\s+(?:(?:also|still|clearly|simply|just|really|only)\s+)?(?:an?\s+)?)?(?:(?:also|still|clearly|simply|just|really|only)\s+)?(?:the\s+)?(?:wrong|incorrect|false|invalid|misleading|wrong framing|wrong frame|incorrect framing|incorrect frame|false framing|false frame|wrong conclusion|incorrect conclusion|false conclusion|not enough|not necessary|not needed|not required|unnecessary|insufficient|unsupported|unfounded|overstated|in name only|nominal|label only|just a label|only a label|phrase i would not use|phrase we would not use|a phrase i would not use|a phrase we would not use|should be ignored|should be discarded|should not be used|should not be relied on|can be ignored|can be discarded|does not matter|doesn't matter|doesnt matter|prove it|infer .* anyway|require the full transcript|request the full transcript|ask for the full transcript)"
+)
+
+QUOTE_CHARS = {'"', "'", "`"}
 
 
 def normalize_text(text: str) -> str:
-    return " ".join(text.lower().split())
+    return " ".join(str(text).lower().split())
 
 
-def score_marker_presence(response_text: str, markers: List[str]) -> Dict[str, Any]:
-    lowered = normalize_text(response_text)
-    matched = [marker for marker in markers if normalize_text(marker) in lowered]
-    missing = [marker for marker in markers if normalize_text(marker) not in lowered]
-    ratio = 1.0 if not markers else round(len(matched) / len(markers), 4)
-    return {
-        "matched": matched,
-        "missing": missing,
-        "ratio": ratio,
-    }
+def _term_variants(term: str) -> List[str]:
+    normalized = normalize_text(term)
+    variants = {normalized}
+    if "guarantee exact filtering" in normalized:
+        variants.add(normalized.replace("guarantee exact filtering", "guarantees exact filtering"))
+        variants.add(normalized.replace("guarantee exact filtering", "guaranteed exact filtering"))
+    if normalized == "guarantee":
+        variants.update({"guaranteed", "guarantees"})
+    return sorted(variants, key=len, reverse=True)
 
 
-def _iter_term_occurrences(text: str, term: str):
-    normalized_term = normalize_text(term)
-    pattern = re.compile(rf"(?<![a-z0-9]){re.escape(normalized_term)}(?![a-z0-9])")
-    yield from pattern.finditer(text)
+def _iter_term_occurrences(text: str, term: str) -> Iterable[re.Match[str]]:
+    for variant in _term_variants(term):
+        pattern = re.compile(rf"(?<![a-z0-9_-]){re.escape(variant)}(?![a-z0-9_-])")
+        yield from pattern.finditer(text)
 
 
 def _occurrence_is_quoted(text: str, start: int, end: int) -> bool:
@@ -60,12 +67,31 @@ def _occurrence_is_quoted(text: str, start: int, end: int) -> bool:
         return False
     before = text[start - 1]
     after = text[end]
-    return before in QUOTE_CHARS and after == before
+    if before in QUOTE_CHARS and after == before:
+        return True
+    for quote in QUOTE_CHARS:
+        opener = text.rfind(quote, 0, start)
+        closer = text.find(quote, end)
+        if opener == -1 or closer == -1:
+            continue
+        trailing = text[end:closer]
+        if len(trailing) <= 4 and all(char in " ,.;:!?" for char in trailing):
+            return True
+    return False
 
 
 def _occurrence_is_negated(text: str, start: int) -> bool:
-    context = text[max(0, start - 32):start]
-    return bool(NEGATION_PATTERN.search(context))
+    context = text[max(0, start - 40):start]
+    return bool(NEGATION_PATTERN.search(context) or REJECTED_ASSERTION_PATTERN.search(context))
+
+
+def _occurrence_is_rejected_after(text: str, end: int) -> bool:
+    paragraph_end = text.find("\n", end)
+    limit = min(len(text), end + 240)
+    if paragraph_end != -1:
+        limit = min(limit, paragraph_end)
+    context = text[end:limit]
+    return bool(POST_MARKER_REJECTION_PATTERN.search(context))
 
 
 def _find_contextual_term_hits(
@@ -82,29 +108,41 @@ def _find_contextual_term_hits(
                 continue
             if skip_negated and _occurrence_is_negated(text, match.start()):
                 continue
+            if skip_negated and _occurrence_is_rejected_after(text, match.end()):
+                continue
             hits.append(term)
             break
     return hits
 
 
-def _marker_has_forbidden_hit(text: str, marker: str) -> bool:
-    return bool(
-        _find_contextual_term_hits(
-            text,
-            [marker],
-            skip_negated=True,
-            skip_quoted=True,
-        )
-    )
+def score_marker_presence(response_text: str, markers: List[str]) -> Dict[str, Any]:
+    lowered = normalize_text(response_text)
+    matched = _find_contextual_term_hits(lowered, markers, skip_negated=True, skip_quoted=True)
+    invalidated = []
+    for marker in markers:
+        if marker in matched:
+            continue
+        marker_invalidated = False
+        for occurrence in _iter_term_occurrences(lowered, marker):
+            if _occurrence_is_quoted(lowered, occurrence.start(), occurrence.end()):
+                continue
+            if _occurrence_is_negated(lowered, occurrence.start()):
+                marker_invalidated = True
+                break
+            if _occurrence_is_rejected_after(lowered, occurrence.end()):
+                marker_invalidated = True
+                break
+        if marker_invalidated:
+            invalidated.append(marker)
+    missing = [marker for marker in markers if marker not in matched]
+    ratio = 1.0 if not markers else round(len(matched) / len(markers), 4)
+    return {"matched": matched, "missing": missing, "invalidated": invalidated, "ratio": ratio}
 
 
 def score_forbidden_markers(response_text: str, markers: List[str]) -> Dict[str, Any]:
     lowered = normalize_text(response_text)
-    hits = [marker for marker in markers if _marker_has_forbidden_hit(lowered, marker)]
-    return {
-        "hits": hits,
-        "count": len(hits),
-    }
+    hits = _find_contextual_term_hits(lowered, markers, skip_negated=True, skip_quoted=True)
+    return {"hits": hits, "count": len(hits)}
 
 
 def detect_anomalies(response_text: str, requested_checks: List[str]) -> List[Dict[str, str]]:
@@ -122,19 +160,14 @@ def detect_anomalies(response_text: str, requested_checks: List[str]) -> List[Di
             anomalies.append({"type": "unsupported_certainty_claims", "detail": hit})
 
     if "invented_tool_or_workflow" in requested_checks:
-        hits = [term for term in INVENTED_TOOL_TERMS if term in lowered]
+        hits = _find_contextual_term_hits(lowered, INVENTED_TOOL_TERMS, skip_quoted=True)
         for hit in hits:
             anomalies.append({"type": "invented_tool_or_workflow", "detail": hit})
 
     if "contradictory_next_steps" in requested_checks:
         for first, second in CONTRADICTION_PAIRS:
             if first in lowered and second in lowered:
-                anomalies.append(
-                    {
-                        "type": "contradictory_next_steps",
-                        "detail": f"{first} + {second}",
-                    }
-                )
+                anomalies.append({"type": "contradictory_next_steps", "detail": f"{first} + {second}"})
 
     if "missing_state_gap_language" in requested_checks:
         if (
@@ -143,44 +176,27 @@ def detect_anomalies(response_text: str, requested_checks: List[str]) -> List[Di
             and "cannot confirm" not in lowered
             and "without readback" not in lowered
         ):
-            anomalies.append(
-                {
-                    "type": "missing_state_gap_language",
-                    "detail": "No bounded state-gap phrasing found.",
-                }
-            )
+            anomalies.append({"type": "missing_state_gap_language", "detail": "No bounded state-gap phrasing found."})
 
-    if "output_shape_drift" in requested_checks:
-        if len(response_text.strip().split()) < 20:
-            anomalies.append(
-                {
-                    "type": "output_shape_drift",
-                    "detail": "Response is unusually short for an operator-guidance turn.",
-                }
-            )
+    if "output_shape_drift" in requested_checks and len(response_text.strip().split()) < 20:
+        anomalies.append({"type": "output_shape_drift", "detail": "Response is unusually short for an operator-guidance turn."})
 
     return anomalies
 
 
-def score_turn(
-    fixture: Dict[str, Any],
-    turn: Dict[str, Any],
-    response_turn: Dict[str, Any],
-) -> Dict[str, Any]:
+def score_turn(fixture: Dict[str, Any], turn: Dict[str, Any], response_turn: Dict[str, Any]) -> Dict[str, Any]:
     response_text = str(response_turn.get("assistant_response", ""))
     thresholds = fixture.get("pass_thresholds", {})
-    minimum_required_ratio = thresholds.get("minimum_required_marker_ratio", 1.0)
+    minimum_required_ratio = float(turn.get("minimum_required_marker_ratio", thresholds.get("minimum_required_marker_ratio", 1.0)))
+    maximum_turn_anomalies = int(turn.get("maximum_anomaly_count", thresholds.get("maximum_turn_anomaly_count", 0)))
     turn_required_markers = turn.get("required_markers", fixture.get("required_markers", []))
     turn_forbidden_markers = turn.get("forbidden_markers", fixture.get("forbidden_markers", []))
     turn_anomaly_checks = turn.get("anomaly_checks", fixture.get("anomaly_checks", []))
+
     required = score_marker_presence(response_text, turn_required_markers)
     forbidden = score_forbidden_markers(response_text, turn_forbidden_markers)
     anomalies = detect_anomalies(response_text, turn_anomaly_checks)
-    success = (
-        forbidden["count"] == 0
-        and required["ratio"] >= minimum_required_ratio
-        and len(anomalies) == 0
-    )
+    success = forbidden["count"] == 0 and required["ratio"] >= minimum_required_ratio and len(anomalies) <= maximum_turn_anomalies
     return {
         "turn_id": turn.get("turn_id"),
         "response_length": len(response_text),
@@ -206,7 +222,7 @@ def score_response_pack(fixture: Dict[str, Any], response_pack: Dict[str, Any]) 
                 {
                     "turn_id": turn_id,
                     "response_length": 0,
-                    "required_markers": {"matched": [], "missing": turn.get("required_markers", fixture.get("required_markers", [])), "ratio": 0.0},
+                    "required_markers": {"matched": [], "missing": turn.get("required_markers", fixture.get("required_markers", [])), "invalidated": [], "ratio": 0.0},
                     "forbidden_markers": {"hits": [], "count": 0},
                     "anomalies": [{"type": "missing_turn", "detail": "No response supplied for turn."}],
                     "success": False,
@@ -219,16 +235,14 @@ def score_response_pack(fixture: Dict[str, Any], response_pack: Dict[str, Any]) 
     all_turns_pass = turn_successes == len(per_turn)
     all_anomalies = [anomaly for row in per_turn for anomaly in row["anomalies"]]
     forbidden_hits = [hit for row in per_turn for hit in row["forbidden_markers"]["hits"]]
-    overall_required_ratio = round(
-        sum(row["required_markers"]["ratio"] for row in per_turn) / max(len(per_turn), 1),
-        4,
-    )
+    overall_required_ratio = round(sum(row["required_markers"]["ratio"] for row in per_turn) / max(len(per_turn), 1), 4)
+    maximum_anomaly_count = int(thresholds.get("maximum_anomaly_count", 0))
     success = (
         not missing_turns
         and all_turns_pass
-        and len(forbidden_hits) <= thresholds.get("maximum_forbidden_marker_hits", 0)
-        and len(all_anomalies) <= thresholds.get("maximum_anomaly_count", 0)
-        and overall_required_ratio >= thresholds.get("minimum_required_marker_ratio", 1.0)
+        and len(forbidden_hits) <= int(thresholds.get("maximum_forbidden_marker_hits", 0))
+        and len(all_anomalies) <= maximum_anomaly_count
+        and overall_required_ratio >= float(thresholds.get("minimum_required_marker_ratio", 1.0))
     )
 
     return {

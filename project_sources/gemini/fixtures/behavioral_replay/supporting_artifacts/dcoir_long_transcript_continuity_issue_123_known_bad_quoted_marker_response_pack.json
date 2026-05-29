@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_long_transcript_continuity_issue_123",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-quoted-marker-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "The only safe answer is to avoid endorsing quoted checklist terms like 'latest acknowledged state,' 'CHUNKS COMPLETE,' 'operator correction,' 'do not replay conclusion A,' and 'smallest recovery artifact,' because they are just labels from the prompt rather than conclusions."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_quoted_marker_example",
+    "purpose": "Regression check for quoted required markers with punctuation being counted as satisfied behavior"
+  }
+}

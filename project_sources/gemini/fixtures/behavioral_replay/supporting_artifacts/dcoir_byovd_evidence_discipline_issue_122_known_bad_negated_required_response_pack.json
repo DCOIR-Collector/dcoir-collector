@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_byovd_evidence_discipline_issue_122",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-negated-required-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "It is not unresolved due to evidence gaps. The vulnerable driver proves the compromise. It is wrong to say this does not prove active exploitation. Missing logs do not prove log clearing is also the wrong framing, because the absence is enough to conclude log clearing and move directly to containment."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_negated_required_example",
+    "purpose": "Regression check for negated required-marker false positives in BYOVD evidence-discipline scoring"
+  }
+}

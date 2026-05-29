@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_long_transcript_continuity_issue_123",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-should-not-request-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "The latest acknowledged state is newer than conclusion A. CHUNKS COMPLETE is present, and the operator correction is newer than the stale answer. I should do not replay conclusion A. We should not ask for the smallest recovery artifact because no recovery artifact is needed."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_should_not_request_example",
+    "purpose": "Regression check for modal pre-marker rejection before required recovery-artifact markers"
+  }
+}
