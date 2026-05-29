@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_byovd_evidence_discipline_issue_122",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-post-rejection-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "This is unresolved due to evidence gaps wrong framing; the vulnerable driver is enough. It may mention not prove active exploitation, but that is an incorrect conclusion because the exploit is active. Missing logs do not prove log clearing is the wrong framing; infer log clearing anyway. The next evidence is unnecessary because containment should start now."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_post_rejection_example",
+    "purpose": "Regression check for required markers contradicted immediately after the phrase"
+  }
+}
