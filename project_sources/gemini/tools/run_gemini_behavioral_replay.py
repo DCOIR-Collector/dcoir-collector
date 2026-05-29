@@ -205,20 +205,20 @@ def row_counts(result: Dict[str, Any]) -> tuple[int, int, int]:
 
 def matrix_rows(results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
     if not results:
-        return [{"model": metadata.get("model_name", ""), "fixture_id": "", "mode": metadata.get("replay_mode", "unknown"), "api_ok": "0/0", "turns": "0/0", "required_ratio": 0, "forbidden_hits": 0, "anomalies": 0, "validation_errors": len([m for m in metadata.get("validation_messages", []) if m.get("level") == "error"]), "scorer": "not_scored", "workflow": "success", "meaning": "Diagnostic report produced."}]
+        return [{"model": metadata.get("model_name", ""), "fixture_id": "", "mode": metadata.get("replay_mode", "unknown"), "api_ok": "0/0", "turns": "0/0", "required_ratio": 0, "forbidden_hits": 0, "anomalies": 0, "validation_errors": len([m for m in metadata.get("validation_messages", []) if m.get("level") == "error"]), "scorer": "not_scored", "workflow": metadata.get("workflow_verdict", "success"), "meaning": "Diagnostic report produced."}]
     rows = []
     for result in results:
         count, ok, _ = row_counts(result)
-        rows.append({"model": result.get("model_name"), "fixture_id": result.get("fixture_id"), "mode": result.get("mode"), "api_ok": f"{ok}/{count}", "turns": f"{result.get('turn_success_count')}/{result.get('turn_count')}", "required_ratio": result.get("overall_required_marker_ratio"), "forbidden_hits": len(result.get("forbidden_marker_hits", [])), "anomalies": result.get("anomaly_count"), "validation_errors": 0, "scorer": "pass" if result.get("success") else "fail", "workflow": "success", "meaning": "Model/scorer verdict is shown here; workflow success means artifacts were produced."})
+        rows.append({"model": result.get("model_name"), "fixture_id": result.get("fixture_id"), "mode": result.get("mode"), "api_ok": f"{ok}/{count}", "turns": f"{result.get('turn_success_count')}/{result.get('turn_count')}", "required_ratio": result.get("overall_required_marker_ratio"), "forbidden_hits": len(result.get("forbidden_marker_hits", [])), "anomalies": result.get("anomaly_count"), "validation_errors": 0, "scorer": "pass" if result.get("success") else "fail", "workflow": metadata.get("workflow_verdict", "success"), "meaning": "Model/scorer verdict is shown here; workflow success means artifacts were produced."})
     return rows
 
 
 def write_reports(output_dir: Path, results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> None:
     rows = matrix_rows(results, metadata)
-    summary = {"workflow_success": True, "scorer_success": bool(results) and all(r.get("success") for r in results), "result_count": len(results), "matrix": rows}
+    summary = {"workflow_success": metadata.get("workflow_verdict", "success") == "success", "scorer_success": bool(results) and all(r.get("success") for r in results), "result_count": len(results), "matrix": rows}
     payload = {"summary": summary, "metadata": metadata, "results": results}
     (output_dir / "gemini_behavioral_replay_run_report.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    lines = ["# Gemini Behavioral Replay Report", "", "## Summary", "", f"- workflow_verdict: `success`", f"- aggregate_scorer_success: `{str(summary['scorer_success']).lower()}`", f"- result_count: `{len(results)}`", f"- live_execution: `{metadata.get('live_execution')}`", f"- fallback_reason: `{metadata.get('fallback_reason', '')}`", "", "## Viable Model Check", ""]
+    lines = ["# Gemini Behavioral Replay Report", "", "## Summary", "", f"- workflow_verdict: `{metadata.get('workflow_verdict', 'success')}`", f"- aggregate_scorer_success: `{str(summary['scorer_success']).lower()}`", f"- result_count: `{len(results)}`", f"- live_execution: `{metadata.get('live_execution')}`", f"- fallback_reason: `{metadata.get('fallback_reason', '')}`", "", "## Evidence Buckets", "", f"- checked_evidence: `{metadata.get('checked_evidence', [])}`", f"- unchecked_evidence: `{metadata.get('unchecked_evidence', [])}`", "", "## Viable Model Check", ""]
     mr = metadata["model_resolution"]
     for key in ("selection_source", "catalog_ok", "catalog_error", "hardcoded_models", "governed_pair_models", "selected_models_to_run", "hardcoded_and_viable", "viable_missing_from_hardcoded", "hardcoded_not_currently_viable"):
         lines.append(f"- {key}: `{mr.get(key)}`")
@@ -263,7 +263,7 @@ def main() -> int:
         if args.allow_fallback:
             mode = "fallback"; metadata["unchecked_evidence"].append("live Gemini API response")
         else:
-            metadata["validation_messages"].append({"level": "error", "message": reason}); metadata["unchecked_evidence"].append("live Gemini API response"); write_reports(output_dir, [], metadata); return 1
+            metadata["workflow_verdict"] = "failure"; metadata["validation_messages"].append({"level": "error", "message": reason}); metadata["unchecked_evidence"].append("live Gemini API response"); write_reports(output_dir, [], metadata); return 1
     results: List[Dict[str, Any]] = []; calls: List[Dict[str, Any]] = []
     deterministic = load_response_pack(Path(args.response_pack).resolve()) if args.response_pack else None
     for row in fixtures:
@@ -290,10 +290,13 @@ def main() -> int:
         if "live Gemini API response" not in target_bucket:
             target_bucket.append("live Gemini API response")
     metadata.update({"replay_mode": mode, "live_execution": mode == "live" and bool(calls), "fallback_reason": reason, "api_call_count": len(calls), "api_call_success_count": ok, "api_call_failure_count": len(calls)-ok, "live_response_complete": live_complete, "prompt_profile": "behavioral_replay_operator_turn", "production_prompt_equivalent": "partial_fixture_replay_prompt", "live_environment_fidelity_gap": "Manual live replay uses fixture prompts and does not prove full production runtime parity."})
-    write_reports(output_dir, results, metadata)
     has_errors = any(message.get("level") == "error" for message in metadata.get("validation_messages", []))
     scorer_failed = bool(results) and not all(result.get("success") for result in results)
-    if mode == "deterministic" and (has_errors or scorer_failed or not results):
+    deterministic_failed = mode == "deterministic" and (has_errors or scorer_failed or not results)
+    if deterministic_failed:
+        metadata["workflow_verdict"] = "failure"
+    write_reports(output_dir, results, metadata)
+    if deterministic_failed:
         return 1
     return 0
 
