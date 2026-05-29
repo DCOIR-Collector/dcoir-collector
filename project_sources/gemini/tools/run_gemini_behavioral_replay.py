@@ -242,17 +242,21 @@ def absolute_gate_pass(result: Dict[str, Any]) -> bool:
 def apply_baseline_comparisons(results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> Dict[str, Any]:
     baseline_model = metadata.get("baseline_model") or DEFAULT_BASELINE_MODEL
     baseline_by_fixture = {r.get("fixture_id"): r for r in results if r.get("model_name") == baseline_model}
-    counts = {"better": 0, "equal": 0, "worse": 0, "baseline": 0, "no_baseline": 0}
+    counts = {"better": 0, "equal": 0, "worse": 0, "baseline": 0, "no_baseline": 0, "absolute_gate_failed": 0}
     for result in results:
         baseline = baseline_by_fixture.get(result.get("fixture_id"))
         absolute_pass = absolute_gate_pass(result)
         if not baseline:
-            verdict = "no_baseline"; delta = None; turn_delta = None
+            verdict = "no_baseline"
+            delta = None
+            turn_delta = None
         else:
             delta = round(float(result.get("overall_required_marker_ratio", 0.0)) - float(baseline.get("overall_required_marker_ratio", 0.0)), 4)
             turn_delta = int(result.get("turn_success_count", 0)) - int(baseline.get("turn_success_count", 0))
             if result.get("model_name") == baseline_model:
                 verdict = "baseline"
+            elif not absolute_pass:
+                verdict = "absolute_gate_failed"
             elif delta > 0 or (delta == 0 and turn_delta > 0):
                 verdict = "better"
             elif delta == 0 and turn_delta == 0:
