@@ -82,6 +82,8 @@ def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
         for model in checked:
             if model not in HARDCODED_MODELS:
                 rejected.append({"model": model, "reason": "not present in hard-coded checkbox model list"})
+            elif catalog["ok"] and model not in viable:
+                rejected.append({"model": model, "reason": "not in currently viable catalog model set"})
             else:
                 selected.append(model)
     selected = sorted(dict.fromkeys(selected))
@@ -103,7 +105,7 @@ def resolve_fixtures(args: argparse.Namespace, fixtures_root: Path) -> tuple[Lis
     checked = csv(args.fixture_ids_csv) or ([args.fixture_id] if args.fixture_id else [])
     custom = csv(args.custom_fixtures_csv)
     rejected: List[Dict[str, str]] = []
-    if args.run_all_active_fixtures or (not checked and not custom):
+    if args.run_all_active_fixtures:
         selected, source = active, "all_active_fixtures"
     elif custom:
         selected, source = [], "custom_fixtures_csv"
