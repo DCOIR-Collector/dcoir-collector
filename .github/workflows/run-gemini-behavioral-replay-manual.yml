@@ -237,6 +237,22 @@ jobs:
             fi
             exit 1
           fi
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = Path("project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/gemini_behavioral_replay_run_report.json")
+          payload = json.loads(report.read_text(encoding="utf-8"))
+          model_resolution = payload.get("metadata", {}).get("model_resolution", {})
+          rejected = model_resolution.get("rejected_selected_models") or []
+          selected = set(model_resolution.get("selected_models_to_run") or [])
+          baseline = os.environ.get("BASELINE_MODEL", "gemini-3.1-pro-preview")
+          if rejected:
+              raise SystemExit(f"Selected model(s) rejected by catalog or checkbox gate: {rejected}")
+          if baseline not in selected:
+              raise SystemExit(f"Baseline model {baseline!r} is not selected for replay.")
+          PY
 
       - name: Run live or fallback Gemini behavioral replay
         shell: bash
