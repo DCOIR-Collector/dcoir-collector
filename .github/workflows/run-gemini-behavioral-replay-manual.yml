@@ -229,9 +229,9 @@ jobs:
           if [[ "$RUN_ALL_ACTIVE_FIXTURES" == "true" ]]; then
             args+=(--run-all-active-fixtures)
           fi
+          model_check_report="project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/chatgpt_workflow_report_section.md"
+          top_level_report="project_sources/validation/out_run_gemini_behavioral_replay_manual/chatgpt_workflow_report_section.md"
           if ! python project_sources/gemini/tools/run_gemini_behavioral_replay.py "${args[@]}"; then
-            model_check_report="project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/chatgpt_workflow_report_section.md"
-            top_level_report="project_sources/validation/out_run_gemini_behavioral_replay_manual/chatgpt_workflow_report_section.md"
             if [[ -f "$model_check_report" ]]; then
               cp "$model_check_report" "$top_level_report"
             fi
@@ -243,6 +243,10 @@ jobs:
           from pathlib import Path
 
           report = Path("project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/gemini_behavioral_replay_run_report.json")
+          section = Path("project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/chatgpt_workflow_report_section.md")
+          top_level = Path("project_sources/validation/out_run_gemini_behavioral_replay_manual/chatgpt_workflow_report_section.md")
+          if section.is_file():
+              top_level.write_text(section.read_text(encoding="utf-8"), encoding="utf-8")
           payload = json.loads(report.read_text(encoding="utf-8"))
           model_resolution = payload.get("metadata", {}).get("model_resolution", {})
           rejected = model_resolution.get("rejected_selected_models") or []
