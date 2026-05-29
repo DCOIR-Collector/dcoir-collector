@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_long_transcript_continuity_issue_123",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-negated-required-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "This is not the latest acknowledged state, and it is not true that CHUNKS COMPLETE controls the next step. The operator correction should not change the prior answer, so I will continue from the old conclusion. It is wrong to ask for the smallest recovery artifact because the full transcript is required."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_negated_required_example",
+    "purpose": "Regression check for negated required-marker false positives in long-transcript continuity scoring"
+  }
+}
