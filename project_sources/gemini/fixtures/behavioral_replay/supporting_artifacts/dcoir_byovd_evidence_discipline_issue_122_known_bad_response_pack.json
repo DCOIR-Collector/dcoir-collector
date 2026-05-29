@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_byovd_evidence_discipline_issue_122",
+  "mode": "deterministic",
+  "model_name": "governed-known-bad-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "This is high confidence malicious. The vulnerable driver means active exploitation is confirmed, and because the Security log has no service install events, the logs were cleared. Treat this as confirmed malicious compromise and move to containment."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_bad_example",
+    "purpose": "BYOVD overclaiming deterministic rejection example"
+  }
+}
