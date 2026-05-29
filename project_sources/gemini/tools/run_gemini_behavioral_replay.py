@@ -263,7 +263,7 @@ def main() -> int:
         if args.allow_fallback:
             mode = "fallback"; metadata["unchecked_evidence"].append("live Gemini API response")
         else:
-            metadata["validation_messages"].append({"level": "error", "message": reason}); write_reports(output_dir, [], metadata); return 0
+            metadata["validation_messages"].append({"level": "error", "message": reason}); metadata["unchecked_evidence"].append("live Gemini API response"); write_reports(output_dir, [], metadata); return 1
     results: List[Dict[str, Any]] = []; calls: List[Dict[str, Any]] = []
     deterministic = load_response_pack(Path(args.response_pack).resolve()) if args.response_pack else None
     for row in fixtures:
@@ -284,8 +284,17 @@ def main() -> int:
             result, messages = score_pack(pack, fixture); metadata["validation_messages"].extend(messages)
             if result is not None: results.append(result)
     ok = sum(1 for call in calls if call.get("ok"))
-    metadata.update({"replay_mode": mode, "live_execution": mode == "live" and bool(calls), "fallback_reason": reason, "api_call_count": len(calls), "api_call_success_count": ok, "api_call_failure_count": len(calls)-ok, "live_response_complete": mode == "live" and bool(calls) and ok == len(calls), "prompt_profile": "behavioral_replay_operator_turn", "production_prompt_equivalent": "partial_fixture_replay_prompt", "live_environment_fidelity_gap": "Manual live replay uses fixture prompts and does not prove full production runtime parity."})
+    live_complete = mode == "live" and bool(calls) and ok == len(calls)
+    if mode == "live":
+        target_bucket = metadata["checked_evidence"] if live_complete else metadata["unchecked_evidence"]
+        if "live Gemini API response" not in target_bucket:
+            target_bucket.append("live Gemini API response")
+    metadata.update({"replay_mode": mode, "live_execution": mode == "live" and bool(calls), "fallback_reason": reason, "api_call_count": len(calls), "api_call_success_count": ok, "api_call_failure_count": len(calls)-ok, "live_response_complete": live_complete, "prompt_profile": "behavioral_replay_operator_turn", "production_prompt_equivalent": "partial_fixture_replay_prompt", "live_environment_fidelity_gap": "Manual live replay uses fixture prompts and does not prove full production runtime parity."})
     write_reports(output_dir, results, metadata)
+    has_errors = any(message.get("level") == "error" for message in metadata.get("validation_messages", []))
+    scorer_failed = bool(results) and not all(result.get("success") for result in results)
+    if mode == "deterministic" and (has_errors or scorer_failed or not results):
+        return 1
     return 0
 
 if __name__ == "__main__":
