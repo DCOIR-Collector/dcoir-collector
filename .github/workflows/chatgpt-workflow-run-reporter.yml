@@ -1,32 +1,18 @@
 # DCOIR WORKFLOW OPERATOR NOTES
 # Workflow key:
-# - workflow-staging_lane-chatgpt-workflow-run-reporter-0007
+# - workflow-staging_lane-chatgpt-workflow-run-reporter-0008
 # Purpose:
-# - Create ChatGPT-readable completed-run reports for allowlisted workflows.
+# - Create ChatGPT-readable completed-run reports for allowlisted workflows, including optional source-workflow custom markdown sections when uploaded as artifacts.
 # Use when:
 # - Use automatically through workflow_run after allowlisted workflow completions, or manually for reporter smoke checks.
 # Do not use when:
 # - Do not use for live polling of active request-id workflows; native staging workflows use their own request-scoped reports.
 # Trigger model:
-# - workflow_run completed for: validate-on-push, validate-on-pr, validate-gemini-behavioral-replay, Dependency Review, Dependabot auto-merge, scheduled-health-check, collector-documentation-quality, Workflow maintenance audit, manual-gemini-bundle-build, manual-gemini-model-comparison, chatgpt-github-artifact-readback, manual-collector-runtime-package-build, manual-collector-optional-exe-build, manual-test-framework-validate, manual-full-validation, Ops apply zip request, Ops dispatch request, Ops file delete request, Ops restructure map request, Publish Knowledge to Wiki, chatgpt-workflow-reporting-validation; workflow_dispatch inputs: note
+# - workflow_run completed for allowlisted workflow names below; workflow_dispatch inputs: note
 # Required inputs:
 # - note: Optional operator note for manual reporter smoke checks default=manual reporter smoke check
-# Required secrets/config:
-# - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
-# Runtime dependencies:
-# - Uses .github/scripts/write_workflow_report.py and GitHub CLI log fetch for failed source runs.
 # Expected outputs/readback:
-# - Reports under chatgpt_staging/status_reports/repo-workflows/<workflow-name>/<run-id>/workflow_report.md.
-# Safety notes:
-# - Do not add the reporter itself or retention cleanup to the allowlist. Update the allowlist when new report-worthy workflows are added.
-# - For pull_request-sourced runs, do not embed failed source-workflow logs into committed reports; use the workflow summary and workflow_run_url instead.
-# Maintenance notes:
-# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
-# - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
-# Authority routing:
-# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
-# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
-# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
+# - Reports under chatgpt_staging/status_reports/repo-workflows/<workflow-name>/<run-id>/workflow_report.md and a final clickable URL in the Output full URL path step.
 name: chatgpt-workflow-run-reporter
 
 on:
@@ -35,6 +21,7 @@ on:
       - validate-on-push
       - validate-on-pr
       - validate-gemini-behavioral-replay
+      - run-gemini-behavioral-replay-manual
       - Dependency Review
       - Dependabot auto-merge
       - scheduled-health-check
@@ -101,13 +88,34 @@ jobs:
           echo "LOG_FETCH_EXIT_CODE=$rc" >> "$GITHUB_ENV"
           exit 0
 
+      - name: Fetch source workflow custom report section
+        if: ${{ github.event_name == 'workflow_run' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          set +e
+          mkdir -p .github/tmp/source_workflow_report_section
+          gh run download "$SOURCE_RUN_ID" --repo "$REPO" --name chatgpt-workflow-report-section -D .github/tmp/source_workflow_report_section > .github/tmp/source_workflow_report_section_download.txt 2> .github/tmp/source_workflow_report_section_error.txt
+          rc=$?
+          if [[ "$rc" -eq 0 && -f .github/tmp/source_workflow_report_section/chatgpt_workflow_report_section.md ]]; then
+            echo "CUSTOM_MARKDOWN_FILE=.github/tmp/source_workflow_report_section/chatgpt_workflow_report_section.md" >> "$GITHUB_ENV"
+          else
+            echo "CUSTOM_MARKDOWN_FILE=" >> "$GITHUB_ENV"
+          fi
+          exit 0
+
       - name: Write ChatGPT-readable workflow report
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p .github/tmp
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            mkdir -p chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-run-reporter/manual-${GITHUB_RUN_ID}
-            cat > chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-run-reporter/manual-${GITHUB_RUN_ID}/workflow_report.md <<REPORT
+            report_path="chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-run-reporter/manual-${GITHUB_RUN_ID}/workflow_report.md"
+            mkdir -p "$(dirname "$report_path")"
+            cat > "$report_path" <<REPORT
           # ChatGPT workflow report
 
           ## Result
@@ -139,11 +147,14 @@ jobs:
 
           Verify this report by GitHub readback, then allow retention cleanup to remove it after the configured success-report retention window. Do not use this completed-run summary for live polling.
           REPORT
+            echo "$report_path" > .github/tmp/chatgpt_workflow_report_path.txt
           else
             python .github/scripts/write_workflow_report.py workflow-run \
               --event-json "$GITHUB_EVENT_PATH" \
               --log-file .github/tmp/source_workflow.log \
               --log-error-file .github/tmp/source_workflow_log_fetch_error.txt \
+              --custom-markdown-file "${CUSTOM_MARKDOWN_FILE:-}" \
+              --report-path-output .github/tmp/chatgpt_workflow_report_path.txt \
               --max-log-lines 300 \
               --max-log-chars 40000
           fi
@@ -157,3 +168,17 @@ jobs:
           git add chatgpt_staging/status_reports/repo-workflows
           git commit -m "Record ChatGPT workflow run report [skip ci]" || exit 0
           git push
+
+      - name: Output full URL path
+        shell: bash
+        run: |
+          set -euo pipefail
+          report_path="$(cat .github/tmp/chatgpt_workflow_report_path.txt)"
+          branch_name="$(git branch --show-current || true)"
+          if [[ -z "$branch_name" ]]; then
+            branch_name="main"
+          fi
+          report_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${branch_name}/${report_path}"
+          echo "ChatGPT workflow report: $report_url"
+          echo "## ChatGPT workflow report" >> "$GITHUB_STEP_SUMMARY"
+          echo "$report_url" >> "$GITHUB_STEP_SUMMARY"
