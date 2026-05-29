@@ -19,23 +19,13 @@ on:
         required: true
         default: false
         type: boolean
-      run_gemini_3_5_flash:
-        description: Include gemini-3.5-flash; default governed production lane
-        required: true
-        default: true
-        type: boolean
-      run_gemini_3_1_pro_preview:
-        description: Include gemini-3.1-pro-preview; default governed reference lane
-        required: true
-        default: true
-        type: boolean
-      run_gemini_3_flash_preview:
-        description: Include gemini-3-flash-preview
+      run_gemini_2_5_flash:
+        description: Include gemini-2.5-flash
         required: true
         default: false
         type: boolean
-      run_gemini_2_5_flash:
-        description: Include gemini-2.5-flash
+      run_gemini_2_5_flash_lite:
+        description: Include gemini-2.5-flash-lite
         required: true
         default: false
         type: boolean
@@ -44,10 +34,45 @@ on:
         required: true
         default: false
         type: boolean
+      run_gemini_3_flash_preview:
+        description: Include gemini-3-flash-preview
+        required: true
+        default: false
+        type: boolean
+      run_gemini_3_1_flash_lite:
+        description: Include gemini-3.1-flash-lite
+        required: true
+        default: false
+        type: boolean
+      run_gemini_3_1_flash_lite_preview:
+        description: Include gemini-3.1-flash-lite-preview
+        required: true
+        default: false
+        type: boolean
+      run_gemini_3_1_pro_preview:
+        description: Include gemini-3.1-pro-preview; default enterprise baseline
+        required: true
+        default: true
+        type: boolean
+      run_gemini_3_1_pro_preview_customtools:
+        description: Include gemini-3.1-pro-preview-customtools; compatibility/capability discovery candidate
+        required: true
+        default: false
+        type: boolean
+      run_gemini_3_5_flash:
+        description: Include gemini-3.5-flash; governed production comparison lane
+        required: true
+        default: true
+        type: boolean
       custom_models_csv:
         description: Optional comma-separated currently viable catalog model IDs; ignored when run_all_viable_catalog_models is true
         required: false
         default: ""
+        type: string
+      baseline_model:
+        description: Baseline model for relative scoring dimensions
+        required: true
+        default: "gemini-3.1-pro-preview"
         type: string
       run_all_active_fixtures:
         description: Run all active fixtures and ignore fixture checkboxes/CSV
@@ -82,7 +107,7 @@ on:
       temperature:
         description: Live replay temperature
         required: true
-        default: "0.1"
+        default: "1.0"
         type: string
 
 permissions:
@@ -101,6 +126,7 @@ jobs:
       DCOIR_GEMINI_API: ${{ secrets.DCOIR_GEMINI_API }}
       RUN_ALL_VIABLE_CATALOG_MODELS: ${{ github.event.inputs.run_all_viable_catalog_models }}
       CUSTOM_MODELS_CSV: ${{ github.event.inputs.custom_models_csv }}
+      BASELINE_MODEL: ${{ github.event.inputs.baseline_model }}
       RUN_ALL_ACTIVE_FIXTURES: ${{ github.event.inputs.run_all_active_fixtures }}
       CUSTOM_FIXTURES_CSV: ${{ github.event.inputs.custom_fixtures_csv }}
       ALLOW_FALLBACK: ${{ github.event.inputs.allow_fallback }}
@@ -130,11 +156,15 @@ jobs:
         run: |
           set -euo pipefail
           selected_models=()
-          if [[ "${{ github.event.inputs.run_gemini_3_5_flash }}" == "true" ]]; then selected_models+=("gemini-3.5-flash"); fi
-          if [[ "${{ github.event.inputs.run_gemini_3_1_pro_preview }}" == "true" ]]; then selected_models+=("gemini-3.1-pro-preview"); fi
-          if [[ "${{ github.event.inputs.run_gemini_3_flash_preview }}" == "true" ]]; then selected_models+=("gemini-3-flash-preview"); fi
           if [[ "${{ github.event.inputs.run_gemini_2_5_flash }}" == "true" ]]; then selected_models+=("gemini-2.5-flash"); fi
+          if [[ "${{ github.event.inputs.run_gemini_2_5_flash_lite }}" == "true" ]]; then selected_models+=("gemini-2.5-flash-lite"); fi
           if [[ "${{ github.event.inputs.run_gemini_2_5_pro }}" == "true" ]]; then selected_models+=("gemini-2.5-pro"); fi
+          if [[ "${{ github.event.inputs.run_gemini_3_flash_preview }}" == "true" ]]; then selected_models+=("gemini-3-flash-preview"); fi
+          if [[ "${{ github.event.inputs.run_gemini_3_1_flash_lite }}" == "true" ]]; then selected_models+=("gemini-3.1-flash-lite"); fi
+          if [[ "${{ github.event.inputs.run_gemini_3_1_flash_lite_preview }}" == "true" ]]; then selected_models+=("gemini-3.1-flash-lite-preview"); fi
+          if [[ "${{ github.event.inputs.run_gemini_3_1_pro_preview }}" == "true" ]]; then selected_models+=("gemini-3.1-pro-preview"); fi
+          if [[ "${{ github.event.inputs.run_gemini_3_1_pro_preview_customtools }}" == "true" ]]; then selected_models+=("gemini-3.1-pro-preview-customtools"); fi
+          if [[ "${{ github.event.inputs.run_gemini_3_5_flash }}" == "true" ]]; then selected_models+=("gemini-3.5-flash"); fi
           selected_fixtures=()
           if [[ "${{ github.event.inputs.run_fixture_issue_124_operator_state }}" == "true" ]]; then selected_fixtures+=("dcoir_operator_state_first_issue_124"); fi
           if [[ "${{ github.event.inputs.run_fixture_issue_122_byovd_evidence }}" == "true" ]]; then selected_fixtures+=("dcoir_byovd_evidence_discipline_issue_122"); fi
@@ -160,6 +190,7 @@ jobs:
             --custom-models-csv "$CUSTOM_MODELS_CSV"
             --fixture-ids-csv "$SELECTED_FIXTURES_CSV"
             --custom-fixtures-csv "$CUSTOM_FIXTURES_CSV"
+            --baseline-model "$BASELINE_MODEL"
             --selection-report-only
           )
           if [[ "$RUN_ALL_VIABLE_CATALOG_MODELS" == "true" ]]; then
@@ -168,14 +199,34 @@ jobs:
           if [[ "$RUN_ALL_ACTIVE_FIXTURES" == "true" ]]; then
             args+=(--run-all-active-fixtures)
           fi
+          model_check_report="project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/chatgpt_workflow_report_section.md"
+          top_level_report="project_sources/validation/out_run_gemini_behavioral_replay_manual/chatgpt_workflow_report_section.md"
           if ! python project_sources/gemini/tools/run_gemini_behavioral_replay.py "${args[@]}"; then
-            model_check_report="project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/chatgpt_workflow_report_section.md"
-            top_level_report="project_sources/validation/out_run_gemini_behavioral_replay_manual/chatgpt_workflow_report_section.md"
             if [[ -f "$model_check_report" ]]; then
               cp "$model_check_report" "$top_level_report"
             fi
             exit 1
           fi
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = Path("project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/gemini_behavioral_replay_run_report.json")
+          section = Path("project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/chatgpt_workflow_report_section.md")
+          top_level = Path("project_sources/validation/out_run_gemini_behavioral_replay_manual/chatgpt_workflow_report_section.md")
+          if section.is_file():
+              top_level.write_text(section.read_text(encoding="utf-8"), encoding="utf-8")
+          payload = json.loads(report.read_text(encoding="utf-8"))
+          model_resolution = payload.get("metadata", {}).get("model_resolution", {})
+          rejected = model_resolution.get("rejected_selected_models") or []
+          selected = set(model_resolution.get("selected_models_to_run") or [])
+          baseline = os.environ.get("BASELINE_MODEL", "gemini-3.1-pro-preview")
+          if rejected:
+              raise SystemExit(f"Selected model(s) rejected by catalog or checkbox gate: {rejected}")
+          if baseline not in selected:
+              raise SystemExit(f"Baseline model {baseline!r} is not selected for replay.")
+          PY
 
       - name: Run live or fallback Gemini behavioral replay
         shell: bash
@@ -189,6 +240,7 @@ jobs:
             --custom-models-csv "$CUSTOM_MODELS_CSV"
             --fixture-ids-csv "$SELECTED_FIXTURES_CSV"
             --custom-fixtures-csv "$CUSTOM_FIXTURES_CSV"
+            --baseline-model "$BASELINE_MODEL"
             --temperature "$TEMPERATURE"
           )
           if [[ "$RUN_ALL_VIABLE_CATALOG_MODELS" == "true" ]]; then
