@@ -248,7 +248,7 @@ def main() -> int:
     output_dir = Path(args.output_dir).resolve(); mkdir(output_dir)
     fixtures_root = Path(args.fixtures_root).resolve(); api_key = os.environ.get(args.api_key_env, "").strip()
     models = resolve_models(args, api_key); fixtures, fixture_resolution = resolve_fixtures(args, fixtures_root)
-    metadata: Dict[str, Any] = {"workflow_verdict": "success", "replay_mode": args.mode, "model_name": ",".join(models["selected_models_to_run"]), "fixture_count": len(fixtures), "model_resolution": models, "fixture_resolution": fixture_resolution, "validation_messages": [], "checked_evidence": ["fixture index", "fixture definitions", "response-pack schema", "deterministic scorer"], "unchecked_evidence": []}
+    metadata: Dict[str, Any] = {"workflow_verdict": "success", "replay_mode": args.mode, "model_name": ",".join(models["selected_models_to_run"]), "fixture_count": len(fixtures), "model_resolution": models, "fixture_resolution": fixture_resolution, "validation_messages": [], "checked_evidence": ["fixture index", "fixture definitions"], "unchecked_evidence": []}
     if models["rejected_selected_models"] or fixture_resolution["rejected_selected_fixtures"]:
         metadata["validation_messages"].append({"level": "error", "message": "One or more selected models or fixtures were rejected."})
     if not models["selected_models_to_run"]:
@@ -282,6 +282,9 @@ def main() -> int:
                 suffix = "live" if mode == "live" else "fallback"
                 (output_dir / f"{safe(fixture.get('fixture_id'))}_{safe(model)}_{suffix}_response_pack.json").write_text(json.dumps(pack, indent=2), encoding="utf-8")
             result, messages = score_pack(pack, fixture); metadata["validation_messages"].extend(messages)
+            for evidence_item in ("response-pack schema", "deterministic scorer"):
+                if evidence_item not in metadata["checked_evidence"]:
+                    metadata["checked_evidence"].append(evidence_item)
             if result is not None: results.append(result)
     ok = sum(1 for call in calls if call.get("ok"))
     live_complete = mode == "live" and bool(calls) and ok == len(calls)
