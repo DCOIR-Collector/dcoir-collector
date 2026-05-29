@@ -104,7 +104,9 @@ def resolve_fixtures(args: argparse.Namespace, fixtures_root: Path) -> tuple[Lis
     repo_root = repo_root_from_script(Path(__file__))
     entries = [e for e in load_fixture_index(fixtures_root).get("fixtures", []) if e.get("status") == "active"]
     active = [e.get("fixture_id") for e in entries]
-    checked = csv(args.fixture_ids_csv) or ([args.fixture_id] if args.fixture_id else [])
+    checked = csv(args.fixture_ids_csv)
+    if args.fixture_ids_csv is None and not checked:
+        checked = [args.fixture_id] if args.fixture_id else active
     custom = csv(args.custom_fixtures_csv)
     rejected: List[Dict[str, str]] = []
     if args.run_all_active_fixtures:
@@ -245,7 +247,7 @@ def write_reports(output_dir: Path, results: List[Dict[str, Any]], metadata: Dic
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--fixtures-root", required=True); p.add_argument("--output-dir", required=True)
-    p.add_argument("--fixture-id"); p.add_argument("--fixture-ids-csv", default=""); p.add_argument("--custom-fixtures-csv", default=""); p.add_argument("--run-all-active-fixtures", action="store_true")
+    p.add_argument("--fixture-id"); p.add_argument("--fixture-ids-csv", default=None); p.add_argument("--custom-fixtures-csv", default=""); p.add_argument("--run-all-active-fixtures", action="store_true")
     p.add_argument("--mode", choices=["deterministic", "live", "fallback"], default="deterministic"); p.add_argument("--response-pack")
     p.add_argument("--api-key-env", default="DCOIR_GEMINI_API"); p.add_argument("--api-base", default=DEFAULT_API_BASE)
     p.add_argument("--model", default=DEFAULT_MODEL); p.add_argument("--models-csv", default=None); p.add_argument("--custom-models-csv", default=""); p.add_argument("--run-all-viable-catalog-models", action="store_true"); p.add_argument("--selection-report-only", action="store_true")
