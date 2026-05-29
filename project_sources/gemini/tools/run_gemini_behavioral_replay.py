@@ -12,6 +12,12 @@ from lib.gemini_behavioral_replay_scoring import score_response_pack
 DEFAULT_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
 DEFAULT_MODEL = "gemini-3.5-flash"
 DEFAULT_BASELINE_MODEL = "gemini-3.1-pro-preview"
+RETIRED_TEXT_MODELS = {
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-001",
+    "gemini-2.0-flash-lite",
+    "gemini-2.0-flash-lite-001",
+}
 HARDCODED_MODELS = [
     "gemini-2.5-flash",
     "gemini-2.5-flash-lite",
@@ -75,7 +81,9 @@ def fetch_catalog(api_key: str, api_base: str) -> Dict[str, Any]:
 
 def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
     catalog = fetch_catalog(api_key, args.api_base)
-    viable = catalog["viable_models"]
+    catalog_viable = catalog["viable_models"]
+    viable = [model for model in catalog_viable if model not in RETIRED_TEXT_MODELS]
+    retired_viable = sorted(set(catalog_viable).intersection(RETIRED_TEXT_MODELS))
     checked = csv(args.models_csv)
     if args.models_csv is None and not checked:
         checked = [args.model] if args.model else []
@@ -87,7 +95,7 @@ def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
         selected, source = [], "custom_models_csv"
         for model in custom:
             if catalog["ok"] and model not in viable:
-                rejected.append({"model": model, "reason": "not in currently viable catalog model set"})
+                rejected.append({"model": model, "reason": "not in currently viable replay text model set"})
             else:
                 selected.append(model)
     else:
@@ -96,10 +104,11 @@ def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
             if model not in HARDCODED_MODELS:
                 rejected.append({"model": model, "reason": "not present in hard-coded checkbox model list"})
             elif catalog["ok"] and model not in viable:
-                rejected.append({"model": model, "reason": "not in currently viable catalog model set"})
+                rejected.append({"model": model, "reason": "not in currently viable replay text model set"})
             else:
                 selected.append(model)
     selected = sorted(dict.fromkeys(selected))
+    retired_entries = [{"model": model, "reason": "deprecated Gemini 2.0 text family removed from replay selector"} for model in retired_viable]
     return {
         "selection_source": source, "catalog_ok": catalog["ok"], "catalog_error": catalog["error"],
         "hardcoded_models": HARDCODED_MODELS, "governed_pair_models": GOVERNED_PAIR_MODELS,
@@ -108,7 +117,7 @@ def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
         "hardcoded_and_viable": sorted(set(HARDCODED_MODELS).intersection(viable)),
         "viable_missing_from_hardcoded": sorted(set(viable).difference(HARDCODED_MODELS)),
         "hardcoded_not_currently_viable": sorted(set(HARDCODED_MODELS).difference(viable)) if catalog["ok"] else [],
-        "excluded_catalog_models": catalog["excluded_models"],
+        "excluded_catalog_models": catalog["excluded_models"] + retired_entries,
     }
 
 
