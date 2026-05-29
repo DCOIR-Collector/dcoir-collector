@@ -11,8 +11,24 @@ from lib.gemini_behavioral_replay_scoring import score_response_pack
 
 DEFAULT_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
 DEFAULT_MODEL = "gemini-3.5-flash"
-HARDCODED_MODELS = ["gemini-3.5-flash", "gemini-3.1-pro-preview", "gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.5-pro"]
-GOVERNED_PAIR_MODELS = ["gemini-3.5-flash", "gemini-3.1-pro-preview"]
+DEFAULT_BASELINE_MODEL = "gemini-3.1-pro-preview"
+HARDCODED_MODELS = [
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-001",
+    "gemini-2.0-flash-lite",
+    "gemini-2.0-flash-lite-001",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-pro",
+    "gemini-3-flash-preview",
+    "gemini-3-pro-preview",
+    "gemini-3.1-flash-lite",
+    "gemini-3.1-flash-lite-preview",
+    "gemini-3.1-pro-preview",
+    "gemini-3.1-pro-preview-customtools",
+    "gemini-3.5-flash",
+]
+GOVERNED_PAIR_MODELS = ["gemini-3.5-flash", DEFAULT_BASELINE_MODEL]
 EXCLUDED_MODEL_SUBSTRINGS = ["antigravity", "aqa", "embedding", "imagen", "image-generation", "native-audio", "robotics", "tts", "veo"]
 
 
@@ -92,6 +108,7 @@ def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
     return {
         "selection_source": source, "catalog_ok": catalog["ok"], "catalog_error": catalog["error"],
         "hardcoded_models": HARDCODED_MODELS, "governed_pair_models": GOVERNED_PAIR_MODELS,
+        "baseline_model": args.baseline_model,
         "selected_models_to_run": selected, "rejected_selected_models": rejected,
         "hardcoded_and_viable": sorted(set(HARDCODED_MODELS).intersection(viable)),
         "viable_missing_from_hardcoded": sorted(set(viable).difference(HARDCODED_MODELS)),
@@ -133,14 +150,21 @@ def resolve_fixtures(args: argparse.Namespace, fixtures_root: Path) -> tuple[Lis
 
 def live_prompt(fixture: Dict[str, Any], turn: Dict[str, Any]) -> str:
     evidence = fixture.get("available_evidence_by_turn", {}).get(turn.get("turn_id"), [])
+    required = turn.get("required_markers", fixture.get("required_markers", []))
+    forbidden = turn.get("forbidden_markers", fixture.get("forbidden_markers", []))
     return "\n\n".join([
         "You are producing the next operator-facing answer for a governed DCOIR Gemini behavioral replay.",
-        "Return only the assistant answer text. Do not include JSON, scoring notes, or hidden reasoning.",
+        "Return only the assistant answer text. Do not include JSON, scoring notes, hidden reasoning, or meta commentary.",
+        "Evidence discipline is mandatory: say what is checked, what is not checked, and avoid conclusions that are not supported by the listed evidence.",
+        "When a required phrase is true and natural, include it exactly so the replay can measure operator-facing behavior without weakening evidence boundaries.",
+        "Do not include any forbidden phrase unless you are clearly rejecting or negating that claim.",
         f"Fixture: {fixture.get('fixture_id')}", f"Scenario: {fixture.get('title')}",
         "Available evidence for this turn:\n" + ("\n".join(f"- {x}" for x in evidence) or "- No additional evidence is available."),
         "Allowed assumptions:\n" + ("\n".join(f"- {x}" for x in turn.get("allowed_assumptions", [])) or "- None."),
         "Disallowed assumptions:\n" + ("\n".join(f"- {x}" for x in turn.get("disallowed_assumptions", [])) or "- None."),
         "Expected behavior tags: " + (", ".join(turn.get("expected_behavior_tags", [])) or "none"),
+        "Required behavior markers to satisfy when accurate: " + (", ".join(required) or "none"),
+        "Forbidden claims to avoid or explicitly reject: " + (", ".join(forbidden) or "none"),
         "User turn:\n" + str(turn.get("content", "")).strip(),
     ])
 
@@ -211,32 +235,77 @@ def row_counts(result: Dict[str, Any]) -> tuple[int, int, int]:
     return len(calls), ok, len(calls) - ok
 
 
+def absolute_gate_pass(result: Dict[str, Any]) -> bool:
+    return not result.get("missing_turns") and not result.get("forbidden_marker_hits") and int(result.get("anomaly_count", 0)) == 0
+
+
+def apply_baseline_comparisons(results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> Dict[str, Any]:
+    baseline_model = metadata.get("baseline_model") or DEFAULT_BASELINE_MODEL
+    baseline_by_fixture = {r.get("fixture_id"): r for r in results if r.get("model_name") == baseline_model}
+    counts = {"better": 0, "equal": 0, "worse": 0, "baseline": 0, "no_baseline": 0}
+    for result in results:
+        baseline = baseline_by_fixture.get(result.get("fixture_id"))
+        absolute_pass = absolute_gate_pass(result)
+        if not baseline:
+            verdict = "no_baseline"; delta = None; turn_delta = None
+        else:
+            delta = round(float(result.get("overall_required_marker_ratio", 0.0)) - float(baseline.get("overall_required_marker_ratio", 0.0)), 4)
+            turn_delta = int(result.get("turn_success_count", 0)) - int(baseline.get("turn_success_count", 0))
+            if result.get("model_name") == baseline_model:
+                verdict = "baseline"
+            elif delta > 0 or (delta == 0 and turn_delta > 0):
+                verdict = "better"
+            elif delta == 0 and turn_delta == 0:
+                verdict = "equal"
+            else:
+                verdict = "worse"
+        result["absolute_safety_evidence_pass"] = absolute_pass
+        result["baseline_relative"] = {
+            "baseline_model": baseline_model,
+            "baseline_present": bool(baseline),
+            "verdict": verdict,
+            "required_marker_ratio_delta": delta,
+            "turn_success_count_delta": turn_delta,
+            "candidate_absolute_safety_evidence_pass": absolute_pass,
+            "baseline_absolute_success": baseline.get("success") if baseline else None,
+            "baseline_required_marker_ratio": baseline.get("overall_required_marker_ratio") if baseline else None,
+        }
+        counts[verdict] = counts.get(verdict, 0) + 1
+    return {"baseline_model": baseline_model, "baseline_fixture_count": len(baseline_by_fixture), "verdict_counts": counts}
+
+
 def matrix_rows(results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
     if not results:
-        return [{"model": metadata.get("model_name", ""), "fixture_id": "", "mode": metadata.get("replay_mode", "unknown"), "api_ok": "0/0", "turns": "0/0", "required_ratio": 0, "forbidden_hits": 0, "anomalies": 0, "validation_errors": len([m for m in metadata.get("validation_messages", []) if m.get("level") == "error"]), "scorer": "not_scored", "workflow": metadata.get("workflow_verdict", "success"), "meaning": "Diagnostic report produced."}]
+        return [{"model": metadata.get("model_name", ""), "fixture_id": "", "mode": metadata.get("replay_mode", "unknown"), "api_ok": "0/0", "turns": "0/0", "required_ratio": 0, "forbidden_hits": 0, "anomalies": 0, "absolute_gate": "not_scored", "validation_errors": len([m for m in metadata.get("validation_messages", []) if m.get("level") == "error"]), "scorer": "not_scored", "baseline_relative": "not_scored", "workflow": metadata.get("workflow_verdict", "success"), "meaning": "Diagnostic report produced."}]
     rows = []
     for result in results:
         count, ok, _ = row_counts(result)
-        rows.append({"model": result.get("model_name"), "fixture_id": result.get("fixture_id"), "mode": result.get("mode"), "api_ok": f"{ok}/{count}", "turns": f"{result.get('turn_success_count')}/{result.get('turn_count')}", "required_ratio": result.get("overall_required_marker_ratio"), "forbidden_hits": len(result.get("forbidden_marker_hits", [])), "anomalies": result.get("anomaly_count"), "validation_errors": 0, "scorer": "pass" if result.get("success") else "fail", "workflow": metadata.get("workflow_verdict", "success"), "meaning": "Model/scorer verdict is shown here; workflow success means artifacts were produced."})
+        baseline_relative = result.get("baseline_relative", {})
+        rows.append({"model": result.get("model_name"), "fixture_id": result.get("fixture_id"), "mode": result.get("mode"), "api_ok": f"{ok}/{count}", "turns": f"{result.get('turn_success_count')}/{result.get('turn_count')}", "required_ratio": result.get("overall_required_marker_ratio"), "forbidden_hits": len(result.get("forbidden_marker_hits", [])), "anomalies": result.get("anomaly_count"), "absolute_gate": "pass" if result.get("absolute_safety_evidence_pass") else "fail", "validation_errors": 0, "scorer": "pass" if result.get("success") else "fail", "baseline_relative": baseline_relative.get("verdict", "not_scored"), "workflow": metadata.get("workflow_verdict", "success"), "meaning": "Absolute safety/evidence gates remain binding; baseline-relative verdict compares coverage/style dimensions."})
     return rows
 
 
 def write_reports(output_dir: Path, results: List[Dict[str, Any]], metadata: Dict[str, Any]) -> None:
+    metadata["baseline_relative_summary"] = apply_baseline_comparisons(results, metadata)
     rows = matrix_rows(results, metadata)
-    summary = {"workflow_success": metadata.get("workflow_verdict", "success") == "success", "scorer_success": bool(results) and all(r.get("success") for r in results), "result_count": len(results), "matrix": rows}
+    summary = {"workflow_success": metadata.get("workflow_verdict", "success") == "success", "scorer_success": bool(results) and all(r.get("success") for r in results), "absolute_safety_evidence_success": bool(results) and all(r.get("absolute_safety_evidence_pass") for r in results), "result_count": len(results), "matrix": rows, "baseline_relative_summary": metadata["baseline_relative_summary"]}
     payload = {"summary": summary, "metadata": metadata, "results": results}
     (output_dir / "gemini_behavioral_replay_run_report.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    lines = ["# Gemini Behavioral Replay Report", "", "## Summary", "", f"- workflow_verdict: `{metadata.get('workflow_verdict', 'success')}`", f"- aggregate_scorer_success: `{str(summary['scorer_success']).lower()}`", f"- result_count: `{len(results)}`", f"- live_execution: `{metadata.get('live_execution')}`", f"- fallback_reason: `{metadata.get('fallback_reason', '')}`", "", "## Evidence Buckets", "", f"- checked_evidence: `{metadata.get('checked_evidence', [])}`", f"- unchecked_evidence: `{metadata.get('unchecked_evidence', [])}`", "", "## Viable Model Check", ""]
+    lines = ["# Gemini Behavioral Replay Report", "", "## Summary", "", f"- workflow_verdict: `{metadata.get('workflow_verdict', 'success')}`", f"- aggregate_scorer_success: `{str(summary['scorer_success']).lower()}`", f"- absolute_safety_evidence_success: `{str(summary['absolute_safety_evidence_success']).lower()}`", f"- baseline_model: `{metadata.get('baseline_model')}`", f"- baseline_relative_summary: `{metadata.get('baseline_relative_summary')}`", f"- result_count: `{len(results)}`", f"- live_execution: `{metadata.get('live_execution')}`", f"- fallback_reason: `{metadata.get('fallback_reason', '')}`", "", "## Evidence Buckets", "", f"- checked_evidence: `{metadata.get('checked_evidence', [])}`", f"- unchecked_evidence: `{metadata.get('unchecked_evidence', [])}`", "", "## Viable Model Check", ""]
     mr = metadata["model_resolution"]
-    for key in ("selection_source", "catalog_ok", "catalog_error", "hardcoded_models", "governed_pair_models", "selected_models_to_run", "hardcoded_and_viable", "viable_missing_from_hardcoded", "hardcoded_not_currently_viable"):
+    for key in ("selection_source", "catalog_ok", "catalog_error", "hardcoded_models", "governed_pair_models", "baseline_model", "selected_models_to_run", "rejected_selected_models", "hardcoded_and_viable", "viable_missing_from_hardcoded", "hardcoded_not_currently_viable"):
         lines.append(f"- {key}: `{mr.get(key)}`")
     lines += ["", "## Fixture Selection", ""]
     fr = metadata["fixture_resolution"]
-    for key in ("selection_source", "active_fixtures", "selected_fixtures_to_run"):
+    for key in ("selection_source", "active_fixtures", "selected_fixtures_to_run", "rejected_selected_fixtures"):
         lines.append(f"- {key}: `{fr.get(key)}`")
-    lines += ["", "## Pass/Fail Matrix", "", "| Model | Fixture | Mode | API OK | Turns | Required Ratio | Forbidden Hits | Anomalies | Scorer | Workflow | Meaning |", "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
+    lines += ["", "## Pass/Fail Matrix", "", "| Model | Fixture | Mode | API OK | Turns | Required Ratio | Forbidden Hits | Anomalies | Absolute Gate | Scorer | Baseline Relative | Workflow | Meaning |", "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
     for row in rows:
-        lines.append(f"| {row['model']} | {row['fixture_id']} | {row['mode']} | {row['api_ok']} | {row['turns']} | {row['required_ratio']} | {row['forbidden_hits']} | {row['anomalies']} | {row['scorer']} | {row['workflow']} | {row['meaning']} |")
+        lines.append(f"| {row['model']} | {row['fixture_id']} | {row['mode']} | {row['api_ok']} | {row['turns']} | {row['required_ratio']} | {row['forbidden_hits']} | {row['anomalies']} | {row['absolute_gate']} | {row['scorer']} | {row['baseline_relative']} | {row['workflow']} | {row['meaning']} |")
+    if results:
+        lines += ["", "## Baseline-Relative Details", ""]
+        for result in results:
+            lines.append(f"- `{result.get('model_name')}` / `{result.get('fixture_id')}`: `{result.get('baseline_relative')}`")
     if metadata.get("validation_messages"):
         lines += ["", "## Validation Messages", ""] + [f"- `{m.get('level')}`: {m.get('message')}" for m in metadata["validation_messages"]]
     markdown = "\n".join(lines).rstrip() + "\n"
@@ -251,7 +320,8 @@ def main() -> int:
     p.add_argument("--mode", choices=["deterministic", "live", "fallback"], default="deterministic"); p.add_argument("--response-pack")
     p.add_argument("--api-key-env", default="DCOIR_GEMINI_API"); p.add_argument("--api-base", default=DEFAULT_API_BASE)
     p.add_argument("--model", default=DEFAULT_MODEL); p.add_argument("--models-csv", default=None); p.add_argument("--custom-models-csv", default=""); p.add_argument("--run-all-viable-catalog-models", action="store_true"); p.add_argument("--selection-report-only", action="store_true")
-    p.add_argument("--temperature", type=float, default=0.1); p.add_argument("--max-retries", type=int, default=4); p.add_argument("--retry-base-seconds", type=float, default=5.0); p.add_argument("--allow-fallback", action="store_true")
+    p.add_argument("--baseline-model", default=DEFAULT_BASELINE_MODEL)
+    p.add_argument("--temperature", type=float, default=1.0); p.add_argument("--max-retries", type=int, default=4); p.add_argument("--retry-base-seconds", type=float, default=5.0); p.add_argument("--allow-fallback", action="store_true")
     args = p.parse_args()
     output_dir = Path(args.output_dir).resolve(); mkdir(output_dir)
     fixtures_root = Path(args.fixtures_root).resolve(); api_key = os.environ.get(args.api_key_env, "").strip()
@@ -262,6 +332,7 @@ def main() -> int:
             "catalog_error": "catalog not consulted for deterministic mode",
             "hardcoded_models": HARDCODED_MODELS,
             "governed_pair_models": GOVERNED_PAIR_MODELS,
+            "baseline_model": args.baseline_model,
             "selected_models_to_run": [args.model],
             "rejected_selected_models": [],
             "hardcoded_and_viable": [],
@@ -272,9 +343,11 @@ def main() -> int:
     else:
         models = resolve_models(args, api_key)
     fixtures, fixture_resolution = resolve_fixtures(args, fixtures_root)
-    metadata: Dict[str, Any] = {"workflow_verdict": "success", "replay_mode": args.mode, "model_name": ",".join(models["selected_models_to_run"]), "fixture_count": len(fixtures), "model_resolution": models, "fixture_resolution": fixture_resolution, "validation_messages": [], "checked_evidence": ["fixture index", "fixture definitions"], "unchecked_evidence": []}
-    if models["rejected_selected_models"] or fixture_resolution["rejected_selected_fixtures"]:
-        metadata["validation_messages"].append({"level": "error", "message": "One or more selected models or fixtures were rejected."})
+    metadata: Dict[str, Any] = {"workflow_verdict": "success", "replay_mode": args.mode, "model_name": ",".join(models["selected_models_to_run"]), "baseline_model": args.baseline_model, "fixture_count": len(fixtures), "model_resolution": models, "fixture_resolution": fixture_resolution, "validation_messages": [], "checked_evidence": ["fixture index", "fixture definitions"], "unchecked_evidence": []}
+    if models["rejected_selected_models"]:
+        metadata["validation_messages"].append({"level": "warning", "message": "One or more selected models were rejected and skipped; see model_resolution.rejected_selected_models."})
+    if fixture_resolution["rejected_selected_fixtures"]:
+        metadata["validation_messages"].append({"level": "error", "message": "One or more selected fixtures were rejected."})
     if not models["selected_models_to_run"]:
         metadata["validation_messages"].append({"level": "error", "message": "No models selected for replay."})
     if not fixtures:
@@ -329,7 +402,7 @@ def main() -> int:
         target_bucket = metadata["checked_evidence"] if live_complete else metadata["unchecked_evidence"]
         if "live Gemini API response" not in target_bucket:
             target_bucket.append("live Gemini API response")
-    metadata.update({"replay_mode": mode, "live_execution": mode == "live" and bool(calls), "fallback_reason": reason, "api_call_count": len(calls), "api_call_success_count": ok, "api_call_failure_count": len(calls)-ok, "live_response_complete": live_complete, "prompt_profile": "behavioral_replay_operator_turn", "production_prompt_equivalent": "partial_fixture_replay_prompt", "live_environment_fidelity_gap": "Manual live replay uses fixture prompts and does not prove full production runtime parity."})
+    metadata.update({"replay_mode": mode, "live_execution": mode == "live" and bool(calls), "fallback_reason": reason, "api_call_count": len(calls), "api_call_success_count": ok, "api_call_failure_count": len(calls)-ok, "live_response_complete": live_complete, "prompt_profile": "behavioral_replay_operator_turn_exact_marker_tuned", "production_prompt_equivalent": "partial_fixture_replay_prompt", "live_environment_fidelity_gap": "Manual live replay uses fixture prompts and does not prove full production runtime parity."})
     has_errors = any(message.get("level") == "error" for message in metadata.get("validation_messages", []))
     scorer_failed = bool(results) and not all(result.get("success") for result in results)
     deterministic_failed = mode == "deterministic" and (has_errors or scorer_failed or not results)
