@@ -65,7 +65,9 @@ def fetch_catalog(api_key: str, api_base: str) -> Dict[str, Any]:
 def resolve_models(args: argparse.Namespace, api_key: str) -> Dict[str, Any]:
     catalog = fetch_catalog(api_key, args.api_base)
     viable = catalog["viable_models"]
-    checked = csv(args.models_csv) or ([args.model] if args.model else [])
+    checked = csv(args.models_csv)
+    if args.models_csv is None and not checked:
+        checked = [args.model] if args.model else []
     custom = csv(args.custom_models_csv)
     rejected: List[Dict[str, str]] = []
     if args.run_all_viable_catalog_models:
@@ -246,7 +248,7 @@ def main() -> int:
     p.add_argument("--fixture-id"); p.add_argument("--fixture-ids-csv", default=""); p.add_argument("--custom-fixtures-csv", default=""); p.add_argument("--run-all-active-fixtures", action="store_true")
     p.add_argument("--mode", choices=["deterministic", "live", "fallback"], default="deterministic"); p.add_argument("--response-pack")
     p.add_argument("--api-key-env", default="DCOIR_GEMINI_API"); p.add_argument("--api-base", default=DEFAULT_API_BASE)
-    p.add_argument("--model", default=DEFAULT_MODEL); p.add_argument("--models-csv", default=""); p.add_argument("--custom-models-csv", default=""); p.add_argument("--run-all-viable-catalog-models", action="store_true"); p.add_argument("--selection-report-only", action="store_true")
+    p.add_argument("--model", default=DEFAULT_MODEL); p.add_argument("--models-csv", default=None); p.add_argument("--custom-models-csv", default=""); p.add_argument("--run-all-viable-catalog-models", action="store_true"); p.add_argument("--selection-report-only", action="store_true")
     p.add_argument("--temperature", type=float, default=0.1); p.add_argument("--max-retries", type=int, default=4); p.add_argument("--retry-base-seconds", type=float, default=5.0); p.add_argument("--allow-fallback", action="store_true")
     args = p.parse_args()
     output_dir = Path(args.output_dir).resolve(); mkdir(output_dir)
