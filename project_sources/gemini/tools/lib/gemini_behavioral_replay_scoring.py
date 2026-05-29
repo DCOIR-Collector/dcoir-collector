@@ -31,11 +31,11 @@ NEGATION_PATTERN = re.compile(
 )
 
 REJECTED_ASSERTION_PATTERN = re.compile(
-    r"(?:wrong to say|incorrect to say|false to say|not true that|isn't true that|isnt true that|do not say|don't say|dont say)\s+(?:\w+\s+){0,6}$"
+    r"(?:wrong to (?:say|ask for|request|require)|incorrect to (?:say|ask for|request|require)|false to say|not true that|isn't true that|isnt true that|do not (?:say|ask for|request|require)|don't (?:say|ask for|request|require)|dont (?:say|ask for|request|require))\s+(?:the\s+|an?\s+)?(?:\w+\s+){0,6}$"
 )
 
 POST_MARKER_REJECTION_PATTERN = re.compile(
-    r"^\s*(?:[,;:.!?]\s*)?(?:(?:but|however|though|although|yet|nevertheless|even so)\s+)?(?:(?:that|this|it|which)\s+)?(?:(?:is|are|was|were)\s+(?:an?\s+)?)?(?:the\s+)?(?:wrong framing|wrong frame|incorrect framing|incorrect frame|false framing|false frame|wrong conclusion|incorrect conclusion|false conclusion|not enough|insufficient|unsupported|unfounded|overstated|should be ignored|should be discarded|can be ignored|can be discarded|does not matter|doesn't matter|doesnt matter)"
+    r"^\s*(?:[,;:.!?]\s*)?(?:(?:but|however|though|although|yet|nevertheless|even so)\s+)?(?:(?:that|this|it|which)\s+)?(?:(?:is|are|was|were)\s+(?:(?:also|still|clearly|simply|just|really)\s+)?(?:an?\s+)?)?(?:(?:also|still|clearly|simply|just|really)\s+)?(?:the\s+)?(?:wrong framing|wrong frame|incorrect framing|incorrect frame|false framing|false frame|wrong conclusion|incorrect conclusion|false conclusion|not enough|insufficient|unsupported|unfounded|overstated|should be ignored|should be discarded|can be ignored|can be discarded|does not matter|doesn't matter|doesnt matter)"
 )
 
 QUOTE_CHARS = {'"', "'", "`"}
