@@ -15,7 +15,20 @@ def write_json(path: Path, payload: Dict[str, Any]) -> None:
 
 def render_markdown_report(results: List[Dict[str, Any]], metadata: Dict[str, Any] | None = None) -> str:
     metadata = metadata or {}
+    aggregate_success = bool(results) and all(result.get("success") for result in results)
+    turn_count = sum(int(result.get("turn_count", 0)) for result in results)
+    turn_success_count = sum(int(result.get("turn_success_count", 0)) for result in results)
     lines = ["# Gemini Behavioral Replay Report", ""]
+    lines.extend(
+        [
+            "## Summary",
+            "",
+            f"- aggregate_success: `{str(aggregate_success).lower()}`",
+            f"- result_count: `{len(results)}`",
+            f"- turns passed: `{turn_success_count}/{turn_count}`",
+            "",
+        ]
+    )
     if metadata:
         lines.extend(["## Execution", ""])
         for key in ("replay_mode", "model_name", "live_execution", "fallback_reason", "fixture_count"):
@@ -67,6 +80,12 @@ def write_reports(
     ensure_dir(output_dir)
     json_path = output_dir / f"{report_name}.json"
     markdown_path = output_dir / f"{report_name}.md"
-    write_json(json_path, {"metadata": metadata or {}, "results": results})
+    aggregate = {
+        "success": bool(results) and all(result.get("success") for result in results),
+        "result_count": len(results),
+        "turn_count": sum(int(result.get("turn_count", 0)) for result in results),
+        "turn_success_count": sum(int(result.get("turn_success_count", 0)) for result in results),
+    }
+    write_json(json_path, {"summary": aggregate, "metadata": metadata or {}, "results": results})
     markdown_path.write_text(render_markdown_report(results, metadata), encoding="utf-8")
     return {"json_report": str(json_path), "markdown_report": str(markdown_path)}
