@@ -10,16 +10,23 @@
     {
       "fixture_id": "dcoir_operator_state_first_issue_124",
       "path": "project_sources/gemini/fixtures/behavioral_replay/dcoir_operator_state_first_issue_124.json",
-      "source_issue_numbers": [
-        124,
-        145
-      ],
+      "source_issue_numbers": [124, 145],
       "status": "active",
-      "mode_support": [
-        "deterministic",
-        "live_gemini",
-        "fallback_emulation"
-      ]
+      "mode_support": ["deterministic", "live_gemini", "fallback_emulation"]
+    },
+    {
+      "fixture_id": "dcoir_byovd_evidence_discipline_issue_122",
+      "path": "project_sources/gemini/fixtures/behavioral_replay/dcoir_byovd_evidence_discipline_issue_122.json",
+      "source_issue_numbers": [122, 145],
+      "status": "active",
+      "mode_support": ["deterministic", "live_gemini", "fallback_emulation"]
+    },
+    {
+      "fixture_id": "dcoir_long_transcript_continuity_issue_123",
+      "path": "project_sources/gemini/fixtures/behavioral_replay/dcoir_long_transcript_continuity_issue_123.json",
+      "source_issue_numbers": [123, 145],
+      "status": "active",
+      "mode_support": ["deterministic", "live_gemini", "fallback_emulation"]
     }
   ]
 }
