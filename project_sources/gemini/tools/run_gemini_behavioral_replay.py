@@ -249,7 +249,23 @@ def main() -> int:
     args = p.parse_args()
     output_dir = Path(args.output_dir).resolve(); mkdir(output_dir)
     fixtures_root = Path(args.fixtures_root).resolve(); api_key = os.environ.get(args.api_key_env, "").strip()
-    models = resolve_models(args, api_key); fixtures, fixture_resolution = resolve_fixtures(args, fixtures_root)
+    if args.mode == "deterministic":
+        models = {
+            "selection_source": "deterministic_response_pack",
+            "catalog_ok": False,
+            "catalog_error": "catalog not consulted for deterministic mode",
+            "hardcoded_models": HARDCODED_MODELS,
+            "governed_pair_models": GOVERNED_PAIR_MODELS,
+            "selected_models_to_run": [args.model],
+            "rejected_selected_models": [],
+            "hardcoded_and_viable": [],
+            "viable_missing_from_hardcoded": [],
+            "hardcoded_not_currently_viable": [],
+            "excluded_catalog_models": [],
+        }
+    else:
+        models = resolve_models(args, api_key)
+    fixtures, fixture_resolution = resolve_fixtures(args, fixtures_root)
     metadata: Dict[str, Any] = {"workflow_verdict": "success", "replay_mode": args.mode, "model_name": ",".join(models["selected_models_to_run"]), "fixture_count": len(fixtures), "model_resolution": models, "fixture_resolution": fixture_resolution, "validation_messages": [], "checked_evidence": ["fixture index", "fixture definitions"], "unchecked_evidence": []}
     if models["rejected_selected_models"] or fixture_resolution["rejected_selected_fixtures"]:
         metadata["validation_messages"].append({"level": "error", "message": "One or more selected models or fixtures were rejected."})
@@ -284,6 +300,11 @@ def main() -> int:
                 if deterministic.get("fixture_id") and deterministic.get("fixture_id") != fixture.get("fixture_id"):
                     continue
                 pack = deterministic
+                if pack.get("mode") != "deterministic":
+                    metadata["validation_messages"].append({"level": "error", "message": f"deterministic mode requires a deterministic response pack, got {pack.get('mode')!r}."})
+                    if "response-pack schema" not in metadata["checked_evidence"]:
+                        metadata["checked_evidence"].append("response-pack schema")
+                    continue
             else:
                 pack = make_pack(fixture, args, model, mode, api_key, reason or "fallback mode requested")
                 calls.extend(pack.get("metadata", {}).get("turn_calls", []))
