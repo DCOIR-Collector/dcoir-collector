@@ -64,6 +64,7 @@ def render_markdown_report(results: List[Dict[str, Any]], metadata: Dict[str, An
             lines.append(f"- `{turn['turn_id']}` success=`{str(turn['success']).lower()}`")
             lines.append(f"  required matched: {', '.join(turn['required_markers']['matched']) or 'none'}")
             lines.append(f"  required missing: {', '.join(turn['required_markers']['missing']) or 'none'}")
+            lines.append(f"  required invalidated: {', '.join(turn['required_markers'].get('invalidated', [])) or 'none'}")
             lines.append(f"  forbidden hits: {', '.join(turn['forbidden_markers']['hits']) or 'none'}")
             anomaly_details = ", ".join(f"{row['type']}: {row['detail']}" for row in turn.get("anomalies", []))
             lines.append(f"  anomalies: {anomaly_details or 'none'}")
