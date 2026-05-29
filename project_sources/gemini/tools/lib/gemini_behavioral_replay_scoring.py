@@ -27,15 +27,15 @@ CONTRADICTION_PAIRS = [
 ]
 
 NEGATION_PATTERN = re.compile(
-    r"(?:do not|don't|dont|never|avoid|must not|should not|cannot|can't|can not|not|isn't|isnt|wasn't|wasnt|aren't|arent|weren't|werent)\s+(?:the\s+|an?\s+)?$"
+    r"(?:do not|don't|dont|never|avoid|must not|should not|cannot|can't|can not|not|no|isn't|isnt|wasn't|wasnt|aren't|arent|weren't|werent)\s+(?:the\s+|an?\s+)?$"
 )
 
 REJECTED_ASSERTION_PATTERN = re.compile(
-    r"(?:wrong to (?:say|ask for|request|require)|incorrect to (?:say|ask for|request|require)|false to say|not true that|isn't true that|isnt true that|do not (?:say|ask for|request|require)|don't (?:say|ask for|request|require)|dont (?:say|ask for|request|require))\s+(?:the\s+|an?\s+)?(?:\w+\s+){0,6}$"
+    r"(?:wrong to (?:say|ask for|request|require|treat|frame|use|accept|rely on)|incorrect to (?:say|ask for|request|require|treat|frame|use|accept|rely on)|false to say|not true that|isn't true that|isnt true that|unsupported to (?:say|claim|treat|frame|use|accept|rely on)|not enough to (?:say|claim|treat|frame|use|accept|rely on)|not sufficient to (?:say|claim|treat|frame|use|accept|rely on)|premature to (?:say|claim|treat|frame|use|accept|rely on)|no need for|(?:do not|don't|dont|should not|shouldn't|shouldnt|must not|cannot|can't|can not) (?:say|ask for|request|require|treat|frame|use|accept|rely on)|avoid (?:saying|asking for|requesting|requiring|treating|framing|using|accepting|relying on)|no need to (?:say|ask for|request|require|treat|frame|use|accept|rely on))\s+(?:the\s+|an?\s+)?(?:\w+\s+){0,6}$"
 )
 
 POST_MARKER_REJECTION_PATTERN = re.compile(
-    r"^\s*(?:[,;:.!?]\s*)?(?:(?:but|however|though|although|yet|nevertheless|even so)\s+)?(?:(?:that|this|it|which)\s+)?(?:(?:is|are|was|were)\s+(?:(?:also|still|clearly|simply|just|really)\s+)?(?:an?\s+)?)?(?:(?:also|still|clearly|simply|just|really)\s+)?(?:the\s+)?(?:wrong framing|wrong frame|incorrect framing|incorrect frame|false framing|false frame|wrong conclusion|incorrect conclusion|false conclusion|not enough|insufficient|unsupported|unfounded|overstated|should be ignored|should be discarded|can be ignored|can be discarded|does not matter|doesn't matter|doesnt matter)"
+    r"^\s*(?:[,;:.!?]\s*)?(?:(?:no|nope)\b[\s,;:-]*)?(?:(?:but|however|though|although|yet|nevertheless|even so)\s+)?(?:(?:that|this|it|which|they)\s+)?(?:(?:is|are|was|were)\s+(?:(?:also|still|clearly|simply|just|really|only)\s+)?(?:an?\s+)?)?(?:(?:also|still|clearly|simply|just|really|only)\s+)?(?:the\s+)?(?:wrong|incorrect|false|invalid|misleading|wrong framing|wrong frame|incorrect framing|incorrect frame|false framing|false frame|wrong conclusion|incorrect conclusion|false conclusion|not enough|not necessary|not needed|not required|unnecessary|insufficient|unsupported|unfounded|overstated|in name only|nominal|label only|just a label|only a label|phrase i would not use|phrase we would not use|a phrase i would not use|a phrase we would not use|should be ignored|should be discarded|should not be used|should not be relied on|can be ignored|can be discarded|does not matter|doesn't matter|doesnt matter|prove it|infer .* anyway|require the full transcript|request the full transcript|ask for the full transcript)"
 )
 
 QUOTE_CHARS = {'"', "'", "`"}
@@ -58,7 +58,7 @@ def _term_variants(term: str) -> List[str]:
 
 def _iter_term_occurrences(text: str, term: str) -> Iterable[re.Match[str]]:
     for variant in _term_variants(term):
-        pattern = re.compile(rf"(?<![a-z0-9]){re.escape(variant)}(?![a-z0-9])")
+        pattern = re.compile(rf"(?<![a-z0-9_-]){re.escape(variant)}(?![a-z0-9_-])")
         yield from pattern.finditer(text)
 
 
@@ -67,7 +67,17 @@ def _occurrence_is_quoted(text: str, start: int, end: int) -> bool:
         return False
     before = text[start - 1]
     after = text[end]
-    return before in QUOTE_CHARS and after == before
+    if before in QUOTE_CHARS and after == before:
+        return True
+    for quote in QUOTE_CHARS:
+        opener = text.rfind(quote, 0, start)
+        closer = text.find(quote, end)
+        if opener == -1 or closer == -1:
+            continue
+        trailing = text[end:closer]
+        if len(trailing) <= 4 and all(char in " ,.;:!?" for char in trailing):
+            return True
+    return False
 
 
 def _occurrence_is_negated(text: str, start: int) -> bool:
@@ -76,7 +86,11 @@ def _occurrence_is_negated(text: str, start: int) -> bool:
 
 
 def _occurrence_is_rejected_after(text: str, end: int) -> bool:
-    context = text[end:min(len(text), end + 90)]
+    paragraph_end = text.find("\n", end)
+    limit = min(len(text), end + 240)
+    if paragraph_end != -1:
+        limit = min(limit, paragraph_end)
+    context = text[end:limit]
     return bool(POST_MARKER_REJECTION_PATTERN.search(context))
 
 
