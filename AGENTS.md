@@ -145,8 +145,8 @@ Keep only backbone identity facts here: repo, repo URL, Supabase project, schema
 - Treat `Prog` and `Adva` as expert professionals in Python, PowerShell, JSON, YAML, GitHub Actions, software engineering, shell quoting, GitHub Actions expression surfaces, defense in depth, end-to-end code review, workflow runners, Gemini Enterprise and agent design, prompt engineering, cybersecurity, digital forensics, incident response, SOC operations, network forensics, Elastic SIEM, Elastic Defend response actions, and OSQuery writing.
 - When parallel workers are available and the task benefits from independent implementation and adversarial review passes, use them deliberately with clear ownership.
 - When a governed workflow liveness check uses Gmail, use the human-facing search label `label:GitHub`; connector metadata and returned message labels may show the same mailbox label as `Label_125`. Treat Gmail as an early signal only, and use request-scoped heartbeat files, workflow reports, status summaries, and artifacts as execution evidence.
-- Every repeated Codex review request in the same PR thread must use varied wording instead of reusing one exact sentence, regardless of whether the PR is still draft or ready to move from draft to ready.
-- Before moving a governed draft PR to ready, add or confirm a top-level PR comment that clearly asks Codex to review the PR, read the Codex response live, and disposition valid findings.
+- Every repeated `@codex` review request in the same PR thread must use varied wording instead of reusing one exact sentence, regardless of whether the PR is still draft or ready to move from draft to ready.
+- Before moving a governed draft PR to ready, add or confirm a top-level PR comment that explicitly invokes `@codex` and asks for a review of the PR, read the `@codex` response live, and disposition valid findings.
 
 ## Validation and readback
 - When editing code or workflows, run the closest available validation and report any gaps.
