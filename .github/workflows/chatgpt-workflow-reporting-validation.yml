@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not use as a general workflow health check; it intentionally supports a failure scenario.
 # Trigger model:
-# - workflow_dispatch inputs: scenario, debug_marker, upload_artifact
+# - pull_request/push paths for workflow-reporting surfaces; workflow_dispatch inputs: scenario, debug_marker, upload_artifact
 # Required inputs:
 # - scenario: Validation scenario to run default=success; debug_marker: Marker text to include in logs for ChatGPT report readback default=CHATGPT_REPORTING_VALIDATION_MARKER; upload_artifact: Upload a small validation artifact default=true
 # Required secrets/config:
@@ -29,6 +29,20 @@
 name: chatgpt-workflow-reporting-validation
 
 on:
+  pull_request:
+    paths:
+      - '.github/scripts/write_workflow_report.py'
+      - '.github/scripts/write_chatgpt_progress_report.py'
+      - '.github/workflows/chatgpt-workflow-run-reporter.yml'
+      - '.github/workflows/chatgpt-workflow-reporting-validation.yml'
+      - 'chatgpt_staging/status_reports/README.md'
+  push:
+    paths:
+      - '.github/scripts/write_workflow_report.py'
+      - '.github/scripts/write_chatgpt_progress_report.py'
+      - '.github/workflows/chatgpt-workflow-run-reporter.yml'
+      - '.github/workflows/chatgpt-workflow-reporting-validation.yml'
+      - 'chatgpt_staging/status_reports/README.md'
   workflow_dispatch:
     inputs:
       scenario:
@@ -54,8 +68,9 @@ permissions:
   contents: read
 
 env:
-  CHATGPT_VALIDATION_SCENARIO: ${{ github.event.inputs.scenario }}
-  CHATGPT_VALIDATION_MARKER: ${{ github.event.inputs.debug_marker }}
+  CHATGPT_VALIDATION_SCENARIO: ${{ inputs.scenario || 'success' }}
+  CHATGPT_VALIDATION_MARKER: ${{ inputs.debug_marker || 'CHATGPT_REPORTING_VALIDATION_MARKER' }}
+  CHATGPT_UPLOAD_ARTIFACT: ${{ github.event_name != 'workflow_dispatch' || inputs.upload_artifact == true }}
 
 concurrency:
   group: chatgpt-workflow-reporting-validation-${{ github.run_id }}
@@ -81,7 +96,7 @@ jobs:
           } | tee validation_artifacts/chatgpt_reporting_validation_context.txt
 
       - name: Success scenario
-        if: ${{ github.event.inputs.scenario == 'success' }}
+        if: ${{ env.CHATGPT_VALIDATION_SCENARIO == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -89,7 +104,7 @@ jobs:
           echo "This run is expected to complete successfully and produce a success report via the central reporter."
 
       - name: Deliberate failure scenario with bounded debug signal
-        if: ${{ github.event.inputs.scenario == 'failure' }}
+        if: ${{ env.CHATGPT_VALIDATION_SCENARIO == 'failure' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -126,16 +141,16 @@ jobs:
           } > validation_artifacts/chatgpt_workflow_report_section.md
 
       - name: Upload validation artifact
-        if: ${{ always() && github.event.inputs.upload_artifact == 'true' }}
+        if: ${{ always() && env.CHATGPT_UPLOAD_ARTIFACT == 'true' }}
         uses: actions/upload-artifact@v7
         with:
-          name: chatgpt-workflow-reporting-validation-${{ github.event.inputs.scenario }}
+          name: chatgpt-workflow-reporting-validation-${{ env.CHATGPT_VALIDATION_SCENARIO }}
           path: validation_artifacts/**
           if-no-files-found: warn
           retention-days: 7
 
       - name: Upload ChatGPT workflow report section
-        if: ${{ always() && github.event.inputs.upload_artifact == 'true' }}
+        if: ${{ always() && env.CHATGPT_UPLOAD_ARTIFACT == 'true' }}
         uses: actions/upload-artifact@v7
         with:
           name: chatgpt-workflow-report-section
