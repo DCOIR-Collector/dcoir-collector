@@ -263,13 +263,22 @@ def make_cleanup_plan(args: argparse.Namespace) -> int:
     reports = sorted(root.glob("**/workflow_report.md"))
     request_files = sorted(p for p in REQUEST_ROOT.glob("**/*.json") if p.is_file())
     out_dirs = sorted(p for p in OUT_ROOT.iterdir() if p.is_dir()) if OUT_ROOT.exists() else []
+    current_run = safe_segment(os.environ.get("GITHUB_RUN_ID", "manual"))
+    report_id = safe_segment(args.report_id or f"retention-cleanup-{current_run}")
+    cleanup_dir = root / "retention-cleanup" / report_id
+    cleanup_report = cleanup_dir / "workflow_report.md"
+    cleanup_dir.mkdir(parents=True, exist_ok=True)
 
-    newest_keep = newest_report_per_workflow(reports) if args.keep_latest else set()
+    newest_keep = newest_report_per_workflow([p for p in reports if "repo-workflows" in p.parts]) if args.keep_latest else set()
     remove: list[tuple[Path, str, float, str]] = []
     keep: list[tuple[Path, str, float, str]] = []
 
     for path in reports:
-        if path.name != "workflow_report.md":
+        if path == cleanup_report or cleanup_dir in path.parents:
+            keep.append((path, "cleanup_report", 0.0, "current cleanup report"))
+            continue
+        if any(part == ".gitkeep" for part in path.parts):
+            keep.append((path, "scaffold", 0.0, "scaffold"))
             continue
         age = path_age_days(path, now)
         if args.workflow_filter and args.workflow_filter not in str(path):
