@@ -103,12 +103,12 @@ Operating rule for ChatGPT:
 
 Use standalone committed reports as scoped cleanup or retention evidence. Do not assume these reports came from the central completed-run reporter, and do not use them as live heartbeat targets unless the workflow-specific header says to do so.
 
-Candidate direct final-report URL output producers:
+Direct final-report URL output producers:
 
 - `chatgpt-staging-cleanup`
 - `chatgpt-report-retention-cleanup`
 
-These workflows already commit their own reports. A later scoped PR can add a direct final URL summary step if that improves operator readback.
+These workflows commit their own reports and write the final report URL to the GitHub Actions run summary after the report path is available. They remain standalone committed-report producers, not central repo-workflows reporter outputs.
 
 ## Workflow reporting lane inventory
 
@@ -118,9 +118,9 @@ This inventory is for workflow-reporting ownership only. GitHub workflow files r
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `.github/workflows/chatgpt-apply-in.yml` | `chatgpt-apply-in` | Live heartbeat | Yes | No | No | No | Uses common heartbeat writer by request id. |
 | `.github/workflows/chatgpt-exec.yml` | `chatgpt-exec` | Live heartbeat | Yes | No | No | No | Uses common heartbeat writer by request id. |
-| `.github/workflows/chatgpt-report-retention-cleanup.yml` | `chatgpt-report-retention-cleanup` | Standalone committed report | No | No | No | Yes | Candidate for direct final-report URL output. |
+| `.github/workflows/chatgpt-report-retention-cleanup.yml` | `chatgpt-report-retention-cleanup` | Standalone committed report | No | No | No | Yes | Outputs direct final retention-report URL after commit. |
 | `.github/workflows/chatgpt-stage-out.yml` | `chatgpt-stage-out` | Live heartbeat | Yes | No | No | No | Uses common heartbeat writer by request id. |
-| `.github/workflows/chatgpt-staging-cleanup.yml` | `chatgpt-staging-cleanup` | Standalone committed report | No | No | No | Yes | Candidate for direct final-report URL output. |
+| `.github/workflows/chatgpt-staging-cleanup.yml` | `chatgpt-staging-cleanup` | Standalone committed report | No | No | No | Yes | Outputs direct final cleanup-report URL when a report path is available. |
 | `.github/workflows/chatgpt-workflow-reporting-validation.yml` | `chatgpt-workflow-reporting-validation` | Completed-run summary | No | Yes | Yes | No | Validates reporter behavior and custom markdown handoff. |
 | `.github/workflows/chatgpt-workflow-run-reporter.yml` | `chatgpt-workflow-run-reporter` | Central completed-run reporter | No | Not applicable | Consumes | No | Owns repo-workflows reports and `Output full URL path`. |
 | `.github/workflows/collector-documentation-quality.yml` | `collector-documentation-quality` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
