@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not use to delete source files, active evidence that must be retained, or reports/bundles that have not been reviewed.
 # Trigger model:
-# - schedule: 0 22 * * *, 0 23 * * *; workflow_dispatch inputs: dry_run, success_days, failure_days, cleanup_days, request_days, bundle_days, workflow_filter
+# - schedule: 0 22 * * *; workflow_dispatch inputs: dry_run, success_days, failure_days, cleanup_days, request_days, bundle_days, workflow_filter
 # Required inputs:
 # - dry_run: Preview cleanup without deleting paths default=false; success_days: Delete success reports at or above this age in days default=1; failure_days: Delete failure reports at or above this age in days default=7; cleanup_days: Delete cleanup reports at or above this age in days default=2; request_days: Delete stale staged request JSON files at or above this age in days default=1; bundle_days: Delete stale staged output bundles at or above this age in days default=2; workflow_filter: Optional path/name filter; leave blank for all cleanup-managed paths default=
 # Required secrets/config:
@@ -30,11 +30,9 @@ name: chatgpt-report-retention-cleanup
 
 on:
   schedule:
-    # GitHub cron is UTC. Run at both DST-relevant UTC hours, then gate
-    # execution to local midnight in Europe/Berlin so Stuttgart cleanup runs
-    # at 00:00 local time across CET and CEST.
+    # GitHub cron is UTC. This runs at 00:00 Europe/Berlin during CEST
+    # and 23:00 Europe/Berlin during CET.
     - cron: '0 22 * * *'
-    - cron: '0 23 * * *'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -63,7 +61,7 @@ on:
         default: 1
         type: number
       bundle_days:
-        description: "Delete staged output bundles at or above this age in days"
+        description: "Delete stale staged output bundles at or above this age in days"
         required: true
         default: 2
         type: number
@@ -85,39 +83,17 @@ jobs:
     name: Cleanup ChatGPT staging retention surfaces
     runs-on: ubuntu-latest
     steps:
-      - name: Check Stuttgart midnight gate
-        id: midnight_gate
-        shell: python
-        run: |
-          import datetime as dt
-          import os
-          from zoneinfo import ZoneInfo
-
-          event_name = "${{ github.event_name }}"
-          now = dt.datetime.now(dt.timezone.utc).astimezone(ZoneInfo("Europe/Berlin"))
-          should_run = event_name != "schedule" or now.hour == 0
-
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
-              fh.write(f"should_run={str(should_run).lower()}\n")
-              fh.write(f"local_time={now.isoformat()}\n")
-
-          print(f"Europe/Berlin local time: {now.isoformat()}")
-          print(f"should_run={should_run}")
-
       - name: Checkout repository
-        if: ${{ steps.midnight_gate.outputs.should_run == 'true' }}
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        if: ${{ steps.midnight_gate.outputs.should_run == 'true' }}
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
       - name: Build retention cleanup plan
-        if: ${{ steps.midnight_gate.outputs.should_run == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -146,7 +122,6 @@ jobs:
           echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
 
       - name: Remove expired staged paths from cleanup plan
-        if: ${{ steps.midnight_gate.outputs.should_run == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -177,7 +152,6 @@ jobs:
           fi
 
       - name: Commit retention cleanup report and deletions
-        if: ${{ steps.midnight_gate.outputs.should_run == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -189,7 +163,6 @@ jobs:
           git push
 
       - name: Output final retention cleanup report URL
-        if: ${{ steps.midnight_gate.outputs.should_run == 'true' }}
         shell: bash
         run: |
           set -euo pipefail

@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not use as a general workflow health check; it intentionally supports a failure scenario.
 # Trigger model:
-# - workflow_dispatch inputs: scenario, debug_marker, upload_artifact
+# - pull_request/push paths for workflow-reporting surfaces; workflow_dispatch inputs: scenario, debug_marker, upload_artifact
 # Required inputs:
 # - scenario: Validation scenario to run default=success; debug_marker: Marker text to include in logs for ChatGPT report readback default=CHATGPT_REPORTING_VALIDATION_MARKER; upload_artifact: Upload a small validation artifact default=true
 # Required secrets/config:
@@ -29,6 +29,20 @@
 name: chatgpt-workflow-reporting-validation
 
 on:
+  pull_request:
+    paths:
+      - '.github/scripts/write_workflow_report.py'
+      - '.github/scripts/write_chatgpt_progress_report.py'
+      - '.github/workflows/chatgpt-workflow-run-reporter.yml'
+      - '.github/workflows/chatgpt-workflow-reporting-validation.yml'
+      - 'chatgpt_staging/status_reports/README.md'
+  push:
+    paths:
+      - '.github/scripts/write_workflow_report.py'
+      - '.github/scripts/write_chatgpt_progress_report.py'
+      - '.github/workflows/chatgpt-workflow-run-reporter.yml'
+      - '.github/workflows/chatgpt-workflow-reporting-validation.yml'
+      - 'chatgpt_staging/status_reports/README.md'
   workflow_dispatch:
     inputs:
       scenario:
@@ -54,8 +68,9 @@ permissions:
   contents: read
 
 env:
-  CHATGPT_VALIDATION_SCENARIO: ${{ github.event.inputs.scenario }}
-  CHATGPT_VALIDATION_MARKER: ${{ github.event.inputs.debug_marker }}
+  CHATGPT_VALIDATION_SCENARIO: ${{ inputs.scenario || 'success' }}
+  CHATGPT_VALIDATION_MARKER: ${{ inputs.debug_marker || 'CHATGPT_REPORTING_VALIDATION_MARKER' }}
+  CHATGPT_UPLOAD_ARTIFACT: ${{ github.event_name != 'workflow_dispatch' || inputs.upload_artifact == true }}
 
 concurrency:
   group: chatgpt-workflow-reporting-validation-${{ github.run_id }}
@@ -66,6 +81,9 @@ jobs:
     name: Validate ChatGPT workflow reporting path
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Emit validation context
         shell: bash
         run: |
@@ -80,8 +98,58 @@ jobs:
             echo "ref=${GITHUB_REF}"
           } | tee validation_artifacts/chatgpt_reporting_validation_context.txt
 
+      - name: Validate PR-head reporter path
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile .github/scripts/write_workflow_report.py
+          python - <<'PY'
+          from pathlib import Path
+
+          reporter = Path('.github/workflows/chatgpt-workflow-run-reporter.yml').read_text(encoding='utf-8')
+          required = [
+              'workflow_run:',
+              'chatgpt-workflow-reporting-validation',
+              'write_workflow_report.py workflow-run',
+              'chatgpt-workflow-report-section',
+          ]
+          missing = [item for item in required if item not in reporter]
+          if missing:
+              raise SystemExit(f'Missing expected reporter workflow entries: {missing}')
+          PY
+          mkdir -p .github/tmp validation_artifacts
+          cat > .github/tmp/pr_head_workflow_run_event.json <<'JSON'
+          {
+            "workflow_run": {
+              "id": 123456789,
+              "name": "chatgpt-workflow-reporting-validation",
+              "conclusion": "success",
+              "event": "pull_request",
+              "head_branch": "pr-head-reporter-smoke",
+              "head_sha": "0000000000000000000000000000000000000000",
+              "html_url": "https://github.com/malwaredevil/dcoir-collector/actions/runs/123456789",
+              "run_attempt": 1,
+              "run_number": 1,
+              "created_at": "2026-05-30T00:00:00Z",
+              "updated_at": "2026-05-30T00:00:00Z",
+              "actor": {"login": "chatgpt-validation"},
+              "repository": {"full_name": "malwaredevil/dcoir-collector"}
+            }
+          }
+          JSON
+          report_path="$(python .github/scripts/write_workflow_report.py workflow-run --event-json .github/tmp/pr_head_workflow_run_event.json | tail -n 1)"
+          test -f "$report_path"
+          grep -F -- '- workflow: chatgpt-workflow-reporting-validation' "$report_path"
+          grep -F -- '- report_family: completed-run-summary' "$report_path"
+          grep -F -- '- result: success' "$report_path"
+          {
+            echo "PR-head reporter smoke succeeded."
+            echo "report_path=${report_path}"
+          } > validation_artifacts/pr_head_reporter_smoke.txt
+
       - name: Success scenario
-        if: ${{ github.event.inputs.scenario == 'success' }}
+        if: ${{ env.CHATGPT_VALIDATION_SCENARIO == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -89,7 +157,7 @@ jobs:
           echo "This run is expected to complete successfully and produce a success report via the central reporter."
 
       - name: Deliberate failure scenario with bounded debug signal
-        if: ${{ github.event.inputs.scenario == 'failure' }}
+        if: ${{ env.CHATGPT_VALIDATION_SCENARIO == 'failure' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -126,16 +194,16 @@ jobs:
           } > validation_artifacts/chatgpt_workflow_report_section.md
 
       - name: Upload validation artifact
-        if: ${{ always() && github.event.inputs.upload_artifact == 'true' }}
+        if: ${{ always() && env.CHATGPT_UPLOAD_ARTIFACT == 'true' }}
         uses: actions/upload-artifact@v7
         with:
-          name: chatgpt-workflow-reporting-validation-${{ github.event.inputs.scenario }}
+          name: chatgpt-workflow-reporting-validation-${{ env.CHATGPT_VALIDATION_SCENARIO }}
           path: validation_artifacts/**
           if-no-files-found: warn
           retention-days: 7
 
       - name: Upload ChatGPT workflow report section
-        if: ${{ always() && github.event.inputs.upload_artifact == 'true' }}
+        if: ${{ always() && env.CHATGPT_UPLOAD_ARTIFACT == 'true' }}
         uses: actions/upload-artifact@v7
         with:
           name: chatgpt-workflow-report-section
