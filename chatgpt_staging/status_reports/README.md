@@ -32,6 +32,7 @@ Common writer:
 
 - `.github/scripts/write_chatgpt_progress_report.py` writes live heartbeat reports, appends `progress_history.jsonl`, and refreshes `latest_progress_marker.json`.
 - Current live heartbeat workflows are `chatgpt-exec`, `chatgpt-stage-out`, `chatgpt-apply-in`, and `chatgpt-github-artifact-readback`.
+- The first and terminal live heartbeat/report pushes should be required, not best-effort, so ChatGPT can trust request-scoped polling readback. Intermediate progress pushes may remain best-effort only when the workflow-specific notes say so.
 
 ## Completed workflow-run summaries
 
@@ -61,7 +62,7 @@ Completed-run workflows may add concise workflow-specific context to the central
 - artifact name: `chatgpt-workflow-report-section`
 - file path inside artifact: `chatgpt_workflow_report_section.md`
 
-The central `chatgpt-workflow-run-reporter` appends that markdown to the completed-run `workflow_report.md` after the standard generated report body. Use this for short, high-signal summaries that help ChatGPT read back run-specific results without opening every artifact or log. Do not use this handoff for live heartbeat status; request-scoped ChatGPT workflows should keep using their stable live heartbeat report path.
+The central `chatgpt-workflow-run-reporter` appends that markdown to the completed-run `workflow_report.md` after the standard generated report body. Use this for short, high-signal summaries that help ChatGPT read back run-specific results without opening every artifact or log. Do not use this handoff for live heartbeat status; request-scoped ChatGPT workflows should keep using their stable live heartbeat report path. The central reporter should use retry-safe report pushes because multiple completed workflows can finish close together.
 
 Current custom markdown producers:
 
