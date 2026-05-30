@@ -100,11 +100,29 @@ jobs:
           mkdir -p .github/tmp/source_workflow_report_section
           gh run download "$SOURCE_RUN_ID" --repo "$REPO" --name chatgpt-workflow-report-section -D .github/tmp/source_workflow_report_section > .github/tmp/source_workflow_report_section_download.txt 2> .github/tmp/source_workflow_report_section_error.txt
           rc=$?
+          status="not_available"
+          note="The source workflow did not provide a readable chatgpt-workflow-report-section artifact. This is expected for workflows that do not produce custom markdown; for custom markdown producers, treat this as a readback gap."
           if [[ "$rc" -eq 0 && -f .github/tmp/source_workflow_report_section/chatgpt_workflow_report_section.md ]]; then
             echo "CUSTOM_MARKDOWN_FILE=.github/tmp/source_workflow_report_section/chatgpt_workflow_report_section.md" >> "$GITHUB_ENV"
+            status="downloaded"
+            note="The source workflow provided chatgpt-workflow-report-section/chatgpt_workflow_report_section.md and it was appended below."
           else
             echo "CUSTOM_MARKDOWN_FILE=" >> "$GITHUB_ENV"
+            if [[ "$rc" -eq 0 ]]; then
+              status="missing_expected_file"
+              note="The artifact download command succeeded, but chatgpt_workflow_report_section.md was not found at the expected path."
+            fi
           fi
+          cat > .github/tmp/source_workflow_report_section_status.md <<STATUS
+          ## Custom report section artifact
+
+          - artifact_name: chatgpt-workflow-report-section
+          - expected_file: chatgpt_workflow_report_section.md
+          - status: ${status}
+          - gh_download_exit_code: ${rc}
+
+          ${note}
+          STATUS
           exit 0
 
       - name: Write ChatGPT-readable workflow report
@@ -156,6 +174,12 @@ jobs:
               --max-log-lines 300 \
               --max-log-chars 40000 | tail -n 1)"
             echo "$report_path" > .github/tmp/chatgpt_workflow_report_path.txt
+            if [[ -f .github/tmp/source_workflow_report_section_status.md ]]; then
+              {
+                echo ""
+                cat .github/tmp/source_workflow_report_section_status.md
+              } >> "$report_path"
+            fi
             if [[ -n "${CUSTOM_MARKDOWN_FILE:-}" && -f "${CUSTOM_MARKDOWN_FILE:-}" ]]; then
               {
                 echo ""
@@ -165,14 +189,9 @@ jobs:
           fi
 
       - name: Commit workflow report
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add chatgpt_staging/status_reports/repo-workflows
-          git commit -m "Record ChatGPT workflow run report [skip ci]" || exit 0
-          git push
+          .github/scripts/Invoke-ChatGptReportPush.ps1 -CommitMessage "Record ChatGPT workflow run report [skip ci]" -Paths "chatgpt_staging/status_reports/repo-workflows" -RequirePush
 
       - name: Output full URL path
         shell: bash
