@@ -16,7 +16,7 @@
 # Runtime dependencies:
 # - Uses repository status report folders under chatgpt_staging/status_reports/, staged request folders under chatgpt_staging/requests/, and staged output bundles under chatgpt_staging/out/.
 # Expected outputs/readback:
-# - Cleanup commits, cleanup status reports under chatgpt_staging/status_reports/retention-cleanup/<run-id>/, and direct final retention-report URL in the run summary.
+# - Cleanup commits, cleanup status reports under chatgpt_staging/status_reports/retention-cleanup/<run-id>/, direct final retention-report URL in the run summary, and a step-summary skip note for the inactive DST-pair cron run.
 # Safety notes:
 # - Cleanup must stay under chatgpt_staging/status_reports, chatgpt_staging/requests, and chatgpt_staging/out, preserve latest workflow-run reports by policy, and use dry_run=true when previewing.
 # Maintenance notes:
@@ -94,15 +94,37 @@ jobs:
           from zoneinfo import ZoneInfo
 
           event_name = "${{ github.event_name }}"
+          schedule_cron = "${{ github.event.schedule }}"
           now = dt.datetime.now(dt.timezone.utc).astimezone(ZoneInfo("Europe/Berlin"))
-          should_run = event_name != "schedule" or now.hour == 0
+          active_cron = "0 22 * * *" if now.utcoffset() == dt.timedelta(hours=2) else "0 23 * * *"
+          should_run = event_name != "schedule" or schedule_cron == active_cron
+          skip_reason = ""
+          if event_name == "schedule" and not should_run:
+              skip_reason = f"inactive DST-pair cron {schedule_cron}; active cron is {active_cron}"
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
               fh.write(f"should_run={str(should_run).lower()}\n")
               fh.write(f"local_time={now.isoformat()}\n")
+              fh.write(f"schedule_cron={schedule_cron}\n")
+              fh.write(f"active_cron={active_cron}\n")
+              fh.write(f"skip_reason={skip_reason}\n")
 
           print(f"Europe/Berlin local time: {now.isoformat()}")
+          print(f"schedule_cron={schedule_cron}")
+          print(f"active_cron={active_cron}")
           print(f"should_run={should_run}")
+          if skip_reason:
+              print(skip_reason)
+
+      - name: Note inactive scheduled cleanup window
+        if: ${{ steps.midnight_gate.outputs.should_run != 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Retention cleanup skipped: ${{ steps.midnight_gate.outputs.skip_reason }}"
+          echo "## ChatGPT retention cleanup skipped" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.midnight_gate.outputs.skip_reason }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Europe/Berlin local time: ${{ steps.midnight_gate.outputs.local_time }}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Checkout repository
         if: ${{ steps.midnight_gate.outputs.should_run == 'true' }}
