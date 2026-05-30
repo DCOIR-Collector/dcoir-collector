@@ -68,21 +68,21 @@ Current custom markdown producers:
 - `run-gemini-behavioral-replay-manual`
 - `manual-gemini-model-comparison`
 - `chatgpt-workflow-reporting-validation`
+- `collector-documentation-quality`
+- `manual-test-framework-validate`
 - `Workflow maintenance audit`
 
 Candidate custom markdown producers to evaluate in later scoped PRs:
 
-- `collector-documentation-quality`
 - `manual-collector-optional-exe-build`
 - `manual-collector-runtime-package-build`
 - `manual-full-validation`
 - `manual-gemini-bundle-build`
-- `manual-test-framework-validate`
 - `validate-gemini-behavioral-replay`
 - `validate-on-pr`
 - `validate-on-push`
 
-Do not add all candidate producers at once. Prefer one small, validated pattern at a time, with source-run artifact readback and central reporter readback for each workflow family.
+Do not add all candidate producers at once. Prefer one small, validated pattern at a time, with source-run artifact readback and central reporter readback for each workflow family. This validation-tooling slice adds concise custom markdown sections for `collector-documentation-quality` and `manual-test-framework-validate`; heavier validation and manual build/package workflows remain candidates.
 
 ## Standalone committed reports
 
@@ -123,7 +123,7 @@ This inventory is for workflow-reporting ownership only. GitHub workflow files r
 | `.github/workflows/chatgpt-staging-cleanup.yml` | `chatgpt-staging-cleanup` | Standalone committed report | No | No | No | Yes | Outputs direct final cleanup-report URL when a report path is available. |
 | `.github/workflows/chatgpt-workflow-reporting-validation.yml` | `chatgpt-workflow-reporting-validation` | Completed-run summary | No | Yes | Yes | No | Validates reporter behavior and custom markdown handoff. |
 | `.github/workflows/chatgpt-workflow-run-reporter.yml` | `chatgpt-workflow-run-reporter` | Central completed-run reporter | No | Not applicable | Consumes | No | Owns repo-workflows reports and `Output full URL path`. |
-| `.github/workflows/collector-documentation-quality.yml` | `collector-documentation-quality` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
+| `.github/workflows/collector-documentation-quality.yml` | `collector-documentation-quality` | Completed-run summary | No | Yes | Yes | No | Validation-family custom markdown producer. |
 | `.github/workflows/dependabot-auto-merge.yml` | `Dependabot auto-merge` | Excluded generic/dependabot | No | Yes | No | No | Excluded from mandatory heartbeat and migration work. |
 | `.github/workflows/dependency-review.yml` | `Dependency Review` | Excluded generic/dependabot | No | Yes | No | No | Excluded from mandatory heartbeat and migration work. |
 | `.github/workflows/manual-collector-optional-exe-build.yml` | `manual-collector-optional-exe-build` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing manual build workflow. |
@@ -132,7 +132,7 @@ This inventory is for workflow-reporting ownership only. GitHub workflow files r
 | `.github/workflows/manual-gemini-bundle-build.yml` | `manual-gemini-bundle-build` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing manual build workflow. |
 | `.github/workflows/manual-gemini-model-comparison.yml` | `manual-gemini-model-comparison` | Completed-run summary | No | Yes | Yes | No | Current custom markdown producer. |
 | `.github/workflows/manual-github-artifact-readback.yml` | `chatgpt-github-artifact-readback` | Live heartbeat | Yes | Yes | No | No | Uses common heartbeat writer; central reporter also summarizes completed runs. |
-| `.github/workflows/manual-test-framework-validate.yml` | `manual-test-framework-validate` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
+| `.github/workflows/manual-test-framework-validate.yml` | `manual-test-framework-validate` | Completed-run summary | No | Yes | Yes | No | Validation-family custom markdown producer. |
 | `.github/workflows/ops-apply-zip.yml` | `Ops apply zip request` | Completed-run summary | No | Yes | No | No | No custom markdown need identified yet. |
 | `.github/workflows/ops-dispatch-request.yml` | `Ops dispatch request` | Completed-run summary | No | Yes | No | No | No custom markdown need identified yet. |
 | `.github/workflows/ops-file-delete.yml` | `Ops file delete request` | Completed-run summary | No | Yes | No | No | No custom markdown need identified yet. |
