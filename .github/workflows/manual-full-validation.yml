@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not use as a quick push gate when validate-on-push is sufficient.
 # Trigger model:
-# - workflow_dispatch inputs: suite
+# - schedule: 30 6 * * 0; workflow_dispatch inputs: suite
 # Required inputs:
 # - suite: Validation suite to run default=FullRegression
 # Required secrets/config:
@@ -29,6 +29,8 @@
 name: manual-full-validation
 
 on:
+  schedule:
+    - cron: '30 6 * * 0'
   workflow_dispatch:
     inputs:
       suite:
