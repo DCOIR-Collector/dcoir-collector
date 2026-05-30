@@ -16,7 +16,7 @@
 # Runtime dependencies:
 # - Uses repository status report folders under chatgpt_staging/status_reports/, staged request folders under chatgpt_staging/requests/, and staged output bundles under chatgpt_staging/out/.
 # Expected outputs/readback:
-# - Cleanup commits and cleanup status reports under chatgpt_staging/status_reports/retention-cleanup/<run-id>/.
+# - Cleanup commits, cleanup status reports under chatgpt_staging/status_reports/retention-cleanup/<run-id>/, and direct final retention-report URL in the run summary.
 # Safety notes:
 # - Cleanup must stay under chatgpt_staging/status_reports, chatgpt_staging/requests, and chatgpt_staging/out, preserve latest workflow-run reports by policy, and use dry_run=true when previewing.
 # Maintenance notes:
@@ -142,7 +142,8 @@ jobs:
           if [[ "$DRY_RUN" == "true" ]]; then
             ARGS+=(--dry-run)
           fi
-          python .github/scripts/write_workflow_report.py "${ARGS[@]}"
+          REPORT_PATH="$(python .github/scripts/write_workflow_report.py "${ARGS[@]}")"
+          echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
 
       - name: Remove expired staged paths from cleanup plan
         if: ${{ steps.midnight_gate.outputs.should_run == 'true' }}
@@ -186,3 +187,25 @@ jobs:
           git add -u chatgpt_staging/status_reports chatgpt_staging/requests chatgpt_staging/out || true
           git commit -m "Clean ChatGPT staging retention surfaces by policy [skip ci]" || exit 0
           git push
+
+      - name: Output final retention cleanup report URL
+        if: ${{ steps.midnight_gate.outputs.should_run == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          report_path="${REPORT_PATH:-}"
+          if [[ -z "$report_path" || ! -f "$report_path" ]]; then
+            echo "No retention cleanup report path available for final URL output."
+            exit 0
+          fi
+          branch_name="${GITHUB_REF_NAME:-}"
+          if [[ -z "$branch_name" ]]; then
+            branch_name="$(git branch --show-current || true)"
+          fi
+          if [[ -z "$branch_name" ]]; then
+            branch_name="main"
+          fi
+          report_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${branch_name}/${report_path}"
+          echo "ChatGPT retention cleanup report: $report_url"
+          echo "## ChatGPT retention cleanup report" >> "$GITHUB_STEP_SUMMARY"
+          echo "$report_url" >> "$GITHUB_STEP_SUMMARY"
