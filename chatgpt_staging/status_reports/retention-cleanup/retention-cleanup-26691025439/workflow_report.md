@@ -1,0 +1,234 @@
+# ChatGPT workflow report
+
+## Result
+
+- workflow: chatgpt-report-retention-cleanup
+- report_scope: retention-cleanup
+- report_family: retention-cleanup-summary
+- assistant_polling_target: false
+- identifier_type: cleanup_run_id
+- do_not_use_for_live_polling: true
+- result: success
+- mode: delete
+- success_retention_days: 99999
+- failure_retention_days: 99999
+- cleanup_retention_days: 99999
+- request_retention_days: 99999
+- bundle_retention_days: 99999
+- keep_latest_per_workflow: true
+- workflow_filter: pr166-url-smoke
+- candidate_count: 0
+- retained_count: 238
+- github_run_id: 26691025439
+- github_sha: f01b0646e42c15cf26e04ccdd14907c88ec34c32
+- report_created_utc: 2026-05-30T18:02:16Z
+
+## Paths selected for cleanup
+- none
+
+## Paths retained or skipped
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260528-gemini-api-smoke-001/workflow_report.md` | kind=filtered | age_days=2.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/chatgpt-exec/exec-20260528-gemini-api-smoke-diagnostic-002/workflow_report.md` | kind=filtered | age_days=2.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/chatgpt-staging-cleanup/artifact-readback-heartbeat-26581484030-validate-gemini-behavioral-replay/workflow_report.md` | kind=filtered | age_days=1.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/chatgpt-staging-cleanup/artifact-readback-staging-26581484030-validate-gemini-behavioral-replay/workflow_report.md` | kind=filtered | age_days=1.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/chatgpt-staging-cleanup/pr166-url-smoke/workflow_report.md` | kind=success | age_days=0.0 | reason=age 0.0d < 99999d
+- `chatgpt_staging/status_reports/chatgpt-staging-cleanup/rtifact-readback-26581484030-validate-gemini-behavioral-replay/workflow_report.md` | kind=filtered | age_days=1.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26611168011/workflow_report.md` | kind=filtered | age_days=1.7 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26611660911/workflow_report.md` | kind=filtered | age_days=1.7 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26611726670/workflow_report.md` | kind=filtered | age_days=1.7 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26612541170/workflow_report.md` | kind=filtered | age_days=1.7 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26629985582/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26630874589/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26630882720/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26630912977/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26631260517/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26631267603/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26632057561/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26632827939/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26632834392/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26632937228/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26632980555/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26633019982/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26633602961/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26639001776/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26642248772/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26643288840/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26644352616/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26644679102/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26644967932/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26645909824/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26650480371/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26651650885/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26651826307/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26653003987/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26653307762/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26655790132/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26656128932/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26657462829/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26657755355/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26659059919/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26663792386/workflow_report.md` | kind=filtered | age_days=0.8 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26684249948/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26684381304/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26685008440/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26685539178/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26685645195/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26688977887/workflow_report.md` | kind=filtered | age_days=0.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26690105069/workflow_report.md` | kind=filtered | age_days=0.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26690167113/workflow_report.md` | kind=filtered | age_days=0.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26690351622/workflow_report.md` | kind=filtered | age_days=0.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependabot-auto-merge/26690385585/workflow_report.md` | kind=filtered | age_days=0.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26611452758/workflow_report.md` | kind=filtered | age_days=1.7 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26630520481/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26642248519/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Dependency-Review/26657498274/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Publish-Knowledge-to-Wiki/26518669861/workflow_report.md` | kind=filtered | age_days=3.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26574446218/workflow_report.md` | kind=filtered | age_days=2.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26575981098/workflow_report.md` | kind=filtered | age_days=2.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26579093877/workflow_report.md` | kind=filtered | age_days=2.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26599549070/workflow_report.md` | kind=filtered | age_days=1.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26611909096/workflow_report.md` | kind=filtered | age_days=1.7 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26660185899/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26684449228/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26685128728/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26685271843/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26685871171/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/Workflow-maintenance-audit/26686135248/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/chatgpt-github-artifact-readback/26597897521/workflow_report.md` | kind=filtered | age_days=1.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-reporting-validation/26685886730/workflow_report.md` | kind=filtered | age_days=0.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/manual-gemini-model-comparison/26574890838/workflow_report.md` | kind=filtered | age_days=2.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26646908568/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26654033666/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26654954275/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26657074338/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26659429806/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26660545417/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/run-gemini-behavioral-replay-manual/26662953993/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26603166851/workflow_report.md` | kind=filtered | age_days=1.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629366303/workflow_report.md` | kind=filtered | age_days=1.4 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629382620/workflow_report.md` | kind=filtered | age_days=1.4 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629399936/workflow_report.md` | kind=filtered | age_days=1.4 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629532124/workflow_report.md` | kind=filtered | age_days=1.4 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629547941/workflow_report.md` | kind=filtered | age_days=1.4 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629560501/workflow_report.md` | kind=filtered | age_days=1.4 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629606093/workflow_report.md` | kind=filtered | age_days=1.4 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629655070/workflow_report.md` | kind=filtered | age_days=1.4 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629669136/workflow_report.md` | kind=filtered | age_days=1.4 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629869989/workflow_report.md` | kind=filtered | age_days=1.4 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26629985601/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26630456284/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26630476137/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26630520520/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26630530546/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26630873657/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631267521/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631304518/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631564514/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631667021/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631674440/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26631705337/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632063144/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632103182/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632811628/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632834327/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632840423/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632850107/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632859173/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632866156/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632911621/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632934160/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632965782/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26632979151/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26633036706/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26634039443/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26638983643/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26639001752/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26640695654/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26641094539/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26641399865/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26641942799/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26642529326/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26642813777/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26643288967/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26644352627/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26644679204/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26644966210/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26646580486/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26650394691/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26650434233/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26650721153/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26651007390/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26651650358/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26655790124/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26655828354/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26656128962/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26657462936/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26657755351/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26659058605/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26661698950/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26661824641/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26662361184/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-gemini-behavioral-replay/26664048545/workflow_report.md` | kind=filtered | age_days=0.8 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26604347677/workflow_report.md` | kind=filtered | age_days=1.8 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26630456248/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26630513828/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26631304440/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26631554964/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26631564499/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26631668687/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26631705284/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632049395/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632064478/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632103195/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632811612/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632912938/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26632965785/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26633019966/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26633037953/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26633603017/workflow_report.md` | kind=filtered | age_days=1.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26640695640/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26641094319/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26641400027/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26641945195/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26642530298/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26642813525/workflow_report.md` | kind=filtered | age_days=1.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26645909836/workflow_report.md` | kind=filtered | age_days=1.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26650723732/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26651007391/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26651826305/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26653307804/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26655790195/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26655830214/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26656128937/workflow_report.md` | kind=filtered | age_days=1.0 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26657498180/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26657755375/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26659059943/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26661824629/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26662361188/workflow_report.md` | kind=filtered | age_days=0.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-pr/26663792403/workflow_report.md` | kind=filtered | age_days=0.8 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26492485610/workflow_report.md` | kind=filtered | age_days=3.5 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26493881064/workflow_report.md` | kind=filtered | age_days=3.5 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26494459297/workflow_report.md` | kind=filtered | age_days=3.5 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26507040225/workflow_report.md` | kind=filtered | age_days=3.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26508219409/workflow_report.md` | kind=filtered | age_days=3.3 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26515815100/workflow_report.md` | kind=filtered | age_days=3.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26515840419/workflow_report.md` | kind=filtered | age_days=3.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26559942731/workflow_report.md` | kind=filtered | age_days=2.5 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26559950846/workflow_report.md` | kind=filtered | age_days=2.5 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26560097501/workflow_report.md` | kind=filtered | age_days=2.5 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26574294509/workflow_report.md` | kind=filtered | age_days=2.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26580243064/workflow_report.md` | kind=filtered | age_days=2.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26580832368/workflow_report.md` | kind=filtered | age_days=2.2 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26580843385/workflow_report.md` | kind=filtered | age_days=2.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26581153693/workflow_report.md` | kind=filtered | age_days=2.1 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600861308/workflow_report.md` | kind=filtered | age_days=1.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600872007/workflow_report.md` | kind=filtered | age_days=1.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600899031/workflow_report.md` | kind=filtered | age_days=1.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26600908498/workflow_report.md` | kind=filtered | age_days=1.9 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26612340034/workflow_report.md` | kind=filtered | age_days=1.7 | reason=workflow_filter did not match
+- `chatgpt_staging/status_reports/repo-workflows/validate-on-push/26612347782/workflow_report.md` | kind=filtered | age_days=1.7 | reason=workflow_filter did not match
+- ... 38 additional retained paths omitted from summary
+
+## Next ChatGPT action
+
+Read this cleanup report, verify scoped deletion/readback when cleanup was not a dry run, then record Airtable evidence if material. Do not use retention-cleanup reports for live workflow polling.
