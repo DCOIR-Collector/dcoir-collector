@@ -98,8 +98,11 @@ jobs:
         run: |
           set +e
           mkdir -p .github/tmp/source_workflow_report_section
-          gh run download "$SOURCE_RUN_ID" --repo "$REPO" --name chatgpt-workflow-report-section -D .github/tmp/source_workflow_report_section > .github/tmp/source_workflow_report_section_download.txt 2> .github/tmp/source_workflow_report_section_error.txt
-          rc=$?
+          if gh run download "$SOURCE_RUN_ID" --repo "$REPO" --name chatgpt-workflow-report-section -D .github/tmp/source_workflow_report_section > .github/tmp/source_workflow_report_section_download.txt 2> .github/tmp/source_workflow_report_section_error.txt; then
+            rc=0
+          else
+            rc=$?
+          fi
           status="not_available"
           note="The source workflow did not provide a readable chatgpt-workflow-report-section artifact. This is expected for workflows that do not produce custom markdown; for custom markdown producers, treat this as a readback gap."
           if [[ "$rc" -eq 0 && -f .github/tmp/source_workflow_report_section/chatgpt_workflow_report_section.md ]]; then
