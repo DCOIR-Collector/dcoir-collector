@@ -16,7 +16,7 @@
 # Runtime dependencies:
 # - Uses selected chatgpt_staging cleanup inputs or cleanup request JSON under chatgpt_staging/cleanup_requests/.
 # Expected outputs/readback:
-# - Cleanup commit and cleanup report.
+# - Cleanup commit, cleanup report, and direct final cleanup-report URL in the run summary when a report path is available.
 # Safety notes:
 # - Manual inputs are deletion controls. Use request_id_filter for bounded cleanup and keep status report deletion off unless readback evidence is no longer needed.
 # Maintenance notes:
@@ -321,6 +321,7 @@ jobs:
 
           echo "removed=$removed" >> "$GITHUB_ENV"
           echo "REPORT_DIR=$REPORT_DIR" >> "$GITHUB_ENV"
+          echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
 
       - name: Commit cleanup
         if: steps.plan.outputs.skip != 'true'
@@ -376,3 +377,26 @@ jobs:
           git add "$REPORT_DIR"
           git commit -m "Record ChatGPT cleanup failure report [skip ci]" || true
           git push || true
+          echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
+
+      - name: Output final cleanup report URL
+        if: always() && steps.plan.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          report_path="${REPORT_PATH:-}"
+          if [[ -z "$report_path" || ! -f "$report_path" ]]; then
+            echo "No cleanup report path available for final URL output."
+            exit 0
+          fi
+          branch_name="${GITHUB_REF_NAME:-}"
+          if [[ -z "$branch_name" ]]; then
+            branch_name="$(git branch --show-current || true)"
+          fi
+          if [[ -z "$branch_name" ]]; then
+            branch_name="main"
+          fi
+          report_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${branch_name}/${report_path}"
+          echo "ChatGPT cleanup report: $report_url"
+          echo "## ChatGPT cleanup report" >> "$GITHUB_STEP_SUMMARY"
+          echo "$report_url" >> "$GITHUB_STEP_SUMMARY"
