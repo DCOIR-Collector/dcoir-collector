@@ -108,7 +108,7 @@ Direct final-report URL output producers:
 - `chatgpt-staging-cleanup`
 - `chatgpt-report-retention-cleanup`
 
-These workflows commit their own reports and write the final report URL to the GitHub Actions run summary after the report path is available. They remain standalone committed-report producers, not central repo-workflows reporter outputs.
+These workflows commit their own reports and write the final report URL to the GitHub Actions run summary after the report path is available. They remain standalone committed-report producers, not central repo-workflows reporter outputs. The retention cleanup workflow has two daily UTC cron entries so one matches Europe/Berlin midnight in CET and the other in CEST; the inactive DST-pair scheduled run is expected to skip and write only a step-summary skip note.
 
 ## Workflow reporting lane inventory
 
@@ -118,7 +118,7 @@ This inventory is for workflow-reporting ownership only. GitHub workflow files r
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `.github/workflows/chatgpt-apply-in.yml` | `chatgpt-apply-in` | Live heartbeat | Yes | No | No | No | Uses common heartbeat writer by request id. |
 | `.github/workflows/chatgpt-exec.yml` | `chatgpt-exec` | Live heartbeat | Yes | No | No | No | Uses common heartbeat writer by request id. |
-| `.github/workflows/chatgpt-report-retention-cleanup.yml` | `chatgpt-report-retention-cleanup` | Standalone committed report | No | No | No | Yes | Outputs direct final retention-report URL after commit. |
+| `.github/workflows/chatgpt-report-retention-cleanup.yml` | `chatgpt-report-retention-cleanup` | Standalone committed report | No | No | No | Yes | Outputs direct final retention-report URL after commit; inactive DST-pair cron run skips with step-summary note. |
 | `.github/workflows/chatgpt-stage-out.yml` | `chatgpt-stage-out` | Live heartbeat | Yes | No | No | No | Uses common heartbeat writer by request id. |
 | `.github/workflows/chatgpt-staging-cleanup.yml` | `chatgpt-staging-cleanup` | Standalone committed report | No | No | No | Yes | Outputs direct final cleanup-report URL when a report path is available. |
 | `.github/workflows/chatgpt-workflow-reporting-validation.yml` | `chatgpt-workflow-reporting-validation` | Completed-run summary | No | Yes | Yes | No | Validates reporter behavior and custom markdown handoff. |
