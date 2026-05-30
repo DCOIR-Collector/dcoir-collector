@@ -16,7 +16,7 @@
 # Runtime dependencies:
 # - Uses syntax checks, required surface list, Gemini packaging smoke build, validation fixtures, documentation validation, collector runtime packaging, and the Core harness suite.
 # Expected outputs/readback:
-# - PR validation artifacts and repo-workflows report.
+# - PR validation artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
 # - Skip heavy execution while the pull request is still draft; run when the PR becomes ready or later meaningful sync events occur.
 # Maintenance notes:
@@ -223,4 +223,33 @@ jobs:
             project_sources/validation/out_preflight_documentation_quality/**
             project_sources/validation/out_validate_on_pr_documentation_quality/**
           if-no-files-found: warn
+          retention-days: 14
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null
+          @"
+          ## Pull request validation summary
+
+          - workflow: validate-on-pr
+          - workflow_run_id: $env:GITHUB_RUN_ID
+          - workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT
+          - head_sha: $env:GITHUB_SHA
+          - ref: $env:GITHUB_REF
+          - event_name: $env:GITHUB_EVENT_NAME
+          - primary_artifact: validate-on-pr-results
+          - artifact_note: includes Gemini smoke-build output, collector runtime output, validate_DCOIR_Run fixture output, documentation-quality output, and TestResults when produced.
+
+          The workflow conclusion is the authoritative pass/fail signal for the PR validation lane. Use artifact readback for package, harness, or report-specific claims.
+          "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: chatgpt-workflow-report-section
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+          if-no-files-found: error
           retention-days: 14

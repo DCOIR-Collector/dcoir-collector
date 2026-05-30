@@ -10,13 +10,13 @@
 # Trigger model:
 # - pull_request/push paths for workflow-reporting surfaces; workflow_dispatch inputs: scenario, debug_marker, upload_artifact
 # Required inputs:
-# - scenario: Validation scenario to run default=success; debug_marker: Marker text to include in logs for ChatGPT report readback default=CHATGPT_REPORTING_VALIDATION_MARKER; upload_artifact: Upload a small validation artifact default=true
+# - scenario: Validation scenario to run default=success; debug_marker: Marker text to include in logs for ChatGPT report readback default=CHATGPT_REPORTING_VALIDATION_MARKER; upload_artifact: Upload the generic validation artifact default=true
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
 # - Uses .github/scripts/write_workflow_report.py indirectly through the reporter workflow and optional validation artifact upload.
 # Expected outputs/readback:
-# - Reporter-generated repo-workflows report, optional validation artifact, and optional chatgpt-workflow-report-section custom markdown artifact.
+# - Reporter-generated repo-workflows report, optional validation artifact, and chatgpt-workflow-report-section custom markdown artifact.
 # Safety notes:
 # - The failure scenario is expected to fail; judge success by the reporter readback, not only the source workflow conclusion.
 # Maintenance notes:
@@ -59,7 +59,7 @@ on:
         default: CHATGPT_REPORTING_VALIDATION_MARKER
         type: string
       upload_artifact:
-        description: "Upload a small validation artifact"
+        description: "Upload the generic validation artifact"
         required: true
         default: true
         type: boolean
@@ -203,7 +203,7 @@ jobs:
           retention-days: 7
 
       - name: Upload ChatGPT workflow report section
-        if: ${{ always() && env.CHATGPT_UPLOAD_ARTIFACT == 'true' }}
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: chatgpt-workflow-report-section
