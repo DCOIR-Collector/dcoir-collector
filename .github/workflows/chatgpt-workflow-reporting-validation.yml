@@ -81,6 +81,9 @@ jobs:
     name: Validate ChatGPT workflow reporting path
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Emit validation context
         shell: bash
         run: |
@@ -94,6 +97,56 @@ jobs:
             echo "sha=${GITHUB_SHA}"
             echo "ref=${GITHUB_REF}"
           } | tee validation_artifacts/chatgpt_reporting_validation_context.txt
+
+      - name: Validate PR-head reporter path
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile .github/scripts/write_workflow_report.py
+          python - <<'PY'
+          from pathlib import Path
+
+          reporter = Path('.github/workflows/chatgpt-workflow-run-reporter.yml').read_text(encoding='utf-8')
+          required = [
+              'workflow_run:',
+              'chatgpt-workflow-reporting-validation',
+              'write_workflow_report.py workflow-run',
+              'chatgpt-workflow-report-section',
+          ]
+          missing = [item for item in required if item not in reporter]
+          if missing:
+              raise SystemExit(f'Missing expected reporter workflow entries: {missing}')
+          PY
+          mkdir -p .github/tmp validation_artifacts
+          cat > .github/tmp/pr_head_workflow_run_event.json <<'JSON'
+          {
+            "workflow_run": {
+              "id": 123456789,
+              "name": "chatgpt-workflow-reporting-validation",
+              "conclusion": "success",
+              "event": "pull_request",
+              "head_branch": "pr-head-reporter-smoke",
+              "head_sha": "0000000000000000000000000000000000000000",
+              "html_url": "https://github.com/malwaredevil/dcoir-collector/actions/runs/123456789",
+              "run_attempt": 1,
+              "run_number": 1,
+              "created_at": "2026-05-30T00:00:00Z",
+              "updated_at": "2026-05-30T00:00:00Z",
+              "actor": {"login": "chatgpt-validation"},
+              "repository": {"full_name": "malwaredevil/dcoir-collector"}
+            }
+          }
+          JSON
+          report_path="$(python .github/scripts/write_workflow_report.py workflow-run --event-json .github/tmp/pr_head_workflow_run_event.json | tail -n 1)"
+          test -f "$report_path"
+          grep -F -- '- workflow: chatgpt-workflow-reporting-validation' "$report_path"
+          grep -F -- '- report_family: completed-run-summary' "$report_path"
+          grep -F -- '- result: success' "$report_path"
+          {
+            echo "PR-head reporter smoke succeeded."
+            echo "report_path=${report_path}"
+          } > validation_artifacts/pr_head_reporter_smoke.txt
 
       - name: Success scenario
         if: ${{ env.CHATGPT_VALIDATION_SCENARIO == 'success' }}
