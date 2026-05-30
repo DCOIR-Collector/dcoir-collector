@@ -322,6 +322,7 @@ jobs:
           echo "removed=$removed" >> "$GITHUB_ENV"
           echo "REPORT_DIR=$REPORT_DIR" >> "$GITHUB_ENV"
           echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
+          echo "REPORT_PUSHED=false" >> "$GITHUB_ENV"
 
       - name: Commit cleanup
         if: steps.plan.outputs.skip != 'true'
@@ -336,6 +337,7 @@ jobs:
             exit 0
           }
           git push
+          echo "REPORT_PUSHED=true" >> "$GITHUB_ENV"
 
       - name: Capture cleanup failure report
         if: failure() && steps.plan.outputs.skip != 'true'
@@ -375,8 +377,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$REPORT_DIR"
-          git commit -m "Record ChatGPT cleanup failure report [skip ci]" || true
-          git push || true
+          if git commit -m "Record ChatGPT cleanup failure report [skip ci]" && git push; then
+            echo "REPORT_PUSHED=true" >> "$GITHUB_ENV"
+          else
+            echo "REPORT_PUSHED=false" >> "$GITHUB_ENV"
+          fi
           echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
 
       - name: Output final cleanup report URL
@@ -385,6 +390,10 @@ jobs:
         run: |
           set -euo pipefail
           report_path="${REPORT_PATH:-}"
+          if [[ "${REPORT_PUSHED:-false}" != "true" ]]; then
+            echo "No pushed cleanup report is available for final URL output."
+            exit 0
+          fi
           if [[ -z "$report_path" || ! -f "$report_path" ]]; then
             echo "No cleanup report path available for final URL output."
             exit 0
