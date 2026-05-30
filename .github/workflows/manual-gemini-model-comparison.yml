@@ -136,6 +136,33 @@ jobs:
             --max-cases "$MAX_CASES" \
             --inter-request-delay-seconds "$INTER_REQUEST_DELAY_SECONDS"
 
+      - name: Prepare ChatGPT workflow report section
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out_dir="project_sources/validation/out_manual_gemini_model_comparison"
+          section="$out_dir/chatgpt_workflow_report_section.md"
+          summary="$out_dir/gemini_model_comparison_summary.md"
+          mkdir -p "$out_dir"
+          {
+            echo "## Gemini model comparison"
+            echo
+            echo "- reference_model: $REFERENCE_MODEL"
+            echo "- candidate_models: $CANDIDATE_MODELS"
+            echo "- fixture_path: $FIXTURE_PATH"
+            echo "- model_profile_path: $MODEL_PROFILE_PATH"
+            echo "- repeat_count: $REPEAT_COUNT"
+            echo "- max_cases: $MAX_CASES"
+            echo "- inter_request_delay_seconds: $INTER_REQUEST_DELAY_SECONDS"
+            echo
+            if [[ -f "$summary" ]]; then
+              cat "$summary"
+            else
+              echo "No model comparison summary markdown was produced. Use the uploaded model-comparison artifact for detailed readback."
+            fi
+          } > "$section"
+
       - name: Upload model comparison artifacts
         if: always()
         uses: actions/upload-artifact@v7
@@ -143,5 +170,15 @@ jobs:
           name: manual-gemini-model-comparison
           path: |
             project_sources/validation/out_manual_gemini_model_comparison/**
+          if-no-files-found: warn
+          retention-days: 21
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: chatgpt-workflow-report-section
+          path: |
+            project_sources/validation/out_manual_gemini_model_comparison/chatgpt_workflow_report_section.md
           if-no-files-found: warn
           retention-days: 21
