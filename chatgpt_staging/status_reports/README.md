@@ -69,20 +69,17 @@ Current custom markdown producers:
 - `manual-gemini-model-comparison`
 - `chatgpt-workflow-reporting-validation`
 - `collector-documentation-quality`
-- `manual-test-framework-validate`
-- `validate-gemini-behavioral-replay`
-- `Workflow maintenance audit`
-
-Candidate custom markdown producers to evaluate in later scoped PRs:
-
 - `manual-collector-optional-exe-build`
 - `manual-collector-runtime-package-build`
 - `manual-full-validation`
 - `manual-gemini-bundle-build`
+- `manual-test-framework-validate`
+- `validate-gemini-behavioral-replay`
 - `validate-on-pr`
 - `validate-on-push`
+- `Workflow maintenance audit`
 
-Do not add all candidate producers at once. Prefer one small, validated pattern at a time, with source-run artifact readback and central reporter readback for each workflow family. Completed slices now cover `collector-documentation-quality`, `manual-test-framework-validate`, and `validate-gemini-behavioral-replay`; heavier validation and manual build/package workflows remain candidates.
+The original candidate custom markdown producer set has been evaluated and promoted. Future workflow-specific additions should still stay scoped and require source-run artifact readback plus central reporter readback before readiness claims.
 
 ## Standalone committed reports
 
@@ -126,10 +123,10 @@ This inventory is for workflow-reporting ownership only. GitHub workflow files r
 | `.github/workflows/collector-documentation-quality.yml` | `collector-documentation-quality` | Completed-run summary | No | Yes | Yes | No | Validation-family custom markdown producer. |
 | `.github/workflows/dependabot-auto-merge.yml` | `Dependabot auto-merge` | Excluded generic/dependabot | No | Yes | No | No | Excluded from mandatory heartbeat and migration work. |
 | `.github/workflows/dependency-review.yml` | `Dependency Review` | Excluded generic/dependabot | No | Yes | No | No | Excluded from mandatory heartbeat and migration work. |
-| `.github/workflows/manual-collector-optional-exe-build.yml` | `manual-collector-optional-exe-build` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing manual build workflow. |
-| `.github/workflows/manual-collector-runtime-package-build.yml` | `manual-collector-runtime-package-build` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing manual build workflow. |
-| `.github/workflows/manual-full-validation.yml` | `manual-full-validation` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing manual validation workflow. |
-| `.github/workflows/manual-gemini-bundle-build.yml` | `manual-gemini-bundle-build` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing manual build workflow. |
+| `.github/workflows/manual-collector-optional-exe-build.yml` | `manual-collector-optional-exe-build` | Completed-run summary | No | Yes | Yes | No | Manual build-family custom markdown producer. |
+| `.github/workflows/manual-collector-runtime-package-build.yml` | `manual-collector-runtime-package-build` | Completed-run summary | No | Yes | Yes | No | Manual build-family custom markdown producer. |
+| `.github/workflows/manual-full-validation.yml` | `manual-full-validation` | Completed-run summary | No | Yes | Yes | No | Manual validation-family custom markdown producer. |
+| `.github/workflows/manual-gemini-bundle-build.yml` | `manual-gemini-bundle-build` | Completed-run summary | No | Yes | Yes | No | Manual build-family custom markdown producer. |
 | `.github/workflows/manual-gemini-model-comparison.yml` | `manual-gemini-model-comparison` | Completed-run summary | No | Yes | Yes | No | Current custom markdown producer. |
 | `.github/workflows/manual-github-artifact-readback.yml` | `chatgpt-github-artifact-readback` | Live heartbeat | Yes | Yes | No | No | Uses common heartbeat writer; central reporter also summarizes completed runs. |
 | `.github/workflows/manual-test-framework-validate.yml` | `manual-test-framework-validate` | Completed-run summary | No | Yes | Yes | No | Validation-family custom markdown producer. |
@@ -141,6 +138,6 @@ This inventory is for workflow-reporting ownership only. GitHub workflow files r
 | `.github/workflows/run-gemini-behavioral-replay-manual.yml` | `run-gemini-behavioral-replay-manual` | Completed-run summary | No | Yes | Yes | No | Current custom markdown producer. |
 | `.github/workflows/scheduled-health-check.yml` | `scheduled-health-check` | Completed-run summary | No | Yes | No | No | No custom markdown need identified yet. |
 | `.github/workflows/validate-gemini-behavioral-replay.yml` | `validate-gemini-behavioral-replay` | Completed-run summary | No | Yes | Yes | No | Validation-family custom markdown producer. |
-| `.github/workflows/validate-on-pr.yml` | `validate-on-pr` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
-| `.github/workflows/validate-on-push.yml` | `validate-on-push` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
+| `.github/workflows/validate-on-pr.yml` | `validate-on-pr` | Completed-run summary | No | Yes | Yes | No | Validation-family custom markdown producer. |
+| `.github/workflows/validate-on-push.yml` | `validate-on-push` | Completed-run summary | No | Yes | Yes | No | Validation-family custom markdown producer. |
 | `.github/workflows/workflow-maintenance-audit.yml` | `Workflow maintenance audit` | Completed-run summary | No | Yes | Yes | No | Current custom markdown producer. |
