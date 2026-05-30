@@ -170,6 +170,9 @@ jobs:
       - name: Write ChatGPT workflow report section
         if: always()
         shell: bash
+        env:
+          REPORT_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          REPORT_REF: ${{ github.event.pull_request.head.ref || github.ref_name }}
         run: |
           set -euo pipefail
           mkdir -p chatgpt_workflow_report_section
@@ -180,8 +183,8 @@ jobs:
           - validation_scope: deterministic Gemini behavioral replay validation
           - workflow_run_id: ${GITHUB_RUN_ID}
           - workflow_run_attempt: ${GITHUB_RUN_ATTEMPT}
-          - head_sha: ${GITHUB_SHA}
-          - ref: ${GITHUB_REF}
+          - head_sha: ${REPORT_HEAD_SHA}
+          - ref: ${REPORT_REF}
           - primary_artifact: validate-gemini-behavioral-replay-results
           - artifact_note: includes deterministic replay outputs, rendered replay report, and known-bad response-pack checks when produced.
 
