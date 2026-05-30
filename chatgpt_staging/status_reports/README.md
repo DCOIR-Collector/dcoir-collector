@@ -28,6 +28,11 @@ Operating rule for ChatGPT:
 4. Use `progress_history.jsonl` and the report phase history to understand current progress.
 5. Do not restage or modify the request while the run may be queued or running.
 
+Common writer:
+
+- `.github/scripts/write_chatgpt_progress_report.py` writes live heartbeat reports, appends `progress_history.jsonl`, and refreshes `latest_progress_marker.json`.
+- Current live heartbeat workflows are `chatgpt-exec`, `chatgpt-stage-out`, `chatgpt-apply-in`, and `chatgpt-github-artifact-readback`.
+
 ## Completed workflow-run summaries
 
 Use these after a GitHub workflow has completed, especially for bounded failure-log excerpts.
@@ -47,6 +52,8 @@ Operating rule for ChatGPT:
 
 Use repo-workflows reports for post-completion diagnostics and failure summaries. Do not use repo-workflows reports to monitor active ChatGPT-staged jobs. For active jobs, use the live heartbeat request-id path instead.
 
+Workflow directory names under `repo-workflows` are normalized by `.github/scripts/write_workflow_report.py`. For example, `Workflow maintenance audit` is written under `Workflow-maintenance-audit`.
+
 ### Custom markdown handoff
 
 Completed-run workflows may add concise workflow-specific context to the central reporter by uploading an artifact with this exact shape:
@@ -62,6 +69,20 @@ Current custom markdown producers:
 - `manual-gemini-model-comparison`
 - `chatgpt-workflow-reporting-validation`
 - `Workflow maintenance audit`
+
+Candidate custom markdown producers to evaluate in later scoped PRs:
+
+- `collector-documentation-quality`
+- `manual-collector-optional-exe-build`
+- `manual-collector-runtime-package-build`
+- `manual-full-validation`
+- `manual-gemini-bundle-build`
+- `manual-test-framework-validate`
+- `validate-gemini-behavioral-replay`
+- `validate-on-pr`
+- `validate-on-push`
+
+Do not add all candidate producers at once. Prefer one small, validated pattern at a time, with source-run artifact readback and central reporter readback for each workflow family.
 
 ## Standalone committed reports
 
@@ -81,3 +102,45 @@ Expected metadata:
 Operating rule for ChatGPT:
 
 Use standalone committed reports as scoped cleanup or retention evidence. Do not assume these reports came from the central completed-run reporter, and do not use them as live heartbeat targets unless the workflow-specific header says to do so.
+
+Candidate direct final-report URL output producers:
+
+- `chatgpt-staging-cleanup`
+- `chatgpt-report-retention-cleanup`
+
+These workflows already commit their own reports. A later scoped PR can add a direct final URL summary step if that improves operator readback.
+
+## Workflow reporting lane inventory
+
+This inventory is for workflow-reporting ownership only. GitHub workflow files remain source truth for executable behavior.
+
+| Workflow file | Workflow name | Reporting lane | Live heartbeat | Central reporter | Custom markdown | Standalone report | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `.github/workflows/chatgpt-apply-in.yml` | `chatgpt-apply-in` | Live heartbeat | Yes | No | No | No | Uses common heartbeat writer by request id. |
+| `.github/workflows/chatgpt-exec.yml` | `chatgpt-exec` | Live heartbeat | Yes | No | No | No | Uses common heartbeat writer by request id. |
+| `.github/workflows/chatgpt-report-retention-cleanup.yml` | `chatgpt-report-retention-cleanup` | Standalone committed report | No | No | No | Yes | Candidate for direct final-report URL output. |
+| `.github/workflows/chatgpt-stage-out.yml` | `chatgpt-stage-out` | Live heartbeat | Yes | No | No | No | Uses common heartbeat writer by request id. |
+| `.github/workflows/chatgpt-staging-cleanup.yml` | `chatgpt-staging-cleanup` | Standalone committed report | No | No | No | Yes | Candidate for direct final-report URL output. |
+| `.github/workflows/chatgpt-workflow-reporting-validation.yml` | `chatgpt-workflow-reporting-validation` | Completed-run summary | No | Yes | Yes | No | Validates reporter behavior and custom markdown handoff. |
+| `.github/workflows/chatgpt-workflow-run-reporter.yml` | `chatgpt-workflow-run-reporter` | Central completed-run reporter | No | Not applicable | Consumes | No | Owns repo-workflows reports and `Output full URL path`. |
+| `.github/workflows/collector-documentation-quality.yml` | `collector-documentation-quality` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
+| `.github/workflows/dependabot-auto-merge.yml` | `Dependabot auto-merge` | Excluded generic/dependabot | No | Yes | No | No | Excluded from mandatory heartbeat and migration work. |
+| `.github/workflows/dependency-review.yml` | `Dependency Review` | Excluded generic/dependabot | No | Yes | No | No | Excluded from mandatory heartbeat and migration work. |
+| `.github/workflows/manual-collector-optional-exe-build.yml` | `manual-collector-optional-exe-build` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing manual build workflow. |
+| `.github/workflows/manual-collector-runtime-package-build.yml` | `manual-collector-runtime-package-build` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing manual build workflow. |
+| `.github/workflows/manual-full-validation.yml` | `manual-full-validation` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing manual validation workflow. |
+| `.github/workflows/manual-gemini-bundle-build.yml` | `manual-gemini-bundle-build` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing manual build workflow. |
+| `.github/workflows/manual-gemini-model-comparison.yml` | `manual-gemini-model-comparison` | Completed-run summary | No | Yes | Yes | No | Current custom markdown producer. |
+| `.github/workflows/manual-github-artifact-readback.yml` | `chatgpt-github-artifact-readback` | Live heartbeat | Yes | Yes | No | No | Uses common heartbeat writer; central reporter also summarizes completed runs. |
+| `.github/workflows/manual-test-framework-validate.yml` | `manual-test-framework-validate` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
+| `.github/workflows/ops-apply-zip.yml` | `Ops apply zip request` | Completed-run summary | No | Yes | No | No | No custom markdown need identified yet. |
+| `.github/workflows/ops-dispatch-request.yml` | `Ops dispatch request` | Completed-run summary | No | Yes | No | No | No custom markdown need identified yet. |
+| `.github/workflows/ops-file-delete.yml` | `Ops file delete request` | Completed-run summary | No | Yes | No | No | No custom markdown need identified yet. |
+| `.github/workflows/ops-restructure-map.yml` | `Ops restructure map request` | Completed-run summary | No | Yes | No | No | No custom markdown need identified yet. |
+| `.github/workflows/publish_knowledge_to_wiki.yml` | `Publish Knowledge to Wiki` | External publish plus completed-run summary | No | Yes | No | External wiki commit | Publishes to wiki and receives central reporter summary. |
+| `.github/workflows/run-gemini-behavioral-replay-manual.yml` | `run-gemini-behavioral-replay-manual` | Completed-run summary | No | Yes | Yes | No | Current custom markdown producer. |
+| `.github/workflows/scheduled-health-check.yml` | `scheduled-health-check` | Completed-run summary | No | Yes | No | No | No custom markdown need identified yet. |
+| `.github/workflows/validate-gemini-behavioral-replay.yml` | `validate-gemini-behavioral-replay` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
+| `.github/workflows/validate-on-pr.yml` | `validate-on-pr` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
+| `.github/workflows/validate-on-push.yml` | `validate-on-push` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
+| `.github/workflows/workflow-maintenance-audit.yml` | `Workflow maintenance audit` | Completed-run summary | No | Yes | Yes | No | Current custom markdown producer. |
