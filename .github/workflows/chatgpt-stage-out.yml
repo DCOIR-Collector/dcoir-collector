@@ -124,7 +124,8 @@ jobs:
             --message 'Stage-out request path resolved. Request validation and bundle creation are next.'
           pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
             -CommitMessage "Progress chatgpt-stage-out ${{ steps.request.outputs.request_id }} request-resolved [skip ci]" \
-            -Paths "chatgpt_staging/status_reports/chatgpt-stage-out/${{ steps.request.outputs.request_id }}"
+            -Paths "chatgpt_staging/status_reports/chatgpt-stage-out/${{ steps.request.outputs.request_id }}" \
+            -RequirePush
 
       - name: Write heartbeat - running stage-out
         if: steps.request.outputs.skip != 'true'
@@ -306,7 +307,8 @@ jobs:
           rm -f "$REQUEST_PATH" || true
           pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
             -CommitMessage "Stage ChatGPT readback bundle and report [skip ci]" \
-            -Paths "$OUT_DIR" "$REPORT_DIR" "$REQUEST_PATH"
+            -Paths "$OUT_DIR" "$REPORT_DIR" "$REQUEST_PATH" \
+            -RequirePush
 
       - name: Capture stage-out failure report
         if: failure() && steps.request.outputs.skip != 'true'
@@ -364,4 +366,5 @@ jobs:
           } >> "$REPORT_PATH"
           pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
             -CommitMessage "Record ChatGPT stage-out failure report [skip ci]" \
-            -Paths "$REPORT_DIR"
+            -Paths "$REPORT_DIR" \
+            -RequirePush
