@@ -165,25 +165,19 @@ jobs:
           fi
 
       - name: Commit workflow report
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add chatgpt_staging/status_reports/repo-workflows
-          git commit -m "Record ChatGPT workflow run report [skip ci]" || exit 0
-          git push
+          ./.github/scripts/Invoke-ChatGptReportPush.ps1 `
+            -CommitMessage "Record ChatGPT workflow run report [skip ci]" `
+            -Paths "chatgpt_staging/status_reports/repo-workflows" `
+            -RequirePush
 
       - name: Output full URL path
         shell: bash
         run: |
           set -euo pipefail
           report_path="$(cat .github/tmp/chatgpt_workflow_report_path.txt)"
-          branch_name="$(git branch --show-current || true)"
-          if [[ -z "$branch_name" ]]; then
-            branch_name="main"
-          fi
-          report_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${branch_name}/${report_path}"
+          report_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/main/${report_path}"
           echo "ChatGPT workflow report: $report_url"
           echo "## ChatGPT workflow report" >> "$GITHUB_STEP_SUMMARY"
           echo "$report_url" >> "$GITHUB_STEP_SUMMARY"
