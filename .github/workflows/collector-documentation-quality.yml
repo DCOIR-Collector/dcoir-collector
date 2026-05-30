@@ -127,7 +127,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path .github/tmp | Out-Null
+          New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null
           @"
           ## Validation summary
 
@@ -141,13 +141,13 @@ jobs:
           - artifact_note: includes the documentation quality JSON output when produced.
 
           The workflow conclusion is the authoritative pass/fail signal. Use this section to locate the validation artifact bundle without opening the full job log first.
-          "@ | Set-Content -Path .github/tmp/chatgpt_workflow_report_section.md -Encoding utf8
+          "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
 
       - name: Upload ChatGPT workflow report section
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: chatgpt-workflow-report-section
-          path: .github/tmp/chatgpt_workflow_report_section.md
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
           if-no-files-found: error
           retention-days: 14
