@@ -1,6 +1,6 @@
 # ChatGPT status reports
 
-This directory has two different report families. Do not mix them.
+This directory has three report families. Do not mix them.
 
 ## Live heartbeat reports
 
@@ -11,6 +11,7 @@ Paths:
 - `chatgpt_staging/status_reports/chatgpt-exec/<request_id>/workflow_report.md`
 - `chatgpt_staging/status_reports/chatgpt-stage-out/<request_id>/workflow_report.md`
 - `chatgpt_staging/status_reports/chatgpt-apply-in/<request_id>/workflow_report.md`
+- `chatgpt_staging/status_reports/chatgpt-github-artifact-readback/<request_id>/workflow_report.md`
 
 Expected metadata:
 
@@ -45,3 +46,22 @@ Expected metadata:
 Operating rule for ChatGPT:
 
 Use repo-workflows reports for post-completion diagnostics and failure summaries. Do not use repo-workflows reports to monitor active ChatGPT-staged jobs. For active jobs, use the live heartbeat request-id path instead.
+
+## Standalone committed reports
+
+Use these after cleanup or retention workflows produce their own committed report outside the central repo-workflows reporter.
+
+Path examples:
+
+- `chatgpt_staging/status_reports/chatgpt-staging-cleanup/<request_id-or-run>/workflow_report.md`
+- `chatgpt_staging/status_reports/retention-cleanup/<run-id>/workflow_report.md`
+
+Expected metadata:
+
+- `report_family`: workflow-specific cleanup or retention report
+- `assistant_polling_target`: false unless the workflow explicitly documents live polling
+- `identifier_type`: request id, run id, or retention cleanup id, as documented by the workflow
+
+Operating rule for ChatGPT:
+
+Use standalone committed reports as scoped cleanup or retention evidence. Do not assume these reports came from the central completed-run reporter, and do not use them as live heartbeat targets unless the workflow-specific header says to do so.
