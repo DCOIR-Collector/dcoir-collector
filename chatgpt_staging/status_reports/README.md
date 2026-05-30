@@ -47,6 +47,22 @@ Operating rule for ChatGPT:
 
 Use repo-workflows reports for post-completion diagnostics and failure summaries. Do not use repo-workflows reports to monitor active ChatGPT-staged jobs. For active jobs, use the live heartbeat request-id path instead.
 
+### Custom markdown handoff
+
+Completed-run workflows may add concise workflow-specific context to the central reporter by uploading an artifact with this exact shape:
+
+- artifact name: `chatgpt-workflow-report-section`
+- file path inside artifact: `chatgpt_workflow_report_section.md`
+
+The central `chatgpt-workflow-run-reporter` appends that markdown to the completed-run `workflow_report.md` after the standard generated report body. Use this for short, high-signal summaries that help ChatGPT read back run-specific results without opening every artifact or log. Do not use this handoff for live heartbeat status; request-scoped ChatGPT workflows should keep using their stable live heartbeat report path.
+
+Current custom markdown producers:
+
+- `run-gemini-behavioral-replay-manual`
+- `manual-gemini-model-comparison`
+- `chatgpt-workflow-reporting-validation`
+- `Workflow maintenance audit`
+
 ## Standalone committed reports
 
 Use these after cleanup or retention workflows produce their own committed report outside the central repo-workflows reporter.

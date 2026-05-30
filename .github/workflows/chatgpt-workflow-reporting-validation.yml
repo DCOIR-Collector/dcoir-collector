@@ -16,7 +16,7 @@
 # Runtime dependencies:
 # - Uses .github/scripts/write_workflow_report.py indirectly through the reporter workflow and optional validation artifact upload.
 # Expected outputs/readback:
-# - Reporter-generated repo-workflows report and optional artifact.
+# - Reporter-generated repo-workflows report, optional validation artifact, and optional chatgpt-workflow-report-section custom markdown artifact.
 # Safety notes:
 # - The failure scenario is expected to fail; judge success by the reporter readback, not only the source workflow conclusion.
 # Maintenance notes:
@@ -111,6 +111,19 @@ jobs:
             echo "marker=${CHATGPT_VALIDATION_MARKER}"
             echo "result is determined by the workflow conclusion"
           } > validation_artifacts/chatgpt_reporting_validation_artifact.txt
+          {
+            echo "## ChatGPT workflow reporting validation"
+            echo
+            echo "- workflow: chatgpt-workflow-reporting-validation"
+            echo "- scenario: ${CHATGPT_VALIDATION_SCENARIO}"
+            echo "- marker: ${CHATGPT_VALIDATION_MARKER}"
+            echo "- workflow_run_id: ${GITHUB_RUN_ID}"
+            echo "- workflow_run_attempt: ${GITHUB_RUN_ATTEMPT}"
+            echo "- head_sha: ${GITHUB_SHA}"
+            echo "- ref: ${GITHUB_REF}"
+            echo
+            echo "The workflow conclusion is the authoritative pass/fail signal. Use this section to confirm the source workflow uploaded custom markdown for the central completed-run reporter."
+          } > validation_artifacts/chatgpt_workflow_report_section.md
 
       - name: Upload validation artifact
         if: ${{ always() && github.event.inputs.upload_artifact == 'true' }}
@@ -118,5 +131,14 @@ jobs:
         with:
           name: chatgpt-workflow-reporting-validation-${{ github.event.inputs.scenario }}
           path: validation_artifacts/**
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload ChatGPT workflow report section
+        if: ${{ always() && github.event.inputs.upload_artifact == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: chatgpt-workflow-report-section
+          path: validation_artifacts/chatgpt_workflow_report_section.md
           if-no-files-found: warn
           retention-days: 7

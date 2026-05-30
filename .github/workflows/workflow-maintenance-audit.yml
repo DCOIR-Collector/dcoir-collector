@@ -16,7 +16,7 @@
 # Runtime dependencies:
 # - Uses project_sources/github_actions/tools/check_workflow_action_versions.py and project_sources/github_actions/tools/check_workflow_consistency_drift.py.
 # Expected outputs/readback:
-# - Maintenance audit result and repo-workflows report.
+# - Maintenance audit result, repo-workflows report, and chatgpt-workflow-report-section custom markdown artifact.
 # Safety notes:
 # - Failures indicate workflow maintenance drift or dependency hygiene issues to repair before relying on changed workflow governance.
 # Maintenance notes:
@@ -67,3 +67,30 @@ jobs:
         run: |
           set -euo pipefail
           python3 project_sources/github_actions/tools/check_workflow_consistency_drift.py
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p maintenance_audit_artifacts
+          {
+            echo "## Workflow maintenance audit"
+            echo
+            echo "- workflow: Workflow maintenance audit"
+            echo "- workflow_run_id: ${GITHUB_RUN_ID}"
+            echo "- workflow_run_attempt: ${GITHUB_RUN_ATTEMPT}"
+            echo "- head_sha: ${GITHUB_SHA}"
+            echo "- ref: ${GITHUB_REF}"
+            echo
+            echo "Use the job conclusion and preceding audit steps as the authoritative pass/fail signal. This custom section lets the central completed-run reporter surface the maintenance-audit context without requiring log screenshots."
+          } > maintenance_audit_artifacts/chatgpt_workflow_report_section.md
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: chatgpt-workflow-report-section
+          path: maintenance_audit_artifacts/chatgpt_workflow_report_section.md
+          if-no-files-found: warn
+          retention-days: 7
