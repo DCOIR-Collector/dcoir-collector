@@ -166,3 +166,38 @@ jobs:
             project_sources/validation/out_validate_gemini_behavioral_replay/**
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: bash
+        env:
+          REPORT_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          REPORT_REF: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          REPORT_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          mkdir -p chatgpt_workflow_report_section
+          cat > chatgpt_workflow_report_section/chatgpt_workflow_report_section.md <<REPORT
+          ## Validation summary
+
+          - workflow: validate-gemini-behavioral-replay
+          - validation_scope: deterministic Gemini behavioral replay validation
+          - workflow_run_id: ${GITHUB_RUN_ID}
+          - workflow_run_attempt: ${GITHUB_RUN_ATTEMPT}
+          - source_event: ${REPORT_EVENT_NAME}
+          - head_sha: ${REPORT_HEAD_SHA}
+          - ref: ${REPORT_REF}
+          - primary_artifact: validate-gemini-behavioral-replay-results
+          - artifact_note: includes deterministic replay outputs, rendered replay report, and known-bad response-pack checks when produced.
+
+          The workflow conclusion is the authoritative pass/fail signal. Use this section to locate the replay validation artifact bundle without opening the full job log first.
+          REPORT
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: chatgpt-workflow-report-section
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14

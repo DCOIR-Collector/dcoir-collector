@@ -70,6 +70,7 @@ Current custom markdown producers:
 - `chatgpt-workflow-reporting-validation`
 - `collector-documentation-quality`
 - `manual-test-framework-validate`
+- `validate-gemini-behavioral-replay`
 - `Workflow maintenance audit`
 
 Candidate custom markdown producers to evaluate in later scoped PRs:
@@ -78,11 +79,10 @@ Candidate custom markdown producers to evaluate in later scoped PRs:
 - `manual-collector-runtime-package-build`
 - `manual-full-validation`
 - `manual-gemini-bundle-build`
-- `validate-gemini-behavioral-replay`
 - `validate-on-pr`
 - `validate-on-push`
 
-Do not add all candidate producers at once. Prefer one small, validated pattern at a time, with source-run artifact readback and central reporter readback for each workflow family. This validation-tooling slice adds concise custom markdown sections for `collector-documentation-quality` and `manual-test-framework-validate`; heavier validation and manual build/package workflows remain candidates.
+Do not add all candidate producers at once. Prefer one small, validated pattern at a time, with source-run artifact readback and central reporter readback for each workflow family. Completed slices now cover `collector-documentation-quality`, `manual-test-framework-validate`, and `validate-gemini-behavioral-replay`; heavier validation and manual build/package workflows remain candidates.
 
 ## Standalone committed reports
 
@@ -140,7 +140,7 @@ This inventory is for workflow-reporting ownership only. GitHub workflow files r
 | `.github/workflows/publish_knowledge_to_wiki.yml` | `Publish Knowledge to Wiki` | External publish plus completed-run summary | No | Yes | No | External wiki commit | Publishes to wiki and receives central reporter summary. |
 | `.github/workflows/run-gemini-behavioral-replay-manual.yml` | `run-gemini-behavioral-replay-manual` | Completed-run summary | No | Yes | Yes | No | Current custom markdown producer. |
 | `.github/workflows/scheduled-health-check.yml` | `scheduled-health-check` | Completed-run summary | No | Yes | No | No | No custom markdown need identified yet. |
-| `.github/workflows/validate-gemini-behavioral-replay.yml` | `validate-gemini-behavioral-replay` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
+| `.github/workflows/validate-gemini-behavioral-replay.yml` | `validate-gemini-behavioral-replay` | Completed-run summary | No | Yes | Yes | No | Validation-family custom markdown producer. |
 | `.github/workflows/validate-on-pr.yml` | `validate-on-pr` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
 | `.github/workflows/validate-on-push.yml` | `validate-on-push` | Completed-run summary | No | Yes | Candidate | No | Artifact-producing validation workflow. |
 | `.github/workflows/workflow-maintenance-audit.yml` | `Workflow maintenance audit` | Completed-run summary | No | Yes | Yes | No | Current custom markdown producer. |
