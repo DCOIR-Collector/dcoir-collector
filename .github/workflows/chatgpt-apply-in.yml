@@ -167,7 +167,8 @@ jobs:
             --message 'Apply-in payload path resolved. Decode and apply validation are next.'
           pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
             -CommitMessage "Progress chatgpt-apply-in ${{ steps.payload.outputs.request_id }} payload-resolved [skip ci]" \
-            -Paths "chatgpt_staging/status_reports/chatgpt-apply-in/${{ steps.payload.outputs.request_id }}"
+            -Paths "chatgpt_staging/status_reports/chatgpt-apply-in/${{ steps.payload.outputs.request_id }}" \
+            -RequirePush
 
       - name: Write heartbeat - running apply-in
         if: steps.payload.outputs.skip != 'true'
@@ -495,7 +496,8 @@ jobs:
           fi
           pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
             -CommitMessage "Apply ChatGPT staging bundle and report [skip ci]" \
-            -Paths "chatgpt_staging/apply_reports" "$REPORT_DIR" "$PAYLOAD" "chatgpt_staging/work/applied_paths.txt" "chatgpt_staging/work/deleted_paths.txt" "chatgpt_staging/work/hash_warnings.txt"
+            -Paths "chatgpt_staging/apply_reports" "$REPORT_DIR" "$PAYLOAD" "chatgpt_staging/work/applied_paths.txt" "chatgpt_staging/work/deleted_paths.txt" "chatgpt_staging/work/hash_warnings.txt" \
+            -RequirePush
 
       - name: Capture apply-in failure report
         if: failure() && steps.payload.outputs.skip != 'true'
@@ -573,7 +575,8 @@ jobs:
           git restore --staged . || true
           pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
             -CommitMessage "Record ChatGPT apply-in workflow report [skip ci]" \
-            -Paths "$REPORT_DIR"
+            -Paths "$REPORT_DIR" \
+            -RequirePush
           echo "FAIL_ARTIFACT_DIR=$ART_DIR" >> "$GITHUB_ENV"
 
       - name: Upload apply-in failure evidence artifact
