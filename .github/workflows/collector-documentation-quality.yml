@@ -16,7 +16,7 @@
 # Runtime dependencies:
 # - Uses project_sources/collector/tools/verify_collector_documentation_quality.py and its self-tests.
 # Expected outputs/readback:
-# - Uploaded documentation quality artifact and repo-workflows report.
+# - Uploaded documentation quality artifact, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
 # - Treat failures as documentation coverage/readiness gaps, not as runtime collector failures by default.
 # Maintenance notes:
@@ -122,3 +122,32 @@ jobs:
             project_sources/validation/out_collector_documentation_quality/**
           if-no-files-found: warn
           retention-days: 21
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path .github/tmp | Out-Null
+          @"
+          ## Validation summary
+
+          - workflow: collector-documentation-quality
+          - validation_scope: collector documentation quality validation
+          - workflow_run_id: $env:GITHUB_RUN_ID
+          - workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT
+          - head_sha: $env:GITHUB_SHA
+          - ref: $env:GITHUB_REF
+          - primary_artifact: collector-documentation-quality
+          - artifact_note: includes the documentation quality JSON output when produced.
+
+          The workflow conclusion is the authoritative pass/fail signal. Use this section to locate the validation artifact bundle without opening the full job log first.
+          "@ | Set-Content -Path .github/tmp/chatgpt_workflow_report_section.md -Encoding utf8
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: chatgpt-workflow-report-section
+          path: .github/tmp/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14
