@@ -35,9 +35,11 @@
     ]
   },
   "collector_bundle": {
-    "path": "project_sources/collector/fixtures/blind_artifacts/collector_bundle/DCOIR_COLLECT_BUNDLE.zip",
+    "path": "project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized",
     "required_for": "collector_bundle_full_manual",
-    "manifest": "project_sources/gemini/fixtures/behavioral_replay/blind/manifests/collector_live_fixture_20260531.manifest.json"
+    "manifest": "project_sources/gemini/fixtures/behavioral_replay/blind/manifests/collector_live_fixture_20260531.manifest.json",
+    "sanitized_manifest": "project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized/SANITIZED_FIXTURE_MANIFEST.json",
+    "storage_model": "committed_sanitized_tree_preserving_collector_bundle_layout"
   },
   "matrix": [
     ["prime_startup", "prime", "readiness"],
