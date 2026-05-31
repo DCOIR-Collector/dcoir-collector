@@ -283,7 +283,7 @@ jobs:
 
       - name: Download artifact by id
         if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.artifact_id != ''
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           run-id: ${{ steps.plan.outputs.source_run_id }}
           artifact-ids: ${{ steps.plan.outputs.artifact_id }}
@@ -292,7 +292,7 @@ jobs:
 
       - name: Download artifact by name
         if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.artifact_id == ''
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           run-id: ${{ steps.plan.outputs.source_run_id }}
           name: ${{ steps.plan.outputs.artifact_name }}
