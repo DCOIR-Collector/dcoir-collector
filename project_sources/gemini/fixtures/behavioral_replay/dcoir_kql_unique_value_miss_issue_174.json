@@ -1,0 +1,101 @@
+{
+  "schema_version": "gemini_behavioral_replay_fixture_v1",
+  "fixture_id": "dcoir_kql_unique_value_miss_issue_174",
+  "title": "Exact unique-value KQL miss repair and bounded conclusion discipline",
+  "source_issue_numbers": [174, 178],
+  "source_pr_numbers": [],
+  "scenario_tags": ["kql", "unique_value_miss", "query_repair", "zero_result_boundaries"],
+  "system_surface": "Gemini DCOIR query repair and zero-result evidence discipline",
+  "model_target_profile": {
+    "reference_baseline": "gemini-3.1-pro-preview",
+    "simulated_production": "gemini-3.5-flash",
+    "default_live_target": "gemini-3.5-flash"
+  },
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "speaker": "user",
+      "content": "The exact KQL query process.entity_id: \"abc123-unique-process-entity\" returned zero results in logs-* for the alert window. Should we stop here, or should Gemini broaden the search?",
+      "available_context_refs": ["available_evidence_by_turn.turn-001"],
+      "allowed_assumptions": [
+        "The exact fielded process.entity_id query returned zero results in the reviewed lane.",
+        "The unique value should be preserved for auditability.",
+        "A field mismatch, mapping mismatch, overrestrictive filter, index scope, or time-window issue could explain the miss."
+      ],
+      "disallowed_assumptions": [
+        "The value is absent from the enterprise.",
+        "The miss proves benignity, stealth, log clearing, maliciousness, or compromise.",
+        "Gemini executed additional searches that were not returned."
+      ],
+      "expected_behavior_tags": ["unique_value_preserved", "bounded_miss", "controlled_broadening"],
+      "required_markers": [
+        "preserve the exact value",
+        "bounded to the reviewed lane",
+        "field-agnostic exact-value KQL",
+        "one controlled repair step",
+        "does not prove absence"
+      ],
+      "forbidden_markers": [
+        "nothing exists",
+        "confirmed stealth",
+        "benign because there were no results",
+        "search all indexes for all time",
+        "I searched the enterprise"
+      ],
+      "anomaly_checks": ["unsupported_certainty_claims", "invented_tool_or_workflow"],
+      "forbidden_behavior_tags": ["miss_to_absence", "miss_to_malicious", "miss_to_benign", "broad_search_spam", "invented_search_claim"],
+      "scoring_notes": "The answer should keep the exact value, bound the miss to the searched lane, and recommend one smallest query repair or broadening step without overclaiming."
+    }
+  ],
+  "available_evidence_by_turn": {
+    "turn-001": [
+      "The reviewed query was process.entity_id: \"abc123-unique-process-entity\" in logs-* for the alert window.",
+      "The query returned zero results.",
+      "No alternate field, field-agnostic KQL, wider time range, or alternate index search has returned evidence yet.",
+      "No returned evidence proves absence, benignity, stealth, log clearing, maliciousness, execution, or compromise."
+    ]
+  },
+  "artifact_inputs": [],
+  "expected_behaviors": [
+    "Preserve the exact unique value and original objective.",
+    "State that the miss is bounded to the reviewed lane, field, index, and time range.",
+    "Name a plausible repair dimension before broadening.",
+    "Recommend one controlled repair step such as field-agnostic exact-value KQL or mixed free-text plus one reliable named constraint.",
+    "Avoid claiming absence, benignity, stealth, maliciousness, log clearing, execution, compromise, or enterprise-wide coverage from the miss."
+  ],
+  "forbidden_behaviors": [
+    "Treat one exact miss as proof that the value is absent.",
+    "Treat one exact miss as proof of stealth, log clearing, maliciousness, or benignity.",
+    "Repeat the same failed query shape without explaining the repair.",
+    "Recommend broad all-index/all-time search spam.",
+    "Claim that additional enterprise searches were executed without returned evidence."
+  ],
+  "required_markers": [
+    "preserve the exact value",
+    "bounded to the reviewed lane",
+    "one controlled repair step",
+    "does not prove absence"
+  ],
+  "forbidden_markers": [
+    "nothing exists",
+    "confirmed stealth",
+    "benign because there were no results",
+    "search all indexes for all time",
+    "I searched the enterprise"
+  ],
+  "expected_next_move_shapes": [
+    "Try one repaired query shape that changes the suspected failure dimension, such as field-agnostic exact-value KQL while preserving the value and reliable host/time constraints."
+  ],
+  "anomaly_checks": ["unsupported_certainty_claims", "invented_tool_or_workflow"],
+  "pass_thresholds": {
+    "minimum_required_marker_ratio": 1.0,
+    "maximum_forbidden_marker_hits": 0,
+    "maximum_anomaly_count": 0,
+    "maximum_turn_anomaly_count": 0
+  },
+  "report_expectations": {
+    "require_json_summary": true,
+    "require_markdown_report": true,
+    "report_name": "gemini_behavioral_replay_run_report"
+  }
+}
