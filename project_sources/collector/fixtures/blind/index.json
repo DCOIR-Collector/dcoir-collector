@@ -1,12 +1,17 @@
 {
-  "schema_version": "dcoir_collector_blind_fixture_index_v1",
-  "issue": "#179",
-  "stored_artifacts_root": "project_sources/collector/fixtures/blind_artifacts",
+  "schema": "collector_blind_fixture_index_v1",
+  "purpose": "Operator-supplied DCOIR Collector artifact fixture metadata for Gemini behavioral harnesses.",
+  "ignored_artifact_root": "project_sources/collector/fixtures/blind_artifacts",
+  "committed_artifacts_policy": "Only sanitized excerpts and manifests are committed. Raw bundles remain ignored/operator-supplied.",
   "fixtures": [
     {
-      "fixture_id": "collector_bundle_fixture_placeholder",
-      "manifest_path": "project_sources/gemini/fixtures/behavioral_replay/blind/manifests/collector_bundle_fixture_placeholder.manifest.json",
-      "status": "operator_artifact_required_for_full"
+      "id": "fixture179_t2_20260531_175810",
+      "manifest": "project_sources/gemini/fixtures/behavioral_replay/blind/manifests/collector_live_fixture_20260531.manifest.json",
+      "derived_scenarios": [
+        "collector_t2_partial_success",
+        "collector_t2_upload_budget",
+        "collector_t2_defender_wmi"
+      ]
     }
   ]
 }
