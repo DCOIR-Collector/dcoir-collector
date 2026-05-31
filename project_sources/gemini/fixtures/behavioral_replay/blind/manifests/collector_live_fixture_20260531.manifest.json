@@ -4,7 +4,15 @@
   "run_id": "fixture179_t2_20260531_175810",
   "collector_version": "4.0.6",
   "collector_status": "PARTIAL_SUCCESS",
-  "privacy_boundary": "Raw ZIPs are not committed. This manifest records identity only; committed scenario evidence is sanitized.",
+  "privacy_boundary": "Raw ZIPs are not committed. The committed fixture tree is sanitized and preserves collector output structure for future tests.",
+  "committed_sanitized_fixture_tree": {
+    "path": "project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized",
+    "manifest": "project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized/SANITIZED_FIXTURE_MANIFEST.json",
+    "source_uploaded_name": "1859_DCOIR_COLLECT_BUNDLE_FIXTURE_HOST_fixture179_t2_20260531_175810.zip",
+    "file_count": 58,
+    "raw_artifacts_included": false,
+    "structure_policy": "Preserves the unzipped DCOIR collect-bundle directory structure and file naming pattern with raw host/user tokens replaced."
+  },
   "artifacts": [
     {
       "uploaded_name": "DCOIR_COLLECT_BUNDLE_FIXTURE_HOST_fixture179_t2_20260531_175810.zip",
