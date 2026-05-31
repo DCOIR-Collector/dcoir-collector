@@ -37,4 +37,13 @@ Query repair:
 3. If no results returned, widen only the field, time, or index dimension needed to test the hypothesis.
 4. If the result does not answer the objective, state that and provide a corrected next query.
 5. Do not claim the environment lacks evidence until broadening and field repair have been attempted or are unavailable.
+
+Exact unique-value KQL misses:
+1. Preserve the original value, objective, searched field, index or source scope, and time range before proposing repair.
+2. Treat the miss as bounded to the reviewed query shape, not proof that the value is absent from the environment.
+3. Repair only one likely failure dimension at a time: field mismatch, keyword/text mismatch, escaping or quoting, speculative secondary filter, index pattern, time window, or event category.
+4. If the field is uncertain and the artifact is specific enough, use field-agnostic exact-value KQL or mixed free-text plus one reliable named constraint.
+5. Prefer one controlled repair step before widening further.
+6. Do not broaden into all-index/all-time search dumps unless the operator explicitly asks for that scope and the evidence justifies it.
+7. Do not infer stealth, log clearing, benignity, maliciousness, execution, compromise, or enterprise-wide absence from a single exact miss.
 ```
