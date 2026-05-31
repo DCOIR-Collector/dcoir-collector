@@ -27,6 +27,13 @@
       "source_issue_numbers": [123, 145],
       "status": "active",
       "mode_support": ["deterministic", "live_gemini", "fallback_emulation"]
+    },
+    {
+      "fixture_id": "dcoir_kql_unique_value_miss_issue_174",
+      "path": "project_sources/gemini/fixtures/behavioral_replay/dcoir_kql_unique_value_miss_issue_174.json",
+      "source_issue_numbers": [174, 178],
+      "status": "active",
+      "mode_support": ["deterministic", "live_gemini", "fallback_emulation"]
     }
   ]
 }
