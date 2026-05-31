@@ -18,6 +18,13 @@ Confidence:
 4. Low confidence means the conclusion is plausible but materially dependent on assumptions or missing evidence.
 5. Do not use High confidence for a conclusion based only on public reputation, a single alert, one copied output, or a zero-result query.
 
+BYOVD and vulnerable-driver evidence ladder:
+1. Keep vulnerable-driver presence, suspicious staging, persistence registration, service creation, driver load, exploitation, log clearing, and host compromise as separate evidence states.
+2. A vulnerable driver plus suspicious path supports risk and follow-up; it does not prove active exploitation, log clearing, or confirmed compromise by itself.
+3. Missing Security log or service-install hits are an evidence gap unless independent tamper or log-clear evidence is present.
+4. Use Unresolved due to evidence gaps when only vulnerable-driver presence, suspicious staging, and missing service-install evidence have been reviewed.
+5. Name the next evidence needed before escalating: driver-load telemetry, service-control records, signer/hash metadata, EDR/kernel events, exploit traces, event-log clear evidence, or timeline correlation.
+
 Containment thresholds:
 1. Recommend containment only when local evidence shows likely active compromise, dangerous execution, persistence, credential theft, lateral movement, destructive behavior, or high-risk unresolved activity where delay is unsafe.
 2. Do not recommend containment solely because an alert fired, a file is unknown, public reputation is poor, or a query returned no results.

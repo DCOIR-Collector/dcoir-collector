@@ -9,7 +9,7 @@
   "reassembly": {
     "method": "concatenate_chunks_in_manifest_order",
     "newline_policy": "preserve_chunk_text_exactly",
-    "expected_sha256": "f7c719d106ad739bb8a2941de5ef7e932496a06570ea97ecbc90f207324815f4"
+    "expected_sha256": "1dc0437f448e18ab229a7560878c4a7a76ce7b81e2d8df492d389092791adfb6"
   },
   "chunks": [
     {
@@ -40,8 +40,8 @@
       "chunk_id": "03",
       "title": "Response_Completeness_Tools_And_Command_Pacing",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_03_Response_Completeness_Tools_And_Command_Pacing.md.txt",
-      "sha256": "06a54c1813cc42075a60c9ddaf91ac311a6be8b4be2f77f4484771aa2dba33fc",
-      "line_count": 77,
+      "sha256": "58a90309d1a66aa8063e1ebfbb2ed82b4aea8f20fa72cec360eb7c34b2489c9a",
+      "line_count": 83,
       "starts_with": "### Response completeness, tool availability, and command pacing"
     },
     {
@@ -56,24 +56,24 @@
       "chunk_id": "05",
       "title": "Query_Objectives_Field_Discovery_And_Syntax_Guards",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_05_Query_Objectives_Field_Discovery_And_Syntax_Guards.md.txt",
-      "sha256": "bb58d27fc515e3f33c8303fcda6135b156eb008bdb5d256ee322aa1c5c28e574",
-      "line_count": 40,
+      "sha256": "1725932522376ab23eb2cf208e5fb24170f3afb1e510a338399be7f8a3bac2de",
+      "line_count": 49,
       "starts_with": "### Query objectives, field discovery, and syntax guards"
     },
     {
       "chunk_id": "06",
       "title": "Zero_Result_Retrieval_Misses_And_Web_Intel",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_06_Zero_Result_Retrieval_Misses_And_Web_Intel.md.txt",
-      "sha256": "89794c6de0109157b027bda8b8fcd5f791956e87ffdb5e7cd3b17c71056f2100",
-      "line_count": 47,
+      "sha256": "0a0fb8b986ec860b1e64bb824e77d3ad046ec2d15488f0332e618bddf58a509e",
+      "line_count": 54,
       "starts_with": "### Zero-result handling, retrieval misses, and web intelligence"
     },
     {
       "chunk_id": "07",
       "title": "Containment_Conclusion_Alert_Family_And_Benign_Tuning",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_07_Containment_Conclusion_Alert_Family_And_Benign_Tuning.md.txt",
-      "sha256": "be41eb8ad3590224ce8f126bf592ce71cb913b13c3b2bdf97dad9d330f09edc8",
-      "line_count": 45,
+      "sha256": "011fedd95f510f4ffeba3996b515115066c6ea4aa9c6834874837a04defdfbc8",
+      "line_count": 52,
       "starts_with": "### Containment, conclusions, alert family, and benign tuning"
     },
     {
@@ -136,8 +136,8 @@
       "chunk_id": "15",
       "title": "Response_Behavior_And_Output_Contract",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_15_Response_Behavior_And_Output_Contract.md.txt",
-      "sha256": "3f960bd3683f1721cecb35ced92c4a802ceb62c9c422a06f8c1e365c6cc63e59",
-      "line_count": 49,
+      "sha256": "97b959e795a4330674dbf58d19dd140f3b672d7f057d3c0d070ff17d07c4996b",
+      "line_count": 55,
       "starts_with": "### Response behavior and output contract"
     },
     {
@@ -176,8 +176,8 @@
       "chunk_id": "20",
       "title": "Routing_Request_Coverage_Tool_Access_And_Memory",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_20_Routing_Request_Coverage_Tool_Access_And_Memory.md.txt",
-      "sha256": "d5ffc5302c04154ace48fbcf3338109945b1acedbf537d667500d9c255822d29",
-      "line_count": 38,
+      "sha256": "fdca08960eea574fc44137d7d1d8861f26ff71e04fff00aef69d296793f12b4d",
+      "line_count": 39,
       "starts_with": "### Routing, request coverage, tool access, and memory limits"
     }
   ]

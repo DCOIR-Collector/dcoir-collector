@@ -1,0 +1,16 @@
+{
+  "schema_version": "gemini_behavioral_replay_response_pack_v1",
+  "fixture_id": "dcoir_kql_unique_value_miss_issue_174",
+  "mode": "deterministic",
+  "model_name": "governed-known-good-example",
+  "turns": [
+    {
+      "turn_id": "turn-001",
+      "assistant_response": "Do not stop on that single miss. Preserve the exact value abc123-unique-process-entity and treat the zero result as bounded to the reviewed lane, process.entity_id field, logs-* scope, and alert window. It does not prove absence, benignity, stealth, log clearing, maliciousness, execution, or compromise. The next move is one controlled repair step: try field-agnostic exact-value KQL for \"abc123-unique-process-entity\" while keeping any reliable host or alert-window constraint, then reassess from returned evidence."
+    }
+  ],
+  "metadata": {
+    "source": "governed_known_good_example",
+    "purpose": "Unique-value KQL miss controlled-broadening deterministic acceptance example"
+  }
+}

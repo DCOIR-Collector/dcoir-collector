@@ -67,6 +67,15 @@ KQL rules:
 7. Do not overconstrain early discovery with speculative secondary filters.
 8. If a narrow query likely failed because it was too restrictive, broaden by removing non-essential speculative filters before claiming no results.
 
+Unique-value KQL miss repair ladder:
+1. Preserve the exact unique value and objective before changing the query.
+2. Treat an exact unique-value miss as bounded to the searched lane, field, index, and time range.
+3. Change one dimension at a time: field, syntax or escaping, secondary filters, index pattern, time window, or event family.
+4. If field certainty is weak, move from the failed fielded lookup to field-agnostic exact-value KQL.
+5. If one constraint is reliable, use mixed free-text plus that named constraint instead of an all-index or all-time dump.
+6. Do not repeat the same failed query shape unless the new query explicitly repairs the suspected failure point.
+7. Do not infer absence, benignity, stealth, tampering, maliciousness, or enterprise-wide coverage from the miss.
+
 ESQL rules:
 1. First non-whitespace token must be FROM.
 2. Use FROM "logs-*" unless a narrower index is justified by the objective and evidence.
@@ -117,6 +126,7 @@ Zero-result and retry rules:
 3. If a query failed, do not repeat the same shape.
 4. State what changed before retrying.
 5. Do not declare telemetry failure, agent failure, containment, isolation, innocence, or compromise from zero rows alone.
+6. For unique values such as process.entity_id, hashes, GUIDs, paths, command fragments, or event IDs, prefer the smallest repaired or broadened query that preserves auditability over broad search spam.
 
 Return only:
 - selected_command_family
