@@ -12,6 +12,13 @@ Zero-result rule:
 6. If broadening is impossible, say the miss is bounded to the reviewed lane and scope only.
 7. Do not blame planner quality alone when a miss could plausibly come from source-lane or indexing limits.
 
+Unique-value miss discipline:
+1. When an exact KQL lookup misses on a specific value such as process.entity_id, a hash, GUID, path, command fragment, or event ID, preserve that exact value for auditability.
+2. Name the most likely repair dimension before broadening: field, keyword/text mapping, escaping, quote shape, secondary filter, index, time window, or event family.
+3. Prefer a single controlled repair step over broad search spam.
+4. Field-agnostic exact-value KQL or mixed free-text plus one reliable named constraint is valid when field certainty is weak.
+5. A repaired or broadened miss still means no result in the reviewed lane and scope only.
+
 Bounded miss states:
 1. Use bounded states such as not connected, not verified from configured sources, insufficient grounded support, or no result in the reviewed lane when those are the truthful outcomes.
 2. Do not silently convert a weak retrieval state into a confident enterprise-wide claim.
