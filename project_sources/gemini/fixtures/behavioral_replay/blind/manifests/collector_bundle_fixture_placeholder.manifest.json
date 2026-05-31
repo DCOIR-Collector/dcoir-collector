@@ -1,0 +1,14 @@
+{
+  "schema_version": "gemini_blind_artifact_manifest_v1",
+  "issue": "#179",
+  "fixture_id": "collector_bundle_fixture_placeholder",
+  "artifact_role": "dcoir_collector_full_regression_bundle",
+  "stored_artifact_path": "project_sources/collector/fixtures/blind_artifacts/collector_bundle/DCOIR_COLLECT_BUNDLE.zip",
+  "committed_to_repo": false,
+  "required_for_modes": ["full"],
+  "expected_gap_when_absent": "operator_supplied_collector_bundle_not_present",
+  "notes": [
+    "The bundle is intentionally ignored by git so changing it does not trigger repository workflows.",
+    "The harness records absence as a warning unless require-stored-artifacts is enabled for full validation."
+  ]
+}

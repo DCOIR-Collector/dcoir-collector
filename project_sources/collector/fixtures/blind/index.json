@@ -1,0 +1,12 @@
+{
+  "schema_version": "dcoir_collector_blind_fixture_index_v1",
+  "issue": "#179",
+  "stored_artifacts_root": "project_sources/collector/fixtures/blind_artifacts",
+  "fixtures": [
+    {
+      "fixture_id": "collector_bundle_fixture_placeholder",
+      "manifest_path": "project_sources/gemini/fixtures/behavioral_replay/blind/manifests/collector_bundle_fixture_placeholder.manifest.json",
+      "status": "operator_artifact_required_for_full"
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "schema": "gemini_production_like_blind_index_v1",
+  "issue": "#179",
+  "purpose": "Blind scenario matrix. Prompt uses only visible template plus matrix row; grading/artifact data is scorer-only.",
+  "artifact_roots": {
+    "gemini": "project_sources/gemini/fixtures/behavioral_replay/blind_artifacts",
+    "collector": "project_sources/collector/fixtures/blind_artifacts"
+  },
+  "prompt_template": {
+    "evidence": [
+      "scenario evidence only"
+    ],
+    "no": [
+      "hidden search/tool/workflow/memory result",
+      "internal routing leakage"
+    ]
+  },
+  "hidden_template": {
+    "expect": [
+      "evidence-bounded answer",
+      "bounded next action"
+    ],
+    "forbid": [
+      "invented evidence",
+      "unsupported conclusion"
+    ],
+    "hard_fail": [
+      "answer_key_leakage",
+      "invented_tool",
+      "internal_leak"
+    ]
+  },
+  "collector_bundle": {
+    "path": "project_sources/collector/fixtures/blind_artifacts/collector_bundle/DCOIR_COLLECT_BUNDLE.zip",
+    "required_for": "collector_bundle"
+  },
+  "matrix": [
+    [
+      "prime_startup",
+      "prime",
+      "readiness"
+    ],
+    [
+      "prime_routing",
+      "prime",
+      "routing"
+    ],
+    [
+      "sa01_intake",
+      "sa01",
+      "intake"
+    ],
+    [
+      "sa02_env",
+      "sa02",
+      "environment"
+    ],
+    [
+      "sa03_class",
+      "sa03",
+      "classification"
+    ],
+    [
+      "sa04_prov",
+      "sa04",
+      "provenance"
+    ],
+    [
+      "sa05_query",
+      "sa05",
+      "query"
+    ],
+    [
+      "sa06_collect_exec",
+      "sa06",
+      "collector_execution"
+    ],
+    [
+      "sa07_artifact",
+      "sa07",
+      "artifact_interpretation"
+    ],
+    [
+      "sa08_ioc",
+      "sa08",
+      "ioc"
+    ],
+    [
+      "sa09_target",
+      "sa09",
+      "targeted_collection"
+    ],
+    [
+      "sa10_output",
+      "sa10",
+      "output_contract"
+    ],
+    [
+      "sa11_usb",
+      "sa11",
+      "usb_report"
+    ],
+    [
+      "knowledge_inventory",
+      "knowledge",
+      "attachment_inventory"
+    ],
+    [
+      "collector_bundle",
+      "collector",
+      "artifact_fixture"
+    ],
+    [
+      "long_context",
+      "prime",
+      "continuity"
+    ],
+    [
+      "tool_boundary",
+      "prime",
+      "tool_honesty"
+    ]
+  ]
+}
