@@ -8,14 +8,14 @@ This folder supports the ChatGPT GitHub staging lane: a controlled path for larg
 
 When a session sees staging-lane, cleanup, failure-report, workflow-report, large-file readback, artifact extraction, or batch-apply work:
 
-1. Read Airtable Queue Control, active Plan, and Work Item.
-2. Consult the Airtable `SKILLROUTE-CHATGPT-STAGING-LANE` and `DECISION-CHATGPT-STAGING-LANE-DEFAULTS` rows.
+1. Read the live GitHub issue or PR, then read the matching Supabase ircore work-item context when governed work is in scope.
+2. Consult Supabase ircore routing, workflow catalog, validation rules, and reusable lessons for the staging-lane scenario.
 3. Read this file and `chatgpt_staging/SCENARIO_MATRIX.md` from GitHub when repo-source behavior is in scope.
 4. Read `operator_tools/github_desktop_lane/docs/CHATGPT_STAGING_LANE_OPERATOR_GUIDE.md` before giving operator-facing CAP or troubleshooting instructions.
 5. Check `chatgpt_staging/status_reports/` before asking the operator for screenshots, copied logs, uploaded logs, or a commit SHA.
 6. Check `chatgpt_staging/failure_reports/` before retrying an old request id.
 7. Check `chatgpt_staging/cleanup_requests/` before assuming cleanup was requested or completed.
-8. Never claim cleanup, retry safety, or production readiness without GitHub readback and Airtable evidence.
+8. Never claim cleanup, retry safety, or production readiness without GitHub readback and Supabase work-item evidence.
 
 ## Production safety principles
 
@@ -109,12 +109,12 @@ Default posture:
 - keep stage-out bundles only until ChatGPT retrieves the needed files or records evidence
 - keep extracted artifact readback bundles only until ChatGPT retrieves the needed files or records evidence
 - delete inbound apply payloads after successful apply/commit/push unless explicit validation evidence requires temporary retention
-- keep status reports only until ChatGPT reads them and records any needed Airtable evidence
+- keep status reports only until ChatGPT reads them and records any needed Supabase work-item evidence
 - keep failure evidence until the failure is diagnosed and retry/stop decision is recorded
 - keep GitHub Actions artifacts for short-lived diagnostics only; current workflow retention is 7 days where configured
 - never delete `.gitkeep` scaffolds
 - use cleanup markers for scoped cleanup when ChatGPT has already consumed a specific request id and wants bounded immediate removal
-- scheduled `chatgpt-report-retention-cleanup` is the automatic fallback cleanup owner for stale status reports, stale staged request JSON files, and aged staged output bundles
+- scheduled `chatgpt-report-retention-cleanup` is the automatic fallback cleanup owner for stale status reports, stale staged request JSON files, aged staged output bundles, and committed status sidecars that are no longer needed as evidence
 - cleanup requests may target top-level stage-out requests and nested request families such as `chatgpt_staging/requests/github_artifact_readback/`
 
 A cleanup run may leave its own final `chatgpt-staging-cleanup/.../workflow_report.md` as proof of what was removed. That report should be cleaned by a later cleanup marker after ChatGPT reads and records it.
@@ -124,6 +124,8 @@ A cleanup run may leave its own final `chatgpt-staging-cleanup/.../workflow_repo
 ```text
 chatgpt_staging/
   requests/          # ChatGPT-created stage-out requests and artifact-readback requests
+  exec_requests/     # ChatGPT-created execution requests for chatgpt-exec live heartbeat runs
+  exec_payloads/     # request-scoped execution payloads retained only while needed for diagnosis or evidence
   in/                # ChatGPT-created apply-in payloads
   out/               # GitHub-created stage-out bundles and artifact readback bundles retained until scoped or retention cleanup
   work/              # transient workflow work area; never intentionally committed
