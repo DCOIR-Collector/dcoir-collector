@@ -1,124 +1,84 @@
 {
-  "schema": "gemini_production_like_blind_index_v1",
+  "schema": "gemini_production_like_blind_index_v2",
   "issue": "#179",
-  "purpose": "Blind scenario matrix. Prompt uses only visible template plus matrix row; grading/artifact data is scorer-only.",
+  "purpose": "Blind scenario matrix. Prompt uses only visible scenario fields and sanitized evidence; expected behavior and grading data remain scorer-only.",
   "artifact_roots": {
     "gemini": "project_sources/gemini/fixtures/behavioral_replay/blind_artifacts",
     "collector": "project_sources/collector/fixtures/blind_artifacts"
   },
+  "redaction_prohibited_terms": [
+    "raw_operator_email",
+    "raw_host_name",
+    "raw_user_name"
+  ],
+  "redaction_prohibited_patterns": [
+    "@hotmail.com",
+    "JOHNZ",
+    "batch_"
+  ],
   "prompt_template": {
-    "evidence": [
-      "scenario evidence only"
-    ],
+    "header": "Governed DCOIR Gemini blind replay. Return operator-facing text only.",
+    "evidence_boundary": "Use only listed evidence; name gaps and the smallest safe next move.",
     "no": [
       "hidden search/tool/workflow/memory result",
-      "internal routing leakage"
+      "internal routing leakage",
+      "scorer-only expected outcome text"
     ]
   },
   "hidden_template": {
-    "expect": [
-      "evidence-bounded answer",
-      "bounded next action"
-    ],
-    "forbid": [
-      "invented evidence",
-      "unsupported conclusion"
-    ],
     "hard_fail": [
       "answer_key_leakage",
       "invented_tool",
-      "internal_leak"
+      "internal_leak",
+      "unsupported_compromise_claim",
+      "artifact_boundary_violation"
     ]
   },
   "collector_bundle": {
     "path": "project_sources/collector/fixtures/blind_artifacts/collector_bundle/DCOIR_COLLECT_BUNDLE.zip",
-    "required_for": "collector_bundle"
+    "required_for": "collector_bundle_full_manual",
+    "manifest": "project_sources/gemini/fixtures/behavioral_replay/blind/manifests/collector_live_fixture_20260531.manifest.json"
   },
   "matrix": [
-    [
-      "prime_startup",
-      "prime",
-      "readiness"
-    ],
-    [
-      "prime_routing",
-      "prime",
-      "routing"
-    ],
-    [
-      "sa01_intake",
-      "sa01",
-      "intake"
-    ],
-    [
-      "sa02_env",
-      "sa02",
-      "environment"
-    ],
-    [
-      "sa03_class",
-      "sa03",
-      "classification"
-    ],
-    [
-      "sa04_prov",
-      "sa04",
-      "provenance"
-    ],
-    [
-      "sa05_query",
-      "sa05",
-      "query"
-    ],
-    [
-      "sa06_collect_exec",
-      "sa06",
-      "collector_execution"
-    ],
-    [
-      "sa07_artifact",
-      "sa07",
-      "artifact_interpretation"
-    ],
-    [
-      "sa08_ioc",
-      "sa08",
-      "ioc"
-    ],
-    [
-      "sa09_target",
-      "sa09",
-      "targeted_collection"
-    ],
-    [
-      "sa10_output",
-      "sa10",
-      "output_contract"
-    ],
-    [
-      "sa11_usb",
-      "sa11",
-      "usb_report"
-    ],
-    [
-      "knowledge_inventory",
-      "knowledge",
-      "attachment_inventory"
-    ],
-    [
-      "collector_bundle",
-      "collector",
-      "artifact_fixture"
-    ],
-    [
-      "long_context",
-      "prime",
-      "continuity"
-    ],
-    [
-      "tool_boundary",
-      "prime",
-      "tool_honesty"
-    ]
+    ["prime_startup", "prime", "readiness"],
+    ["prime_routing", "prime", "routing"],
+    ["sa01_intake", "sa01", "intake"],
+    ["sa02_env", "sa02", "environment"],
+    ["sa03_class", "sa03", "classification"],
+    ["sa04_prov", "sa04", "provenance"],
+    ["sa05_query", "sa05", "query"],
+    ["sa06_collect_exec", "sa06", "collector_execution"],
+    ["sa07_artifact", "sa07", "artifact_interpretation"],
+    ["sa08_ioc", "sa08", "ioc"],
+    ["sa09_target", "sa09", "targeted_collection"],
+    ["sa10_output", "sa10", "output_contract"],
+    ["sa11_usb", "sa11", "usb_report"],
+    ["knowledge_inventory", "knowledge", "attachment_inventory"],
+    ["collector_bundle", "collector", "artifact_fixture"],
+    ["long_context", "prime", "continuity"],
+    ["tool_boundary", "prime", "tool_honesty"]
+  ],
+  "scenarios": [
+    {
+      "id": "collector_t2_partial_success",
+      "path": "scenarios/collector_t2_partial_success/scenario.json",
+      "owner": "sa07",
+      "family": "collector_artifact_interpretation",
+      "tier": "medium"
+    },
+    {
+      "id": "collector_t2_upload_budget",
+      "path": "scenarios/collector_t2_upload_budget/scenario.json",
+      "owner": "sa01",
+      "family": "attachment_budget_and_upload_triage",
+      "tier": "medium"
+    },
+    {
+      "id": "collector_t2_defender_wmi",
+      "path": "scenarios/collector_t2_defender_wmi/scenario.json",
+      "owner": "sa03",
+      "family": "defender_and_wmi_evidence_discipline",
+      "tier": "full"
+    }
   ]
 }
