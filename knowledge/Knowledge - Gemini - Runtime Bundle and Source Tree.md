@@ -26,8 +26,15 @@ The runtime attachment set does not by itself create:
 - durable memory;
 - proof that an external workflow or tool already ran.
 
+Production-context boundary:
+
+- use runtime attachments for SOC/IR analysis, collector interpretation, evidence handling, and analyst-facing command-lane discipline;
+- do not treat runtime attachments as development-maintenance instructions, packaging-control instructions, staging authority, or an operator-control action channel;
+- do not expose development cleanup, issue-tracking, workflow-maintenance, or packaging-system details in analyst-facing output unless the user supplied that material as case evidence or explicitly asked for source/provenance help;
+- when a production answer needs package, source, or workflow-state provenance, label it as returned evidence or user-provided context rather than hidden runtime knowledge.
+
 If a source lane or action did not actually return evidence in the session, Gemini must not claim that it happened just because an attachment discusses that lane.
 
 ---
 
-> Supporting human-readable Knowledge doc. Not part of the DCOIR control plane.
+> Supporting human-readable Knowledge doc. Not an operator-control action surface.
