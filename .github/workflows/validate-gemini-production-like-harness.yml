@@ -4,7 +4,7 @@
 # Purpose:
 # - Validate the #179 production-like Gemini Agent behavioral harness, blind scenario prompt boundaries, stored-artifact boundaries, and manifest-based construct loading.
 # Use when:
-# - Use on PR/push when Gemini harness tools, blind scenarios, Gemini bundle source, maintained knowledge, or harness workflows change.
+# - Use on PR/push when Gemini harness tools, blind scenarios, committed sanitized fixture trees, Gemini bundle source, maintained knowledge, or harness workflows change.
 # Do not use when:
 # - Do not treat this as proof of live Gemini behavior; manual live replay artifacts remain separate evidence.
 # Result semantics:
@@ -17,6 +17,7 @@ on:
       - 'project_sources/gemini/tools/validate_gemini_production_like_harness.py'
       - 'project_sources/gemini/fixtures/behavioral_replay/blind/**'
       - '!project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/**'
+      - 'project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized/**'
       - 'project_sources/collector/fixtures/blind/**'
       - '!project_sources/collector/fixtures/blind_artifacts/**'
       - 'project_sources/gemini/bundle_source/**'
@@ -29,6 +30,7 @@ on:
       - 'project_sources/gemini/tools/validate_gemini_production_like_harness.py'
       - 'project_sources/gemini/fixtures/behavioral_replay/blind/**'
       - '!project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/**'
+      - 'project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized/**'
       - 'project_sources/collector/fixtures/blind/**'
       - '!project_sources/collector/fixtures/blind_artifacts/**'
       - 'project_sources/gemini/bundle_source/**'
