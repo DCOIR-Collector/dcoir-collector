@@ -1,0 +1,178 @@
+COMMAND=reg.exe query HKLM\SYSTEM\CurrentControlSet\Control\Lsa /s
+EXIT_CODE=0
+
+STDOUT:
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+    auditbasedirectories    REG_DWORD    0x0
+    auditbaseobjects    REG_DWORD    0x0
+    Authentication Packages    REG_MULTI_SZ    msv1_0
+    Bounds    REG_BINARY    0030000000200000
+    crashonauditfail    REG_DWORD    0x0
+    fullprivilegeauditing    REG_BINARY    00
+    LimitBlankPasswordUse    REG_DWORD    0x1
+    NoLmHash    REG_DWORD    0x1
+    Notification Packages    REG_MULTI_SZ    scecli
+    Security Packages    REG_MULTI_SZ    ""
+    disabledomaincreds    REG_DWORD    0x0
+    everyoneincludesanonymous    REG_DWORD    0x0
+    forceguest    REG_DWORD    0x0
+    LsaCfgFlagsDefault    REG_DWORD    0x0
+    LsaPid    REG_DWORD    0x5fc
+    ProductType    REG_DWORD    0xa1
+    restrictanonymous    REG_DWORD    0x0
+    restrictanonymoussam    REG_DWORD    0x1
+    SamConnectedAccountsExist    REG_DWORD    0x1
+    SecureBoot    REG_DWORD    0x1
+    IsPplAutoEnabled    REG_DWORD    0x2
+    RunAsPPL    REG_DWORD    0x2
+    RunAsPPLBoot    REG_DWORD    0x2
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\AccessProviders
+    MartaExtension    REG_SZ    ntmarta.dll
+    ProviderOrder    REG_MULTI_SZ    Windows NT Access Provider
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\AccessProviders\Windows NT Access Provider
+    ProviderPath    REG_EXPAND_SZ    %SystemRoot%\system32\ntmarta.dll
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Audit
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Audit\AuditPolicy
+    AuditPolicySD    REG_BINARY    01000000D08C9DDF0115D1118C7A00C04FC297EB01000000F2AD4D7D8265F5469DDC8C35074124200000002000000000106600000001000020000000106C26EAFA01294C7886FDFCE2C49FC53AF8E4D4EB27455E070BFF7C022656BE000000000E8000000002000020000000DFDFF13E207445EE34972E9CFA2F244B04BC58EBE39E9DD1AF27541F7D528189700000008D568F3C4641C7D4A4602E08B5B306968A47CB3F690A0C1AFFDA5609781E385B9C9B2213DC79A5F3ADF8B901B45D204919FE8CCE15EC7DA12207EB04D3EB2E5696551A287D5D04404758FF745C24EDCF273442B40B7BE9F272F128A865DE4E18D306BA537ABA83FFE5660DA91802F04340000000E5B625494F5660814C12D4304A8635A16D39870FFFFAE4D208FFB18844CF908D29A04A4BACBA23561EE76EB8609A7B61745E86B2E7CE52E8F9DB6A78DE619C18
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Audit\PerUserAuditing
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Audit\PerUserAuditing\System
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\CentralizedAccessPolicies
+    MaxDataSize    REG_DWORD    0x0
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\CentralizedAccessPolicies\CAPEs
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\CentralizedAccessPolicies\CAPs
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\ComponentUpdates
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\ComponentUpdates\Privileges
+    00000000-0000-0000-0000-000000000000    REG_SZ    PrivilegeAdd;S-1-5-80-3169285310-278349998-1452333686-3865143136-4212226833;SeServiceLogonRight
+    00000000-0000-0000-0000-000000000000    REG_SZ    PrivilegeAdd;S-1-5-99-216390572-1995538116-3857911515-2404958512-2623887229;SeImpersonatePrivilege
+    00000000-0000-0000-0000-000000000000    REG_SZ    PrivilegeAdd;S-1-5-80-3169285310-278349998-1452333686-3865143136-4212226833;SeSystemTimePrivilege
+    00000000-0000-0000-0000-000000000000    REG_SZ    PrivilegeAdd;S-1-5-99-0;SeServiceLogonRight
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\ComponentUpdates\SecurityInstallationProvider
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\ComponentUpdates\SecurityInstallationProvider\S-1-5-19
+    Group1    REG_BINARY    0109000000000005200000005796D816CD3DB8C73AB6AB6D682E796C5EFA8B5D5A1040FA9746B304437C4254
+    Group2    REG_BINARY    0109000000000005200000001BCA59796509E3107A29F9CB5919D9D599A9A72D9544DAB4728F4AD30BD93024
+    Group3    REG_BINARY    01090000000000052000000017881EDA76478088332F1143FE5053DB3EDC124D18F400817D92F569579BBB9A
+    Group4    REG_BINARY    010900000000000520000000502EB30038039D7D04D93ACD696F76F6DC95E8E446FA83DF6F5B17E5AD34FE27
+    Group5    REG_BINARY    010900000000000520000000B0770AD29DE60F68036B552F52EF4928B4BA566FC7E5577490AB44428E32587A
+    Group6    REG_BINARY    01090000000000052000000092DFB758F1CD0F33EA60535A51DB4C523E8B7FB1F28FD184049FD034929309A7
+    Group7    REG_BINARY    01090000000000052000000063B6FE745E7B0929DD82DFD4CE4149D80E67D62FE3E19772388A4A0C790BD0C6
+    Group8    REG_BINARY    010900000000000520000000DCDCC72B1B84FB178CFDD5999F6AA154C3091AFB54A898A298EF9B0DE13DAA21
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp
+    DebugLogLevel    REG_DWORD    0x0
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowDefaultCredentials
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowDefaultCredentialsDomain
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowDefaultCredentialsWhenNTLMOnly
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowDefaultCredentialsWhenNTLMOnlyDomain
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowFreshCredentials
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowFreshCredentialsDomain
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowFreshCredentialsWhenNTLMOnly
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowFreshCredentialsWhenNTLMOnlyDomain
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowSavedCredentials
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowSavedCredentialsDomain
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowSavedCredentialsWhenNTLMOnly
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\AllowSavedCredentialsWhenNTLMOnlyDomain
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\DenyDefaultCredentials
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\DenyDefaultCredentialsDomain
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\DenyFreshCredentials
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\DenyFreshCredentialsDomain
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\DenySavedCredentials
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Credssp\PolicyDefaults\DenySavedCredentialsDomain
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Data
+    Pattern    REG_BINARY    EF584883FA06F056FD87FBDFA640727F
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\DPL
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\FipsAlgorithmPolicy
+    Enabled    REG_DWORD    0x0
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\GBG
+    GrafBlumGroup    REG_BINARY    355D9747624C701DB4
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\JD
+    Lookup    REG_BINARY    4D05C3B329C0
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Domains
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\HostToRealm
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
+    Auth132    REG_SZ    IISSUBA
+    NtlmMinClientSec    REG_DWORD    0x20000000
+    NtlmMinServerSec    REG_DWORD    0x20000000
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\OfflineLSA
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\OfflineLSA\DBOptions
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\OfflineSAM
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\OfflineSAM\DBOptions
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\OSConfig
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Skew1
+    SkewMatrix    REG_BINARY    3537D0CC82381A4187A5DC29823CC4A1
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\SSO
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\SSO\Passport1.4
+    SSOURL    REG_SZ    http://www.passport.com
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\SspiCache
+    Time    REG_BINARY    9B25F2CE17F1DB01
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\SspiCache\credssp.dll
+    Capabilities    REG_DWORD    0x810733
+    Comment    REG_SZ    Microsoft CredSSP Security Provider
+    Name    REG_SZ    CREDSSP
+    RpcId    REG_DWORD    0xffff
+    Time    REG_BINARY    804BEE8E13F1DB01
+    TokenSize    REG_DWORD    0x11d48
+    Type    REG_DWORD    0x21
+    Version    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Tracing
+
+
+
+STDERR:
+

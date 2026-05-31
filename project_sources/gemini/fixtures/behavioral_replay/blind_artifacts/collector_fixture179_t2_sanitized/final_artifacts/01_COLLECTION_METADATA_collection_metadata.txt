@@ -1,0 +1,14 @@
+CollectorVersion=4.0.6
+Mode=Collect
+Tier=T2
+Hours=72
+Host=FIXTURE_HOST
+RunId=fixture179_t2_20260531_175810
+UserContext=FIXTURE_HOST\FIXTURE_USER
+IsElevated=True
+TimeLocal=2026-05-31T17:58:13.8939160+02:00
+TimeUTC=2026-05-31T15:58:13.8939160Z
+RunRoot=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810
+ReportsDir=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\reports
+ArtifactsDir=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts
+EnrichSessionsDir=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\enrich_sessions

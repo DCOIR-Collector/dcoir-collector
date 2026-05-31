@@ -1,0 +1,51 @@
+{
+    "worker_name":  "network_light",
+    "status":  "OK",
+    "start_time_utc":  "2026-05-31T15:58:11.5936154Z",
+    "end_time_utc":  "2026-05-31T15:58:11.7947092Z",
+    "duration_ms":  201,
+    "worker_pid":  31232,
+    "step_results":  [
+                         {
+                             "step_name":  "NETWORK_IPCONFIG",
+                             "command":  "ipconfig /all",
+                             "exit_code":  0,
+                             "allowed_exit_codes":  [
+                                                        0
+                                                    ],
+                             "within_allowed_exit_codes":  true,
+                             "text":  "COMMAND=ipconfig /all\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n\r\nWindows IP Configuration\r\n\r\n   Host Name . . . . . . . . . . . . : FIXTURE_HOST\r\n   Primary Dns Suffix  . . . . . . . : \r\n   Node Type . . . . . . . . . . . . : Hybrid\r\n   IP Routing Enabled. . . . . . . . : No\r\n   WINS Proxy Enabled. . . . . . . . : No\r\n\r\nWireless LAN adapter Local Area Connection* 1:\r\n\r\n   Media State . . . . . . . . . . . : Media disconnected\r\n   Connection-specific DNS Suffix  . : \r\n   Description . . . . . . . . . . . : Microsoft Wi-Fi Direct Virtual Adapter\r\n   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF\r\n   DHCP Enabled. . . . . . . . . . . : Yes\r\n   Autoconfiguration Enabled . . . . : Yes\r\n\r\nWireless LAN adapter Local Area Connection* 2:\r\n\r\n   Media State . . . . . . . . . . . : Media disconnected\r\n   Connection-specific DNS Suffix  . : \r\n   Description . . . . . . . . . . . : Microsoft Wi-Fi Direct Virtual Adapter #2\r\n   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF\r\n   DHCP Enabled. . . . . . . . . . . : No\r\n   Autoconfiguration Enabled . . . . : Yes\r\n\r\nWireless LAN adapter Wi-Fi:\r\n\r\n   Connection-specific DNS Suffix  . : \r\n   Description . . . . . . . . . . . : Intel(R) Wi-Fi 6E AX211 160MHz\r\n   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF\r\n   DHCP Enabled. . . . . . . . . . . : Yes\r\n   Autoconfiguration Enabled . . . . : Yes\r\n   IPv4 Address. . . . . . . . . . . : 203.0.113.10(Preferred) \r\n   Subnet Mask . . . . . . . . . . . : 203.0.113.10\r\n   Lease Obtained. . . . . . . . . . : Sunday, May 31, 2026 5:46:21 PM\r\n   Lease Expires . . . . . . . . . . : Sunday, May 31, 2026 6:46:20 PM\r\n   Default Gateway . . . . . . . . . : 203.0.113.10\r\n   DHCP Server . . . . . . . . . . . : 203.0.113.10\r\n   DNS Servers . . . . . . . . . . . : 203.0.113.10\r\n   NetBIOS over Tcpip. . . . . . . . : Enabled\r\n\r\nEthernet adapter Bluetooth Network Connection:\r\n\r\n   Media State . . . . . . . . . . . : Media disconnected\r\n   Connection-specific DNS Suffix  . : \r\n   Description . . . . . . . . . . . : Bluetooth Device (Personal Area Network)\r\n   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF\r\n   DHCP Enabled. . . . . . . . . . . : Yes\r\n   Autoconfiguration Enabled . . . . : Yes\r\n\r\n\r\nSTDERR:\r\n"
+                         },
+                         {
+                             "step_name":  "NETWORK_DNS_CACHE",
+                             "command":  "ipconfig /displaydns",
+                             "exit_code":  0,
+                             "allowed_exit_codes":  [
+                                                        0
+                                                    ],
+                             "within_allowed_exit_codes":  true,
+                             "text":  "COMMAND=ipconfig /displaydns\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n\r\nWindows IP Configuration\r\n\r\n    kubernetes.docker.internal\r\n    ----------------------------------------\r\n    No records of type AAAA\r\n\r\n\r\n    Record Name . . . . . : kubernetes.docker.internal\r\n    Record Type . . . . . : 1\r\n    Time To Live  . . . . : 300606\r\n    Data Length . . . . . : 4\r\n    Section . . . . . . . : Answer\r\n    A (Host) Record . . . : 127.0.0.1\r\n\r\n\r\n    203.0.113.10.in-addr.arpa.\r\n    ----------------------------------------\r\n    Record Name . . . . . : 203.0.113.10.in-addr.arpa.\r\n    Record Type . . . . . : 12\r\n    Time To Live  . . . . : 300606\r\n    Data Length . . . . . : 8\r\n    Section . . . . . . . : Answer\r\n    PTR Record  . . . . . : kubernetes.docker.internal\r\n\r\n\r\n    FIXTURE_HOST.mshome.net\r\n    ----------------------------------------\r\n    No records of type AAAA\r\n\r\n\r\n    Record Name . . . . . : FIXTURE_HOST.mshome.net\r\n    Record Type . . . . . : 1\r\n    Time To Live  . . . . : 300606\r\n    Data Length . . . . . : 4\r\n    Section . . . . . . . : Answer\r\n    A (Host) Record . . . : 203.0.113.10\r\n\r\n\r\n    203.0.113.10.in-addr.arpa.\r\n    ----------------------------------------\r\n    Record Name . . . . . : 203.0.113.10.in-addr.arpa.\r\n    Record Type . . . . . : 12\r\n    Time To Live  . . . . : 300606\r\n    Data Length . . . . . : 8\r\n    Section . . . . . . . : Answer\r\n    PTR Record  . . . . . : FIXTURE_HOST.mshome.net\r\n\r\n\r\n\r\n\r\nSTDERR:\r\n"
+                         },
+                         {
+                             "step_name":  "NETWORK_ROUTE_PRINT",
+                             "command":  "route print",
+                             "exit_code":  0,
+                             "allowed_exit_codes":  [
+                                                        0
+                                                    ],
+                             "within_allowed_exit_codes":  true,
+                             "text":  "COMMAND=route print\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n===========================================================================\r\nInterface List\r\n  9...90 09 df 0e 07 aa ......Microsoft Wi-Fi Direct Virtual Adapter\r\n  7...92 09 df 0e 07 a9 ......Microsoft Wi-Fi Direct Virtual Adapter #2\r\n  3...90 09 df 0e 07 a9 ......Intel(R) Wi-Fi 6E AX211 160MHz\r\n  5...90 09 df 0e 07 ad ......Bluetooth Device (Personal Area Network)\r\n  1...........................Software Loopback Interface 1\r\n===========================================================================\r\n\r\nIPv4 Route Table\r\n===========================================================================\r\nActive Routes:\r\nNetwork Destination        Netmask          Gateway       Interface  Metric\r\n          0.0.0.0          0.0.0.0     203.0.113.10     203.0.113.10     45\r\n      203.0.113.10    203.0.113.10         On-link      203.0.113.10    301\r\n     203.0.113.10  255.255.255.255         On-link      203.0.113.10    301\r\n    203.0.113.10  255.255.255.255         On-link      203.0.113.10    301\r\n        203.0.113.10        203.0.113.10         On-link         127.0.0.1    331\r\n        127.0.0.1  255.255.255.255         On-link         127.0.0.1    331\r\n  203.0.113.10  255.255.255.255         On-link         127.0.0.1    331\r\n        203.0.113.10        203.0.113.10         On-link         127.0.0.1    331\r\n        203.0.113.10        203.0.113.10         On-link      203.0.113.10    301\r\n  255.255.255.255  255.255.255.255         On-link         127.0.0.1    331\r\n  255.255.255.255  255.255.255.255         On-link      203.0.113.10    301\r\n===========================================================================\r\nPersistent Routes:\r\n  None\r\n\r\nIPv6 Route Table\r\n===========================================================================\r\nActive Routes:\r\n If Metric Network Destination      Gateway\r\n  1    331 ::1/128                  On-link\r\n  1    331 ff00::/8                 On-link\r\n===========================================================================\r\nPersistent Routes:\r\n  None\r\n\r\n\r\nSTDERR:\r\n"
+                         },
+                         {
+                             "step_name":  "NETWORK_ARP_A",
+                             "command":  "arp -a",
+                             "exit_code":  0,
+                             "allowed_exit_codes":  [
+                                                        0
+                                                    ],
+                             "within_allowed_exit_codes":  true,
+                             "text":  "COMMAND=arp -a\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n\r\nInterface: 203.0.113.10 --- 0x3\r\n  Internet Address      Physical Address      Type\r\n  203.0.113.10          AA-BB-CC-DD-EE-FF     dynamic   \r\n  203.0.113.10         AA-BB-CC-DD-EE-FF     static    \r\n  203.0.113.10            AA-BB-CC-DD-EE-FF     static    \r\n  203.0.113.10           AA-BB-CC-DD-EE-FF     static    \r\n  203.0.113.10           AA-BB-CC-DD-EE-FF     static    \r\n  203.0.113.10          AA-BB-CC-DD-EE-FF     static    \r\n  203.0.113.10       AA-BB-CC-DD-EE-FF     static    \r\n  255.255.255.255       AA-BB-CC-DD-EE-FF     static    \r\n\r\n\r\nSTDERR:\r\n"
+                         }
+                     ]
+}
+

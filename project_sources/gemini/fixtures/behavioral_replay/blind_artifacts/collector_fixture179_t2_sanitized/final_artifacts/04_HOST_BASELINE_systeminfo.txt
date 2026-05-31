@@ -1,0 +1,71 @@
+COMMAND=systeminfo
+EXIT_CODE=0
+
+STDOUT:
+
+Host Name:                     FIXTURE_HOST
+OS Name:                       Microsoft Windows 11 Pro for Workstations
+OS Version:                    10.0.26200 N/A Build 26200
+OS Manufacturer:               Microsoft Corporation
+OS Configuration:              Standalone Workstation
+OS Build Type:                 Multiprocessor Free
+Registered Owner:              FIXTURE_USER
+Registered Organization:       N/A
+Product ID:                    FIXTURE-PRODUCT-ID
+Original Install Date:         11/23/2024, 4:12:41 PM
+System Boot Time:              5/28/2026, 5:27:44 AM
+System Manufacturer:           FIXTURE_VENDOR
+System Model:                  FIXTURE_MODEL
+System Type:                   x64-based PC
+Processor(s):                  1 Processor(s) Installed.
+                               [01]: Intel64 Family 6 Model 186 Stepping 2 GenuineIntel ~2600 Mhz
+BIOS Version:                  FIXTURE_BIOS
+Windows Directory:             C:\WINDOWS
+System Directory:              C:\WINDOWS\system32
+Boot Device:                   \Device\HarddiskVolume1
+System Locale:                 en-us;English (United States)
+Input Locale:                  en-us;English (United States)
+Time Zone:                     (UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna
+Total Physical Memory:         16,003 MB
+Available Physical Memory:     5,306 MB
+Virtual Memory: Max Size:      19,587 MB
+Virtual Memory: Available:     3,216 MB
+Virtual Memory: In Use:        16,371 MB
+Page File Location(s):         C:\pagefile.sys
+Domain:                        WORKGROUP
+Logon Server:                  \\FIXTURE_HOST
+Hotfix(s):                     4 Hotfix(s) Installed.
+                               [01]: KB5092427
+                               [02]: KB5054156
+                               [03]: KB5089573
+                               [04]: KB5092734
+Network Card(s):               2 NIC(s) Installed.
+                               [01]: Intel(R) Wi-Fi 6E AX211 160MHz
+                                     Connection Name: Wi-Fi
+                                     DHCP Enabled:    Yes
+                                     DHCP Server:     203.0.113.10
+                                     IP address(es)
+                                     [01]: 203.0.113.10
+                               [02]: Bluetooth Device (Personal Area Network)
+                                     Connection Name: Bluetooth Network Connection
+                                     Status:          Media disconnected
+Virtualization-based security: Status: Running
+                               Required Security Properties:
+                               Available Security Properties:
+                                     Base Virtualization Support
+                                     Secure Boot
+                                     DMA Protection
+                                     Secure Memory Overwrite
+                                     UEFI Code Readonly
+                                     Mode Based Execution Control
+                                     APIC Virtualization
+                               Services Configured:
+                               Services Running:
+                               App Control for Business policy: Enforced
+                               App Control for Business user mode policy: Off
+                               Security Features Enabled:
+Hyper-V Requirements:          A hypervisor has been detected. Features required for Hyper-V will not be displayed.
+
+
+STDERR:
+

@@ -1,0 +1,69 @@
+
+
+AMEngineVersion                  : 0.0.0.0
+AMProductVersion                 : 4.18.25030.2
+AMRunningMode                    : Not running
+AMServiceEnabled                 : False
+AMServiceVersion                 : 0.0.0.0
+AntispywareEnabled               : False
+AntispywareSignatureAge          : 0
+AntispywareSignatureLastUpdated  : 
+AntispywareSignatureVersion      : 
+AntivirusEnabled                 : False
+AntivirusSignatureAge            : 65535
+AntivirusSignatureLastUpdated    : 
+AntivirusSignatureVersion        : 
+BehaviorMonitorEnabled           : False
+ComputerID                       : FIXTURE-COMPUTER-ID
+ComputerState                    : 0
+DefenderSignaturesOutOfDate      : False
+DeviceControlDefaultEnforcement  : Unknown
+DeviceControlPoliciesLastUpdated : 1/1/1601 1:00:00 AM
+DeviceControlState               : Unknown
+FullScanAge                      : 4294967295
+FullScanEndTime                  : 
+FullScanOverdue                  : False
+FullScanRequired                 : False
+FullScanSignatureVersion         : 
+FullScanStartTime                : 
+InitializationProgress           : ServiceStartedSuccessfully
+IoavProtectionEnabled            : False
+IsTamperProtected                : False
+IsVirtualMachine                 : False
+LastFullScanSource               : 0
+LastQuickScanSource              : 0
+NISEnabled                       : False
+NISEngineVersion                 : 0.0.0.0
+NISSignatureAge                  : 65535
+NISSignatureLastUpdated          : 
+NISSignatureVersion              : 
+OnAccessProtectionEnabled        : False
+ProductStatus                    : 1
+QuickScanAge                     : 4294967295
+QuickScanEndTime                 : 
+QuickScanOverdue                 : False
+QuickScanSignatureVersion        : 
+QuickScanStartTime               : 
+RealTimeProtectionEnabled        : False
+RealTimeScanDirection            : 0
+RebootRequired                   : False
+SmartAppControlExpiration        : 
+SmartAppControlState             : 
+TamperProtectionSource           : Signatures
+TDTCapable                       : N/A
+TDTMode                          : N/A
+TDTSiloType                      : N/A
+TDTStatus                        : N/A
+TDTTelemetry                     : N/A
+TroubleShootingDailyMaxQuota     : 
+TroubleShootingDailyQuotaLeft    : 
+TroubleShootingEndTime           : 
+TroubleShootingExpirationLeft    : 
+TroubleShootingMode              : 
+TroubleShootingModeSource        : 
+TroubleShootingQuotaResetTime    : 
+TroubleShootingStartTime         : 
+PSComputerName                   : 
+CimClass                         : ROOT/Microsoft/Windows/Defender:MSFT_MpComputerStatus
+CimInstanceProperties            : {AMEngineVersion, AMProductVersion, AMRunningMode, AMServiceEnabled...}
+CimSystemProperties              : Microsoft.Management.Infrastructure.CimSystemProperties

@@ -1,0 +1,13 @@
+COMMAND=date /t & time /t & hostname & ver
+EXIT_CODE=0
+
+STDOUT:
+Sun 05/31/2026 
+05:58 PM
+FIXTURE_HOST
+
+Microsoft Windows [Version 10.0.26200.8524]
+
+
+STDERR:
+

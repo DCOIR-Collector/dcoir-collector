@@ -1,0 +1,100 @@
+
+================================================================================
+RUN_SUMMARY
+================================================================================
+
+CollectorVersion=4.0.6
+Mode=Collect
+Tier=T2
+Hours=72
+Host=FIXTURE_HOST
+RunId=fixture179_t2_20260531_175810
+TimeLocal=2026-05-31T18:02:35.8581694+02:00
+TimeUTC=2026-05-31T16:02:35.8581694Z
+RunRoot=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810
+BaselineReport=
+MetadataReport=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\reports\DCOIR_METADATA_FIXTURE_HOST_fixture179_t2_20260531_175810.txt
+ExecutionContext=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\99_COLLECTION_METADATA_execution_context.txt
+SecurityAuditPolicy=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\99_COLLECTION_METADATA_security_audit_policy.txt
+AuditPolicyAccessStatus=OK
+SecurityFiltered=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\25_EVENT_TIMELINE_TEXT_security_filtered.txt
+SecurityHighSignalSummary=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\25A_EVENT_TIMELINE_TEXT_security_high_signal_summary.txt
+NetstatOwnerAwareStatus=OWNER_AWARE_OK
+NetstatPidOnlyPath=
+CollectBundle=
+UploadSummary=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\reports\DCOIR_UPLOAD_SUMMARY_FIXTURE_HOST_fixture179_t2_20260531_175810.txt
+AttachmentBudgetManifest=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\reports\DCOIR_ATTACHMENT_BUDGET_MANIFEST_FIXTURE_HOST_fixture179_t2_20260531_175810.json.txt
+DefaultGeminiUploadSetStatus=SAFE_DEFAULT_SET
+
+
+================================================================================
+TOOL_AVAILABILITY
+================================================================================
+
+
+Tool      Present Path                                                                                              
+----      ------- ----                                                                                              
+accesschk    True C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\accesschk64.exe
+autorunsc    True C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\autorunsc64.exe
+listdlls     True C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\listdlls64.exe 
+pipelist     True C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\pipelist64.exe 
+pslist       True C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\pslist64.exe   
+sigcheck     True C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\sigcheck64.exe 
+streams      True C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\streams64.exe  
+strings      True C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\strings64.exe  
+tcpvcon      True C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\tcpvcon64.exe  
+
+
+
+
+
+================================================================================
+NOTES
+================================================================================
+
+Cleanup removes the selected run folder and the package zip.
+Artifact retrieval is a separate get-file step.
+A new Collect run purges prior DCOIR runs before starting.
+Follow-on Enrich sessions do not purge the current run.
+For Gemini uploads in the current office environment, prefer the upload summary plus representative artifacts over the monolithic baseline report.
+
+Notes:
+Bounded parallel baseline workers executed with observed overlap across 6 worker pair(s).
+Registry key absent or not readable: HKLM\Software\Microsoft\Windows\CurrentVersion\Run
+No events were found for channel [Microsoft-Windows-TaskScheduler/Operational] in the selected window.
+
+
+================================================================================
+ERRORS
+================================================================================
+
+ERROR collecting WMI persistence class [FilterToConsumerBinding]: Invalid class 
+
+
+================================================================================
+RECOMMENDED_ENRICHMENT_ACTIONS
+================================================================================
+
+The following process review candidates were selected by baseline heuristics. Treat them as triage prompts for analyst validation, not proof of malicious activity.
+Process review candidate PID 5008 (powershell.exe) :: heuristic flags: living-off-the-land process
+Suggested next action if analyst review warrants deeper validation: powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'C:\Fixture\dcoir\stage\DCOIR_Collector.ps1' -Mode Enrich -RunId fixture179_t2_20260531_175810 -Action SigcheckPath -Path "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -OutRoot "C:\Fixture\dcoir\out"
+Suggested next action if analyst review warrants deeper validation: powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'C:\Fixture\dcoir\stage\DCOIR_Collector.ps1' -Mode Enrich -RunId fixture179_t2_20260531_175810 -Action StringsPath -Path "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -OutRoot "C:\Fixture\dcoir\out"
+Suggested next action if analyst review warrants file retrieval: powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'C:\Fixture\dcoir\stage\DCOIR_Collector.ps1' -Mode Enrich -RunId fixture179_t2_20260531_175810 -Action PullSuspiciousFile -Path "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -OutRoot "C:\Fixture\dcoir\out"
+Process review candidate PID 39680 (powershell.exe) :: heuristic flags: living-off-the-land process
+Suggested next action if analyst review warrants deeper validation: powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'C:\Fixture\dcoir\stage\DCOIR_Collector.ps1' -Mode Enrich -RunId fixture179_t2_20260531_175810 -Action SigcheckPath -Path "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -OutRoot "C:\Fixture\dcoir\out"
+Suggested next action if analyst review warrants deeper validation: powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'C:\Fixture\dcoir\stage\DCOIR_Collector.ps1' -Mode Enrich -RunId fixture179_t2_20260531_175810 -Action StringsPath -Path "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -OutRoot "C:\Fixture\dcoir\out"
+Suggested next action if analyst review warrants file retrieval: powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'C:\Fixture\dcoir\stage\DCOIR_Collector.ps1' -Mode Enrich -RunId fixture179_t2_20260531_175810 -Action PullSuspiciousFile -Path "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -OutRoot "C:\Fixture\dcoir\out"
+
+
+================================================================================
+WORKFLOW
+================================================================================
+
+1. Retrieve the collect bundle with get-file.
+2. For Gemini uploads, prefer the upload summary, metadata report, manifest, logs, and representative final_artifacts slices.
+3. Review the merged baseline locally when the full monolithic report is needed.
+4. Run one enrichment action at a time.
+5. Continue the same enrichment session or finalize it for ZIP retrieval.
+6. Keep the current run until Cleanup is explicitly run.
+
+

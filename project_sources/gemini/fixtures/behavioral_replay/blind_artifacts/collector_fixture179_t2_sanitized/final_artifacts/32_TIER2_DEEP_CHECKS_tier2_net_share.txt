@@ -1,0 +1,17 @@
+COMMAND=cmd.exe /c "net share"
+EXIT_CODE=0
+
+STDOUT:
+
+Share name   Resource                        Remark
+
+-------------------------------------------------------------------------------
+C$           C:\                             Default share                     
+IPC$                                         Remote IPC                        
+ADMIN$       C:\WINDOWS                      Remote Admin                      
+The command completed successfully.
+
+
+
+STDERR:
+

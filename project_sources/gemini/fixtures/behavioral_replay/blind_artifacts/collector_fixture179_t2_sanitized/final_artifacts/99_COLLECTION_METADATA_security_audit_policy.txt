@@ -1,0 +1,51 @@
+COMMAND=auditpol.exe /get /subcategory:Logon
+EXIT_CODE=0
+
+STDOUT:
+System audit policy
+Category/Subcategory                      Setting
+Logon/Logoff
+  Logon                                   Success and Failure
+
+
+STDERR:
+
+
+COMMAND=auditpol.exe /get /subcategory:Logoff
+EXIT_CODE=0
+
+STDOUT:
+System audit policy
+Category/Subcategory                      Setting
+Logon/Logoff
+  Logoff                                  Success
+
+
+STDERR:
+
+
+COMMAND=auditpol.exe /get "/subcategory:Special Logon"
+EXIT_CODE=0
+
+STDOUT:
+System audit policy
+Category/Subcategory                      Setting
+Logon/Logoff
+  Special Logon                           Success
+
+
+STDERR:
+
+
+COMMAND=auditpol.exe /get "/subcategory:Process Creation"
+EXIT_CODE=0
+
+STDOUT:
+System audit policy
+Category/Subcategory                      Setting
+Detailed Tracking
+  Process Creation                        No Auditing
+
+
+STDERR:
+

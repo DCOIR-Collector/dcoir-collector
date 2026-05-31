@@ -1,0 +1,8 @@
+EXECUTION_CONTEXT
+UserContext=FIXTURE_HOST\FIXTURE_USER
+IsElevated=True
+Host=FIXTURE_HOST
+ProcessId=28620
+PowerShellVersion=5.1.26100.8521
+CurrentDirectory=C:\Fixture\dcoir\stage
+DiagnosticContext=Elevated execution should allow owner-aware netstat capture and broader Security log visibility when audit policy supports it.

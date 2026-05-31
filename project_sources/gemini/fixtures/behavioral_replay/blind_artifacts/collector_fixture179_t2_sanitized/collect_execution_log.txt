@@ -1,0 +1,38 @@
+DCOIR Collect Execution Log
+RunId=fixture179_t2_20260531_175810
+[2026-05-31T15:58:13.9481054Z] OK SECURITY_AUDIT_POLICY_LOGON duration_ms=32 exit_code=0
+  COMMAND=auditpol.exe /get /subcategory:Logon
+[2026-05-31T15:58:13.9832942Z] OK SECURITY_AUDIT_POLICY_LOGOFF duration_ms=15 exit_code=0
+  COMMAND=auditpol.exe /get /subcategory:Logoff
+[2026-05-31T15:58:14.0021196Z] OK SECURITY_AUDIT_POLICY_SPECIAL_LOGON duration_ms=16 exit_code=0
+  COMMAND=auditpol.exe /get "/subcategory:Special Logon"
+[2026-05-31T15:58:14.0202753Z] OK SECURITY_AUDIT_POLICY_PROCESS_CREATION duration_ms=15 exit_code=0
+  COMMAND=auditpol.exe /get "/subcategory:Process Creation"
+[2026-05-31T15:59:28.9429408Z] OK SYSINTERNALS_PSLIST duration_ms=533 exit_code=0
+  COMMAND=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\pslist64.exe -accepteula -nobanner -t
+[2026-05-31T15:59:29.0080000Z] OK NETWORK_NETSTAT_OWNER_AWARE duration_ms=56 exit_code=0
+  COMMAND=cmd.exe /c "netstat -abno"
+[2026-05-31T16:00:26.8781315Z] OK SYSINTERNALS_TCPVCON duration_ms=55629 exit_code=0
+  COMMAND=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\tcpvcon64.exe -accepteula -nobanner
+[2026-05-31T16:00:26.9044887Z] OK SYSINTERNALS_PIPELIST duration_ms=22 exit_code=0
+  COMMAND=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\pipelist64.exe -accepteula -nobanner
+[2026-05-31T16:00:26.9404884Z] OK PERSISTENCE_SERVICES duration_ms=31 exit_code=0
+  COMMAND=cmd.exe /c "sc queryex type= service state= all"
+[2026-05-31T16:00:28.6944618Z] OK PERSISTENCE_SCHEDULED_TASKS duration_ms=1750 exit_code=0
+  COMMAND=cmd.exe /c "schtasks /query /fo LIST /v"
+[2026-05-31T16:00:28.7240900Z] OK PERSISTENCE_HKLM_RUN duration_ms=24 exit_code=1
+  COMMAND=cmd.exe /c "reg query \"HKLM\Software\Microsoft\Windows\CurrentVersion\Run\""
+[2026-05-31T16:02:18.2323811Z] OK SYSINTERNALS_AUTORUNSC duration_ms=109492 exit_code=0
+  COMMAND=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\autorunsc64.exe -accepteula -nobanner -a * -c -h -s *
+[2026-05-31T16:02:35.3788961Z] OK TIER2_REG_IFEO duration_ms=42 exit_code=0
+  COMMAND=reg.exe query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options" /s
+[2026-05-31T16:02:35.4831954Z] OK TIER2_REG_WINLOGON duration_ms=100 exit_code=0
+  COMMAND=reg.exe query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon" /s
+[2026-05-31T16:02:35.5271936Z] OK TIER2_REG_LSA duration_ms=41 exit_code=0
+  COMMAND=reg.exe query HKLM\SYSTEM\CurrentControlSet\Control\Lsa /s
+[2026-05-31T16:02:35.5944451Z] OK TIER2_NET_SHARE duration_ms=39 exit_code=0
+  COMMAND=cmd.exe /c "net share"
+[2026-05-31T16:02:35.6301914Z] OK TIER2_NET_SESSION duration_ms=32 exit_code=0
+  COMMAND=cmd.exe /c "net session"
+[2026-05-31T16:02:35.7490587Z] OK TIER2_FIREWALL_PROFILES duration_ms=115 exit_code=0
+  COMMAND=cmd.exe /c "netsh advfirewall show allprofiles"

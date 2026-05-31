@@ -1,0 +1,34 @@
+DCOIR_ANALYST_OVERVIEW
+CollectorVersion=4.0.6
+RunId=fixture179_t2_20260531_175810
+WorkflowPhase=CollectBaseline
+PrimaryReviewPosture=SmallerSurfaceFirst
+DoNotAssumeMonolithicBaselineUpload=true
+MergedBaselineReportEmitted=false
+DefaultGeminiUploadSetStatus=SAFE_DEFAULT_SET
+CollectTier=T2
+CollectorObservedErrorCount=1
+RunHealth=DEGRADED_OR_PARTIAL_REVIEW_REQUIRED
+
+WHAT_TO_REVIEW_FIRST
+1. Start with this overview, the upload summary, and the metadata report.
+2. Use the analyst follow-up queue and security high-signal summary as the first decisive triage surface.
+3. Use representative process, network, and defender artifacts before expanding into broader local review.
+4. This run recorded degraded or partial conditions. Review errors.log and the affected truth surfaces before treating the overview as complete.
+
+REVIEW_FIRST_PATHS
+UPLOAD_SUMMARY_PATH=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\reports\DCOIR_UPLOAD_SUMMARY_FIXTURE_HOST_fixture179_t2_20260531_175810.txt
+METADATA_REPORT_PATH=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\reports\DCOIR_METADATA_FIXTURE_HOST_fixture179_t2_20260531_175810.txt
+ATTACHMENT_BUDGET_MANIFEST_PATH=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\reports\DCOIR_ATTACHMENT_BUDGET_MANIFEST_FIXTURE_HOST_fixture179_t2_20260531_175810.json.txt
+COLLECTION_SCOPE_PATH=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\99_TARGETED_COLLECTION_collection_scope.txt
+ANALYST_FOLLOW_UP_QUEUE_PATH=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\35_ANALYST_FOLLOW_UP_QUEUE_analyst_follow_up_queue.txt
+SECURITY_HIGH_SIGNAL_SUMMARY_PATH=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\25A_EVENT_TIMELINE_TEXT_security_high_signal_summary.txt
+PROCESS_INVENTORY_PATH=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\08_PROCESS_EXECUTION_CONTEXT_process_inventory.txt
+STRUCTURED_NET_PATH=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\12_NETWORK_STATE_structured_net.txt
+DEFENDER_STATUS_PATH=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\23_SECURITY_POSTURE_AND_DEFENSIVE_STATE_defender_status.txt
+
+DEGRADED_REVIEW_NOTE
+This run emitted collector errors during collection. Use errors.log plus the specific affected artifacts as the truth surface for degraded lanes.
+
+NO_MERGED_BASELINE_REPORT
+No merged baseline report is emitted in this build. Use metadata plus representative artifacts for broader local review.

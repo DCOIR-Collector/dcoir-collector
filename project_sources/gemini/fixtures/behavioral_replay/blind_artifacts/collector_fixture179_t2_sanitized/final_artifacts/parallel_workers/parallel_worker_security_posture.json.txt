@@ -1,0 +1,21 @@
+{
+    "worker_name":  "security_posture",
+    "status":  "OK",
+    "start_time_utc":  "2026-05-31T15:58:11.6605201Z",
+    "end_time_utc":  "2026-05-31T15:58:11.8723787Z",
+    "duration_ms":  212,
+    "worker_pid":  38960,
+    "step_results":  [
+                         {
+                             "step_name":  "SECURITY_FIREWALL_PROFILES",
+                             "command":  "netsh advfirewall show allprofiles",
+                             "exit_code":  0,
+                             "allowed_exit_codes":  [
+                                                        0
+                                                    ],
+                             "within_allowed_exit_codes":  true,
+                             "text":  "COMMAND=netsh advfirewall show allprofiles\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n\r\nDomain Profile Settings: \r\n----------------------------------------------------------------------\r\nState                                 ON\r\nFirewall Policy                       BlockInbound,AllowOutbound\r\nLocalFirewallRules                    N/A (GPO-store only)\r\nLocalConSecRules                      N/A (GPO-store only)\r\nInboundUserNotification               Enable\r\nRemoteManagement                      Disable\r\nUnicastResponseToMulticast            Enable\r\n\r\nLogging:\r\nLogAllowedConnections                 Disable\r\nLogDroppedConnections                 Disable\r\nFileName                              %systemroot%\\system32\\LogFiles\\Firewall\\pfirewall.log\r\nMaxFileSize                           4096\r\n\r\n\r\nPrivate Profile Settings: \r\n----------------------------------------------------------------------\r\nState                                 ON\r\nFirewall Policy                       BlockInbound,AllowOutbound\r\nLocalFirewallRules                    N/A (GPO-store only)\r\nLocalConSecRules                      N/A (GPO-store only)\r\nInboundUserNotification               Enable\r\nRemoteManagement                      Disable\r\nUnicastResponseToMulticast            Enable\r\n\r\nLogging:\r\nLogAllowedConnections                 Disable\r\nLogDroppedConnections                 Disable\r\nFileName                              %systemroot%\\system32\\LogFiles\\Firewall\\pfirewall.log\r\nMaxFileSize                           4096\r\n\r\n\r\nPublic Profile Settings: \r\n----------------------------------------------------------------------\r\nState                                 ON\r\nFirewall Policy                       BlockInbound,AllowOutbound\r\nLocalFirewallRules                    N/A (GPO-store only)\r\nLocalConSecRules                      N/A (GPO-store only)\r\nInboundUserNotification               Enable\r\nRemoteManagement                      Disable\r\nUnicastResponseToMulticast            Enable\r\n\r\nLogging:\r\nLogAllowedConnections                 Disable\r\nLogDroppedConnections                 Disable\r\nFileName                              %systemroot%\\system32\\LogFiles\\Firewall\\pfirewall.log\r\nMaxFileSize                           4096\r\n\r\nOk.\r\n\r\n\r\n\r\nSTDERR:\r\n"
+                         }
+                     ]
+}
+

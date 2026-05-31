@@ -1,0 +1,59 @@
+COMMAND=ipconfig /all
+EXIT_CODE=0
+
+STDOUT:
+
+Windows IP Configuration
+
+   Host Name . . . . . . . . . . . . : FIXTURE_HOST
+   Primary Dns Suffix  . . . . . . . : 
+   Node Type . . . . . . . . . . . . : Hybrid
+   IP Routing Enabled. . . . . . . . : No
+   WINS Proxy Enabled. . . . . . . . : No
+
+Wireless LAN adapter Local Area Connection* 1:
+
+   Media State . . . . . . . . . . . : Media disconnected
+   Connection-specific DNS Suffix  . : 
+   Description . . . . . . . . . . . : Microsoft Wi-Fi Direct Virtual Adapter
+   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF
+   DHCP Enabled. . . . . . . . . . . : Yes
+   Autoconfiguration Enabled . . . . : Yes
+
+Wireless LAN adapter Local Area Connection* 2:
+
+   Media State . . . . . . . . . . . : Media disconnected
+   Connection-specific DNS Suffix  . : 
+   Description . . . . . . . . . . . : Microsoft Wi-Fi Direct Virtual Adapter #2
+   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF
+   DHCP Enabled. . . . . . . . . . . : No
+   Autoconfiguration Enabled . . . . : Yes
+
+Wireless LAN adapter Wi-Fi:
+
+   Connection-specific DNS Suffix  . : 
+   Description . . . . . . . . . . . : Intel(R) Wi-Fi 6E AX211 160MHz
+   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF
+   DHCP Enabled. . . . . . . . . . . : Yes
+   Autoconfiguration Enabled . . . . : Yes
+   IPv4 Address. . . . . . . . . . . : 203.0.113.10(Preferred) 
+   Subnet Mask . . . . . . . . . . . : 203.0.113.10
+   Lease Obtained. . . . . . . . . . : Sunday, May 31, 2026 5:46:21 PM
+   Lease Expires . . . . . . . . . . : Sunday, May 31, 2026 6:46:20 PM
+   Default Gateway . . . . . . . . . : 203.0.113.10
+   DHCP Server . . . . . . . . . . . : 203.0.113.10
+   DNS Servers . . . . . . . . . . . : 203.0.113.10
+   NetBIOS over Tcpip. . . . . . . . : Enabled
+
+Ethernet adapter Bluetooth Network Connection:
+
+   Media State . . . . . . . . . . . : Media disconnected
+   Connection-specific DNS Suffix  . : 
+   Description . . . . . . . . . . . : Bluetooth Device (Personal Area Network)
+   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF
+   DHCP Enabled. . . . . . . . . . . : Yes
+   Autoconfiguration Enabled . . . . : Yes
+
+
+STDERR:
+

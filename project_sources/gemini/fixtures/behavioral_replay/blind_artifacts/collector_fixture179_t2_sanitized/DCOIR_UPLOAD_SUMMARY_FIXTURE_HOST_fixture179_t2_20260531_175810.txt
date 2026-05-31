@@ -1,0 +1,26 @@
+CollectorVersion=4.0.6
+RunId=fixture179_t2_20260531_175810
+WorkflowPhase=CollectBaseline
+UploadModel=ChunkFirst
+DoNotAssumeMonolithicBaselineUpload=true
+HardPerFileKB=1000
+HardTotalKB=2000
+SafePerFileKB=900
+SafeTotalKB=1800
+DefaultSetStatus=SAFE_DEFAULT_SET
+RecommendedUploadTotalKB=186
+
+Recommended files for Gemini upload by default:
+- C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\reports\DCOIR_METADATA_FIXTURE_HOST_fixture179_t2_20260531_175810.txt [8 KB]
+- C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\01_COLLECTION_METADATA_collection_metadata.txt [1 KB]
+- C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\02_COLLECTION_NOTES_AND_LIMITATIONS_collection_notes_and_limitations.txt [1 KB]
+- C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\25A_EVENT_TIMELINE_TEXT_security_high_signal_summary.txt [4 KB]
+- C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\08_PROCESS_EXECUTION_CONTEXT_process_inventory.txt [151 KB]
+- C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\12_NETWORK_STATE_structured_net.txt [15 KB]
+- C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\23_SECURITY_POSTURE_AND_DEFENSIVE_STATE_defender_status.txt [3 KB]
+- C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\final_artifacts\35_ANALYST_FOLLOW_UP_QUEUE_analyst_follow_up_queue.txt [3 KB]
+
+Default guidance:
+- Prefer this upload summary, the metadata report, and the listed representative artifacts.
+- Do not assume the large merged baseline report is upload-safe in the office Gemini environment.
+- If this set must be trimmed further, keep metadata, follow-up queue, security high-signal summary, and one representative process/network artifact first.

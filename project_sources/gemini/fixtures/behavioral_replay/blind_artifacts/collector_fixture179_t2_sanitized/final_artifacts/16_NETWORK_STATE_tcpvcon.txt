@@ -1,0 +1,338 @@
+COMMAND=C:\Fixture\dcoir\out\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\tools\tcpvcon64.exe -accepteula -nobanner
+EXIT_CODE=0
+
+STDOUT:
+[TCP] FIXTURE_VENDOR_framework.exe
+	PID:	4996
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] FIXTURE_VENDOR_framework.exe
+	PID:	4996
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ArmourySocketServer.exe
+	PID:	31200
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ROGLiveService.exe
+	PID:	7644
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ArmouryCrate.Service.exe
+	PID:	28228
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] svchost.exe
+	PID:	15480
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] svchost.exe
+	PID:	15480
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] bdservicehost.exe
+	PID:	4324
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdservicehost.exe
+	PID:	4324
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdservicehost.exe
+	PID:	4332
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdservicehost.exe
+	PID:	4332
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdvpnservice.exe
+	PID:	6936
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdvpnservice.exe
+	PID:	6936
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdservicehost.exe
+	PID:	6952
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdservicehost.exe
+	PID:	6952
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] wsccommunicator.exe
+	PID:	12976
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] wsccommunicator.exe
+	PID:	12976
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ROGLiveService.exe
+	PID:	7644
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] WUDFHost.exe
+	PID:	2128
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] WUDFHost.exe
+	PID:	2128
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] WUDFHost.exe
+	PID:	2436
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] WUDFHost.exe
+	PID:	2436
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ipfsvc.exe
+	PID:	7268
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ipfsvc.exe
+	PID:	7268
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] AcPowerNotification.exe
+	PID:	41992
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ProductAgentService.exe
+	PID:	8812
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ProductAgentService.exe
+	PID:	8812
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ArmouryCrate.Service.exe
+	PID:	28228
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] [System Process]
+	PID:	0
+	State:	TIME_WAIT
+	Local:	FIXTURE_HOST
+	Remote:	zrh04s07-in-f10.1e100.net
+[TCP] msedge.exe
+	PID:	18144
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] [System Process]
+	PID:	0
+	State:	TIME_WAIT
+	Local:	FIXTURE_HOST
+	Remote:	bz-in-f138.1e100.net
+[TCP] bdagent.exe
+	PID:	25616
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdagent.exe
+	PID:	25616
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ProductAgentService.exe
+	PID:	8812
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] msedgewebview2.exe
+	PID:	33220
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] bdvpnservice.exe
+	PID:	6936
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] [System Process]
+	PID:	0
+	State:	TIME_WAIT
+	Local:	FIXTURE_HOST
+	Remote:	zrh04s07-in-f10.1e100.net
+[TCP] ArmourySocketServer.exe
+	PID:	31200
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] ArmouryCrate.UserSessionHelper.exe
+	PID:	6516
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] adb.exe
+	PID:	31416
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] adb.exe
+	PID:	31416
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] adb.exe
+	PID:	31416
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] adb.exe
+	PID:	31416
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] msedge.exe
+	PID:	18144
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	pnmuca-ag-in-f5.1e100.net
+[TCP] ArmouryCrate.UserSessionHelper.exe
+	PID:	6516
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] msedge.exe
+	PID:	18144
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	pnmuca-ag-in-f5.1e100.net
+[TCP] msedge.exe
+	PID:	18144
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] msedge.exe
+	PID:	18144
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	lcmuca-ag-in-f10.1e100.net
+[TCP] bdservicehost.exe
+	PID:	3416
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdservicehost.exe
+	PID:	3416
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] NVDisplay.Container.exe
+	PID:	4184
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] NVDisplay.Container.exe
+	PID:	4184
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdservicehost.exe
+	PID:	3416
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10.bc.googleusercontent.com
+[TCP] msedge.exe
+	PID:	18144
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	pnmuca-ag-in-f5.1e100.net
+[TCP] msedge.exe
+	PID:	18144
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] CrossDeviceService.exe
+	PID:	6036
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] msedge.exe
+	PID:	18144
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	lb-140-82-112-26-iad.github.com
+[TCP] AdobeCollabSync.exe
+	PID:	2972
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	ec2-46-137-154-72.eu-west-1.compute.amazonaws.com
+[TCP] bdservicehost.exe
+	PID:	3416
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10.bc.googleusercontent.com
+[TCP] AuraWallpaperService.exe
+	PID:	6920
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] msedge.exe
+	PID:	18144
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] [System Process]
+	PID:	0
+	State:	TIME_WAIT
+	Local:	FIXTURE_HOST
+	Remote:	203.0.113.10
+[TCP] nvcontainer.exe
+	PID:	26340
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] nvcontainer.exe
+	PID:	26340
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdservicehost.exe
+	PID:	3416
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+[TCP] bdservicehost.exe
+	PID:	3416
+	State:	ESTABLISHED
+	Local:	FIXTURE_HOST
+	Remote:	localhost
+
+
+STDERR:
+

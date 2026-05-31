@@ -1,0 +1,2849 @@
+
+
+ProcessId       : 0
+ParentProcessId : 0
+Name            : System Idle Process
+Owner           : 
+ExecutablePath  : 
+CreationTime    : 
+CommandLine     : 
+
+ProcessId       : 4
+ParentProcessId : 0
+Name            : System
+Owner           : 
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:45 AM
+CommandLine     : 
+
+ProcessId       : 284
+ParentProcessId : 4
+Name            : Secure System
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:42 AM
+CommandLine     : 
+
+ProcessId       : 328
+ParentProcessId : 4
+Name            : Registry
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:42 AM
+CommandLine     : 
+
+ProcessId       : 852
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceNetworkRestricted -p -s TimeBrokerSvc
+
+ProcessId       : 1344
+ParentProcessId : 4
+Name            : smss.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:45 AM
+CommandLine     : 
+
+ProcessId       : 1412
+ParentProcessId : 26244
+Name            : WindowsTerminal.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.24.11321.0_x64__8wekyb3d8bbwe\WindowsTerminal.exe
+CreationTime    : 5/30/2026 2:08:42 PM
+CommandLine     : "C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.24.11321.0_x64__8wekyb3d8bbwe\WindowsTerminal.exe" 
+
+ProcessId       : 1436
+ParentProcessId : 1908
+Name            : LsaIso.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : 
+
+ProcessId       : 1532
+ParentProcessId : 1908
+Name            : lsass.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : 
+
+ProcessId       : 1804
+ParentProcessId : 1576
+Name            : csrss.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:52 AM
+CommandLine     : 
+
+ProcessId       : 1908
+ParentProcessId : 1576
+Name            : wininit.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:54 AM
+CommandLine     : 
+
+ProcessId       : 1976
+ParentProcessId : 2024
+Name            : spoolsv.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\spoolsv.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\spoolsv.exe
+
+ProcessId       : 2024
+ParentProcessId : 1908
+Name            : services.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : 
+
+ProcessId       : 2096
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k DcomLaunch -p
+
+ProcessId       : 2124
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k UserProfileService -p -s ProfSvc
+
+ProcessId       : 2128
+ParentProcessId : 2024
+Name            : WUDFHost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\Windows\System32\WUDFHost.exe
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : "C:\Windows\System32\WUDFHost.exe" -HostGUID:{00000000-0000-0000-0000-000000000000} -IoEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -SystemEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -IoCancelEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 
+                  -NonStateChangingEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -LifetimeId:00000000-0000-0000-0000-000000000000 -DeviceGroupId: -HostArg:0
+
+ProcessId       : 2136
+ParentProcessId : 1908
+Name            : fontdrvhost.exe
+Owner           : Font Driver Host\UMFD-0
+ExecutablePath  : C:\WINDOWS\system32\fontdrvhost.exe
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : "fontdrvhost.exe"
+
+ProcessId       : 2256
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalSystemNetworkRestricted -p -s NcbService
+
+ProcessId       : 2260
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\NETWORK SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k RPCSS -p
+
+ProcessId       : 2316
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceHttp -p
+
+ProcessId       : 2320
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k DcomLaunch -p -s LSM
+
+ProcessId       : 2436
+ParentProcessId : 2024
+Name            : WUDFHost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\Windows\System32\WUDFHost.exe
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : "C:\Windows\System32\WUDFHost.exe" -HostGUID:{00000000-0000-0000-0000-000000000000} -IoEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -SystemEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -IoCancelEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 
+                  -NonStateChangingEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -LifetimeId:00000000-0000-0000-0000-000000000000 -DeviceGroupId: -HostArg:0
+
+ProcessId       : 2516
+ParentProcessId : 2924
+Name            : taskhostw.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\taskhostw.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : taskhostw.exe {00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 2524
+ParentProcessId : 2024
+Name            : WUDFHost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\Windows\System32\WUDFHost.exe
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : "C:\Windows\System32\WUDFHost.exe" -HostGUID:{00000000-0000-0000-0000-000000000000} -IoEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -SystemEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -IoCancelEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 
+                  -NonStateChangingEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -LifetimeId:00000000-0000-0000-0000-000000000000 -DeviceGroupId: -HostArg:0
+
+ProcessId       : 2576
+ParentProcessId : 2024
+Name            : WUDFCompanionHost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:55 AM
+CommandLine     : 
+
+ProcessId       : 2712
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceNoNetwork -p
+
+ProcessId       : 2724
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k appmodel -p -s StateRepository
+
+ProcessId       : 2736
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalService -p -s nsi
+
+ProcessId       : 2860
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:27 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=19 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=198766626440 --skip-read-main-dll --metrics-shmem-handle=4876,i,7852859669374490654,8652576098805645480,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709004115666625 --mojo-platform-channel-handle=7760 /prefetch:1
+
+ProcessId       : 2868
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\NETWORK SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k NetworkService -p
+
+ProcessId       : 2916
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceNetworkRestricted -p -s Dhcp
+
+ProcessId       : 2924
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -p -s Schedule
+
+ProcessId       : 2936
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\NETWORK SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k netprofm -p -s netprofm
+
+ProcessId       : 2972
+ParentProcessId : 33552
+Name            : AdobeCollabSync.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\Adobe\Acrobat DC\Acrobat\AdobeCollabSync.exe
+CreationTime    : 5/30/2026 12:46:05 PM
+CommandLine     : "C:\Program Files\Adobe\Acrobat DC\Acrobat\AdobeCollabSync.exe" --type=collab-renderer --proc=33552
+
+ProcessId       : 2992
+ParentProcessId : 2096
+Name            : AcrobatNotificationClient.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\WindowsApps\AcrobatNotificationClient_1.0.4.0_x86__e1rzdqpraam7r\AcrobatNotificationClient.exe
+CreationTime    : 5/30/2026 3:41:43 PM
+CommandLine     : "C:\Program Files\WindowsApps\AcrobatNotificationClient_1.0.4.0_x86__e1rzdqpraam7r\AcrobatNotificationClient.exe" -ServerName:App.AppXj7d2pwbjt1by8j1s5wak729xa46cf4br.mca
+
+ProcessId       : 3084
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:25 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=crashpad-handler "--user-data-dir=C:\Users\FIXTURE_USER\AppData\Local\Microsoft\Edge\User Data" /prefetch:4 --monitor-self-annotation=ptype=crashpad-handler "--database=C:\Users\FIXTURE_USER\AppData\Local\Microsoft\Edge\User Data\Crashpad" --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=148.0.7778.180 "--annotation=exe=C:\Program Files 
+                  (x86)\Microsoft\Edge\Application\msedge.exe" --annotation=plat=Win64 --annotation=prod=Edge --annotation=ver=148.0.3967.83 --initial-client-data=0x2ec,0x2f0,0x2f4,0x2e8,0x2fc,0x7ff83b995d58,0x7ff83b995d64,0x7ff83b995d70
+
+ProcessId       : 3100
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:42:40 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=48 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=198899205133 --skip-read-main-dll --metrics-shmem-handle=7880,i,15720357731169559863,8186036216678499644,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709031289880246 --mojo-platform-channel-handle=7272 /prefetch:1
+
+ProcessId       : 3168
+ParentProcessId : 2024
+Name            : IntelCpHDCPSvc.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\iigd_dch.inf_amd64_ffe7d9986336312b\IntelCpHDCPSvc.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\iigd_dch.inf_amd64_ffe7d9986336312b\IntelCpHDCPSvc.exe
+
+ProcessId       : 3176
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p -s DisplayEnhancementService
+
+ProcessId       : 3268
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -p -s UserManager
+
+ProcessId       : 3328
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceNetworkRestricted -p -s Wcmsvc
+
+ProcessId       : 3408
+ParentProcessId : 2024
+Name            : bdservicehost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender Security App\Safepay\bdservicehost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender Security App\Safepay\bdservicehost.exe" "settings/services/configs/bdsafepaysrv_config.json"
+
+ProcessId       : 3416
+ParentProcessId : 2024
+Name            : bdservicehost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender Security\bdservicehost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender Security\bdservicehost.exe" "settings/services/configs/bdshieldsrv_config.json"
+
+ProcessId       : 3536
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p -s DevQueryBroker
+
+ProcessId       : 3792
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k NetSvcs -p -s hns
+
+ProcessId       : 3824
+ParentProcessId : 5128
+Name            : ctfmon.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\ctfmon.exe
+CreationTime    : 5/30/2026 12:34:04 PM
+CommandLine     : /QuitInfo:0000000000000368;0000000000000360; 
+
+ProcessId       : 3836
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\NETWORK SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k NetworkService -p
+
+ProcessId       : 4172
+ParentProcessId : 5768
+Name            : wlanext.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\WLANExt.exe
+CreationTime    : 5/28/2026 5:28:05 AM
+CommandLine     : C:\WINDOWS\system32\WLANExt.exe 1684098978592
+
+ProcessId       : 4184
+ParentProcessId : 2024
+Name            : NVDisplay.Container.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\nvami.inf_amd64_dbe4d685876106ff\Display.NvContainer\NVDisplay.Container.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\nvami.inf_amd64_dbe4d685876106ff\Display.NvContainer\NVDisplay.Container.exe -s NVDisplay.ContainerLocalSystem -f C:\ProgramData\NVIDIA\NVDisplay.ContainerLocalSystem.log -l 3 -d C:\WINDOWS\System32\DriverStore\FileRepository\nvami.inf_amd64_dbe4d685876106ff\Display.NvContainer\plugins\LocalSystem -r -p 30000 -cfg NVDisplay.ContainerLocalSystem\LocalSystem /ert
+
+ProcessId       : 4324
+ParentProcessId : 2024
+Name            : bdservicehost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender Security\bdservicehost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender Security\bdservicehost.exe" "settings/services/configs/bdauxsrv_config.json"
+
+ProcessId       : 4332
+ParentProcessId : 2024
+Name            : bdservicehost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender Security App\bdservicehost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender Security App\bdservicehost.exe" "settings/services/configs/bdappsrv_config.json"
+
+ProcessId       : 4340
+ParentProcessId : 2024
+Name            : FIXTURE_VENDORCertService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\FIXTURE_VENDOR\FIXTURE_VENDORCertService\1.3.2\FIXTURE_VENDORCertService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\FIXTURE_VENDOR\FIXTURE_VENDORCertService\1.3.2\FIXTURE_VENDORCertService.exe"
+
+ProcessId       : 4348
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalServiceNetworkRestricted -p -s EventLog
+
+ProcessId       : 4576
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k netsvcs -p -s Themes
+
+ProcessId       : 4584
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceRedirectionGuard -p -s EventSystem
+
+ProcessId       : 4592
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p -s SysMain
+
+ProcessId       : 4716
+ParentProcessId : 4
+Name            : Memory Compression
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : 
+
+ProcessId       : 4764
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcsRedirectionGuard -p -s SENS
+
+ProcessId       : 4824
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalService -p -s FontCache
+
+ProcessId       : 4832
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalSystemNetworkRestricted -p -s AudioEndpointBuilder
+
+ProcessId       : 4996
+ParentProcessId : 31200
+Name            : FIXTURE_VENDOR_framework.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\FIXTURE_VENDOR\ArmouryDevice\FIXTURE_VENDOR_framework.exe
+CreationTime    : 5/30/2026 12:34:10 PM
+CommandLine     : "C:\Program Files (x86)\FIXTURE_VENDOR\ArmouryDevice\FIXTURE_VENDOR_framework.exe"
+
+ProcessId       : 5008
+ParentProcessId : 1412
+Name            : powershell.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+CreationTime    : 5/30/2026 2:08:42 PM
+CommandLine     : C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+
+ProcessId       : 5044
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalServiceNetworkRestricted -p
+
+ProcessId       : 5112
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:28:18 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalService -p -s fdPHost
+
+ProcessId       : 5128
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalSystemNetworkRestricted -p -s TextInputManagementService
+
+ProcessId       : 5148
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalService -p -s DispBrokerDesktopSvc
+
+ProcessId       : 5420
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalServiceNetworkRestricted -p -s DusmSvc
+
+ProcessId       : 5520
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceNoNetworkFirewall -p
+
+ProcessId       : 5532
+ParentProcessId : 13984
+Name            : SearchFilterHost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\SearchFilterHost.exe
+CreationTime    : 5/31/2026 8:46:42 AM
+CommandLine     : "C:\WINDOWS\System32\SearchFilterHost.exe" 904 3844 3848 892 {00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 5768
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p
+
+ProcessId       : 5788
+ParentProcessId : 2024
+Name            : WUDFHost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\Windows\System32\WUDFHost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Windows\System32\WUDFHost.exe" -HostGUID:{00000000-0000-0000-0000-000000000000} -IoEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -SystemEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -IoCancelEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 
+                  -NonStateChangingEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -LifetimeId:00000000-0000-0000-0000-000000000000 -DeviceGroupId:WudfDefaultDevicePool -HostArg:0
+
+ProcessId       : 5796
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:29:41 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceAndNoImpersonation -p -s upnphost
+
+ProcessId       : 5896
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p -s HvHost
+
+ProcessId       : 5904
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k netsvcs -p -s BDESVC
+
+ProcessId       : 5920
+ParentProcessId : 2024
+Name            : FIXTURE_VENDOROptimization.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDOROptimization\FIXTURE_VENDOROptimization.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDOROptimization\FIXTURE_VENDOROptimization.exe
+
+ProcessId       : 5928
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k netsvcs -p -s ShellHWDetection
+
+ProcessId       : 6036
+ParentProcessId : 2096
+Name            : CrossDeviceService.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\WindowsApps\MicrosoftWindows.CrossDevice_1.26032.83.0_x64__cw5n1h2txyewy\CrossDeviceService.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : "C:\Program Files\WindowsApps\MicrosoftWindows.CrossDevice_1.26032.83.0_x64__cw5n1h2txyewy\CrossDeviceService.exe" -RegisterProcessAsComServer -Embedding
+
+ProcessId       : 6132
+ParentProcessId : 2096
+Name            : RtkAudUService64.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\realtekservice.inf_amd64_55047240f73a1fa6\RtkAudUService64.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\realtekservice.inf_amd64_55047240f73a1fa6\RtkAudUService64.exe -Embedding
+
+ProcessId       : 6200
+ParentProcessId : 5920
+Name            : FIXTURE_VENDORWiFiSmartConnect.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDOROptimization\FIXTURE_VENDORWiFiSmartConnect.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDOROptimization\FIXTURE_VENDORWiFiSmartConnect.exe" /startRun
+
+ProcessId       : 6240
+ParentProcessId : 6516
+Name            : conhost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/30/2026 12:33:59 PM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 6268
+ParentProcessId : 6200
+Name            : conhost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 6272
+ParentProcessId : 2024
+Name            : GameSDK.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\FIXTURE_VENDOR\GameSDK Service\GameSDK.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\FIXTURE_VENDOR\GameSDK Service\GameSDK.exe"
+
+ProcessId       : 6320
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:30:38 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k netsvcs
+
+ProcessId       : 6356
+ParentProcessId : 2024
+Name            : GameInputRedistService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Microsoft GameInput\x64\GameInputRedistService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\Microsoft GameInput\x64\GameInputRedistService.exe"
+
+ProcessId       : 6420
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p -s hidserv
+
+ProcessId       : 6516
+ParentProcessId : 28228
+Name            : ArmouryCrate.UserSessionHelper.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\Armoury Crate Service\ArmouryCrate.UserSessionHelper.exe
+CreationTime    : 5/30/2026 12:33:59 PM
+CommandLine     : "C:\Program Files\FIXTURE_VENDOR\Armoury Crate Service\ArmouryCrate.UserSessionHelper.exe" 0000000000001538 00000000000017C0 0000000000001690 0000000000001790 0000000000001794 000000000000177C 0000000000001798
+
+ProcessId       : 6536
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalSystemNetworkRestricted -p
+
+ProcessId       : 6548
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceNetworkRestricted -p
+
+ProcessId       : 6600
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\NETWORK SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k NetworkService -p -s LanmanWorkstation
+
+ProcessId       : 6720
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k NetSvcs -p -s iphlpsvc
+
+ProcessId       : 6816
+ParentProcessId : 7464
+Name            : ipf_helper.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\ipf_cpu.inf_amd64_7218f3b363a821fe\ipf_helper.exe
+CreationTime    : 5/30/2026 12:33:59 PM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\ipf_cpu.inf_amd64_7218f3b363a821fe\ipf_helper.exe"
+
+ProcessId       : 6832
+ParentProcessId : 2024
+Name            : FIXTURE_VENDORAppService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORAppService\FIXTURE_VENDORAppService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORAppService\FIXTURE_VENDORAppService.exe
+
+ProcessId       : 6864
+ParentProcessId : 2024
+Name            : armsvc.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Common Files\Adobe\ARM\1.0\armsvc.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\Common Files\Adobe\ARM\1.0\armsvc.exe"
+
+ProcessId       : 6876
+ParentProcessId : 2024
+Name            : ArmouryCrateControlInterface.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\FIXTURE_VENDORACCI\ArmouryCrateControlInterface.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\FIXTURE_VENDORACCI\ArmouryCrateControlInterface.exe
+
+ProcessId       : 6888
+ParentProcessId : 2024
+Name            : FIXTURE_VENDORPTPService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORptpfilter.inf_amd64_ecb433fbe09a7c88\FIXTURE_VENDORPTPService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORptpfilter.inf_amd64_ecb433fbe09a7c88\FIXTURE_VENDORPTPService.exe
+
+ProcessId       : 6896
+ParentProcessId : 2024
+Name            : FIXTURE_VENDORSoftwareManager.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORSoftwareManager\FIXTURE_VENDORSoftwareManager.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORSoftwareManager\FIXTURE_VENDORSoftwareManager.exe
+
+ProcessId       : 6912
+ParentProcessId : 2024
+Name            : FIXTURE_VENDORSystemDiagnosis.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORSystemDiagnosis\FIXTURE_VENDORSystemDiagnosis.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORSystemDiagnosis\FIXTURE_VENDORSystemDiagnosis.exe
+
+ProcessId       : 6920
+ParentProcessId : 2024
+Name            : AuraWallpaperService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\Aura Wallpaper Service\AuraWallpaperService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\FIXTURE_VENDOR\Aura Wallpaper Service\AuraWallpaperService.exe"
+
+ProcessId       : 6928
+ParentProcessId : 2024
+Name            : FIXTURE_VENDORSystemAnalysis.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORSystemAnalysis\FIXTURE_VENDORSystemAnalysis.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORSystemAnalysis\FIXTURE_VENDORSystemAnalysis.exe
+
+ProcessId       : 6936
+ParentProcessId : 2024
+Name            : bdvpnservice.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender VPN\bdvpnservice.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender VPN\bdvpnservice.exe" "service"
+
+ProcessId       : 6952
+ParentProcessId : 2024
+Name            : bdservicehost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : 
+
+ProcessId       : 6960
+ParentProcessId : 7144
+Name            : AggregatorHost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\AggregatorHost.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : AggregatorHost.exe
+
+ProcessId       : 6980
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -s CertPropSvc
+
+ProcessId       : 6988
+ParentProcessId : 2024
+Name            : FIXTURE_VENDORSwitch.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORSwitch\FIXTURE_VENDORSwitch.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORSwitch\FIXTURE_VENDORSwitch.exe
+
+ProcessId       : 7016
+ParentProcessId : 2024
+Name            : OfficeClickToRun.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe" /service
+
+ProcessId       : 7024
+ParentProcessId : 2024
+Name            : AdobeUpdateService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\ElevationManager\AdobeUpdateService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\ElevationManager\AdobeUpdateService.exe"
+
+ProcessId       : 7040
+ParentProcessId : 2024
+Name            : GlideXNearService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\GlideX\GlideXNear\GlideXNearService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\FIXTURE_VENDOR\GlideX\GlideXNear\GlideXNearService.exe"
+
+ProcessId       : 7048
+ParentProcessId : 2024
+Name            : GlideXRemoteService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\GlideX\GlideXRemote\GlideXRemoteService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\FIXTURE_VENDOR\GlideX\GlideXRemote\GlideXRemoteService.exe"
+
+ProcessId       : 7056
+ParentProcessId : 2024
+Name            : HapticService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Interhaptics\HapticService\HapticService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\Interhaptics\HapticService\HapticService.exe"
+
+ProcessId       : 7068
+ParentProcessId : 2024
+Name            : GlideXServiceExt.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\GlideX\GlideXServiceExt.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\FIXTURE_VENDOR\GlideX\GlideXServiceExt.exe"
+
+ProcessId       : 7076
+ParentProcessId : 2024
+Name            : CortexLauncherService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer\Razer Cortex\CortexLauncherService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\Razer\Razer Cortex\CortexLauncherService.exe"
+
+ProcessId       : 7088
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:57 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k netsvcs -p -s SharedAccess
+
+ProcessId       : 7092
+ParentProcessId : 2024
+Name            : OneApp.IGCC.WinService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\igcc_dch.inf_amd64_a687edda40db3316\OneApp.IGCC.WinService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\igcc_dch.inf_amd64_a687edda40db3316\OneApp.IGCC.WinService.exe"
+
+ProcessId       : 7100
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -p -s IKEEXT
+
+ProcessId       : 7108
+ParentProcessId : 2024
+Name            : GlideXService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\GlideX\GlideXService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\FIXTURE_VENDOR\GlideX\GlideXService.exe"
+
+ProcessId       : 7132
+ParentProcessId : 2024
+Name            : DAX3API.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\dax3_swc_aposvc.inf_amd64_8e54c1bc7d581ad1\DAX3API.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\dax3_swc_aposvc.inf_amd64_8e54c1bc7d581ad1\DAX3API.exe
+
+ProcessId       : 7144
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k utcsvc -p
+
+ProcessId       : 7152
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p -s DeviceAssociationService
+
+ProcessId       : 7156
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p -s NgcSvc
+
+ProcessId       : 7196
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalServiceNoNetwork -p -s DPS
+
+ProcessId       : 7248
+ParentProcessId : 2024
+Name            : IntelAudioService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\intcoed.inf_amd64_6f0a892deb241071\AS\IAS\IntelAudioService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\intcoed.inf_amd64_6f0a892deb241071\\AS\\IAS\\IntelAudioService.exe
+
+ProcessId       : 7268
+ParentProcessId : 2024
+Name            : ipfsvc.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\dtt_sw.inf_amd64_d6f52e3fdecf287d\ipfsvc.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\dtt_sw.inf_amd64_d6f52e3fdecf287d\ipfsvc.exe"
+
+ProcessId       : 7284
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:29:40 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -p -s Appinfo
+
+ProcessId       : 7304
+ParentProcessId : 2024
+Name            : nvcontainer.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\NVIDIA Corporation\NvContainer\nvcontainer.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\NVIDIA Corporation\NvContainer\nvcontainer.exe" -s NvContainerLocalSystem -a -f "C:\ProgramData\NVIDIA Corporation\NVIDIA app\NvContainer\NvContainerLocalSystem.log" -l 3 -d "C:\Program Files\NVIDIA Corporation\NvContainer\plugins\LocalSystem" -r -p 30000  -ert
+
+ProcessId       : 7320
+ParentProcessId : 6548
+Name            : NgcIso.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : 
+
+ProcessId       : 7368
+ParentProcessId : 2024
+Name            : logioptionsplus_updater.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\LogiOptionsPlus\logioptionsplus_updater.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\LogiOptionsPlus\logioptionsplus_updater.exe" --run-as-service
+
+ProcessId       : 7424
+ParentProcessId : 21660
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:34:03 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --noerrdialogs --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; Cortana 1.18.9.23723; 203.0.113.10.26200.8524) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.26200 IsWebView2/True (WebView2Version 148.0.3967.83)" 
+                  --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\LocalState\EBWebView" --webview-exe-name=SearchHost.exe --webview-exe-version=2604.28014.500.0 --embedded-browser-webview=1 --always-read-main-dll --metrics-shmem-handle=2264,i,8370535244104408862,4834322755760113264,524288 --field-trial-handle=2060,i,17947549696185473114,6742738100504886339,262144 --enable-features=msEdgeFluentOverlayScrollbar 
+                  --disable-features=msSmartScreenProtection --variations-seed-version --pseudonymization-salt-handle=2064,i,9783652518168249982,13270529815344630578,4 --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=2332 /prefetch:11 /pfhostedapp:3f15cee1e3ce18f16f14611f330796b98aaf69d5
+
+ProcessId       : 7464
+ParentProcessId : 2024
+Name            : ipf_uf.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\ipf_cpu.inf_amd64_7218f3b363a821fe\ipf_uf.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\ipf_cpu.inf_amd64_7218f3b363a821fe\ipf_uf.exe"
+
+ProcessId       : 7480
+ParentProcessId : 2024
+Name            : WUDFCompanionHost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : 
+
+ProcessId       : 7504
+ParentProcessId : 2024
+Name            : logi_lamparray_service.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\logi_lamparray_usb.inf_amd64_cdf3ca3c77d5f267\logi_lamparray_service.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\logi_lamparray_usb.inf_amd64_cdf3ca3c77d5f267\logi_lamparray_service.exe
+
+ProcessId       : 7512
+ParentProcessId : 2096
+Name            : AdobeNotificationClient.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\Common Files\Adobe\Adobe OS Extension\AdobeNotificationClient.exe
+CreationTime    : 5/30/2026 12:37:43 PM
+CommandLine     : "C:\Program Files\Common Files\Adobe\Adobe OS Extension\AdobeNotificationClient.exe" -ServerName:CreativeCloud.AppXkc26ec7ewq1x9dww5fbpte7xrjdypftp.mca
+
+ProcessId       : 7580
+ParentProcessId : 2024
+Name            : RzSDKService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzSDKService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\Razer Chroma SDK\bin\RzSDKService.exe"
+
+ProcessId       : 7588
+ParentProcessId : 2024
+Name            : RzDiagnosticService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzDiagnosticService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\Razer Chroma SDK\bin\RzDiagnosticService.exe"
+
+ProcessId       : 7600
+ParentProcessId : 2024
+Name            : RzSDKServer.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzSDKServer.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\Razer Chroma SDK\bin\RzSDKServer.exe"
+
+ProcessId       : 7608
+ParentProcessId : 2024
+Name            : GameManagerService3.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer\Razer Services\GMS3\GameManagerService3.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\Razer\Razer Services\GMS3\GameManagerService3.exe"
+
+ProcessId       : 7644
+ParentProcessId : 2024
+Name            : ROGLiveService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\ROG Live Service\ROGLiveService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\FIXTURE_VENDOR\ROG Live Service\ROGLiveService.exe"
+
+ProcessId       : 7652
+ParentProcessId : 6356
+Name            : GameInputRedistService.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\Microsoft GameInput\x64\GameInputRedistService.exe
+CreationTime    : 5/30/2026 12:33:59 PM
+CommandLine     : "C:\Program Files\Microsoft GameInput\x64\GameInputRedistService.exe" /session=\\.\pipe\GameInputServiceSession-002fb19cc85ad545-00000003
+
+ProcessId       : 7700
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -p -s LanmanServer
+
+ProcessId       : 7708
+ParentProcessId : 21660
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:34:03 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=service --noerrdialogs --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; Cortana 1.18.9.23723; 203.0.113.10.26200.8524) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.26200 IsWebView2/True (WebView2Version 148.0.3967.83)" 
+                  --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\LocalState\EBWebView" --webview-exe-name=SearchHost.exe --webview-exe-version=2604.28014.500.0 --embedded-browser-webview=1 --always-read-main-dll --metrics-shmem-handle=2588,i,12997876251262251213,7663474206082827419,524288 --field-trial-handle=2060,i,17947549696185473114,6742738100504886339,262144 --enable-features=msEdgeFluentOverlayScrollbar 
+                  --disable-features=msSmartScreenProtection --variations-seed-version --pseudonymization-salt-handle=2064,i,9783652518168249982,13270529815344630578,4 --trace-process-track-uuid=3190708990060038890 --mojo-platform-channel-handle=2612 /prefetch:13 /pfhostedapp:3f15cee1e3ce18f16f14611f330796b98aaf69d5
+
+ProcessId       : 7792
+ParentProcessId : 2024
+Name            : jhi_service.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\dal.inf_amd64_b5484efd38adbe8d\jhi_service.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\dal.inf_amd64_b5484efd38adbe8d\jhi_service.exe
+
+ProcessId       : 7804
+ParentProcessId : 2024
+Name            : RazerCentralService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer\Razer Services\Razer Central\RazerCentralService.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files (x86)\Razer\Razer Services\Razer Central\RazerCentralService.exe"
+
+ProcessId       : 7824
+ParentProcessId : 2024
+Name            : sqlwriter.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Microsoft SQL Server\90\Shared\sqlwriter.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\Program Files\Microsoft SQL Server\90\Shared\sqlwriter.exe"
+
+ProcessId       : 7836
+ParentProcessId : 2024
+Name            : RtkAudUService64.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\realtekservice.inf_amd64_55047240f73a1fa6\RtkAudUService64.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\realtekservice.inf_amd64_55047240f73a1fa6\RtkAudUService64.exe"
+
+ProcessId       : 7976
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k imgsvc
+
+ProcessId       : 8136
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k NetSvcs -s nvagent
+
+ProcessId       : 8148
+ParentProcessId : 2024
+Name            : WUDFCompanionHost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : 
+
+ProcessId       : 8248
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:31:07 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k WuqiSvcGroup -p -s wuqisvc
+
+ProcessId       : 8544
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:41:25 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=utility --utility-sub-type=edge_search_indexer.mojom.SearchIndexerInterfaceBroker --lang=en-US --service-sandbox-type=search_indexer --message-loop-type-ui --video-capture-use-gpu-memory-buffer --skip-read-main-dll --metrics-shmem-handle=740,i,218923436080628617,16868490867603779840,524288 --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version 
+                  --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709024730587303 --mojo-platform-channel-handle=9276 /prefetch:14
+
+ProcessId       : 8784
+ParentProcessId : 13984
+Name            : SearchFilterHost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\SearchFilterHost.exe
+CreationTime    : 5/31/2026 12:27:50 PM
+CommandLine     : "C:\WINDOWS\System32\SearchFilterHost.exe" 904 2224 2212 892 {00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 8812
+ParentProcessId : 2024
+Name            : ProductAgentService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Bitdefender Agent\ProductAgentService.exe
+CreationTime    : 5/28/2026 3:50:22 PM
+CommandLine     : "C:\Program Files\Bitdefender Agent\ProductAgentService.exe"
+
+ProcessId       : 9004
+ParentProcessId : 2024
+Name            : SecurityHealthService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:28:57 PM
+CommandLine     : 
+
+ProcessId       : 9080
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 9:19:40 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=231 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=229919144939 --skip-read-main-dll --metrics-shmem-handle=10612,i,18229239785759310246,9893226956391055308,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709202768538613 --mojo-platform-channel-handle=10872 /prefetch:1
+
+ProcessId       : 9184
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k UnistackSvcGroup -s WpnUserService
+
+ProcessId       : 9308
+ParentProcessId : 7580
+Name            : RzAppManager
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzAppManager
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : -svc "RzAppManager" -f "C:\Program Files (x86)\Razer Chroma SDK\bin\RzAppManager.dll"
+
+ProcessId       : 9352
+ParentProcessId : 7580
+Name            : RzBTLEManager
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzBTLEManager
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : -svc "RzBTLEManager" -f "C:\Program Files (x86)\Razer Chroma SDK\bin\RzBTLEManager.dll"
+
+ProcessId       : 9368
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -p -s Winmgmt
+
+ProcessId       : 9376
+ParentProcessId : 2096
+Name            : dllhost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\DllHost.exe
+CreationTime    : 5/31/2026 5:54:52 PM
+CommandLine     : "C:\WINDOWS\system32\DllHost.exe" /Processid:{00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 9388
+ParentProcessId : 7580
+Name            : RzChromaConnectManager
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzChromaConnectManager
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : -svc "RzChromaConnectManager" -f "C:\Program Files (x86)\Razer Chroma SDK\bin\RzChromaConnectManager.dll"
+
+ProcessId       : 9440
+ParentProcessId : 7580
+Name            : RzChromaConnectServer
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzChromaConnectServer
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : -svc "RzChromaConnectServer" -f "C:\Program Files (x86)\Razer Chroma SDK\bin\RzChromaConnectServer.dll"
+
+ProcessId       : 9488
+ParentProcessId : 7580
+Name            : RzDeviceManager
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzDeviceManager
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : -svc "RzDeviceManager" -f "C:\Program Files (x86)\Razer Chroma SDK\bin\RzDeviceManager.dll"
+
+ProcessId       : 9536
+ParentProcessId : 7580
+Name            : RzDeviceManagerEx
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzDeviceManagerEx
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : -svc "RzDeviceManagerEx" -f "C:\Program Files (x86)\Razer Chroma SDK\bin\RzDeviceManagerEx.dll"
+
+ProcessId       : 9612
+ParentProcessId : 7580
+Name            : RzIoTDeviceManager
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzIoTDeviceManager
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : -svc "RzIoTDeviceManager" -f "C:\Program Files (x86)\Razer Chroma SDK\bin\RzIoTDeviceManager.dll"
+
+ProcessId       : 9716
+ParentProcessId : 7580
+Name            : RzSmartlightingDeviceManager
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzSmartlightingDeviceManager
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : -svc "RzSmartlightingDeviceManager" -f "C:\Program Files (x86)\Razer Chroma SDK\bin\RzSmartlightingDeviceManager.dll"
+
+ProcessId       : 9724
+ParentProcessId : 9352
+Name            : conhost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 9748
+ParentProcessId : 7580
+Name            : RzWDLDeviceManager
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzWDLDeviceManager
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : -svc "RzWDLDeviceManager" -f "C:\Program Files (x86)\Razer Chroma SDK\bin\RzWDLDeviceManager.dll"
+
+ProcessId       : 9816
+ParentProcessId : 9440
+Name            : conhost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 9896
+ParentProcessId : 9308
+Name            : conhost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 10052
+ParentProcessId : 9388
+Name            : conhost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 10076
+ParentProcessId : 9488
+Name            : conhost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 10084
+ParentProcessId : 9536
+Name            : conhost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 10156
+ParentProcessId : 31908
+Name            : LogiAiPromptBuilder.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\LogiOptionsPlus\logi_ai_prompt_builder\LogiAiPromptBuilder.exe
+CreationTime    : 5/31/2026 8:46:46 AM
+CommandLine     : "C:\Program Files\LogiOptionsPlus\logi_ai_prompt_builder\LogiAiPromptBuilder.exe" 
+
+ProcessId       : 10184
+ParentProcessId : 9716
+Name            : conhost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 10196
+ParentProcessId : 9748
+Name            : conhost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 10208
+ParentProcessId : 9612
+Name            : conhost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/28/2026 5:27:56 AM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 10252
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p -s webthreatdefusersvc
+
+ProcessId       : 10352
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/31/2026 5:39:24 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --instant-process --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=944 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=303101128114 --skip-read-main-dll --metrics-shmem-handle=4564,i,7921363063999605958,3038643750274728605,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709870879376950 --mojo-platform-channel-handle=7040 /prefetch:1
+
+ProcessId       : 10696
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:57 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalService -p -s WdiServiceHost
+
+ProcessId       : 11340
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:28:11 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k netsvcs -p -s BITS
+
+ProcessId       : 11376
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:25 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=service --startup-read-main-dll --metrics-shmem-handle=2972,i,6190390315620670192,395118462864331776,524288 --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 
+                  --trace-process-track-uuid=3190708990060038890 --mojo-platform-channel-handle=2992 /prefetch:13
+
+ProcessId       : 11784
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:57 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalServiceNetworkRestricted -s RmSvc
+
+ProcessId       : 11796
+ParentProcessId : 2096
+Name            : WmiPrvSE.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\wbem\wmiprvse.exe
+CreationTime    : 5/28/2026 5:27:57 AM
+CommandLine     : C:\WINDOWS\system32\wbem\wmiprvse.exe
+
+ProcessId       : 11964
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:29:40 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalService -p -s CDPSvc
+
+ProcessId       : 12976
+ParentProcessId : 6952
+Name            : wsccommunicator.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:27:57 AM
+CommandLine     : 
+
+ProcessId       : 13608
+ParentProcessId : 2024
+Name            : Intel_PIE_Service.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\piecomponent.inf_amd64_69ce535827d9822a\Intel_PIE_Service.exe
+CreationTime    : 5/28/2026 5:28:05 AM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\piecomponent.inf_amd64_69ce535827d9822a\Intel_PIE_Service.exe"
+
+ProcessId       : 13944
+ParentProcessId : 21660
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:34:03 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --type=gpu-process --noerrdialogs --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; Cortana 1.18.9.23723; 203.0.113.10.26200.8524) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.26200 IsWebView2/True (WebView2Version 148.0.3967.83)" 
+                  --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\LocalState\EBWebView" --webview-exe-name=SearchHost.exe --webview-exe-version=2604.28014.500.0 --embedded-browser-webview=1 --gpu-preferences=SAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAAQAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --always-read-main-dll --metrics-shmem-handle=1940,i,11843829566520279073,8316653513882528150,262144 
+                  --field-trial-handle=2060,i,17947549696185473114,6742738100504886339,262144 --enable-features=msEdgeFluentOverlayScrollbar --disable-features=msSmartScreenProtection --variations-seed-version --pseudonymization-salt-handle=2064,i,9783652518168249982,13270529815344630578,4 --trace-process-track-uuid=3190708988185955192 --mojo-platform-channel-handle=2052 /prefetch:2 /pfhostedapp:3f15cee1e3ce18f16f14611f330796b98aaf69d5
+
+ProcessId       : 13984
+ParentProcessId : 2024
+Name            : SearchIndexer.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\SearchIndexer.exe
+CreationTime    : 5/28/2026 5:28:00 AM
+CommandLine     : C:\WINDOWS\system32\SearchIndexer.exe /Embedding
+
+ProcessId       : 14224
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/30/2026 12:34:04 PM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalService -p -s NPSMSvc
+
+ProcessId       : 14312
+ParentProcessId : 2024
+Name            : gamingservices.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\WindowsApps\Microsoft.GamingServices_36.113.14003.0_x64__8wekyb3d8bbwe\GamingServices.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : "C:\Program Files\WindowsApps\Microsoft.GamingServices_36.113.14003.0_x64__8wekyb3d8bbwe\GamingServices.exe"
+
+ProcessId       : 14316
+ParentProcessId : 2024
+Name            : gamingservicesnet.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\Program Files\WindowsApps\Microsoft.GamingServices_36.113.14003.0_x64__8wekyb3d8bbwe\GamingServicesNet.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : "C:\Program Files\WindowsApps\Microsoft.GamingServices_36.113.14003.0_x64__8wekyb3d8bbwe\GamingServicesNet.exe"
+
+ProcessId       : 14592
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : 
+CreationTime    : 5/28/2026 5:30:01 AM
+CommandLine     : 
+
+ProcessId       : 14668
+ParentProcessId : 4324
+Name            : bdntwrk.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender Security\bdntwrk.exe
+CreationTime    : 5/28/2026 5:27:58 AM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender Security\bdntwrk.exe" --action=run-server --rwppid
+
+ProcessId       : 15072
+ParentProcessId : 2096
+Name            : unsecapp.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\wbem\unsecapp.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : C:\WINDOWS\system32\wbem\unsecapp.exe -Embedding
+
+ProcessId       : 15100
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k osprivacy -p -s camsvc
+
+ProcessId       : 15108
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\NETWORK SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k NetworkService -s TermService
+
+ProcessId       : 15432
+ParentProcessId : 2024
+Name            : WMIRegistrationService.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\mewmiprov.inf_amd64_d51901c26227fb29\WMIRegistrationService.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : C:\WINDOWS\System32\DriverStore\FileRepository\mewmiprov.inf_amd64_d51901c26227fb29\WMIRegistrationService.exe
+
+ProcessId       : 15440
+ParentProcessId : 2024
+Name            : wslservice.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\WSL\wslservice.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : "C:\Program Files\WSL\wslservice.exe"
+
+ProcessId       : 15448
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k WSAIFabricSvcGroup -p -s WSAIFabricSvc
+
+ProcessId       : 15464
+ParentProcessId : 2024
+Name            : updatesrv.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender Security\updatesrv.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender Security\updatesrv.exe" /service
+
+ProcessId       : 15472
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalSystemNetworkRestricted -p -s TrkWks
+
+ProcessId       : 15480
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:27:59 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -p -s WpnService
+
+ProcessId       : 15492
+ParentProcessId : 5920
+Name            : FIXTURE_VENDOROptimizationStartupTask.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDOROptimization\FIXTURE_VENDOROptimizationStartupTask.exe
+CreationTime    : 5/30/2026 12:33:59 PM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDOROptimization\FIXTURE_VENDOROptimizationStartupTask.exe"
+
+ProcessId       : 16612
+ParentProcessId : 7152
+Name            : dasHost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\dashost.exe
+CreationTime    : 5/28/2026 5:28:06 AM
+CommandLine     : dashost.exe {cc05dfce-3f00-4c3e-b1ae9a9723412b41}
+
+ProcessId       : 16920
+ParentProcessId : 2024
+Name            : GameInputSvc.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\GameInputSvc.exe
+CreationTime    : 5/28/2026 5:28:12 AM
+CommandLine     : C:\WINDOWS\System32\GameInputSvc.exe
+
+ProcessId       : 16924
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:30:00 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -p -s UsoSvc
+
+ProcessId       : 16944
+ParentProcessId : 37036
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe
+CreationTime    : 5/31/2026 8:46:47 AM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe" --type=gpu-process --noerrdialogs --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\flutter_webview_windows\LogiAiPromptBuilder\EBWebView" --webview-exe-name=LogiAiPromptBuilder.exe --webview-exe-version=1.9.0+710605 --embedded-browser-webview=1 --gpu-preferences=SAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAAQAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== 
+                  --startup-read-main-dll --metrics-shmem-handle=1796,i,17392060732872106275,5020680542352401975,262144 --field-trial-handle=1916,i,13759726038235733447,15903476341856651558,262144 --variations-seed-version --pseudonymization-salt-handle=1928,i,15365129945403731533,5785239958766704066,4 --trace-process-track-uuid=3190708988185955192 --mojo-platform-channel-handle=1900 /prefetch:2 /pfhostedapp:fcff8b1a48bb4dfcfad6abc15b9596c8683f5327
+
+ProcessId       : 17196
+ParentProcessId : 2096
+Name            : unsecapp.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\wbem\unsecapp.exe
+CreationTime    : 5/31/2026 8:46:46 AM
+CommandLine     : C:\WINDOWS\system32\wbem\unsecapp.exe -Embedding
+
+ProcessId       : 17508
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:28:07 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceRedirectionGuard -p -s BthAvctpSvc
+
+ProcessId       : 17512
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:28:07 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalService -p -s bthserv
+
+ProcessId       : 17524
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:28:07 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceNetworkRestricted -s BTAGService
+
+ProcessId       : 17840
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:28:07 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceAndNoImpersonation -p -s SSDPSRV
+
+ProcessId       : 17872
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:28:07 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k DcomLaunch -p -s DeviceInstall
+
+ProcessId       : 17968
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:28:08 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalSystemNetworkRestricted -p -s UmRdpService
+
+ProcessId       : 17984
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:30:37 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalSystemNetworkRestricted -p -s Netman
+
+ProcessId       : 18136
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:28:07 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k netsvcs -p
+
+ProcessId       : 18144
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:25 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --startup-read-main-dll --metrics-shmem-handle=2640,i,3151866257410163081,7248379406074421077,524288 --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 
+                  --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=2648 /prefetch:11
+
+ProcessId       : 18484
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:28:08 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k netsvcs -p -s SessionEnv
+
+ProcessId       : 18680
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:28:08 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalService -p -s PhoneSvc
+
+ProcessId       : 18688
+ParentProcessId : 2024
+Name            : WUDFHost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\Windows\System32\WUDFHost.exe
+CreationTime    : 5/28/2026 5:28:08 AM
+CommandLine     : "C:\Windows\System32\WUDFHost.exe" -HostGUID:{00000000-0000-0000-0000-000000000000} -IoEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -SystemEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -IoCancelEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 
+                  -NonStateChangingEventPortName:\UMDFCommunicationPorts\WUDF\HostProcess-00000000-0000-0000-0000-000000000000 -LifetimeId:00000000-0000-0000-0000-000000000000 -DeviceGroupId:WudfDefaultDevicePoolPriorityHigh -HostArg:0
+
+ProcessId       : 18836
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:28:10 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p -s PcaSvc
+
+ProcessId       : 18944
+ParentProcessId : 2096
+Name            : RuntimeBroker.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\RuntimeBroker.exe
+CreationTime    : 5/30/2026 12:37:43 PM
+CommandLine     : C:\Windows\System32\RuntimeBroker.exe -Embedding
+
+ProcessId       : 19212
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:28:18 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceAndNoImpersonation -p -s FDResPub
+
+ProcessId       : 19464
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\NETWORK SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:30:38 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k NetworkService -p -s TapiSrv
+
+ProcessId       : 19724
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:29:40 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -p -s TokenBroker
+
+ProcessId       : 19736
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:41 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=29 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=198780771328 --skip-read-main-dll --metrics-shmem-handle=3564,i,11506287993164661520,16086692502863815179,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709013486085115 --mojo-platform-channel-handle=9840 /prefetch:1
+
+ProcessId       : 20212
+ParentProcessId : 2924
+Name            : AsHotplugCtrl.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\FIXTURE_VENDOR Hotplug Controller\AsHotplugCtrl.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : "C:\Program Files\FIXTURE_VENDOR\FIXTURE_VENDOR Hotplug Controller\AsHotplugCtrl.exe"
+
+ProcessId       : 20868
+ParentProcessId : 3268
+Name            : sihost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\sihost.exe
+CreationTime    : 5/30/2026 12:33:59 PM
+CommandLine     : sihost.exe
+
+ProcessId       : 20892
+ParentProcessId : 37036
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe
+CreationTime    : 5/31/2026 8:46:47 AM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe" --type=renderer --noerrdialogs --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\flutter_webview_windows\LogiAiPromptBuilder\EBWebView" --webview-exe-name=LogiAiPromptBuilder.exe --webview-exe-version=1.9.0+710605 --embedded-browser-webview=1 --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags=--expose-gc --device-scale-factor=1.5 --num-raster-threads=4 
+                  --enable-main-frame-before-activation --renderer-client-id=6 --time-ticks-at-unix-epoch=-1779938862581273 --launch-time-ticks=271144969259 --skip-read-main-dll --metrics-shmem-handle=4580,i,7484901020811119446,2500407938232538569,2097152 --field-trial-handle=1916,i,13759726038235733447,15903476341856651558,262144 --variations-seed-version --pseudonymization-salt-handle=1928,i,15365129945403731533,5785239958766704066,4 --trace-process-track-uuid=3190708991934122588 
+                  --mojo-platform-channel-handle=4416 /pfhostedapp:fcff8b1a48bb4dfcfad6abc15b9596c8683f5327 /prefetch:1
+
+ProcessId       : 20904
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:30:00 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k InvSvcGroup -p -s InventorySvc
+
+ProcessId       : 20952
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:25 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --extension-process --renderer-sub-type=extension --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=13 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=198764593076 --skip-read-main-dll 
+                  --metrics-shmem-handle=5752,i,2312998387383402333,9610690688590252196,2097152 --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190708998493415531 --mojo-platform-channel-handle=5776 /prefetch:9
+
+ProcessId       : 20980
+ParentProcessId : 2024
+Name            : bdredline.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Common Files\Bitdefender\SetupInformation\Bitdefender RedLine\bdredline.exe
+CreationTime    : 5/28/2026 5:29:59 AM
+CommandLine     : "C:\Program Files\Common Files\Bitdefender\SetupInformation\Bitdefender RedLine\bdredline.exe"
+
+ProcessId       : 21084
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:36:27 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcs -p -s seclogon
+
+ProcessId       : 21184
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/31/2026 5:46:09 PM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalServiceNetworkRestricted -p -s WFDSConMgrSvc
+
+ProcessId       : 21204
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/31/2026 12:21:40 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=768 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=284038027296 --skip-read-main-dll --metrics-shmem-handle=11300,i,5260110989555117825,5316142916884055294,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709705960011526 --mojo-platform-channel-handle=8068 /prefetch:1
+
+ProcessId       : 21432
+ParentProcessId : 2096
+Name            : TextInputHost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TextInputHost.exe
+CreationTime    : 5/30/2026 12:34:12 PM
+CommandLine     : "C:\WINDOWS\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TextInputHost.exe" -ServerName:InputApp.AppXk0k6mrh4r2q0ct33a9wgbez0x7v9cz5y.mca
+
+ProcessId       : 21556
+ParentProcessId : 3416
+Name            : bduserhost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender Security\bduserhost.exe
+CreationTime    : 5/30/2026 12:34:02 PM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender Security\bduserhost.exe" "settings/userprocesses/configs/coreaudio_config.json"
+
+ProcessId       : 21564
+ParentProcessId : 4996
+Name            : FIXTURE_VENDOR_framework.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\FIXTURE_VENDOR\ArmouryDevice\FIXTURE_VENDOR_framework.exe
+CreationTime    : 5/30/2026 12:34:11 PM
+CommandLine     : "C:\Program Files (x86)\FIXTURE_VENDOR\ArmouryDevice\FIXTURE_VENDOR_framework.exe" --type=gpu-process --user-data-dir="C:\Users\FIXTURE_USER\AppData\Roaming\FIXTURE_VENDOR_framework" --gpu-preferences=SAAAAAAAAADgAAAIAAAAAAAAAAAAAGAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --use-gl=angle --use-angle=swiftshader-webgl --field-trial-handle=1944,i,5986957153975287669,16776287516531703677,262144 
+                  --enable-features=EnableTransparentHwndEnlargement,PdfUseShowSaveFilePicker --disable-features=ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation,WinDelaySpellcheckServiceInit --variations-seed-version --mojo-platform-channel-handle=1956 /prefetch:2
+
+ProcessId       : 21660
+ParentProcessId : 30664
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:34:03 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --embedded-browser-webview=1 --webview-exe-name=SearchHost.exe --webview-exe-version=2604.28014.500.0 --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\LocalState\EBWebView" --noerrdialogs --disable-features=msSmartScreenProtection --edge-webview-enable-mojo-ipcz --enable-features=msEdgeFluentOverlayScrollbar 
+                  --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; Cortana 1.18.9.23723; 203.0.113.10.26200.8524) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.26200 IsWebView2/True (WebView2Version 148.0.3967.83)" --lang=en-US --mojo-named-platform-channel-pipe=30664.35440.7905222873292169575 /pfhostedapp:3f15cee1e3ce18f16f14611f330796b98aaf69d5
+
+ProcessId       : 21668
+ParentProcessId : 2096
+Name            : RuntimeBroker.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\RuntimeBroker.exe
+CreationTime    : 5/30/2026 12:41:25 PM
+CommandLine     : C:\Windows\System32\RuntimeBroker.exe -Embedding
+
+ProcessId       : 22028
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/31/2026 2:15:32 AM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=479 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=247669889871 --ssd-no-pressure-read-main-dll --metrics-shmem-handle=9524,i,10191940079938520445,2669352793782523281,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709435154917165 --mojo-platform-channel-handle=9408 /prefetch:1
+
+ProcessId       : 22096
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:28:51 PM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalSystemNetworkRestricted -p -s SensorService
+
+ProcessId       : 22352
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:41:12 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en-US --service-sandbox-type=audio --video-capture-use-gpu-memory-buffer --skip-read-main-dll --metrics-shmem-handle=10288,i,1230474968642836908,13523428557690808898,524288 --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version 
+                  --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709018171294360 --mojo-platform-channel-handle=10276 /prefetch:12
+
+ProcessId       : 22508
+ParentProcessId : 26244
+Name            : notepad++.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\Notepad++\notepad++.exe
+CreationTime    : 5/31/2026 10:30:16 AM
+CommandLine     : "C:\Program Files\Notepad++\notepad++.exe" 
+
+ProcessId       : 22732
+ParentProcessId : 16920
+Name            : GameInputSvc.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\GameInputSvc.exe
+CreationTime    : 5/30/2026 12:09:11 AM
+CommandLine     : "C:\WINDOWS\System32\GameInputSvc.exe" Global\GameInputSession_3
+
+ProcessId       : 23476
+ParentProcessId : 2096
+Name            : RuntimeBroker.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\RuntimeBroker.exe
+CreationTime    : 5/30/2026 12:34:01 PM
+CommandLine     : C:\Windows\System32\RuntimeBroker.exe -Embedding
+
+ProcessId       : 23840
+ParentProcessId : 2096
+Name            : dllhost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\DllHost.exe
+CreationTime    : 5/31/2026 5:54:52 PM
+CommandLine     : "C:\WINDOWS\system32\DllHost.exe" /Processid:{00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 23876
+ParentProcessId : 1412
+Name            : OpenConsole.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.24.11321.0_x64__8wekyb3d8bbwe\OpenConsole.exe
+CreationTime    : 5/30/2026 2:08:42 PM
+CommandLine     : "C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.24.11321.0_x64__8wekyb3d8bbwe\OpenConsole.exe" --headless --inheritcursor --textMeasurement graphemes --width 87 --height 51 --signal 0xc30 --server 0xc24
+
+ProcessId       : 24156
+ParentProcessId : 2096
+Name            : mscopilot_proxy.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Copilot\Application\mscopilot_proxy.exe
+CreationTime    : 5/31/2026 5:54:52 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Copilot\Application\mscopilot_proxy.exe" -Embedding
+
+ProcessId       : 24932
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:30:01 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k whesvc -p -s whesvc
+
+ProcessId       : 24996
+ParentProcessId : 2924
+Name            : RtkAudUService64.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\realtekservice.inf_amd64_55047240f73a1fa6\RtkAudUService64.exe
+CreationTime    : 5/30/2026 12:34:30 PM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\realtekservice.inf_amd64_55047240f73a1fa6\RtkAudUService64.exe" -background
+
+ProcessId       : 25012
+ParentProcessId : 13984
+Name            : SearchFilterHost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\SearchFilterHost.exe
+CreationTime    : 5/31/2026 9:56:43 AM
+CommandLine     : "C:\WINDOWS\System32\SearchFilterHost.exe" 904 1048 2232 892 {00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 25056
+ParentProcessId : 19704
+Name            : FIXTURE_VENDOROSD.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDOROptimization\FIXTURE_VENDOROSD.exe
+CreationTime    : 5/30/2026 12:34:13 PM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDOROptimization\FIXTURE_VENDOROSD.exe" 
+
+ProcessId       : 25484
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/30/2026 12:41:14 PM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k DevicesFlow -s DevicesFlowUserSvc
+
+ProcessId       : 25552
+ParentProcessId : 2096
+Name            : ApplicationFrameHost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\ApplicationFrameHost.exe
+CreationTime    : 5/30/2026 12:41:13 PM
+CommandLine     : C:\WINDOWS\system32\ApplicationFrameHost.exe -Embedding
+
+ProcessId       : 25616
+ParentProcessId : 4332
+Name            : bdagent.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender Security App\bdagent.exe
+CreationTime    : 5/30/2026 12:34:25 PM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender Security App\bdagent.exe"
+
+ProcessId       : 25748
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k UnistackSvcGroup -s CDPUserSvc
+
+ProcessId       : 25780
+ParentProcessId : 13984
+Name            : SearchFilterHost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\SearchFilterHost.exe
+CreationTime    : 5/31/2026 12:27:50 PM
+CommandLine     : "C:\WINDOWS\System32\SearchFilterHost.exe" 904 576 4132 892 {00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 26028
+ParentProcessId : 2096
+Name            : backgroundTaskHost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\backgroundTaskHost.exe
+CreationTime    : 5/30/2026 12:34:03 PM
+CommandLine     : "C:\WINDOWS\system32\backgroundTaskHost.exe" -ServerName:App.AppXapskvk16gk8da8kch5g4qxh42vxccved.mca
+
+ProcessId       : 26232
+ParentProcessId : 3416
+Name            : bduserhost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender Security\bduserhost.exe
+CreationTime    : 5/30/2026 12:34:01 PM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender Security\bduserhost.exe" "settings/userprocesses/configs/oneclickagent_config.json"
+
+ProcessId       : 26244
+ParentProcessId : 2904
+Name            : explorer.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\Explorer.EXE
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : C:\WINDOWS\Explorer.EXE
+
+ProcessId       : 26276
+ParentProcessId : 5044
+Name            : audiodg.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\AUDIODG.EXE
+CreationTime    : 5/31/2026 5:54:52 PM
+CommandLine     : C:\WINDOWS\system32\AUDIODG.EXE 0x00000000000005E4
+
+ProcessId       : 26340
+ParentProcessId : 7304
+Name            : nvcontainer.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\NVIDIA Corporation\NvContainer\nvcontainer.exe
+CreationTime    : 5/30/2026 12:33:59 PM
+CommandLine     : "C:\Program Files\NVIDIA Corporation\NvContainer\nvcontainer.exe" -f "C:\ProgramData\NVIDIA Corporation\NVIDIA App\NvContainer\NvContainerUser%d.log" -d "C:\Program Files\NVIDIA Corporation\NvContainer\plugins\User" -r -l 3 -p 30000   -c
+
+ProcessId       : 26448
+ParentProcessId : 35884
+Name            : fontdrvhost.exe
+Owner           : Font Driver Host\UMFD-3
+ExecutablePath  : C:\WINDOWS\System32\fontdrvhost.exe
+CreationTime    : 5/30/2026 12:09:00 AM
+CommandLine     : "fontdrvhost.exe"
+
+ProcessId       : 26712
+ParentProcessId : 6896
+Name            : FIXTURE_VENDORSoftwareManagerAgent.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORSoftwareManager\FIXTURE_VENDORSoftwareManagerAgent.exe
+CreationTime    : 5/30/2026 12:38:11 PM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\FIXTURE_VENDORsci2.inf_amd64_3eb06da3aad59dcc\FIXTURE_VENDORSoftwareManager\FIXTURE_VENDORSoftwareManagerAgent.exe" Start "00000000-0000-0000-0000-000000000000"
+
+ProcessId       : 26820
+ParentProcessId : 2096
+Name            : WmiPrvSE.exe
+Owner           : NT AUTHORITY\NETWORK SERVICE
+ExecutablePath  : C:\WINDOWS\system32\wbem\wmiprvse.exe
+CreationTime    : 5/31/2026 8:46:38 AM
+CommandLine     : C:\WINDOWS\system32\wbem\wmiprvse.exe
+
+ProcessId       : 27156
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/30/2026 12:34:03 PM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k UdkSvcGroup -s UdkUserSvc
+
+ProcessId       : 27464
+ParentProcessId : 2024
+Name            : bdredline.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Bitdefender Agent\redline\bdredline.exe
+CreationTime    : 5/28/2026 3:49:54 PM
+CommandLine     : "C:\Program Files\Bitdefender Agent\redline\bdredline.exe"
+
+ProcessId       : 28072
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/30/2026 12:34:02 PM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k ClipboardSvcGroup -p -s cbdhsvc
+
+ProcessId       : 28228
+ParentProcessId : 2024
+Name            : ArmouryCrate.Service.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\Armoury Crate Service\ArmouryCrate.Service.exe
+CreationTime    : 5/28/2026 5:40:29 PM
+CommandLine     : "C:\Program Files\FIXTURE_VENDOR\Armoury Crate Service\ArmouryCrate.Service.exe"
+
+ProcessId       : 28308
+ParentProcessId : 2096
+Name            : RuntimeBroker.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\RuntimeBroker.exe
+CreationTime    : 5/30/2026 12:34:02 PM
+CommandLine     : C:\Windows\System32\RuntimeBroker.exe -Embedding
+
+ProcessId       : 28444
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:29:48 AM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalService -p -s LicenseManager
+
+ProcessId       : 28588
+ParentProcessId : 2024
+Name            : TrustedInstaller.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\servicing\TrustedInstaller.exe
+CreationTime    : 5/31/2026 5:58:12 PM
+CommandLine     : C:\WINDOWS\servicing\TrustedInstaller.exe
+
+ProcessId       : 28620
+ParentProcessId : 35312
+Name            : powershell.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+CreationTime    : 5/31/2026 5:58:10 PM
+CommandLine     : "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T2 -Hours 72 -OutRoot C:\Fixture\dcoir\out -PackageName DCOIR_Collector.zip -RunId fixture179_t2_20260531_175810
+
+ProcessId       : 28788
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:26 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=17 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=198765152677 --skip-read-main-dll --metrics-shmem-handle=7228,i,1577725649648455746,8340417070312251283,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709002241582927 --mojo-platform-channel-handle=4544 /prefetch:1
+
+ProcessId       : 28992
+ParentProcessId : 2096
+Name            : WidgetService.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\WindowsApps\Microsoft.WidgetsPlatformRuntime_1.6.18.0_x64__8wekyb3d8bbwe\WidgetService\WidgetService.exe
+CreationTime    : 5/30/2026 12:34:03 PM
+CommandLine     : "C:\Program Files\WindowsApps\Microsoft.WidgetsPlatformRuntime_1.6.18.0_x64__8wekyb3d8bbwe\WidgetService\WidgetService.exe" -RegisterProcessAsComServer -Embedding
+
+ProcessId       : 29296
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 2:26:03 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=78 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=205102797494 --ssd-no-pressure-read-main-dll --metrics-shmem-handle=4720,i,5515833035745410860,5248588927815282656,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709059401135716 --mojo-platform-channel-handle=7060 /prefetch:1
+
+ProcessId       : 29884
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/28/2026 5:28:51 PM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalSystemNetworkRestricted -p -s DsSvc
+
+ProcessId       : 29976
+ParentProcessId : 35212
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:35:04 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --type=crashpad-handler --user-data-dir=C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy\LocalState\EBWebView /prefetch:4 /pfhostedapp:c97520bf0a73acd71a9fa6a620328a5b14203346 --monitor-self-annotation=ptype=crashpad-handler 
+                  --database=C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy\LocalState\EBWebView\Crashpad --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=148.0.7778.180 "--annotation=exe=C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --annotation=plat=Win64 "--annotation=prod=Edge WebView2" --annotation=ver=148.0.3967.83 
+                  --initial-client-data=0x170,0x174,0x178,0x14c,0x180,0x7ff83b995d58,0x7ff83b995d64,0x7ff83b995d70
+
+ProcessId       : 30340
+ParentProcessId : 35212
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:35:04 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --type=gpu-process --noerrdialogs --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy\LocalState\EBWebView" --webview-exe-name=Widgets.exe --webview-exe-version=526.1202.10.0 --embedded-browser-webview=1 
+                  --gpu-preferences=SAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAAQAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --startup-read-main-dll --metrics-shmem-handle=1932,i,10898359967718368876,15050571296073845988,262144 --field-trial-handle=2056,i,1186238245318390196,14897104921420921155,262144 --variations-seed-version --pseudonymization-salt-handle=2072,i,5314047817027111902,18171458465975042930,4 --trace-process-track-uuid=3190708988185955192 
+                  --mojo-platform-channel-handle=2044 /prefetch:2 /pfhostedapp:c97520bf0a73acd71a9fa6a620328a5b14203346
+
+ProcessId       : 30664
+ParentProcessId : 2096
+Name            : SearchHost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\SearchHost.exe
+CreationTime    : 5/30/2026 12:34:02 PM
+CommandLine     : "C:\WINDOWS\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\SearchHost.exe" -ServerName:CortanaUI.AppXstmwaab17q5s3y22tp6apqz7a45vwv65.mca
+
+ProcessId       : 30740
+ParentProcessId : 31908
+Name            : logioptionsplus_appbroker.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\LogiOptionsPlus\logioptionsplus_appbroker.exe
+CreationTime    : 5/31/2026 8:46:42 AM
+CommandLine     : "C:\Program Files\LogiOptionsPlus\logioptionsplus_appbroker.exe" 
+
+ProcessId       : 30948
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:29:51 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k netsvcsRedirectionGuard -p -s lfsvc
+
+ProcessId       : 31200
+ParentProcessId : 11624
+Name            : ArmourySocketServer.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\FIXTURE_VENDOR\ArmouryDevice\dll\ArmourySocketServer\ArmourySocketServer.exe
+CreationTime    : 5/30/2026 12:34:06 PM
+CommandLine     : "C:\Program Files (x86)\FIXTURE_VENDOR\ArmouryDevice\dll\ArmourySocketServer\ArmourySocketServer.exe" 
+
+ProcessId       : 31272
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k BthAppGroup -p -s BluetoothUserService
+
+ProcessId       : 31312
+ParentProcessId : 2096
+Name            : SystemSettings.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\ImmersiveControlPanel\SystemSettings.exe
+CreationTime    : 5/30/2026 12:41:13 PM
+CommandLine     : "C:\Windows\ImmersiveControlPanel\SystemSettings.exe" -ServerName:microsoft.windows.immersivecontrolpanel
+
+ProcessId       : 31360
+ParentProcessId : 21660
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:34:03 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --type=crashpad-handler --user-data-dir=C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\LocalState\EBWebView /prefetch:4 /pfhostedapp:3f15cee1e3ce18f16f14611f330796b98aaf69d5 --monitor-self-annotation=ptype=crashpad-handler 
+                  --database=C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\LocalState\EBWebView\Crashpad --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=148.0.7778.180 "--annotation=exe=C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --annotation=plat=Win64 "--annotation=prod=Edge WebView2" --annotation=ver=148.0.3967.83 
+                  --initial-client-data=0x16c,0x170,0x174,0x12c,0x17c,0x7ff83b995d58,0x7ff83b995d64,0x7ff83b995d70
+
+ProcessId       : 31416
+ParentProcessId : 34368
+Name            : adb.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\GlideX\adb.exe
+CreationTime    : 5/28/2026 8:13:42 PM
+CommandLine     : adb -L tcp:5037 fork-server server --reply-fd 620
+
+ProcessId       : 31712
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:41:12 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=utility --utility-sub-type=video_capture.mojom.VideoCaptureService --lang=en-US --service-sandbox-type=none --video-capture-use-gpu-memory-buffer --skip-read-main-dll --metrics-shmem-handle=10168,i,9432915294840260585,11110763030722234641,524288 --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version 
+                  --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709019108336209 --mojo-platform-channel-handle=10204 /prefetch:14
+
+ProcessId       : 31768
+ParentProcessId : 35212
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:35:04 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --noerrdialogs --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy\LocalState\EBWebView" --webview-exe-name=Widgets.exe --webview-exe-version=526.1202.10.0 --embedded-browser-webview=1 --startup-read-main-dll 
+                  --metrics-shmem-handle=2312,i,10760933616058202254,8131027457711513193,524288 --field-trial-handle=2056,i,1186238245318390196,14897104921420921155,262144 --variations-seed-version --pseudonymization-salt-handle=2072,i,5314047817027111902,18171458465975042930,4 --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=2252 /prefetch:11 /pfhostedapp:c97520bf0a73acd71a9fa6a620328a5b14203346
+
+ProcessId       : 31908
+ParentProcessId : 7368
+Name            : logioptionsplus_agent.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\LogiOptionsPlus\logioptionsplus_agent.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : "C:\Program Files\LogiOptionsPlus\logioptionsplus_agent.exe"
+
+ProcessId       : 31944
+ParentProcessId : 2024
+Name            : RzChromaStreamServer.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files (x86)\Razer Chroma SDK\bin\RzChromaStreamServer.exe
+CreationTime    : 5/28/2026 5:30:00 AM
+CommandLine     : "C:\Program Files (x86)\Razer Chroma SDK\bin\RzChromaStreamServer.exe"
+
+ProcessId       : 32056
+ParentProcessId : 2096
+Name            : TiWorker.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\winsxs\amd64_microsoft-windows-servicingstack_31bf3856ad364e35_10.0.26100.8519_none_a516b12977594009\TiWorker.exe
+CreationTime    : 5/31/2026 5:58:13 PM
+CommandLine     : C:\WINDOWS\winsxs\amd64_microsoft-windows-servicingstack_31bf3856ad364e35_10.0.26100.8519_none_a516b12977594009\TiWorker.exe -Embedding
+
+ProcessId       : 32152
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:30:01 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalService -s W32Time
+
+ProcessId       : 32888
+ParentProcessId : 2096
+Name            : ArmouryCrate.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\WindowsApps\B9ECED6F.ArmouryCrate_6.5.7.0_x64__qmba6cd70vzyy\ArmouryCrate.exe
+CreationTime    : 5/30/2026 12:34:03 PM
+CommandLine     : "C:\Program Files\WindowsApps\B9ECED6F.ArmouryCrate_6.5.7.0_x64__qmba6cd70vzyy\ArmouryCrate.exe" -ServerName:App.AppXvfb40rz8a1t4j47e2hx7482r6kww4nw1.mca
+
+ProcessId       : 32904
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\svchost.exe
+CreationTime    : 5/28/2026 5:30:37 AM
+CommandLine     : C:\WINDOWS\system32\svchost.exe -k LocalService -p -s SstpSvc
+
+ProcessId       : 33056
+ParentProcessId : 1412
+Name            : OpenConsole.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.24.11321.0_x64__8wekyb3d8bbwe\OpenConsole.exe
+CreationTime    : 5/30/2026 2:08:42 PM
+CommandLine     : "C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.24.11321.0_x64__8wekyb3d8bbwe\OpenConsole.exe" --headless --inheritcursor --textMeasurement graphemes --width 87 --height 51 --signal 0xd6c --server 0xd64
+
+ProcessId       : 33220
+ParentProcessId : 37036
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe
+CreationTime    : 5/31/2026 8:46:47 AM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --noerrdialogs --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\flutter_webview_windows\LogiAiPromptBuilder\EBWebView" --webview-exe-name=LogiAiPromptBuilder.exe --webview-exe-version=1.9.0+710605 --embedded-browser-webview=1 --startup-read-main-dll 
+                  --metrics-shmem-handle=2168,i,16086010925135070308,3456205562516889408,524288 --field-trial-handle=1916,i,13759726038235733447,15903476341856651558,262144 --variations-seed-version --pseudonymization-salt-handle=1928,i,15365129945403731533,5785239958766704066,4 --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=2148 /prefetch:11 /pfhostedapp:fcff8b1a48bb4dfcfad6abc15b9596c8683f5327
+
+ProcessId       : 33528
+ParentProcessId : 2096
+Name            : Widgets.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\WindowsApps\MicrosoftWindows.Client.WebExperience_526.1202.40.0_x64__cw5n1h2txyewy\Dashboard\Widgets.exe
+CreationTime    : 5/30/2026 12:34:02 PM
+CommandLine     : "C:\Program Files\WindowsApps\MicrosoftWindows.Client.WebExperience_526.1202.40.0_x64__cw5n1h2txyewy\Dashboard\Widgets.exe" -ServerName:Microsoft.Windows.DashboardServer
+
+ProcessId       : 33552
+ParentProcessId : 14240
+Name            : AdobeCollabSync.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\Adobe\Acrobat DC\Acrobat\AdobeCollabSync.exe
+CreationTime    : 5/30/2026 12:46:05 PM
+CommandLine     : "C:\Program Files\Adobe\Acrobat DC\Acrobat\AdobeCollabSync.exe"
+
+ProcessId       : 33748
+ParentProcessId : 7304
+Name            : nvcontainer.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\NVIDIA Corporation\NvContainer\nvcontainer.exe
+CreationTime    : 5/30/2026 12:09:11 AM
+CommandLine     : "C:\Program Files\NVIDIA Corporation\NvContainer\nvcontainer.exe" -f "C:\ProgramData\NVIDIA Corporation\NVIDIA App\NvContainer\NvContainerSession%d.log" -d "C:\Program Files\NVIDIA Corporation\NvContainer\plugins\Session" -r -l 3 -p 30000  -ert -c
+
+ProcessId       : 33784
+ParentProcessId : 2096
+Name            : RuntimeBroker.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\RuntimeBroker.exe
+CreationTime    : 5/30/2026 12:37:46 PM
+CommandLine     : C:\Windows\System32\RuntimeBroker.exe -Embedding
+
+ProcessId       : 33800
+ParentProcessId : 2096
+Name            : StartMenuExperienceHost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\SystemApps\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\StartMenuExperienceHost.exe
+CreationTime    : 5/30/2026 12:34:02 PM
+CommandLine     : "C:\WINDOWS\SystemApps\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\StartMenuExperienceHost.exe" -ServerName:FullTrustApp.AppXykjsye98af63ez2annt9djke8trg8stn.mca
+
+ProcessId       : 35128
+ParentProcessId : 35212
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:35:04 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --type=renderer --noerrdialogs --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy\LocalState\EBWebView" --webview-exe-name=Widgets.exe --webview-exe-version=526.1202.10.0 --embedded-browser-webview=1 --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags=--expose-gc --device-scale-factor=1.5 --num-raster-threads=4 
+                  --enable-main-frame-before-activation --renderer-client-id=5 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=198443284643 --ssd-no-pressure-read-main-dll --metrics-shmem-handle=3780,i,15213770881774500097,17530129490985547203,2097152 --field-trial-handle=2056,i,1186238245318390196,14897104921420921155,262144 --variations-seed-version --pseudonymization-salt-handle=2072,i,5314047817027111902,18171458465975042930,4 --trace-process-track-uuid=3190708990997080739 
+                  --mojo-platform-channel-handle=4036 /pfhostedapp:c97520bf0a73acd71a9fa6a620328a5b14203346 /prefetch:1
+
+ProcessId       : 35140
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:27 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=20 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=198766658640 --skip-read-main-dll --metrics-shmem-handle=4860,i,12676115120102663871,720131067782693920,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709005052708474 --mojo-platform-channel-handle=7500 /prefetch:1
+
+ProcessId       : 35212
+ParentProcessId : 33528
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:35:04 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --embedded-browser-webview=1 --webview-exe-name=Widgets.exe --webview-exe-version=526.1202.10.0 --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy\LocalState\EBWebView" --noerrdialogs --disk-cache-size=52428800 --edge-webview-is-background --lang=en-US --mojo-named-platform-channel-pipe=33528.35472.7088362128069351474 
+                  /pfhostedapp:c97520bf0a73acd71a9fa6a620328a5b14203346
+
+ProcessId       : 35252
+ParentProcessId : 13984
+Name            : SearchProtocolHost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\SearchProtocolHost.exe
+CreationTime    : 5/31/2026 2:46:44 PM
+CommandLine     : "C:\WINDOWS\System32\SearchProtocolHost.exe" Global\UsGthrFltPipeMssGthrPipe277_ Global\UsGthrCtrlFltPipeMssGthrPipe277 1 -2147483646 "Software\Microsoft\Windows Search" "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT; MS Search 4.0 Robot)" "C:\ProgramData\Microsoft\Search\Data\Temp\usgthrsvc" "DownLevelDaemon" 
+
+ProcessId       : 35312
+ParentProcessId : 26244
+Name            : powershell.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+CreationTime    : 5/31/2026 5:54:54 PM
+CommandLine     : "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" 
+
+ProcessId       : 35692
+ParentProcessId : 4996
+Name            : FIXTURE_VENDOR_framework.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\FIXTURE_VENDOR\ArmouryDevice\FIXTURE_VENDOR_framework.exe
+CreationTime    : 5/30/2026 12:34:11 PM
+CommandLine     : "C:\Program Files (x86)\FIXTURE_VENDOR\ArmouryDevice\FIXTURE_VENDOR_framework.exe" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --user-data-dir="C:\Users\FIXTURE_USER\AppData\Roaming\FIXTURE_VENDOR_framework" --field-trial-handle=1944,i,5986957153975287669,16776287516531703677,262144 --enable-features=EnableTransparentHwndEnlargement,PdfUseShowSaveFilePicker 
+                  --disable-features=ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation,WinDelaySpellcheckServiceInit --variations-seed-version --mojo-platform-channel-handle=2592 /prefetch:11
+
+ProcessId       : 35820
+ParentProcessId : 37036
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe
+CreationTime    : 5/31/2026 8:46:47 AM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe" --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=service --noerrdialogs --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\flutter_webview_windows\LogiAiPromptBuilder\EBWebView" --webview-exe-name=LogiAiPromptBuilder.exe --webview-exe-version=1.9.0+710605 --embedded-browser-webview=1 --startup-read-main-dll 
+                  --metrics-shmem-handle=2408,i,15118443727109081563,16284076032241086773,524288 --field-trial-handle=1916,i,13759726038235733447,15903476341856651558,262144 --variations-seed-version --pseudonymization-salt-handle=1928,i,15365129945403731533,5785239958766704066,4 --trace-process-track-uuid=3190708990060038890 --mojo-platform-channel-handle=2420 /prefetch:13 /pfhostedapp:fcff8b1a48bb4dfcfad6abc15b9596c8683f5327
+
+ProcessId       : 35884
+ParentProcessId : 41904
+Name            : winlogon.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\WinLogon.exe
+CreationTime    : 5/30/2026 12:09:00 AM
+CommandLine     : C:\WINDOWS\System32\WinLogon.exe -SpecialSession
+
+ProcessId       : 35948
+ParentProcessId : 26244
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:25 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --profile-directory=Default
+
+ProcessId       : 36012
+ParentProcessId : 13984
+Name            : SearchFilterHost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\SearchFilterHost.exe
+CreationTime    : 5/31/2026 10:25:41 AM
+CommandLine     : "C:\WINDOWS\System32\SearchFilterHost.exe" 904 4076 3284 892 {00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 36016
+ParentProcessId : 35948
+Name            : identity_helper.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\148.0.3967.83\identity_helper.exe
+CreationTime    : 5/30/2026 12:40:27 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\148.0.3967.83\identity_helper.exe" --type=utility --utility-sub-type=winrt_app_id.mojom.WinrtAppIdService --lang=en-US --service-sandbox-type=windows_package_identity --video-capture-use-gpu-memory-buffer --skip-read-main-dll --metrics-shmem-handle=8768,i,6977227566098593320,8757200405540637725,524288 --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version 
+                  --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709006926792172 --mojo-platform-channel-handle=8780 /prefetch:14
+
+ProcessId       : 36048
+ParentProcessId : 3416
+Name            : bduserhost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\Bitdefender\Bitdefender Security\bduserhost.exe
+CreationTime    : 5/30/2026 12:34:04 PM
+CommandLine     : "C:\Program Files\Bitdefender\Bitdefender Security\bduserhost.exe" "settings/userprocesses/configs/fileshredderagent_config.json"
+
+ProcessId       : 36332
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:25 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --extension-process --renderer-sub-type=extension --init-isolate-as-foreground --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=11 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=198764564458 --skip-read-main-dll 
+                  --metrics-shmem-handle=5048,i,5390481561470048509,4566758743212794986,2097152 --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190708996619331833 --mojo-platform-channel-handle=5056 /prefetch:9
+
+ProcessId       : 36672
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:25 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=gpu-process --gpu-preferences=SAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAAQAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --startup-read-main-dll --metrics-shmem-handle=2260,i,9731252942959986540,13365589334399307031,262144 --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version 
+                  --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190708988185955192 --mojo-platform-channel-handle=2436 /prefetch:2
+
+ProcessId       : 36900
+ParentProcessId : 21660
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:34:04 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --type=renderer --noerrdialogs --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; Cortana 1.18.9.23723; 203.0.113.10.26200.8524) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.26200 IsWebView2/True (WebView2Version 148.0.3967.83)" 
+                  --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\LocalState\EBWebView" --webview-exe-name=SearchHost.exe --webview-exe-version=2604.28014.500.0 --embedded-browser-webview=1 --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags=--expose-gc --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=5 --time-ticks-at-unix-epoch=-1779938861125898 
+                  --launch-time-ticks=198382929462 --always-read-main-dll --metrics-shmem-handle=3908,i,17407027432903772335,7159689999366372538,2097152 --field-trial-handle=2060,i,17947549696185473114,6742738100504886339,262144 --enable-features=msEdgeFluentOverlayScrollbar --disable-features=msSmartScreenProtection --variations-seed-version --pseudonymization-salt-handle=2064,i,9783652518168249982,13270529815344630578,4 --trace-process-track-uuid=3190708990997080739 
+                  --mojo-platform-channel-handle=3208 /pfhostedapp:3f15cee1e3ce18f16f14611f330796b98aaf69d5 /prefetch:1
+
+ProcessId       : 37036
+ParentProcessId : 10156
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe
+CreationTime    : 5/31/2026 8:46:47 AM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe" --embedded-browser-webview=1 --webview-exe-name=LogiAiPromptBuilder.exe --webview-exe-version=1.9.0+710605 --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\flutter_webview_windows\LogiAiPromptBuilder\EBWebView" --noerrdialogs --mojo-named-platform-channel-pipe=10156.10656.9100692063010424481 /pfhostedapp:fcff8b1a48bb4dfcfad6abc15b9596c8683f5327
+
+ProcessId       : 37280
+ParentProcessId : 37036
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe
+CreationTime    : 5/31/2026 8:46:47 AM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe" --type=crashpad-handler --user-data-dir=C:\Users\FIXTURE_USER\AppData\Local\flutter_webview_windows\LogiAiPromptBuilder\EBWebView /prefetch:4 /pfhostedapp:fcff8b1a48bb4dfcfad6abc15b9596c8683f5327 --monitor-self-annotation=ptype=crashpad-handler --database=C:\Users\FIXTURE_USER\AppData\Local\flutter_webview_windows\LogiAiPromptBuilder\EBWebView\Crashpad --annotation=IsOfficialBuild=1 
+                  --annotation=channel= --annotation=chromium-version=148.0.7778.217 "--annotation=exe=C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.96\msedgewebview2.exe" --annotation=plat=Win64 "--annotation=prod=Edge WebView2" --annotation=ver=148.0.3967.96 --initial-client-data=0x178,0x17c,0x180,0x154,0x188,0x7fffe5555d58,0x7fffe5555d64,0x7fffe5555d70
+
+ProcessId       : 37592
+ParentProcessId : 20868
+Name            : ShellHost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\ShellHost.exe
+CreationTime    : 5/31/2026 5:56:24 PM
+CommandLine     : "C:\Windows\System32\ShellHost.exe"
+
+ProcessId       : 37636
+ParentProcessId : 35212
+Name            : msedgewebview2.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe
+CreationTime    : 5/30/2026 12:35:04 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\EdgeWebView\Application\148.0.3967.83\msedgewebview2.exe" --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=service --noerrdialogs --user-data-dir="C:\Users\FIXTURE_USER\AppData\Local\Packages\MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy\LocalState\EBWebView" --webview-exe-name=Widgets.exe --webview-exe-version=526.1202.10.0 --embedded-browser-webview=1 --startup-read-main-dll 
+                  --metrics-shmem-handle=2540,i,17432150752305123916,2940323761094974833,524288 --field-trial-handle=2056,i,1186238245318390196,14897104921420921155,262144 --variations-seed-version --pseudonymization-salt-handle=2072,i,5314047817027111902,18171458465975042930,4 --trace-process-track-uuid=3190708990060038890 --mojo-platform-channel-handle=2552 /prefetch:13 /pfhostedapp:c97520bf0a73acd71a9fa6a620328a5b14203346
+
+ProcessId       : 37804
+ParentProcessId : 2096
+Name            : dllhost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\DllHost.exe
+CreationTime    : 5/31/2026 5:54:52 PM
+CommandLine     : "C:\WINDOWS\system32\DllHost.exe" /Processid:{00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 38080
+ParentProcessId : 13984
+Name            : SearchFilterHost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\SearchFilterHost.exe
+CreationTime    : 5/31/2026 9:56:43 AM
+CommandLine     : "C:\WINDOWS\System32\SearchFilterHost.exe" 904 3808 3804 892 {00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 38908
+ParentProcessId : 8812
+Name            : DiscoverySrv.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\Program Files\Bitdefender Agent\203.0.113.10\DiscoverySrv.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : "C:\Program Files\Bitdefender Agent\203.0.113.10\DiscoverySrv.exe"
+
+ProcessId       : 39408
+ParentProcessId : 13984
+Name            : SearchFilterHost.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\SearchFilterHost.exe
+CreationTime    : 5/31/2026 8:15:03 AM
+CommandLine     : "C:\WINDOWS\System32\SearchFilterHost.exe" 904 3056 3052 892 {00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 39472
+ParentProcessId : 41904
+Name            : csrss.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : 
+CreationTime    : 5/30/2026 12:09:00 AM
+CommandLine     : 
+
+ProcessId       : 39680
+ParentProcessId : 1412
+Name            : powershell.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+CreationTime    : 5/30/2026 2:08:42 PM
+CommandLine     : C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+
+ProcessId       : 39840
+ParentProcessId : 35884
+Name            : dwm.exe
+Owner           : Window Manager\DWM-3
+ExecutablePath  : C:\WINDOWS\System32\dwm.exe
+CreationTime    : 5/30/2026 12:09:00 AM
+CommandLine     : "dwm.exe"
+
+ProcessId       : 39980
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/31/2026 5:39:24 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --instant-process --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=945 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=303101202687 --skip-read-main-dll --metrics-shmem-handle=7104,i,7340968119269049292,1658667661465500582,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709871816418799 --mojo-platform-channel-handle=11768 /prefetch:1
+
+ProcessId       : 40208
+ParentProcessId : 2096
+Name            : UserOOBEBroker.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\oobe\UserOOBEBroker.exe
+CreationTime    : 5/31/2026 10:39:41 AM
+CommandLine     : C:\Windows\System32\oobe\UserOOBEBroker.exe -Embedding
+
+ProcessId       : 40912
+ParentProcessId : 2096
+Name            : WmiPrvSE.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\system32\wbem\wmiprvse.exe
+CreationTime    : 5/31/2026 8:45:44 AM
+CommandLine     : C:\WINDOWS\system32\wbem\wmiprvse.exe
+
+ProcessId       : 41156
+ParentProcessId : 2096
+Name            : DataExchangeHost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\DataExchangeHost.exe
+CreationTime    : 5/31/2026 2:04:29 AM
+CommandLine     : C:\Windows\System32\DataExchangeHost.exe -Embedding
+
+ProcessId       : 41340
+ParentProcessId : 35312
+Name            : conhost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\conhost.exe
+CreationTime    : 5/31/2026 5:54:54 PM
+CommandLine     : \??\C:\WINDOWS\system32\conhost.exe 0x4
+
+ProcessId       : 41992
+ParentProcessId : 2924
+Name            : AcPowerNotification.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\FIXTURE_VENDOR\ArmouryDevice\dll\AcPowerNotification\AcPowerNotification.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : "C:\Program Files (x86)\FIXTURE_VENDOR\ArmouryDevice\dll\AcPowerNotification\AcPowerNotification.exe"
+
+ProcessId       : 42056
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/30/2026 12:40:25 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=7 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=198764474172 --ssd-no-pressure-read-main-dll --metrics-shmem-handle=3696,i,5661216722699853928,3856647378920971827,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190708992871164437 --mojo-platform-channel-handle=3724 /prefetch:1
+
+ProcessId       : 42200
+ParentProcessId : 2096
+Name            : AppActions.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\AppActions.exe
+CreationTime    : 5/30/2026 12:44:00 PM
+CommandLine     : "C:\WINDOWS\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\AppActions.exe" -Embedding
+
+ProcessId       : 42572
+ParentProcessId : 20868
+Name            : CrossDeviceResume.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\CrossDeviceResume.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : "C:\WINDOWS\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\CrossDeviceResume.exe" /tileid MicrosoftWindows.Client.CBS_cw5n1h2txyewy!CrossDeviceResumeApp
+
+ProcessId       : 42744
+ParentProcessId : 2924
+Name            : FIXTURE_VENDORSmartDisplayControl.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\FIXTURE_VENDOR\FIXTURE_VENDOR Smart Display Control\FIXTURE_VENDORSmartDisplayControl.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : "C:\Program Files (x86)\FIXTURE_VENDOR\FIXTURE_VENDOR Smart Display Control\FIXTURE_VENDORSmartDisplayControl.exe"
+
+ProcessId       : 43020
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/31/2026 5:36:56 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=935 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=302953381151 --skip-read-main-dll --metrics-shmem-handle=8428,i,11307131679734589952,4727216431822273037,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709862446000309 --mojo-platform-channel-handle=5040 /prefetch:1
+
+ProcessId       : 43672
+ParentProcessId : 2924
+Name            : AsMonitorControl.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\FIXTURE_VENDOR\FIXTURE_VENDOR Monitor Control\AsMonitorControl.exe
+CreationTime    : 5/30/2026 12:34:00 PM
+CommandLine     : "C:\Program Files\FIXTURE_VENDOR\FIXTURE_VENDOR Monitor Control\AsMonitorControl.exe"
+
+ProcessId       : 43804
+ParentProcessId : 4184
+Name            : NVDisplay.Container.exe
+Owner           : NT AUTHORITY\SYSTEM
+ExecutablePath  : C:\WINDOWS\System32\DriverStore\FileRepository\nvami.inf_amd64_dbe4d685876106ff\Display.NvContainer\NVDisplay.Container.exe
+CreationTime    : 5/30/2026 12:09:11 AM
+CommandLine     : "C:\WINDOWS\System32\DriverStore\FileRepository\nvami.inf_amd64_dbe4d685876106ff\Display.NvContainer\NVDisplay.Container.exe" -f %ProgramData%\NVIDIA\DisplaySessionContainer%d.log -d C:\WINDOWS\System32\DriverStore\FileRepository\nvami.inf_amd64_dbe4d685876106ff\Display.NvContainer\plugins\Session -r -l 3 -p 30000 -cfg NVDisplay.ContainerLocalSystem\Session /ert -c
+
+ProcessId       : 43848
+ParentProcessId : 2096
+Name            : PhoneExperienceHost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\WindowsApps\Microsoft.YourPhone_1.26032.102.0_x64__8wekyb3d8bbwe\PhoneExperienceHost.exe
+CreationTime    : 5/30/2026 12:34:10 PM
+CommandLine     : "C:\Program Files\WindowsApps\Microsoft.YourPhone_1.26032.102.0_x64__8wekyb3d8bbwe\PhoneExperienceHost.exe" -ComServer:Background -Embedding
+
+ProcessId       : 44648
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/31/2026 5:58:08 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=974 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=304224574223 --ssd-no-pressure-read-main-dll --metrics-shmem-handle=9284,i,6624780158234489630,4195476508963539077,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709898990632420 --mojo-platform-channel-handle=9900 /prefetch:1
+
+ProcessId       : 45200
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : 
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/31/2026 5:57:36 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --extension-process --renderer-sub-type=extension --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=972 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=304193327172 --ssd-no-pressure-read-main-dll 
+                  --metrics-shmem-handle=9296,i,7657382287609063922,13222661616202945518,2097152 --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709897116548722 --mojo-platform-channel-handle=12308 /prefetch:9
+
+ProcessId       : 45504
+ParentProcessId : 33552
+Name            : acrotray.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files\Adobe\Acrobat DC\Acrobat\AcroTray.exe
+CreationTime    : 5/31/2026 5:46:45 PM
+CommandLine     : "C:\Program Files\Adobe\Acrobat DC\Acrobat\AcroTray.exe" 
+
+ProcessId       : 45580
+ParentProcessId : 2096
+Name            : smartscreen.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Windows\System32\smartscreen.exe
+CreationTime    : 5/31/2026 5:53:26 PM
+CommandLine     : C:\Windows\System32\smartscreen.exe -Embedding
+
+ProcessId       : 45612
+ParentProcessId : 2024
+Name            : svchost.exe
+Owner           : NT AUTHORITY\LOCAL SERVICE
+ExecutablePath  : C:\WINDOWS\System32\svchost.exe
+CreationTime    : 5/31/2026 5:46:21 PM
+CommandLine     : C:\WINDOWS\System32\svchost.exe -k LocalServiceNetworkRestricted -p -s lmhosts
+
+ProcessId       : 45864
+ParentProcessId : 2096
+Name            : dllhost.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\WINDOWS\system32\DllHost.exe
+CreationTime    : 5/31/2026 5:54:52 PM
+CommandLine     : "C:\WINDOWS\system32\DllHost.exe" /Processid:{00000000-0000-0000-0000-000000000000}
+
+ProcessId       : 45932
+ParentProcessId : 35948
+Name            : msedge.exe
+Owner           : FIXTURE_HOST\FIXTURE_USER
+ExecutablePath  : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+CreationTime    : 5/31/2026 5:39:20 PM
+CommandLine     : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --type=renderer --pdf-upsell-enabled --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=940 --time-ticks-at-unix-epoch=-1779938861125899 --launch-time-ticks=303097110261 --ssd-no-pressure-read-main-dll --metrics-shmem-handle=12236,i,18128729954130352105,11877180867170545709,2097152 
+                  --field-trial-handle=2448,i,10293519435202661845,9943035893418495875,262144 --variations-seed-version --pseudonymization-salt-handle=2464,i,17268964326349158680,10280612901491063825,4 --trace-process-track-uuid=3190709867131209554 --mojo-platform-channel-handle=3612 /prefetch:1
+
+
+
+

@@ -1,0 +1,75 @@
+{
+    "run_id":  "fixture179_t2_20260531_175810",
+    "workflow_phase":  "collect_baseline",
+    "upload_model":  "chunk_first",
+    "budget":  {
+                   "HardTotalKB":  2000,
+                   "SafeTotalKB":  1800,
+                   "SafePerFileKB":  900,
+                   "HardPerFileKB":  1000
+               },
+    "default_set_status":  "SAFE_DEFAULT_SET",
+    "recommended_upload_total_kb":  186,
+    "recommended_upload_files":  [
+                                     {
+                                         "path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\reports\\DCOIR_METADATA_FIXTURE_HOST_fixture179_t2_20260531_175810.txt",
+                                         "relative_path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\reports\\DCOIR_METADATA_FIXTURE_HOST_fixture179_t2_20260531_175810.txt",
+                                         "size_kb":  8,
+                                         "within_safe_per_file":  true,
+                                         "within_hard_per_file":  true
+                                     },
+                                     {
+                                         "path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\01_COLLECTION_METADATA_collection_metadata.txt",
+                                         "relative_path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\01_COLLECTION_METADATA_collection_metadata.txt",
+                                         "size_kb":  1,
+                                         "within_safe_per_file":  true,
+                                         "within_hard_per_file":  true
+                                     },
+                                     {
+                                         "path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\02_COLLECTION_NOTES_AND_LIMITATIONS_collection_notes_and_limitations.txt",
+                                         "relative_path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\02_COLLECTION_NOTES_AND_LIMITATIONS_collection_notes_and_limitations.txt",
+                                         "size_kb":  1,
+                                         "within_safe_per_file":  true,
+                                         "within_hard_per_file":  true
+                                     },
+                                     {
+                                         "path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\25A_EVENT_TIMELINE_TEXT_security_high_signal_summary.txt",
+                                         "relative_path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\25A_EVENT_TIMELINE_TEXT_security_high_signal_summary.txt",
+                                         "size_kb":  4,
+                                         "within_safe_per_file":  true,
+                                         "within_hard_per_file":  true
+                                     },
+                                     {
+                                         "path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\08_PROCESS_EXECUTION_CONTEXT_process_inventory.txt",
+                                         "relative_path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\08_PROCESS_EXECUTION_CONTEXT_process_inventory.txt",
+                                         "size_kb":  151,
+                                         "within_safe_per_file":  true,
+                                         "within_hard_per_file":  true
+                                     },
+                                     {
+                                         "path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\12_NETWORK_STATE_structured_net.txt",
+                                         "relative_path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\12_NETWORK_STATE_structured_net.txt",
+                                         "size_kb":  15,
+                                         "within_safe_per_file":  true,
+                                         "within_hard_per_file":  true
+                                     },
+                                     {
+                                         "path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\23_SECURITY_POSTURE_AND_DEFENSIVE_STATE_defender_status.txt",
+                                         "relative_path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\23_SECURITY_POSTURE_AND_DEFENSIVE_STATE_defender_status.txt",
+                                         "size_kb":  3,
+                                         "within_safe_per_file":  true,
+                                         "within_hard_per_file":  true
+                                     },
+                                     {
+                                         "path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\35_ANALYST_FOLLOW_UP_QUEUE_analyst_follow_up_queue.txt",
+                                         "relative_path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\35_ANALYST_FOLLOW_UP_QUEUE_analyst_follow_up_queue.txt",
+                                         "size_kb":  3,
+                                         "within_safe_per_file":  true,
+                                         "within_hard_per_file":  true
+                                     }
+                                 ],
+    "baseline_report_path":  null,
+    "metadata_report_path":  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\reports\\DCOIR_METADATA_FIXTURE_HOST_fixture179_t2_20260531_175810.txt",
+    "note":  "The merged baseline report may be useful for local analyst review but is no longer the default Gemini-facing upload surface."
+}
+

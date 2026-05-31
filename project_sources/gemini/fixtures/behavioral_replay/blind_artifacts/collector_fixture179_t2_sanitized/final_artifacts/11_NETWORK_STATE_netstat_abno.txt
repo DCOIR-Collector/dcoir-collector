@@ -1,0 +1,403 @@
+COMMAND=cmd.exe /c "netstat -abno"
+EXIT_CODE=0
+
+STDOUT:
+
+Active Connections
+
+  Proto  Local Address          Foreign Address        State           PID
+  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       2260
+  RpcSs
+ [svchost.exe]
+  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING       4
+ Can not obtain ownership information
+  TCP    0.0.0.0:2869           0.0.0.0:0              LISTENING       4
+ Can not obtain ownership information
+  TCP    0.0.0.0:3389           0.0.0.0:0              LISTENING       15108
+  TermService
+ [svchost.exe]
+  TCP    0.0.0.0:5040           0.0.0.0:0              LISTENING       11964
+  CDPSvc
+ [svchost.exe]
+  TCP    0.0.0.0:5357           0.0.0.0:0              LISTENING       4
+ Can not obtain ownership information
+  TCP    0.0.0.0:12177          0.0.0.0:0              LISTENING       6516
+ [ArmouryCrate.UserSessionHelper.exe]
+  TCP    0.0.0.0:49664          0.0.0.0:0              LISTENING       1532
+ Can not obtain ownership information
+  TCP    0.0.0.0:49665          0.0.0.0:0              LISTENING       1908
+ Can not obtain ownership information
+  TCP    0.0.0.0:49668          0.0.0.0:0              LISTENING       2924
+  Schedule
+ [svchost.exe]
+  TCP    0.0.0.0:49671          0.0.0.0:0              LISTENING       4348
+  EventLog
+ [svchost.exe]
+  TCP    0.0.0.0:49678          0.0.0.0:0              LISTENING       1976
+ [spoolsv.exe]
+  TCP    0.0.0.0:49682          0.0.0.0:0              LISTENING       7040
+ [GlideXNearService.exe]
+  TCP    0.0.0.0:49683          0.0.0.0:0              LISTENING       7040
+ [GlideXNearService.exe]
+  TCP    0.0.0.0:49688          0.0.0.0:0              LISTENING       7040
+ [GlideXNearService.exe]
+  TCP    0.0.0.0:49691          0.0.0.0:0              LISTENING       7608
+ [GameManagerService3.exe]
+  TCP    0.0.0.0:49710          0.0.0.0:0              LISTENING       2024
+ Can not obtain ownership information
+  TCP    0.0.0.0:49751          0.0.0.0:0              LISTENING       18484
+  SessionEnv
+ [svchost.exe]
+  TCP    0.0.0.0:49752          0.0.0.0:0              LISTENING       7108
+ [GlideXService.exe]
+  TCP    0.0.0.0:49753          0.0.0.0:0              LISTENING       7108
+ [GlideXService.exe]
+  TCP    0.0.0.0:49754          0.0.0.0:0              LISTENING       7108
+ [GlideXService.exe]
+  TCP    0.0.0.0:49755          0.0.0.0:0              LISTENING       7108
+ [GlideXService.exe]
+  TCP    0.0.0.0:49756          0.0.0.0:0              LISTENING       7108
+ [GlideXService.exe]
+  TCP    0.0.0.0:49757          0.0.0.0:0              LISTENING       7108
+ [GlideXService.exe]
+  TCP    0.0.0.0:54235          0.0.0.0:0              LISTENING       4
+ Can not obtain ownership information
+  TCP    203.0.113.10:139       0.0.0.0:0              LISTENING       4
+ Can not obtain ownership information
+  TCP    203.0.113.10:49421     203.0.113.10:443    ESTABLISHED     15480
+  WpnService
+ [svchost.exe]
+  TCP    203.0.113.10:49422     203.0.113.10:443    ESTABLISHED     15480
+  WpnService
+ [svchost.exe]
+  TCP    203.0.113.10:51093     203.0.113.10:443     TIME_WAIT       0
+  TCP    203.0.113.10:52046     203.0.113.10:443       ESTABLISHED     18144
+ [msedge.exe]
+  TCP    203.0.113.10:52146     203.0.113.10:443    TIME_WAIT       0
+  TCP    203.0.113.10:54046     203.0.113.10:443     ESTABLISHED     8812
+ [ProductAgentService.exe]
+  TCP    203.0.113.10:54220     203.0.113.10:443       ESTABLISHED     33220
+ [msedgewebview2.exe]
+  TCP    203.0.113.10:56029     203.0.113.10:443     ESTABLISHED     6936
+ [bdvpnservice.exe]
+  TCP    203.0.113.10:56348     203.0.113.10:443     TIME_WAIT       0
+  TCP    203.0.113.10:58285     203.0.113.10:443      ESTABLISHED     18144
+ [msedge.exe]
+  TCP    203.0.113.10:59014     203.0.113.10:443      ESTABLISHED     18144
+ [msedge.exe]
+  TCP    203.0.113.10:59111     203.0.113.10:443     ESTABLISHED     18144
+ [msedge.exe]
+  TCP    203.0.113.10:59338     203.0.113.10:443     ESTABLISHED     18144
+ [msedge.exe]
+  TCP    203.0.113.10:59760     203.0.113.10:443      ESTABLISHED     3416
+ [bdservicehost.exe]
+  TCP    203.0.113.10:61311     203.0.113.10:443      ESTABLISHED     18144
+ [msedge.exe]
+  TCP    203.0.113.10:61926     203.0.113.10:443     ESTABLISHED     18144
+ [msedge.exe]
+  TCP    203.0.113.10:61929     203.0.113.10:443       ESTABLISHED     6036
+ [CrossDeviceService.exe]
+  TCP    203.0.113.10:61993     203.0.113.10:443      ESTABLISHED     18144
+ [msedge.exe]
+  TCP    203.0.113.10:62316     203.0.113.10:443      ESTABLISHED     2972
+ [AdobeCollabSync.exe]
+  TCP    203.0.113.10:62317     203.0.113.10:443      ESTABLISHED     3416
+ [bdservicehost.exe]
+  TCP    203.0.113.10:63402     203.0.113.10:443       ESTABLISHED     18144
+ [msedge.exe]
+  TCP    203.0.113.10:63482     203.0.113.10:443       TIME_WAIT       0
+  TCP    127.0.0.1:1042         0.0.0.0:0              LISTENING       4996
+ [FIXTURE_VENDOR_framework.exe]
+  TCP    127.0.0.1:1042         127.0.0.1:49927        ESTABLISHED     4996
+ [FIXTURE_VENDOR_framework.exe]
+  TCP    127.0.0.1:1042         127.0.0.1:57459        ESTABLISHED     4996
+ [FIXTURE_VENDOR_framework.exe]
+  TCP    127.0.0.1:1043         0.0.0.0:0              LISTENING       4996
+ [FIXTURE_VENDOR_framework.exe]
+  TCP    127.0.0.1:1337         0.0.0.0:0              LISTENING       7600
+ [RzSDKServer.exe]
+  TCP    127.0.0.1:5037         0.0.0.0:0              LISTENING       31416
+ [adb.exe]
+  TCP    127.0.0.1:7778         0.0.0.0:0              LISTENING       6876
+ [ArmouryCrateControlInterface.exe]
+  TCP    127.0.0.1:9012         0.0.0.0:0              LISTENING       31200
+ [ArmourySocketServer.exe]
+  TCP    127.0.0.1:9012         127.0.0.1:57486        ESTABLISHED     31200
+ [ArmourySocketServer.exe]
+  TCP    127.0.0.1:9013         0.0.0.0:0              LISTENING       31200
+ [ArmourySocketServer.exe]
+  TCP    127.0.0.1:11001        0.0.0.0:0              LISTENING       6920
+ [AuraWallpaperService.exe]
+  TCP    127.0.0.1:13030        0.0.0.0:0              LISTENING       7644
+ [ROGLiveService.exe]
+  TCP    127.0.0.1:13030        127.0.0.1:49698        ESTABLISHED     7644
+ [ROGLiveService.exe]
+  TCP    127.0.0.1:13031        0.0.0.0:0              LISTENING       28228
+ [ArmouryCrate.Service.exe]
+  TCP    127.0.0.1:13031        127.0.0.1:62694        ESTABLISHED     28228
+ [ArmouryCrate.Service.exe]
+  TCP    127.0.0.1:13032        0.0.0.0:0              LISTENING       28228
+ [ArmouryCrate.Service.exe]
+  TCP    127.0.0.1:13331        0.0.0.0:0              LISTENING       9440
+ [RzChromaConnectServer]
+  TCP    127.0.0.1:13344        0.0.0.0:0              LISTENING       31944
+ [RzChromaStreamServer.exe]
+  TCP    127.0.0.1:19010        0.0.0.0:0              LISTENING       31908
+ [logioptionsplus_agent.exe]
+  TCP    127.0.0.1:19292        0.0.0.0:0              LISTENING       2972
+ [AdobeCollabSync.exe]
+  TCP    127.0.0.1:22112        0.0.0.0:0              LISTENING       7644
+ [ROGLiveService.exe]
+  TCP    127.0.0.1:24830        0.0.0.0:0              LISTENING       6896
+ [FIXTURE_VENDORSoftwareManager.exe]
+  TCP    127.0.0.1:27339        0.0.0.0:0              LISTENING       4
+ Can not obtain ownership information
+  TCP    127.0.0.1:49672        127.0.0.1:49673        ESTABLISHED     4324
+ [bdservicehost.exe]
+  TCP    127.0.0.1:49673        127.0.0.1:49672        ESTABLISHED     4324
+ [bdservicehost.exe]
+  TCP    127.0.0.1:49674        127.0.0.1:49675        ESTABLISHED     4332
+ [bdservicehost.exe]
+  TCP    127.0.0.1:49675        127.0.0.1:49674        ESTABLISHED     4332
+ [bdservicehost.exe]
+  TCP    127.0.0.1:49680        127.0.0.1:49681        ESTABLISHED     6936
+ [bdvpnservice.exe]
+  TCP    127.0.0.1:49681        127.0.0.1:49680        ESTABLISHED     6936
+ [bdvpnservice.exe]
+  TCP    127.0.0.1:49689        127.0.0.1:49690        ESTABLISHED     6952
+ Can not obtain ownership information
+  TCP    127.0.0.1:49690        127.0.0.1:49689        ESTABLISHED     6952
+ Can not obtain ownership information
+  TCP    127.0.0.1:49694        127.0.0.1:49695        ESTABLISHED     12976
+ Can not obtain ownership information
+  TCP    127.0.0.1:49695        127.0.0.1:49694        ESTABLISHED     12976
+ Can not obtain ownership information
+  TCP    127.0.0.1:49698        127.0.0.1:13030        ESTABLISHED     7644
+ [ROGLiveService.exe]
+  TCP    127.0.0.1:49743        127.0.0.1:49744        ESTABLISHED     2128
+ [WUDFHost.exe]
+  TCP    127.0.0.1:49744        127.0.0.1:49743        ESTABLISHED     2128
+ [WUDFHost.exe]
+  TCP    127.0.0.1:49747        127.0.0.1:49748        ESTABLISHED     2436
+ [WUDFHost.exe]
+  TCP    127.0.0.1:49748        127.0.0.1:49747        ESTABLISHED     2436
+ [WUDFHost.exe]
+  TCP    127.0.0.1:49749        127.0.0.1:49750        ESTABLISHED     7268
+ [ipfsvc.exe]
+  TCP    127.0.0.1:49750        127.0.0.1:49749        ESTABLISHED     7268
+ [ipfsvc.exe]
+  TCP    127.0.0.1:49927        127.0.0.1:1042         ESTABLISHED     41992
+ [AcPowerNotification.exe]
+  TCP    127.0.0.1:49928        127.0.0.1:49929        ESTABLISHED     8812
+ [ProductAgentService.exe]
+  TCP    127.0.0.1:49929        127.0.0.1:49928        ESTABLISHED     8812
+ [ProductAgentService.exe]
+  TCP    127.0.0.1:50100        0.0.0.0:0              LISTENING       28228
+ [ArmouryCrate.Service.exe]
+  TCP    127.0.0.1:50100        127.0.0.1:58899        ESTABLISHED     28228
+ [ArmouryCrate.Service.exe]
+  TCP    127.0.0.1:50923        0.0.0.0:0              LISTENING       6876
+ [ArmouryCrateControlInterface.exe]
+  TCP    127.0.0.1:51100        0.0.0.0:0              LISTENING       6516
+ [ArmouryCrate.UserSessionHelper.exe]
+  TCP    127.0.0.1:53800        127.0.0.1:53801        ESTABLISHED     25616
+ [bdagent.exe]
+  TCP    127.0.0.1:53801        127.0.0.1:53800        ESTABLISHED     25616
+ [bdagent.exe]
+  TCP    127.0.0.1:57459        127.0.0.1:1042         ESTABLISHED     31200
+ [ArmourySocketServer.exe]
+  TCP    127.0.0.1:57486        127.0.0.1:9012         ESTABLISHED     6516
+ [ArmouryCrate.UserSessionHelper.exe]
+  TCP    127.0.0.1:57570        127.0.0.1:57571        ESTABLISHED     31416
+ [adb.exe]
+  TCP    127.0.0.1:57571        127.0.0.1:57570        ESTABLISHED     31416
+ [adb.exe]
+  TCP    127.0.0.1:57572        127.0.0.1:57573        ESTABLISHED     31416
+ [adb.exe]
+  TCP    127.0.0.1:57573        127.0.0.1:57572        ESTABLISHED     31416
+ [adb.exe]
+  TCP    127.0.0.1:58899        127.0.0.1:50100        ESTABLISHED     6516
+ [ArmouryCrate.UserSessionHelper.exe]
+  TCP    127.0.0.1:59348        127.0.0.1:59349        ESTABLISHED     3416
+ [bdservicehost.exe]
+  TCP    127.0.0.1:59349        127.0.0.1:59348        ESTABLISHED     3416
+ [bdservicehost.exe]
+  TCP    127.0.0.1:59449        127.0.0.1:59450        ESTABLISHED     4184
+ [NVDisplay.Container.exe]
+  TCP    127.0.0.1:59450        127.0.0.1:59449        ESTABLISHED     4184
+ [NVDisplay.Container.exe]
+  TCP    127.0.0.1:62694        127.0.0.1:13031        ESTABLISHED     6920
+ [AuraWallpaperService.exe]
+  TCP    127.0.0.1:63948        127.0.0.1:63949        ESTABLISHED     26340
+ [nvcontainer.exe]
+  TCP    127.0.0.1:63949        127.0.0.1:63948        ESTABLISHED     26340
+ [nvcontainer.exe]
+  TCP    127.0.0.1:64101        127.0.0.1:64102        ESTABLISHED     3416
+ [bdservicehost.exe]
+  TCP    127.0.0.1:64102        127.0.0.1:64101        ESTABLISHED     3416
+ [bdservicehost.exe]
+  TCP    127.0.0.1:65444        0.0.0.0:0              LISTENING       7588
+ [RzDiagnosticService.exe]
+  TCP    [::]:135               [::]:0                 LISTENING       2260
+  RpcSs
+ [svchost.exe]
+  TCP    [::]:445               [::]:0                 LISTENING       4
+ Can not obtain ownership information
+  TCP    [::]:2869              [::]:0                 LISTENING       4
+ Can not obtain ownership information
+  TCP    [::]:3389              [::]:0                 LISTENING       15108
+  TermService
+ [svchost.exe]
+  TCP    [::]:5357              [::]:0                 LISTENING       4
+ Can not obtain ownership information
+  TCP    [::]:49664             [::]:0                 LISTENING       1532
+ Can not obtain ownership information
+  TCP    [::]:49665             [::]:0                 LISTENING       1908
+ Can not obtain ownership information
+  TCP    [::]:49668             [::]:0                 LISTENING       2924
+  Schedule
+ [svchost.exe]
+  TCP    [::]:49671             [::]:0                 LISTENING       4348
+  EventLog
+ [svchost.exe]
+  TCP    [::]:49678             [::]:0                 LISTENING       1976
+ [spoolsv.exe]
+  TCP    [::]:49691             [::]:0                 LISTENING       7608
+ [GameManagerService3.exe]
+  TCP    [::]:49710             [::]:0                 LISTENING       2024
+ Can not obtain ownership information
+  TCP    [::]:49751             [::]:0                 LISTENING       18484
+  SessionEnv
+ [svchost.exe]
+  TCP    [::]:54235             [::]:0                 LISTENING       4
+ Can not obtain ownership information
+  TCP    [::1]:49679            [::]:0                 LISTENING       7792
+ [jhi_service.exe]
+  UDP    0.0.0.0:123            *:*                                    32152
+  W32Time
+ [svchost.exe]
+  UDP    0.0.0.0:500            *:*                                    7100
+  IKEEXT
+ [svchost.exe]
+  UDP    0.0.0.0:3389           *:*                                    15108
+  TermService
+ [svchost.exe]
+  UDP    0.0.0.0:3702           *:*                                    19212
+  FDResPub
+ [svchost.exe]
+  UDP    0.0.0.0:3702           *:*                                    19212
+  FDResPub
+ [svchost.exe]
+  UDP    0.0.0.0:4500           *:*                                    7100
+  IKEEXT
+ [svchost.exe]
+  UDP    0.0.0.0:5050           *:*                                    11964
+  CDPSvc
+ [svchost.exe]
+  UDP    0.0.0.0:5353           *:*                                    2868
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:5353           *:*                                    35948
+ [msedge.exe]
+  UDP    0.0.0.0:5353           *:*                                    18144
+ [msedge.exe]
+  UDP    0.0.0.0:5353           *:*                                    33220
+ [msedgewebview2.exe]
+  UDP    0.0.0.0:5355           *:*                                    2868
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:51861          *:*                                    2868
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:52152          203.0.113.10:443                     18144
+ [msedge.exe]
+  UDP    0.0.0.0:53458          *:*                                    6516
+ [ArmouryCrate.UserSessionHelper.exe]
+  UDP    0.0.0.0:55080          203.0.113.10:443                      18144
+ [msedge.exe]
+  UDP    0.0.0.0:55916          *:*                                    2868
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:57603          203.0.113.10:443                     18144
+ [msedge.exe]
+  UDP    0.0.0.0:57840          203.0.113.10:443                      18144
+ [msedge.exe]
+  UDP    0.0.0.0:57960          203.0.113.10:443                     18144
+ [msedge.exe]
+  UDP    0.0.0.0:58443          203.0.113.10:443                     18144
+ [msedge.exe]
+  UDP    0.0.0.0:60261          203.0.113.10:443                     18144
+ [msedge.exe]
+  UDP    0.0.0.0:61094          *:*                                    2868
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:61770          203.0.113.10:443                    18144
+ [msedge.exe]
+  UDP    0.0.0.0:63986          203.0.113.10:443                    18144
+ [msedge.exe]
+  UDP    0.0.0.0:65061          *:*                                    19212
+  FDResPub
+ [svchost.exe]
+  UDP    203.0.113.10:137       *:*                                    4
+ Can not obtain ownership information
+  UDP    203.0.113.10:138       *:*                                    4
+ Can not obtain ownership information
+  UDP    203.0.113.10:1900      *:*                                    17840
+  SSDPSRV
+ [svchost.exe]
+  UDP    203.0.113.10:50818     *:*                                    17840
+  SSDPSRV
+ [svchost.exe]
+  UDP    127.0.0.1:1900         *:*                                    17840
+  SSDPSRV
+ [svchost.exe]
+  UDP    127.0.0.1:10030        *:*                                    26340
+ [nvcontainer.exe]
+  UDP    127.0.0.1:49664        127.0.0.1:49664                        6720
+  iphlpsvc
+ [svchost.exe]
+  UDP    127.0.0.1:50819        *:*                                    17840
+  SSDPSRV
+ [svchost.exe]
+  UDP    127.0.0.1:60020        *:*                                    26340
+ [nvcontainer.exe]
+  UDP    [::]:123               *:*                                    32152
+  W32Time
+ [svchost.exe]
+  UDP    [::]:500               *:*                                    7100
+  IKEEXT
+ [svchost.exe]
+  UDP    [::]:3389              *:*                                    15108
+  TermService
+ [svchost.exe]
+  UDP    [::]:3702              *:*                                    19212
+  FDResPub
+ [svchost.exe]
+  UDP    [::]:3702              *:*                                    19212
+  FDResPub
+ [svchost.exe]
+  UDP    [::]:4500              *:*                                    7100
+  IKEEXT
+ [svchost.exe]
+  UDP    [::]:51861             *:*                                    2868
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:55916             *:*                                    2868
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:61094             *:*                                    2868
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:65062             *:*                                    19212
+  FDResPub
+ [svchost.exe]
+  UDP    [::1]:1900             *:*                                    17840
+  SSDPSRV
+ [svchost.exe]
+  UDP    [::1]:50817            *:*                                    17840
+  SSDPSRV
+ [svchost.exe]
+
+
+STDERR:
+

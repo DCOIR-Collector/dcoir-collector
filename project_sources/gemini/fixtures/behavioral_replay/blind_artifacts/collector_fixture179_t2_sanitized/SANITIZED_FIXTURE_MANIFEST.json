@@ -1,0 +1,370 @@
+{
+  "schema": "dcoir_collect_bundle_sanitized_fixture_tree_v1",
+  "source_uploaded_file": "1859_DCOIR_COLLECT_BUNDLE_FIXTURE_HOST_fixture179_t2_20260531_175810.zip",
+  "run_id": "fixture179_t2_20260531_175810",
+  "collector_version": "4.0.6",
+  "structure_policy": "Preserve collector bundle directory structure and file naming pattern; replace raw host/user tokens in filenames and file contents.",
+  "raw_artifacts_included": false,
+  "sanitization_summary": [
+    "host token -> FIXTURE_HOST",
+    "account token -> FIXTURE_USER",
+    "local staging root -> C:\\Fixture\\dcoir",
+    "GUID-like values -> zero GUID",
+    "Windows domain SID values -> fixture SID",
+    "IPv4 values other than loopback/zero/broadcast -> 203.0.113.10",
+    "MAC-like values -> AA-BB-CC-DD-EE-FF",
+    "email-like values -> fixture.user@example.invalid",
+    "C:\\Users paths -> C:\\Users\\FIXTURE_USER"
+  ],
+  "file_count": 58,
+  "files": [
+    {
+      "source_path": "25A_EVENT_TIMELINE_TEXT_security_high_signal_summary.txt",
+      "sanitized_path": "25A_EVENT_TIMELINE_TEXT_security_high_signal_summary.txt",
+      "source_size_bytes": 3877,
+      "sanitized_size_bytes": 3958
+    },
+    {
+      "source_path": "25_EVENT_TIMELINE_TEXT_security_filtered.txt",
+      "sanitized_path": "25_EVENT_TIMELINE_TEXT_security_filtered.txt",
+      "source_size_bytes": 793847,
+      "sanitized_size_bytes": 795150
+    },
+    {
+      "source_path": "99_COLLECTION_METADATA_execution_context.txt",
+      "sanitized_path": "99_COLLECTION_METADATA_execution_context.txt",
+      "source_size_bytes": 340,
+      "sanitized_size_bytes": 332
+    },
+    {
+      "source_path": "99_COLLECTION_METADATA_security_audit_policy.txt",
+      "sanitized_path": "99_COLLECTION_METADATA_security_audit_policy.txt",
+      "source_size_bytes": 950,
+      "sanitized_size_bytes": 947
+    },
+    {
+      "source_path": "99_PARALLEL_EXECUTION_parallel_execution_proof.json.txt",
+      "sanitized_path": "99_PARALLEL_EXECUTION_parallel_execution_proof.json.txt",
+      "source_size_bytes": 35402,
+      "sanitized_size_bytes": 35307
+    },
+    {
+      "source_path": "DCOIR_ANALYST_OVERVIEW_FIXTURE_HOST_fixture179_t2_20260531_175810.txt",
+      "sanitized_path": "DCOIR_ANALYST_OVERVIEW_FIXTURE_HOST_fixture179_t2_20260531_175810.txt",
+      "source_size_bytes": 2739,
+      "sanitized_size_bytes": 2679
+    },
+    {
+      "source_path": "DCOIR_ATTACHMENT_BUDGET_MANIFEST_FIXTURE_HOST_fixture179_t2_20260531_175810.json.txt",
+      "sanitized_path": "DCOIR_ATTACHMENT_BUDGET_MANIFEST_FIXTURE_HOST_fixture179_t2_20260531_175810.json.txt",
+      "source_size_bytes": 6520,
+      "sanitized_size_bytes": 6557
+    },
+    {
+      "source_path": "DCOIR_METADATA_FIXTURE_HOST_fixture179_t2_20260531_175810.txt",
+      "sanitized_path": "DCOIR_METADATA_FIXTURE_HOST_fixture179_t2_20260531_175810.txt",
+      "source_size_bytes": 7736,
+      "sanitized_size_bytes": 7514
+    },
+    {
+      "source_path": "DCOIR_UPLOAD_SUMMARY_FIXTURE_HOST_fixture179_t2_20260531_175810.txt",
+      "sanitized_path": "DCOIR_UPLOAD_SUMMARY_FIXTURE_HOST_fixture179_t2_20260531_175810.txt",
+      "source_size_bytes": 1980,
+      "sanitized_size_bytes": 1923
+    },
+    {
+      "source_path": "collect_execution_log.jsonl",
+      "sanitized_path": "collect_execution_log.jsonl",
+      "source_size_bytes": 4979,
+      "sanitized_size_bytes": 4984
+    },
+    {
+      "source_path": "collect_execution_log.txt",
+      "sanitized_path": "collect_execution_log.txt",
+      "source_size_bytes": 3012,
+      "sanitized_size_bytes": 2981
+    },
+    {
+      "source_path": "errors.log",
+      "sanitized_path": "errors.log",
+      "source_size_bytes": 124,
+      "sanitized_size_bytes": 121
+    },
+    {
+      "source_path": "final_artifacts/01_COLLECTION_METADATA_collection_metadata.txt",
+      "sanitized_path": "final_artifacts/01_COLLECTION_METADATA_collection_metadata.txt",
+      "source_size_bytes": 653,
+      "sanitized_size_bytes": 626
+    },
+    {
+      "source_path": "final_artifacts/02_COLLECTION_NOTES_AND_LIMITATIONS_collection_notes_and_limitations.txt",
+      "sanitized_path": "final_artifacts/02_COLLECTION_NOTES_AND_LIMITATIONS_collection_notes_and_limitations.txt",
+      "source_size_bytes": 626,
+      "sanitized_size_bytes": 623
+    },
+    {
+      "source_path": "final_artifacts/03_HOST_BASELINE_time_host.txt",
+      "sanitized_path": "final_artifacts/03_HOST_BASELINE_time_host.txt",
+      "source_size_bytes": 172,
+      "sanitized_size_bytes": 171
+    },
+    {
+      "source_path": "final_artifacts/04_HOST_BASELINE_systeminfo.txt",
+      "sanitized_path": "final_artifacts/04_HOST_BASELINE_systeminfo.txt",
+      "source_size_bytes": 3706,
+      "sanitized_size_bytes": 3610
+    },
+    {
+      "source_path": "final_artifacts/05_IDENTITY_AND_SESSION_CONTEXT_whoami_all.txt",
+      "sanitized_path": "final_artifacts/05_IDENTITY_AND_SESSION_CONTEXT_whoami_all.txt",
+      "source_size_bytes": 7693,
+      "sanitized_size_bytes": 7649
+    },
+    {
+      "source_path": "final_artifacts/06_IDENTITY_AND_SESSION_CONTEXT_sessions.txt",
+      "sanitized_path": "final_artifacts/06_IDENTITY_AND_SESSION_CONTEXT_sessions.txt",
+      "source_size_bytes": 577,
+      "sanitized_size_bytes": 574
+    },
+    {
+      "source_path": "final_artifacts/07_IDENTITY_AND_SESSION_CONTEXT_logon_sessions_wmi.txt",
+      "sanitized_path": "final_artifacts/07_IDENTITY_AND_SESSION_CONTEXT_logon_sessions_wmi.txt",
+      "source_size_bytes": 5368,
+      "sanitized_size_bytes": 5101
+    },
+    {
+      "source_path": "final_artifacts/08_PROCESS_EXECUTION_CONTEXT_process_inventory.txt",
+      "sanitized_path": "final_artifacts/08_PROCESS_EXECUTION_CONTEXT_process_inventory.txt",
+      "source_size_bytes": 153712,
+      "sanitized_size_bytes": 155362
+    },
+    {
+      "source_path": "final_artifacts/09_PROCESS_EXECUTION_CONTEXT_pslist.txt",
+      "sanitized_path": "final_artifacts/09_PROCESS_EXECUTION_CONTEXT_pslist.txt",
+      "source_size_bytes": 27443,
+      "sanitized_size_bytes": 27605
+    },
+    {
+      "source_path": "final_artifacts/10_NETWORK_STATE_ipconfig_all.txt",
+      "sanitized_path": "final_artifacts/10_NETWORK_STATE_ipconfig_all.txt",
+      "source_size_bytes": 2216,
+      "sanitized_size_bytes": 2214
+    },
+    {
+      "source_path": "final_artifacts/11_NETWORK_STATE_netstat_abno.txt",
+      "sanitized_path": "final_artifacts/11_NETWORK_STATE_netstat_abno.txt",
+      "source_size_bytes": 18198,
+      "sanitized_size_bytes": 18197
+    },
+    {
+      "source_path": "final_artifacts/12_NETWORK_STATE_structured_net.txt",
+      "sanitized_path": "final_artifacts/12_NETWORK_STATE_structured_net.txt",
+      "source_size_bytes": 14509,
+      "sanitized_size_bytes": 14476
+    },
+    {
+      "source_path": "final_artifacts/13_NETWORK_STATE_dns_cache.txt",
+      "sanitized_path": "final_artifacts/13_NETWORK_STATE_dns_cache.txt",
+      "source_size_bytes": 1430,
+      "sanitized_size_bytes": 1439
+    },
+    {
+      "source_path": "final_artifacts/14_NETWORK_STATE_route_print.txt",
+      "sanitized_path": "final_artifacts/14_NETWORK_STATE_route_print.txt",
+      "source_size_bytes": 2066,
+      "sanitized_size_bytes": 2077
+    },
+    {
+      "source_path": "final_artifacts/15_NETWORK_STATE_arp_a.txt",
+      "sanitized_path": "final_artifacts/15_NETWORK_STATE_arp_a.txt",
+      "source_size_bytes": 609,
+      "sanitized_size_bytes": 606
+    },
+    {
+      "source_path": "final_artifacts/16_NETWORK_STATE_tcpvcon.txt",
+      "sanitized_path": "final_artifacts/16_NETWORK_STATE_tcpvcon.txt",
+      "source_size_bytes": 6867,
+      "sanitized_size_bytes": 6993
+    },
+    {
+      "source_path": "final_artifacts/17_NETWORK_STATE_pipelist.txt",
+      "sanitized_path": "final_artifacts/17_NETWORK_STATE_pipelist.txt",
+      "source_size_bytes": 23710,
+      "sanitized_size_bytes": 23620
+    },
+    {
+      "source_path": "final_artifacts/18_PERSISTENCE_AND_AUTOSTARTS_services.txt",
+      "sanitized_path": "final_artifacts/18_PERSISTENCE_AND_AUTOSTARTS_services.txt",
+      "source_size_bytes": 144324,
+      "sanitized_size_bytes": 144546
+    },
+    {
+      "source_path": "final_artifacts/19_PERSISTENCE_AND_AUTOSTARTS_scheduled_tasks.txt",
+      "sanitized_path": "final_artifacts/19_PERSISTENCE_AND_AUTOSTARTS_scheduled_tasks.txt",
+      "source_size_bytes": 617149,
+      "sanitized_size_bytes": 618368
+    },
+    {
+      "source_path": "final_artifacts/20_PERSISTENCE_AND_AUTOSTARTS_run_hklm.txt",
+      "sanitized_path": "final_artifacts/20_PERSISTENCE_AND_AUTOSTARTS_run_hklm.txt",
+      "source_size_bytes": 201,
+      "sanitized_size_bytes": 198
+    },
+    {
+      "source_path": "final_artifacts/21_PERSISTENCE_AND_AUTOSTARTS_run_hku_loaded_users.txt",
+      "sanitized_path": "final_artifacts/21_PERSISTENCE_AND_AUTOSTARTS_run_hku_loaded_users.txt",
+      "source_size_bytes": 1988,
+      "sanitized_size_bytes": 1913
+    },
+    {
+      "source_path": "final_artifacts/22_PERSISTENCE_AND_AUTOSTARTS_autorunsc.csv.txt",
+      "sanitized_path": "final_artifacts/22_PERSISTENCE_AND_AUTOSTARTS_autorunsc.csv.txt",
+      "source_size_bytes": 1128124,
+      "sanitized_size_bytes": 1130439
+    },
+    {
+      "source_path": "final_artifacts/23_SECURITY_POSTURE_AND_DEFENSIVE_STATE_defender_status.txt",
+      "sanitized_path": "final_artifacts/23_SECURITY_POSTURE_AND_DEFENSIVE_STATE_defender_status.txt",
+      "source_size_bytes": 2940,
+      "sanitized_size_bytes": 2920
+    },
+    {
+      "source_path": "final_artifacts/24_SECURITY_POSTURE_AND_DEFENSIVE_STATE_firewall_profiles.txt",
+      "sanitized_path": "final_artifacts/24_SECURITY_POSTURE_AND_DEFENSIVE_STATE_firewall_profiles.txt",
+      "source_size_bytes": 2233,
+      "sanitized_size_bytes": 2230
+    },
+    {
+      "source_path": "final_artifacts/25A_EVENT_TIMELINE_TEXT_security_high_signal_summary.txt",
+      "sanitized_path": "final_artifacts/25A_EVENT_TIMELINE_TEXT_security_high_signal_summary.txt",
+      "source_size_bytes": 3877,
+      "sanitized_size_bytes": 3958
+    },
+    {
+      "source_path": "final_artifacts/25_EVENT_TIMELINE_TEXT_security_filtered.txt",
+      "sanitized_path": "final_artifacts/25_EVENT_TIMELINE_TEXT_security_filtered.txt",
+      "source_size_bytes": 793847,
+      "sanitized_size_bytes": 795150
+    },
+    {
+      "source_path": "final_artifacts/26_EVENT_TIMELINE_TEXT_powershell_operational_filtered.txt",
+      "sanitized_path": "final_artifacts/26_EVENT_TIMELINE_TEXT_powershell_operational_filtered.txt",
+      "source_size_bytes": 1723167,
+      "sanitized_size_bytes": 1715897
+    },
+    {
+      "source_path": "final_artifacts/27_EVENT_TIMELINE_TEXT_taskscheduler_operational_filtered.txt",
+      "sanitized_path": "final_artifacts/27_EVENT_TIMELINE_TEXT_taskscheduler_operational_filtered.txt",
+      "source_size_bytes": 107,
+      "sanitized_size_bytes": 104
+    },
+    {
+      "source_path": "final_artifacts/28_TIER2_DEEP_CHECKS_tier2_reg_ifeo.txt",
+      "sanitized_path": "final_artifacts/28_TIER2_DEEP_CHECKS_tier2_reg_ifeo.txt",
+      "source_size_bytes": 17893,
+      "sanitized_size_bytes": 17900
+    },
+    {
+      "source_path": "final_artifacts/29_TIER2_DEEP_CHECKS_tier2_reg_winlogon.txt",
+      "sanitized_path": "final_artifacts/29_TIER2_DEEP_CHECKS_tier2_reg_winlogon.txt",
+      "source_size_bytes": 36619,
+      "sanitized_size_bytes": 36516
+    },
+    {
+      "source_path": "final_artifacts/30_TIER2_DEEP_CHECKS_tier2_reg_lsa.txt",
+      "sanitized_path": "final_artifacts/30_TIER2_DEEP_CHECKS_tier2_reg_lsa.txt",
+      "source_size_bytes": 9187,
+      "sanitized_size_bytes": 9184
+    },
+    {
+      "source_path": "final_artifacts/31_TIER2_DEEP_CHECKS_tier2_wmi_persistence.txt",
+      "sanitized_path": "final_artifacts/31_TIER2_DEEP_CHECKS_tier2_wmi_persistence.txt",
+      "source_size_bytes": 3317,
+      "sanitized_size_bytes": 3314
+    },
+    {
+      "source_path": "final_artifacts/32_TIER2_DEEP_CHECKS_tier2_net_share.txt",
+      "sanitized_path": "final_artifacts/32_TIER2_DEEP_CHECKS_tier2_net_share.txt",
+      "source_size_bytes": 494,
+      "sanitized_size_bytes": 491
+    },
+    {
+      "source_path": "final_artifacts/33_TIER2_DEEP_CHECKS_tier2_net_session.txt",
+      "sanitized_path": "final_artifacts/33_TIER2_DEEP_CHECKS_tier2_net_session.txt",
+      "source_size_bytes": 113,
+      "sanitized_size_bytes": 110
+    },
+    {
+      "source_path": "final_artifacts/34_TIER2_DEEP_CHECKS_tier2_firewall_profiles.txt",
+      "sanitized_path": "final_artifacts/34_TIER2_DEEP_CHECKS_tier2_firewall_profiles.txt",
+      "source_size_bytes": 2246,
+      "sanitized_size_bytes": 2243
+    },
+    {
+      "source_path": "final_artifacts/35_ANALYST_FOLLOW_UP_QUEUE_analyst_follow_up_queue.txt",
+      "sanitized_path": "final_artifacts/35_ANALYST_FOLLOW_UP_QUEUE_analyst_follow_up_queue.txt",
+      "source_size_bytes": 2515,
+      "sanitized_size_bytes": 2404
+    },
+    {
+      "source_path": "final_artifacts/99_COLLECTION_METADATA_execution_context.txt",
+      "sanitized_path": "final_artifacts/99_COLLECTION_METADATA_execution_context.txt",
+      "source_size_bytes": 340,
+      "sanitized_size_bytes": 332
+    },
+    {
+      "source_path": "final_artifacts/99_COLLECTION_METADATA_security_audit_policy.txt",
+      "sanitized_path": "final_artifacts/99_COLLECTION_METADATA_security_audit_policy.txt",
+      "source_size_bytes": 950,
+      "sanitized_size_bytes": 947
+    },
+    {
+      "source_path": "final_artifacts/99_PARALLEL_EXECUTION_parallel_execution_proof.json.txt",
+      "sanitized_path": "final_artifacts/99_PARALLEL_EXECUTION_parallel_execution_proof.json.txt",
+      "source_size_bytes": 35402,
+      "sanitized_size_bytes": 35307
+    },
+    {
+      "source_path": "final_artifacts/99_TARGETED_COLLECTION_collection_scope.txt",
+      "sanitized_path": "final_artifacts/99_TARGETED_COLLECTION_collection_scope.txt",
+      "source_size_bytes": 597,
+      "sanitized_size_bytes": 594
+    },
+    {
+      "source_path": "final_artifacts/99_TARGETED_COLLECTION_parallelism_assessment.txt",
+      "sanitized_path": "final_artifacts/99_TARGETED_COLLECTION_parallelism_assessment.txt",
+      "source_size_bytes": 1475,
+      "sanitized_size_bytes": 1472
+    },
+    {
+      "source_path": "final_artifacts/parallel_workers/parallel_worker_host_baseline.json.txt",
+      "sanitized_path": "final_artifacts/parallel_workers/parallel_worker_host_baseline.json.txt",
+      "source_size_bytes": 5386,
+      "sanitized_size_bytes": 5297
+    },
+    {
+      "source_path": "final_artifacts/parallel_workers/parallel_worker_identity_context.json.txt",
+      "sanitized_path": "final_artifacts/parallel_workers/parallel_worker_identity_context.json.txt",
+      "source_size_bytes": 9827,
+      "sanitized_size_bytes": 9783
+    },
+    {
+      "source_path": "final_artifacts/parallel_workers/parallel_worker_network_light.json.txt",
+      "sanitized_path": "final_artifacts/parallel_workers/parallel_worker_network_light.json.txt",
+      "source_size_bytes": 8953,
+      "sanitized_size_bytes": 8977
+    },
+    {
+      "source_path": "final_artifacts/parallel_workers/parallel_worker_security_posture.json.txt",
+      "sanitized_path": "final_artifacts/parallel_workers/parallel_worker_security_posture.json.txt",
+      "source_size_bytes": 3180,
+      "sanitized_size_bytes": 3177
+    },
+    {
+      "source_path": "manifest_collect.json",
+      "sanitized_path": "manifest_collect.json",
+      "source_size_bytes": 15618,
+      "sanitized_size_bytes": 15763
+    }
+  ]
+}

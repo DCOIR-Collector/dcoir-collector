@@ -1,0 +1,20 @@
+SID=S-1-5-21-FIXTURE-SID
+
+
+org.whispersystems.signal-desktop                        : C:\Users\FIXTURE_USER\AppData\Local\Programs\signal-desktop\Signal.exe --start-in-tray
+GoogleDriveFS                                            : "C:\Program Files\Google\Drive File Stream\203.0.113.10\GoogleDriveFS.exe" --startup_mode
+Adobe Acrobat Synchronizer                               : "C:\Program Files\Adobe\Acrobat DC\Acrobat\AdobeCollabSync.exe"
+RazerAxon                                                : "C:\Program Files (x86)\Razer\Razer Axon\RazerAxon.exe" -autorun
+RazerAppEngine                                           : "C:\Program Files\Razer\RazerAppEngine\RazerAppEngine.exe" --url-params=apps=chroma-app,synapse --launch-force-hidden=chroma-app,synapse --autoStart=1
+Teams                                                    : "C:\Users\FIXTURE_USER\AppData\Local\Microsoft\WindowsApps\MSTeams_8wekyb3d8bbwe\ms-teams.exe" msteams:system-initiated
+Grammarly                                                : "C:\Users\FIXTURE_USER\AppData\Local\Grammarly\DesktopIntegrations\Grammarly.Desktop.exe" --autostart
+Docker Desktop                                           : C:\Program Files\Docker\Docker\Docker Desktop.exe
+MicrosoftEdgeAutoLaunch_62AA2886CFDD833C8146E499823EC816 : "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --no-startup-window --win-session-start
+PSPath                                                   : Microsoft.PowerShell.Core\Registry::HKEY_USERS\S-1-5-21-FIXTURE-SID\Software\Microsoft\Windows\CurrentVersion\Run
+PSParentPath                                             : Microsoft.PowerShell.Core\Registry::HKEY_USERS\S-1-5-21-FIXTURE-SID\Software\Microsoft\Windows\CurrentVersion
+PSChildName                                              : Run
+PSProvider                                               : Microsoft.PowerShell.Core\Registry
+
+
+
+
