@@ -1,0 +1,657 @@
+COMMAND=reg.exe query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon" /s
+EXIT_CODE=0
+
+STDOUT:
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon
+    AutoRestartShell    REG_DWORD    0x1
+    Background    REG_SZ    0 0 0
+    CachedLogonsCount    REG_SZ    10
+    DebugServerCommand    REG_SZ    no
+    DisableBackButton    REG_DWORD    0x1
+    EnableSIHostIntegration    REG_DWORD    0x1
+    ForceUnlockLogon    REG_DWORD    0x0
+    LegalNoticeCaption    REG_SZ    
+    LegalNoticeText    REG_SZ    
+    PasswordExpiryWarning    REG_DWORD    0x5
+    PowerdownAfterShutdown    REG_SZ    0
+    PreCreateKnownFolders    REG_SZ    {00000000-0000-0000-0000-000000000000}
+    ReportBootOk    REG_SZ    1
+    Shell    REG_SZ    explorer.exe
+    ShellAppRuntime    REG_SZ    ShellAppRuntime.exe
+    ShellCritical    REG_DWORD    0x0
+    ShellInfrastructure    REG_SZ    sihost.exe
+    SiHostCritical    REG_DWORD    0x0
+    SiHostReadyTimeOut    REG_DWORD    0x0
+    SiHostRestartCountLimit    REG_DWORD    0x0
+    SiHostRestartTimeGap    REG_DWORD    0x0
+    VMApplet    REG_SZ    SystemPropertiesPerformance.exe /pagefile
+    WinStationsDisabled    REG_SZ    0
+    Userinit    REG_SZ    C:\Windows\system32\userinit.exe,
+    DisableCad    REG_DWORD    0x1
+    DisableLockWorkstation    REG_DWORD    0x0
+    EnableFirstLogonAnimation    REG_DWORD    0x1
+    AutoLogonSID    REG_SZ    S-1-5-21-FIXTURE-SID
+    LastUsedUsername    REG_SZ    FIXTURE_USER
+    LastLogOffEndTimePerfCounter    REG_QWORD    0x165d5d2eb7a
+    ShutdownFlags    REG_DWORD    0x20033
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\AlternateShells
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Wireless Group Policy
+    DisplayName    REG_EXPAND_SZ    @wlgpclnt.dll,-100
+    DllName    REG_EXPAND_SZ    wlgpclnt.dll
+    GenerateGroupPolicy    REG_SZ    GenerateWLANPolicy
+    NoGPOListChanges    REG_DWORD    0x1
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicyEx    REG_SZ    ProcessWLANPolicyEx
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Environment
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-1
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Environment,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyEnviron
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyEnviron
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExEnviron
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    UEV Policy
+    DllName    REG_EXPAND_SZ    AppManagementConfiguration.dll
+    ProcessGroupPolicy    REG_SZ    ProcessUevPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Central Access Policy Configuration
+    DisplayName    REG_EXPAND_SZ    @auditcse.dll,-4000
+    DllName    REG_EXPAND_SZ    auditcse.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    ForceRefreshFG    REG_DWORD    0x0
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyCap
+    MaxNoGPOListChangesInterval    REG_DWORD    0x78
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExCap
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Local Users and Groups
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-2
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Local Users and Groups,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyLocUsAndGroups
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyLocUsAndGroups
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExLocUsAndGroups
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Device Settings
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-3
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Device Settings,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyDevices
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyDevices
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExDevices
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Folder Redirection
+    DisplayName    REG_EXPAND_SZ    @fdeploy.dll,-261
+    DllName    REG_EXPAND_SZ    fdeploy.dll
+    EventSources    REG_MULTI_SZ    (Folder Redirection,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicy
+    NoBackgroundPolicy    REG_DWORD    0x0
+    NoGPOListChanges    REG_DWORD    0x0
+    NoMachinePolicy    REG_DWORD    0x1
+    NoSlowLink    REG_DWORD    0x1
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyEx
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    MitigationOptions
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-22
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyMitigationOptions
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    AppV Policy
+    DllName    REG_EXPAND_SZ    AppManagementConfiguration.dll
+    ProcessGroupPolicy    REG_SZ    ProcessAppVPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Microsoft Disk Quota
+    DisplayName    REG_EXPAND_SZ    @%SystemRoot%\System32\dskquota.dll,-100
+    DllName    REG_EXPAND_SZ    %SystemRoot%\System32\dskquota.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x0
+    NoBackgroundPolicy    REG_DWORD    0x0
+    NoGPOListChanges    REG_DWORD    0x1
+    NoMachinePolicy    REG_DWORD    0x0
+    NoSlowLink    REG_DWORD    0x1
+    NoUserPolicy    REG_DWORD    0x1
+    PerUserLocalSettings    REG_DWORD    0x0
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Network Options
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-4
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Network Options,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyNetworkOptions
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyNetworkOptions
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExNetworkOptions
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    QoS Packet Scheduler
+    DisplayName    REG_EXPAND_SZ    @gptext.dll,-201
+    DllName    REG_EXPAND_SZ    gptext.dll
+    NoGPOListChanges    REG_DWORD    0x1
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessPSCHEDPolicy
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Scripts
+    DisplayName    REG_EXPAND_SZ    @gpscript.dll,-1
+    DllName    REG_SZ    C:\Windows\System32\gpscript.dll
+    GenerateGroupPolicy    REG_SZ    GenerateScriptsGroupPolicy
+    NoGPOListChanges    REG_DWORD    0x1
+    NoSlowLink    REG_DWORD    0x1
+    NotifyLinkTransition    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessScriptsGroupPolicy
+    ProcessGroupPolicyEx    REG_SZ    ProcessScriptsGroupPolicyEx
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Per-process Mitigation Options
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-22
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyProcessMitigationOptions
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Remote Desktop USB Redirection
+    DisplayName    REG_EXPAND_SZ    @%SystemRoot%\System32\TsUsbRedirectionGroupPolicyExtension.dll,-100
+    DllName    REG_EXPAND_SZ    %SystemRoot%\System32\TsUsbRedirectionGroupPolicyExtension.dll
+    NoBackgroundPolicy    REG_DWORD    0x0
+    NoGPOListChanges    REG_DWORD    0x1
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyEx
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Internet Explorer Zonemapping
+    DisplayName    REG_SZ    @C:\Windows\System32\iedkcs32.dll,-3051
+    DllName    REG_SZ    C:\Windows\System32\iedkcs32.dll
+    NoGPOListChanges    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyForZoneMap
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    DllName    REG_SZ    C:\Windows\System32\tsworkspace.dll
+    NoMachinePolicy    REG_DWORD    0x1
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicyEx    REG_SZ    RADCProcessGroupPolicyEx
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Work Folders
+    DisplayName    REG_EXPAND_SZ    @WorkFoldersGPExt.dll,-261
+    DllName    REG_EXPAND_SZ    WorkFoldersGPExt.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x0
+    NoBackgroundPolicy    REG_DWORD    0x0
+    NoGPOListChanges    REG_DWORD    0x0
+    NoMachinePolicy    REG_DWORD    0x0
+    NoSlowLink    REG_DWORD    0x0
+    NoUserPolicy    REG_DWORD    0x0
+    PerUserLocalSettings    REG_DWORD    0x0
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Drive Maps
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-5
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Drive Maps,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyDrives
+    NoMachinePolicy    REG_DWORD    0x1
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyDrives
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExDrives
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Folders
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-6
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Folders,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyFolders
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyFolders
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExFolders
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Network Shares
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-7
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Network Shares,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyNetShares
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyNetShares
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExNetShares
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Files
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-8
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Files,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyFiles
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyFiles
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExFiles
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Data Sources
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-9
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Data Sources,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyDataSources
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyDataSources
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExDataSources
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Ini Files
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-10
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Ini Files,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyIniFile
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyIniFile
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExIniFile
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    MDM Policy
+    DllName    REG_EXPAND_SZ    dmenrollengine.dll
+    ProcessGroupPolicy    REG_SZ    AutoEnrollMDM
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Windows Search Group Policy Extension
+    DllName    REG_EXPAND_SZ    %SystemRoot%\System32\srchadmin.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    NoBackgroundPolicy    REG_DWORD    0x0
+    NoGPOListChanges    REG_DWORD    0x1
+    NoMachinePolicy    REG_DWORD    0x0
+    NoSlowLink    REG_DWORD    0x0
+    NoUserPolicy    REG_DWORD    0x0
+    PerUserLocalSettings    REG_DWORD    0x0
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Internet Explorer User Accelerators
+    DisplayName    REG_SZ    @C:\Windows\System32\iedkcs32.dll,-3051
+    DllName    REG_SZ    C:\Windows\System32\iedkcs32.dll
+    NoGPOListChanges    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyForActivities
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyForActivitiesEx
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Security
+    DisplayName    REG_EXPAND_SZ    @scecli.dll,-7650
+    DllName    REG_EXPAND_SZ    scecli.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    ExtensionDebugLevel    REG_DWORD    0x0
+    ExtensionRsopPlanningDebugLevel    REG_DWORD    0x1
+    GenerateGroupPolicy    REG_SZ    SceGenerateGroupPolicy
+    MaxNoGPOListChangesInterval    REG_DWORD    0x3c0
+    NoGPOListChanges    REG_DWORD    0x1
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    SceProcessSecurityPolicyGPO
+    ProcessGroupPolicyEx    REG_SZ    SceProcessSecurityPolicyGPOEx
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Start Layout Group Policy
+    DisplayName    REG_EXPAND_SZ    @%SystemRoot%\System32\StartTileData.dll,-100
+    DllName    REG_EXPAND_SZ    %SystemRoot%\System32\StartTileData.dll
+    NoGPOListChanges    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessStartLayoutPolicy
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Deployed Printer Connections
+    DisplayName    REG_EXPAND_SZ    @%systemroot%\system32\gpprnext.dll,-1
+    DllName    REG_EXPAND_SZ    %systemroot%\system32\gpprnext.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    ExtensionEventSource    REG_SZ    
+    GenerateGroupPolicy    REG_SZ    PrinterGenerateGroupPolicy
+    MaxNoGPOListChangesInterval    REG_DWORD    0x0
+    NoBackgroundPolicy    REG_DWORD    0x0
+    NoGPOListChanges    REG_DWORD    0x0
+    NoMachinePolicy    REG_DWORD    0x0
+    NoSlowLink    REG_DWORD    0x1
+    NotifyLinkTransition    REG_DWORD    0x0
+    NoUserPolicy    REG_DWORD    0x0
+    PerUserLocalSettings    REG_DWORD    0x0
+    ProcessGroupPolicy    REG_SZ    PrinterProcessGroupPolicy
+    ProcessGroupPolicyEx    REG_SZ    PrinterProcessGroupPolicyEx
+    RequiresSuccessfulRegistry    REG_DWORD    0x0
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Services
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-11
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Services,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyServices
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyServices
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExServices
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Windows Protected Print Policy
+    DllName    REG_EXPAND_SZ    %systemroot%\system32\WindowsProtectedPrintConfiguration.dll
+    ProcessGroupPolicy    REG_SZ    ProcessWindowsProtectedPrintPolicy
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Folder Options
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-12
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Folder Options,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyFolderOptions
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyFolderOptions
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExFolderOptions
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Scheduled Tasks
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-13
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Scheduled Tasks,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicySchedTasks
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicySchedTasks
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExSchedTasks
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Registry
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-14
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Registry,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyRegistry
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyRegistry
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExRegistry
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    802.3 Group Policy
+    DisplayName    REG_EXPAND_SZ    @dot3gpclnt.dll,-100
+    DllName    REG_EXPAND_SZ    dot3gpclnt.dll
+    GenerateGroupPolicy    REG_SZ    GenerateLANPolicy
+    NoGPOListChanges    REG_DWORD    0x1
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicyEx    REG_SZ    ProcessLANPolicyEx
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Windows To Go Startup Options
+    DllName    REG_EXPAND_SZ    pwlauncher.dll
+    ProcessGroupPolicy    REG_SZ    ProcessLauncherGroupPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Printers
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-16
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Printers,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyPrinters
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyPrinters
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExPrinters
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Windows To Go Hibernate Options
+    DllName    REG_EXPAND_SZ    pwlauncher.dll
+    ProcessGroupPolicy    REG_SZ    ProcessHibernateGroupPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Shortcuts
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-17
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Shortcuts,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyShortcuts
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyShortcuts
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExShortcuts
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Microsoft Offline Files
+    DllName    REG_EXPAND_SZ    %SystemRoot%\System32\cscobj.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    NoBackgroundPolicy    REG_DWORD    0x0
+    NoGPOListChanges    REG_DWORD    0x0
+    NoMachinePolicy    REG_DWORD    0x0
+    NoSlowLink    REG_DWORD    0x0
+    NoUserPolicy    REG_DWORD    0x0
+    PerUserLocalSettings    REG_DWORD    0x0
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Software Installation
+    DisplayName    REG_EXPAND_SZ    @appmgmts.dll,-3252
+    DllName    REG_EXPAND_SZ    appmgmts.dll
+    EventSources    REG_MULTI_SZ    (Application Management,Application)\0(MsiInstaller,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicy
+    NoBackgroundPolicy    REG_DWORD    0x0
+    NoSlowLink    REG_DWORD    0x1
+    NoUserPolicy    REG_DWORD    0x0
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyObjectsEx
+    RequiresSucessfulRegistry    REG_DWORD    0x0
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    TCPIP
+    DisplayName    REG_EXPAND_SZ    @gptext.dll,-204
+    DllName    REG_EXPAND_SZ    gptext.dll
+    NoGPOListChanges    REG_DWORD    0x1
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessTCPIPPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Internet Explorer Machine Accelerators
+    DisplayName    REG_SZ    @C:\Windows\System32\iedkcs32.dll,-3051
+    DllName    REG_SZ    C:\Windows\System32\iedkcs32.dll
+    NoGPOListChanges    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyForActivities
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyForActivitiesEx
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Delivery Optimization GP extension
+    DllName    REG_EXPAND_SZ    %SystemRoot%\system32\domgmt.dll
+    ProcessGroupPolicy    REG_SZ    DOProcessGroupPolicy
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    IP Security
+    DisplayName    REG_EXPAND_SZ    @C:\Windows\System32\polstore.dll,-5012
+    DllName    REG_EXPAND_SZ    %SystemRoot%\System32\polstore.dll
+    GenerateGroupPolicy    REG_SZ    GenerateIPSECPolicy
+    NoGPOListChanges    REG_DWORD    0x0
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicyEx    REG_SZ    ProcessIPSECPolicyEx
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Internet Settings
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-18
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Internet Settings,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyInternet
+    NoMachinePolicy    REG_DWORD    0x1
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyInternet
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExInternet
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Start Menu Settings
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-19
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Start Menu Settings,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyStartMenu
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyStartMenu
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExStartMenu
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Regional Options
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-20
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Regional Options,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyRegionOptions
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyRegionOptions
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExRegionOptions
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Power Options
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-21
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Power Options,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyPowerOptions
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyPowerOptions
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExPowerOptions
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    DisplayName    REG_EXPAND_SZ    @dggpext.dll,-600
+    DllName    REG_EXPAND_SZ    dggpext.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x0
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessVirtualizationBasedSecurityGroupPolicy
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Audit Policy Configuration
+    DisplayName    REG_EXPAND_SZ    @auditcse.dll,-3000
+    DllName    REG_EXPAND_SZ    auditcse.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    ForceRefreshFG    REG_DWORD    0x0
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicy
+    MaxNoGPOListChangesInterval    REG_DWORD    0x3c0
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyEx
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Group Policy Applications
+    DisplayName    REG_EXPAND_SZ    @gpprefcl.dll,-15
+    DllName    REG_SZ    C:\Windows\System32\gpprefcl.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x1
+    EventSources    REG_SZ    (Group Policy Applications,Application)
+    GenerateGroupPolicy    REG_SZ    GenerateGroupPolicyApplications
+    NoMachinePolicy    REG_DWORD    0x1
+    PerUserLocalSettings    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessGroupPolicyApplications
+    ProcessGroupPolicyEx    REG_SZ    ProcessGroupPolicyExApplications
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    Enterprise QoS
+    DisplayName    REG_EXPAND_SZ    @gptext.dll,-203
+    DllName    REG_EXPAND_SZ    gptext.dll
+    ProcessGroupPolicy    REG_SZ    ProcessEQoSPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    (Default)    REG_SZ    CP
+    DisplayName    REG_EXPAND_SZ    @gptext.dll,-205
+    DllName    REG_EXPAND_SZ    gptext.dll
+    NoGPOListChanges    REG_DWORD    0x1
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessConnectivityPlatformPolicy
+    RequiresSuccessfulRegistry    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{00000000-0000-0000-0000-000000000000}
+    DisplayName    REG_EXPAND_SZ    @dggpext.dll,-600
+    DllName    REG_EXPAND_SZ    dggpext.dll
+    EnableAsynchronousProcessing    REG_DWORD    0x0
+    NoUserPolicy    REG_DWORD    0x1
+    ProcessGroupPolicy    REG_SZ    ProcessConfigCIPolicyGroupPolicy
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Notify
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Notify\ScCertProp
+    DLLName    REG_SZ    wlnotify.dll
+    Logon    REG_SZ    SCardStartCertProp
+    Logoff    REG_SZ    SCardStopCertProp
+    Lock    REG_SZ    SCardSuspendCertProp
+    Unlock    REG_SZ    SCardResumeCertProp
+    Enabled    REG_DWORD    0x1
+    Impersonate    REG_DWORD    0x1
+    Asynchronous    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\ShellPrograms
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\ShellPrograms\RdpInit.exe
+    AppResolverHostProcess    REG_DWORD    0x1
+    CloakDesktopWindow    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\ShellPrograms\RdpShell.exe
+    ShouldStartRailRPC    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\ShellPrograms\ShellAppRuntime.exe
+    AppResolverHostProcess    REG_DWORD    0x1
+    HandlesShellDesktopSwitchEvent    REG_DWORD    0x1
+    InitializationCompleteEvent    REG_SZ    
+    SupportsRailV2    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList
+    CodexSandboxOffline    REG_DWORD    0x0
+    CodexSandboxOnline    REG_DWORD    0x0
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\UserDefaults
+    ExcludeProfileDirs    REG_SZ    AppData\Local;AppData\LocalLow;$Recycle.Bin;OneDrive;Work Folders
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\AutoLogonChecked
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\VolatileUserMgrKey
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\VolatileUserMgrKey\1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\VolatileUserMgrKey\1\S-1-5-21-FIXTURE-SID
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\VolatileUserMgrKey\2
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\VolatileUserMgrKey\2\S-1-5-21-FIXTURE-SID
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\VolatileUserMgrKey\3
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\VolatileUserMgrKey\3\S-1-5-21-FIXTURE-SID
+    contextLuid    REG_QWORD    0x1c8a8bb7
+
+
+
+STDERR:
+

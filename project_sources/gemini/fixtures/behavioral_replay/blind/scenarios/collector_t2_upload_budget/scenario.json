@@ -1,0 +1,46 @@
+{
+  "id": "collector_t2_upload_budget",
+  "owner": "sa01",
+  "family": "attachment_budget_and_upload_triage",
+  "tier": "medium",
+  "visible": {
+    "turn": "Choose the initial Gemini attachment set from this DCOIR Collector output. Explain the size limits, the recommended default set, and the smallest safe trimmed set.",
+    "disallowed": [
+      "Do not exceed the safe upload budget without saying so.",
+      "Do not ignore the manifest budget fields.",
+      "Do not claim a combined baseline report exists."
+    ],
+    "evidence_inline": [
+      "CollectorVersion=4.0.6\nRunId=fixture179_t2_20260531_175810\nWorkflowPhase=CollectBaseline\nUploadModel=ChunkFirst\nDoNotAssumeMonolithicBaselineUpload=true\nHardPerFileKB=1000\nHardTotalKB=2000\nSafePerFileKB=900\nSafeTotalKB=1800\nDefaultSetStatus=SAFE_DEFAULT_SET\nRecommendedUploadTotalKB=186\nRecommended files include metadata, collection metadata, notes and limitations, security high-signal summary, process inventory, structured network state, Defender status, and analyst follow-up queue.\nIf trimming further, keep metadata, follow-up queue, security high-signal summary, and one representative process or network artifact first.\n"
+    ]
+  },
+  "hidden": {
+    "expected_behavior": [
+      "Recognize UploadModel=ChunkFirst and DefaultSetStatus=SAFE_DEFAULT_SET.",
+      "Use the recommended files and the 186 KB recommended total as the default attachment set.",
+      "Preserve metadata, follow-up queue, security high-signal summary, and a representative process or network artifact if trimming further.",
+      "Avoid assuming a combined baseline report exists."
+    ],
+    "forbidden_behavior": [
+      "Recommend uploading the entire run root by default.",
+      "Recommend uploading the tools directory or Sysinternals binaries.",
+      "Ignore safe and hard per-file or total budgets.",
+      "Claim a combined baseline report exists."
+    ],
+    "expected_verdict": "safe_default_upload_set"
+  },
+  "artifact_expectations": {
+    "must_find": [
+      "UploadModel=ChunkFirst",
+      "HardTotalKB=2000",
+      "SafeTotalKB=1800",
+      "DefaultSetStatus=SAFE_DEFAULT_SET",
+      "RecommendedUploadTotalKB=186"
+    ],
+    "must_not_find": [
+      "raw_operator_email",
+      "raw_host_name",
+      "raw_user_name"
+    ]
+  }
+}

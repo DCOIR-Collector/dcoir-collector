@@ -1,0 +1,340 @@
+COMMAND=reg.exe query "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options" /s
+EXIT_CODE=0
+
+STDOUT:
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\about.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Acrobat.exe
+    DisableExceptionChainValidation    REG_DWORD    0x0
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\AcrobatInfo.exe
+    (Default)    REG_SZ    
+    DisableExceptionChainValidation    REG_DWORD    0x0
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\AcroCEF.exe
+    DisableExceptionChainValidation    REG_DWORD    0x0
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\AcroRd32.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\AcroServicesUpdater.exe
+    DisableExceptionChainValidation    REG_DWORD    0x0
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\agentcontroller.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\analysecrash.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\FIXTURE_VENDORUpdate.exe
+    DisableExceptionChainValidation    REG_DWORD    0x0
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdagent.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdfvcl.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdfvwiz.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bditxag.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdload.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdntwrk.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdpatcher.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdpretraining.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdredline.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdreinit.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdservicehost.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdsubwiz.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdsyslog.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdsyslogcrashhandler.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdtbnmh.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdtkexec.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdtpwiz.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdtrackersnmh.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bduserhost.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdvpnservice.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bdwinre.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\bitdefenderci.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\certutil.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\clview.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\clwinre.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\cnfnot32.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\decrypters.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\downloader.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\excel.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\excelcnv.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ExtExport.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ffutils.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\genptch.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\graph.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\hntwhlpr.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ie4uinit.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ieinstal.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ielowutil.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ieUnatt.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\iexplore.exe
+    DisableExceptionChainValidation    REG_DWORD    0x0
+    DisableUserModeCallbackFilter    REG_DWORD    0x1
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\installer.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\LSASS.exe
+    AuditLevel    REG_DWORD    0x8
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\lync.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MicrosoftEdgeUpdate.exe
+    DisableExceptionChainValidation    REG_DWORD    0x0
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\mitm_install_tool_dci.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MRT.exe
+    CFGOptions    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msaccess.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\mscorsvw.exe
+    MitigationOptions    REG_QWORD    0x100000000
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msfeedssync.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\mshta.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MsMpEng.exe
+    CFGOptions    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msoadfsb.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msoasb.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msohtmed.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msosrec.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msoxmled.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\mspub.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msqry32.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MsSense.exe
+    MitigationOptions    REG_QWORD    0x1000010
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\nativeauth.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ngen.exe
+    MitigationOptions    REG_QWORD    0x100000000
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ngentask.exe
+    MitigationOptions    REG_QWORD    0x100000000
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\notepad.exe
+    UseFilter    REG_DWORD    0x1
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\notepad.exe\0
+    AppExecutionAliasRedirect    REG_DWORD    0x1
+    AppExecutionAliasRedirectPackages    REG_SZ    *
+    FilterFullPath    REG_SZ    C:\Windows\System32\notepad.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\notepad.exe\1
+    AppExecutionAliasRedirect    REG_DWORD    0x1
+    AppExecutionAliasRedirectPackages    REG_SZ    *
+    FilterFullPath    REG_SZ    C:\Windows\SysWOW64\notepad.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\notepad.exe\2
+    AppExecutionAliasRedirect    REG_DWORD    0x1
+    AppExecutionAliasRedirectPackages    REG_SZ    *
+    FilterFullPath    REG_SZ    C:\Windows\notepad.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\obk.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\obkagent.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\obkch.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\odscanlogviewie.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\odscanui.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\odslv.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\odsw.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\onboarding.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\onenote.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\onenotem.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\orgchart.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\outlook.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\powerpnt.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\PresentationHost.exe
+    MitigationOptions    REG_QWORD    0x111111
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\PrintDialog.exe
+    MitigationOptions    REG_QWORD    0x100000000
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\PrintIsolationHost.exe
+    MitigationOptions    REG_QWORD    0x200000
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ProductCfg.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ransomwarerecover.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\runtimebroker.exe
+    MitigationOptions    REG_QWORD    0x100000000
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\scam-copilot-chat.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\scanost.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\scanpst.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\sdxhelper.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\seccenter.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\selfcert.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\setlang.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\setuplauncher.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\splwow64.exe
+    MitigationOptions    REG_QWORD    0x200000
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\spoolsv.exe
+    MitigationOptions    REG_QWORD    0x200000
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\ssh-agent.exe
+    MitigationOptions    REG_BINARY    00000000000000000000000000000000000010
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\st_launcher.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\supporttool.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\svchost.exe
+    MinimumStackCommitInBytes    REG_DWORD    0x8000
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\SystemSettings.exe
+    MitigationOptions    REG_QWORD    0x100000000
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\testinitsigs.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\Updatesrv.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\updcenter.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\VBoxHeadless.exe
+    ImageExpansionMitigation    REG_DWORD    0x2
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\VBoxNetDHCP.exe
+    ImageExpansionMitigation    REG_DWORD    0x2
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\VirtualBox.exe
+    ImageExpansionMitigation    REG_DWORD    0x2
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\VirtualBoxVM.exe
+    ImageExpansionMitigation    REG_DWORD    0x2
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\vulnerability.scan.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\windows10universal.exe
+    ImageExpansionMitigation    REG_DWORD    0x2
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\winword.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\wordconv.exe
+    MitigationOptions    REG_QWORD    0x100
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\wpr.exe
+    MitigationOptions    REG_BINARY    00000000000000000000000000000000000010
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\wprui.exe
+    MitigationOptions    REG_BINARY    00000000000000000000000000000000000010
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\wsccommunicator.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\wsccommunicator_ls.exe
+
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\wscfix.exe
+
+
+
+STDERR:
+

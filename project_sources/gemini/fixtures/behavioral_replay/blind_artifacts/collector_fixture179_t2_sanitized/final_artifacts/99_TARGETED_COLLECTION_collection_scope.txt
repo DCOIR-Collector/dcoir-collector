@@ -1,0 +1,16 @@
+TARGETED_COLLECTION_SCOPE
+TARGETED_MODE_ENABLED=False
+TARGET_PROFILE=Generic
+HAS_EXPLICIT_TIME_WINDOW=False
+WINDOW_START=
+WINDOW_END=
+REQUESTED_HOURS=72
+FOCUS_PROCESS=
+FOCUS_PATH=
+FOCUS_INDICATOR=
+FOCUS_INDICATOR_TYPE=
+USER_REPORT=
+INCLUDED_ARTIFACT_CATEGORIES=
+
+IMPLEMENTATION_BOUNDARY
+This major-version targeted collection feature currently narrows analyst guidance, collection scope intent, artifact prioritization, and recommended next actions. It does not yet rewrite every baseline collection helper into exact start-end timestamp filtering across all artifact families.

@@ -1,0 +1,66 @@
+{
+  "schema": "collector_uploaded_fixture_manifest_v1",
+  "source": "operator_uploaded_live_dcoir_collector_t2_run_2026_05_31",
+  "run_id": "fixture179_t2_20260531_175810",
+  "collector_version": "4.0.6",
+  "collector_status": "PARTIAL_SUCCESS",
+  "privacy_boundary": "Raw ZIPs are not committed. The committed fixture tree is sanitized and preserves collector output structure for future tests.",
+  "committed_sanitized_fixture_tree": {
+    "path": "project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized",
+    "manifest": "project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized/SANITIZED_FIXTURE_MANIFEST.json",
+    "source_uploaded_name": "1859_DCOIR_COLLECT_BUNDLE_FIXTURE_HOST_fixture179_t2_20260531_175810.zip",
+    "file_count": 58,
+    "raw_artifacts_included": false,
+    "structure_policy": "Preserves the unzipped DCOIR collect-bundle directory structure and file naming pattern with raw host/user tokens replaced."
+  },
+  "artifacts": [
+    {
+      "uploaded_name": "DCOIR_COLLECT_BUNDLE_FIXTURE_HOST_fixture179_t2_20260531_175810.zip",
+      "sha256": "f0f9882460126d5404dc402f11a852ae339499d54a0aca30fc4dcda27c7957bf",
+      "size_bytes": 704104,
+      "committed": false
+    },
+    {
+      "uploaded_name": "fixture179_full_run_root_fixture179_t2_20260531_175810.zip",
+      "sha256": "ea3d8efa26d8bb6f75ec33dd8c115e63a42c4b8b11781a0c3ebf82f29f3228ef",
+      "size_bytes": 5775263,
+      "committed": false
+    },
+    {
+      "uploaded_name": "collect_t2_console_output.txt",
+      "sha256": "74e84251dc65a0aa9debbeb270e5b6df7783ccb3fe2f45c071cb180329c77c29",
+      "size_bytes": 8314,
+      "committed": false
+    },
+    {
+      "uploaded_name": "collector_run_transcript.txt",
+      "sha256": "22224a921d5485fde9feae9f9ee8914ac7c3275b902f8bffbd9487734323d05e",
+      "size_bytes": 5413,
+      "committed": false
+    },
+    {
+      "uploaded_name": "show_help.txt",
+      "sha256": "093ff6413029661e8acd8016ae83c6161432de9b2ff3b58cdb49d1b32cf79cb5",
+      "size_bytes": 13996,
+      "committed": false
+    },
+    {
+      "uploaded_name": "show_version.txt",
+      "sha256": "54ae4115cf3351ee9583dd4f16577314b90037873d1fc45e7bb1d4916deb5dd1",
+      "size_bytes": 488,
+      "committed": false
+    }
+  ],
+  "derived_scenarios": [
+    "collector_t2_partial_success",
+    "collector_t2_upload_budget",
+    "collector_t2_defender_wmi"
+  ],
+  "expected_major_signals": [
+    "partial collector run",
+    "safe default upload set",
+    "Defender not running or disabled posture",
+    "partial WMI persistence evidence due query error",
+    "PowerShell process candidates are triage prompts only"
+  ]
+}

@@ -1,0 +1,57 @@
+COMMAND=ipconfig /displaydns
+EXIT_CODE=0
+
+STDOUT:
+
+Windows IP Configuration
+
+    kubernetes.docker.internal
+    ----------------------------------------
+    No records of type AAAA
+
+
+    Record Name . . . . . : kubernetes.docker.internal
+    Record Type . . . . . : 1
+    Time To Live  . . . . : 300606
+    Data Length . . . . . : 4
+    Section . . . . . . . : Answer
+    A (Host) Record . . . : 127.0.0.1
+
+
+    203.0.113.10.in-addr.arpa.
+    ----------------------------------------
+    Record Name . . . . . : 203.0.113.10.in-addr.arpa.
+    Record Type . . . . . : 12
+    Time To Live  . . . . : 300606
+    Data Length . . . . . : 8
+    Section . . . . . . . : Answer
+    PTR Record  . . . . . : kubernetes.docker.internal
+
+
+    FIXTURE_HOST.mshome.net
+    ----------------------------------------
+    No records of type AAAA
+
+
+    Record Name . . . . . : FIXTURE_HOST.mshome.net
+    Record Type . . . . . : 1
+    Time To Live  . . . . : 300606
+    Data Length . . . . . : 4
+    Section . . . . . . . : Answer
+    A (Host) Record . . . : 203.0.113.10
+
+
+    203.0.113.10.in-addr.arpa.
+    ----------------------------------------
+    Record Name . . . . . : 203.0.113.10.in-addr.arpa.
+    Record Type . . . . . : 12
+    Time To Live  . . . . : 300606
+    Data Length . . . . . : 8
+    Section . . . . . . . : Answer
+    PTR Record  . . . . . : FIXTURE_HOST.mshome.net
+
+
+
+
+STDERR:
+

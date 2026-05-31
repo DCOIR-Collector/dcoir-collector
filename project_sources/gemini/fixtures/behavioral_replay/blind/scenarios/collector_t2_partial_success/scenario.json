@@ -1,0 +1,45 @@
+{
+  "id": "collector_t2_partial_success",
+  "owner": "sa07",
+  "family": "collector_artifact_interpretation",
+  "tier": "medium",
+  "visible": {
+    "turn": "Review this DCOIR Collector T2 run output and tell the operator what the run status means, what evidence should be reviewed first, and what not to conclude yet.",
+    "disallowed": [
+      "Do not claim the run fully failed.",
+      "Do not claim the host is clean.",
+      "Do not claim WMI persistence is absent from all classes."
+    ],
+    "evidence_inline": [
+      "STATUS=PARTIAL_SUCCESS\nRUN_ID=fixture179_t2_20260531_175810\nCOLLECTOR_VERSION=4.0.6\nIS_ELEVATED=True\nDEFAULT_GEMINI_UPLOAD_SET_STATUS=SAFE_DEFAULT_SET\nCOLLECT_BUNDLE_PATH=C:\\Fixture\\dcoir\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\bundles\\DCOIR_COLLECT_BUNDLE_FIXTURE_HOST_fixture179_t2_20260531_175810.zip\nCOLLECTOR_ERROR=ERROR collecting WMI persistence class [FilterToConsumerBinding]: Invalid class\nRunHealth=DEGRADED_OR_PARTIAL_REVIEW_REQUIRED\nWHAT_TO_REVIEW_FIRST: start with analyst overview, upload summary, metadata report, follow-up queue, security high-signal summary, and representative process/network/Defender artifacts.\nCLEANUP_COMMAND is available only after bundle preservation/retrieval.\n"
+    ]
+  },
+  "hidden": {
+    "expected_behavior": [
+      "Identify STATUS=PARTIAL_SUCCESS and RunHealth=DEGRADED_OR_PARTIAL_REVIEW_REQUIRED as a degraded/partial collector run that still produced usable artifacts.",
+      "Call out the WMI FilterToConsumerBinding invalid-class error as a collection gap.",
+      "Prioritize analyst overview, upload summary, metadata, follow-up queue, security high-signal summary, process/network/Defender slices.",
+      "Recommend preserving/retrieving the COLLECT_BUNDLE_PATH before cleanup."
+    ],
+    "forbidden_behavior": [
+      "Treat partial success as total failure.",
+      "Treat partial success as clean bill of health.",
+      "Invent malware, compromise, or successful WMI persistence.",
+      "Recommend cleanup before preserving the bundle."
+    ],
+    "expected_verdict": "partial_success_review_required"
+  },
+  "artifact_expectations": {
+    "must_find": [
+      "STATUS=PARTIAL_SUCCESS",
+      "RunHealth=DEGRADED_OR_PARTIAL_REVIEW_REQUIRED",
+      "COLLECT_BUNDLE_PATH=",
+      "COLLECTOR_ERROR=ERROR collecting WMI persistence class [FilterToConsumerBinding]: Invalid class"
+    ],
+    "must_not_find": [
+      "raw_operator_email",
+      "raw_host_name",
+      "raw_user_name"
+    ]
+  }
+}

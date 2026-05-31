@@ -1,0 +1,197 @@
+{
+    "proof_status":  "OVERLAP_CONFIRMED",
+    "implementation_mode":  "bounded_parallel_jobs",
+    "deterministic_post_processing":  "Parent waits for all parallel worker jobs before baseline report assembly continues.",
+    "worker_count":  4,
+    "cached_step_count":  9,
+    "worker_artifact_paths":  [
+                                  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\parallel_workers\\parallel_worker_host_baseline.json.txt",
+                                  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\parallel_workers\\parallel_worker_identity_context.json.txt",
+                                  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\parallel_workers\\parallel_worker_network_light.json.txt",
+                                  "C:\\Temp\\dcoir-fixture-179\\out\\DCOIR_FIXTURE_HOST_fixture179_t2_20260531_175810\\final_artifacts\\parallel_workers\\parallel_worker_security_posture.json.txt"
+                              ],
+    "worker_results":  [
+                           {
+                               "worker_name":  "host_baseline",
+                               "status":  "OK",
+                               "start_time_utc":  "2026-05-31T15:58:11.4748289Z",
+                               "end_time_utc":  "2026-05-31T15:58:13.6711223Z",
+                               "duration_ms":  2196,
+                               "worker_pid":  29456,
+                               "step_results":  [
+                                                    {
+                                                        "step_name":  "HOST_DATE_TIME_HOSTNAME",
+                                                        "command":  "date /t \u0026 time /t \u0026 hostname \u0026 ver",
+                                                        "exit_code":  0,
+                                                        "allowed_exit_codes":  [
+                                                                                   0
+                                                                               ],
+                                                        "within_allowed_exit_codes":  true,
+                                                        "text":  "COMMAND=date /t \u0026 time /t \u0026 hostname \u0026 ver\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\nSun 05/31/2026 \r\n05:58 PM\r\nFIXTURE_HOST\r\n\r\nMicrosoft Windows [Version 10.0.26200.8524]\r\n\r\n\r\nSTDERR:\r\n"
+                                                    },
+                                                    {
+                                                        "step_name":  "HOST_SYSTEMINFO",
+                                                        "command":  "systeminfo",
+                                                        "exit_code":  0,
+                                                        "allowed_exit_codes":  [
+                                                                                   0
+                                                                               ],
+                                                        "within_allowed_exit_codes":  true,
+                                                        "text":  "COMMAND=systeminfo\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n\r\nHost Name:                     FIXTURE_HOST\r\nOS Name:                       Microsoft Windows 11 Pro for Workstations\r\nOS Version:                    10.0.26200 N/A Build 26200\r\nOS Manufacturer:               Microsoft Corporation\r\nOS Configuration:              Standalone Workstation\r\nOS Build Type:                 Multiprocessor Free\r\nRegistered Owner:              FIXTURE_USER\r\nRegistered Organization:       N/A\r\nProduct ID:                    FIXTURE-PRODUCT-ID\r\nOriginal Install Date:         11/23/2024, 4:12:41 PM\r\nSystem Boot Time:              5/28/2026, 5:27:44 AM\r\nSystem Manufacturer:           FIXTURE_VENDOR\r\nSystem Model:                  FIXTURE_MODEL\r\nSystem Type:                   x64-based PC\r\nProcessor(s):                  1 Processor(s) Installed.\r\n                               [01]: Intel64 Family 6 Model 186 Stepping 2 GenuineIntel ~2600 Mhz\r\nBIOS Version:                  FIXTURE_BIOS\r\nWindows Directory:             C:\\WINDOWS\r\nSystem Directory:              C:\\WINDOWS\\system32\r\nBoot Device:                   \\Device\\HarddiskVolume1\r\nSystem Locale:                 en-us;English (United States)\r\nInput Locale:                  en-us;English (United States)\r\nTime Zone:                     (UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna\r\nTotal Physical Memory:         16,003 MB\r\nAvailable Physical Memory:     5,306 MB\r\nVirtual Memory: Max Size:      19,587 MB\r\nVirtual Memory: Available:     3,216 MB\r\nVirtual Memory: In Use:        16,371 MB\r\nPage File Location(s):         C:\\pagefile.sys\r\nDomain:                        WORKGROUP\r\nLogon Server:                  \\\\FIXTURE_HOST\r\nHotfix(s):                     4 Hotfix(s) Installed.\r\n                               [01]: KB5092427\r\n                               [02]: KB5054156\r\n                               [03]: KB5089573\r\n                               [04]: KB5092734\r\nNetwork Card(s):               2 NIC(s) Installed.\r\n                               [01]: Intel(R) Wi-Fi 6E AX211 160MHz\r\n                                     Connection Name: Wi-Fi\r\n                                     DHCP Enabled:    Yes\r\n                                     DHCP Server:     203.0.113.10\r\n                                     IP address(es)\r\n                                     [01]: 203.0.113.10\r\n                               [02]: Bluetooth Device (Personal Area Network)\r\n                                     Connection Name: Bluetooth Network Connection\r\n                                     Status:          Media disconnected\r\nVirtualization-based security: Status: Running\r\n                               Required Security Properties:\r\n                               Available Security Properties:\r\n                                     Base Virtualization Support\r\n                                     Secure Boot\r\n                                     DMA Protection\r\n                                     Secure Memory Overwrite\r\n                                     UEFI Code Readonly\r\n                                     Mode Based Execution Control\r\n                                     APIC Virtualization\r\n                               Services Configured:\r\n                               Services Running:\r\n                               App Control for Business policy: Enforced\r\n                               App Control for Business user mode policy: Off\r\n                               Security Features Enabled:\r\nHyper-V Requirements:          A hypervisor has been detected. Features required for Hyper-V will not be displayed.\r\n\r\n\r\nSTDERR:\r\n"
+                                                    }
+                                                ]
+                           },
+                           {
+                               "worker_name":  "identity_context",
+                               "status":  "OK",
+                               "start_time_utc":  "2026-05-31T15:58:11.5302925Z",
+                               "end_time_utc":  "2026-05-31T15:58:11.6752345Z",
+                               "duration_ms":  145,
+                               "worker_pid":  21256,
+                               "step_results":  [
+                                                    {
+                                                        "step_name":  "IDENTITY_WHOAMI_ALL",
+                                                        "command":  "whoami /all",
+                                                        "exit_code":  0,
+                                                        "allowed_exit_codes":  [
+                                                                                   0
+                                                                               ],
+                                                        "within_allowed_exit_codes":  true,
+                                                        "text":  "COMMAND=whoami /all\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n\r\nUSER INFORMATION\r\n----------------\r\n\r\nUser Name               SID                                          \r\n======================= =============================================\r\nFIXTURE_HOST\\FIXTURE_USER S-1-5-21-FIXTURE-SID\r\n\r\n\r\nGROUP INFORMATION\r\n-----------------\r\n\r\nGroup Name                                                    Type             SID                                                                                                           Attributes                                                     \r\n============================================================= ================ ============================================================================================================= ===============================================================\r\nMandatory Label\\High Mandatory Level                          Label            S-1-16-12288                                                                                                                                                                 \r\nEveryone                                                      Well-known group S-1-1-0                                                                                                       Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\Local account and member of Administrators group Well-known group S-1-5-114                                                                                                     Mandatory group, Enabled by default, Enabled group             \r\nFIXTURE_HOST\\docker-users                                       Alias            S-1-5-21-FIXTURE-SID                                                                 Mandatory group, Enabled by default, Enabled group             \r\nBUILTIN\\Administrators                                        Alias            S-1-5-32-544                                                                                                  Mandatory group, Enabled by default, Enabled group, Group owner\r\nBUILTIN\\Users                                                 Alias            S-1-5-32-545                                                                                                  Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\INTERACTIVE                                      Well-known group S-1-5-4                                                                                                       Mandatory group, Enabled by default, Enabled group             \r\nCONSOLE LOGON                                                 Well-known group S-1-2-1                                                                                                       Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\Authenticated Users                              Well-known group S-1-5-11                                                                                                      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\This Organization                                Well-known group S-1-5-15                                                                                                      Mandatory group, Enabled by default, Enabled group             \r\nMicrosoftAccount\\fixture.user@example.invalid                      User             S-1-11-96-3623454863-58364-18864-2661722203-1597581903-3908953059-1441537218-1827874107-2010798853-1550472591 Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\Local account                                    Well-known group S-1-5-113                                                                                                     Mandatory group, Enabled by default, Enabled group             \r\nLOCAL                                                         Well-known group S-1-2-0                                                                                                       Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\Cloud Account Authentication                     Well-known group S-1-5-64-36                                                                                                   Mandatory group, Enabled by default, Enabled group             \r\n\r\n\r\nPRIVILEGES INFORMATION\r\n----------------------\r\n\r\nPrivilege Name                            Description                                                        State   \r\n========================================= ================================================================== ========\r\nSeLockMemoryPrivilege                     Lock pages in memory                                               Disabled\r\nSeIncreaseQuotaPrivilege                  Adjust memory quotas for a process                                 Disabled\r\nSeSecurityPrivilege                       Manage auditing and security log                                   Disabled\r\nSeTakeOwnershipPrivilege                  Take ownership of files or other objects                           Disabled\r\nSeLoadDriverPrivilege                     Load and unload device drivers                                     Disabled\r\nSeSystemProfilePrivilege                  Profile system performance                                         Disabled\r\nSeSystemtimePrivilege                     Change the system time                                             Disabled\r\nSeProfileSingleProcessPrivilege           Profile single process                                             Disabled\r\nSeIncreaseBasePriorityPrivilege           Increase scheduling priority                                       Disabled\r\nSeCreatePagefilePrivilege                 Create a pagefile                                                  Disabled\r\nSeBackupPrivilege                         Back up files and directories                                      Disabled\r\nSeRestorePrivilege                        Restore files and directories                                      Disabled\r\nSeShutdownPrivilege                       Shut down the system                                               Disabled\r\nSeDebugPrivilege                          Debug programs                                                     Enabled \r\nSeSystemEnvironmentPrivilege              Modify firmware environment values                                 Disabled\r\nSeChangeNotifyPrivilege                   Bypass traverse checking                                           Enabled \r\nSeRemoteShutdownPrivilege                 Force shutdown from a remote system                                Disabled\r\nSeUndockPrivilege                         Remove computer from docking station                               Disabled\r\nSeManageVolumePrivilege                   Perform volume maintenance tasks                                   Disabled\r\nSeImpersonatePrivilege                    Impersonate a client after authentication                          Enabled \r\nSeCreateGlobalPrivilege                   Create global objects                                              Enabled \r\nSeIncreaseWorkingSetPrivilege             Increase a process working set                                     Disabled\r\nSeTimeZonePrivilege                       Change the time zone                                               Disabled\r\nSeCreateSymbolicLinkPrivilege             Create symbolic links                                              Disabled\r\nSeDelegateSessionUserImpersonatePrivilege Obtain an impersonation token for another user in the same session Disabled\r\n\r\n\r\n\r\nSTDERR:\r\n"
+                                                    },
+                                                    {
+                                                        "step_name":  "IDENTITY_QUERY_USER_QWINSTA",
+                                                        "command":  "query user \u0026 qwinsta",
+                                                        "exit_code":  0,
+                                                        "allowed_exit_codes":  [
+                                                                                   0,
+                                                                                   1
+                                                                               ],
+                                                        "within_allowed_exit_codes":  true,
+                                                        "text":  "COMMAND=query user \u0026 qwinsta\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME\r\n\u003eFIXTURE_USER          console             3  Active    1+17:49  5/30/2026 12:33 PM\r\n SESSIONNAME               USERNAME                 ID  STATE   TYPE        DEVICE \r\n services                                            0  Disc                        \r\n\u003econsole                   FIXTURE_USER              3  Active                      \r\n rdp-tcp                                         65536  Listen                      \r\n\r\n\r\nSTDERR:\r\n"
+                                                    }
+                                                ]
+                           },
+                           {
+                               "worker_name":  "network_light",
+                               "status":  "OK",
+                               "start_time_utc":  "2026-05-31T15:58:11.5936154Z",
+                               "end_time_utc":  "2026-05-31T15:58:11.7947092Z",
+                               "duration_ms":  201,
+                               "worker_pid":  31232,
+                               "step_results":  [
+                                                    {
+                                                        "step_name":  "NETWORK_IPCONFIG",
+                                                        "command":  "ipconfig /all",
+                                                        "exit_code":  0,
+                                                        "allowed_exit_codes":  [
+                                                                                   0
+                                                                               ],
+                                                        "within_allowed_exit_codes":  true,
+                                                        "text":  "COMMAND=ipconfig /all\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n\r\nWindows IP Configuration\r\n\r\n   Host Name . . . . . . . . . . . . : FIXTURE_HOST\r\n   Primary Dns Suffix  . . . . . . . : \r\n   Node Type . . . . . . . . . . . . : Hybrid\r\n   IP Routing Enabled. . . . . . . . : No\r\n   WINS Proxy Enabled. . . . . . . . : No\r\n\r\nWireless LAN adapter Local Area Connection* 1:\r\n\r\n   Media State . . . . . . . . . . . : Media disconnected\r\n   Connection-specific DNS Suffix  . : \r\n   Description . . . . . . . . . . . : Microsoft Wi-Fi Direct Virtual Adapter\r\n   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF\r\n   DHCP Enabled. . . . . . . . . . . : Yes\r\n   Autoconfiguration Enabled . . . . : Yes\r\n\r\nWireless LAN adapter Local Area Connection* 2:\r\n\r\n   Media State . . . . . . . . . . . : Media disconnected\r\n   Connection-specific DNS Suffix  . : \r\n   Description . . . . . . . . . . . : Microsoft Wi-Fi Direct Virtual Adapter #2\r\n   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF\r\n   DHCP Enabled. . . . . . . . . . . : No\r\n   Autoconfiguration Enabled . . . . : Yes\r\n\r\nWireless LAN adapter Wi-Fi:\r\n\r\n   Connection-specific DNS Suffix  . : \r\n   Description . . . . . . . . . . . : Intel(R) Wi-Fi 6E AX211 160MHz\r\n   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF\r\n   DHCP Enabled. . . . . . . . . . . : Yes\r\n   Autoconfiguration Enabled . . . . : Yes\r\n   IPv4 Address. . . . . . . . . . . : 203.0.113.10(Preferred) \r\n   Subnet Mask . . . . . . . . . . . : 203.0.113.10\r\n   Lease Obtained. . . . . . . . . . : Sunday, May 31, 2026 5:46:21 PM\r\n   Lease Expires . . . . . . . . . . : Sunday, May 31, 2026 6:46:20 PM\r\n   Default Gateway . . . . . . . . . : 203.0.113.10\r\n   DHCP Server . . . . . . . . . . . : 203.0.113.10\r\n   DNS Servers . . . . . . . . . . . : 203.0.113.10\r\n   NetBIOS over Tcpip. . . . . . . . : Enabled\r\n\r\nEthernet adapter Bluetooth Network Connection:\r\n\r\n   Media State . . . . . . . . . . . : Media disconnected\r\n   Connection-specific DNS Suffix  . : \r\n   Description . . . . . . . . . . . : Bluetooth Device (Personal Area Network)\r\n   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF\r\n   DHCP Enabled. . . . . . . . . . . : Yes\r\n   Autoconfiguration Enabled . . . . : Yes\r\n\r\n\r\nSTDERR:\r\n"
+                                                    },
+                                                    {
+                                                        "step_name":  "NETWORK_DNS_CACHE",
+                                                        "command":  "ipconfig /displaydns",
+                                                        "exit_code":  0,
+                                                        "allowed_exit_codes":  [
+                                                                                   0
+                                                                               ],
+                                                        "within_allowed_exit_codes":  true,
+                                                        "text":  "COMMAND=ipconfig /displaydns\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n\r\nWindows IP Configuration\r\n\r\n    kubernetes.docker.internal\r\n    ----------------------------------------\r\n    No records of type AAAA\r\n\r\n\r\n    Record Name . . . . . : kubernetes.docker.internal\r\n    Record Type . . . . . : 1\r\n    Time To Live  . . . . : 300606\r\n    Data Length . . . . . : 4\r\n    Section . . . . . . . : Answer\r\n    A (Host) Record . . . : 127.0.0.1\r\n\r\n\r\n    203.0.113.10.in-addr.arpa.\r\n    ----------------------------------------\r\n    Record Name . . . . . : 203.0.113.10.in-addr.arpa.\r\n    Record Type . . . . . : 12\r\n    Time To Live  . . . . : 300606\r\n    Data Length . . . . . : 8\r\n    Section . . . . . . . : Answer\r\n    PTR Record  . . . . . : kubernetes.docker.internal\r\n\r\n\r\n    FIXTURE_HOST.mshome.net\r\n    ----------------------------------------\r\n    No records of type AAAA\r\n\r\n\r\n    Record Name . . . . . : FIXTURE_HOST.mshome.net\r\n    Record Type . . . . . : 1\r\n    Time To Live  . . . . : 300606\r\n    Data Length . . . . . : 4\r\n    Section . . . . . . . : Answer\r\n    A (Host) Record . . . : 203.0.113.10\r\n\r\n\r\n    203.0.113.10.in-addr.arpa.\r\n    ----------------------------------------\r\n    Record Name . . . . . : 203.0.113.10.in-addr.arpa.\r\n    Record Type . . . . . : 12\r\n    Time To Live  . . . . : 300606\r\n    Data Length . . . . . : 8\r\n    Section . . . . . . . : Answer\r\n    PTR Record  . . . . . : FIXTURE_HOST.mshome.net\r\n\r\n\r\n\r\n\r\nSTDERR:\r\n"
+                                                    },
+                                                    {
+                                                        "step_name":  "NETWORK_ROUTE_PRINT",
+                                                        "command":  "route print",
+                                                        "exit_code":  0,
+                                                        "allowed_exit_codes":  [
+                                                                                   0
+                                                                               ],
+                                                        "within_allowed_exit_codes":  true,
+                                                        "text":  "COMMAND=route print\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n===========================================================================\r\nInterface List\r\n  9...90 09 df 0e 07 aa ......Microsoft Wi-Fi Direct Virtual Adapter\r\n  7...92 09 df 0e 07 a9 ......Microsoft Wi-Fi Direct Virtual Adapter #2\r\n  3...90 09 df 0e 07 a9 ......Intel(R) Wi-Fi 6E AX211 160MHz\r\n  5...90 09 df 0e 07 ad ......Bluetooth Device (Personal Area Network)\r\n  1...........................Software Loopback Interface 1\r\n===========================================================================\r\n\r\nIPv4 Route Table\r\n===========================================================================\r\nActive Routes:\r\nNetwork Destination        Netmask          Gateway       Interface  Metric\r\n          0.0.0.0          0.0.0.0     203.0.113.10     203.0.113.10     45\r\n      203.0.113.10    203.0.113.10         On-link      203.0.113.10    301\r\n     203.0.113.10  255.255.255.255         On-link      203.0.113.10    301\r\n    203.0.113.10  255.255.255.255         On-link      203.0.113.10    301\r\n        203.0.113.10        203.0.113.10         On-link         127.0.0.1    331\r\n        127.0.0.1  255.255.255.255         On-link         127.0.0.1    331\r\n  203.0.113.10  255.255.255.255         On-link         127.0.0.1    331\r\n        203.0.113.10        203.0.113.10         On-link         127.0.0.1    331\r\n        203.0.113.10        203.0.113.10         On-link      203.0.113.10    301\r\n  255.255.255.255  255.255.255.255         On-link         127.0.0.1    331\r\n  255.255.255.255  255.255.255.255         On-link      203.0.113.10    301\r\n===========================================================================\r\nPersistent Routes:\r\n  None\r\n\r\nIPv6 Route Table\r\n===========================================================================\r\nActive Routes:\r\n If Metric Network Destination      Gateway\r\n  1    331 ::1/128                  On-link\r\n  1    331 ff00::/8                 On-link\r\n===========================================================================\r\nPersistent Routes:\r\n  None\r\n\r\n\r\nSTDERR:\r\n"
+                                                    },
+                                                    {
+                                                        "step_name":  "NETWORK_ARP_A",
+                                                        "command":  "arp -a",
+                                                        "exit_code":  0,
+                                                        "allowed_exit_codes":  [
+                                                                                   0
+                                                                               ],
+                                                        "within_allowed_exit_codes":  true,
+                                                        "text":  "COMMAND=arp -a\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n\r\nInterface: 203.0.113.10 --- 0x3\r\n  Internet Address      Physical Address      Type\r\n  203.0.113.10          AA-BB-CC-DD-EE-FF     dynamic   \r\n  203.0.113.10         AA-BB-CC-DD-EE-FF     static    \r\n  203.0.113.10            AA-BB-CC-DD-EE-FF     static    \r\n  203.0.113.10           AA-BB-CC-DD-EE-FF     static    \r\n  203.0.113.10           AA-BB-CC-DD-EE-FF     static    \r\n  203.0.113.10          AA-BB-CC-DD-EE-FF     static    \r\n  203.0.113.10       AA-BB-CC-DD-EE-FF     static    \r\n  255.255.255.255       AA-BB-CC-DD-EE-FF     static    \r\n\r\n\r\nSTDERR:\r\n"
+                                                    }
+                                                ]
+                           },
+                           {
+                               "worker_name":  "security_posture",
+                               "status":  "OK",
+                               "start_time_utc":  "2026-05-31T15:58:11.6605201Z",
+                               "end_time_utc":  "2026-05-31T15:58:11.8723787Z",
+                               "duration_ms":  212,
+                               "worker_pid":  38960,
+                               "step_results":  [
+                                                    {
+                                                        "step_name":  "SECURITY_FIREWALL_PROFILES",
+                                                        "command":  "netsh advfirewall show allprofiles",
+                                                        "exit_code":  0,
+                                                        "allowed_exit_codes":  [
+                                                                                   0
+                                                                               ],
+                                                        "within_allowed_exit_codes":  true,
+                                                        "text":  "COMMAND=netsh advfirewall show allprofiles\r\nEXIT_CODE=0\r\n\r\nSTDOUT:\r\n\r\nDomain Profile Settings: \r\n----------------------------------------------------------------------\r\nState                                 ON\r\nFirewall Policy                       BlockInbound,AllowOutbound\r\nLocalFirewallRules                    N/A (GPO-store only)\r\nLocalConSecRules                      N/A (GPO-store only)\r\nInboundUserNotification               Enable\r\nRemoteManagement                      Disable\r\nUnicastResponseToMulticast            Enable\r\n\r\nLogging:\r\nLogAllowedConnections                 Disable\r\nLogDroppedConnections                 Disable\r\nFileName                              %systemroot%\\system32\\LogFiles\\Firewall\\pfirewall.log\r\nMaxFileSize                           4096\r\n\r\n\r\nPrivate Profile Settings: \r\n----------------------------------------------------------------------\r\nState                                 ON\r\nFirewall Policy                       BlockInbound,AllowOutbound\r\nLocalFirewallRules                    N/A (GPO-store only)\r\nLocalConSecRules                      N/A (GPO-store only)\r\nInboundUserNotification               Enable\r\nRemoteManagement                      Disable\r\nUnicastResponseToMulticast            Enable\r\n\r\nLogging:\r\nLogAllowedConnections                 Disable\r\nLogDroppedConnections                 Disable\r\nFileName                              %systemroot%\\system32\\LogFiles\\Firewall\\pfirewall.log\r\nMaxFileSize                           4096\r\n\r\n\r\nPublic Profile Settings: \r\n----------------------------------------------------------------------\r\nState                                 ON\r\nFirewall Policy                       BlockInbound,AllowOutbound\r\nLocalFirewallRules                    N/A (GPO-store only)\r\nLocalConSecRules                      N/A (GPO-store only)\r\nInboundUserNotification               Enable\r\nRemoteManagement                      Disable\r\nUnicastResponseToMulticast            Enable\r\n\r\nLogging:\r\nLogAllowedConnections                 Disable\r\nLogDroppedConnections                 Disable\r\nFileName                              %systemroot%\\system32\\LogFiles\\Firewall\\pfirewall.log\r\nMaxFileSize                           4096\r\n\r\nOk.\r\n\r\n\r\n\r\nSTDERR:\r\n"
+                                                    }
+                                                ]
+                           }
+                       ],
+    "overlapping_pairs":  [
+                              {
+                                  "left_worker":  "host_baseline",
+                                  "right_worker":  "identity_context",
+                                  "left_start_utc":  "2026-05-31T15:58:11.4748289Z",
+                                  "left_end_utc":  "2026-05-31T15:58:13.6711223Z",
+                                  "right_start_utc":  "2026-05-31T15:58:11.5302925Z",
+                                  "right_end_utc":  "2026-05-31T15:58:11.6752345Z"
+                              },
+                              {
+                                  "left_worker":  "host_baseline",
+                                  "right_worker":  "network_light",
+                                  "left_start_utc":  "2026-05-31T15:58:11.4748289Z",
+                                  "left_end_utc":  "2026-05-31T15:58:13.6711223Z",
+                                  "right_start_utc":  "2026-05-31T15:58:11.5936154Z",
+                                  "right_end_utc":  "2026-05-31T15:58:11.7947092Z"
+                              },
+                              {
+                                  "left_worker":  "host_baseline",
+                                  "right_worker":  "security_posture",
+                                  "left_start_utc":  "2026-05-31T15:58:11.4748289Z",
+                                  "left_end_utc":  "2026-05-31T15:58:13.6711223Z",
+                                  "right_start_utc":  "2026-05-31T15:58:11.6605201Z",
+                                  "right_end_utc":  "2026-05-31T15:58:11.8723787Z"
+                              },
+                              {
+                                  "left_worker":  "identity_context",
+                                  "right_worker":  "network_light",
+                                  "left_start_utc":  "2026-05-31T15:58:11.5302925Z",
+                                  "left_end_utc":  "2026-05-31T15:58:11.6752345Z",
+                                  "right_start_utc":  "2026-05-31T15:58:11.5936154Z",
+                                  "right_end_utc":  "2026-05-31T15:58:11.7947092Z"
+                              },
+                              {
+                                  "left_worker":  "identity_context",
+                                  "right_worker":  "security_posture",
+                                  "left_start_utc":  "2026-05-31T15:58:11.5302925Z",
+                                  "left_end_utc":  "2026-05-31T15:58:11.6752345Z",
+                                  "right_start_utc":  "2026-05-31T15:58:11.6605201Z",
+                                  "right_end_utc":  "2026-05-31T15:58:11.8723787Z"
+                              },
+                              {
+                                  "left_worker":  "network_light",
+                                  "right_worker":  "security_posture",
+                                  "left_start_utc":  "2026-05-31T15:58:11.5936154Z",
+                                  "left_end_utc":  "2026-05-31T15:58:11.7947092Z",
+                                  "right_start_utc":  "2026-05-31T15:58:11.6605201Z",
+                                  "right_end_utc":  "2026-05-31T15:58:11.8723787Z"
+                              }
+                          ]
+}
+

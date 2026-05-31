@@ -1,0 +1,172 @@
+WIN32_LOGONSESSION
+LogonId=123503
+LogonType=2 (Interactive)
+AuthenticationPackage=Negotiate
+StartTime=5/28/2026 5:27:55 AM
+------------------------------------------------------------
+LogonId=123571
+LogonType=2 (Interactive)
+AuthenticationPackage=Negotiate
+StartTime=5/28/2026 5:27:55 AM
+------------------------------------------------------------
+LogonId=12633949
+LogonType=2 (Interactive)
+AuthenticationPackage=Negotiate
+StartTime=5/28/2026 5:49:34 AM
+------------------------------------------------------------
+LogonId=12634014
+LogonType=2 (Interactive)
+AuthenticationPackage=Negotiate
+StartTime=5/28/2026 5:49:34 AM
+------------------------------------------------------------
+LogonId=13267949
+LogonType=2 (Interactive)
+AuthenticationPackage=CloudAP
+StartTime=5/28/2026 3:32:28 PM
+Accounts:
+  FIXTURE_HOST\FIXTURE_USER SID=S-1-5-21-FIXTURE-SID Source=AssociatedInstance
+------------------------------------------------------------
+LogonId=13268269
+LogonType=2 (Interactive)
+AuthenticationPackage=CloudAP
+StartTime=5/28/2026 3:32:28 PM
+Accounts:
+  FIXTURE_HOST\FIXTURE_USER SID=S-1-5-21-FIXTURE-SID Source=AssociatedInstance
+------------------------------------------------------------
+LogonId=3019900
+LogonType=2 (Interactive)
+AuthenticationPackage=CloudAP
+StartTime=5/28/2026 5:29:40 AM
+Accounts:
+  FIXTURE_HOST\FIXTURE_USER SID=S-1-5-21-FIXTURE-SID Source=AssociatedInstance
+------------------------------------------------------------
+LogonId=3019990
+LogonType=2 (Interactive)
+AuthenticationPackage=CloudAP
+StartTime=5/28/2026 5:29:40 AM
+Accounts:
+  FIXTURE_HOST\FIXTURE_USER SID=S-1-5-21-FIXTURE-SID Source=AssociatedInstance
+------------------------------------------------------------
+LogonId=478159571
+LogonType=2 (Interactive)
+AuthenticationPackage=Negotiate
+StartTime=5/30/2026 12:09:00 AM
+------------------------------------------------------------
+LogonId=478163835
+LogonType=2 (Interactive)
+AuthenticationPackage=Negotiate
+StartTime=5/30/2026 12:09:00 AM
+------------------------------------------------------------
+LogonId=478163912
+LogonType=2 (Interactive)
+AuthenticationPackage=Negotiate
+StartTime=5/30/2026 12:09:00 AM
+------------------------------------------------------------
+LogonId=478772908
+LogonType=2 (Interactive)
+AuthenticationPackage=CloudAP
+StartTime=5/30/2026 12:33:59 PM
+Accounts:
+  FIXTURE_HOST\FIXTURE_USER SID=S-1-5-21-FIXTURE-SID Source=AssociatedInstance
+------------------------------------------------------------
+LogonId=478773608
+LogonType=2 (Interactive)
+AuthenticationPackage=CloudAP
+StartTime=5/30/2026 12:33:59 PM
+Accounts:
+  FIXTURE_HOST\FIXTURE_USER SID=S-1-5-21-FIXTURE-SID Source=AssociatedInstance
+------------------------------------------------------------
+LogonId=87548
+LogonType=2 (Interactive)
+AuthenticationPackage=Negotiate
+StartTime=5/28/2026 5:27:55 AM
+------------------------------------------------------------
+LogonId=87567
+LogonType=2 (Interactive)
+AuthenticationPackage=Negotiate
+StartTime=5/28/2026 5:27:55 AM
+------------------------------------------------------------
+LogonId=996
+LogonType=5 (Service)
+AuthenticationPackage=Negotiate
+StartTime=5/28/2026 5:27:55 AM
+Accounts:
+  FIXTURE_HOST\NETWORK SERVICE SID=S-1-5-20 Source=AssociatedInstance
+------------------------------------------------------------
+LogonId=997
+LogonType=5 (Service)
+AuthenticationPackage=Negotiate
+StartTime=5/28/2026 5:27:55 AM
+Accounts:
+  FIXTURE_HOST\LOCAL SERVICE SID=S-1-5-19 Source=AssociatedInstance
+------------------------------------------------------------
+LogonId=999
+LogonType=0 (System)
+AuthenticationPackage=NTLM
+StartTime=5/28/2026 5:27:55 AM
+Accounts:
+  FIXTURE_HOST\SYSTEM SID=S-1-5-18 Source=AssociatedInstance
+------------------------------------------------------------
+
+WIN32_LOGGEDONUSER_ASSOCIATIONS
+
+
+LogonId : 
+Domain  : 
+User    : 
+SID     : 
+Source  : ParsedAssociation
+
+LogonId : 13267949
+Domain  : FIXTURE_HOST
+User    : FIXTURE_USER
+SID     : S-1-5-21-FIXTURE-SID
+Source  : AssociatedInstance
+
+LogonId : 13268269
+Domain  : FIXTURE_HOST
+User    : FIXTURE_USER
+SID     : S-1-5-21-FIXTURE-SID
+Source  : AssociatedInstance
+
+LogonId : 3019900
+Domain  : FIXTURE_HOST
+User    : FIXTURE_USER
+SID     : S-1-5-21-FIXTURE-SID
+Source  : AssociatedInstance
+
+LogonId : 3019990
+Domain  : FIXTURE_HOST
+User    : FIXTURE_USER
+SID     : S-1-5-21-FIXTURE-SID
+Source  : AssociatedInstance
+
+LogonId : 478772908
+Domain  : FIXTURE_HOST
+User    : FIXTURE_USER
+SID     : S-1-5-21-FIXTURE-SID
+Source  : AssociatedInstance
+
+LogonId : 478773608
+Domain  : FIXTURE_HOST
+User    : FIXTURE_USER
+SID     : S-1-5-21-FIXTURE-SID
+Source  : AssociatedInstance
+
+LogonId : 996
+Domain  : FIXTURE_HOST
+User    : NETWORK SERVICE
+SID     : S-1-5-20
+Source  : AssociatedInstance
+
+LogonId : 997
+Domain  : FIXTURE_HOST
+User    : LOCAL SERVICE
+SID     : S-1-5-19
+Source  : AssociatedInstance
+
+LogonId : 999
+Domain  : FIXTURE_HOST
+User    : SYSTEM
+SID     : S-1-5-18
+Source  : AssociatedInstance

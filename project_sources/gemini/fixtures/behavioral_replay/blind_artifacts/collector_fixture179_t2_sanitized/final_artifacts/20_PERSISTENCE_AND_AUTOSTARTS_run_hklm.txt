@@ -1,0 +1,8 @@
+COMMAND=reg query "HKLM\Software\Microsoft\Windows\CurrentVersion\Run"
+EXIT_CODE=1
+
+STDOUT:
+
+
+STDERR:
+Registry key absent or not readable: HKLM\Software\Microsoft\Windows\CurrentVersion\Run

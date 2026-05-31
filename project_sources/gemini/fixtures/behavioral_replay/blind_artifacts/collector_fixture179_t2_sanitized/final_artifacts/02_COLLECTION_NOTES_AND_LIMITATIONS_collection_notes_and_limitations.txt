@@ -1,0 +1,9 @@
+Offline profile hives were not loaded by design.
+Only loaded HKU user Run keys were collected.
+Raw EVTX files are not part of baseline collection. Log text is exported for baseline review.
+Current run files remain in place until Cleanup runs.
+A new Collect run purges prior DCOIR run folders and the prior package zip.
+The merged baseline report remains useful for local analyst review, but it is no longer the default Gemini-facing upload surface. Prefer the upload summary and representative artifacts.
+
+Collection notes:
+Bounded parallel baseline workers executed with observed overlap across 6 worker pair(s).

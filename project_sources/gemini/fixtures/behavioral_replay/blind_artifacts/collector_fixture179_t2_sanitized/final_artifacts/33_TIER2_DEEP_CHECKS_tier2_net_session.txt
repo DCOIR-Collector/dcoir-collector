@@ -1,0 +1,10 @@
+COMMAND=cmd.exe /c "net session"
+EXIT_CODE=0
+
+STDOUT:
+There are no entries in the list.
+
+
+
+STDERR:
+

@@ -1,0 +1,64 @@
+SECURITY_HIGH_SIGNAL_SUMMARY
+WINDOW_HOURS=72
+RAW_EVENT_COUNT=800
+INTERESTING_EVENT_COUNT=16
+SUPPRESSED_EVENT_COUNT=784
+
+INTERESTING_EVENT_COUNTS
+Id=4624 Count=8
+Id=4648 Count=4
+Id=4672 Count=4
+
+SUPPRESSED_EVENT_COUNTS
+4624, routine successful service or machine logon Count=392
+4672, routine special privileges assignment for service or machine account Count=392
+
+EVENT_SUMMARY
+[2026-05-31T08:46:41.6082820+02:00] Id=4672 Special privileges assigned Subject=MicrosoftAccount\\fixture.user@example.invalid Privileges=SeSecurityPrivilege
+			SeTakeOwnershipPrivilege
+			SeLoadDriverPrivilege
+			SeBackupPrivilege
+			SeRestorePrivilege
+			SeDebugPrivilege
+			SeSystemEnvironmentPrivilege
+			SeImpersonatePrivilege
+			SeDelegateSessionUserImpersonatePrivilege
+[2026-05-31T08:46:41.6082752+02:00] Id=4624 Successful logon Target=MicrosoftAccount\\fixture.user@example.invalid LogonType=7 SourceIp=- Workstation=FIXTURE_HOST
+[2026-05-31T08:46:41.6082523+02:00] Id=4624 Successful logon Target=MicrosoftAccount\\fixture.user@example.invalid LogonType=7 SourceIp=- Workstation=FIXTURE_HOST
+[2026-05-31T08:46:41.6082129+02:00] Id=4648 Explicit credentials Subject=WORKGROUP\\FIXTURE_HOST$ TargetServer=localhost Process=C:\Windows\System32\lsass.exe SourceIp=-
+[2026-05-31T08:46:41.5875366+02:00] Id=4672 Special privileges assigned Subject=MicrosoftAccount\\fixture.user@example.invalid Privileges=SeSecurityPrivilege
+			SeTakeOwnershipPrivilege
+			SeLoadDriverPrivilege
+			SeBackupPrivilege
+			SeRestorePrivilege
+			SeDebugPrivilege
+			SeSystemEnvironmentPrivilege
+			SeImpersonatePrivilege
+			SeDelegateSessionUserImpersonatePrivilege
+[2026-05-31T08:46:41.5875325+02:00] Id=4624 Successful logon Target=MicrosoftAccount\\fixture.user@example.invalid LogonType=11 SourceIp=127.0.0.1 Workstation=FIXTURE_HOST
+[2026-05-31T08:46:41.5875207+02:00] Id=4624 Successful logon Target=MicrosoftAccount\\fixture.user@example.invalid LogonType=11 SourceIp=127.0.0.1 Workstation=FIXTURE_HOST
+[2026-05-31T08:46:41.5874990+02:00] Id=4648 Explicit credentials Subject=WORKGROUP\\FIXTURE_HOST$ TargetServer=localhost Process=C:\Windows\System32\svchost.exe SourceIp=127.0.0.1
+[2026-05-30T19:14:04.2073178+02:00] Id=4672 Special privileges assigned Subject=MicrosoftAccount\\fixture.user@example.invalid Privileges=SeSecurityPrivilege
+			SeTakeOwnershipPrivilege
+			SeLoadDriverPrivilege
+			SeBackupPrivilege
+			SeRestorePrivilege
+			SeDebugPrivilege
+			SeSystemEnvironmentPrivilege
+			SeImpersonatePrivilege
+			SeDelegateSessionUserImpersonatePrivilege
+[2026-05-30T19:14:04.2072976+02:00] Id=4624 Successful logon Target=MicrosoftAccount\\fixture.user@example.invalid LogonType=7 SourceIp=- Workstation=FIXTURE_HOST
+[2026-05-30T19:14:04.2072726+02:00] Id=4624 Successful logon Target=MicrosoftAccount\\fixture.user@example.invalid LogonType=7 SourceIp=- Workstation=FIXTURE_HOST
+[2026-05-30T19:14:04.2072268+02:00] Id=4648 Explicit credentials Subject=WORKGROUP\\FIXTURE_HOST$ TargetServer=localhost Process=C:\Windows\System32\lsass.exe SourceIp=-
+[2026-05-30T19:14:04.1783985+02:00] Id=4672 Special privileges assigned Subject=MicrosoftAccount\\fixture.user@example.invalid Privileges=SeSecurityPrivilege
+			SeTakeOwnershipPrivilege
+			SeLoadDriverPrivilege
+			SeBackupPrivilege
+			SeRestorePrivilege
+			SeDebugPrivilege
+			SeSystemEnvironmentPrivilege
+			SeImpersonatePrivilege
+			SeDelegateSessionUserImpersonatePrivilege
+[2026-05-30T19:14:04.1783952+02:00] Id=4624 Successful logon Target=MicrosoftAccount\\fixture.user@example.invalid LogonType=11 SourceIp=127.0.0.1 Workstation=FIXTURE_HOST
+[2026-05-30T19:14:04.1783858+02:00] Id=4624 Successful logon Target=MicrosoftAccount\\fixture.user@example.invalid LogonType=11 SourceIp=127.0.0.1 Workstation=FIXTURE_HOST
+[2026-05-30T19:14:04.1783678+02:00] Id=4648 Explicit credentials Subject=WORKGROUP\\FIXTURE_HOST$ TargetServer=localhost Process=C:\Windows\System32\svchost.exe SourceIp=127.0.0.1
