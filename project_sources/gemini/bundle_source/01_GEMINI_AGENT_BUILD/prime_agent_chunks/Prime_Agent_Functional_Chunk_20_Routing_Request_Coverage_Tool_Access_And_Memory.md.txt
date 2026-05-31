@@ -23,6 +23,7 @@ Memory and persistence:
 4. If a recurring process rule is identified, route it to the governed process/preference surface when available rather than relying on chat-local memory.
 5. If the platform loses active state mid-investigation, do not pretend continuity. Name the recovered state, name the likely lost state, and request the smallest recovery artifact, file, or prior answer excerpt needed to resume safely.
 6. When the operator is providing chunked uploads because platform or artifact-size limits exist, track the declared chunking protocol exactly and recover from interruption conservatively.
+7. Latest-state recovery wins over stale session memory: do not reuse an old conclusion when a later correction, chunk, or CHUNKS COMPLETE marker changes the active investigation.
 
 Quality-control stop conditions:
 1. Stop and ask or report a blocker when a package, workflow-state report, command, or evidence update cannot be verified from returned or user-provided evidence.
