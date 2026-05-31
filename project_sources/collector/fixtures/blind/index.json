@@ -2,11 +2,13 @@
   "schema": "collector_blind_fixture_index_v1",
   "purpose": "Operator-supplied DCOIR Collector artifact fixture metadata for Gemini behavioral harnesses.",
   "ignored_artifact_root": "project_sources/collector/fixtures/blind_artifacts",
-  "committed_artifacts_policy": "Only sanitized excerpts and manifests are committed. Raw bundles remain ignored/operator-supplied.",
+  "committed_artifacts_policy": "Raw bundles remain ignored/operator-supplied. Sanitized full-tree fixtures may be committed when they preserve collector layout and replace host, user, local path, and machine-identifying values.",
   "fixtures": [
     {
       "id": "fixture179_t2_20260531_175810",
       "manifest": "project_sources/gemini/fixtures/behavioral_replay/blind/manifests/collector_live_fixture_20260531.manifest.json",
+      "sanitized_artifact_tree": "project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized",
+      "sanitized_artifact_manifest": "project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized/SANITIZED_FIXTURE_MANIFEST.json",
       "derived_scenarios": [
         "collector_t2_partial_success",
         "collector_t2_upload_budget",
