@@ -129,15 +129,7 @@ jobs:
               cat "${output}"
               exit 1
             fi
-            python - "${output}" <<'PY'
-import json
-import sys
-path = sys.argv[1]
-with open(path, encoding='utf-8') as fh:
-    data = json.load(fh)
-if data.get('success') is not False:
-    raise SystemExit(f'Known-bad output did not record success=false: {path}')
-PY
+            python -c "import json, sys; data=json.load(open(sys.argv[1], encoding='utf-8')); assert data.get('success') is False, sys.argv[1]" "${output}"
           }
 
           check_known_bad dcoir_byovd_evidence_discipline_issue_122 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_byovd_evidence_discipline_issue_122_known_bad_response_pack.json "Issue 122 baseline"
