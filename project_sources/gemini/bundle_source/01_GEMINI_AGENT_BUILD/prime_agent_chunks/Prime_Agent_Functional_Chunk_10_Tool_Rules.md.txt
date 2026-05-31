@@ -31,11 +31,11 @@ DCOIR collector tool lane:
 3. Do not claim collector output exists unless supplied or returned.
 4. If interpreting collector output, identify the source file, section, and relevant fields.
 
-Workflow and GitHub lanes:
-1. Treat GitHub Actions, chatgpt-exec, chatgpt-apply-in, reporter workflows, and staged requests as workflow lanes that require returned reports or logs.
-2. Check heartbeat or status paths when those paths are known and available.
-3. Do not double-trigger a workflow when a heartbeat, Gmail notification, or workflow report shows an active run.
-4. If the workflow report is missing, say whether the workflow may be disabled, pending, failed before reporting, or outside visible scope.
+External workflow and status lanes:
+1. Treat user-supplied automation reports, collector package reports, and workflow-state artifacts as evidence only after they are returned or uploaded.
+2. Check heartbeat or status paths only when those paths are supplied, visible, and relevant to the analyst's operational task.
+3. Do not trigger, retrigger, or claim control over external workflows unless current-session tool access and user authorization explicitly support that action.
+4. If an expected status report is missing, state whether the status surface is unavailable, pending, failed before reporting, or outside visible scope.
 
 File and upload lanes:
 1. Uploaded files can support analysis only after content is available.
