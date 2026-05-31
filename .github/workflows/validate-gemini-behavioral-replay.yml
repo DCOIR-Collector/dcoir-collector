@@ -85,21 +85,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python project_sources/gemini/tools/run_gemini_behavioral_replay.py \
-            --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
-            --fixture-id dcoir_operator_state_first_issue_124 \
-            --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_operator_state_first_issue_124_known_good_response_pack.json \
-            --output-dir project_sources/validation/out_validate_gemini_behavioral_replay/run_good_issue_124
-          python project_sources/gemini/tools/run_gemini_behavioral_replay.py \
-            --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
-            --fixture-id dcoir_byovd_evidence_discipline_issue_122 \
-            --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_byovd_evidence_discipline_issue_122_known_good_response_pack.json \
-            --output-dir project_sources/validation/out_validate_gemini_behavioral_replay/run_good_issue_122
-          python project_sources/gemini/tools/run_gemini_behavioral_replay.py \
-            --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
-            --fixture-id dcoir_long_transcript_continuity_issue_123 \
-            --response-pack project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_long_transcript_continuity_issue_123_known_good_response_pack.json \
-            --output-dir project_sources/validation/out_validate_gemini_behavioral_replay/run_good_issue_123
+          run_known_good() {
+            local fixture_id="$1"
+            local response_pack="$2"
+            local output_dir="$3"
+            python project_sources/gemini/tools/run_gemini_behavioral_replay.py \
+              --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
+              --fixture-id "${fixture_id}" \
+              --response-pack "${response_pack}" \
+              --output-dir "${output_dir}"
+          }
+
+          run_known_good dcoir_operator_state_first_issue_124 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_operator_state_first_issue_124_known_good_response_pack.json project_sources/validation/out_validate_gemini_behavioral_replay/run_good_issue_124
+          run_known_good dcoir_byovd_evidence_discipline_issue_122 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_byovd_evidence_discipline_issue_122_known_good_response_pack.json project_sources/validation/out_validate_gemini_behavioral_replay/run_good_issue_122
+          run_known_good dcoir_long_transcript_continuity_issue_123 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_long_transcript_continuity_issue_123_known_good_response_pack.json project_sources/validation/out_validate_gemini_behavioral_replay/run_good_issue_123
+          run_known_good dcoir_kql_unique_value_miss_issue_174 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_kql_unique_value_miss_issue_174_known_good_response_pack.json project_sources/validation/out_validate_gemini_behavioral_replay/run_good_issue_174
 
       - name: Render standalone replay report
         shell: bash
@@ -113,17 +113,31 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p project_sources/validation/out_validate_gemini_behavioral_replay/known_bad_results
           check_known_bad() {
             local fixture_id="$1"
             local response_pack="$2"
             local label="$3"
+            local safe_label
+            safe_label="$(printf '%s' "${label}" | tr -c 'A-Za-z0-9_.-' '_')"
+            local output="project_sources/validation/out_validate_gemini_behavioral_replay/known_bad_results/${safe_label}.json"
             if python project_sources/gemini/tools/score_gemini_behavioral_replay.py \
               --fixtures-root project_sources/gemini/fixtures/behavioral_replay \
               --response-pack "${response_pack}" \
-              --fixture-id "${fixture_id}"; then
+              --fixture-id "${fixture_id}" > "${output}"; then
               echo "${label} known-bad response pack unexpectedly passed."
+              cat "${output}"
               exit 1
             fi
+            python - "${output}" <<'PY'
+import json
+import sys
+path = sys.argv[1]
+with open(path, encoding='utf-8') as fh:
+    data = json.load(fh)
+if data.get('success') is not False:
+    raise SystemExit(f'Known-bad output did not record success=false: {path}')
+PY
           }
 
           check_known_bad dcoir_byovd_evidence_discipline_issue_122 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_byovd_evidence_discipline_issue_122_known_bad_response_pack.json "Issue 122 baseline"
@@ -143,6 +157,12 @@ jobs:
           check_known_bad dcoir_long_transcript_continuity_issue_123 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_long_transcript_continuity_issue_123_known_bad_quoted_marker_response_pack.json "Issue 123 quoted marker"
           check_known_bad dcoir_long_transcript_continuity_issue_123 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_long_transcript_continuity_issue_123_known_bad_suffix_response_pack.json "Issue 123 suffix marker"
           check_known_bad dcoir_long_transcript_continuity_issue_123 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_long_transcript_continuity_issue_123_known_bad_not_needed_response_pack.json "Issue 123 not-needed"
+          check_known_bad dcoir_kql_unique_value_miss_issue_174 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_kql_unique_value_miss_issue_174_known_bad_absence_response_pack.json "Issue 174 miss-to-absence"
+          check_known_bad dcoir_kql_unique_value_miss_issue_174 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_kql_unique_value_miss_issue_174_known_bad_malicious_response_pack.json "Issue 174 miss-to-malicious"
+          check_known_bad dcoir_kql_unique_value_miss_issue_174 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_kql_unique_value_miss_issue_174_known_bad_benign_response_pack.json "Issue 174 miss-to-benign"
+          check_known_bad dcoir_kql_unique_value_miss_issue_174 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_kql_unique_value_miss_issue_174_known_bad_repeat_shape_response_pack.json "Issue 174 repeat-shape"
+          check_known_bad dcoir_kql_unique_value_miss_issue_174 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_kql_unique_value_miss_issue_174_known_bad_broad_spam_response_pack.json "Issue 174 broad-spam"
+          check_known_bad dcoir_kql_unique_value_miss_issue_174 project_sources/gemini/fixtures/behavioral_replay/supporting_artifacts/dcoir_kql_unique_value_miss_issue_174_known_bad_invented_search_response_pack.json "Issue 174 invented-search"
 
       - name: Ensure response-pack mode mismatches fail
         shell: bash
@@ -190,7 +210,7 @@ jobs:
           - primary_artifact: validate-gemini-behavioral-replay-results
           - artifact_note: includes deterministic replay outputs, rendered replay report, and known-bad response-pack checks when produced.
 
-          The workflow conclusion is the authoritative pass/fail signal. Use this section to locate the replay validation artifact bundle without opening the full job log first.
+          The workflow conclusion indicates the configured job passed or failed. For readiness claims, also read back the uploaded artifact and confirm the expected fixture and response-pack outputs are present.
           REPORT
 
       - name: Upload ChatGPT workflow report section
