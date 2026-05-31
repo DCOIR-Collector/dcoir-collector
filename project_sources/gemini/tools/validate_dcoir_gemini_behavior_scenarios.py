@@ -129,6 +129,21 @@ SCENARIOS = {
             ['smallest broadening step', 'what additional result would move the case toward benign or malicious'],
         ],
     },
+    'GeminiUniqueValueKqlMissBroadening': {
+        'description': 'The stored Gemini source should repair exact unique-value KQL misses with one controlled broadening step while preserving bounded zero-result conclusions.',
+        'all_markers': [
+            'exact unique-value kql',
+            'preserve the exact unique value',
+            'field-agnostic exact-value kql',
+            'one controlled repair step',
+            'does not prove absence',
+        ],
+        'any_marker_groups': [
+            ['field mismatch', 'keyword/text mismatch', 'escaping or quoting', 'secondary filter'],
+            ['do not infer stealth', 'do not infer absence', 'do not infer benignity', 'do not infer maliciousness'],
+            ['broad search spam', 'all-index/all-time search dumps'],
+        ],
+    },
     'GeminiSecurityProductNegativeControl': {
         'description': 'The stored Gemini source should preserve false-positive-aware handling for benign or dual-use security-product behavior.',
         'all_markers': ['false-positive-aware', 'security product'],
