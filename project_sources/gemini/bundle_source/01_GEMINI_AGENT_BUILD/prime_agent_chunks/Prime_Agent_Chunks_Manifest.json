@@ -3,13 +3,13 @@
   "source_prime_agent_file": "01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt",
   "generated_prime_agent_file": "01_GEMINI_AGENT_BUILD/Prime_Agent_DCOIR_Gemini_Orchestrator.md.txt",
   "source_strategy": "chunked_reassembled_prime_agent",
-  "chunking_strategy": "functional_same_to_same_rewrite_using_gemini_research_reference",
-  "rewrite_guidance_source": "Airtable Gemini Research Reference full-table guidance pull, 76 records, session 2026-05-12",
+  "chunking_strategy": "functional_same_to_same_rewrite_using_governed_gemini_research_reference",
+  "rewrite_guidance_source": "Governed Gemini research reference guidance pull, 76 records, session 2026-05-12",
   "chunk_count": 21,
   "reassembly": {
     "method": "concatenate_chunks_in_manifest_order",
     "newline_policy": "preserve_chunk_text_exactly",
-    "expected_sha256": "8352d26561eea3bce10a57be45e16b8aac707190405863133f134897135e64d6"
+    "expected_sha256": "f7c719d106ad739bb8a2941de5ef7e932496a06570ea97ecbc90f207324815f4"
   },
   "chunks": [
     {
@@ -32,7 +32,7 @@
       "chunk_id": "02",
       "title": "Readiness_Startup_And_Branch_Gating",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_02_Readiness_Startup_And_Branch_Gating.md.txt",
-      "sha256": "26488b6939cc1f6159c843e3ff9aa314bbe9b740d6b277669150027b2189da46",
+      "sha256": "40d35c3ef1895db7bc40c315d21919368c3da9cab1183ff948eb250395fd5d35",
       "line_count": 39,
       "starts_with": "### Readiness, startup, and branch gating"
     },
@@ -96,7 +96,7 @@
       "chunk_id": "10",
       "title": "Tool_Rules",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_10_Tool_Rules.md.txt",
-      "sha256": "fc11466a39818eb0ca0899b91e03bd23b62c98d1791b0262aaad848abf551d62",
+      "sha256": "1eb9c888045a883b30f7de9f1f587b57cc665317dd966050f21ba302cf1d730b",
       "line_count": 51,
       "starts_with": "### Tool rules"
     },
@@ -112,7 +112,7 @@
       "chunk_id": "12",
       "title": "Schema_Environment_And_Data_Access",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_12_Schema_Environment_And_Data_Access.md.txt",
-      "sha256": "ddcf52c66c024921b9dbd1a33cded0528008bdcfce08c413769dded394536d5b",
+      "sha256": "a0cf9f68d38baf92e26d7a2c655396671c8085010dd07252e817287696279e1d",
       "line_count": 35,
       "starts_with": "### Schema, environment, and data access"
     },
@@ -152,7 +152,7 @@
       "chunk_id": "17",
       "title": "DCOIR_Branch_Ownership_Collector_And_USB",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_17_DCOIR_Branch_Ownership_Collector_And_USB.md.txt",
-      "sha256": "9511bc0ee7db0df33fdffd3198208f5789fbc8bdab3401b1fd670702e3282adc",
+      "sha256": "a85490350cd9432ad6784b429622217948268f03a64dca098b7ed380b5f2b1d6",
       "line_count": 39,
       "starts_with": "### DCOIR branch ownership, collector, and USB report lanes"
     },
@@ -176,7 +176,7 @@
       "chunk_id": "20",
       "title": "Routing_Request_Coverage_Tool_Access_And_Memory",
       "path": "01_GEMINI_AGENT_BUILD/prime_agent_chunks/Prime_Agent_Functional_Chunk_20_Routing_Request_Coverage_Tool_Access_And_Memory.md.txt",
-      "sha256": "b4a703c8f202730df7c2431b4fdc22ad0bf7afe4dbc9338332cfc50ca67ef03a",
+      "sha256": "d5ffc5302c04154ace48fbcf3338109945b1acedbf537d667500d9c255822d29",
       "line_count": 38,
       "starts_with": "### Routing, request coverage, tool access, and memory limits"
     }

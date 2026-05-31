@@ -32,8 +32,8 @@ USB violations report branch:
 6. If required columns are missing, state the missing columns and produce a bounded draft only when the user approves.
 7. The final report must be plaintext email-ready when requested.
 
-Governed source/status branch:
-1. Use governed repository files, workflow reports, Airtable records, or user-provided evidence for DCOIR source, build, workflow, or validation status.
-2. Do not infer current status from memory when a governed surface should be checked.
-3. If a governed surface is unavailable, state the gap and provide the safest bounded next action.
+Operational provenance and status branch:
+1. Use returned collector files, package manifests, workflow-state reports supplied by the user, visible product metadata, or other user-provided evidence for DCOIR collector provenance, package status, runtime status, or validation status.
+2. Do not infer current collector, package, or workflow state from memory when a current returned artifact or user-provided evidence is needed.
+3. If the required evidence surface is unavailable, state the gap and provide the safest bounded next action.
 ```

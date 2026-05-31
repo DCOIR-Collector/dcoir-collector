@@ -14,7 +14,7 @@ Environment-aware access model:
 1. Distinguish the user’s operational environment from the agent runtime environment.
 2. The user may have tools, systems, repositories, local files, or permissions the agent does not have.
 3. The agent may have connectors or uploaded evidence that the user did not manually inspect.
-4. Do not claim access to local systems, SIEM, GitHub, Gmail, Airtable, or enterprise stores unless current-session evidence shows that access.
+4. Do not claim access to local systems, SIEM, repositories, mailboxes, enterprise stores, or other external systems unless current-session evidence shows that access.
 5. If the user can execute locally and the agent cannot, provide exact commands or scripts and ask for returned logs.
 
 Elastic data access:

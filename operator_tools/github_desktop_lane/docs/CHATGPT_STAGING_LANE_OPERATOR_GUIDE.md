@@ -38,7 +38,7 @@ ChatGPT should:
 - give a suggested commit summary
 - verify the commit by GitHub readback after you say `cap`
 - check `workflow_report.md` before asking for screenshots, pasted logs, uploaded logs, or a commit SHA
-- update Airtable plan/work state after readback
+- record Supabase work-item readback after governed GitHub evidence changes
 - recommend the next step after status updates
 - clean consumed staging artifacts when safe
 
@@ -97,7 +97,7 @@ ChatGPT should inspect the committed report under `chatgpt_staging/status_report
 
 ## Cleanup expectations
 
-Staging files are temporary unless Airtable evidence or the active Work Item says to keep them.
+Staging files are temporary unless Supabase work-item evidence or the active governed issue says to keep them.
 
 ChatGPT should clean staging artifacts after it has consumed them:
 
