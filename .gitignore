@@ -18,6 +18,8 @@ project_sources/TestResults/
 # Gemini behavioral harness blind/generated artifacts
 project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/**
 !project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/.gitkeep
+!project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized/
+!project_sources/gemini/fixtures/behavioral_replay/blind_artifacts/collector_fixture179_t2_sanitized/**
 project_sources/gemini/fixtures/behavioral_replay/blind/**/response_packs/
 
 # Collector blind fixture artifacts are operator-supplied or generated locally.
