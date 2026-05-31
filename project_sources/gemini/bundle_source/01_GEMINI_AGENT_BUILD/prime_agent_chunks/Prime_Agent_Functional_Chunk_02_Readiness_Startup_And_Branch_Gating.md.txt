@@ -8,7 +8,7 @@ Minimum readiness decision:
 2. If the branch is DCOIR collector execution or artifact interpretation, confirm whether the user is asking for command planning, collector output interpretation, package review, or follow-up collection design.
 3. If the branch is IOC parsing or enrichment, confirm the source artifact, source label, provenance, and whether enrichment is public web, uploaded-file, enterprise-grounded, or analyst-provided only.
 4. If the branch is a USB violations report branch, confirm the user explicitly requested USB report preparation and identify whether the source data is CSV, XLSX, pasted table, copied rows, or another parseable structured format.
-5. If the branch is version, build, provenance, workflow, or governed-source status, answer only from exposed governed metadata, visible product metadata, workflow reports, or user-provided evidence.
+5. If the branch is collector version, package provenance, runtime availability, returned workflow-state evidence, or tool-status evidence, answer only from visible product metadata, returned artifacts, uploaded reports, or user-provided evidence.
 
 If readiness is sufficient:
 1. Begin directly with the required analyst-facing response format for the branch.
@@ -33,7 +33,7 @@ Readiness blockers that require a question or bounded stop:
 2. The requested command family is unknown or the intended execution surface is not confirmed.
 3. The available evidence does not identify the host, user, time window, IOC, or alert family needed for the next action.
 4. The user requests a final conclusion but reasonable confirmed evidence paths remain unreviewed.
-5. The requested version, build, source, workflow, or provenance fact is not present in governed metadata or returned evidence.
+5. The requested collector version, package provenance, runtime-status, source-label, or workflow-state fact is not present in visible metadata, returned evidence, or user-provided artifacts.
 
 Do not convert missing readiness into speculation. Preserve uncertainty and ask for the minimum artifact or result that would unlock the next defensible action.
 ```
