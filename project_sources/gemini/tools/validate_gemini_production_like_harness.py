@@ -68,9 +68,15 @@ def blind(root,fixtures,out,ms,require):
         pp=pdir/f'{sid}.prompt.txt'; pp.write_text(prompt,encoding='utf-8')
         owner=str(sc.get('owner',ref.get('owner',''))); fam=str(sc.get('family',ref.get('family',''))); tier=str(sc.get('tier',ref.get('tier','medium'))); tags.update([owner,fam,tier])
         rows.append({'scenario_id':sid,'owner':owner,'family':fam,'tier':tier,'prompt_path':rel(pp,root),'prompt_sha256':sha_text(prompt),'attachment_count':len(atts),'attachments':atts,'expected_verdict':sc.get('hidden',{}).get('expected_verdict',''),'artifact_expectations':sig})
-    gap=None; bundle=idx.get('collector_bundle',{}).get('path')
-    if bundle and not (root/bundle).is_file():
-        gap=f'stored artifact not present at {bundle}; full artifact replay remains manual/operator-supplied'; add(ms,'error' if require else 'warning',gap,'blind/index.json')
+    gap=None; collector_bundle=idx.get('collector_bundle',{}); bundle=collector_bundle.get('path')
+    if bundle:
+        bp=root/bundle
+        if not bp.exists():
+            gap=f'stored artifact not present at {bundle}; full artifact replay remains manual/operator-supplied'; add(ms,'error' if require else 'warning',gap,'blind/index.json')
+        elif bp.is_dir():
+            sm=collector_bundle.get('sanitized_manifest')
+            if sm and not (root/sm).is_file():
+                gap=f'sanitized stored artifact tree present at {bundle}, but sanitized manifest is missing at {sm}'; add(ms,'error',gap,'blind/index.json')
     return {'schema':idx.get('schema'),'legacy_matrix_count':len(idx.get('matrix',[])),'scenario_count':len(rows),'coverage_tags':sorted(x for x in tags if x),'prompts':rows,'stored_artifact_gap':gap}
 def collector(root,ms):
     ip=root/'project_sources/collector/fixtures/blind/index.json'
@@ -103,7 +109,7 @@ def write_reports(out,rep):
     (out/'gemini_production_like_scenario_matrix.json').write_text(json.dumps({'summary':rep['summary'],'scenarios':rep['blind_scenarios'].get('prompts',[]),'collector_fixtures':rep.get('collector_fixtures',{})},indent=2),encoding='utf-8')
     md=['# Gemini Production-Like Behavioral Harness Report','','## Summary']+[f"- {k}: `{v}`" for k,v in rep['summary'].items()]+['','## Scenario Matrix','','| Scenario | Owner | Family | Tier | Attachments | Expected verdict |','|---|---|---|---|---:|---|']
     for r in rep['blind_scenarios'].get('prompts',[]): md.append(f"| {r['scenario_id']} | {r['owner']} | {r['family']} | {r['tier']} | {r['attachment_count']} | {r['expected_verdict']} |")
-    md += ['','## Messages']+[f"- {m['level']}: {m['message']}"+(f" (`{m['path']}`)" if m.get('path') else '') for m in rep['messages']]+['','## Verdict Semantics','','- Workflow success means the harness ran and produced trustworthy evidence artifacts.','- Harness success means schemas, prompt separation, artifact signals, redaction checks, and construct loading passed.','- Behavior success remains `not_scored_static_harness` unless a deterministic or live model response lane is executed.','- Full raw collector bundles are operator-supplied and ignored unless manual validation explicitly requires them.']
+    md += ['','## Messages']+[f"- {m['level']}: {m['message']}"+(f" (`{m['path']}`)" if m.get('path') else '') for m in rep['messages']]+['','## Verdict Semantics','','- Workflow success means the harness ran and produced trustworthy evidence artifacts.','- Harness success means schemas, prompt separation, artifact signals, redaction checks, and construct loading passed.','- Behavior success remains `not_scored_static_harness` unless a deterministic or live model response lane is executed.','- Raw collector bundles remain operator-supplied and ignored; committed sanitized fixture trees may be used for static/full-artifact harness coverage.']
     text='\n'.join(md)+'\n'; (out/'gemini_production_like_harness_report.md').write_text(text,encoding='utf-8'); (out/'chatgpt_workflow_report_section.md').write_text(text,encoding='utf-8')
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument('--repo-root',default='.'); ap.add_argument('--fixtures-root',default='project_sources/gemini/fixtures/behavioral_replay'); ap.add_argument('--output-dir',default='project_sources/validation/out_gemini_production_like_harness'); ap.add_argument('--mode',choices=['light','medium','full'],default='light'); ap.add_argument('--require-stored-artifacts',action='store_true'); a=ap.parse_args()
