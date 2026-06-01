@@ -265,3 +265,36 @@ function Get-TestTextPaddingFromEnvironment {
   }
   return $sb.ToString()
 }
+
+<#
+.SYNOPSIS
+Formats normalized event-window target details for enrich reports.
+
+.DESCRIPTION
+Builds target-details text from the same normalized event-window object used by event
+readers so invalid explicit windows do not leave rejected raw bounds in enrich action
+metadata.
+
+.FUNCTION NAME
+Get-CollectorEventWindowTargetDetails
+
+.INPUTS
+LogName string, Hours integer, optional EventIds, and optional MaxEvents.
+
+.OUTPUTS
+String suitable for action target-details fields.
+#>
+function Get-CollectorEventWindowTargetDetails {
+  param([string]$LogName,[int]$Hours,[int[]]$Ids,[int]$Take)
+  $window = Get-CollectorEffectiveEventWindow -WindowHours $Hours
+  $parts = New-Object System.Collections.ArrayList
+  [void]$parts.Add(("LogName={0}" -f $LogName))
+  [void]$parts.Add(("Hours={0}" -f $Hours))
+  if ($window.HasExplicitWindow) {
+    [void]$parts.Add(("WindowStart={0}" -f $window.StartTime.ToString('o')))
+    if ($window.EndTime) { [void]$parts.Add(("WindowEnd={0}" -f $window.EndTime.ToString('o'))) }
+  }
+  if ($Ids -and @($Ids).Count -gt 0) { [void]$parts.Add(("EventIds={0}" -f ($Ids -join ','))) }
+  if ($Take -gt 0) { [void]$parts.Add(("MaxEvents={0}" -f $Take)) }
+  return ($parts -join '; ')
+}
