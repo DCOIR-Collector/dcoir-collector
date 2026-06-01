@@ -1,0 +1,150 @@
+      $sourceHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash
+      $sha = [System.Security.Cryptography.SHA256]::Create()
+      try {
+        $rebuiltHashBytes = $sha.ComputeHash($rebuilt.ToArray())
+      } finally {
+        $sha.Dispose()
+      }
+      $rebuiltHash = (($rebuiltHashBytes | ForEach-Object { $_.ToString('x2') }) -join '').ToUpperInvariant()
+      $lines += ('SOURCE_SHA256={0}' -f $sourceHash)
+      $lines += ('REBUILT_SHA256={0}' -f $rebuiltHash)
+      if ($rebuiltHash -ne $sourceHash) { [void]$violations.Add(('Chunk byte reconstruction hash did not match source artifact: {0}' -f $sourceKey)) }
+      if (($artifact.source_sha256) -and ([string]$artifact.source_sha256 -ne $sourceHash)) { [void]$violations.Add(('Manifest source SHA256 did not match source artifact: {0}' -f $sourceKey)) }
+    }
+    if (@($violations).Count -eq 0) {
+      $status = 'PASS'
+      $message = 'Production upload-safe chunks stayed within size budget and reconstructed source artifacts exactly.'
+    } else {
+      $message = ($violations -join '; ')
+    }
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Verifies oversized-artifact chunking behavior.
+
+.DESCRIPTION
+Checks that the synthetic oversized artifact exceeded the hard per-file threshold, was
+split into multiple chunk files, and that each chunk stayed within the safe per-file
+budget.
+
+.FUNCTION NAME
+Invoke-ChunkingOversizeVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when chunking expectations fail.
+#>
+function Invoke-ChunkingOversizeVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "SYNTHETIC_OVERSIZE_SOURCE_PATH=$($CollectStep.SyntheticOversizeSourcePath)",
+    "CHUNK_MANIFEST_PATH=$($CollectStep.ChunkManifestPath)"
+  )
+
+  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.SyntheticOversizeSourcePath) -or -not (Test-Path -LiteralPath $CollectStep.SyntheticOversizeSourcePath)) {
+    $message = 'Synthetic oversize source artifact was not emitted by the collector.'
+  } elseif ([string]::IsNullOrWhiteSpace([string]$CollectStep.ChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.ChunkManifestPath)) {
+    $message = 'Chunk manifest path was not emitted by the collector.'
+  } else {
+    $manifest = Get-Content -LiteralPath $CollectStep.ChunkManifestPath -Raw | ConvertFrom-Json
+    $chunkPaths = @($manifest.chunk_paths)
+    $sourceSizeKB = [int]$manifest.source_size_kb
+    $chunkCount = [int]$manifest.chunk_count
+    $violations = New-Object System.Collections.ArrayList
+    if ($sourceSizeKB -le $HardPerFileKB) { [void]$violations.Add('Synthetic source artifact did not exceed the hard per-file budget.') }
+    if ($chunkCount -lt 2) { [void]$violations.Add('Chunk count was less than 2 for the oversized artifact.') }
+    foreach ($chunkPath in $chunkPaths) {
+      if (-not (Test-Path -LiteralPath $chunkPath)) {
+        [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
+        continue
+      }
+      $chunkSizeKB = [int][Math]::Ceiling(((Get-Item -LiteralPath $chunkPath).Length) / 1KB)
+      $lines += ('CHUNK={0} SIZE_KB={1}' -f $chunkPath, $chunkSizeKB)
+      if ($chunkSizeKB -gt $SafePerFileKB) {
+        [void]$violations.Add(('Chunk exceeded safe per-file budget: {0}' -f $chunkPath))
+      }
+    }
+    if (@($violations).Count -eq 0) {
+      $status = 'PASS'
+      $message = 'Synthetic oversized artifact was chunked into multiple smaller files within the safe per-file budget.'
+    } else {
+      $message = ($violations -join '; ')
+    }
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Verifies chunk reconstruction metadata and exact rebuild behavior.
+
+.DESCRIPTION
+Checks that the chunk manifest describes reconstruction order, that the chunk list is
+consistent, and that concatenating the chunk files reproduces the original synthetic
+source artifact exactly.
+
+.FUNCTION NAME
+Invoke-ChunkingReconstructionVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when reconstruction expectations
+fail.
+#>
+function Invoke-ChunkingReconstructionVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "SYNTHETIC_OVERSIZE_SOURCE_PATH=$($CollectStep.SyntheticOversizeSourcePath)",
+    "CHUNK_MANIFEST_PATH=$($CollectStep.ChunkManifestPath)"
+  )
+
+  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.SyntheticOversizeSourcePath) -or -not (Test-Path -LiteralPath $CollectStep.SyntheticOversizeSourcePath)) {
+    $message = 'Synthetic oversize source artifact was not emitted by the collector.'
+  } elseif ([string]::IsNullOrWhiteSpace([string]$CollectStep.ChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.ChunkManifestPath)) {
+    $message = 'Chunk manifest path was not emitted by the collector.'
+  } else {
+    $manifest = Get-Content -LiteralPath $CollectStep.ChunkManifestPath -Raw | ConvertFrom-Json
+    $chunkPaths = @($manifest.chunk_paths)
+    $violations = New-Object System.Collections.ArrayList
+    if (-not $manifest.reconstruction_order) {
+      [void]$violations.Add('Chunk manifest does not describe reconstruction order.')
+    }
+    if ([int]$manifest.chunk_count -ne @($chunkPaths).Count) {
+      [void]$violations.Add('Chunk count in manifest does not match listed chunk paths.')
+    }
+    $rebuilt = New-Object System.Text.StringBuilder
+    foreach ($chunkPath in $chunkPaths) {
+      if (-not (Test-Path -LiteralPath $chunkPath)) {
+        [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
+        continue
+      }
+      $lines += ('RECONSTRUCT_CHUNK={0}' -f $chunkPath)
+      [void]$rebuilt.Append((Get-Content -LiteralPath $chunkPath -Raw))
+    }
