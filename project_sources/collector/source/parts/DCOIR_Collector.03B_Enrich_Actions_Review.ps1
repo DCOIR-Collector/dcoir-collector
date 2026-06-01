@@ -116,7 +116,7 @@ function Invoke-EnrichmentAction {
       if (-not $ToolMap.strings) { throw "strings tool not found in staged tools directory." }
       $reason = "Readable string extraction for a suspicious file."
       $targetDetails = "Path=$Path"
-      $outputText = Invoke-ToolToText -ToolPath $ToolMap.strings -Arguments @("-nobanner","-n","4",$Path) -StepName "ENRICH_STRINGS_PATH"
+      $outputText = Invoke-ToolToText -ToolPath $ToolMap.strings -Arguments @("-accepteula","-nobanner","-n","4",$Path) -StepName "ENRICH_STRINGS_PATH"
       $interpretation = "Review URLs, domains, IPs, command lines, registry keys, mutex names, and suspicious paths."
       $nextStep = "If strings show a second-stage file path or URL, follow that thread next."
     }
@@ -125,7 +125,7 @@ function Invoke-EnrichmentAction {
       if (-not $ToolMap.streams) { throw "streams tool not found in staged tools directory." }
       $reason = "Alternate data stream review for a suspicious path."
       $targetDetails = "Path=$Path"
-      $outputText = Invoke-ToolToText -ToolPath $ToolMap.streams -Arguments @($Path) -StepName "ENRICH_STREAMS_PATH"
+      $outputText = Invoke-ToolToText -ToolPath $ToolMap.streams -Arguments @("-accepteula","-nobanner",$Path) -StepName "ENRICH_STREAMS_PATH"
       $interpretation = "Review named streams that could hide payloads or mark file-of-origin data."
       $nextStep = "If a suspicious stream is present, stage the parent file for offline review."
     }
