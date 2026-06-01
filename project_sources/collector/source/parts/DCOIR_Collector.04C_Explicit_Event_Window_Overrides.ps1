@@ -46,6 +46,7 @@ function Get-CollectorEffectiveEventWindow {
   $now = Get-Date
   $parsedStart = $null
   $parsedEnd = $null
+  $parseFailed = $false
 
   if (-not [string]::IsNullOrWhiteSpace($WindowStart)) {
     [datetime]$tmpStart = [datetime]::MinValue
@@ -53,6 +54,7 @@ function Get-CollectorEffectiveEventWindow {
       $parsedStart = $tmpStart
     } else {
       Add-CollectorError ("Invalid WindowStart value [{0}]; falling back to hour-window behavior." -f $WindowStart)
+      $parseFailed = $true
     }
   }
 
@@ -62,10 +64,14 @@ function Get-CollectorEffectiveEventWindow {
       $parsedEnd = $tmpEnd
     } else {
       Add-CollectorError ("Invalid WindowEnd value [{0}]; falling back to hour-window behavior." -f $WindowEnd)
+      $parseFailed = $true
     }
   }
 
-  if ($parsedStart -and $parsedEnd -and $parsedEnd -lt $parsedStart) {
+  if ($parseFailed) {
+    $parsedStart = $null
+    $parsedEnd = $null
+  } elseif ($parsedStart -and $parsedEnd -and $parsedEnd -lt $parsedStart) {
     Add-CollectorError ("WindowEnd [{0}] is earlier than WindowStart [{1}]; falling back to hour-window behavior." -f $WindowEnd, $WindowStart)
     $parsedStart = $null
     $parsedEnd = $null
@@ -358,8 +364,22 @@ function Get-SecurityHighSignalSummaryText {
 
     return ($lines -join [Environment]::NewLine)
   } catch {
-    Add-CollectorError "Failed to collect condensed Security summary: $($_.Exception.Message)"
-    return "ERROR collecting condensed Security summary: $($_.Exception.Message)"
+    $msg = $_.Exception.Message
+    if ($msg -match 'No events were found') {
+      $window = Get-CollectorEffectiveEventWindow -WindowHours $WindowHours
+      Add-CollectorNote "No high-signal Security events were found in the selected window."
+      $lines = New-Object System.Collections.ArrayList
+      [void]$lines.Add("SECURITY_HIGH_SIGNAL_SUMMARY")
+      foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel 'Security' -Ids $ids -Take $Take)) { [void]$lines.Add($metadataLine) }
+      [void]$lines.Add("RAW_EVENT_COUNT=0")
+      [void]$lines.Add("INTERESTING_EVENT_COUNT=0")
+      [void]$lines.Add("SUPPRESSED_EVENT_COUNT=0")
+      [void]$lines.Add("")
+      [void]$lines.Add("No high-signal Security events were found in the selected window.")
+      return ($lines -join [Environment]::NewLine)
+    }
+    Add-CollectorError "Failed to collect condensed Security summary: $msg"
+    return "ERROR collecting condensed Security summary: $msg"
   }
 }
 
