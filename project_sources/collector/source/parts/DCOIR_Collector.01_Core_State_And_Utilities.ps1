@@ -531,6 +531,59 @@ function Get-RunRoot {
   return (Join-Path $Root ("DCOIR_{0}_{1}" -f $env:COMPUTERNAME, $CurrentRunId))
 }
 
+
+<#
+.SYNOPSIS
+Checks whether a directory name matches the collector run-root pattern.
+
+.DESCRIPTION
+Limits cleanup discovery to run roots created by this collector on the current host.
+
+.FUNCTION NAME
+Test-DCOIRRunDirectoryName
+
+.INPUTS
+Directory name string.
+
+.OUTPUTS
+Boolean.
+#>
+function Test-DCOIRRunDirectoryName {
+  param([string]$Name)
+  if ([string]::IsNullOrWhiteSpace($Name)) { return $false }
+  $hostPattern = [regex]::Escape([string]$env:COMPUTERNAME)
+  return [regex]::IsMatch($Name, ("^DCOIR_{0}_\d{{8}}_\d{{6}}$" -f $hostPattern))
+}
+
+<#
+.SYNOPSIS
+Checks whether a no-state directory is safe for fallback cleanup.
+
+.DESCRIPTION
+Requires both a strict collector run-root name and collector-created child structure
+before no-state cleanup may remove the directory.
+
+.FUNCTION NAME
+Test-DCOIRNoStateCleanupCandidate
+
+.INPUTS
+DirectoryInfo object.
+
+.OUTPUTS
+Boolean.
+#>
+function Test-DCOIRNoStateCleanupCandidate {
+  param([object]$Directory)
+  if (-not $Directory) { return $false }
+  if (-not (Test-DCOIRRunDirectoryName -Name $Directory.Name)) { return $false }
+  if (Test-Path -LiteralPath (Join-Path $Directory.FullName 'state.json')) { return $false }
+  $requiredChildren = @('tools','reports','final_artifacts','logs','bundles')
+  foreach ($child in $requiredChildren) {
+    if (-not (Test-Path -LiteralPath (Join-Path $Directory.FullName $child))) { return $false }
+  }
+  return $true
+}
+
 <#
 .SYNOPSIS
 Builds the state-file path for one run.
@@ -597,7 +650,7 @@ function Load-State {
 
   if ([string]::IsNullOrWhiteSpace($CurrentRunId)) {
     $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
-      Where-Object { $_.Name -like "DCOIR_*" } |
+      Where-Object { Test-DCOIRRunDirectoryName -Name $_.Name } |
       Sort-Object LastWriteTime -Descending
     if (-not $dirs) {
       throw "No DCOIR run directories found under $Root"
@@ -646,7 +699,7 @@ function Find-LatestDCOIRRunDirectory {
   }
 
   $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
-    Where-Object { $_.Name -like "DCOIR_*" } |
+    Where-Object { Test-DCOIRRunDirectoryName -Name $_.Name } |
     Sort-Object LastWriteTime -Descending
   return ($dirs | Select-Object -First 1)
 }
@@ -674,11 +727,8 @@ function Invoke-NoStateCleanup {
 
   $targets = New-Object System.Collections.ArrayList
   $runDir = Find-LatestDCOIRRunDirectory -Root $Root -CurrentRunId $CurrentRunId
-  if ($runDir) {
-    $statePath = Join-Path $runDir.FullName "state.json"
-    if (-not (Test-Path -LiteralPath $statePath)) {
-      [void]$targets.Add($runDir.FullName)
-    }
+  if ($runDir -and (Test-DCOIRNoStateCleanupCandidate -Directory $runDir)) {
+    [void]$targets.Add($runDir.FullName)
   }
 
   $pkg = Join-Path $Root $CurrentPackageName
@@ -989,7 +1039,7 @@ function Initialize-RunStructure {
 Purges prior DCOIR run folders and the previous package file.
 
 .DESCRIPTION
-Deletes prior run directories under the out-root and removes the prior package ZIP when
+Deletes prior collector run directories under the out-root and removes the prior package ZIP when
 present so a fresh collect run starts from a clean workspace.
 
 .FUNCTION NAME
@@ -999,14 +1049,14 @@ Purge-PreviousRuns
 Root string and CurrentPackageName string.
 
 .OUTPUTS
-No direct output. Deletes prior run directories and package file as a side effect.
+No direct output. Deletes prior strict-pattern collector run directories and package file as a side effect.
 #>
 function Purge-PreviousRuns {
   param([string]$Root,[string]$CurrentPackageName)
 
   try {
     $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
-      Where-Object { $_.Name -like "DCOIR_*" }
+      Where-Object { Test-DCOIRRunDirectoryName -Name $_.Name }
     foreach ($dir in $dirs) {
       Remove-Item -LiteralPath $dir.FullName -Recurse -Force -ErrorAction SilentlyContinue
     }
