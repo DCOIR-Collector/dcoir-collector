@@ -1,7 +1,7 @@
 {
   "bundle_name": "DCOIR_Collector_Delivery_Package",
-  "bundle_version": "4_0_6",
-  "top_level_folder": "DCOIR_Collector_Delivery_Package_4_0_6",
+  "bundle_version": "4_0_7",
+  "top_level_folder": "DCOIR_Collector_Delivery_Package_4_0_7",
   "source_strategy": "compile_single_runtime_then_package",
   "collector_wrapper_source": "project_sources/collector/source/DCOIR_Collector.ps1",
   "collector_part_files": [
