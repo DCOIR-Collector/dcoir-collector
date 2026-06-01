@@ -134,21 +134,20 @@ function Get-TestTextPaddingFromEnvironment {
 
 <#
 .SYNOPSIS
-Splits a real text artifact into upload-safe chunk companions.
+Chooses a UTF-8 safe byte length for one upload-safe chunk.
 
 .DESCRIPTION
-Creates ordered UTF-8 text chunks that can be concatenated to reconstruct the original
-artifact text exactly. The source artifact is preserved; this helper writes derivative
-chunk companions plus metadata used by the aggregate upload-safe chunk manifest.
+Returns a chunk length that stays within the target byte budget without ending in the
+middle of a UTF-8 multibyte character whenever the source bytes are valid UTF-8.
 
 .FUNCTION NAME
-Split-TextArtifactIntoUploadSafeChunks
+Get-Utf8SafeChunkLength
 
 .INPUTS
-Source artifact path, artifact directory, source key, target chunk size, and origin label.
+Source byte array, current offset, and target chunk byte count.
 
 .OUTPUTS
-Ordered hashtable describing chunk paths, sizes, source provenance, and reconstruction.
+Integer byte length for the next chunk.
 #>
 function Get-Utf8SafeChunkLength {
   param([byte[]]$Bytes,[int]$Offset,[int]$TargetBytes)
@@ -175,6 +174,24 @@ function Get-Utf8SafeChunkLength {
   return [Math]::Min($charLength, $remaining)
 }
 
+<#
+.SYNOPSIS
+Splits a real text artifact into upload-safe chunk companions.
+
+.DESCRIPTION
+Creates ordered byte-preserving chunks that can be concatenated to reconstruct the original
+artifact exactly. The source artifact is preserved; this helper writes derivative chunk
+companions plus metadata used by the aggregate upload-safe chunk manifest.
+
+.FUNCTION NAME
+Split-TextArtifactIntoUploadSafeChunks
+
+.INPUTS
+Source artifact path, artifact directory, source key, target chunk size, and origin label.
+
+.OUTPUTS
+Ordered hashtable describing chunk paths, sizes, hashes, source provenance, and reconstruction.
+#>
 function Split-TextArtifactIntoUploadSafeChunks {
   param(
     [string]$SourcePath,
