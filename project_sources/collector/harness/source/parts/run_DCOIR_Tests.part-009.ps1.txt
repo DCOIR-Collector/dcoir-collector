@@ -1,0 +1,143 @@
+    if (@($violations).Count -eq 0) {
+      $sourceText = Get-Content -LiteralPath $CollectStep.SyntheticOversizeSourcePath -Raw
+      if ($rebuilt.ToString() -eq $sourceText) {
+        $status = 'PASS'
+        $message = 'Chunk reconstruction metadata and chunk ordering were sufficient to rebuild the synthetic oversize artifact exactly.'
+      } else {
+        $message = 'Chunk reconstruction did not match the original synthetic source artifact.'
+      }
+    } else {
+      $message = ($violations -join '; ')
+    }
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Writes the suite summary text and JSON files.
+
+.DESCRIPTION
+Builds the final summary text and JSON objects from the accumulated harness results and
+writes them into the current test-run output directory.
+
+.FUNCTION NAME
+Save-Summary
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Writes summary.txt and summary.json.
+#>
+function Save-Summary {
+  Ensure-Directory -Path $RunOutputRoot
+  $summaryTxtPath = Join-Path $RunOutputRoot "summary.txt"
+  $summaryJsonPath = Join-Path $RunOutputRoot "summary.json"
+  $lines = @()
+  $lines += ("SUITE={0}" -f $Suite)
+  $lines += ("LIVE_RESPONSE_MODE={0}" -f $LiveResponseMode)
+  $lines += ("PROJECT_ROOT={0}" -f $ProjectRoot)
+  $lines += ("COLLECTOR_PATH={0}" -f $CollectorFullPath)
+  $lines += ("COLLECTOR_INVOCATION_MODE={0}" -f $script:ResolvedCollectorInvocationMode)
+  $lines += ("MASTER_ZIP={0}" -f $MasterZipFullPath)
+  $lines += ("WORKING_ZIP={0}" -f $WorkingZipPath)
+  $lines += ("TEST_RUN_OUTPUT={0}" -f $RunOutputRoot)
+  $lines += ("LATEST_RUN_ID={0}" -f $script:CollectorRunId)
+  $lines += ("LATEST_ENRICH_SESSION_ID={0}" -f $script:CollectorSessionId)
+  $lines += ""
+  foreach ($r in $script:Results) {
+    if ($r.CollectorReportedStatus) {
+      $lines += ("STEP={0} STATUS={1} EXIT_CODE={2} COLLECTOR_STATUS={3} LOG={4}" -f $r.StepName, $r.Status, $r.ExitCode, $r.CollectorReportedStatus, $r.LogPath)
+    } else {
+      $lines += ("STEP={0} STATUS={1} EXIT_CODE={2} LOG={3}" -f $r.StepName, $r.Status, $r.ExitCode, $r.LogPath)
+    }
+  }
+  Set-Content -Path $summaryTxtPath -Value $lines -Encoding UTF8
+  $summaryObj = [pscustomobject]@{
+    Suite = $Suite
+    LiveResponseMode = [bool]$LiveResponseMode
+    ProjectRoot = $ProjectRoot
+    CollectorPath = $CollectorFullPath
+    CollectorInvocationMode = $script:ResolvedCollectorInvocationMode
+    MasterZip = $MasterZipFullPath
+    WorkingZip = $WorkingZipPath
+    TestRunOutput = $RunOutputRoot
+    LatestRunId = $script:CollectorRunId
+    LatestEnrichSessionId = $script:CollectorSessionId
+    Results = @($script:Results)
+  }
+  $summaryObj | ConvertTo-Json -Depth 6 | Set-Content -Path $summaryJsonPath -Encoding UTF8
+}
+
+<#
+.SYNOPSIS
+Runs the core validation suite.
+
+.DESCRIPTION
+Exercises the standard collect, enrich, finalize, and optional cleanup path plus the
+collect and finalized enrich output-contract verifiers.
+
+.FUNCTION NAME
+Run-CoreSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
+function Run-CoreSuite {
+  Restore-WorkingZip -Reason "Core"
+  $collect = Invoke-CollectorStep -StepName "01_CollectT1" -CollectorArgs @("-Quick","collect-t1")
+  Assert-CollectorStepSucceeded -StepName "01_CollectT1" -CollectorStep $collect
+  Invoke-CollectOutputContractVerification -StepName "ZZ_CollectOutputContract" -CollectStep $collect
+  if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_Collect" -ManifestPath $collect.AttachmentBudgetManifestPath }
+  [void](Invoke-CollectorStep -StepName "02_EnrichStartTcp" -CollectorArgs @("-Quick","enrich-start-tcp"))
+  [void](Invoke-CollectorStep -StepName "03_EnrichAddLogTextSecurity" -CollectorArgs @("-Quick","enrich-add-logtext","-Target","Security"))
+  $finalize = Invoke-CollectorStep -StepName "04_EnrichFinalize" -CollectorArgs @("-Quick","enrich-finalize")
+  Assert-CollectorStepSucceeded -StepName "04_EnrichFinalize" -CollectorStep $finalize
+  Invoke-EnrichFinalizedOutputContractVerification -StepName "ZZ_EnrichFinalizedOutputContract" -EnrichStep $finalize
+  if (-not $SkipCleanup) {
+    $cleanup = Invoke-CollectorStep -StepName "05_Cleanup" -CollectorArgs @("-Quick","cleanup")
+    Assert-CollectorStepSucceeded -StepName "05_Cleanup" -CollectorStep $cleanup
+    Invoke-CleanupOutputContractVerification -StepName "ZZ_CleanupOutputContract" -CleanupStep $cleanup
+  }
+}
+
+<#
+.SYNOPSIS
+Runs the retrieval validation suite.
+
+.DESCRIPTION
+Exercises collect, raw-log enrich retrieval, finalize, and optional cleanup behavior.
+
+.FUNCTION NAME
+Run-RetrievalSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
+function Run-RetrievalSuite {
+  Restore-WorkingZip -Reason "Retrieval"
+  $collect = Invoke-CollectorStep -StepName "11_CollectT1" -CollectorArgs @("-Quick","collect-t1")
+  Assert-CollectorStepSucceeded -StepName "11_CollectT1" -CollectorStep $collect
+  if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_RetrievalCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
+  [void](Invoke-CollectorStep -StepName "12_EnrichStartLogRawSecurity" -CollectorArgs @("-Quick","enrich-start-lograw"))
+  [void](Invoke-CollectorStep -StepName "13_EnrichFinalize" -CollectorArgs @("-Quick","enrich-finalize"))
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "14_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+}
+
+<#
+.SYNOPSIS
+Runs the quick-alias validation suite.
+
