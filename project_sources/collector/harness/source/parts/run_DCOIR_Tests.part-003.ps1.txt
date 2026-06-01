@@ -1,0 +1,150 @@
+  $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
+  $logLines = New-Object System.Collections.ArrayList
+  [void]$logLines.Add("STEP=$StepName")
+  [void]$logLines.Add("START=$($start.ToString('o'))")
+  [void]$logLines.Add("END=$($end.ToString('o'))")
+  [void]$logLines.Add(("DURATION_MS={0}" -f [int][Math]::Round(($end - $start).TotalMilliseconds)))
+  [void]$logLines.Add("EXIT_CODE=$exitCode")
+  [void]$logLines.Add("TIMED_OUT=$($processResult.TimedOut)")
+  [void]$logLines.Add("TIMEOUT_SECONDS=$CollectorStepTimeoutSeconds")
+  if ($collectorReportedStatus) { [void]$logLines.Add("COLLECTOR_STATUS=$collectorReportedStatus") }
+  [void]$logLines.Add(("COMMAND={0}" -f $invocation.DisplayCommand))
+  [void]$logLines.Add("")
+  [void]$logLines.Add("STDOUT:")
+  [void]$logLines.Add($stdout)
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $logLines
+  $status = if ($processResult.TimedOut) { 'FAIL' } else { Resolve-CollectorStepStatus -ExitCode $exitCode -CollectorReportedStatus $collectorReportedStatus }
+  $runId = Parse-OutputValue -Text $stdout -Key "RUN_ID"
+  $sessionId = Parse-OutputValue -Text $stdout -Key "ENRICH_SESSION_ID"
+  if ($runId) { $script:CollectorRunId = $runId }
+  if ($sessionId) { $script:CollectorSessionId = $sessionId }
+  Add-Result -StepName $StepName -Status $status -ExitCode $exitCode -RunId $runId -EnrichSessionId $sessionId -CollectorReportedStatus $collectorReportedStatus -LogPath $logPath -Start $start -End $end
+  if ($processResult.TimedOut -and -not $ContinueOnError) {
+    throw ("Collector step '{0}' timed out after {1} seconds." -f $StepName, $CollectorStepTimeoutSeconds)
+  }
+  return [pscustomobject]@{
+    StepName = $StepName
+    Status = $status
+    ExitCode = $exitCode
+    RunId = $runId
+    EnrichSessionId = $sessionId
+    CollectorReportedStatus = $collectorReportedStatus
+    StdOut = $stdout
+    LogPath = $logPath
+    BaselineReportPath = Parse-OutputValue -Text $stdout -Key "BASELINE_REPORT_PATH"
+    MetadataReportPath = Parse-OutputValue -Text $stdout -Key "METADATA_REPORT_PATH"
+    UploadSummaryPath = Parse-OutputValue -Text $stdout -Key "UPLOAD_SUMMARY_PATH"
+    AttachmentBudgetManifestPath = Parse-OutputValue -Text $stdout -Key "ATTACHMENT_BUDGET_MANIFEST_PATH"
+    UploadSafeChunkManifestPath = Parse-OutputValue -Text $stdout -Key "UPLOAD_SAFE_CHUNK_MANIFEST_PATH"
+    CollectionScopePath = Parse-OutputValue -Text $stdout -Key "COLLECTION_SCOPE_PATH"
+    ParallelismAssessmentPath = Parse-OutputValue -Text $stdout -Key "PARALLELISM_ASSESSMENT_PATH"
+    TargetedCollectionPlanPath = Parse-OutputValue -Text $stdout -Key "TARGETED_COLLECTION_PLAN_PATH"
+    SecurityHighSignalSummaryPath = Parse-OutputValue -Text $stdout -Key "SECURITY_HIGH_SIGNAL_SUMMARY_PATH"
+    SyntheticOversizeSourcePath = Parse-OutputValue -Text $stdout -Key "SYNTHETIC_OVERSIZE_SOURCE_PATH"
+    ChunkManifestPath = Parse-OutputValue -Text $stdout -Key "CHUNK_MANIFEST_PATH"
+    DefaultGeminiUploadSetStatus = Parse-OutputValue -Text $stdout -Key "DEFAULT_GEMINI_UPLOAD_SET_STATUS"
+    CollectBundlePath = Parse-OutputValue -Text $stdout -Key "COLLECT_BUNDLE_PATH"
+    EnrichBundlePath = Parse-OutputValue -Text $stdout -Key "ENRICH_BUNDLE_PATH"
+    SessionResolutionMode = Parse-OutputValue -Text $stdout -Key "SESSION_RESOLUTION_MODE"
+    SessionStatus = Parse-OutputValue -Text $stdout -Key "SESSION_STATUS"
+    NextGetFile = Parse-OutputValue -Text $stdout -Key "NEXT_GET_FILE"
+    NextOptions = Parse-OutputValue -Text $stdout -Key "NEXT_OPTIONS"
+    CleanupCommand = Parse-OutputValue -Text $stdout -Key "CLEANUP_COMMAND"
+    DeleteScriptCommand = Parse-OutputValue -Text $stdout -Key "DELETE_SCRIPT_COMMAND"
+    GeminiUploadGuidance = Parse-OutputValue -Text $stdout -Key "GEMINI_UPLOAD_GUIDANCE"
+    CleanupStatus = Parse-OutputValue -Text $stdout -Key "CLEANUP_STATUS"
+    HasQuickCommands = [regex]::IsMatch($stdout, '(?m)^NEXT_QUICK_COMMANDS$')
+  }
+}
+
+<#
+.SYNOPSIS
+Runs one collector step with temporary environment overrides.
+
+.DESCRIPTION
+Applies the supplied process-scope environment overrides plus the harness test-mode flag,
+invokes one collector step, and restores the previous environment values afterward.
+
+.FUNCTION NAME
+Invoke-CollectorStepWithEnvOverride
+
+.INPUTS
+Mandatory StepName string, CollectorArgs string array, and EnvOverrides hashtable.
+
+.OUTPUTS
+Collector step result object returned by Invoke-CollectorStep.
+#>
+function Invoke-CollectorStepWithEnvOverride {
+  param(
+    [Parameter(Mandatory=$true)][string]$StepName,
+    [Parameter(Mandatory=$true)][string[]]$CollectorArgs,
+    [Parameter(Mandatory=$true)][hashtable]$EnvOverrides
+  )
+
+  $previous = @{}
+  $effectiveEnvOverrides = @{}
+  foreach ($name in $EnvOverrides.Keys) {
+    $effectiveEnvOverrides[$name] = $EnvOverrides[$name]
+  }
+  if (-not $effectiveEnvOverrides.ContainsKey('DCOIR_COLLECTOR_TEST_MODE')) {
+    $effectiveEnvOverrides['DCOIR_COLLECTOR_TEST_MODE'] = '1'
+  }
+
+  try {
+    foreach ($name in $effectiveEnvOverrides.Keys) {
+      $previous[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
+      [Environment]::SetEnvironmentVariable($name, [string]$effectiveEnvOverrides[$name], 'Process')
+    }
+    return Invoke-CollectorStep -StepName $StepName -CollectorArgs $CollectorArgs
+  } finally {
+    foreach ($name in $effectiveEnvOverrides.Keys) {
+      [Environment]::SetEnvironmentVariable($name, $previous[$name], 'Process')
+    }
+  }
+}
+
+<#
+.SYNOPSIS
+Runs one harness step that is expected to fail in a specific way.
+
+.DESCRIPTION
+Runs the collector directly, captures stdout and stderr, compares the result to the
+expected bind-reject or runtime-error outcome, checks for required text patterns, logs
+the result, and returns the harness result object.
+
+.FUNCTION NAME
+Invoke-ExpectedFailureStep
+
+.INPUTS
+Mandatory StepName, CollectorArgs, and ExpectedOutcome, plus optional ExpectedPatterns.
+
+.OUTPUTS
+PSCustomObject containing the observed failure behavior and harness log path.
+#>
+function Invoke-ExpectedFailureStep {
+  param(
+    [Parameter(Mandatory=$true)][string]$StepName,
+    [Parameter(Mandatory=$true)][string[]]$CollectorArgs,
+    [Parameter(Mandatory=$true)][ValidateSet('BIND_REJECT','RUNTIME_ERROR')][string]$ExpectedOutcome,
+    [string[]]$ExpectedPatterns
+  )
+
+  Ensure-Directory -Path $LogsDir
+  $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
+  $processResult = Invoke-CollectorProcess -StepName $StepName -Invocation $invocation
+  $start = $processResult.Start
+  $end = $processResult.End
+  $stdoutText = $processResult.StdOutText
+  $stderrText = $processResult.StdErrText
+  $exitCode = $processResult.ExitCode
+
+  $stdout = @($stdoutText, $stderrText | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
+  $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
+
+  $missingPatterns = New-Object System.Collections.ArrayList
+  foreach ($pattern in @($ExpectedPatterns)) {
+    if (-not [string]::IsNullOrWhiteSpace($pattern) -and -not [regex]::IsMatch($stdout, [regex]::Escape($pattern))) {
+      [void]$missingPatterns.Add($pattern)
+    }
+  }
+
