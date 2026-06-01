@@ -1640,7 +1640,7 @@ function Run-FailureGatesSuite {
   [void](Invoke-ExpectedFailureStep -StepName "97_QuickSigcheckMissingTarget" -CollectorArgs @("-Quick","enrich-start-sigcheck") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("requires -Target <path>"))
   [void](Invoke-ExpectedFailureStep -StepName "98_QuickListDllsBadPid" -CollectorArgs @("-Quick","enrich-start-listdlls","-Target","abc") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("requires a numeric -Target <pid>"))
   [void](Invoke-ExpectedFailureStep -StepName "98B_MissingPackageCheckedPaths" -CollectorArgs @("-Quick","collect-t1","-PackageName","DCOIR_MISSING_TEST_PACKAGE.zip") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("Package not found:","CheckedPaths="))
-  $strayDir = Join-Path 'C:\Temp' 'DCOIR_OPERATOR_NOT_A_RUN'RUN'
+  $strayDir = Join-Path 'C:\Temp' 'DCOIR_OPERATOR_NOT_A_RUN'
   New-Item -Path $strayDir -ItemType Directory -Force | Out-Null
   Set-Content -Path (Join-Path $strayDir 'keep.txt') -Value 'must-not-delete' -Encoding UTF8
   $cleanupAfterMissingPackage = Invoke-CollectorStep -StepName "98C_CleanupAfterMissingPackageNoState" -CollectorArgs @("-Quick","cleanup")
