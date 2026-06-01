@@ -620,6 +620,100 @@ function Load-State {
 
 <#
 .SYNOPSIS
+Finds the newest collector run directory under a root.
+
+.DESCRIPTION
+Selects only directories matching the collector run-root naming pattern under the supplied
+root. When a RunId is supplied, only the expected host/run-id directory is considered.
+
+.FUNCTION NAME
+Find-LatestDCOIRRunDirectory
+
+.INPUTS
+Root string and optional CurrentRunId string.
+
+.OUTPUTS
+DirectoryInfo object or null.
+#>
+function Find-LatestDCOIRRunDirectory {
+  param([string]$Root,[string]$CurrentRunId)
+
+  if ([string]::IsNullOrWhiteSpace($Root) -or -not (Test-Path -LiteralPath $Root)) { return $null }
+  if (-not [string]::IsNullOrWhiteSpace($CurrentRunId)) {
+    $expected = Get-RunRoot -Root $Root -CurrentRunId $CurrentRunId
+    if (Test-Path -LiteralPath $expected) { return Get-Item -LiteralPath $expected }
+    return $null
+  }
+
+  $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -like "DCOIR_*" } |
+    Sort-Object LastWriteTime -Descending
+  return ($dirs | Select-Object -First 1)
+}
+
+<#
+.SYNOPSIS
+Removes a bounded no-state collector run directory.
+
+.DESCRIPTION
+Used by cleanup mode after early collect failures where a run directory was created before
+state.json was saved. Deletes only the expected or latest DCOIR_* run directory under the
+selected OutRoot and the configured package file under that same root.
+
+.FUNCTION NAME
+Invoke-NoStateCleanup
+
+.INPUTS
+Root string, optional CurrentRunId, and current package name.
+
+.OUTPUTS
+Hashtable describing cleanup status and targets.
+#>
+function Invoke-NoStateCleanup {
+  param([string]$Root,[string]$CurrentRunId,[string]$CurrentPackageName)
+
+  $targets = New-Object System.Collections.ArrayList
+  $runDir = Find-LatestDCOIRRunDirectory -Root $Root -CurrentRunId $CurrentRunId
+  if ($runDir) {
+    $statePath = Join-Path $runDir.FullName "state.json"
+    if (-not (Test-Path -LiteralPath $statePath)) {
+      [void]$targets.Add($runDir.FullName)
+    }
+  }
+
+  $pkg = Join-Path $Root $CurrentPackageName
+  if (Test-Path -LiteralPath $pkg) { [void]$targets.Add($pkg) }
+
+  $removed = New-Object System.Collections.ArrayList
+  $failed = New-Object System.Collections.ArrayList
+  foreach ($target in @($targets)) {
+    try {
+      Remove-Item -LiteralPath $target -Recurse -Force -ErrorAction Stop
+      [void]$removed.Add($target)
+    } catch {
+      [void]$failed.Add(("{0} :: {1}" -f $target, $_.Exception.Message))
+    }
+  }
+
+  $status = if (@($targets).Count -eq 0) {
+    'NO_TARGET_FOUND'
+  } elseif (@($failed).Count -gt 0) {
+    'PARTIAL_FAILED'
+  } else {
+    'MISSING_STATE_ORPHAN_CLEANED'
+  }
+
+  return @{
+    Status = $status
+    RunRoot = if ($runDir) { $runDir.FullName } else { $null }
+    RemovedTargets = @($removed)
+    FailedTargets = @($failed)
+    TargetCount = @($targets).Count
+  }
+}
+
+<#
+.SYNOPSIS
 Recursively converts a deserialized state object into plain hashtables and arrays.
 
 .DESCRIPTION
@@ -953,6 +1047,7 @@ function Move-PackageToOutRoot {
   $scriptDir = Get-ScriptDirectory
   $sourcePath = Join-Path $scriptDir $CurrentPackageName
   $destPath = Join-Path $Root $CurrentPackageName
+  $checkedPaths = @($sourcePath, $destPath)
 
   if (Test-Path -LiteralPath $sourcePath) {
     if ($sourcePath -ne $destPath) {
@@ -965,7 +1060,7 @@ function Move-PackageToOutRoot {
     return $destPath
   }
 
-  throw "Package not found in script directory or OutRoot: $CurrentPackageName"
+  throw ("Package not found: {0}. CheckedPaths={1}" -f $CurrentPackageName, ($checkedPaths -join '; '))
 }
 
 <#
