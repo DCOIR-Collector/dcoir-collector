@@ -6,7 +6,7 @@
 # Use when:
 # - Use before collector runtime release/delivery or when packaging behavior needs manual verification.
 # Do not use when:
-# - Do not use for Gemini bundle builds or optional EXE builds.
+# - Do not use for Gemini bundle builds, optional EXE builds, or collector harness regression validation.
 # Trigger model:
 # - workflow_dispatch inputs: package_version_override
 # Required inputs:
@@ -14,11 +14,12 @@
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses project_sources/collector/tools/build_dcoir_collector_runtime_package.py and related validation/restore tooling.
+# - Uses project_sources/collector/tools/build_dcoir_collector_runtime_package.py and package validation tooling.
 # Expected outputs/readback:
 # - Collector delivery package artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
 # - Package validity requires artifact inspection and downstream validation, not workflow completion alone.
+# - Harness regression validation belongs in manual-full-validation, not this package-build workflow.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
 # - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
@@ -83,15 +84,14 @@ jobs:
         shell: pwsh
         run: |
           $psFiles = @(
-            'project_sources/collector/source/DCOIR_Collector.ps1',
-            'project_sources/collector/harness/run_DCOIR_Tests.ps1'
+            'project_sources/collector/source/DCOIR_Collector.ps1'
           )
           if (Test-Path -LiteralPath 'project_sources/collector/source/parts') {
             $psFiles += Get-ChildItem -Path 'project_sources/collector/source/parts' -File -Filter '*.ps1' | ForEach-Object { $_.FullName }
           }
           $psFiles = @($psFiles | Where-Object { Test-Path -LiteralPath $_ })
           if (-not $psFiles) {
-            throw 'Required collector and harness PowerShell files were not found.'
+            throw 'Required collector PowerShell files were not found.'
           }
           $parseFailures = @()
           foreach ($file in $psFiles) {
@@ -157,44 +157,15 @@ jobs:
             throw 'Collector runtime package build failed.'
           }
 
-      - name: Restore built collector runtime for harness smoke
-        shell: pwsh
-        run: |
-          $deliveryZip = Get-ChildItem -Path project_sources/validation/out -File -Filter 'DCOIR_Collector_Delivery_Package_*.zip' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-          if (-not $deliveryZip) {
-            throw 'Collector delivery package zip was not produced.'
-          }
-          python project_sources/collector/tools/restore_dcoir_collector_runtime_zip.py --delivery-package-zip $deliveryZip.FullName --base-runtime-zip supporting_assets/DCOIR_Collector.zip --output-dir project_sources/validation/out --output-name DCOIR_Collector_runtime_for_harness.zip
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector runtime zip restore bridge failed.'
-          }
-          $extractDir = 'project_sources/validation/out/runtime_harness'
-          Remove-Item -Recurse -Force $extractDir -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
-          Expand-Archive -LiteralPath project_sources/validation/out/DCOIR_Collector_runtime_for_harness.zip -DestinationPath $extractDir -Force
-          "HARNESS_RUNTIME_ZIP=$((Resolve-Path project_sources/validation/out/DCOIR_Collector_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
-          "HARNESS_COLLECTOR_PATH=$((Resolve-Path project_sources/validation/out/runtime_harness/DCOIR_Collector.ps1).Path)" | Add-Content -Path $env:GITHUB_ENV
-
-      - name: Run collector core smoke on built runtime package
-        shell: pwsh
-        working-directory: project_sources
-        run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector runtime package Core smoke failed.'
-          }
-
       - name: Upload collector runtime package artifacts
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: manual-collector-runtime-package-build
           path: |
-            project_sources/TestResults/**
             project_sources/validation/out/*.zip
             project_sources/validation/out/*report.json
             project_sources/validation/out/compiled_runtime/**
-            project_sources/validation/out/runtime_harness/**
             project_sources/validation/out_preflight_documentation_quality/**
           if-no-files-found: warn
           retention-days: 21
@@ -214,9 +185,10 @@ jobs:
           - ref: $env:GITHUB_REF
           - package_version_override: $env:PACKAGE_VERSION_OVERRIDE
           - primary_artifact: manual-collector-runtime-package-build
-          - artifact_note: includes delivery package zips, package reports, compiled runtime output, restored harness runtime, and documentation-quality output when produced.
+          - artifact_note: includes delivery package zips, package reports, compiled runtime output, and documentation-quality output when produced.
 
-          The workflow conclusion is the authoritative pass/fail signal. Package validity still requires artifact readback before release or operator-distribution claims.
+          The workflow conclusion is the authoritative pass/fail signal for packaging only. Harness regression validation belongs in manual-full-validation.
+          Package validity still requires artifact readback before release or operator-distribution claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
 
       - name: Upload ChatGPT workflow report section
