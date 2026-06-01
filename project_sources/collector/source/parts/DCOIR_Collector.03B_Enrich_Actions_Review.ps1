@@ -125,7 +125,7 @@ function Invoke-EnrichmentAction {
       if (-not $ToolMap.streams) { throw "streams tool not found in staged tools directory." }
       $reason = "Alternate data stream review for a suspicious path."
       $targetDetails = "Path=$Path"
-      $outputText = Invoke-ToolToText -ToolPath $ToolMap.streams -Arguments @("-accepteula","-nobanner",$Path) -StepName "ENRICH_STREAMS_PATH"
+      $outputText = Invoke-ToolToText -ToolPath $ToolMap.streams -Arguments @("-accepteula",$Path) -StepName "ENRICH_STREAMS_PATH"
       $interpretation = "Review named streams that could hide payloads or mark file-of-origin data."
       $nextStep = "If a suspicious stream is present, stage the parent file for offline review."
     }
