@@ -30,6 +30,13 @@ def build_inline_block(part_paths: List[Path]) -> str:
     return '\n'.join(blocks) + '\n'
 
 
+def require_non_empty_list(manifest: dict, key: str) -> list:
+    value = manifest.get(key)
+    if not isinstance(value, list) or not value:
+        raise SystemExit(f'{key} must be a non-empty list')
+    return value
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--source-dir', required=True)
@@ -42,10 +49,15 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     manifest = load_manifest(source_dir)
+    if manifest.get('harness_source'):
+        raise SystemExit('harness_source is not supported by the collector runtime package compiler')
+
     wrapper_path = source_dir / manifest['collector_wrapper_source']
-    harness_source = manifest.get('harness_source')
-    harness_path = source_dir / harness_source if harness_source else None
-    part_paths = [source_dir / rel for rel in manifest.get('collector_part_files', [])]
+    part_rels = require_non_empty_list(manifest, 'collector_part_files')
+    part_paths = [source_dir / rel for rel in part_rels]
+    missing_parts = [rel for rel, path in zip(part_rels, part_paths) if not path.exists()]
+    if missing_parts:
+        raise SystemExit('collector_part_files references missing files: ' + ', '.join(missing_parts))
 
     wrapper_text = wrapper_path.read_text(encoding='utf-8')
     inline_block = build_inline_block(part_paths)
@@ -62,16 +74,11 @@ def main() -> int:
     compiled_collector = compiled_root / manifest.get('compiled_runtime_name', 'DCOIR_Collector.ps1')
     compiled_collector.write_text(compiled_text, encoding='utf-8')
 
-    compiled_harness = None
-    if harness_path is not None:
-        compiled_harness = compiled_root / harness_path.name
-        compiled_harness.write_text(harness_path.read_text(encoding='utf-8'), encoding='utf-8')
-
     report = {
         'success': True,
         'source_dir': str(source_dir),
         'compiled_collector_path': str(compiled_collector),
-        'compiled_harness_path': str(compiled_harness) if compiled_harness is not None else None,
+        'compiled_harness_path': None,
         'compiled_runtime_name': compiled_collector.name,
         'collector_part_count': len(part_paths),
         'collector_part_files': [p.name for p in part_paths],
