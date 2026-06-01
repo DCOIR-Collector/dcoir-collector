@@ -140,7 +140,7 @@ function Invoke-EnrichmentAction {
     "LogText" {
       if (-not $LogName) { throw "LogText requires -LogName" }
       $reason = "Text export for a Windows event channel."
-      $targetDetails = "LogName=$LogName; Hours=$Hours; EventIds=$($EventId -join ',')"
+      $targetDetails = Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take $MaxEvents
       $outputText = Get-EventText -Channel $LogName -WindowHours $Hours -Ids $EventId -Take $MaxEvents
       $interpretation = "Review exact timestamps, Event IDs, process names, accounts, and error details."
       $nextStep = "If text volume is too high or message fidelity is not enough, use LogRaw."
