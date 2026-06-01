@@ -139,12 +139,13 @@ function Invoke-ChunkingReconstructionVerification {
     if ([int]$manifest.chunk_count -ne @($chunkPaths).Count) {
       [void]$violations.Add('Chunk count in manifest does not match listed chunk paths.')
     }
-    $rebuilt = New-Object System.Text.StringBuilder
+    $rebuilt = New-Object System.IO.MemoryStream
     foreach ($chunkPath in $chunkPaths) {
       if (-not (Test-Path -LiteralPath $chunkPath)) {
         [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
         continue
       }
       $lines += ('RECONSTRUCT_CHUNK={0}' -f $chunkPath)
-      [void]$rebuilt.Append((Get-Content -LiteralPath $chunkPath -Raw))
+      $chunkBytes = [System.IO.File]::ReadAllBytes($chunkPath)
+      $rebuilt.Write($chunkBytes, 0, $chunkBytes.Length)
     }
