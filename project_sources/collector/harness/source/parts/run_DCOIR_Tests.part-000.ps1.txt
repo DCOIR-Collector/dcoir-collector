@@ -1,0 +1,150 @@
+<#
+.SYNOPSIS
+DCOIR collector harness and regression runner.
+
+.DESCRIPTION
+Executes the collector through bounded validation suites, captures per-step logs and
+summaries, verifies output contracts and failure gates, and writes machine-readable and
+human-readable summary artifacts for regression review.
+
+.FILE NAME
+run_DCOIR_Tests.ps1
+
+.INPUTS
+Suite selection, collector path, output root, master ZIP path, live-response mode flag,
+attachment-budget thresholds, and cleanup/continue-on-error switches.
+
+.OUTPUTS
+Per-step harness logs, suite summary text and JSON, and the collector executions that
+those validation suites drive.
+#>
+
+param(
+  [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","ChunkingOversizeArtifact","ChunkingReconstructionMetadata","MajorVersion","FullRegression","FailureGates")]
+  [string]$Suite = "Core",
+
+  [string]$CollectorPath = ".\DCOIR_Collector.ps1",
+
+  [string]$OutputRoot = ".\TestResults",
+
+  [string]$MasterZipPath = ".\assets\DCOIR_Collector.zip",
+
+  [switch]$LiveResponseMode,
+
+  [int]$SafePerFileKB = 900,
+
+  [int]$HardPerFileKB = 1000,
+
+  [int]$SafePerPromptKB = 1800,
+
+  [int]$HardPerPromptKB = 2000,
+
+  [switch]$ContinueOnError,
+
+  [switch]$SkipCleanup,
+
+  [ValidateSet("Auto","PowerShellFile","Executable")]
+  [string]$CollectorInvocationMode = "Auto",
+
+  [ValidateRange(1,3600)]
+  [int]$CollectorStepTimeoutSeconds = 600
+)
+
+Set-StrictMode -Version 2
+$ErrorActionPreference = "Stop"
+
+if ($LiveResponseMode) {
+  if ($CollectorPath -eq ".\DCOIR_Collector.ps1") { $CollectorPath = "C:\Temp\DCOIR_Collector.ps1" }
+  if ($OutputRoot -eq ".\TestResults") { $OutputRoot = "C:\Temp\DCOIR_TestResults" }
+  if ($MasterZipPath -eq ".\assets\DCOIR_Collector.zip") { $MasterZipPath = "C:\Temp\assets\DCOIR_Collector.zip" }
+}
+
+$ProjectRoot = Split-Path -Parent (Resolve-Path -LiteralPath $CollectorPath)
+$CollectorFullPath = (Resolve-Path -LiteralPath $CollectorPath).Path
+$script:ResolvedCollectorInvocationMode = $CollectorInvocationMode
+if ($script:ResolvedCollectorInvocationMode -eq "Auto") {
+  $collectorExtension = [System.IO.Path]::GetExtension($CollectorFullPath)
+  if ($collectorExtension -ieq ".exe") {
+    $script:ResolvedCollectorInvocationMode = "Executable"
+  } else {
+    $script:ResolvedCollectorInvocationMode = "PowerShellFile"
+  }
+}
+$Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$OutputRootFullPath = if ([System.IO.Path]::IsPathRooted($OutputRoot)) {
+  [System.IO.Path]::GetFullPath($OutputRoot)
+} else {
+  [System.IO.Path]::GetFullPath((Join-Path $ProjectRoot $OutputRoot))
+}
+$RunOutputRoot = Join-Path $OutputRootFullPath ("DCOIR_TestRun_{0}" -f $Timestamp)
+$LogsDir = Join-Path $RunOutputRoot "logs"
+$WorkingZipPath = [System.IO.Path]::GetFullPath((Join-Path $ProjectRoot "DCOIR_Collector.zip"))
+$MasterZipFullPath = if ([System.IO.Path]::IsPathRooted($MasterZipPath)) {
+  [System.IO.Path]::GetFullPath($MasterZipPath)
+} else {
+  [System.IO.Path]::GetFullPath((Join-Path $ProjectRoot $MasterZipPath))
+}
+
+$script:CollectorRunId = $null
+$script:CollectorSessionId = $null
+$script:Results = New-Object System.Collections.ArrayList
+$script:CollectorStepTimeoutMilliseconds = [int]($CollectorStepTimeoutSeconds * 1000)
+
+<#
+.SYNOPSIS
+Ensures that one directory exists.
+
+.DESCRIPTION
+Creates the requested directory path when it does not already exist.
+
+.FUNCTION NAME
+Ensure-Directory
+
+.INPUTS
+Path string.
+
+.OUTPUTS
+No direct output. Creates the directory as a side effect.
+#>
+function Ensure-Directory {
+  param([string]$Path)
+  if (-not (Test-Path -LiteralPath $Path)) {
+    New-Item -Path $Path -ItemType Directory -Force | Out-Null
+  }
+}
+
+<#
+.SYNOPSIS
+Parses one KEY=value line from collector or harness output text.
+
+.DESCRIPTION
+Finds the first line matching the supplied key and returns the trimmed value portion.
+Returns null when the key is absent.
+
+.FUNCTION NAME
+Parse-OutputValue
+
+.INPUTS
+Text string and Key string.
+
+.OUTPUTS
+String value or null.
+#>
+function Parse-OutputValue {
+  param([string]$Text,[string]$Key)
+  $pattern = '(?m)^{0}=(.+)$' -f [regex]::Escape($Key)
+  $m = [regex]::Match($Text, $pattern)
+  if ($m.Success) { return $m.Groups[1].Value.Trim() }
+  return $null
+}
+
+<#
+.SYNOPSIS
+Writes one harness log file.
+
+.DESCRIPTION
+Ensures the logs directory exists, writes the supplied lines to a named step log, and
+returns the log path.
+
+.FUNCTION NAME
+Write-HarnessLog
