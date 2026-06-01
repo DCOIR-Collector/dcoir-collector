@@ -1,0 +1,150 @@
+  }
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Verifies the targeted-collection artifact contract.
+
+.DESCRIPTION
+Checks that the targeted collect step emitted the collection scope, parallelism
+assessment, and targeted collection plan paths and that the artifacts contain the
+expected markers.
+
+.FUNCTION NAME
+Invoke-TargetedCollectionVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the targeted artifacts are
+missing or malformed.
+#>
+function Invoke-TargetedCollectionVerification {
+  param([string]$StepName,[object]$CollectStep,[object]$ExpectedExplicitEventWindow = $null)
+  $start = Get-Date
+  $status = "FAIL"
+  $message = ""
+  $lines = @(
+    "STEP=$StepName",
+    "COLLECTION_SCOPE_PATH=$($CollectStep.CollectionScopePath)",
+    "PARALLELISM_ASSESSMENT_PATH=$($CollectStep.ParallelismAssessmentPath)",
+    "TARGETED_COLLECTION_PLAN_PATH=$($CollectStep.TargetedCollectionPlanPath)"
+  )
+
+  $required = @(
+    @{ Label = "COLLECTION_SCOPE_PATH"; Path = $CollectStep.CollectionScopePath },
+    @{ Label = "PARALLELISM_ASSESSMENT_PATH"; Path = $CollectStep.ParallelismAssessmentPath },
+    @{ Label = "TARGETED_COLLECTION_PLAN_PATH"; Path = $CollectStep.TargetedCollectionPlanPath }
+  )
+
+  $missing = New-Object System.Collections.ArrayList
+  foreach ($row in $required) {
+    $candidate = [string]$row.Path
+    if ([string]::IsNullOrWhiteSpace($candidate)) {
+      [void]$missing.Add(("{0} was not emitted by the collector response." -f $row.Label))
+      continue
+    }
+    if (-not (Test-Path -LiteralPath $candidate)) {
+      [void]$missing.Add(("{0} path does not exist: {1}" -f $row.Label, $candidate))
+    }
+  }
+
+  if (@($missing).Count -eq 0) {
+    $scopeText = Get-Content -LiteralPath $CollectStep.CollectionScopePath -Raw
+    $planText = Get-Content -LiteralPath $CollectStep.TargetedCollectionPlanPath -Raw
+    $metadataText = if ($CollectStep.SecurityHighSignalSummaryPath -and (Test-Path -LiteralPath $CollectStep.SecurityHighSignalSummaryPath)) { Get-Content -LiteralPath $CollectStep.SecurityHighSignalSummaryPath -Raw } else { '' }
+    $expectedWindowOk = $true
+    if ($null -ne $ExpectedExplicitEventWindow) {
+      $expectedValue = if ([bool]$ExpectedExplicitEventWindow) { 'True' } else { 'False' }
+      $expectedWindowOk = ($metadataText -match ("HAS_EXPLICIT_TIME_WINDOW={0}" -f $expectedValue))
+      $lines += ("EXPECTED_EXPLICIT_EVENT_WINDOW={0}" -f $expectedValue)
+    }
+    if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN') -and ($scopeText -match 'WINDOW_START=') -and ($scopeText -match 'WINDOW_END=') -and ($metadataText -match 'WINDOW_START=') -and ($metadataText -match 'WINDOW_END=') -and $expectedWindowOk) {
+      $status = "PASS"
+      $message = "Targeted collection artifacts were produced and contained expected markers plus effective event-window fields."
+    } else {
+      $message = "Targeted collection artifact markers or effective event-window fields were missing or unexpected."
+    }
+  } else {
+    $message = ($missing -join '; ')
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Verifies production upload-safe chunk manifest behavior.
+
+.DESCRIPTION
+Reads the production chunk manifest, verifies chunk size bounds, and reconstructs the
+source artifact text from chunk_paths in order.
+
+.FUNCTION NAME
+Invoke-ProductionChunkingVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when production chunking fails.
+#>
+function Invoke-ProductionChunkingVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "UPLOAD_SAFE_CHUNK_MANIFEST_PATH=$($CollectStep.UploadSafeChunkManifestPath)"
+  )
+
+  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.UploadSafeChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.UploadSafeChunkManifestPath)) {
+    $message = 'Production upload-safe chunk manifest path was not emitted by the collector.'
+  } else {
+    $manifest = Get-Content -LiteralPath $CollectStep.UploadSafeChunkManifestPath -Raw | ConvertFrom-Json
+    $artifacts = @($manifest.chunked_artifacts)
+    $violations = New-Object System.Collections.ArrayList
+    if (@($artifacts).Count -lt 1) { [void]$violations.Add('No chunked_artifacts were recorded in the production chunk manifest.') }
+    foreach ($artifact in $artifacts) {
+      $sourcePath = [string]$artifact.source_path
+      $sourceKey = [string]$artifact.source_artifact_key
+      $chunkPaths = @($artifact.chunk_paths)
+      $lines += ("SOURCE_KEY={0}" -f $sourceKey)
+      $lines += ("SOURCE_PATH={0}" -f $sourcePath)
+      if ([string]::IsNullOrWhiteSpace($sourcePath) -or -not (Test-Path -LiteralPath $sourcePath)) {
+        [void]$violations.Add(('Missing source artifact for chunk row: {0}' -f $sourceKey))
+        continue
+      }
+      if (@($chunkPaths).Count -lt 2) { [void]$violations.Add(('Chunk count was less than 2 for oversized source: {0}' -f $sourceKey)) }
+      $rebuilt = New-Object System.IO.MemoryStream
+      $chunkSha256 = @($artifact.chunk_sha256)
+      $chunkIndex = 0
+      foreach ($chunkPath in $chunkPaths) {
+        if (-not (Test-Path -LiteralPath $chunkPath)) {
+          [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
+          continue
+        }
+        $chunkSizeKB = [int][Math]::Ceiling(((Get-Item -LiteralPath $chunkPath).Length) / 1KB)
+        $lines += ('CHUNK={0} SIZE_KB={1}' -f $chunkPath, $chunkSizeKB)
+        if ($chunkSizeKB -gt $SafePerFileKB) { [void]$violations.Add(('Chunk exceeded safe per-file budget: {0}' -f $chunkPath)) }
+        $chunkBytes = [System.IO.File]::ReadAllBytes($chunkPath)
+        if (@($chunkSha256).Count -gt $chunkIndex) {
+          $actualChunkHash = (Get-FileHash -LiteralPath $chunkPath -Algorithm SHA256).Hash
+          if ($actualChunkHash -ne [string]$chunkSha256[$chunkIndex]) { [void]$violations.Add(('Chunk SHA256 did not match manifest for: {0}' -f $chunkPath)) }
+        }
+        $rebuilt.Write($chunkBytes, 0, $chunkBytes.Length)
+        $chunkIndex += 1
+      }
