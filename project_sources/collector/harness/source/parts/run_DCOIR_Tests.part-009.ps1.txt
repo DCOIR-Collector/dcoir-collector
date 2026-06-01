@@ -141,3 +141,9 @@ function Run-RetrievalSuite {
 .SYNOPSIS
 Runs the quick-alias validation suite.
 
+.DESCRIPTION
+Exercises the supported quick enrich aliases against representative file, PID, service,
+registry, task, and pull-action inputs plus optional cleanup.
+
+.FUNCTION NAME
+Run-QuickAliasesSuite
