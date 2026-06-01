@@ -151,7 +151,7 @@ function Resolve-DCOIRRuntimePath {
 }
 
 $ScriptFilePath = Resolve-DCOIRRuntimePath
-$ScriptVersion = "4.0.6"
+$ScriptVersion = "4.0.7"
 
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList
