@@ -132,6 +132,71 @@ function Get-CollectorEventFilterHashtable {
 
 <#
 .SYNOPSIS
+Formats event-window metadata for text reports.
+
+.DESCRIPTION
+Returns stable key-value lines that make the effective event-window behavior observable in
+event text, summaries, and enrichment reports.
+
+.FUNCTION NAME
+Get-CollectorEventWindowMetadataLines
+
+.INPUTS
+Window hashtable, channel name, optional event IDs, and max-event count.
+
+.OUTPUTS
+Array of strings.
+#>
+function Get-CollectorEventWindowMetadataLines {
+  param(
+    [hashtable]$Window,
+    [string]$Channel,
+    [int[]]$Ids,
+    [int]$Take
+  )
+
+  $lines = New-Object System.Collections.ArrayList
+  if (-not [string]::IsNullOrWhiteSpace($Channel)) { [void]$lines.Add(("CHANNEL={0}" -f $Channel)) }
+  [void]$lines.Add(("WINDOW_HOURS={0}" -f $Window.EffectiveHours))
+  [void]$lines.Add(("HAS_EXPLICIT_TIME_WINDOW={0}" -f $Window.HasExplicitWindow))
+  [void]$lines.Add(("WINDOW_START={0}" -f $Window.StartTime.ToString("o")))
+  [void]$lines.Add(("WINDOW_END={0}" -f $(if ($Window.EndTime) { $Window.EndTime.ToString("o") } else { "" })))
+  if ($Ids -and @($Ids).Count -gt 0) { [void]$lines.Add(("EVENT_IDS={0}" -f ($Ids -join ','))) }
+  if ($Take -gt 0) { [void]$lines.Add(("MAX_EVENTS={0}" -f $Take)) }
+  return @($lines)
+}
+
+<#
+.SYNOPSIS
+Formats explicit event-window target details for enrich reports.
+
+.DESCRIPTION
+Builds one semicolon-delimited target-details string that includes explicit window fields
+when they were supplied by the operator.
+
+.FUNCTION NAME
+Get-CollectorEventWindowTargetDetails
+
+.INPUTS
+LogName string, Hours integer, optional EventIds, and optional MaxEvents.
+
+.OUTPUTS
+String suitable for action target-details fields.
+#>
+function Get-CollectorEventWindowTargetDetails {
+  param([string]$LogName,[int]$Hours,[int[]]$Ids,[int]$Take)
+  $parts = New-Object System.Collections.ArrayList
+  [void]$parts.Add(("LogName={0}" -f $LogName))
+  [void]$parts.Add(("Hours={0}" -f $Hours))
+  if (-not [string]::IsNullOrWhiteSpace($WindowStart)) { [void]$parts.Add(("WindowStart={0}" -f $WindowStart)) }
+  if (-not [string]::IsNullOrWhiteSpace($WindowEnd)) { [void]$parts.Add(("WindowEnd={0}" -f $WindowEnd)) }
+  if ($Ids -and @($Ids).Count -gt 0) { [void]$parts.Add(("EventIds={0}" -f ($Ids -join ','))) }
+  if ($Take -gt 0) { [void]$parts.Add(("MaxEvents={0}" -f $Take)) }
+  return ($parts -join '; ')
+}
+
+<#
+.SYNOPSIS
 Builds a condensed Security high-signal summary for the selected window.
 
 .DESCRIPTION
@@ -225,10 +290,7 @@ function Get-SecurityHighSignalSummaryText {
 
     $lines = New-Object System.Collections.ArrayList
     [void]$lines.Add("SECURITY_HIGH_SIGNAL_SUMMARY")
-    [void]$lines.Add(("WINDOW_HOURS={0}" -f $window.EffectiveHours))
-    [void]$lines.Add(("HAS_EXPLICIT_TIME_WINDOW={0}" -f $window.HasExplicitWindow))
-    [void]$lines.Add(("WINDOW_START={0}" -f $window.StartTime.ToString("o")))
-    [void]$lines.Add(("WINDOW_END={0}" -f $(if ($window.EndTime) { $window.EndTime.ToString("o") } else { "" })))
+    foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel 'Security' -Ids $ids -Take $Take)) { [void]$lines.Add($metadataLine) }
     [void]$lines.Add(("RAW_EVENT_COUNT={0}" -f @($events).Count))
     [void]$lines.Add(("INTERESTING_EVENT_COUNT={0}" -f @($interesting).Count))
     [void]$lines.Add(("SUPPRESSED_EVENT_COUNT={0}" -f @($suppressed).Count))
@@ -332,11 +394,7 @@ function Get-EventText {
     }
 
     $lines = New-Object System.Collections.ArrayList
-    [void]$lines.Add(("CHANNEL={0}" -f $Channel))
-    [void]$lines.Add(("WINDOW_HOURS={0}" -f $window.EffectiveHours))
-    [void]$lines.Add(("HAS_EXPLICIT_TIME_WINDOW={0}" -f $window.HasExplicitWindow))
-    [void]$lines.Add(("WINDOW_START={0}" -f $window.StartTime.ToString("o")))
-    [void]$lines.Add(("WINDOW_END={0}" -f $(if ($window.EndTime) { $window.EndTime.ToString("o") } else { "" })))
+    foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel $Channel -Ids $Ids -Take $Take)) { [void]$lines.Add($metadataLine) }
     [void]$lines.Add(("EVENT_COUNT={0}" -f @($events).Count))
     [void]$lines.Add("")
 
