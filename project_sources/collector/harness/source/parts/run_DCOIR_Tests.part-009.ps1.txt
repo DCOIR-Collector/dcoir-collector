@@ -1,12 +1,23 @@
     if (@($violations).Count -eq 0) {
-      $sourceText = Get-Content -LiteralPath $CollectStep.SyntheticOversizeSourcePath -Raw
-      if ($rebuilt.ToString() -eq $sourceText) {
+      $sourceHash = (Get-FileHash -LiteralPath $CollectStep.SyntheticOversizeSourcePath -Algorithm SHA256).Hash
+      $sha = [System.Security.Cryptography.SHA256]::Create()
+      try {
+        $rebuiltHashBytes = $sha.ComputeHash($rebuilt.ToArray())
+      } finally {
+        $sha.Dispose()
+        $rebuilt.Dispose()
+      }
+      $rebuiltHash = (($rebuiltHashBytes | ForEach-Object { $_.ToString('x2') }) -join '').ToUpperInvariant()
+      $lines += ('SOURCE_SHA256={0}' -f $sourceHash)
+      $lines += ('REBUILT_SHA256={0}' -f $rebuiltHash)
+      if ($rebuiltHash -eq $sourceHash) {
         $status = 'PASS'
-        $message = 'Chunk reconstruction metadata and chunk ordering were sufficient to rebuild the synthetic oversize artifact exactly.'
+        $message = 'Chunk reconstruction metadata and chunk ordering were sufficient to rebuild the synthetic oversize artifact byte-for-byte.'
       } else {
-        $message = 'Chunk reconstruction did not match the original synthetic source artifact.'
+        $message = 'Chunk byte reconstruction hash did not match the original synthetic source artifact.'
       }
     } else {
+      $rebuilt.Dispose()
       $message = ($violations -join '; ')
     }
   }
@@ -106,7 +117,7 @@ function Run-CoreSuite {
   Invoke-EnrichFinalizedOutputContractVerification -StepName "ZZ_EnrichFinalizedOutputContract" -EnrichStep $finalize
   if (-not $SkipCleanup) {
     $cleanup = Invoke-CollectorStep -StepName "05_Cleanup" -CollectorArgs @("-Quick","cleanup")
-    Assert-CollectorStepSucceeded -StepName "05_Cleanup" -CollectorStep $cleanup
+    Assert-CollectorStepSucceeded -StepName "05_Cleanup" -CleanupStep $cleanup
     Invoke-CleanupOutputContractVerification -StepName "ZZ_CleanupOutputContract" -CleanupStep $cleanup
   }
 }
