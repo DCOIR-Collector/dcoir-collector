@@ -30,13 +30,15 @@ Use this order unless a narrower evidence question clearly justifies deviating f
 2. `UPLOAD_SUMMARY_PATH`
 3. `METADATA_REPORT_PATH`
 4. `ATTACHMENT_BUDGET_MANIFEST_PATH`
-5. `COLLECTION_SCOPE_PATH`
-6. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
-7. `EXECUTION_CONTEXT_PATH` when visibility/elevation context matters
-8. `PARALLELISM_ASSESSMENT_PATH` when runtime interpretation matters
-9. `TARGETED_COLLECTION_PLAN_PATH` when targeted mode was used
-10. representative high-signal artifacts referenced by the above surfaces
-11. the collect bundle or broader flat output only after the first-pass question is clearer
+5. optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when full-fidelity event text was chunked for upload
+6. `COLLECTION_SCOPE_PATH`
+7. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
+8. `EXECUTION_CONTEXT_PATH` when visibility/elevation context matters
+9. `PARALLELISM_ASSESSMENT_PATH` when runtime interpretation matters
+10. `TARGETED_COLLECTION_PLAN_PATH` when targeted mode was used
+11. representative high-signal artifacts referenced by the above surfaces
+12. upload-safe full-fidelity chunks only when the high-signal summary is not enough
+13. the collect bundle or broader flat output only after the first-pass question is clearer
 
 Do not default to searching the entire output tree before reading the orientation surfaces.
 
@@ -50,6 +52,7 @@ Do not default to searching the entire output tree before reading the orientatio
 | `UPLOAD_SUMMARY_PATH` | Which files are most likely to be useful first when upload/review budget matters? |
 | `METADATA_REPORT_PATH` | What run state, timing, and structural context do I need before interpreting artifacts? |
 | `ATTACHMENT_BUDGET_MANIFEST_PATH` | Which recommended files fit the intended environment budget, and which do not? |
+| `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` | Which oversized real text artifacts have ordered full-fidelity chunk companions? |
 | `COLLECTION_SCOPE_PATH` | What collection scope was actually requested or emphasized? |
 | `SECURITY_HIGH_SIGNAL_SUMMARY_PATH` | What security-relevant signals deserve first-pass attention? |
 | `EXECUTION_CONTEXT_PATH` | Was the run elevated, and were visibility limits likely to affect interpretation? |
@@ -145,7 +148,8 @@ In practical current-source terms, that often means:
 2. `UPLOAD_SUMMARY_PATH`
 3. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
 4. one representative evidence carrier
-5. only then broader supporting files
+5. upload-safe chunks for a full-fidelity source artifact only when the summary is insufficient
+6. only then broader supporting files
 
 Do not upload broad low-value output before the artifact most likely to answer the live question.
 
