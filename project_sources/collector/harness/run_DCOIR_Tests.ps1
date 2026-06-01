@@ -44,7 +44,10 @@ param(
   [switch]$SkipCleanup,
 
   [ValidateSet("Auto","PowerShellFile","Executable")]
-  [string]$CollectorInvocationMode = "Auto"
+  [string]$CollectorInvocationMode = "Auto",
+
+  [ValidateRange(1,3600)]
+  [int]$CollectorStepTimeoutSeconds = 600
 )
 
 Set-StrictMode -Version 2
@@ -85,6 +88,7 @@ $MasterZipFullPath = if ([System.IO.Path]::IsPathRooted($MasterZipPath)) {
 $script:CollectorRunId = $null
 $script:CollectorSessionId = $null
 $script:Results = New-Object System.Collections.ArrayList
+$script:CollectorStepTimeoutMilliseconds = [int]($CollectorStepTimeoutSeconds * 1000)
 
 <#
 .SYNOPSIS
@@ -368,6 +372,46 @@ Mandatory StepName string and CollectorArgs string array.
 PSCustomObject containing harness status, parsed collector contract fields, stdout text,
 and the step log path.
 #>
+function Invoke-CollectorProcess {
+  param(
+    [Parameter(Mandatory=$true)][string]$StepName,
+    [Parameter(Mandatory=$true)][object]$Invocation
+  )
+
+  $start = Get-Date
+  Write-Host ("HARNESS_STEP_START step={0} timeout_seconds={1}" -f $StepName, $CollectorStepTimeoutSeconds)
+  $process = New-Object System.Diagnostics.Process
+  $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $process.StartInfo.FileName = $Invocation.FileName
+  $process.StartInfo.UseShellExecute = $false
+  $process.StartInfo.RedirectStandardOutput = $true
+  $process.StartInfo.RedirectStandardError = $true
+  $process.StartInfo.CreateNoWindow = $true
+  $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues @($Invocation.Arguments)
+  [void]$process.Start()
+  $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+  $stderrTask = $process.StandardError.ReadToEndAsync()
+  $timedOut = -not $process.WaitForExit($script:CollectorStepTimeoutMilliseconds)
+  if ($timedOut) {
+    try { $process.Kill() } catch { }
+    try { $process.WaitForExit() } catch { }
+  }
+  $stdoutText = $stdoutTask.GetAwaiter().GetResult()
+  $stderrText = $stderrTask.GetAwaiter().GetResult()
+  $exitCode = if ($timedOut) { -1001 } else { $process.ExitCode }
+  $end = Get-Date
+  Write-Host ("HARNESS_STEP_END step={0} exit_code={1} timed_out={2} duration_ms={3}" -f $StepName, $exitCode, $timedOut, [int][Math]::Round(($end - $start).TotalMilliseconds))
+
+  return [pscustomobject]@{
+    Start = $start
+    End = $end
+    ExitCode = $exitCode
+    StdOutText = $stdoutText
+    StdErrText = $stderrText
+    TimedOut = [bool]$timedOut
+  }
+}
+
 function Invoke-CollectorStep {
   param(
     [Parameter(Mandatory=$true)][string]$StepName,
@@ -375,23 +419,12 @@ function Invoke-CollectorStep {
   )
   Ensure-Directory -Path $LogsDir
   $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
-  $start = Get-Date
-  $process = New-Object System.Diagnostics.Process
-  $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
-  $process.StartInfo.FileName = $invocation.FileName
-  $process.StartInfo.UseShellExecute = $false
-  $process.StartInfo.RedirectStandardOutput = $true
-  $process.StartInfo.RedirectStandardError = $true
-  $process.StartInfo.CreateNoWindow = $true
-  $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues @($invocation.Arguments)
-  [void]$process.Start()
-  $stdoutTask = $process.StandardOutput.ReadToEndAsync()
-  $stderrTask = $process.StandardError.ReadToEndAsync()
-  $process.WaitForExit()
-  $stdoutText = $stdoutTask.GetAwaiter().GetResult()
-  $stderrText = $stderrTask.GetAwaiter().GetResult()
-  $exitCode = $process.ExitCode
-  $end = Get-Date
+  $processResult = Invoke-CollectorProcess -StepName $StepName -Invocation $invocation
+  $start = $processResult.Start
+  $end = $processResult.End
+  $stdoutText = $processResult.StdOutText
+  $stderrText = $processResult.StdErrText
+  $exitCode = $processResult.ExitCode
   $stdout = @($stdoutText, $stderrText | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
   $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
   $logLines = New-Object System.Collections.ArrayList
@@ -400,18 +433,23 @@ function Invoke-CollectorStep {
   [void]$logLines.Add("END=$($end.ToString('o'))")
   [void]$logLines.Add(("DURATION_MS={0}" -f [int][Math]::Round(($end - $start).TotalMilliseconds)))
   [void]$logLines.Add("EXIT_CODE=$exitCode")
+  [void]$logLines.Add("TIMED_OUT=$($processResult.TimedOut)")
+  [void]$logLines.Add("TIMEOUT_SECONDS=$CollectorStepTimeoutSeconds")
   if ($collectorReportedStatus) { [void]$logLines.Add("COLLECTOR_STATUS=$collectorReportedStatus") }
   [void]$logLines.Add(("COMMAND={0}" -f $invocation.DisplayCommand))
   [void]$logLines.Add("")
   [void]$logLines.Add("STDOUT:")
   [void]$logLines.Add($stdout)
   $logPath = Write-HarnessLog -StepName $StepName -Lines $logLines
-  $status = Resolve-CollectorStepStatus -ExitCode $exitCode -CollectorReportedStatus $collectorReportedStatus
+  $status = if ($processResult.TimedOut) { 'FAIL' } else { Resolve-CollectorStepStatus -ExitCode $exitCode -CollectorReportedStatus $collectorReportedStatus }
   $runId = Parse-OutputValue -Text $stdout -Key "RUN_ID"
   $sessionId = Parse-OutputValue -Text $stdout -Key "ENRICH_SESSION_ID"
   if ($runId) { $script:CollectorRunId = $runId }
   if ($sessionId) { $script:CollectorSessionId = $sessionId }
   Add-Result -StepName $StepName -Status $status -ExitCode $exitCode -RunId $runId -EnrichSessionId $sessionId -CollectorReportedStatus $collectorReportedStatus -LogPath $logPath -Start $start -End $end
+  if ($processResult.TimedOut -and -not $ContinueOnError) {
+    throw ("Collector step '{0}' timed out after {1} seconds." -f $StepName, $CollectorStepTimeoutSeconds)
+  }
   return [pscustomobject]@{
     StepName = $StepName
     Status = $status
@@ -521,24 +559,12 @@ function Invoke-ExpectedFailureStep {
 
   Ensure-Directory -Path $LogsDir
   $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
-  $start = Get-Date
-
-  $process = New-Object System.Diagnostics.Process
-  $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
-  $process.StartInfo.FileName = $invocation.FileName
-  $process.StartInfo.UseShellExecute = $false
-  $process.StartInfo.RedirectStandardOutput = $true
-  $process.StartInfo.RedirectStandardError = $true
-  $process.StartInfo.CreateNoWindow = $true
-  $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues @($invocation.Arguments)
-  [void]$process.Start()
-  $stdoutTask = $process.StandardOutput.ReadToEndAsync()
-  $stderrTask = $process.StandardError.ReadToEndAsync()
-  $process.WaitForExit()
-  $stdoutText = $stdoutTask.GetAwaiter().GetResult()
-  $stderrText = $stderrTask.GetAwaiter().GetResult()
-  $exitCode = $process.ExitCode
-  $end = Get-Date
+  $processResult = Invoke-CollectorProcess -StepName $StepName -Invocation $invocation
+  $start = $processResult.Start
+  $end = $processResult.End
+  $stdoutText = $processResult.StdOutText
+  $stderrText = $processResult.StdErrText
+  $exitCode = $processResult.ExitCode
 
   $stdout = @($stdoutText, $stderrText | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
   $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
@@ -552,27 +578,31 @@ function Invoke-ExpectedFailureStep {
 
   $status = 'FAIL'
   $message = ''
-  switch ($ExpectedOutcome) {
-    'BIND_REJECT' {
-      $observedNativeBindReject = $exitCode -ne 0 -and [string]::IsNullOrWhiteSpace($collectorReportedStatus) -and @($missingPatterns).Count -eq 0
-      $observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq 'Executable' -and $exitCode -ne 0
-      if ($observedNativeBindReject -or $observedExecutableRuntimeReject) {
-        $status = 'PASS'
-        if ($observedExecutableRuntimeReject) {
-          $message = 'Observed expected executable nonzero reject behavior for bind-reject gate.'
+  if ($processResult.TimedOut) {
+    $message = 'Collector process timed out before expected failure behavior was observed.'
+  } else {
+    switch ($ExpectedOutcome) {
+      'BIND_REJECT' {
+        $observedNativeBindReject = $exitCode -ne 0 -and [string]::IsNullOrWhiteSpace($collectorReportedStatus) -and @($missingPatterns).Count -eq 0
+        $observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq 'Executable' -and $exitCode -ne 0
+        if ($observedNativeBindReject -or $observedExecutableRuntimeReject) {
+          $status = 'PASS'
+          if ($observedExecutableRuntimeReject) {
+            $message = 'Observed expected executable nonzero reject behavior for bind-reject gate.'
+          } else {
+            $message = 'Observed expected bind-reject behavior.'
+          }
         } else {
-          $message = 'Observed expected bind-reject behavior.'
+          $message = 'Expected bind-reject behavior was not observed.'
         }
-      } else {
-        $message = 'Expected bind-reject behavior was not observed.'
       }
-    }
-    'RUNTIME_ERROR' {
-      if ($exitCode -ne 0 -and $collectorReportedStatus -eq 'ERROR' -and @($missingPatterns).Count -eq 0) {
-        $status = 'PASS'
-        $message = 'Observed expected runtime-error behavior.'
-      } else {
-        $message = 'Expected runtime-error behavior was not observed.'
+      'RUNTIME_ERROR' {
+        if ($exitCode -ne 0 -and $collectorReportedStatus -eq 'ERROR' -and @($missingPatterns).Count -eq 0) {
+          $status = 'PASS'
+          $message = 'Observed expected runtime-error behavior.'
+        } else {
+          $message = 'Expected runtime-error behavior was not observed.'
+        }
       }
     }
   }
@@ -588,6 +618,8 @@ function Invoke-ExpectedFailureStep {
   [void]$logLines.Add(("DURATION_MS={0}" -f [int][Math]::Round(($end - $start).TotalMilliseconds)))
   [void]$logLines.Add("EXPECTED_OUTCOME=$ExpectedOutcome")
   [void]$logLines.Add("EXIT_CODE=$exitCode")
+  [void]$logLines.Add("TIMED_OUT=$($processResult.TimedOut)")
+  [void]$logLines.Add("TIMEOUT_SECONDS=$CollectorStepTimeoutSeconds")
   if ($collectorReportedStatus) { [void]$logLines.Add("COLLECTOR_STATUS=$collectorReportedStatus") }
   [void]$logLines.Add("STATUS=$status")
   if ($message) { [void]$logLines.Add("MESSAGE=$message") }
