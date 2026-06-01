@@ -86,6 +86,7 @@ Tier 2 is still a collect-mode run, so many of the same operator-visible surface
 - `ANALYST_OVERVIEW_PATH`
 - `UPLOAD_SUMMARY_PATH`
 - `ATTACHMENT_BUDGET_MANIFEST_PATH`
+- optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when oversized full-fidelity text artifacts were chunked
 - `COLLECTION_SCOPE_PATH`
 - `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
 - `EXECUTION_CONTEXT_PATH`
@@ -122,10 +123,12 @@ Use this order for the current build:
 2. `UPLOAD_SUMMARY_PATH`
 3. `METADATA_REPORT_PATH`
 4. `ATTACHMENT_BUDGET_MANIFEST_PATH`
-5. `COLLECTION_SCOPE_PATH`
-6. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
-7. deeper Tier-2-relevant artifacts referenced by those surfaces
-8. broader local output only after the deeper question is more clearly framed
+5. optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when full-fidelity text chunks are present
+6. `COLLECTION_SCOPE_PATH`
+7. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
+8. deeper Tier-2-relevant artifacts referenced by those surfaces
+9. upload-safe full-fidelity chunks only when the summary is insufficient
+10. broader local output only after the deeper question is more clearly framed
 
 If the run was launched to answer a narrow persistence or WMI question, prioritize the artifacts that most directly support that question instead of reading all deeper output uniformly.
 
