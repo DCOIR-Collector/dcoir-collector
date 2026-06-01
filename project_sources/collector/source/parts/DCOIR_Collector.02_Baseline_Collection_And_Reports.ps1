@@ -71,6 +71,182 @@ function Get-FileSizeKB {
 
 <#
 .SYNOPSIS
+Returns the SHA256 hash for one file when available.
+
+.DESCRIPTION
+Computes a SHA256 digest for provenance and reconstruction metadata. Returns an empty
+string when the path is blank, missing, or cannot be hashed.
+
+.FUNCTION NAME
+Get-FileSha256
+
+.INPUTS
+Path string for the file to inspect.
+
+.OUTPUTS
+SHA256 hash string or an empty string.
+#>
+function Get-FileSha256 {
+  param([string]$Path)
+  if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path)) { return "" }
+  try {
+    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash
+  } catch {
+    Add-CollectorError ("Failed to hash file [{0}]: {1}" -f $Path, $_.Exception.Message)
+    return ""
+  }
+}
+
+<#
+.SYNOPSIS
+Builds deterministic test padding for a text artifact.
+
+.DESCRIPTION
+Reads a process-scoped environment variable containing a requested KB value and returns
+repeatable text content of at least that size. Used only by harness tests to make a real
+collector artifact key exceed the upload-safe chunk threshold.
+
+.FUNCTION NAME
+Get-TestTextPaddingFromEnvironment
+
+.INPUTS
+Environment variable name.
+
+.OUTPUTS
+String containing deterministic padding or an empty string.
+#>
+function Get-TestTextPaddingFromEnvironment {
+  param([string]$Name)
+  $raw = [Environment]::GetEnvironmentVariable($Name, 'Process')
+  if ([string]::IsNullOrWhiteSpace($raw)) { return "" }
+  [int]$requestedKB = 0
+  if (-not [int]::TryParse($raw, [ref]$requestedKB) -or $requestedKB -le 0) { return "" }
+
+  $line = 'DCOIR_PRODUCTION_CHUNK_TEST_PAYLOAD|ABCDEFGHIJKLMNOPQRSTUVWXYZ|0123456789|line='
+  $sb = New-Object System.Text.StringBuilder
+  $index = 0
+  while ([System.Text.Encoding]::UTF8.GetByteCount($sb.ToString()) -lt ($requestedKB * 1024)) {
+    [void]$sb.AppendLine(('{0}{1:000000}' -f $line, $index))
+    $index += 1
+  }
+  return $sb.ToString()
+}
+
+<#
+.SYNOPSIS
+Splits a real text artifact into upload-safe chunk companions.
+
+.DESCRIPTION
+Creates ordered UTF-8 text chunks that can be concatenated to reconstruct the original
+artifact text exactly. The source artifact is preserved; this helper writes derivative
+chunk companions plus metadata used by the aggregate upload-safe chunk manifest.
+
+.FUNCTION NAME
+Split-TextArtifactIntoUploadSafeChunks
+
+.INPUTS
+Source artifact path, artifact directory, source key, target chunk size, and origin label.
+
+.OUTPUTS
+Ordered hashtable describing chunk paths, sizes, source provenance, and reconstruction.
+#>
+function Split-TextArtifactIntoUploadSafeChunks {
+  param(
+    [string]$SourcePath,
+    [string]$ArtifactsDir,
+    [string]$SourceKey,
+    [int]$TargetChunkKB,
+    [string]$Origin = 'collector_production_upload_safe'
+  )
+
+  $chunkPaths = New-Object System.Collections.ArrayList
+  $chunkSizes = New-Object System.Collections.ArrayList
+  $targetBytes = [Math]::Max(1, $TargetChunkKB) * 1024
+  $sourceText = [System.IO.File]::ReadAllText($SourcePath)
+  $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+  $safeKey = ($SourceKey -replace '[\\/:*?"<>| ]','_')
+  $chunkIndex = 1
+  $current = New-Object System.Text.StringBuilder
+  $currentBytes = 0
+
+  foreach ($ch in $sourceText.ToCharArray()) {
+    $chText = [string]$ch
+    $chBytes = [System.Text.Encoding]::UTF8.GetByteCount($chText)
+    if (($currentBytes + $chBytes) -gt $targetBytes -and $currentBytes -gt 0) {
+      $chunkPath = Join-Path $ArtifactsDir ("90_UPLOAD_SAFE_CHUNKS_{0}_chunk_{1:000}.txt" -f $safeKey, $chunkIndex)
+      [System.IO.File]::WriteAllText($chunkPath, $current.ToString(), $utf8NoBom)
+      [void]$chunkPaths.Add($chunkPath)
+      [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
+      $chunkIndex += 1
+      $current = New-Object System.Text.StringBuilder
+      $currentBytes = 0
+    }
+    [void]$current.Append($chText)
+    $currentBytes += $chBytes
+  }
+
+  if ($currentBytes -gt 0 -or @($chunkPaths).Count -eq 0) {
+    $chunkPath = Join-Path $ArtifactsDir ("90_UPLOAD_SAFE_CHUNKS_{0}_chunk_{1:000}.txt" -f $safeKey, $chunkIndex)
+    [System.IO.File]::WriteAllText($chunkPath, $current.ToString(), $utf8NoBom)
+    [void]$chunkPaths.Add($chunkPath)
+    [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
+  }
+
+  return [ordered]@{
+    origin = $Origin
+    source_artifact_key = $SourceKey
+    source_path = $SourcePath
+    source_size_kb = Get-FileSizeKB -Path $SourcePath
+    source_sha256 = Get-FileSha256 -Path $SourcePath
+    target_chunk_kb = $TargetChunkKB
+    chunk_count = @($chunkPaths).Count
+    chunk_paths = @($chunkPaths)
+    chunk_file_sizes_kb = @($chunkSizes)
+    reconstruction_order = 'Concatenate chunk_paths in listed order to reconstruct the original source artifact text exactly.'
+  }
+}
+
+<#
+.SYNOPSIS
+Creates upload-safe chunk companions for selected oversized real artifacts.
+
+.DESCRIPTION
+Detects selected human-readable artifact keys that exceed the configured safe per-file
+budget, writes ordered chunk companions, and returns manifest rows for the normal collect
+handoff surfaces.
+
+.FUNCTION NAME
+New-ProductionUploadSafeChunkCompanions
+
+.INPUTS
+Collector state, artifact map, and upload budget.
+
+.OUTPUTS
+Array of ordered manifest rows.
+#>
+function New-ProductionUploadSafeChunkCompanions {
+  param([hashtable]$State,[hashtable]$ArtifactMap,[hashtable]$Budget)
+
+  $rows = New-Object System.Collections.ArrayList
+  foreach ($key in @('security_filtered','powershell_operational_filtered','taskscheduler_operational_filtered')) {
+    if (-not $ArtifactMap.ContainsKey($key)) { continue }
+    $sourcePath = [string]$ArtifactMap[$key]
+    if ([string]::IsNullOrWhiteSpace($sourcePath) -or -not (Test-Path -LiteralPath $sourcePath)) { continue }
+    $sourceSizeKB = Get-FileSizeKB -Path $sourcePath
+    if ($sourceSizeKB -le [int]$Budget.SafePerFileKB) { continue }
+
+    $chunkResult = Split-TextArtifactIntoUploadSafeChunks -SourcePath $sourcePath -ArtifactsDir $State.ArtifactsDir -SourceKey $key -TargetChunkKB ([Math]::Min(700, [int]$Budget.SafePerFileKB))
+    [void]$rows.Add($chunkResult)
+    foreach ($chunkPath in @($chunkResult.chunk_paths)) {
+      [void]$ArtifactMap.Add(("{0}_upload_safe_chunk_{1:000}" -f $key, (@($ArtifactMap.Keys | Where-Object { $_ -like ("{0}_upload_safe_chunk_*" -f $key) }).Count + 1)), $chunkPath)
+    }
+  }
+
+  return @($rows)
+}
+
+<#
+.SYNOPSIS
 Converts one object into safe JSON text for artifact writing.
 
 .DESCRIPTION
@@ -251,6 +427,7 @@ function New-CollectUploadArtifacts {
 
   $budget = Get-CollectorUploadBudget
   $artifactMap = $Baseline.ArtifactMap
+  $chunkCompanions = New-ProductionUploadSafeChunkCompanions -State $State -ArtifactMap $artifactMap -Budget $budget
   $recommendedPaths = @()
 
   foreach ($key in @(
@@ -295,6 +472,26 @@ function New-CollectUploadArtifacts {
 
   $uploadSummaryPath = Join-Path $State.ReportsDir ("DCOIR_UPLOAD_SUMMARY_{0}_{1}.txt" -f $env:COMPUTERNAME, $State.RunId)
   $uploadManifestPath = Join-Path $State.ReportsDir ("DCOIR_ATTACHMENT_BUDGET_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
+  $chunkManifestPath = $null
+  if (@($chunkCompanions).Count -gt 0) {
+    $chunkManifestPath = Join-Path $State.ReportsDir ("DCOIR_UPLOAD_SAFE_CHUNK_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
+    $chunkManifestObj = [ordered]@{
+      run_id = $State.RunId
+      origin = 'collector_production_upload_safe'
+      budget = $budget
+      chunked_artifact_count = @($chunkCompanions).Count
+      chunked_artifacts = @($chunkCompanions)
+    }
+    Set-Content -Path $chunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8
+    $State.UploadSafeChunkManifestPath = $chunkManifestPath
+    $Baseline.ArtifactMap['upload_safe_chunk_manifest'] = $chunkManifestPath
+    [void]$Baseline.ArtifactPaths.Add($chunkManifestPath)
+    foreach ($chunkRow in @($chunkCompanions)) {
+      foreach ($chunkPath in @($chunkRow.chunk_paths)) {
+        [void]$Baseline.ArtifactPaths.Add($chunkPath)
+      }
+    }
+  }
 
   $summaryLines = @(
     "CollectorVersion=$ScriptVersion",
@@ -319,6 +516,18 @@ function New-CollectUploadArtifacts {
   $summaryLines += "- Prefer this upload summary, the metadata report, and the listed representative artifacts."
   $summaryLines += "- Do not assume the large merged baseline report is upload-safe in the office Gemini environment."
   $summaryLines += "- If this set must be trimmed further, keep metadata, follow-up queue, security high-signal summary, and one representative process/network artifact first."
+  if (@($chunkCompanions).Count -gt 0) {
+    $summaryLines += ""
+    $summaryLines += "Upload-safe chunk companions:"
+    $summaryLines += ("- UPLOAD_SAFE_CHUNK_MANIFEST_PATH={0}" -f $chunkManifestPath)
+    foreach ($chunkRow in @($chunkCompanions)) {
+      $summaryLines += ("- SourceKey={0} SourceSizeKB={1} ChunkCount={2} TargetChunkKB={3}" -f $chunkRow.source_artifact_key, $chunkRow.source_size_kb, $chunkRow.chunk_count, $chunkRow.target_chunk_kb)
+      foreach ($chunkPath in @($chunkRow.chunk_paths)) {
+        $summaryLines += ("  - {0}" -f $chunkPath)
+      }
+    }
+    $summaryLines += "- Upload the high-signal summary first for triage; use full-fidelity chunk companions when the oversized source artifact is needed."
+  }
 
   Set-Content -Path $uploadSummaryPath -Value $summaryLines -Encoding UTF8
 
@@ -330,6 +539,8 @@ function New-CollectUploadArtifacts {
     default_set_status = $setStatus
     recommended_upload_total_kb = $safeTotal
     recommended_upload_files = @($recommended)
+    upload_safe_chunk_manifest_path = $chunkManifestPath
+    upload_safe_chunk_companions = @($chunkCompanions)
     baseline_report_path = $State.BaselineReportPath
     metadata_report_path = $State.MetadataReportPath
     note = 'The merged baseline report may be useful for local analyst review but is no longer the default Gemini-facing upload surface.'
@@ -342,6 +553,8 @@ function New-CollectUploadArtifacts {
     DefaultSetStatus = $setStatus
     RecommendedUploadTotalKB = $safeTotal
     RecommendedUploadCount = @($recommended).Count
+    UploadSafeChunkManifestPath = $chunkManifestPath
+    UploadSafeChunkCompanionCount = @($chunkCompanions).Count
   }
 }
 
@@ -679,6 +892,7 @@ function New-BaselineReport {
 
   $securityIds = @(4624,4625,4634,4647,4648,4672,4688,4697,4698)
   $securityText = Get-EventText -Channel "Security" -WindowHours $Hours -Ids $securityIds -Take $MaxEvents
+  $securityText += Get-TestTextPaddingFromEnvironment -Name 'DCOIR_TEST_SECURITY_FILTERED_OVERSIZE_KB'
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "EVENT_TIMELINE_TEXT" -Name "security_filtered.txt" -Text $securityText
   [void]$artifactPaths.Add($p); $artifactMap['security_filtered'] = $p; $State.SecurityFilteredPath = $p
   $securityHighSignalText = Get-SecurityHighSignalSummaryText -WindowHours $Hours -Take ([Math]::Min($MaxEvents, 200))
