@@ -174,6 +174,7 @@ $collectorPartFiles = @(
   "DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1",
   "DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1",
   "DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1",
+  "DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
   "DCOIR_Collector.05_Main_Entry.ps1"
 )
 
