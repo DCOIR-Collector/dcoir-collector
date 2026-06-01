@@ -150,6 +150,31 @@ Source artifact path, artifact directory, source key, target chunk size, and ori
 .OUTPUTS
 Ordered hashtable describing chunk paths, sizes, source provenance, and reconstruction.
 #>
+function Get-Utf8SafeChunkLength {
+  param([byte[]]$Bytes,[int]$Offset,[int]$TargetBytes)
+
+  $remaining = $Bytes.Length - $Offset
+  if ($remaining -le 0) { return 0 }
+  $length = [Math]::Min($TargetBytes, $remaining)
+  if (($Offset + $length) -ge $Bytes.Length) { return $length }
+
+  $end = $Offset + $length
+  $lead = $end - 1
+  while (($lead -gt $Offset) -and (($Bytes[$lead] -band 0xC0) -eq 0x80)) { $lead -= 1 }
+  $leadByte = $Bytes[$lead]
+
+  if (($leadByte -band 0x80) -eq 0) { return $length }
+  if (($leadByte -band 0xE0) -eq 0xC0) { $charLength = 2 }
+  elseif (($leadByte -band 0xF0) -eq 0xE0) { $charLength = 3 }
+  elseif (($leadByte -band 0xF8) -eq 0xF0) { $charLength = 4 }
+  else { return $length }
+
+  if (($lead + $charLength) -le $end) { return $length }
+  $safeLength = $lead - $Offset
+  if ($safeLength -gt 0) { return $safeLength }
+  return [Math]::Min($charLength, $remaining)
+}
+
 function Split-TextArtifactIntoUploadSafeChunks {
   param(
     [string]$SourcePath,
@@ -161,35 +186,33 @@ function Split-TextArtifactIntoUploadSafeChunks {
 
   $chunkPaths = New-Object System.Collections.ArrayList
   $chunkSizes = New-Object System.Collections.ArrayList
+  $chunkSha256 = New-Object System.Collections.ArrayList
   $targetBytes = [Math]::Max(1, $TargetChunkKB) * 1024
-  $sourceText = [System.IO.File]::ReadAllText($SourcePath)
-  $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-  $safeKey = ($SourceKey -replace '[\\/:*?"<>| ]','_')
+  $sourceBytes = [System.IO.File]::ReadAllBytes($SourcePath)
+  $safeKey = ($SourceKey -replace '[\/:*?"<>| ]','_')
   $chunkIndex = 1
-  $current = New-Object System.Text.StringBuilder
-  $currentBytes = 0
+  $offset = 0
 
-  foreach ($ch in $sourceText.ToCharArray()) {
-    $chText = [string]$ch
-    $chBytes = [System.Text.Encoding]::UTF8.GetByteCount($chText)
-    if (($currentBytes + $chBytes) -gt $targetBytes -and $currentBytes -gt 0) {
-      $chunkPath = Join-Path $ArtifactsDir ("90_UPLOAD_SAFE_CHUNKS_{0}_chunk_{1:000}.txt" -f $safeKey, $chunkIndex)
-      [System.IO.File]::WriteAllText($chunkPath, $current.ToString(), $utf8NoBom)
-      [void]$chunkPaths.Add($chunkPath)
-      [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
-      $chunkIndex += 1
-      $current = New-Object System.Text.StringBuilder
-      $currentBytes = 0
-    }
-    [void]$current.Append($chText)
-    $currentBytes += $chBytes
-  }
-
-  if ($currentBytes -gt 0 -or @($chunkPaths).Count -eq 0) {
+  if ($sourceBytes.Length -eq 0) {
     $chunkPath = Join-Path $ArtifactsDir ("90_UPLOAD_SAFE_CHUNKS_{0}_chunk_{1:000}.txt" -f $safeKey, $chunkIndex)
-    [System.IO.File]::WriteAllText($chunkPath, $current.ToString(), $utf8NoBom)
+    [System.IO.File]::WriteAllBytes($chunkPath, [byte[]]@())
     [void]$chunkPaths.Add($chunkPath)
     [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
+    [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
+  }
+
+  while ($offset -lt $sourceBytes.Length) {
+    $length = Get-Utf8SafeChunkLength -Bytes $sourceBytes -Offset $offset -TargetBytes $targetBytes
+    if ($length -le 0) { $length = [Math]::Min($targetBytes, ($sourceBytes.Length - $offset)) }
+    $chunkBytes = New-Object byte[] $length
+    [Array]::Copy($sourceBytes, $offset, $chunkBytes, 0, $length)
+    $chunkPath = Join-Path $ArtifactsDir ("90_UPLOAD_SAFE_CHUNKS_{0}_chunk_{1:000}.txt" -f $safeKey, $chunkIndex)
+    [System.IO.File]::WriteAllBytes($chunkPath, $chunkBytes)
+    [void]$chunkPaths.Add($chunkPath)
+    [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
+    [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
+    $offset += $length
+    $chunkIndex += 1
   }
 
   return [ordered]@{
@@ -197,15 +220,16 @@ function Split-TextArtifactIntoUploadSafeChunks {
     source_artifact_key = $SourceKey
     source_path = $SourcePath
     source_size_kb = Get-FileSizeKB -Path $SourcePath
+    source_size_bytes = $sourceBytes.Length
     source_sha256 = Get-FileSha256 -Path $SourcePath
     target_chunk_kb = $TargetChunkKB
     chunk_count = @($chunkPaths).Count
     chunk_paths = @($chunkPaths)
     chunk_file_sizes_kb = @($chunkSizes)
-    reconstruction_order = 'Concatenate chunk_paths in listed order to reconstruct the original source artifact text exactly.'
+    chunk_sha256 = @($chunkSha256)
+    reconstruction_order = 'Concatenate chunk_paths in listed order as bytes to reconstruct the original source artifact exactly.'
   }
 }
-
 <#
 .SYNOPSIS
 Creates upload-safe chunk companions for selected oversized real artifacts.
