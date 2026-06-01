@@ -1,0 +1,150 @@
+
+.DESCRIPTION
+Copies the master ZIP into the working ZIP path, logs the operation as a harness result,
+and throws if the master ZIP is missing.
+
+.FUNCTION NAME
+Restore-WorkingZip
+
+.INPUTS
+Reason string used in the harness step name.
+
+.OUTPUTS
+No direct output. Copies the ZIP and logs the result.
+#>
+function Restore-WorkingZip {
+  param([string]$Reason)
+  $stepName = "ZZ_RestoreWorkingZip_{0}" -f ($Reason -replace '[^A-Za-z0-9_-]','_')
+  $start = Get-Date
+  if (-not (Test-Path -LiteralPath $MasterZipFullPath)) {
+    $end = Get-Date
+    $logPath = Write-HarnessLog -StepName $stepName -Lines @("STEP=$stepName","STATUS=FAIL","MESSAGE=Master zip not found.","MASTER_ZIP=$MasterZipFullPath","WORKING_ZIP=$WorkingZipPath")
+    Add-Result -StepName $stepName -Status "FAIL" -ExitCode 1 -RunId $null -EnrichSessionId $null -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+    throw ("Master zip not found: {0}" -f $MasterZipFullPath)
+  }
+  Copy-Item -LiteralPath $MasterZipFullPath -Destination $WorkingZipPath -Force
+  $status = "PASS"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $stepName -Lines @("STEP=$stepName","STATUS=$status","MASTER_ZIP=$MasterZipFullPath","WORKING_ZIP=$WorkingZipPath")
+  Add-Result -StepName $stepName -Status $status -ExitCode 0 -RunId $null -EnrichSessionId $null -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+}
+
+<#
+.SYNOPSIS
+Maps collector process status into harness step status.
+
+.DESCRIPTION
+Returns FAIL on nonzero exit code, PARTIAL_SUCCESS when the collector reported that
+status, and PASS otherwise.
+
+.FUNCTION NAME
+Resolve-CollectorStepStatus
+
+.INPUTS
+ExitCode integer and CollectorReportedStatus string.
+
+.OUTPUTS
+String harness status value.
+#>
+function Resolve-CollectorStepStatus {
+  param([int]$ExitCode,[string]$CollectorReportedStatus)
+  if ($ExitCode -ne 0) { return "FAIL" }
+  if ($CollectorReportedStatus -eq "PARTIAL_SUCCESS") { return "PARTIAL_SUCCESS" }
+  return "PASS"
+}
+
+<#
+.SYNOPSIS
+Runs one collector process with a bounded timeout.
+
+.DESCRIPTION
+Starts the prepared collector invocation, captures stdout and stderr asynchronously,
+kills the process tree if it exceeds the configured timeout, bounds pipe-drain waits,
+and emits live start/end markers for workflow-log readback.
+
+.FUNCTION NAME
+Invoke-CollectorProcess
+
+.INPUTS
+Mandatory StepName string and prepared Invocation object.
+
+.OUTPUTS
+PSCustomObject containing start/end timestamps, exit code, stdout, stderr, and timeout flag.
+#>
+function Invoke-CollectorProcess {
+  param(
+    [Parameter(Mandatory=$true)][string]$StepName,
+    [Parameter(Mandatory=$true)][object]$Invocation
+  )
+
+  $start = Get-Date
+  Write-Host ("HARNESS_STEP_START step={0} timeout_seconds={1}" -f $StepName, $CollectorStepTimeoutSeconds)
+  $process = New-Object System.Diagnostics.Process
+  $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $process.StartInfo.FileName = $Invocation.FileName
+  $process.StartInfo.UseShellExecute = $false
+  $process.StartInfo.RedirectStandardOutput = $true
+  $process.StartInfo.RedirectStandardError = $true
+  $process.StartInfo.CreateNoWindow = $true
+  $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues @($Invocation.Arguments)
+  [void]$process.Start()
+  $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+  $stderrTask = $process.StandardError.ReadToEndAsync()
+  $timedOut = -not $process.WaitForExit($script:CollectorStepTimeoutMilliseconds)
+  if ($timedOut) {
+    try {
+      Start-Process -FilePath 'taskkill.exe' -ArgumentList @('/PID', $process.Id.ToString(), '/T', '/F') -NoNewWindow -Wait -ErrorAction SilentlyContinue | Out-Null
+    } catch {
+      try { $process.Kill() } catch { }
+    }
+    try { [void]$process.WaitForExit(5000) } catch { }
+  }
+  $stdoutText = if ($stdoutTask.Wait(5000)) { $stdoutTask.GetAwaiter().GetResult() } else { '[HARNESS_TIMEOUT_STDOUT_DRAIN_INCOMPLETE]' }
+  $stderrText = if ($stderrTask.Wait(5000)) { $stderrTask.GetAwaiter().GetResult() } else { '[HARNESS_TIMEOUT_STDERR_DRAIN_INCOMPLETE]' }
+  $exitCode = if ($timedOut) { -1001 } else { $process.ExitCode }
+  $end = Get-Date
+  Write-Host ("HARNESS_STEP_END step={0} exit_code={1} timed_out={2} duration_ms={3}" -f $StepName, $exitCode, $timedOut, [int][Math]::Round(($end - $start).TotalMilliseconds))
+
+  return [pscustomobject]@{
+    Start = $start
+    End = $end
+    ExitCode = $exitCode
+    StdOutText = $stdoutText
+    StdErrText = $stderrText
+    TimedOut = [bool]$timedOut
+  }
+}
+
+<#
+.SYNOPSIS
+Runs one collector step and captures its contract surface.
+
+.DESCRIPTION
+Builds the collector invocation, runs it through Invoke-CollectorProcess, writes a
+per-step harness log, updates the tracked run/session identifiers, records the harness
+result, and returns the parsed collector contract values used by downstream verifiers.
+
+.FUNCTION NAME
+Invoke-CollectorStep
+
+.INPUTS
+Mandatory StepName string and CollectorArgs string array.
+
+.OUTPUTS
+PSCustomObject containing harness status, parsed collector contract fields, stdout text,
+and the step log path.
+#>
+function Invoke-CollectorStep {
+  param(
+    [Parameter(Mandatory=$true)][string]$StepName,
+    [Parameter(Mandatory=$true)][string[]]$CollectorArgs
+  )
+  Ensure-Directory -Path $LogsDir
+  $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
+  $processResult = Invoke-CollectorProcess -StepName $StepName -Invocation $invocation
+  $start = $processResult.Start
+  $end = $processResult.End
+  $stdoutText = $processResult.StdOutText
+  $stderrText = $processResult.StdErrText
+  $exitCode = $processResult.ExitCode
+  $stdout = @($stdoutText, $stderrText | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
