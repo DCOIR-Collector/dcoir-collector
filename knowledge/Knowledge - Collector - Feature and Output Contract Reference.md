@@ -157,6 +157,8 @@ Use targeted collection when the question is narrower than a generic baseline an
 | `-FocusIndicatorType` | Clarify indicator type |
 | `-UserReport` | Preserve the user/analyst problem statement |
 
+Exact event-window filtering is source-backed for event-log text and raw EVTX lanes that route through the explicit event-window helpers. Targeted mode still does not mean every artifact family is exact-window filtered; use the scope and plan surfaces to identify the requested boundary and event-log artifacts to verify the filtered evidence carrier.
+
 ### Targeted profiles actually exposed by source
 
 | Profile | Intended use |
@@ -322,6 +324,7 @@ Operators should not reduce it to “one big bundle” or “one report.”
 | `ANALYST_OVERVIEW_PATH` | Source-backed analyst-first entry surface |
 | `UPLOAD_SUMMARY_PATH` | Tells you what is recommended for upload/review first |
 | `ATTACHMENT_BUDGET_MANIFEST_PATH` | Records the recommended upload set against environment budget |
+| optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` | Lists upload-safe chunk companions for oversized real text artifacts |
 | `COLLECTION_SCOPE_PATH` | Documents the current collect scope |
 | `PARALLELISM_ASSESSMENT_PATH` | Explains bounded runtime parallelism posture |
 | optional `TARGETED_COLLECTION_PLAN_PATH` | Gives targeted analyst guidance when targeted mode is used |
@@ -342,6 +345,7 @@ Operators should not reduce it to “one big bundle” or “one report.”
 | Surface | Why it matters |
 | --- | --- |
 | `DEFAULT_GEMINI_UPLOAD_SET_STATUS` | Shows whether the default upload set fits the expected budget |
+| optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` | Production chunk manifest for oversized real human-readable artifacts such as full-fidelity event text |
 | optional `SYNTHETIC_OVERSIZE_SOURCE_PATH` | Validation-specific oversized-artifact surface |
 | optional `CHUNK_MANIFEST_PATH` | Validation-specific chunking surface |
 | repeated `COLLECTOR_ERROR=` lines | Preserve bounded degraded-run facts without hiding them |
@@ -354,10 +358,12 @@ For current source behavior, the safest first-pass review order is:
 2. `UPLOAD_SUMMARY_PATH`
 3. `METADATA_REPORT_PATH`
 4. `ATTACHMENT_BUDGET_MANIFEST_PATH`
-5. `COLLECTION_SCOPE_PATH`
-6. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
-7. representative high-signal artifacts referenced by those surfaces
-8. bundle retrieval or deeper local review after the first-pass question is clearer
+5. optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when the upload summary reports oversized full-fidelity text chunks
+6. `COLLECTION_SCOPE_PATH`
+7. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
+8. representative high-signal artifacts referenced by those surfaces
+9. upload-safe full-fidelity chunks only when the high-signal summary is not enough
+10. bundle retrieval or deeper local review after the first-pass question is clearer
 
 Do not assume a merged baseline report is the primary review surface in the current build.
 
@@ -397,6 +403,7 @@ Cleanup exists to remove run/output material after evidence is safe.
 It is not a retrieval step, and it should not be used as a substitute for deciding what matters first.
 
 Source-backed cleanup guidance also makes clear that cleanup does not remove the uploaded collector script unless the explicit delete-script command is used.
+If collect fails before `state.json` is saved, cleanup has a bounded missing-state fallback: it removes only the latest matching `DCOIR_*` orphan under the selected `OutRoot` plus the configured package file, and reports `MISSING_STATE_ORPHAN_CLEANED` or `NO_TARGET_FOUND` instead of requiring manual temp-folder cleanup.
 
 Practical operator rule:
 
