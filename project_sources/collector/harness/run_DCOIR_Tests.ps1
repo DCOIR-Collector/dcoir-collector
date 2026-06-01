@@ -359,8 +359,8 @@ Runs one collector process with a bounded timeout.
 
 .DESCRIPTION
 Starts the prepared collector invocation, captures stdout and stderr asynchronously,
-kills the process if it exceeds the configured timeout, and emits live start/end
-markers for workflow-log readback.
+kills the process tree if it exceeds the configured timeout, bounds pipe-drain waits,
+and emits live start/end markers for workflow-log readback.
 
 .FUNCTION NAME
 Invoke-CollectorProcess
@@ -392,11 +392,15 @@ function Invoke-CollectorProcess {
   $stderrTask = $process.StandardError.ReadToEndAsync()
   $timedOut = -not $process.WaitForExit($script:CollectorStepTimeoutMilliseconds)
   if ($timedOut) {
-    try { $process.Kill() } catch { }
-    try { $process.WaitForExit() } catch { }
+    try {
+      Start-Process -FilePath 'taskkill.exe' -ArgumentList @('/PID', $process.Id.ToString(), '/T', '/F') -NoNewWindow -Wait -ErrorAction SilentlyContinue | Out-Null
+    } catch {
+      try { $process.Kill() } catch { }
+    }
+    try { [void]$process.WaitForExit(5000) } catch { }
   }
-  $stdoutText = $stdoutTask.GetAwaiter().GetResult()
-  $stderrText = $stderrTask.GetAwaiter().GetResult()
+  $stdoutText = if ($stdoutTask.Wait(5000)) { $stdoutTask.GetAwaiter().GetResult() } else { '[HARNESS_TIMEOUT_STDOUT_DRAIN_INCOMPLETE]' }
+  $stderrText = if ($stderrTask.Wait(5000)) { $stderrTask.GetAwaiter().GetResult() } else { '[HARNESS_TIMEOUT_STDERR_DRAIN_INCOMPLETE]' }
   $exitCode = if ($timedOut) { -1001 } else { $process.ExitCode }
   $end = Get-Date
   Write-Host ("HARNESS_STEP_END step={0} exit_code={1} timed_out={2} duration_ms={3}" -f $StepName, $exitCode, $timedOut, [int][Math]::Round(($end - $start).TotalMilliseconds))
@@ -602,7 +606,7 @@ function Invoke-ExpectedFailureStep {
     switch ($ExpectedOutcome) {
       'BIND_REJECT' {
         $observedNativeBindReject = $exitCode -ne 0 -and [string]::IsNullOrWhiteSpace($collectorReportedStatus) -and @($missingPatterns).Count -eq 0
-        $observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq 'Executable' -and $exitCode -ne 0
+        $observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq 'Executable' -and $exitCode -ne 0 -and @($missingPatterns).Count -eq 0
         if ($observedNativeBindReject -or $observedExecutableRuntimeReject) {
           $status = 'PASS'
           if ($observedExecutableRuntimeReject) {
