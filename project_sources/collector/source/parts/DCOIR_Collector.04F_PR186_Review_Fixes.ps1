@@ -1,0 +1,267 @@
+<#
+.SYNOPSIS
+DCOIR collector PR #186 review-fix overrides.
+
+.DESCRIPTION
+Applies narrowly scoped helper overrides for PR #186 review findings before the main
+collector entrypoint runs. Keeps custom run-id discovery compatible with collector-created
+run roots, normalizes invalid explicit-window state across downstream scope surfaces, and
+gates synthetic validation padding behind an explicit harness test-mode flag.
+
+.FILE NAME
+DCOIR_Collector.04F_PR186_Review_Fixes.ps1
+
+.INPUTS
+Current collector globals, process environment variables, run-root directory names, and
+state hashtables.
+
+.OUTPUTS
+Replacement helper functions used by the compiled collector runtime.
+#>
+
+<#
+.SYNOPSIS
+Checks whether a directory name matches a collector run-root for the current host.
+
+.DESCRIPTION
+Accepts timestamp run IDs and supported custom run IDs produced by Get-RunRoot while
+remaining bounded to the current host prefix and a conservative run-id character set.
+
+.FUNCTION NAME
+Test-DCOIRRunDirectoryName
+
+.INPUTS
+Directory name string.
+
+.OUTPUTS
+Boolean.
+#>
+function Test-DCOIRRunDirectoryName {
+  param([string]$Name)
+  if ([string]::IsNullOrWhiteSpace($Name)) { return $false }
+  $hostPrefix = "DCOIR_{0}_" -f [string]$env:COMPUTERNAME
+  if (-not $Name.StartsWith($hostPrefix, [System.StringComparison]::OrdinalIgnoreCase)) { return $false }
+  $runIdPart = $Name.Substring($hostPrefix.Length)
+  if ([string]::IsNullOrWhiteSpace($runIdPart)) { return $false }
+  return [regex]::IsMatch($runIdPart, '^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$')
+}
+
+<#
+.SYNOPSIS
+Checks whether collector validation-only behavior is explicitly enabled.
+
+.DESCRIPTION
+Returns true when DCOIR_COLLECTOR_TEST_MODE is set to 1 or when the collector was
+spawned by the maintained harness script. Test payload helpers must require this before
+mutating runtime artifacts from environment variables.
+
+.FUNCTION NAME
+Test-DCOIRCollectorTestModeEnabled
+
+.INPUTS
+Process environment variable DCOIR_COLLECTOR_TEST_MODE and parent process command line.
+
+.OUTPUTS
+Boolean.
+#>
+function Test-DCOIRCollectorTestModeEnabled {
+  if ([Environment]::GetEnvironmentVariable('DCOIR_COLLECTOR_TEST_MODE', 'Process') -eq '1') { return $true }
+  try {
+    $current = Get-CimInstance Win32_Process -Filter ("ProcessId = {0}" -f $PID) -ErrorAction Stop
+    if ($current -and $current.ParentProcessId) {
+      $parent = Get-CimInstance Win32_Process -Filter ("ProcessId = {0}" -f $current.ParentProcessId) -ErrorAction Stop
+      if ($parent.CommandLine -match 'run_DCOIR_Tests\.ps1') { return $true }
+    }
+  } catch {
+    return $false
+  }
+  return $false
+}
+
+<#
+.SYNOPSIS
+Resolves the effective event window for the current collector call.
+
+.DESCRIPTION
+Combines WindowHours with explicit WindowStart and WindowEnd inputs. Invalid or inverted
+explicit bounds clear the script-level raw window values so later targeted scope and plan
+surfaces cannot reuse rejected values after event readers have fallen back.
+
+.FUNCTION NAME
+Get-CollectorEffectiveEventWindow
+
+.INPUTS
+WindowHours integer plus WindowStart and WindowEnd globals.
+
+.OUTPUTS
+Hashtable containing HasExplicitWindow, StartTime, EndTime, and EffectiveHours.
+#>
+function Get-CollectorEffectiveEventWindow {
+  param([int]$WindowHours = 24)
+
+  $effectiveHours = [math]::Abs($WindowHours)
+  if ($effectiveHours -le 0) { $effectiveHours = 24 }
+
+  $now = Get-Date
+  $parsedStart = $null
+  $parsedEnd = $null
+  $parseFailed = $false
+
+  if (-not [string]::IsNullOrWhiteSpace($WindowStart)) {
+    [datetime]$tmpStart = [datetime]::MinValue
+    if ([datetime]::TryParse($WindowStart, [ref]$tmpStart)) {
+      $parsedStart = $tmpStart
+    } else {
+      Add-CollectorError ("Invalid WindowStart value [{0}]; falling back to hour-window behavior." -f $WindowStart)
+      $parseFailed = $true
+    }
+  }
+
+  if (-not [string]::IsNullOrWhiteSpace($WindowEnd)) {
+    [datetime]$tmpEnd = [datetime]::MinValue
+    if ([datetime]::TryParse($WindowEnd, [ref]$tmpEnd)) {
+      $parsedEnd = $tmpEnd
+    } else {
+      Add-CollectorError ("Invalid WindowEnd value [{0}]; falling back to hour-window behavior." -f $WindowEnd)
+      $parseFailed = $true
+    }
+  }
+
+  if ($parseFailed) {
+    $parsedStart = $null
+    $parsedEnd = $null
+    $script:WindowStart = $null
+    $script:WindowEnd = $null
+  } elseif ($parsedStart -and $parsedEnd -and $parsedEnd -lt $parsedStart) {
+    Add-CollectorError ("WindowEnd [{0}] is earlier than WindowStart [{1}]; falling back to hour-window behavior." -f $WindowEnd, $WindowStart)
+    $parsedStart = $null
+    $parsedEnd = $null
+    $script:WindowStart = $null
+    $script:WindowEnd = $null
+  }
+
+  if ($parsedStart -and -not $parsedEnd) {
+    $parsedEnd = $now
+  } elseif ($parsedEnd -and -not $parsedStart) {
+    $parsedStart = $parsedEnd.AddHours(-1 * $effectiveHours)
+  }
+
+  $hasExplicitWindow = ($parsedStart -ne $null) -or ($parsedEnd -ne $null)
+  $startTime = if ($parsedStart) { $parsedStart } else { $now.AddHours(-1 * $effectiveHours) }
+  $endTime = if ($parsedEnd) { $parsedEnd } else { $null }
+
+  return @{
+    HasExplicitWindow = [bool]$hasExplicitWindow
+    StartTime = $startTime
+    EndTime = $endTime
+    EffectiveHours = $effectiveHours
+  }
+}
+
+<#
+.SYNOPSIS
+Builds the targeted collection scope object.
+
+.DESCRIPTION
+Uses the same effective event-window resolver as event collection metadata so invalid
+explicit-window fallback cannot produce contradictory targeted scope output.
+
+.FUNCTION NAME
+Get-TargetedCollectionScopeObject
+
+.INPUTS
+State hashtable.
+
+.OUTPUTS
+Ordered hashtable describing the targeted collection scope.
+#>
+function Get-TargetedCollectionScopeObject {
+  param([hashtable]$State)
+
+  $window = Get-CollectorEffectiveEventWindow -WindowHours $Hours
+  $hasWindow = [bool]$window.HasExplicitWindow
+  $windowStartText = if ($window.HasExplicitWindow) { $window.StartTime.ToString('o') } else { '' }
+  $windowEndText = if ($window.HasExplicitWindow -and $window.EndTime) { $window.EndTime.ToString('o') } else { '' }
+  $hasFocus = (-not [string]::IsNullOrWhiteSpace($FocusProcess)) -or (-not [string]::IsNullOrWhiteSpace($FocusPath)) -or (-not [string]::IsNullOrWhiteSpace($FocusIndicator)) -or (-not [string]::IsNullOrWhiteSpace($UserReport))
+  $categories = @()
+  if ($IncludeArtifactCategory) { $categories = @($IncludeArtifactCategory | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) }
+
+  return [ordered]@{
+    targeted_mode_enabled = [bool]$Targeted
+    target_profile = $TargetProfile
+    has_explicit_time_window = $hasWindow
+    window_start = $windowStartText
+    window_end = $windowEndText
+    requested_hours = $Hours
+    included_artifact_categories = $categories
+    focus_process = $FocusProcess
+    focus_path = $FocusPath
+    focus_indicator = $FocusIndicator
+    focus_indicator_type = $FocusIndicatorType
+    user_report = $UserReport
+    has_focus_context = $hasFocus
+    implementation_boundary = 'This major-version targeted collection feature currently narrows analyst guidance, collection scope intent, artifact prioritization, and recommended next actions. It does not yet rewrite every baseline collection helper into exact start-end timestamp filtering across all artifact families.'
+  }
+}
+
+<#
+.SYNOPSIS
+Reads the synthetic oversized-artifact validation size.
+
+.DESCRIPTION
+Returns the requested synthetic oversized artifact size only when collector harness test
+mode is explicitly enabled. This prevents stale response-action environment variables
+from creating synthetic artifacts in normal collection runs.
+
+.FUNCTION NAME
+Get-ValidationSyntheticOversizeArtifactKB
+
+.INPUTS
+Process environment variables DCOIR_COLLECTOR_TEST_MODE and DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB.
+
+.OUTPUTS
+Integer requested synthetic artifact size in KB.
+#>
+function Get-ValidationSyntheticOversizeArtifactKB {
+  if (-not (Test-DCOIRCollectorTestModeEnabled)) { return 0 }
+  $raw = [Environment]::GetEnvironmentVariable('DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB', 'Process')
+  if ([string]::IsNullOrWhiteSpace($raw)) { return 0 }
+  $parsed = 0
+  if ([int]::TryParse($raw, [ref]$parsed) -and $parsed -gt 0) { return $parsed }
+  return 0
+}
+
+<#
+.SYNOPSIS
+Builds deterministic test padding for a text artifact.
+
+.DESCRIPTION
+Returns deterministic chunk-test padding only when collector harness test mode is
+explicitly enabled. Normal collection runs ignore stale inherited padding variables.
+
+.FUNCTION NAME
+Get-TestTextPaddingFromEnvironment
+
+.INPUTS
+Environment variable name plus DCOIR_COLLECTOR_TEST_MODE.
+
+.OUTPUTS
+String containing deterministic padding or an empty string.
+#>
+function Get-TestTextPaddingFromEnvironment {
+  param([string]$Name)
+  if (-not (Test-DCOIRCollectorTestModeEnabled)) { return '' }
+  $raw = [Environment]::GetEnvironmentVariable($Name, 'Process')
+  if ([string]::IsNullOrWhiteSpace($raw)) { return '' }
+  [int]$requestedKB = 0
+  if (-not [int]::TryParse($raw, [ref]$requestedKB) -or $requestedKB -le 0) { return '' }
+
+  $line = 'DCOIR_PRODUCTION_CHUNK_TEST_PAYLOAD|ABCDEFGHIJKLMNOPQRSTUVWXYZ|0123456789|line='
+  $sb = New-Object System.Text.StringBuilder
+  $index = 0
+  while ([System.Text.Encoding]::UTF8.GetByteCount($sb.ToString()) -lt ($requestedKB * 1024)) {
+    [void]$sb.AppendLine(('{0}{1:000000}' -f $line, $index))
+    $index += 1
+  }
+  return $sb.ToString()
+}
