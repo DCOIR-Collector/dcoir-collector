@@ -425,6 +425,7 @@ function Invoke-CollectorStep {
     MetadataReportPath = Parse-OutputValue -Text $stdout -Key "METADATA_REPORT_PATH"
     UploadSummaryPath = Parse-OutputValue -Text $stdout -Key "UPLOAD_SUMMARY_PATH"
     AttachmentBudgetManifestPath = Parse-OutputValue -Text $stdout -Key "ATTACHMENT_BUDGET_MANIFEST_PATH"
+    UploadSafeChunkManifestPath = Parse-OutputValue -Text $stdout -Key "UPLOAD_SAFE_CHUNK_MANIFEST_PATH"
     CollectionScopePath = Parse-OutputValue -Text $stdout -Key "COLLECTION_SCOPE_PATH"
     ParallelismAssessmentPath = Parse-OutputValue -Text $stdout -Key "PARALLELISM_ASSESSMENT_PATH"
     TargetedCollectionPlanPath = Parse-OutputValue -Text $stdout -Key "TARGETED_COLLECTION_PLAN_PATH"
@@ -1045,14 +1046,89 @@ function Invoke-TargetedCollectionVerification {
   if (@($missing).Count -eq 0) {
     $scopeText = Get-Content -LiteralPath $CollectStep.CollectionScopePath -Raw
     $planText = Get-Content -LiteralPath $CollectStep.TargetedCollectionPlanPath -Raw
-    if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN')) {
+    if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN') -and ($scopeText -match 'WINDOW_START=') -and ($scopeText -match 'WINDOW_END=')) {
       $status = "PASS"
-      $message = "Targeted collection artifacts were produced and contained the expected markers."
+      $message = "Targeted collection artifacts were produced and contained expected markers plus explicit window fields."
     } else {
-      $message = "Targeted collection artifact markers were missing."
+      $message = "Targeted collection artifact markers or explicit window fields were missing."
     }
   } else {
     $message = ($missing -join '; ')
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Verifies production upload-safe chunk manifest behavior.
+
+.DESCRIPTION
+Reads the production chunk manifest, verifies chunk size bounds, and reconstructs the
+source artifact text from chunk_paths in order.
+
+.FUNCTION NAME
+Invoke-ProductionChunkingVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when production chunking fails.
+#>
+function Invoke-ProductionChunkingVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "UPLOAD_SAFE_CHUNK_MANIFEST_PATH=$($CollectStep.UploadSafeChunkManifestPath)"
+  )
+
+  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.UploadSafeChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.UploadSafeChunkManifestPath)) {
+    $message = 'Production upload-safe chunk manifest path was not emitted by the collector.'
+  } else {
+    $manifest = Get-Content -LiteralPath $CollectStep.UploadSafeChunkManifestPath -Raw | ConvertFrom-Json
+    $artifacts = @($manifest.chunked_artifacts)
+    $violations = New-Object System.Collections.ArrayList
+    if (@($artifacts).Count -lt 1) { [void]$violations.Add('No chunked_artifacts were recorded in the production chunk manifest.') }
+    foreach ($artifact in $artifacts) {
+      $sourcePath = [string]$artifact.source_path
+      $sourceKey = [string]$artifact.source_artifact_key
+      $chunkPaths = @($artifact.chunk_paths)
+      $lines += ("SOURCE_KEY={0}" -f $sourceKey)
+      $lines += ("SOURCE_PATH={0}" -f $sourcePath)
+      if ([string]::IsNullOrWhiteSpace($sourcePath) -or -not (Test-Path -LiteralPath $sourcePath)) {
+        [void]$violations.Add(('Missing source artifact for chunk row: {0}' -f $sourceKey))
+        continue
+      }
+      if (@($chunkPaths).Count -lt 2) { [void]$violations.Add(('Chunk count was less than 2 for oversized source: {0}' -f $sourceKey)) }
+      $rebuilt = New-Object System.Text.StringBuilder
+      foreach ($chunkPath in $chunkPaths) {
+        if (-not (Test-Path -LiteralPath $chunkPath)) {
+          [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
+          continue
+        }
+        $chunkSizeKB = [int][Math]::Ceiling(((Get-Item -LiteralPath $chunkPath).Length) / 1KB)
+        $lines += ('CHUNK={0} SIZE_KB={1}' -f $chunkPath, $chunkSizeKB)
+        if ($chunkSizeKB -gt $SafePerFileKB) { [void]$violations.Add(('Chunk exceeded safe per-file budget: {0}' -f $chunkPath)) }
+        [void]$rebuilt.Append((Get-Content -LiteralPath $chunkPath -Raw))
+      }
+      $sourceText = Get-Content -LiteralPath $sourcePath -Raw
+      if ($rebuilt.ToString() -ne $sourceText) { [void]$violations.Add(('Chunk reconstruction did not match source artifact: {0}' -f $sourceKey)) }
+    }
+    if (@($violations).Count -eq 0) {
+      $status = 'PASS'
+      $message = 'Production upload-safe chunks stayed within size budget and reconstructed source artifacts exactly.'
+    } else {
+      $message = ($violations -join '; ')
+    }
   }
 
   $lines += "STATUS=$status"
@@ -1432,6 +1508,12 @@ function Run-TargetedCollectionSuite {
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_TargetedCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
   Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedCollectionValidation" -CollectStep $collect
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "62_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+
+  Restore-WorkingZip -Reason "TargetedCollection_NeutralWindow"
+  $neutral = Invoke-CollectorStep -StepName "63_CollectTargetedNeutralWindow" -CollectorArgs @("-Targeted","-TargetProfile","PopupWindow","-WindowStart","2026-04-08T08:45:00Z","-WindowEnd","2026-04-08T09:15:00Z","-UserReport","User reported popup around 2026-04-08T09:00Z")
+  Assert-CollectorStepSucceeded -StepName "63_CollectTargetedNeutralWindow" -CollectorStep $neutral
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedNeutralWindowValidation" -CollectStep $neutral
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "64_CleanupNeutralWindow" -CollectorArgs @("-Quick","cleanup")) }
 }
 
 <#
@@ -1457,6 +1539,12 @@ function Run-ChunkingOversizeArtifactSuite {
   Assert-CollectorStepSucceeded -StepName "71_CollectT1_SyntheticOversize" -CollectorStep $collect
   Invoke-ChunkingOversizeVerification -StepName "ZZ_ChunkingOversizeValidation" -CollectStep $collect
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "72_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+
+  Restore-WorkingZip -Reason "ChunkingProductionSecurityFiltered"
+  $productionCollect = Invoke-CollectorStepWithEnvOverride -StepName "73_CollectT1_ProductionSecurityFilteredOversize" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SECURITY_FILTERED_OVERSIZE_KB' = '2600' }
+  Assert-CollectorStepSucceeded -StepName "73_CollectT1_ProductionSecurityFilteredOversize" -CollectorStep $productionCollect
+  Invoke-ProductionChunkingVerification -StepName "ZZ_ProductionSecurityFilteredChunkingValidation" -CollectStep $productionCollect
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "74_CleanupProductionSecurityFiltered" -CollectorArgs @("-Quick","cleanup")) }
 }
 
 <#
@@ -1517,7 +1605,14 @@ function Run-FailureGatesSuite {
   [void](Invoke-ExpectedFailureStep -StepName "96_QuickUnknown" -CollectorArgs @("-Quick","unknown-value") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("Unknown -Quick value","Quick command examples:"))
   [void](Invoke-ExpectedFailureStep -StepName "97_QuickSigcheckMissingTarget" -CollectorArgs @("-Quick","enrich-start-sigcheck") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("requires -Target <path>"))
   [void](Invoke-ExpectedFailureStep -StepName "98_QuickListDllsBadPid" -CollectorArgs @("-Quick","enrich-start-listdlls","-Target","abc") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("requires a numeric -Target <pid>"))
+  [void](Invoke-ExpectedFailureStep -StepName "98B_MissingPackageCheckedPaths" -CollectorArgs @("-Quick","collect-t1","-PackageName","DCOIR_MISSING_TEST_PACKAGE.zip") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("Package not found:","CheckedPaths="))
+  $cleanupAfterMissingPackage = Invoke-CollectorStep -StepName "98C_CleanupAfterMissingPackageNoState" -CollectorArgs @("-Quick","cleanup")
+  Assert-CollectorStepSucceeded -StepName "98C_CleanupAfterMissingPackageNoState" -CollectorStep $cleanupAfterMissingPackage
+  if ($cleanupAfterMissingPackage.CleanupStatus -notin @('MISSING_STATE_ORPHAN_CLEANED','NO_TARGET_FOUND')) {
+    throw ("Cleanup after missing package returned unexpected status: {0}" -f $cleanupAfterMissingPackage.CleanupStatus)
+  }
 
+  Restore-WorkingZip -Reason "FailureGates_AfterMissingPackageCleanup"
   $invalidStart = Invoke-CollectorStep -StepName "99_TargetedInvalidWindowStart" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","not-a-date","-WindowEnd","2026-04-08T09:15:00Z")
   Assert-CollectorStepDegradedPartial -StepName "99_TargetedInvalidWindowStart" -CollectorStep $invalidStart -ExpectedPatterns @("Invalid WindowStart value [not-a-date]; falling back to hour-window behavior.")
   Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedInvalidWindowStartValidation" -CollectStep $invalidStart
