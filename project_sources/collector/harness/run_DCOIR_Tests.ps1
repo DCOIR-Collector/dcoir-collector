@@ -1014,7 +1014,7 @@ No direct return value beyond harness logging; throws when the targeted artifact
 missing or malformed.
 #>
 function Invoke-TargetedCollectionVerification {
-  param([string]$StepName,[object]$CollectStep)
+  param([string]$StepName,[object]$CollectStep,[object]$ExpectedExplicitEventWindow = $null)
   $start = Get-Date
   $status = "FAIL"
   $message = ""
@@ -1046,11 +1046,18 @@ function Invoke-TargetedCollectionVerification {
   if (@($missing).Count -eq 0) {
     $scopeText = Get-Content -LiteralPath $CollectStep.CollectionScopePath -Raw
     $planText = Get-Content -LiteralPath $CollectStep.TargetedCollectionPlanPath -Raw
-    if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN') -and ($scopeText -match 'WINDOW_START=') -and ($scopeText -match 'WINDOW_END=')) {
+    $metadataText = if ($CollectStep.SecurityHighSignalSummaryPath -and (Test-Path -LiteralPath $CollectStep.SecurityHighSignalSummaryPath)) { Get-Content -LiteralPath $CollectStep.SecurityHighSignalSummaryPath -Raw } else { '' }
+    $expectedWindowOk = $true
+    if ($null -ne $ExpectedExplicitEventWindow) {
+      $expectedValue = if ([bool]$ExpectedExplicitEventWindow) { 'True' } else { 'False' }
+      $expectedWindowOk = ($metadataText -match ("HAS_EXPLICIT_TIME_WINDOW={0}" -f $expectedValue))
+      $lines += ("EXPECTED_EXPLICIT_EVENT_WINDOW={0}" -f $expectedValue)
+    }
+    if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN') -and ($scopeText -match 'WINDOW_START=') -and ($scopeText -match 'WINDOW_END=') -and ($metadataText -match 'WINDOW_START=') -and ($metadataText -match 'WINDOW_END=') -and $expectedWindowOk) {
       $status = "PASS"
-      $message = "Targeted collection artifacts were produced and contained expected markers plus explicit window fields."
+      $message = "Targeted collection artifacts were produced and contained expected markers plus effective event-window fields."
     } else {
-      $message = "Targeted collection artifact markers or explicit window fields were missing."
+      $message = "Targeted collection artifact markers or effective event-window fields were missing or unexpected."
     }
   } else {
     $message = ($missing -join '; ')
@@ -1109,7 +1116,9 @@ function Invoke-ProductionChunkingVerification {
         continue
       }
       if (@($chunkPaths).Count -lt 2) { [void]$violations.Add(('Chunk count was less than 2 for oversized source: {0}' -f $sourceKey)) }
-      $rebuilt = New-Object System.Text.StringBuilder
+      $rebuilt = New-Object System.IO.MemoryStream
+      $chunkSha256 = @($artifact.chunk_sha256)
+      $chunkIndex = 0
       foreach ($chunkPath in $chunkPaths) {
         if (-not (Test-Path -LiteralPath $chunkPath)) {
           [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
@@ -1118,10 +1127,26 @@ function Invoke-ProductionChunkingVerification {
         $chunkSizeKB = [int][Math]::Ceiling(((Get-Item -LiteralPath $chunkPath).Length) / 1KB)
         $lines += ('CHUNK={0} SIZE_KB={1}' -f $chunkPath, $chunkSizeKB)
         if ($chunkSizeKB -gt $SafePerFileKB) { [void]$violations.Add(('Chunk exceeded safe per-file budget: {0}' -f $chunkPath)) }
-        [void]$rebuilt.Append((Get-Content -LiteralPath $chunkPath -Raw))
+        $chunkBytes = [System.IO.File]::ReadAllBytes($chunkPath)
+        if (@($chunkSha256).Count -gt $chunkIndex) {
+          $actualChunkHash = (Get-FileHash -LiteralPath $chunkPath -Algorithm SHA256).Hash
+          if ($actualChunkHash -ne [string]$chunkSha256[$chunkIndex]) { [void]$violations.Add(('Chunk SHA256 did not match manifest for: {0}' -f $chunkPath)) }
+        }
+        $rebuilt.Write($chunkBytes, 0, $chunkBytes.Length)
+        $chunkIndex += 1
       }
-      $sourceText = Get-Content -LiteralPath $sourcePath -Raw
-      if ($rebuilt.ToString() -ne $sourceText) { [void]$violations.Add(('Chunk reconstruction did not match source artifact: {0}' -f $sourceKey)) }
+      $sourceHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash
+      $sha = [System.Security.Cryptography.SHA256]::Create()
+      try {
+        $rebuiltHashBytes = $sha.ComputeHash($rebuilt.ToArray())
+      } finally {
+        $sha.Dispose()
+      }
+      $rebuiltHash = (($rebuiltHashBytes | ForEach-Object { $_.ToString('x2') }) -join '').ToUpperInvariant()
+      $lines += ('SOURCE_SHA256={0}' -f $sourceHash)
+      $lines += ('REBUILT_SHA256={0}' -f $rebuiltHash)
+      if ($rebuiltHash -ne $sourceHash) { [void]$violations.Add(('Chunk byte reconstruction hash did not match source artifact: {0}' -f $sourceKey)) }
+      if (($artifact.source_sha256) -and ([string]$artifact.source_sha256 -ne $sourceHash)) { [void]$violations.Add(('Manifest source SHA256 did not match source artifact: {0}' -f $sourceKey)) }
     }
     if (@($violations).Count -eq 0) {
       $status = 'PASS'
@@ -1506,13 +1531,13 @@ function Run-TargetedCollectionSuite {
   $collect = Invoke-CollectorStep -StepName "61_CollectTargetedPopup" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","2026-04-08T08:45:00Z","-WindowEnd","2026-04-08T09:15:00Z")
   Assert-CollectorStepSucceeded -StepName "61_CollectTargetedPopup" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_TargetedCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
-  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedCollectionValidation" -CollectStep $collect
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedCollectionValidation" -CollectStep $collect -ExpectedExplicitEventWindow $true
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "62_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 
   Restore-WorkingZip -Reason "TargetedCollection_NeutralWindow"
   $neutral = Invoke-CollectorStep -StepName "63_CollectTargetedNeutralWindow" -CollectorArgs @("-Targeted","-TargetProfile","PopupWindow","-WindowStart","2026-04-08T08:45:00Z","-WindowEnd","2026-04-08T09:15:00Z","-UserReport","User reported popup around 2026-04-08T09:00Z")
   Assert-CollectorStepSucceeded -StepName "63_CollectTargetedNeutralWindow" -CollectorStep $neutral
-  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedNeutralWindowValidation" -CollectStep $neutral
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedNeutralWindowValidation" -CollectStep $neutral -ExpectedExplicitEventWindow $true
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "64_CleanupNeutralWindow" -CollectorArgs @("-Quick","cleanup")) }
 }
 
@@ -1606,28 +1631,35 @@ function Run-FailureGatesSuite {
   [void](Invoke-ExpectedFailureStep -StepName "97_QuickSigcheckMissingTarget" -CollectorArgs @("-Quick","enrich-start-sigcheck") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("requires -Target <path>"))
   [void](Invoke-ExpectedFailureStep -StepName "98_QuickListDllsBadPid" -CollectorArgs @("-Quick","enrich-start-listdlls","-Target","abc") -ExpectedOutcome 'BIND_REJECT' -ExpectedPatterns @("requires a numeric -Target <pid>"))
   [void](Invoke-ExpectedFailureStep -StepName "98B_MissingPackageCheckedPaths" -CollectorArgs @("-Quick","collect-t1","-PackageName","DCOIR_MISSING_TEST_PACKAGE.zip") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("Package not found:","CheckedPaths="))
+  $strayDir = Join-Path $OutRoot 'DCOIR_OPERATOR_NOT_A_RUN'
+  New-Item -Path $strayDir -ItemType Directory -Force | Out-Null
+  Set-Content -Path (Join-Path $strayDir 'keep.txt') -Value 'must-not-delete' -Encoding UTF8
   $cleanupAfterMissingPackage = Invoke-CollectorStep -StepName "98C_CleanupAfterMissingPackageNoState" -CollectorArgs @("-Quick","cleanup")
   Assert-CollectorStepSucceeded -StepName "98C_CleanupAfterMissingPackageNoState" -CollectorStep $cleanupAfterMissingPackage
   if ($cleanupAfterMissingPackage.CleanupStatus -notin @('MISSING_STATE_ORPHAN_CLEANED','NO_TARGET_FOUND')) {
     throw ("Cleanup after missing package returned unexpected status: {0}" -f $cleanupAfterMissingPackage.CleanupStatus)
   }
+  if (-not (Test-Path -LiteralPath (Join-Path $strayDir 'keep.txt'))) {
+    throw 'No-state cleanup deleted an unrelated DCOIR_* directory.'
+  }
+  Remove-Item -LiteralPath $strayDir -Recurse -Force -ErrorAction SilentlyContinue
 
   Restore-WorkingZip -Reason "FailureGates_AfterMissingPackageCleanup"
   $invalidStart = Invoke-CollectorStep -StepName "99_TargetedInvalidWindowStart" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","not-a-date","-WindowEnd","2026-04-08T09:15:00Z")
   Assert-CollectorStepDegradedPartial -StepName "99_TargetedInvalidWindowStart" -CollectorStep $invalidStart -ExpectedPatterns @("Invalid WindowStart value [not-a-date]; falling back to hour-window behavior.")
-  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedInvalidWindowStartValidation" -CollectStep $invalidStart
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedInvalidWindowStartValidation" -CollectStep $invalidStart -ExpectedExplicitEventWindow $false
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "99_CleanupAfterInvalidWindowStart" -CollectorArgs @("-Quick","cleanup")) }
 
   Restore-WorkingZip -Reason "FailureGates_TargetedInvalidWindowEnd"
   $invalidEnd = Invoke-CollectorStep -StepName "100_TargetedInvalidWindowEnd" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","2026-04-08T08:45:00Z","-WindowEnd","not-a-date")
   Assert-CollectorStepDegradedPartial -StepName "100_TargetedInvalidWindowEnd" -CollectorStep $invalidEnd -ExpectedPatterns @("Invalid WindowEnd value [not-a-date]; falling back to hour-window behavior.")
-  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedInvalidWindowEndValidation" -CollectStep $invalidEnd
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedInvalidWindowEndValidation" -CollectStep $invalidEnd -ExpectedExplicitEventWindow $false
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "100_CleanupAfterInvalidWindowEnd" -CollectorArgs @("-Quick","cleanup")) }
 
   Restore-WorkingZip -Reason "FailureGates_TargetedInvertedWindow"
   $invertedWindow = Invoke-CollectorStep -StepName "101_TargetedInvertedWindow" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","2026-04-08T09:15:00Z","-WindowEnd","2026-04-08T08:45:00Z")
   Assert-CollectorStepDegradedPartial -StepName "101_TargetedInvertedWindow" -CollectorStep $invertedWindow -ExpectedPatterns @("is earlier than WindowStart")
-  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedInvertedWindowValidation" -CollectStep $invertedWindow
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedInvertedWindowValidation" -CollectStep $invertedWindow -ExpectedExplicitEventWindow $false
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "101_CleanupAfterInvertedWindow" -CollectorArgs @("-Quick","cleanup")) }
 }
 
