@@ -36,8 +36,8 @@ $builder = New-Object System.Text.StringBuilder
 foreach ($part in $parts) {
   $text = [System.IO.File]::ReadAllText($part.FullName)
   [void]$builder.Append($text)
-  if (-not $text.EndsWith([Environment]::NewLine)) {
-    [void]$builder.Append([Environment]::NewLine)
+  if (-not $text.EndsWith("`n")) {
+    [void]$builder.Append("`n")
   }
 }
 
