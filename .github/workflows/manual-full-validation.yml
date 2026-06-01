@@ -211,10 +211,11 @@ jobs:
 
       - name: Run selected harness suite
         shell: pwsh
+        timeout-minutes: 120
         working-directory: project_sources
         run: |
           $suite = '${{ env.MANUAL_FULL_VALIDATION_SUITE }}'
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite $suite -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite $suite -MasterZipPath $env:HARNESS_RUNTIME_ZIP -CollectorStepTimeoutSeconds 600
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh
