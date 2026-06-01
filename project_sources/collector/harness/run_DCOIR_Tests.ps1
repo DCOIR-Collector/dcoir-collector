@@ -355,22 +355,21 @@ function Resolve-CollectorStepStatus {
 
 <#
 .SYNOPSIS
-Runs one collector step through powershell.exe and captures its contract surface.
+Runs one collector process with a bounded timeout.
 
 .DESCRIPTION
-Builds the collector invocation, runs it, writes a per-step harness log, updates the
-tracked run/session identifiers, records the harness result, and returns the parsed
-collector contract values used by downstream verifiers.
+Starts the prepared collector invocation, captures stdout and stderr asynchronously,
+kills the process if it exceeds the configured timeout, and emits live start/end
+markers for workflow-log readback.
 
 .FUNCTION NAME
-Invoke-CollectorStep
+Invoke-CollectorProcess
 
 .INPUTS
-Mandatory StepName string and CollectorArgs string array.
+Mandatory StepName string and prepared Invocation object.
 
 .OUTPUTS
-PSCustomObject containing harness status, parsed collector contract fields, stdout text,
-and the step log path.
+PSCustomObject containing start/end timestamps, exit code, stdout, stderr, and timeout flag.
 #>
 function Invoke-CollectorProcess {
   param(
@@ -412,6 +411,25 @@ function Invoke-CollectorProcess {
   }
 }
 
+<#
+.SYNOPSIS
+Runs one collector step and captures its contract surface.
+
+.DESCRIPTION
+Builds the collector invocation, runs it through Invoke-CollectorProcess, writes a
+per-step harness log, updates the tracked run/session identifiers, records the harness
+result, and returns the parsed collector contract values used by downstream verifiers.
+
+.FUNCTION NAME
+Invoke-CollectorStep
+
+.INPUTS
+Mandatory StepName string and CollectorArgs string array.
+
+.OUTPUTS
+PSCustomObject containing harness status, parsed collector contract fields, stdout text,
+and the step log path.
+#>
 function Invoke-CollectorStep {
   param(
     [Parameter(Mandatory=$true)][string]$StepName,
