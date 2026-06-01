@@ -158,13 +158,23 @@ function Get-SecurityHighSignalSummaryText {
       Select-Object -First ($Take * 4))
 
     if (@($events).Count -eq 0) {
+      $lines = New-Object System.Collections.ArrayList
+      [void]$lines.Add('SECURITY_HIGH_SIGNAL_SUMMARY')
+      foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel 'Security' -Ids $ids -Take $Take)) { [void]$lines.Add($metadataLine) }
+      [void]$lines.Add('RAW_EVENT_COUNT=0')
+      [void]$lines.Add('INTERESTING_EVENT_COUNT=0')
+      [void]$lines.Add('SUPPRESSED_EVENT_COUNT=0')
+      [void]$lines.Add('')
       if (-not (Test-DiagnosticCollectorIsElevated)) {
         $message = Get-NonElevatedSecurityVisibilityMessage
         Add-CollectorNote $message
-        return $message
+        [void]$lines.Add($message)
+        return ($lines -join [Environment]::NewLine)
       }
-      Add-CollectorNote 'No high-signal Security events were found in the selected window.'
-      return 'No high-signal Security events were found in the selected window.'
+      $message = 'No high-signal Security events were found in the selected window.'
+      Add-CollectorNote $message
+      [void]$lines.Add($message)
+      return ($lines -join [Environment]::NewLine)
     }
 
     $interesting = New-Object System.Collections.ArrayList
@@ -247,7 +257,7 @@ function Get-SecurityHighSignalSummaryText {
 
     $lines = New-Object System.Collections.ArrayList
     [void]$lines.Add('SECURITY_HIGH_SIGNAL_SUMMARY')
-    [void]$lines.Add(("WINDOW_HOURS={0}" -f $WindowHours))
+    foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel 'Security' -Ids $ids -Take $Take)) { [void]$lines.Add($metadataLine) }
     [void]$lines.Add(("RAW_EVENT_COUNT={0}" -f @($events).Count))
     [void]$lines.Add(("INTERESTING_EVENT_COUNT={0}" -f @($interesting).Count))
     [void]$lines.Add(("SUPPRESSED_EVENT_COUNT={0}" -f @($suppressed).Count))
@@ -320,13 +330,24 @@ function Get-SecurityHighSignalSummaryText {
   } catch {
     $msg = $_.Exception.Message
     if ($msg -match 'No events were found') {
+      $window = Get-CollectorEffectiveEventWindow -WindowHours $WindowHours
+      $lines = New-Object System.Collections.ArrayList
+      [void]$lines.Add('SECURITY_HIGH_SIGNAL_SUMMARY')
+      foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel 'Security' -Ids $ids -Take $Take)) { [void]$lines.Add($metadataLine) }
+      [void]$lines.Add('RAW_EVENT_COUNT=0')
+      [void]$lines.Add('INTERESTING_EVENT_COUNT=0')
+      [void]$lines.Add('SUPPRESSED_EVENT_COUNT=0')
+      [void]$lines.Add('')
       if (-not (Test-DiagnosticCollectorIsElevated)) {
         $message = Get-NonElevatedSecurityVisibilityMessage
         Add-CollectorNote $message
-        return $message
+        [void]$lines.Add($message)
+        return ($lines -join [Environment]::NewLine)
       }
-      Add-CollectorNote 'No high-signal Security events were found in the selected window.'
-      return 'No high-signal Security events were found in the selected window.'
+      $message = 'No high-signal Security events were found in the selected window.'
+      Add-CollectorNote $message
+      [void]$lines.Add($message)
+      return ($lines -join [Environment]::NewLine)
     }
     Add-CollectorError ("Failed to collect condensed Security summary: {0}" -f $msg)
     return ("ERROR collecting condensed Security summary: {0}" -f $msg)
@@ -375,18 +396,24 @@ function Get-EventText {
       Select-Object -First $Take
 
     if (@($events).Count -eq 0) {
+      $lines = New-Object System.Collections.ArrayList
+      foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel $Channel -Ids $Ids -Take $Take)) { [void]$lines.Add($metadataLine) }
+      [void]$lines.Add('EVENT_COUNT=0')
+      [void]$lines.Add('')
       if (($Channel -eq 'Security') -and (-not (Test-DiagnosticCollectorIsElevated))) {
         $message = Get-NonElevatedSecurityVisibilityMessage
         Add-CollectorNote $message
-        return $message
+        [void]$lines.Add($message)
+        return ($lines -join [Environment]::NewLine)
       }
-      Add-CollectorNote (("No events were found for channel [{0}] in the selected window." -f $Channel))
-      return (("No events were found for channel [{0}] in the selected window." -f $Channel))
+      $message = ("No events were found for channel [{0}] in the selected window." -f $Channel)
+      Add-CollectorNote $message
+      [void]$lines.Add($message)
+      return ($lines -join [Environment]::NewLine)
     }
 
     $lines = New-Object System.Collections.ArrayList
-    [void]$lines.Add(("CHANNEL={0}" -f $Channel))
-    [void]$lines.Add(("WINDOW_HOURS={0}" -f $WindowHours))
+    foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel $Channel -Ids $Ids -Take $Take)) { [void]$lines.Add($metadataLine) }
     [void]$lines.Add(("EVENT_COUNT={0}" -f @($events).Count))
     [void]$lines.Add('')
 
@@ -408,13 +435,21 @@ function Get-EventText {
   } catch {
     $msg = $_.Exception.Message
     if ($msg -match 'No events were found') {
+      $window = Get-CollectorEffectiveEventWindow -WindowHours $WindowHours
+      $lines = New-Object System.Collections.ArrayList
+      foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel $Channel -Ids $Ids -Take $Take)) { [void]$lines.Add($metadataLine) }
+      [void]$lines.Add('EVENT_COUNT=0')
+      [void]$lines.Add('')
       if (($Channel -eq 'Security') -and (-not (Test-DiagnosticCollectorIsElevated))) {
         $message = Get-NonElevatedSecurityVisibilityMessage
         Add-CollectorNote $message
-        return $message
+        [void]$lines.Add($message)
+        return ($lines -join [Environment]::NewLine)
       }
-      Add-CollectorNote (("No events were found for channel [{0}] in the selected window." -f $Channel))
-      return (("No events were found for channel [{0}] in the selected window." -f $Channel))
+      $message = ("No events were found for channel [{0}] in the selected window." -f $Channel)
+      Add-CollectorNote $message
+      [void]$lines.Add($message)
+      return ($lines -join [Environment]::NewLine)
     }
     Add-CollectorError (("Failed to collect event log text for [{0}]: {1}" -f $Channel, $msg))
     return (("ERROR collecting event log text for [{0}]: {1}" -f $Channel, $msg))
