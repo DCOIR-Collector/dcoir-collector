@@ -217,6 +217,8 @@ function Get-CollectorContextualHelpText {
       $lines += 'DCOIR Collector Contextual Help - Cleanup'
       $lines += ''
       $lines += 'Cleanup removes the run root and consumed package state.'
+      $lines += 'If a collect run failed before state.json was saved, cleanup removes only the latest matching DCOIR_* orphan under the selected OutRoot and reports MISSING_STATE_ORPHAN_CLEANED.'
+      $lines += 'Cleanup reports NO_TARGET_FOUND when no state-backed run or bounded orphan cleanup target exists.'
       $lines += 'Cleanup does not remove the uploaded collector script unless you run DELETE_SCRIPT_COMMAND explicitly.'
       $lines += ''
       $lines += 'Response-action-safe example:'
