@@ -1,0 +1,150 @@
+    $message = 'Finalized enrich-session output contract fields were emitted.'
+  } else {
+    $message = (@($missing) -join '; ')
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $EnrichStep.RunId -EnrichSessionId $EnrichStep.EnrichSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Verifies the cleanup output contract fields.
+
+.DESCRIPTION
+Checks that the cleanup step emitted RUN_ID, a COMPLETE cleanup status, and the
+delete-script command.
+
+.FUNCTION NAME
+Invoke-CleanupOutputContractVerification
+
+.INPUTS
+StepName string and CleanupStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the contract is incomplete.
+#>
+function Invoke-CleanupOutputContractVerification {
+  param([string]$StepName,[object]$CleanupStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "RUN_ID=$($CleanupStep.RunId)",
+    "CLEANUP_STATUS=$($CleanupStep.CleanupStatus)",
+    "DELETE_SCRIPT_COMMAND=$($CleanupStep.DeleteScriptCommand)",
+    "HAS_QUICK_COMMANDS=$($CleanupStep.HasQuickCommands)"
+  )
+
+  $missing = New-Object System.Collections.ArrayList
+  if ([string]::IsNullOrWhiteSpace($CleanupStep.RunId)) { [void]$missing.Add('RUN_ID missing') }
+  if ($CleanupStep.CleanupStatus -ne 'COMPLETE') { [void]$missing.Add('CLEANUP_STATUS missing or not COMPLETE') }
+  if ([string]::IsNullOrWhiteSpace($CleanupStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
+
+  if (@($missing).Count -eq 0) {
+    $status = 'PASS'
+    $message = 'Cleanup output contract fields were emitted.'
+  } else {
+    $message = (@($missing) -join '; ')
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $CleanupStep.RunId -EnrichSessionId $CleanupStep.EnrichSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Verifies the attachment-budget manifest against the harness thresholds.
+
+.DESCRIPTION
+Reads the attachment-budget manifest, checks per-file and total-size values against the
+configured safe and hard thresholds, logs the result, and throws when the manifest is
+out of bounds.
+
+.FUNCTION NAME
+Invoke-AttachmentBudgetVerification
+
+.INPUTS
+StepName string and ManifestPath string.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the budget check fails.
+#>
+function Invoke-AttachmentBudgetVerification {
+  param([string]$StepName,[string]$ManifestPath)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @("STEP=$StepName","MANIFEST_PATH=$ManifestPath","SAFE_PER_FILE_KB=$SafePerFileKB","HARD_PER_FILE_KB=$HardPerFileKB","SAFE_PER_PROMPT_KB=$SafePerPromptKB","HARD_PER_PROMPT_KB=$HardPerPromptKB")
+  if (-not (Test-Path -LiteralPath $ManifestPath)) {
+    $message = 'Attachment budget manifest missing.'
+    $lines += "STATUS=FAIL"
+    $lines += "MESSAGE=$message"
+  } else {
+    $obj = Get-Content -LiteralPath $ManifestPath -Raw | ConvertFrom-Json
+    $rows = @($obj.recommended_upload_files)
+    $total = 0
+    $violations = New-Object System.Collections.ArrayList
+    foreach ($row in $rows) {
+      $total += [int]$row.size_kb
+      $lines += ('FILE={0} SIZE_KB={1}' -f $row.path, $row.size_kb)
+      if ([int]$row.size_kb -gt $SafePerFileKB) { [void]$violations.Add(('safe per-file exceeded: {0}' -f $row.path)) }
+      if ([int]$row.size_kb -gt $HardPerFileKB) { [void]$violations.Add(('hard per-file exceeded: {0}' -f $row.path)) }
+    }
+    $lines += "TOTAL_RECOMMENDED_KB=$total"
+    if ($total -gt $SafePerPromptKB) { [void]$violations.Add('safe total exceeded') }
+    if ($total -gt $HardPerPromptKB) { [void]$violations.Add('hard total exceeded') }
+    if (@($violations).Count -eq 0) {
+      $status = 'PASS'
+      $message = 'Recommended upload set is within the configured safe budget.'
+    } else {
+      $status = 'FAIL'
+      $message = ($violations -join '; ')
+    }
+    $lines += "STATUS=$status"
+    $lines += "MESSAGE=$message"
+  }
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Verifies enrich-session reuse behavior.
+
+.DESCRIPTION
+Checks that enrich-start created a new session, enrich-add reused the same session, and
+the recorded session-resolution modes match the expected model.
+
+.FUNCTION NAME
+Invoke-SessionBehaviorVerification
+
+.INPUTS
+StepName string, start/add session IDs, and start/add session-resolution modes.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the session behavior is
+incorrect.
+#>
+function Invoke-SessionBehaviorVerification {
+  param([string]$StepName,[string]$StartSessionId,[string]$AddSessionId,[string]$StartMode,[string]$AddMode)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @("STEP=$StepName","START_SESSION_ID=$StartSessionId","ADD_SESSION_ID=$AddSessionId","START_MODE=$StartMode","ADD_MODE=$AddMode")
+  if ($StartSessionId -and $AddSessionId -and ($StartSessionId -eq $AddSessionId) -and ($StartMode -eq 'CREATED_NEW_SESSION') -and ($AddMode -like 'REUSED_*')) {
+    $status = 'PASS'
+    $message = 'enrich-add reused the existing open session as expected.'
+  } else {
+    $message = 'Session reuse behavior did not match the expected start/add model.'
