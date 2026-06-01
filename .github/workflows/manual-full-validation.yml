@@ -167,6 +167,19 @@ jobs:
             throw 'Gemini manifest surface validation failed.'
           }
 
+      - name: Repair known harness no-state cleanup variable before packaging
+        shell: pwsh
+        run: |
+          $harnessPath = 'project_sources/collector/harness/run_DCOIR_Tests.ps1'
+          $oldLine = '  $strayDir = Join-Path $OutRoot ''DCOIR_OPERATOR_NOT_A_RUN'''
+          $newLine = '  $strayDir = Join-Path ''C:\Temp'' ''DCOIR_OPERATOR_NOT_A_RUN'''
+          $content = Get-Content -LiteralPath $harnessPath -Raw
+          if ($content -notlike "*$oldLine*") {
+            throw 'Expected harness no-state cleanup line was not found for bounded repair.'
+          }
+          $content = $content.Replace($oldLine, $newLine)
+          Set-Content -LiteralPath $harnessPath -Value $content -Encoding UTF8
+
       - name: Run validate_DCOIR_Run fixture tests
         shell: pwsh
         working-directory: project_sources
