@@ -146,6 +146,14 @@ function Get-CollectorEffectiveEventWindow {
     $parsedStart = $parsedEnd.AddHours(-1 * $effectiveHours)
   }
 
+  if ($parsedStart -and $parsedEnd -and $parsedEnd -lt $parsedStart) {
+    Add-CollectorError ("Effective WindowEnd [{0}] is earlier than WindowStart [{1}] after partial-window normalization; falling back to hour-window behavior." -f $parsedEnd.ToString('o'), $parsedStart.ToString('o'))
+    $parsedStart = $null
+    $parsedEnd = $null
+    $script:WindowStart = $null
+    $script:WindowEnd = $null
+  }
+
   $hasExplicitWindow = ($parsedStart -ne $null) -or ($parsedEnd -ne $null)
   $startTime = if ($parsedStart) { $parsedStart } else { $now.AddHours(-1 * $effectiveHours) }
   $endTime = if ($parsedEnd) { $parsedEnd } else { $null }
