@@ -34,7 +34,7 @@ if (-not (Test-Path -LiteralPath $outputDirectory)) {
 $writer = New-Object System.Text.UTF8Encoding($false)
 $builder = New-Object System.Text.StringBuilder
 foreach ($part in $parts) {
-  $text = [System.IO.File]::ReadAllText($part.FullName)
+  $text = [System.IO.File]::ReadAllText($part.FullName) -replace "`r`n", "`n" -replace "`r", "`n"
   [void]$builder.Append($text)
   if (-not $text.EndsWith("`n")) {
     [void]$builder.Append("`n")
