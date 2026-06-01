@@ -117,7 +117,7 @@ function Run-CoreSuite {
   Invoke-EnrichFinalizedOutputContractVerification -StepName "ZZ_EnrichFinalizedOutputContract" -EnrichStep $finalize
   if (-not $SkipCleanup) {
     $cleanup = Invoke-CollectorStep -StepName "05_Cleanup" -CollectorArgs @("-Quick","cleanup")
-    Assert-CollectorStepSucceeded -StepName "05_Cleanup" -CleanupStep $cleanup
+    Assert-CollectorStepSucceeded -StepName "05_Cleanup" -CollectorStep $cleanup
     Invoke-CleanupOutputContractVerification -StepName "ZZ_CleanupOutputContract" -CleanupStep $cleanup
   }
 }
