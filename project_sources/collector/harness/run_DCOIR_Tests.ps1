@@ -429,6 +429,7 @@ function Invoke-CollectorStep {
     CollectionScopePath = Parse-OutputValue -Text $stdout -Key "COLLECTION_SCOPE_PATH"
     ParallelismAssessmentPath = Parse-OutputValue -Text $stdout -Key "PARALLELISM_ASSESSMENT_PATH"
     TargetedCollectionPlanPath = Parse-OutputValue -Text $stdout -Key "TARGETED_COLLECTION_PLAN_PATH"
+    SecurityHighSignalSummaryPath = Parse-OutputValue -Text $stdout -Key "SECURITY_HIGH_SIGNAL_SUMMARY_PATH"
     SyntheticOversizeSourcePath = Parse-OutputValue -Text $stdout -Key "SYNTHETIC_OVERSIZE_SOURCE_PATH"
     ChunkManifestPath = Parse-OutputValue -Text $stdout -Key "CHUNK_MANIFEST_PATH"
     DefaultGeminiUploadSetStatus = Parse-OutputValue -Text $stdout -Key "DEFAULT_GEMINI_UPLOAD_SET_STATUS"
@@ -451,8 +452,8 @@ function Invoke-CollectorStep {
 Runs one collector step with temporary environment overrides.
 
 .DESCRIPTION
-Applies the supplied process-scope environment overrides, invokes one collector step,
-and restores the previous environment values afterward.
+Applies the supplied process-scope environment overrides plus the harness test-mode flag,
+invokes one collector step, and restores the previous environment values afterward.
 
 .FUNCTION NAME
 Invoke-CollectorStepWithEnvOverride
@@ -471,14 +472,22 @@ function Invoke-CollectorStepWithEnvOverride {
   )
 
   $previous = @{}
+  $effectiveEnvOverrides = @{}
+  foreach ($name in $EnvOverrides.Keys) {
+    $effectiveEnvOverrides[$name] = $EnvOverrides[$name]
+  }
+  if (-not $effectiveEnvOverrides.ContainsKey('DCOIR_COLLECTOR_TEST_MODE')) {
+    $effectiveEnvOverrides['DCOIR_COLLECTOR_TEST_MODE'] = '1'
+  }
+
   try {
-    foreach ($name in $EnvOverrides.Keys) {
+    foreach ($name in $effectiveEnvOverrides.Keys) {
       $previous[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
-      [Environment]::SetEnvironmentVariable($name, [string]$EnvOverrides[$name], 'Process')
+      [Environment]::SetEnvironmentVariable($name, [string]$effectiveEnvOverrides[$name], 'Process')
     }
     return Invoke-CollectorStep -StepName $StepName -CollectorArgs $CollectorArgs
   } finally {
-    foreach ($name in $EnvOverrides.Keys) {
+    foreach ($name in $effectiveEnvOverrides.Keys) {
       [Environment]::SetEnvironmentVariable($name, $previous[$name], 'Process')
     }
   }
