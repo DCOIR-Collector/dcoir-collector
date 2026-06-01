@@ -89,6 +89,7 @@ For current source behavior, the important operator-visible surfaces include:
 - `ANALYST_OVERVIEW_PATH`
 - `UPLOAD_SUMMARY_PATH`
 - `ATTACHMENT_BUDGET_MANIFEST_PATH`
+- optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when oversized full-fidelity text artifacts were chunked
 - `COLLECTION_SCOPE_PATH`
 - `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
 - `EXECUTION_CONTEXT_PATH`
@@ -111,11 +112,13 @@ For the current build, use this review order:
 2. `UPLOAD_SUMMARY_PATH`
 3. `METADATA_REPORT_PATH`
 4. `ATTACHMENT_BUDGET_MANIFEST_PATH`
-5. `COLLECTION_SCOPE_PATH`
-6. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
-7. `EXECUTION_CONTEXT_PATH` when elevation/visibility affects interpretation
-8. representative high-signal artifacts referenced by the above surfaces
-9. broader flat output or the bundle only after the first-pass question is clearer
+5. optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when full-fidelity text chunks are present
+6. `COLLECTION_SCOPE_PATH`
+7. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
+8. `EXECUTION_CONTEXT_PATH` when elevation/visibility affects interpretation
+9. representative high-signal artifacts referenced by the above surfaces
+10. upload-safe full-fidelity chunks only when the summary is insufficient
+11. broader flat output or the bundle only after the first-pass question is clearer
 
 Avoid jumping directly into raw files before reading the orientation surfaces.
 
