@@ -43,7 +43,8 @@ def main() -> int:
 
     manifest = load_manifest(source_dir)
     wrapper_path = source_dir / manifest['collector_wrapper_source']
-    harness_path = source_dir / manifest['harness_source']
+    harness_source = manifest.get('harness_source')
+    harness_path = source_dir / harness_source if harness_source else None
     part_paths = [source_dir / rel for rel in manifest.get('collector_part_files', [])]
 
     wrapper_text = wrapper_path.read_text(encoding='utf-8')
@@ -59,15 +60,18 @@ def main() -> int:
     compiled_root = output_dir / 'compiled_runtime'
     compiled_root.mkdir(parents=True, exist_ok=True)
     compiled_collector = compiled_root / manifest.get('compiled_runtime_name', 'DCOIR_Collector.ps1')
-    compiled_harness = compiled_root / harness_path.name
     compiled_collector.write_text(compiled_text, encoding='utf-8')
-    compiled_harness.write_text(harness_path.read_text(encoding='utf-8'), encoding='utf-8')
+
+    compiled_harness = None
+    if harness_path is not None:
+        compiled_harness = compiled_root / harness_path.name
+        compiled_harness.write_text(harness_path.read_text(encoding='utf-8'), encoding='utf-8')
 
     report = {
         'success': True,
         'source_dir': str(source_dir),
         'compiled_collector_path': str(compiled_collector),
-        'compiled_harness_path': str(compiled_harness),
+        'compiled_harness_path': str(compiled_harness) if compiled_harness is not None else None,
         'compiled_runtime_name': compiled_collector.name,
         'collector_part_count': len(part_paths),
         'collector_part_files': [p.name for p in part_paths],
