@@ -43,6 +43,10 @@ def main() -> int:
     checks['missing_collector_part_files'] = missing_parts
     if missing_parts:
         errors.append('collector_part_files references missing files: ' + ', '.join(missing_parts))
+    empty_parts = [rel for rel in collector_part_files if (source_dir / rel).exists() and not (source_dir / rel).read_text(encoding='utf-8').strip()]
+    checks['empty_collector_part_files'] = empty_parts
+    if empty_parts:
+        errors.append('collector_part_files references empty files: ' + ', '.join(empty_parts))
 
     delivery_entries = manifest.get('delivery_zip_entries', [])
     checks['delivery_entry_count'] = len(delivery_entries)
