@@ -20,6 +20,8 @@ def build_inline_block(part_paths: List[Path]) -> str:
     blocks.append('# BEGIN COMPILED COLLECTOR PARTS')
     for part_path in part_paths:
         text = part_path.read_text(encoding='utf-8')
+        if not text.strip():
+            raise SystemExit(f'collector part file is empty: {part_path}')
         if not text.endswith('\n'):
             text += '\n'
         blocks.append(f"# BEGIN {part_path.name}")
