@@ -107,6 +107,21 @@ StepName string and CollectStep result object.
 No direct return value beyond harness logging; throws when the targeted artifacts are
 missing or malformed.
 #>
+
+function Test-HarnessUtcTimestampLine {
+  param([string]$Text,[string]$FieldName,[string]$ExpectedValue)
+  if ([string]::IsNullOrWhiteSpace($Text) -or [string]::IsNullOrWhiteSpace($FieldName) -or [string]::IsNullOrWhiteSpace($ExpectedValue)) { return $false }
+  $match = [regex]::Match($Text, ('(?m)^{0}=(.+)$' -f [regex]::Escape($FieldName)))
+  if (-not $match.Success) { return $false }
+  try {
+    $actualUtc = ([datetime]::Parse($match.Groups[1].Value.Trim())).ToUniversalTime()
+    $expectedUtc = ([datetime]::Parse($ExpectedValue)).ToUniversalTime()
+    return ($actualUtc -eq $expectedUtc)
+  } catch {
+    return $false
+  }
+}
+
 function Invoke-TargetedCollectionVerification {
   param(
     [string]$StepName,
@@ -156,12 +171,12 @@ function Invoke-TargetedCollectionVerification {
     $expectedWindowValuesOk = $true
     if (-not [string]::IsNullOrWhiteSpace($ExpectedWindowStart)) {
       $expectedStartText = ([datetime]::Parse($ExpectedWindowStart)).ToUniversalTime().ToString('o')
-      $expectedWindowValuesOk = $expectedWindowValuesOk -and ($scopeText -match ("WINDOW_START={0}" -f [regex]::Escape($expectedStartText))) -and ($metadataText -match ("WINDOW_START={0}" -f [regex]::Escape($expectedStartText)))
+      $expectedWindowValuesOk = $expectedWindowValuesOk -and (Test-HarnessUtcTimestampLine -Text $scopeText -FieldName 'WINDOW_START' -ExpectedValue $ExpectedWindowStart) -and (Test-HarnessUtcTimestampLine -Text $metadataText -FieldName 'WINDOW_START' -ExpectedValue $ExpectedWindowStart)
       $lines += ("EXPECTED_WINDOW_START={0}" -f $expectedStartText)
     }
     if (-not [string]::IsNullOrWhiteSpace($ExpectedWindowEnd)) {
       $expectedEndText = ([datetime]::Parse($ExpectedWindowEnd)).ToUniversalTime().ToString('o')
-      $expectedWindowValuesOk = $expectedWindowValuesOk -and ($scopeText -match ("WINDOW_END={0}" -f [regex]::Escape($expectedEndText))) -and ($metadataText -match ("WINDOW_END={0}" -f [regex]::Escape($expectedEndText)))
+      $expectedWindowValuesOk = $expectedWindowValuesOk -and (Test-HarnessUtcTimestampLine -Text $scopeText -FieldName 'WINDOW_END' -ExpectedValue $ExpectedWindowEnd) -and (Test-HarnessUtcTimestampLine -Text $metadataText -FieldName 'WINDOW_END' -ExpectedValue $ExpectedWindowEnd)
       $lines += ("EXPECTED_WINDOW_END={0}" -f $expectedEndText)
     }
     if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN') -and ($scopeText -match 'WINDOW_START=') -and ($scopeText -match 'WINDOW_END=') -and ($metadataText -match 'WINDOW_START=') -and ($metadataText -match 'WINDOW_END=') -and $expectedWindowOk -and $expectedWindowValuesOk) {
