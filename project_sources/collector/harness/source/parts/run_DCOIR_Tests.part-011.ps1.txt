@@ -1,3 +1,31 @@
+#>
+function Run-ChunkingOversizeArtifactSuite {
+  Restore-WorkingZip -Reason "ChunkingOversizeArtifact"
+  $collect = Invoke-CollectorStepWithEnvOverride -StepName "71_CollectT1_SyntheticOversize" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB' = '2600' }
+  Assert-CollectorStepSucceeded -StepName "71_CollectT1_SyntheticOversize" -CollectorStep $collect
+  Invoke-ChunkingOversizeVerification -StepName "ZZ_ChunkingOversizeValidation" -CollectStep $collect
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "72_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+
+  Restore-WorkingZip -Reason "ChunkingProductionEventText"
+  $productionCollect = Invoke-CollectorStepWithEnvOverride -StepName "73_CollectT1_ProductionEventTextOversize" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SECURITY_FILTERED_OVERSIZE_KB' = '2600'; 'DCOIR_TEST_POWERSHELL_OPERATIONAL_OVERSIZE_KB' = '2600'; 'DCOIR_TEST_TASKSCHEDULER_OPERATIONAL_OVERSIZE_KB' = '2600' }
+  Assert-CollectorStepSucceeded -StepName "73_CollectT1_ProductionEventTextOversize" -CollectorStep $productionCollect
+  Invoke-ProductionChunkingVerification -StepName "ZZ_ProductionEventTextChunkingValidation" -CollectStep $productionCollect
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "74_CleanupProductionEventText" -CollectorArgs @("-Quick","cleanup")) }
+}
+
+<#
+.SYNOPSIS
+Runs the chunk-reconstruction metadata validation suite.
+
+.DESCRIPTION
+Exercises collect with the synthetic oversized artifact environment override and verifies
+that the emitted reconstruction metadata can rebuild the original artifact exactly.
+
+.FUNCTION NAME
+Run-ChunkingReconstructionMetadataSuite
+
+.INPUTS
+No direct parameters.
 
 .OUTPUTS
 No direct output. Executes the suite and writes harness results.
@@ -140,4 +168,5 @@ try {
   Write-Error $_.Exception.Message
   exit 1
 }
+
 
