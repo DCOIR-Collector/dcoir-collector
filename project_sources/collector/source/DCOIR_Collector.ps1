@@ -3356,6 +3356,7 @@ function New-BaselineReport {
     "Mode=Collect"
     "Tier=$Tier"
     "Hours=$Hours"
+    "MaxEvents=$MaxEvents"
     "Host=$env:COMPUTERNAME"
     "RunId=$($State.RunId)"
     "UserContext=$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
@@ -3737,8 +3738,9 @@ open session and last resolution mode.
 Initialize-EnrichSession
 
 .INPUTS
-Collector state hashtable, optional requested session identifier, and an optional
-ForceNew switch that suppresses reuse of the currently open session.
+Collector state hashtable, optional requested session identifier, an optional ForceNew
+switch that suppresses reuse of the currently open session, and an optional guard that
+requires an existing open session for finalize-only calls.
 
 .OUTPUTS
 Hashtable describing the resolved enrichment session, whether reused or newly created.
@@ -3747,7 +3749,8 @@ function Initialize-EnrichSession {
   param(
     [hashtable]$State,
     [string]$RequestedSessionId,
-    [switch]$ForceNew
+    [switch]$ForceNew,
+    [switch]$RequireExistingOpenSession
   )
 
   if (-not $State.ContainsKey("EnrichSessions") -or $null -eq $State.EnrichSessions) {
@@ -3783,6 +3786,10 @@ function Initialize-EnrichSession {
       $State.LastSessionResolutionMode = 'REUSED_OPEN_SESSION'
       return $open
     }
+  }
+
+  if ($RequireExistingOpenSession) {
+    throw "No open enrichment session is available to finalize. Start an enrich session or provide -EnrichSessionId for a non-finalized session."
   }
 
   $State.EnrichSessionCounter = [int]$State.EnrichSessionCounter + 1
@@ -7338,7 +7345,8 @@ try {
         throw "Enrich mode requires -Action or -FinalizeEnrichSession."
       }
 
-      $session = Initialize-EnrichSession -State $state -RequestedSessionId $EnrichSessionId -ForceNew:$NewEnrichSession
+      $requireOpenSessionForFinalize = [bool]($FinalizeEnrichSession -and -not $Action -and [string]::IsNullOrWhiteSpace($EnrichSessionId))
+      $session = Initialize-EnrichSession -State $state -RequestedSessionId $EnrichSessionId -ForceNew:$NewEnrichSession -RequireExistingOpenSession:$requireOpenSessionForFinalize
 
       $logStamp = Get-Date -Format "yyyyMMdd_HHmmss"
       $actionLabel = if ($Action) { $Action } else { "FinalizeSession" }
