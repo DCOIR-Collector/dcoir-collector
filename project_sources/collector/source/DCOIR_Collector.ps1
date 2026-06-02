@@ -1,19 +1,95 @@
-<#
-.SYNOPSIS
-DCOIR collector source wrapper.
+param(
+  [ValidateSet("Collect","Enrich","Cleanup")]
+  [string]$Mode = "Collect",
 
-.DESCRIPTION
-Loads the maintained collector source parts in deterministic order for source-mode
-execution. The runtime package builder compiles these same parts into the delivery
-runtime.
-#>
+  [ValidateSet("T1","T2")]
+  [string]$Tier = "T1",
+
+  [int]$Hours = 24,
+
+  [string]$OutRoot = "C:\Temp",
+
+  [string]$PackageName = "DCOIR_Collector.zip",
+
+  [string]$RunId,
+
+  [ValidateSet(
+    "SigcheckPath",
+    "ListDllsPid",
+    "AccessChkFile",
+    "AccessChkService",
+    "AccessChkReg",
+    "StringsPath",
+    "StreamsPath",
+    "TcpvconRefresh",
+    "LogText",
+    "LogRaw",
+    "PullSuspiciousFile",
+    "PullScriptOrConfig",
+    "PullTaskXml",
+    "PullServiceBinary",
+    "PullWmiReferencedFile"
+  )]
+  [string]$Action,
+
+  [int]$TargetPid,
+  [string]$Path,
+  [string]$ServiceName,
+  [string]$RegistryPath,
+  [string]$LogName,
+  [int[]]$EventId,
+  [int]$MaxEvents = 500,
+  [string]$EnrichSessionId,
+  [switch]$NewEnrichSession,
+  [switch]$FinalizeEnrichSession,
+  [string]$Quick,
+  [string]$Target,
+  [string]$Target2,
+
+  [switch]$Targeted,
+  [ValidateSet("Generic","PopupWindow","ScriptExecution","PersistenceFollowUp","NetworkOnly","ProcessAndPowerShell")]
+  [string]$TargetProfile = "Generic",
+  [string]$WindowStart,
+  [string]$WindowEnd,
+  [string[]]$IncludeArtifactCategory,
+  [string]$FocusProcess,
+  [string]$FocusPath,
+  [string]$FocusIndicator,
+  [string]$FocusIndicatorType,
+  [string]$UserReport,
+
+  [Alias("help","h","?")]
+  [switch]$ShowHelp,
+
+  [Alias("version","ver","buildinfo")]
+  [switch]$ShowVersion
+)
 
 Set-StrictMode -Version 2
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 
+<#
+.SYNOPSIS
+Checks whether one runtime path candidate is usable for collector self-location.
+
+.DESCRIPTION
+Rejects blank paths and host shell executable paths such as powershell.exe or pwsh.exe
+so script-mode execution does not mistake the PowerShell host for the collector source.
+
+.FUNCTION NAME
+Test-DCOIRRuntimePathCandidate
+
+.INPUTS
+Path string.
+
+.OUTPUTS
+Boolean indicating whether the candidate is a usable collector runtime path.
+#>
 function Test-DCOIRRuntimePathCandidate {
   param([string]$Path)
+
   if ([string]::IsNullOrWhiteSpace($Path)) { return $false }
+
   try {
     $leaf = [System.IO.Path]::GetFileName($Path)
     if ($leaf -in @("powershell.exe", "pwsh.exe", "powershell", "pwsh")) { return $false }
@@ -23,12 +99,46 @@ function Test-DCOIRRuntimePathCandidate {
   }
 }
 
+<#
+.SYNOPSIS
+Resolves the collector runtime path for script and optional EXE execution.
+
+.DESCRIPTION
+Prefers script-specific paths such as PSCommandPath and MyInvocation.PSCommandPath for
+PowerShell script execution, then safely checks MyInvocation.MyCommand properties, and
+finally falls back to the current process executable path for the optional EXE variant.
+The resolver avoids strict-mode property errors when PS2EXE command metadata lacks a
+Path property.
+
+.FUNCTION NAME
+Resolve-DCOIRRuntimePath
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+String absolute path to the active collector script or optional EXE runtime.
+#>
 function Resolve-DCOIRRuntimePath {
-  foreach ($candidate in @($PSCommandPath, $MyInvocation.PSCommandPath, $MyInvocation.MyCommand.Path)) {
+  foreach ($candidate in @($PSCommandPath, $MyInvocation.PSCommandPath)) {
     if (Test-DCOIRRuntimePathCandidate -Path $candidate) {
-      return [System.IO.Path]::GetFullPath($candidate)
+      return [System.IO.Path]::GetFullPath([string]$candidate)
     }
   }
+
+  try {
+    $cmd = $MyInvocation.MyCommand
+    if ($null -ne $cmd) {
+      $pathProperty = $cmd.PSObject.Properties['Path']
+      if ($pathProperty -and (Test-DCOIRRuntimePathCandidate -Path ([string]$pathProperty.Value))) {
+        return [System.IO.Path]::GetFullPath([string]$pathProperty.Value)
+      }
+      $sourceProperty = $cmd.PSObject.Properties['Source']
+      if ($sourceProperty -and (Test-DCOIRRuntimePathCandidate -Path ([string]$sourceProperty.Value))) {
+        return [System.IO.Path]::GetFullPath([string]$sourceProperty.Value)
+      }
+    }
+  } catch { }
 
   try {
     $processPath = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
