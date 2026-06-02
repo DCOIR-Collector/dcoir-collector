@@ -198,9 +198,6 @@ function Sync-CollectionMetadataCompanionArtifact {
 
   try {
     $artifactText = Get-Content -LiteralPath $rootPath -Raw
-    $artifactText = Add-BoundedCollectFieldsToCollectionMetadataText -Name 'collection_metadata.txt' -Text $artifactText
-    Set-Content -LiteralPath $rootPath -Value $artifactText -Encoding UTF8
-
     $sectionDir = Join-Path $ArtifactsDir 'COLLECTION_METADATA'
     Ensure-Directory -Path $sectionDir
     $sectionPath = Join-Path $sectionDir 'collection_metadata.txt'
