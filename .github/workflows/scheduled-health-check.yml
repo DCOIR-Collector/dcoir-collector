@@ -14,9 +14,9 @@
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses repository required-surface and validation smoke checks defined in the workflow.
+# - Uses repository required-surface checks, syntax checks, Gemini smoke build, collector package smoke build, validate_DCOIR_Run fixture tests, and collector documentation quality validation.
 # Expected outputs/readback:
-# - Health-check artifact/report and repo-workflows report.
+# - Health-check artifact, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
 # - A pass is a health signal only; use targeted validation for release or workflow-specific readiness.
 # Maintenance notes:
@@ -130,6 +130,16 @@ jobs:
             throw 'PowerShell syntax validation failed.'
           }
 
+      - name: Smoke-test Gemini bundle build
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force project_sources/validation/out_health_gemini -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/validation/out_health_gemini | Out-Null
+          python project_sources/gemini/tools/build_dcoir_gemini_release.py --source-root project_sources/gemini/bundle_source --output-dir project_sources/validation/out_health_gemini
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Gemini bundle health smoke test failed.'
+          }
+
       - name: Run validate_DCOIR_Run fixture tests
         shell: pwsh
         working-directory: project_sources
@@ -155,3 +165,45 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw 'Collector delivery package smoke test failed.'
           }
+
+      - name: Upload health-check artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: scheduled-health-check-results
+          path: |
+            project_sources/validation/out_health_gemini/**
+            project_sources/validation/out_health_validate_dcoir_run_fixtures/**
+            project_sources/validation/out_health_documentation_quality/**
+            project_sources/validation/out_health_collector/**
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null
+          @"
+          ## Scheduled health-check summary
+
+          - workflow: scheduled-health-check
+          - workflow_run_id: $env:GITHUB_RUN_ID
+          - workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT
+          - head_sha: $env:GITHUB_SHA
+          - ref: $env:GITHUB_REF
+          - event_name: $env:GITHUB_EVENT_NAME
+          - primary_artifact: scheduled-health-check-results
+          - artifact_note: includes Gemini smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, and collector package smoke-build output when produced.
+
+          The workflow conclusion is the authoritative pass/fail signal for this health lane. Treat this as a routine health signal, not FullRegression or release-readiness proof.
+          "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: chatgpt-workflow-report-section
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14
