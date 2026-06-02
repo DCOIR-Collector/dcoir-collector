@@ -1,8 +1,3 @@
-  if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_QuickAliasesCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
-  [void](Invoke-CollectorStep -StepName "22_EnrichStartSigcheck" -CollectorArgs @("-Quick","enrich-start-sigcheck","-Target",$sampleBinaryPath))
-  [void](Invoke-CollectorStep -StepName "23_EnrichFinalize_Sigcheck" -CollectorArgs @("-Quick","enrich-finalize"))
-  [void](Invoke-CollectorStep -StepName "24_EnrichStartStrings" -CollectorArgs @("-Quick","enrich-start-strings","-Target",$sampleBinaryPath))
-  [void](Invoke-CollectorStep -StepName "25_EnrichFinalize_Strings" -CollectorArgs @("-Quick","enrich-finalize"))
   [void](Invoke-CollectorStep -StepName "26_EnrichStartStreams" -CollectorArgs @("-Quick","enrich-start-streams","-Target",$sampleScriptPath))
   [void](Invoke-CollectorStep -StepName "27_EnrichFinalize_Streams" -CollectorArgs @("-Quick","enrich-finalize"))
   [void](Invoke-CollectorStep -StepName "28_EnrichStartListDlls" -CollectorArgs @("-Quick","enrich-start-listdlls","-Target",$PID.ToString()))
@@ -111,3 +106,9 @@ function Run-ChunkingOversizeArtifactSuite {
   $collect = Invoke-CollectorStepWithEnvOverride -StepName "71_CollectT1_SyntheticOversize" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB' = '2600' }
   Assert-CollectorStepSucceeded -StepName "71_CollectT1_SyntheticOversize" -CollectorStep $collect
   Invoke-ChunkingOversizeVerification -StepName "ZZ_ChunkingOversizeValidation" -CollectStep $collect
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "72_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+
+  Restore-WorkingZip -Reason "ChunkingProductionEventText"
+  $productionCollect = Invoke-CollectorStepWithEnvOverride -StepName "73_CollectT1_ProductionEventTextOversize" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SECURITY_FILTERED_OVERSIZE_KB' = '2600'; 'DCOIR_TEST_POWERSHELL_OPERATIONAL_OVERSIZE_KB' = '2600'; 'DCOIR_TEST_TASKSCHEDULER_OPERATIONAL_OVERSIZE_KB' = '2600' }
+  Assert-CollectorStepSucceeded -StepName "73_CollectT1_ProductionEventTextOversize" -CollectorStep $productionCollect
+  Invoke-ProductionChunkingVerification -StepName "ZZ_ProductionEventTextChunkingValidation" -CollectStep $productionCollect
