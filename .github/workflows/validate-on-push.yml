@@ -14,7 +14,7 @@
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses syntax checks, required surface checks, Gemini smoke build, collector package smoke build, validate_DCOIR_Run fixture tests, and documentation validation.
+# - Uses syntax checks, required surface checks, harness assembly parity, Gemini smoke build, collector package smoke build, validate_DCOIR_Run fixture tests, and documentation validation.
 # Expected outputs/readback:
 # - Fast validation artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
@@ -37,8 +37,9 @@ name: validate-on-push
 # Restored automatic posture (2026-04-30):
 # - Push triggering is enabled only for collector, Gemini, packaging, validation,
 #   maintained knowledge, and this workflow's own definition paths.
-# - Routine automatic coverage keeps lightweight syntax, governed-surface, Gemini,
-#   collector package smoke, validate_DCOIR_Run, and documentation checks on push.
+# - Routine automatic coverage keeps lightweight syntax, governed-surface, harness
+#   assembly parity, Gemini, collector package smoke, validate_DCOIR_Run, and
+#   documentation checks on push.
 # - Heavier collector runtime harness validation remains in validate-on-pr and
 #   manual-full-validation at meaningful review checkpoints.
 #
@@ -135,6 +136,14 @@ jobs:
           if ($parseFailures.Count -gt 0) {
             $parseFailures | ForEach-Object { Write-Error $_ }
             throw 'PowerShell syntax validation failed.'
+          }
+
+      - name: Verify collector harness assembly parity
+        shell: pwsh
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\project_sources\collector\harness\assemble_run_DCOIR_Tests.ps1 -OutputPath .\project_sources\collector\harness\run_DCOIR_Tests.generated.ps1 -ExpectedHarnessPath .\project_sources\collector\harness\run_DCOIR_Tests.ps1
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector harness assembly parity validation failed.'
           }
 
       - name: Verify required governed surfaces
