@@ -1,13 +1,3 @@
-  ) -join [Environment]::NewLine
-
-  throw $message
-}
-
-<#
-.SYNOPSIS
-Verifies the collect output contract fields.
-
-.DESCRIPTION
 Checks that the collect step emitted the required post-run contract fields such as
 RUN_ID, NEXT_GET_FILE, cleanup command, delete-script command, and Gemini upload
 guidance.
@@ -214,3 +204,7 @@ function Invoke-CleanupOutputContractVerification {
 
 <#
 .SYNOPSIS
+Verifies the attachment-budget manifest against the harness thresholds.
+
+.DESCRIPTION
+Reads the attachment-budget manifest, checks per-file and total-size values against the
