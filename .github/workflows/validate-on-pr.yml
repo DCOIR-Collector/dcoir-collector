@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not use as the quick push gate when validate-on-push is sufficient, and do not treat it as a replacement for deeper manual-full-validation coverage.
 # Trigger model:
-# - pull_request types: opened, reopened, synchronize, ready_for_review; same scoped paths as validate-on-push
+# - pull_request types: opened, reopened, synchronize, ready_for_review; same scoped paths as validate-on-push, including DCOIR_KNOWLEDGE_INDEX.md and docs/validation/dcoir_collector_capability_coverage_matrix.md
 # Required inputs:
 # - none
 # Required secrets/config:
@@ -63,6 +63,8 @@ on:
       - 'project_sources/validation/**'
       - 'knowledge/Knowledge - *.md'
       - 'knowledge/README.md'
+      - 'DCOIR_KNOWLEDGE_INDEX.md'
+      - 'docs/validation/dcoir_collector_capability_coverage_matrix.md'
       - 'supporting_assets/DCOIR_Collector.zip'
       - '.github/workflows/validate-on-push.yml'
       - '.github/workflows/validate-on-pr.yml'
@@ -165,7 +167,7 @@ jobs:
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\collector\\tools\\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\\collector\\harness\\validate_DCOIR_Run.ps1 -OutputRoot .\\validation\\out_validate_on_pr_validate_dcoir_run_fixtures
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\tools\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\collector\harness\validate_DCOIR_Run.ps1 -OutputRoot .\validation\out_validate_on_pr_validate_dcoir_run_fixtures
 
       - name: Run collector documentation quality gate
         shell: pwsh
@@ -205,7 +207,7 @@ jobs:
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\collector\\harness\\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
           if ($LASTEXITCODE -ne 0) {
             throw 'Collector harness suite failed: Core'
           }
