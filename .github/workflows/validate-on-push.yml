@@ -14,7 +14,7 @@
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses syntax checks, required surface checks, Gemini smoke build, validate_DCOIR_Run fixture tests, and documentation validation.
+# - Uses syntax checks, required surface checks, Gemini smoke build, collector package smoke build, validate_DCOIR_Run fixture tests, and documentation validation.
 # Expected outputs/readback:
 # - Fast validation artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
@@ -38,9 +38,9 @@ name: validate-on-push
 # - Push triggering is enabled only for collector, Gemini, packaging, validation,
 #   maintained knowledge, and this workflow's own definition paths.
 # - Routine automatic coverage keeps lightweight syntax, governed-surface, Gemini,
-#   validate_DCOIR_Run, and documentation checks on push.
-# - Heavier collector runtime build and core harness validation move to validate-on-pr
-#   at meaningful PR checkpoints.
+#   collector package smoke, validate_DCOIR_Run, and documentation checks on push.
+# - Heavier collector runtime harness validation remains in validate-on-pr and
+#   manual-full-validation at meaningful review checkpoints.
 #
 # Gemini topology rule:
 # - Gemini bundle required-file and sub-agent inventory checks are manifest-driven.
@@ -157,6 +157,16 @@ jobs:
             throw 'Gemini bundle smoke test failed.'
           }
 
+      - name: Smoke-test collector runtime package build
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_collector -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_collector | Out-Null
+          python project_sources/collector/tools/build_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/validation/out_validate_on_push_collector
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector runtime package smoke test failed.'
+          }
+
       - name: Run validate_DCOIR_Run fixture tests
         shell: pwsh
         working-directory: project_sources
@@ -181,6 +191,7 @@ jobs:
           path: |
             project_sources/TestResults/**
             project_sources/validation/out_validate_on_push_gemini/**
+            project_sources/validation/out_validate_on_push_collector/**
             project_sources/validation/out_validate_on_push_validate_dcoir_run_fixtures/**
             project_sources/validation/out_preflight_documentation_quality/**
             project_sources/validation/out_validate_on_push_documentation_quality/**
@@ -202,9 +213,9 @@ jobs:
           - ref: $env:GITHUB_REF
           - event_name: $env:GITHUB_EVENT_NAME
           - primary_artifact: validate-on-push-results
-          - artifact_note: includes Gemini smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, and TestResults when produced.
+          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, and TestResults when produced.
 
-          The workflow conclusion is the authoritative pass/fail signal for the push validation lane. Use artifact readback for harness, documentation, or report-specific claims.
+          The workflow conclusion is the authoritative pass/fail signal for the push validation lane. Use artifact readback for harness, package, documentation, or report-specific claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
 
       - name: Upload ChatGPT workflow report section
