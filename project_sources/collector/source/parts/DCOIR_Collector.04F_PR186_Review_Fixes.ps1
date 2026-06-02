@@ -257,6 +257,33 @@ function Test-DCOIRCollectorTestModeEnabled {
 
 <#
 .SYNOPSIS
+Builds the response-action-safe collector command base with exact run scope when known.
+
+.DESCRIPTION
+Returns the response-action-safe collector command base and appends the current RunId
+when collector state has already established one. This keeps emitted cleanup/enrich
+commands exact for custom RunId runs without broadening blank-RunId discovery.
+
+.FUNCTION NAME
+Get-CollectorResponseActionCommandBase
+
+.INPUTS
+Current Global:CurrentRunId.
+
+.OUTPUTS
+String containing the response-action-safe command base.
+#>
+function Get-CollectorResponseActionCommandBase {
+  $base = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File """".\DCOIR_Collector.ps1"""""
+  $current = [string]$Global:CurrentRunId
+  if (-not [string]::IsNullOrWhiteSpace($current) -and [regex]::IsMatch($current, '^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$')) {
+    return ('{0} -RunId ""{1}""' -f $base, $current)
+  }
+  return $base
+}
+
+<#
+.SYNOPSIS
 Resolves the effective event window for the current collector call.
 
 .DESCRIPTION
