@@ -1,3 +1,4 @@
+    $status = 'PASS'
     $message = 'Finalized enrich-session output contract fields were emitted.'
   } else {
     $message = (@($missing) -join '; ')
@@ -148,3 +149,26 @@ function Invoke-SessionBehaviorVerification {
     $message = 'enrich-add reused the existing open session as expected.'
   } else {
     $message = 'Session reuse behavior did not match the expected start/add model.'
+  }
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Verifies the targeted-collection artifact contract.
+
+.DESCRIPTION
+Checks that the targeted collect step emitted the collection scope, parallelism
+assessment, and targeted collection plan paths and that the artifacts contain the
+expected markers.
+
+.FUNCTION NAME
+Invoke-TargetedCollectionVerification
+
+.INPUTS
+StepName string and CollectStep result object.
