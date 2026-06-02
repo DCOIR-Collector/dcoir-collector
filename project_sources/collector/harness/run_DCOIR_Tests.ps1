@@ -1066,6 +1066,23 @@ function Invoke-Tier2CollectVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+<#
+.SYNOPSIS
+Verifies the open enrich-session output contract fields.
+
+.DESCRIPTION
+Checks that an enrich-start style step emitted the expected open-session contract values
+such as RUN_ID, ENRICH_SESSION_ID, NEXT_OPTIONS, and the delete-script command.
+
+.FUNCTION NAME
+Invoke-EnrichOpenOutputContractVerification
+
+.INPUTS
+StepName string and EnrichStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the contract is incomplete.
+#>
 function Invoke-EnrichOpenOutputContractVerification {
   param([string]$StepName,[object]$EnrichStep)
   $start = Get-Date
@@ -1300,6 +1317,25 @@ function Invoke-SessionBehaviorVerification {
 }
 
 
+<#
+.SYNOPSIS
+Verifies one enrich-session resolution result.
+
+.DESCRIPTION
+Checks that an enrich step used the expected session-resolution mode and optional
+session identity constraints, including required or forbidden session IDs.
+
+.FUNCTION NAME
+Invoke-SessionResolutionVerification
+
+.INPUTS
+StepName string, SessionStep result object, expected mode, and optional expected or
+unexpected session IDs.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the resolution behavior does
+not match the expected mode or identity constraints.
+#>
 function Invoke-SessionResolutionVerification {
   param(
     [string]$StepName,
@@ -1374,6 +1410,25 @@ function Test-HarnessUtcTimestampLine {
   }
 }
 
+<#
+.SYNOPSIS
+Verifies the targeted-collection artifact contract.
+
+.DESCRIPTION
+Checks that targeted collect emitted collection scope, parallelism assessment, targeted
+plan, high-signal metadata, and optional explicit event-window values.
+
+.FUNCTION NAME
+Invoke-TargetedCollectionVerification
+
+.INPUTS
+StepName string, CollectStep result object, optional explicit-window expectation, and
+optional expected WindowStart and WindowEnd strings.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when targeted artifacts are missing
+or malformed.
+#>
 function Invoke-TargetedCollectionVerification {
   param(
     [string]$StepName,
@@ -1752,12 +1807,46 @@ function Add-CapabilityCoverage {
   })
 }
 
+<#
+.SYNOPSIS
+Builds a lookup table of harness step statuses.
+
+.DESCRIPTION
+Creates a hashtable keyed by StepName from accumulated harness results so coverage rows
+can quickly test whether mapped steps passed.
+
+.FUNCTION NAME
+Get-StepStatusMap
+
+.INPUTS
+No direct parameters; reads the script-level Results collection.
+
+.OUTPUTS
+Hashtable mapping step names to status strings.
+#>
 function Get-StepStatusMap {
   $map = @{}
   foreach ($r in @($script:Results)) { $map[$r.StepName] = $r.Status }
   return $map
 }
 
+<#
+.SYNOPSIS
+Checks whether all mapped coverage steps passed.
+
+.DESCRIPTION
+Returns true only when every requested step exists in the status map and has a PASS or
+PARTIAL_SUCCESS status accepted by the coverage model.
+
+.FUNCTION NAME
+Test-StepsCovered
+
+.INPUTS
+Status map hashtable and step-name array.
+
+.OUTPUTS
+Boolean coverage result for the mapped steps.
+#>
 function Test-StepsCovered {
   param([hashtable]$Map,[string[]]$Steps)
   foreach ($step in $Steps) {
@@ -1767,6 +1856,23 @@ function Test-StepsCovered {
   return $true
 }
 
+<#
+.SYNOPSIS
+Checks harness-generated coverage artifact evidence.
+
+.DESCRIPTION
+Validates non-step-based coverage rows such as progress files, retained evidence files,
+and generated coverage matrix artifacts.
+
+.FUNCTION NAME
+Test-CoverageArtifactEvidence
+
+.INPUTS
+Capability identifier string.
+
+.OUTPUTS
+Boolean indicating whether required harness artifact evidence exists.
+#>
 function Test-CoverageArtifactEvidence {
   param([string]$CapabilityId)
   switch ($CapabilityId) {
@@ -1790,6 +1896,23 @@ function Test-CoverageArtifactEvidence {
   }
 }
 
+<#
+.SYNOPSIS
+Adds collector capability coverage rows to the harness result model.
+
+.DESCRIPTION
+Builds the advertised-capability matrix, maps rows to harness steps or artifact evidence,
+and records status and remaining-gap text for JSON and Markdown output.
+
+.FUNCTION NAME
+Add-CollectorCapabilityCoverageRows
+
+.INPUTS
+No direct parameters; reads harness results and artifact paths.
+
+.OUTPUTS
+No direct output. Appends rows to the script-level CoverageRows collection.
+#>
 function Add-CollectorCapabilityCoverageRows {
   if (@($script:CoverageRows).Count -gt 0) { return }
   $map = Get-StepStatusMap
@@ -1819,6 +1942,23 @@ function Add-CollectorCapabilityCoverageRows {
   }
 }
 
+<#
+.SYNOPSIS
+Writes collector capability coverage artifacts.
+
+.DESCRIPTION
+Serializes the accumulated capability coverage rows to reusable JSON and Markdown files
+for #187 audit readback and future drift checks.
+
+.FUNCTION NAME
+Write-CapabilityCoverageFiles
+
+.INPUTS
+No direct parameters; reads script-level coverage rows and output paths.
+
+.OUTPUTS
+No direct output. Writes collector_capability_coverage.json and .md.
+#>
 function Write-CapabilityCoverageFiles {
   $obj = [pscustomobject]@{
     schema_version = 'dcoir_collector_capability_coverage_v1'
@@ -1840,6 +1980,23 @@ function Write-CapabilityCoverageFiles {
   Set-Content -Path $CoverageMdPath -Value $lines -Encoding UTF8
 }
 
+<#
+.SYNOPSIS
+Finalizes and saves collector capability coverage output.
+
+.DESCRIPTION
+Builds coverage rows, writes coverage artifacts, then rechecks the coverage-matrix row
+after artifacts exist so the matrix artifact can be marked covered when valid.
+
+.FUNCTION NAME
+Save-CapabilityCoverage
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Writes coverage artifacts and updates in-memory coverage rows.
+#>
 function Save-CapabilityCoverage {
   Add-CollectorCapabilityCoverageRows
   Write-CapabilityCoverageFiles
