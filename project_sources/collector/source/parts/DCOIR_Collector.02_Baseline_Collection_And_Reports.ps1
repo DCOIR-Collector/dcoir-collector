@@ -771,6 +771,7 @@ function New-BaselineReport {
     "Mode=Collect"
     "Tier=$Tier"
     "Hours=$Hours"
+    "MaxEvents=$MaxEvents"
     "Host=$env:COMPUTERNAME"
     "RunId=$($State.RunId)"
     "UserContext=$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
