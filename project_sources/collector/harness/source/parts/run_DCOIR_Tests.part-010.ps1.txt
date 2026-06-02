@@ -1,3 +1,55 @@
+  Assert-CollectorStepSucceeded -StepName "01_CollectT1" -CollectorStep $collect
+  Invoke-CollectOutputContractVerification -StepName "ZZ_CollectOutputContract" -CollectStep $collect
+  if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_Collect" -ManifestPath $collect.AttachmentBudgetManifestPath }
+  [void](Invoke-CollectorStep -StepName "02_EnrichStartTcp" -CollectorArgs @("-Quick","enrich-start-tcp"))
+  [void](Invoke-CollectorStep -StepName "03_EnrichAddLogTextSecurity" -CollectorArgs @("-Quick","enrich-add-logtext","-Target","Security"))
+  $finalize = Invoke-CollectorStep -StepName "04_EnrichFinalize" -CollectorArgs @("-Quick","enrich-finalize")
+  Assert-CollectorStepSucceeded -StepName "04_EnrichFinalize" -CollectorStep $finalize
+  Invoke-EnrichFinalizedOutputContractVerification -StepName "ZZ_EnrichFinalizedOutputContract" -EnrichStep $finalize
+  if (-not $SkipCleanup) {
+    $cleanup = Invoke-CollectorStep -StepName "05_Cleanup" -CollectorArgs @("-Quick","cleanup")
+    Assert-CollectorStepSucceeded -StepName "05_Cleanup" -CollectorStep $cleanup
+    Invoke-CleanupOutputContractVerification -StepName "ZZ_CleanupOutputContract" -CleanupStep $cleanup
+  }
+}
+
+<#
+.SYNOPSIS
+Runs the retrieval validation suite.
+
+.DESCRIPTION
+Exercises collect, raw-log enrich retrieval, finalize, and optional cleanup behavior.
+
+.FUNCTION NAME
+Run-RetrievalSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
+function Run-RetrievalSuite {
+  Restore-WorkingZip -Reason "Retrieval"
+  $collect = Invoke-CollectorStep -StepName "11_CollectT1" -CollectorArgs @("-Quick","collect-t1")
+  Assert-CollectorStepSucceeded -StepName "11_CollectT1" -CollectorStep $collect
+  if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_RetrievalCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
+  [void](Invoke-CollectorStep -StepName "12_EnrichStartLogRawSecurity" -CollectorArgs @("-Quick","enrich-start-lograw"))
+  [void](Invoke-CollectorStep -StepName "13_EnrichFinalize" -CollectorArgs @("-Quick","enrich-finalize"))
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "14_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+}
+
+<#
+.SYNOPSIS
+Runs the quick-alias validation suite.
+
+.DESCRIPTION
+Exercises the supported quick enrich aliases against representative file, PID, service,
+registry, task, and pull-action inputs plus optional cleanup.
+
+.FUNCTION NAME
+Run-QuickAliasesSuite
+
 .INPUTS
 No direct parameters.
 
@@ -94,13 +146,13 @@ function Run-TargetedCollectionSuite {
   $collect = Invoke-CollectorStep -StepName "61_CollectTargetedPopup" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","2026-04-08T08:45:00Z","-WindowEnd","2026-04-08T09:15:00Z")
   Assert-CollectorStepSucceeded -StepName "61_CollectTargetedPopup" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_TargetedCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
-  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedCollectionValidation" -CollectStep $collect -ExpectedExplicitEventWindow $true
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedCollectionValidation" -CollectStep $collect -ExpectedExplicitEventWindow $true -ExpectedWindowStart "2026-04-08T08:45:00Z" -ExpectedWindowEnd "2026-04-08T09:15:00Z"
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "62_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 
   Restore-WorkingZip -Reason "TargetedCollection_NeutralWindow"
   $neutral = Invoke-CollectorStep -StepName "63_CollectTargetedNeutralWindow" -CollectorArgs @("-Targeted","-TargetProfile","PopupWindow","-WindowStart","2026-04-08T08:45:00Z","-WindowEnd","2026-04-08T09:15:00Z","-UserReport","User reported popup around 2026-04-08T09:00Z")
   Assert-CollectorStepSucceeded -StepName "63_CollectTargetedNeutralWindow" -CollectorStep $neutral
-  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedNeutralWindowValidation" -CollectStep $neutral -ExpectedExplicitEventWindow $true
+  Invoke-TargetedCollectionVerification -StepName "ZZ_TargetedNeutralWindowValidation" -CollectStep $neutral -ExpectedExplicitEventWindow $true -ExpectedWindowStart "2026-04-08T08:45:00Z" -ExpectedWindowEnd "2026-04-08T09:15:00Z"
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "64_CleanupNeutralWindow" -CollectorArgs @("-Quick","cleanup")) }
 }
 
@@ -120,31 +172,3 @@ No direct parameters.
 
 .OUTPUTS
 No direct output. Executes the suite and writes harness results.
-#>
-function Run-ChunkingOversizeArtifactSuite {
-  Restore-WorkingZip -Reason "ChunkingOversizeArtifact"
-  $collect = Invoke-CollectorStepWithEnvOverride -StepName "71_CollectT1_SyntheticOversize" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB' = '2600' }
-  Assert-CollectorStepSucceeded -StepName "71_CollectT1_SyntheticOversize" -CollectorStep $collect
-  Invoke-ChunkingOversizeVerification -StepName "ZZ_ChunkingOversizeValidation" -CollectStep $collect
-  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "72_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
-
-  Restore-WorkingZip -Reason "ChunkingProductionSecurityFiltered"
-  $productionCollect = Invoke-CollectorStepWithEnvOverride -StepName "73_CollectT1_ProductionSecurityFilteredOversize" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SECURITY_FILTERED_OVERSIZE_KB' = '2600' }
-  Assert-CollectorStepSucceeded -StepName "73_CollectT1_ProductionSecurityFilteredOversize" -CollectorStep $productionCollect
-  Invoke-ProductionChunkingVerification -StepName "ZZ_ProductionSecurityFilteredChunkingValidation" -CollectStep $productionCollect
-  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "74_CleanupProductionSecurityFiltered" -CollectorArgs @("-Quick","cleanup")) }
-}
-
-<#
-.SYNOPSIS
-Runs the chunk-reconstruction metadata validation suite.
-
-.DESCRIPTION
-Exercises collect with the synthetic oversized artifact environment override and verifies
-that the emitted reconstruction metadata can rebuild the original artifact exactly.
-
-.FUNCTION NAME
-Run-ChunkingReconstructionMetadataSuite
-
-.INPUTS
-No direct parameters.
