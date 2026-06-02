@@ -48,6 +48,8 @@ function Run-SessionBehaviorSuite {
   Assert-CollectorStepSucceeded -StepName "51_CollectT1" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_SessionBehaviorCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
 
+  [void](Invoke-ExpectedFailureStep -StepName "51B_EnrichFinalizeWithoutOpenSession" -CollectorArgs @("-Quick","enrich-finalize","-RunId",$script:CollectorRunId) -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("No open enrichment session is available to finalize."))
+
   $startStep = Invoke-CollectorStep -StepName "52_EnrichStartTcp" -CollectorArgs @("-Quick","enrich-start-tcp")
   Assert-CollectorStepSucceeded -StepName "52_EnrichStartTcp" -CollectorStep $startStep
   Invoke-EnrichOpenOutputContractVerification -StepName "ZZ_EnrichOpenOutputContract" -EnrichStep $startStep
