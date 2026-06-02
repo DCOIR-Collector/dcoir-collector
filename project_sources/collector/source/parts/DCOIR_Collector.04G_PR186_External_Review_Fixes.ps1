@@ -152,6 +152,52 @@ function Add-BoundedCollectFieldsToCollectionMetadataText {
 
 <#
 .SYNOPSIS
+Normalizes collection metadata text for strict line-oriented bundle validators.
+
+.DESCRIPTION
+Converts collection_metadata.txt to LF line endings after bounded collect fields are
+present. This preserves the metadata values while ensuring validators that use exact
+line anchors can match Tier, Hours, and MaxEvents inside ZIP entries on Windows runners.
+
+.FUNCTION NAME
+Convert-CollectionMetadataValidationText
+
+.INPUTS
+Metadata text.
+
+.OUTPUTS
+LF-normalized metadata text.
+#>
+function Convert-CollectionMetadataValidationText {
+  param([string]$Text)
+  return ([string]$Text -replace "`r`n", "`n" -replace "`r", "`n")
+}
+
+<#
+.SYNOPSIS
+Writes UTF-8 text without BOM using exact text content.
+
+.DESCRIPTION
+Avoids Set-Content newline normalization for metadata surfaces that are validated with
+strict line anchors from inside ZIP bundles.
+
+.FUNCTION NAME
+Write-DCOIRUtf8NoBomText
+
+.INPUTS
+Path and text.
+
+.OUTPUTS
+No direct output. Writes text to disk.
+#>
+function Write-DCOIRUtf8NoBomText {
+  param([string]$Path,[string]$Text)
+  $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+  [System.IO.File]::WriteAllText($Path, [string]$Text, $utf8NoBom)
+}
+
+<#
+.SYNOPSIS
 Writes one collector artifact and a section-directory companion copy.
 
 .DESCRIPTION
@@ -183,15 +229,26 @@ function Write-ArtifactText {
   $safeSection = ($Section -replace '[\/:*?"<>| ]','_')
   $safeName = ($Name -replace '[\/:*?"<>| ]','_')
   $artifactText = Add-BoundedCollectFieldsToCollectionMetadataText -Name $Name -Text $Text
+  if ($Name -eq 'collection_metadata.txt') {
+    $artifactText = Convert-CollectionMetadataValidationText -Text $artifactText
+  }
   $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
-  Set-Content -Path $path -Value $artifactText -Encoding UTF8
+  if ($Name -eq 'collection_metadata.txt') {
+    Write-DCOIRUtf8NoBomText -Path $path -Text $artifactText
+  } else {
+    Set-Content -Path $path -Value $artifactText -Encoding UTF8
+  }
 
   try {
     if (-not [string]::IsNullOrWhiteSpace($safeSection) -and -not [string]::IsNullOrWhiteSpace($safeName)) {
       $sectionDir = Join-Path $ArtifactsDir $safeSection
       Ensure-Directory -Path $sectionDir
       $sectionPath = Join-Path $sectionDir $safeName
-      Set-Content -Path $sectionPath -Value $artifactText -Encoding UTF8
+      if ($Name -eq 'collection_metadata.txt') {
+        Write-DCOIRUtf8NoBomText -Path $sectionPath -Text $artifactText
+      } else {
+        Set-Content -Path $sectionPath -Value $artifactText -Encoding UTF8
+      }
     }
   } catch {
     Add-CollectorError ("Failed to write section companion artifact [{0}/{1}]: {2}" -f $safeSection, $safeName, $_.Exception.Message)
@@ -332,10 +389,12 @@ function Sync-CollectionMetadataCompanionArtifact {
 
   try {
     $artifactText = Get-Content -LiteralPath $rootPath -Raw
+    $artifactText = Add-BoundedCollectFieldsToCollectionMetadataText -Name 'collection_metadata.txt' -Text $artifactText
+    $artifactText = Convert-CollectionMetadataValidationText -Text $artifactText
     $sectionDir = Join-Path $ArtifactsDir 'COLLECTION_METADATA'
     Ensure-Directory -Path $sectionDir
     $sectionPath = Join-Path $sectionDir 'collection_metadata.txt'
-    Set-Content -LiteralPath $sectionPath -Value $artifactText -Encoding UTF8
+    Write-DCOIRUtf8NoBomText -Path $sectionPath -Text $artifactText
   } catch {
     Add-CollectorError ("Failed to synchronize collection metadata companion artifact: {0}" -f $_.Exception.Message)
   }
