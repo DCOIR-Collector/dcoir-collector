@@ -68,19 +68,21 @@ function Run-SessionBehaviorSuite {
   Assert-CollectorStepSucceeded -StepName "56_EnrichFinalizeRequestedOriginal" -CollectorStep $requestedFinalize
   Invoke-EnrichFinalizedOutputContractVerification -StepName "ZZ_RequestedFinalizeOutputContract" -EnrichStep $requestedFinalize
 
-  $openFinalize = Invoke-CollectorStep -StepName "57_EnrichFinalizeOpen" -CollectorArgs @("-Quick","enrich-finalize")
-  Assert-CollectorStepSucceeded -StepName "57_EnrichFinalizeOpen" -CollectorStep $openFinalize
+  [void](Invoke-ExpectedFailureStep -StepName "57_EnrichAddFinalizedRequestedSession" -CollectorArgs @("-Mode","Enrich","-RunId",$script:CollectorRunId,"-EnrichSessionId",$startStep.EnrichSessionId,"-Action","LogText","-LogName","Security","-MaxEvents","5") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @(("Requested enrichment session is finalized and cannot be appended: {0}" -f $startStep.EnrichSessionId)))
+
+  $openFinalize = Invoke-CollectorStep -StepName "58_EnrichFinalizeOpen" -CollectorArgs @("-Quick","enrich-finalize")
+  Assert-CollectorStepSucceeded -StepName "58_EnrichFinalizeOpen" -CollectorStep $openFinalize
   Invoke-EnrichFinalizedOutputContractVerification -StepName "ZZ_OpenFinalizeOutputContract" -EnrichStep $openFinalize
 
-  $afterFinalize = Invoke-CollectorStep -StepName "58_EnrichAddAfterFinalize" -CollectorArgs @("-Quick","enrich-add-logtext","-Target","Security")
-  Assert-CollectorStepSucceeded -StepName "58_EnrichAddAfterFinalize" -CollectorStep $afterFinalize
+  $afterFinalize = Invoke-CollectorStep -StepName "59_EnrichAddAfterFinalize" -CollectorArgs @("-Quick","enrich-add-logtext","-Target","Security")
+  Assert-CollectorStepSucceeded -StepName "59_EnrichAddAfterFinalize" -CollectorStep $afterFinalize
   Invoke-SessionResolutionVerification -StepName "ZZ_AddAfterFinalizeValidation" -SessionStep $afterFinalize -ExpectedMode 'CREATED_NEW_SESSION' -UnexpectedSessionId $forceNewStep.EnrichSessionId
 
-  [void](Invoke-ExpectedFailureStep -StepName "59_MissingRequestedEnrichSession" -CollectorArgs @("-Mode","Enrich","-RunId",$script:CollectorRunId,"-EnrichSessionId","ENRICH_DOES_NOT_EXIST","-Action","LogText","-LogName","Security") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("Requested enrichment session was not found: ENRICH_DOES_NOT_EXIST"))
+  [void](Invoke-ExpectedFailureStep -StepName "60_MissingRequestedEnrichSession" -CollectorArgs @("-Mode","Enrich","-RunId",$script:CollectorRunId,"-EnrichSessionId","ENRICH_DOES_NOT_EXIST","-Action","LogText","-LogName","Security") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("Requested enrichment session was not found: ENRICH_DOES_NOT_EXIST"))
 
   if (-not $SkipCleanup) {
-    $cleanup = Invoke-CollectorStep -StepName "60_CleanupAfterOpenSession" -CollectorArgs @("-Quick","cleanup")
-    Assert-CollectorStepSucceeded -StepName "60_CleanupAfterOpenSession" -CollectorStep $cleanup
+    $cleanup = Invoke-CollectorStep -StepName "61_CleanupAfterOpenSession" -CollectorArgs @("-Quick","cleanup")
+    Assert-CollectorStepSucceeded -StepName "61_CleanupAfterOpenSession" -CollectorStep $cleanup
   }
 }
 
