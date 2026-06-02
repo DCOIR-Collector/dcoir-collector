@@ -1,155 +1,115 @@
-    $status = 'PASS'
-    $message = 'Finalized enrich-session output contract fields were emitted.'
+    if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN') -and ($scopeText -match 'WINDOW_START=') -and ($scopeText -match 'WINDOW_END=') -and ($metadataText -match 'WINDOW_START=') -and ($metadataText -match 'WINDOW_END=') -and $expectedWindowOk -and $expectedWindowValuesOk) {
+      $status = "PASS"
+      $message = "Targeted collection artifacts were produced and contained expected markers plus exact effective event-window fields."
+    } else {
+      $message = "Targeted collection artifact markers or exact effective event-window fields were missing or unexpected."
+    }
   } else {
-    $message = (@($missing) -join '; ')
+    $message = ($missing -join '; ')
   }
 
   $lines += "STATUS=$status"
   $lines += "MESSAGE=$message"
   $end = Get-Date
   $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
-  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $EnrichStep.RunId -EnrichSessionId $EnrichStep.EnrichSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
 <#
 .SYNOPSIS
-Verifies the cleanup output contract fields.
+Verifies production upload-safe chunk manifest behavior.
 
 .DESCRIPTION
-Checks that the cleanup step emitted RUN_ID, a COMPLETE cleanup status, and the
-delete-script command.
+Reads the production chunk manifest, verifies chunk size bounds, and reconstructs the
+source artifact text from chunk_paths in order.
 
 .FUNCTION NAME
-Invoke-CleanupOutputContractVerification
+Invoke-ProductionChunkingVerification
 
 .INPUTS
-StepName string and CleanupStep result object.
+StepName string and CollectStep result object.
 
 .OUTPUTS
-No direct return value beyond harness logging; throws when the contract is incomplete.
+No direct return value beyond harness logging; throws when production chunking fails.
 #>
-function Invoke-CleanupOutputContractVerification {
-  param([string]$StepName,[object]$CleanupStep)
+function Invoke-ProductionChunkingVerification {
+  param([string]$StepName,[object]$CollectStep)
   $start = Get-Date
   $status = 'FAIL'
   $message = ''
   $lines = @(
     "STEP=$StepName",
-    "RUN_ID=$($CleanupStep.RunId)",
-    "CLEANUP_STATUS=$($CleanupStep.CleanupStatus)",
-    "DELETE_SCRIPT_COMMAND=$($CleanupStep.DeleteScriptCommand)",
-    "HAS_QUICK_COMMANDS=$($CleanupStep.HasQuickCommands)"
+    "UPLOAD_SAFE_CHUNK_MANIFEST_PATH=$($CollectStep.UploadSafeChunkManifestPath)"
   )
 
-  $missing = New-Object System.Collections.ArrayList
-  if ([string]::IsNullOrWhiteSpace($CleanupStep.RunId)) { [void]$missing.Add('RUN_ID missing') }
-  if ($CleanupStep.CleanupStatus -ne 'COMPLETE') { [void]$missing.Add('CLEANUP_STATUS missing or not COMPLETE') }
-  if ([string]::IsNullOrWhiteSpace($CleanupStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
-
-  if (@($missing).Count -eq 0) {
-    $status = 'PASS'
-    $message = 'Cleanup output contract fields were emitted.'
+  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.UploadSafeChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.UploadSafeChunkManifestPath)) {
+    $message = 'Production upload-safe chunk manifest path was not emitted by the collector.'
   } else {
-    $message = (@($missing) -join '; ')
-  }
-
-  $lines += "STATUS=$status"
-  $lines += "MESSAGE=$message"
-  $end = Get-Date
-  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
-  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $CleanupStep.RunId -EnrichSessionId $CleanupStep.EnrichSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
-  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
-}
-
-<#
-.SYNOPSIS
-Verifies the attachment-budget manifest against the harness thresholds.
-
-.DESCRIPTION
-Reads the attachment-budget manifest, checks per-file and total-size values against the
-configured safe and hard thresholds, logs the result, and throws when the manifest is
-out of bounds.
-
-.FUNCTION NAME
-Invoke-AttachmentBudgetVerification
-
-.INPUTS
-StepName string and ManifestPath string.
-
-.OUTPUTS
-No direct return value beyond harness logging; throws when the budget check fails.
-#>
-function Invoke-AttachmentBudgetVerification {
-  param([string]$StepName,[string]$ManifestPath)
-  $start = Get-Date
-  $status = 'FAIL'
-  $message = ''
-  $lines = @("STEP=$StepName","MANIFEST_PATH=$ManifestPath","SAFE_PER_FILE_KB=$SafePerFileKB","HARD_PER_FILE_KB=$HardPerFileKB","SAFE_PER_PROMPT_KB=$SafePerPromptKB","HARD_PER_PROMPT_KB=$HardPerPromptKB")
-  if (-not (Test-Path -LiteralPath $ManifestPath)) {
-    $message = 'Attachment budget manifest missing.'
-    $lines += "STATUS=FAIL"
-    $lines += "MESSAGE=$message"
-  } else {
-    $obj = Get-Content -LiteralPath $ManifestPath -Raw | ConvertFrom-Json
-    $rows = @($obj.recommended_upload_files)
-    $total = 0
+    $manifest = Get-Content -LiteralPath $CollectStep.UploadSafeChunkManifestPath -Raw | ConvertFrom-Json
+    $artifacts = @($manifest.chunked_artifacts)
     $violations = New-Object System.Collections.ArrayList
-    foreach ($row in $rows) {
-      $total += [int]$row.size_kb
-      $lines += ('FILE={0} SIZE_KB={1}' -f $row.path, $row.size_kb)
-      if ([int]$row.size_kb -gt $SafePerFileKB) { [void]$violations.Add(('safe per-file exceeded: {0}' -f $row.path)) }
-      if ([int]$row.size_kb -gt $HardPerFileKB) { [void]$violations.Add(('hard per-file exceeded: {0}' -f $row.path)) }
+    if (@($artifacts).Count -lt 1) { [void]$violations.Add('No chunked_artifacts were recorded in the production chunk manifest.') }
+    $expectedSourceKeys = @('security_filtered','powershell_operational_filtered','taskscheduler_operational_filtered')
+    $observedSourceKeys = @($artifacts | ForEach-Object { [string]$_.source_artifact_key })
+    foreach ($expectedSourceKey in $expectedSourceKeys) {
+      if ($observedSourceKeys -notcontains $expectedSourceKey) {
+        [void]$violations.Add(('Expected production chunk source artifact was not chunked: {0}' -f $expectedSourceKey))
+      }
     }
-    $lines += "TOTAL_RECOMMENDED_KB=$total"
-    if ($total -gt $SafePerPromptKB) { [void]$violations.Add('safe total exceeded') }
-    if ($total -gt $HardPerPromptKB) { [void]$violations.Add('hard total exceeded') }
+    foreach ($artifact in $artifacts) {
+      $sourcePath = [string]$artifact.source_path
+      $sourceKey = [string]$artifact.source_artifact_key
+      $chunkPaths = @($artifact.chunk_paths)
+      $lines += ("SOURCE_KEY={0}" -f $sourceKey)
+      $lines += ("SOURCE_PATH={0}" -f $sourcePath)
+      [void](Add-HarnessEvidenceFile -StepName $StepName -Path $sourcePath -Label ("source_{0}" -f $sourceKey))
+      if ([string]::IsNullOrWhiteSpace($sourcePath) -or -not (Test-Path -LiteralPath $sourcePath)) {
+        [void]$violations.Add(('Missing source artifact for chunk row: {0}' -f $sourceKey))
+        continue
+      }
+      if (@($chunkPaths).Count -lt 2) { [void]$violations.Add(('Chunk count was less than 2 for oversized source: {0}' -f $sourceKey)) }
+      $rebuilt = New-Object System.IO.MemoryStream
+      $chunkSha256 = @($artifact.chunk_sha256)
+      $chunkIndex = 0
+      foreach ($chunkPath in $chunkPaths) {
+        if (-not (Test-Path -LiteralPath $chunkPath)) {
+          [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
+          continue
+        }
+        [void](Add-HarnessEvidenceFile -StepName $StepName -Path $chunkPath -Label ("chunk_{0}_{1:000}" -f $sourceKey, ($chunkIndex + 1)))
+        $chunkSizeKB = [int][Math]::Ceiling(((Get-Item -LiteralPath $chunkPath).Length) / 1KB)
+        $lines += ('CHUNK={0} SIZE_KB={1}' -f $chunkPath, $chunkSizeKB)
+        if ($chunkSizeKB -gt $SafePerFileKB) { [void]$violations.Add(('Chunk exceeded safe per-file budget: {0}' -f $chunkPath)) }
+        $chunkBytes = [System.IO.File]::ReadAllBytes($chunkPath)
+        if (@($chunkSha256).Count -gt $chunkIndex) {
+          $actualChunkHash = (Get-FileHash -LiteralPath $chunkPath -Algorithm SHA256).Hash
+          if ($actualChunkHash -ne [string]$chunkSha256[$chunkIndex]) { [void]$violations.Add(('Chunk SHA256 did not match manifest for: {0}' -f $chunkPath)) }
+        }
+        $rebuilt.Write($chunkBytes, 0, $chunkBytes.Length)
+        $chunkIndex += 1
+      }
+      $sourceHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash
+      $sha = [System.Security.Cryptography.SHA256]::Create()
+      try {
+        $rebuiltHashBytes = $sha.ComputeHash($rebuilt.ToArray())
+      } finally {
+        $sha.Dispose()
+      }
+      $rebuiltHash = (($rebuiltHashBytes | ForEach-Object { $_.ToString('x2') }) -join '').ToUpperInvariant()
+      $lines += ('SOURCE_SHA256={0}' -f $sourceHash)
+      $lines += ('REBUILT_SHA256={0}' -f $rebuiltHash)
+      if ($rebuiltHash -ne $sourceHash) { [void]$violations.Add(('Chunk byte reconstruction hash did not match source artifact: {0}' -f $sourceKey)) }
+      if (($artifact.source_sha256) -and ([string]$artifact.source_sha256 -ne $sourceHash)) { [void]$violations.Add(('Manifest source SHA256 did not match source artifact: {0}' -f $sourceKey)) }
+    }
     if (@($violations).Count -eq 0) {
       $status = 'PASS'
-      $message = 'Recommended upload set is within the configured safe budget.'
+      $message = 'Production upload-safe chunks stayed within size budget and reconstructed source artifacts exactly.'
     } else {
-      $status = 'FAIL'
       $message = ($violations -join '; ')
     }
-    $lines += "STATUS=$status"
-    $lines += "MESSAGE=$message"
   }
-  $end = Get-Date
-  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
-  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
-  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
-}
 
-<#
-.SYNOPSIS
-Verifies enrich-session reuse behavior.
-
-.DESCRIPTION
-Checks that enrich-start created a new session, enrich-add reused the same session, and
-the recorded session-resolution modes match the expected model.
-
-.FUNCTION NAME
-Invoke-SessionBehaviorVerification
-
-.INPUTS
-StepName string, start/add session IDs, and start/add session-resolution modes.
-
-.OUTPUTS
-No direct return value beyond harness logging; throws when the session behavior is
-incorrect.
-#>
-function Invoke-SessionBehaviorVerification {
-  param([string]$StepName,[string]$StartSessionId,[string]$AddSessionId,[string]$StartMode,[string]$AddMode)
-  $start = Get-Date
-  $status = 'FAIL'
-  $message = ''
-  $lines = @("STEP=$StepName","START_SESSION_ID=$StartSessionId","ADD_SESSION_ID=$AddSessionId","START_MODE=$StartMode","ADD_MODE=$AddMode")
-  if ($StartSessionId -and $AddSessionId -and ($StartSessionId -eq $AddSessionId) -and ($StartMode -eq 'CREATED_NEW_SESSION') -and ($AddMode -like 'REUSED_*')) {
-    $status = 'PASS'
-    $message = 'enrich-add reused the existing open session as expected.'
-  } else {
-    $message = 'Session reuse behavior did not match the expected start/add model.'
-  }
   $lines += "STATUS=$status"
   $lines += "MESSAGE=$message"
   $end = Get-Date
@@ -160,15 +120,41 @@ function Invoke-SessionBehaviorVerification {
 
 <#
 .SYNOPSIS
-Verifies the targeted-collection artifact contract.
+Verifies oversized-artifact chunking behavior.
 
 .DESCRIPTION
-Checks that the targeted collect step emitted the collection scope, parallelism
-assessment, and targeted collection plan paths and that the artifacts contain the
-expected markers.
+Checks that the synthetic oversized artifact exceeded the hard per-file threshold, was
+split into multiple chunk files, and that each chunk stayed within the safe per-file
+budget.
 
 .FUNCTION NAME
-Invoke-TargetedCollectionVerification
+Invoke-ChunkingOversizeVerification
 
 .INPUTS
 StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when chunking expectations fail.
+#>
+function Invoke-ChunkingOversizeVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "SYNTHETIC_OVERSIZE_SOURCE_PATH=$($CollectStep.SyntheticOversizeSourcePath)",
+    "CHUNK_MANIFEST_PATH=$($CollectStep.ChunkManifestPath)"
+  )
+
+  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.SyntheticOversizeSourcePath) -or -not (Test-Path -LiteralPath $CollectStep.SyntheticOversizeSourcePath)) {
+    $message = 'Synthetic oversize source artifact was not emitted by the collector.'
+  } elseif ([string]::IsNullOrWhiteSpace([string]$CollectStep.ChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.ChunkManifestPath)) {
+    $message = 'Chunk manifest path was not emitted by the collector.'
+  } else {
+    $manifest = Get-Content -LiteralPath $CollectStep.ChunkManifestPath -Raw | ConvertFrom-Json
+    $chunkPaths = @($manifest.chunk_paths)
+    $sourceSizeKB = [int]$manifest.source_size_kb
+    $chunkCount = [int]$manifest.chunk_count
+    $violations = New-Object System.Collections.ArrayList
+    if ($sourceSizeKB -le $HardPerFileKB) { [void]$violations.Add('Synthetic source artifact did not exceed the hard per-file budget.') }
