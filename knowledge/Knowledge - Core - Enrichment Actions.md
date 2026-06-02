@@ -58,7 +58,9 @@ The current source supports these bounded statements:
 - `enrich-start` style paths create a new session;
 - `enrich-add` style paths reuse the current open session unless explicitly overridden;
 - explicit session targeting can be done with `-EnrichSessionId`;
-- `enrich-finalize` finalizes the current open session and produces a bundle.
+- a finalized requested session cannot be appended to;
+- `enrich-finalize` finalizes the current open session or a valid non-finalized requested session and produces a bundle;
+- `enrich-finalize` without an open or requested non-finalized session is rejected instead of creating an empty bundle.
 
 ---
 
@@ -198,8 +200,8 @@ Important enrich output surfaces visible in current source include:
 - `NEXT_GET_FILE` when finalized
 - `DELETE_SCRIPT_COMMAND`
 
-A finalize-only path is still a normal enrich outcome.
-When the operator runs `enrich-finalize` without a new action, the current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`.
+A finalize-only path is still a normal enrich outcome when it closes an existing open session or a valid non-finalized requested session.
+When the operator runs `enrich-finalize` without a new action, the current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`; if no open or requested non-finalized session exists, the collector rejects the command so operators do not receive an empty finalized bundle.
 
 ### Practical enrich review order
 
@@ -248,6 +250,8 @@ Retrieval is usually better than another broad collection when the question is a
 - running multiple unrelated enrichments in one session;
 - starting a new session when the current one should be extended;
 - extending a session that should be finalized;
+- trying to append to a session that has already been finalized;
+- treating a rejected finalize-without-open command as a collector failure instead of a guardrail;
 - using enrichment when retrieval is already the narrower answer;
 - cleaning up before outputs are reviewed or retrieved;
 - inventing action flags not exposed by the collector;
