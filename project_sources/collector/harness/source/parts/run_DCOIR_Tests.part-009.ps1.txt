@@ -1,3 +1,20 @@
+<#
+.SYNOPSIS
+Writes collector capability coverage artifacts.
+
+.DESCRIPTION
+Serializes the accumulated capability coverage rows to reusable JSON and Markdown files
+for #187 audit readback and future drift checks.
+
+.FUNCTION NAME
+Write-CapabilityCoverageFiles
+
+.INPUTS
+No direct parameters; reads script-level coverage rows and output paths.
+
+.OUTPUTS
+No direct output. Writes collector_capability_coverage.json and .md.
+#>
 function Write-CapabilityCoverageFiles {
   $obj = [pscustomobject]@{
     schema_version = 'dcoir_collector_capability_coverage_v1'
@@ -19,6 +36,23 @@ function Write-CapabilityCoverageFiles {
   Set-Content -Path $CoverageMdPath -Value $lines -Encoding UTF8
 }
 
+<#
+.SYNOPSIS
+Finalizes and saves collector capability coverage output.
+
+.DESCRIPTION
+Builds coverage rows, writes coverage artifacts, then rechecks the coverage-matrix row
+after artifacts exist so the matrix artifact can be marked covered when valid.
+
+.FUNCTION NAME
+Save-CapabilityCoverage
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Writes coverage artifacts and updates in-memory coverage rows.
+#>
 function Save-CapabilityCoverage {
   Add-CollectorCapabilityCoverageRows
   Write-CapabilityCoverageFiles
