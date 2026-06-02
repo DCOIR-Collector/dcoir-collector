@@ -1,3 +1,52 @@
+    }
+  }
+}
+
+<#
+.SYNOPSIS
+Runs one harness step that is expected to fail in a specific way.
+
+.DESCRIPTION
+Runs the collector directly, captures stdout and stderr, compares the result to the
+expected bind-reject or runtime-error outcome, checks for required text patterns, logs
+the result, and returns the harness result object.
+
+.FUNCTION NAME
+Invoke-ExpectedFailureStep
+
+.INPUTS
+Mandatory StepName, CollectorArgs, and ExpectedOutcome, plus optional ExpectedPatterns.
+
+.OUTPUTS
+PSCustomObject containing the observed failure behavior and harness log path.
+#>
+function Invoke-ExpectedFailureStep {
+  param(
+    [Parameter(Mandatory=$true)][string]$StepName,
+    [Parameter(Mandatory=$true)][string[]]$CollectorArgs,
+    [Parameter(Mandatory=$true)][ValidateSet('BIND_REJECT','RUNTIME_ERROR')][string]$ExpectedOutcome,
+    [string[]]$ExpectedPatterns
+  )
+
+  Ensure-Directory -Path $LogsDir
+  $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
+  $processResult = Invoke-CollectorProcess -StepName $StepName -Invocation $invocation
+  $start = $processResult.Start
+  $end = $processResult.End
+  $stdoutText = $processResult.StdOutText
+  $stderrText = $processResult.StdErrText
+  $exitCode = $processResult.ExitCode
+
+  $stdout = @($stdoutText, $stderrText | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
+  $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
+
+  $missingPatterns = New-Object System.Collections.ArrayList
+  foreach ($pattern in @($ExpectedPatterns)) {
+    if (-not [string]::IsNullOrWhiteSpace($pattern) -and -not [regex]::IsMatch($stdout, [regex]::Escape($pattern))) {
+      [void]$missingPatterns.Add($pattern)
+    }
+  }
+
   $status = 'FAIL'
   $message = ''
   if ($processResult.TimedOut) {
@@ -123,28 +172,3 @@ No direct output. Throws when the expected degraded behavior is absent.
 #>
 function Assert-CollectorStepDegradedPartial {
   param(
-    [string]$StepName,
-    [object]$CollectorStep,
-    [string[]]$ExpectedPatterns
-  )
-
-  $missingPatterns = New-Object System.Collections.ArrayList
-  foreach ($pattern in @($ExpectedPatterns)) {
-    if (-not [string]::IsNullOrWhiteSpace($pattern) -and -not [regex]::IsMatch($CollectorStep.StdOut, [regex]::Escape($pattern))) {
-      [void]$missingPatterns.Add($pattern)
-    }
-  }
-
-  if ($CollectorStep.ExitCode -eq 0 -and $CollectorStep.CollectorReportedStatus -eq 'PARTIAL_SUCCESS' -and @($missingPatterns).Count -eq 0) {
-    return
-  }
-
-  $message = @(
-    ("Collector step did not show the expected degraded partial behavior: {0}" -f $StepName),
-    ("Collector harness status: {0}" -f $CollectorStep.Status),
-    ("Collector reported status: {0}" -f $CollectorStep.CollectorReportedStatus),
-    ("Collector step log: {0}" -f $CollectorStep.LogPath),
-    ("Missing patterns: {0}" -f (@($missingPatterns) -join '; ')),
-    "Collector stdout follows:",
-    $CollectorStep.StdOut
-  ) -join [Environment]::NewLine
