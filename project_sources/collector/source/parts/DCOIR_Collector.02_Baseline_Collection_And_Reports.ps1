@@ -940,9 +940,11 @@ function New-BaselineReport {
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "EVENT_TIMELINE_TEXT" -Name "security_high_signal_summary.txt" -Text $securityHighSignalText
   [void]$artifactPaths.Add($p); $artifactMap['security_high_signal_summary'] = $p; $State.SecurityHighSignalSummaryPath = $p
   $psOpText = Get-EventText -Channel "Microsoft-Windows-PowerShell/Operational" -WindowHours $Hours -Take $MaxEvents
+  $psOpText += Get-TestTextPaddingFromEnvironment -Name 'DCOIR_TEST_POWERSHELL_OPERATIONAL_OVERSIZE_KB'
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "EVENT_TIMELINE_TEXT" -Name "powershell_operational_filtered.txt" -Text $psOpText
   [void]$artifactPaths.Add($p); $artifactMap['powershell_operational_filtered'] = $p
   $taskOpText = Get-EventText -Channel "Microsoft-Windows-TaskScheduler/Operational" -WindowHours $Hours -Take $MaxEvents
+  $taskOpText += Get-TestTextPaddingFromEnvironment -Name 'DCOIR_TEST_TASKSCHEDULER_OPERATIONAL_OVERSIZE_KB'
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "EVENT_TIMELINE_TEXT" -Name "taskscheduler_operational_filtered.txt" -Text $taskOpText
   [void]$artifactPaths.Add($p); $artifactMap['taskscheduler_operational_filtered'] = $p
   Add-Section -Builder $sb -Name "EVENT_TIMELINE_TEXT_HIGH_SIGNAL" -Text $securityHighSignalText
