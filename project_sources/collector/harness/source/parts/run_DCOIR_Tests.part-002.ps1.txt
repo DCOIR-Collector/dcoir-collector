@@ -1,4 +1,88 @@
 
+.FUNCTION NAME
+Quote-Arg
+
+.INPUTS
+Value string.
+
+.OUTPUTS
+String safe-for-display argument token.
+#>
+function Quote-Arg {
+  param([string]$Value)
+  if ($null -eq $Value) { return '""' }
+  if ($Value -match '[\s"]') {
+    return '"' + ($Value -replace '"','\"') + '"'
+  }
+  return $Value
+}
+
+<#
+.SYNOPSIS
+Builds one display argument string from an argument array.
+
+.DESCRIPTION
+Quotes each argument with Quote-Arg and joins the resulting tokens with spaces.
+
+.FUNCTION NAME
+Build-ArgumentString
+
+.INPUTS
+ArgumentValues string array.
+
+.OUTPUTS
+String joined argument list.
+#>
+function Build-ArgumentString {
+  param([string[]]$ArgumentValues)
+  $parts = New-Object System.Collections.ArrayList
+  foreach ($a in $ArgumentValues) {
+    [void]$parts.Add((Quote-Arg -Value $a))
+  }
+  return ($parts -join ' ')
+}
+
+<#
+.SYNOPSIS
+Builds the collector process invocation for PS1 or optional EXE collector runtimes.
+
+.DESCRIPTION
+Returns the executable path, argument array, and display command used by harness steps.
+PowerShell-file mode runs powershell.exe -File against the collector script. Executable
+mode invokes the optional collector EXE directly while preserving the same collector
+argument surface used by the PS1 runtime.
+
+.FUNCTION NAME
+New-CollectorInvocation
+
+.INPUTS
+CollectorArgs string array.
+
+.OUTPUTS
+PSCustomObject containing FileName, Arguments, and DisplayCommand.
+#>
+function New-CollectorInvocation {
+  param([string[]]$CollectorArgs)
+  if ($script:ResolvedCollectorInvocationMode -eq "Executable") {
+    return [pscustomobject]@{
+      FileName = $CollectorFullPath
+      Arguments = @($CollectorArgs)
+      DisplayCommand = ("{0} {1}" -f (Quote-Arg -Value $CollectorFullPath), (Build-ArgumentString -ArgumentValues $CollectorArgs)).Trim()
+    }
+  }
+
+  $invokeArgs = @("-NoProfile","-ExecutionPolicy","Bypass","-File",$CollectorFullPath) + $CollectorArgs
+  return [pscustomobject]@{
+    FileName = 'powershell.exe'
+    Arguments = $invokeArgs
+    DisplayCommand = ("powershell.exe {0}" -f (Build-ArgumentString -ArgumentValues $invokeArgs))
+  }
+}
+
+<#
+.SYNOPSIS
+Restores the working collector ZIP from the master ZIP.
+
 .DESCRIPTION
 Copies the master ZIP into the working ZIP path, logs the operation as a harness result,
 and throws if the master ZIP is missing.
@@ -78,7 +162,9 @@ function Invoke-CollectorProcess {
   )
 
   $start = Get-Date
+  $commandDisplay = ("{0} {1}" -f $Invocation.FileName, (Build-ArgumentString -ArgumentValues @($Invocation.Arguments))).Trim()
   Write-Host ("HARNESS_STEP_START step={0} timeout_seconds={1}" -f $StepName, $CollectorStepTimeoutSeconds)
+  Write-HarnessProgress -StepName $StepName -Phase 'starting' -Status 'STARTED' -Command $commandDisplay -TimeoutSeconds $CollectorStepTimeoutSeconds
   $process = New-Object System.Diagnostics.Process
   $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
   $process.StartInfo.FileName = $Invocation.FileName
@@ -86,65 +172,3 @@ function Invoke-CollectorProcess {
   $process.StartInfo.RedirectStandardOutput = $true
   $process.StartInfo.RedirectStandardError = $true
   $process.StartInfo.CreateNoWindow = $true
-  $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues @($Invocation.Arguments)
-  [void]$process.Start()
-  $stdoutTask = $process.StandardOutput.ReadToEndAsync()
-  $stderrTask = $process.StandardError.ReadToEndAsync()
-  $timedOut = -not $process.WaitForExit($script:CollectorStepTimeoutMilliseconds)
-  if ($timedOut) {
-    try {
-      Start-Process -FilePath 'taskkill.exe' -ArgumentList @('/PID', $process.Id.ToString(), '/T', '/F') -NoNewWindow -Wait -ErrorAction SilentlyContinue | Out-Null
-    } catch {
-      try { $process.Kill() } catch { }
-    }
-    try { [void]$process.WaitForExit(5000) } catch { }
-  }
-  $stdoutText = if ($stdoutTask.Wait(5000)) { $stdoutTask.GetAwaiter().GetResult() } else { '[HARNESS_TIMEOUT_STDOUT_DRAIN_INCOMPLETE]' }
-  $stderrText = if ($stderrTask.Wait(5000)) { $stderrTask.GetAwaiter().GetResult() } else { '[HARNESS_TIMEOUT_STDERR_DRAIN_INCOMPLETE]' }
-  $exitCode = if ($timedOut) { -1001 } else { $process.ExitCode }
-  $end = Get-Date
-  Write-Host ("HARNESS_STEP_END step={0} exit_code={1} timed_out={2} duration_ms={3}" -f $StepName, $exitCode, $timedOut, [int][Math]::Round(($end - $start).TotalMilliseconds))
-
-  return [pscustomobject]@{
-    Start = $start
-    End = $end
-    ExitCode = $exitCode
-    StdOutText = $stdoutText
-    StdErrText = $stderrText
-    TimedOut = [bool]$timedOut
-  }
-}
-
-<#
-.SYNOPSIS
-Runs one collector step and captures its contract surface.
-
-.DESCRIPTION
-Builds the collector invocation, runs it through Invoke-CollectorProcess, writes a
-per-step harness log, updates the tracked run/session identifiers, records the harness
-result, and returns the parsed collector contract values used by downstream verifiers.
-
-.FUNCTION NAME
-Invoke-CollectorStep
-
-.INPUTS
-Mandatory StepName string and CollectorArgs string array.
-
-.OUTPUTS
-PSCustomObject containing harness status, parsed collector contract fields, stdout text,
-and the step log path.
-#>
-function Invoke-CollectorStep {
-  param(
-    [Parameter(Mandatory=$true)][string]$StepName,
-    [Parameter(Mandatory=$true)][string[]]$CollectorArgs
-  )
-  Ensure-Directory -Path $LogsDir
-  $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
-  $processResult = Invoke-CollectorProcess -StepName $StepName -Invocation $invocation
-  $start = $processResult.Start
-  $end = $processResult.End
-  $stdoutText = $processResult.StdOutText
-  $stderrText = $processResult.StdErrText
-  $exitCode = $processResult.ExitCode
-  $stdout = @($stdoutText, $stderrText | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
