@@ -172,3 +172,103 @@ function Write-HarnessLog {
 
 <#
 .SYNOPSIS
+Writes one durable harness progress event.
+
+.DESCRIPTION
+Appends JSONL and text progress records before and after meaningful harness operations so
+interrupted FullRegression runs preserve the last active suite, step, command, and log path.
+
+.FUNCTION NAME
+Write-HarnessProgress
+
+.INPUTS
+SuiteName, StepName, Phase, Status, Command, TimeoutSeconds, ProcessId, RunId, SessionId,
+LogPath, and Message values.
+
+.OUTPUTS
+No direct output. Appends progress.jsonl and progress.txt entries.
+#>
+function Write-HarnessProgress {
+  param(
+    [string]$SuiteName = $Suite,
+    [string]$StepName,
+    [string]$Phase,
+    [string]$Status = '',
+    [string]$Command = '',
+    [int]$TimeoutSeconds = 0,
+    [int]$ProcessId = 0,
+    [string]$RunId = $script:CollectorRunId,
+    [string]$SessionId = $script:CollectorSessionId,
+    [string]$LogPath = '',
+    [string]$Message = ''
+  )
+  Ensure-Directory -Path $RunOutputRoot
+  $event = [ordered]@{
+    timestamp = (Get-Date).ToString('o')
+    suite = $SuiteName
+    step = $StepName
+    phase = $Phase
+    status = $Status
+    command = $Command
+    timeout_seconds = $TimeoutSeconds
+    process_id = $ProcessId
+    run_id = $RunId
+    enrich_session_id = $SessionId
+    log_path = $LogPath
+    message = $Message
+  }
+  $json = $event | ConvertTo-Json -Compress -Depth 4
+  Add-Content -Path $ProgressJsonlPath -Value $json -Encoding UTF8
+  Add-Content -Path $ProgressTxtPath -Value ("{0} SUITE={1} STEP={2} PHASE={3} STATUS={4} RUN_ID={5} LOG={6} MESSAGE={7}" -f $event.timestamp, $SuiteName, $StepName, $Phase, $Status, $RunId, $LogPath, $Message) -Encoding UTF8
+}
+
+<#
+.SYNOPSIS
+Copies one evidence file into the durable harness evidence folder.
+
+.DESCRIPTION
+Preserves bounded copies of collector artifacts referenced by harness logs so workflow
+artifacts can be independently reviewed without transient C:\Temp paths.
+
+.FUNCTION NAME
+Add-HarnessEvidenceFile
+
+.INPUTS
+StepName, Path, and optional Label.
+
+.OUTPUTS
+String copied evidence path or null.
+#>
+function Add-HarnessEvidenceFile {
+  param([string]$StepName,[string]$Path,[string]$Label = '')
+  if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path)) { return $null }
+  Ensure-Directory -Path $EvidenceRoot
+  $safeStep = ($StepName -replace '[\\/:*?"<>| ]','_')
+  $stepDir = Join-Path $EvidenceRoot $safeStep
+  Ensure-Directory -Path $stepDir
+  $baseName = Split-Path -Leaf $Path
+  if (-not [string]::IsNullOrWhiteSpace($Label)) { $baseName = ("{0}_{1}" -f (($Label -replace '[\\/:*?"<>| ]','_')), $baseName) }
+  $dest = Join-Path $stepDir $baseName
+  Copy-Item -LiteralPath $Path -Destination $dest -Force
+  return $dest
+}
+
+<#
+.SYNOPSIS
+Copies standard collector contract artifacts for one step.
+
+.DESCRIPTION
+Preserves reports, manifests, targeted artifacts, summaries, and chunk manifests that are
+printed as collector response paths.
+
+.FUNCTION NAME
+Add-CollectorStepEvidence
+
+.INPUTS
+StepName and CollectorStep object.
+
+.OUTPUTS
+No direct output. Copies available artifacts into the evidence folder.
+#>
+function Add-CollectorStepEvidence {
+  param([string]$StepName,[object]$CollectorStep)
