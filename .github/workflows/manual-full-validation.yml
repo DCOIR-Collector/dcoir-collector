@@ -46,6 +46,7 @@ on:
           - TargetedCollection
           - ChunkingOversizeArtifact
           - ChunkingReconstructionMetadata
+          - Tier2BoundedCollect
           - MajorVersion
           - FailureGates
           - FullRegression
