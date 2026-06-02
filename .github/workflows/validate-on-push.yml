@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not treat as full regression or pre-merge proof; validate-on-pr owns the heavier PR-focused runtime and harness validation.
 # Trigger model:
-# - push paths: project_sources/collector/source/**, project_sources/collector/harness/**, project_sources/collector/tools/**, project_sources/collector/manifests/**, project_sources/gemini/bundle_source/**, project_sources/gemini/tools/**, project_sources/validation/**, knowledge/Knowledge - *.md ...; workflow_dispatch
+# - push paths: project_sources/collector/source/**, project_sources/collector/harness/**, project_sources/collector/tools/**, project_sources/collector/manifests/**, project_sources/gemini/bundle_source/**, project_sources/gemini/tools/**, project_sources/validation/**, knowledge/Knowledge - *.md, knowledge/README.md, DCOIR_KNOWLEDGE_INDEX.md, docs/validation/dcoir_collector_capability_coverage_matrix.md ...; workflow_dispatch
 # Required inputs:
 # - none
 # Required secrets/config:
@@ -59,6 +59,8 @@ on:
       - 'project_sources/validation/**'
       - 'knowledge/Knowledge - *.md'
       - 'knowledge/README.md'
+      - 'DCOIR_KNOWLEDGE_INDEX.md'
+      - 'docs/validation/dcoir_collector_capability_coverage_matrix.md'
       - 'supporting_assets/DCOIR_Collector.zip'
       - '.github/workflows/validate-on-push.yml'
       - '.github/workflows/validate-on-pr.yml'
@@ -171,7 +173,7 @@ jobs:
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\collector\\tools\\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\\collector\\harness\\validate_DCOIR_Run.ps1 -OutputRoot .\\validation\\out_validate_on_push_validate_dcoir_run_fixtures
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\tools\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\collector\harness\validate_DCOIR_Run.ps1 -OutputRoot .\validation\out_validate_on_push_validate_dcoir_run_fixtures
 
       - name: Run collector documentation quality gate
         shell: pwsh
