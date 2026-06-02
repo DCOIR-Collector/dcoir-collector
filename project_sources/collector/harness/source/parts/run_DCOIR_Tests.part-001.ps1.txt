@@ -241,3 +241,4 @@ function Invoke-CollectorProcess {
   $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
   $process.StartInfo.FileName = $Invocation.FileName
   $process.StartInfo.UseShellExecute = $false
+  $process.StartInfo.RedirectStandardOutput = $true
