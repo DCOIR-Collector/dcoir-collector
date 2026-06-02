@@ -90,8 +90,8 @@ For enrich output, start with the session and action surfaces before jumping int
 5. optional `STAGED_PATH` when a retrieval-style action staged evidence
 6. optional `ENRICH_BUNDLE_PATH` after finalization
 
-A finalize-only enrich path is still a normal outcome.
-When the operator runs `enrich-finalize` without a new action, the current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`.
+A finalize-only enrich path is a normal outcome only when it finalizes an existing open session or a valid non-finalized requested session.
+When the operator runs `enrich-finalize` without a new action, the current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`; if there is no open or requested non-finalized session, the collector rejects the command so operators do not review an empty enrichment bundle as evidence.
 
 ### Practical enrich interpretation rule
 
