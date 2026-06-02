@@ -11,7 +11,7 @@ script invocation contract for validation workflows and direct operator runs.
 param(
   [string]$PartsDirectory = (Join-Path $PSScriptRoot 'source\parts'),
   [string]$OutputPath = (Join-Path $PSScriptRoot 'run_DCOIR_Tests.generated.ps1'),
-  [string]$ExpectedSha256 = '7fbdb5230007cbbfc75b3df9d217a73f3be64579e928ec731d79327da88f7a9c'
+  [string]$ExpectedSha256 = '154d9adca38cccbe8ab089bfee4d4421eb0e2107a977f600360b7a94fc17ecf7'
 )
 
 Set-StrictMode -Version 2
