@@ -1,9 +1,3 @@
-#>
-function Run-ChunkingOversizeArtifactSuite {
-  Restore-WorkingZip -Reason "ChunkingOversizeArtifact"
-  $collect = Invoke-CollectorStepWithEnvOverride -StepName "71_CollectT1_SyntheticOversize" -CollectorArgs @("-Quick","collect-t1") -EnvOverrides @{ 'DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB' = '2600' }
-  Assert-CollectorStepSucceeded -StepName "71_CollectT1_SyntheticOversize" -CollectorStep $collect
-  Invoke-ChunkingOversizeVerification -StepName "ZZ_ChunkingOversizeValidation" -CollectStep $collect
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "72_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
 
   Restore-WorkingZip -Reason "ChunkingProductionEventText"
@@ -168,5 +162,4 @@ try {
   Write-Error $_.Exception.Message
   exit 1
 }
-
 
