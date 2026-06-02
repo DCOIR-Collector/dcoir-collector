@@ -25,7 +25,9 @@ Checks whether a directory name matches a collector run-root for the current hos
 
 .DESCRIPTION
 Accepts timestamp run IDs and supported custom run IDs produced by Get-RunRoot while
-remaining bounded to the current host prefix and a conservative run-id character set.
+remaining bounded to the current host prefix and a conservative run-id character set. Use
+this broad predicate for exact run lookup only; bulk deletion uses the stricter purge
+predicate below.
 
 .FUNCTION NAME
 Test-DCOIRRunDirectoryName
@@ -44,6 +46,103 @@ function Test-DCOIRRunDirectoryName {
   $runIdPart = $Name.Substring($hostPrefix.Length)
   if ([string]::IsNullOrWhiteSpace($runIdPart)) { return $false }
   return [regex]::IsMatch($runIdPart, '^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$')
+}
+
+<#
+.SYNOPSIS
+Checks whether a directory name is safe for bulk prior-run purge.
+
+.DESCRIPTION
+Allows only timestamp-style collector run-root names for automatic bulk purge. Custom
+RunId directories are resolved by exact RunId lookup or no-state cleanup only after
+collector-created structure is present.
+
+.FUNCTION NAME
+Test-DCOIRBulkPurgeRunDirectoryName
+
+.INPUTS
+Directory name string.
+
+.OUTPUTS
+Boolean.
+#>
+function Test-DCOIRBulkPurgeRunDirectoryName {
+  param([string]$Name)
+  if ([string]::IsNullOrWhiteSpace($Name)) { return $false }
+  $hostPattern = [regex]::Escape([string]$env:COMPUTERNAME)
+  return [regex]::IsMatch($Name, ("^DCOIR_{0}_\d{{8}}_\d{{6}}$" -f $hostPattern))
+}
+
+<#
+.SYNOPSIS
+Checks whether a no-state directory is safe for fallback cleanup.
+
+.DESCRIPTION
+Allows supported custom run-root names only when collector-created child structure is
+present and no state.json exists, so exact custom RunId cleanup can remove collector-owned
+early-failure directories without broadening bulk purge.
+
+.FUNCTION NAME
+Test-DCOIRNoStateCleanupCandidate
+
+.INPUTS
+DirectoryInfo object.
+
+.OUTPUTS
+Boolean.
+#>
+function Test-DCOIRNoStateCleanupCandidate {
+  param([object]$Directory)
+  if (-not $Directory) { return $false }
+  if (-not (Test-DCOIRRunDirectoryName -Name $Directory.Name)) { return $false }
+  if (Test-Path -LiteralPath (Join-Path $Directory.FullName 'state.json')) { return $false }
+  $requiredChildren = @('tools','reports','final_artifacts','logs','bundles')
+  foreach ($child in $requiredChildren) {
+    if (-not (Test-Path -LiteralPath (Join-Path $Directory.FullName $child))) { return $false }
+  }
+  return $true
+}
+
+<#
+.SYNOPSIS
+Deletes prior timestamp-style collector run directories.
+
+.DESCRIPTION
+Overrides the core purge helper so automatic bulk cleanup does not delete arbitrary
+custom-named directories under OutRoot. Exact custom RunId cleanup remains available
+through Find-LatestDCOIRRunDirectory and Test-DCOIRNoStateCleanupCandidate.
+
+.FUNCTION NAME
+Purge-PreviousRuns
+
+.INPUTS
+Root string and CurrentPackageName string.
+
+.OUTPUTS
+No direct output. Deletes prior strict-pattern collector run directories and package file
+as a side effect.
+#>
+function Purge-PreviousRuns {
+  param([string]$Root,[string]$CurrentPackageName)
+
+  try {
+    $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
+      Where-Object { Test-DCOIRBulkPurgeRunDirectoryName -Name $_.Name }
+    foreach ($dir in $dirs) {
+      Remove-Item -LiteralPath $dir.FullName -Recurse -Force -ErrorAction SilentlyContinue
+    }
+  } catch {
+    Add-CollectorError "Failed to purge previous DCOIR directories: $($_.Exception.Message)"
+  }
+
+  try {
+    $pkg = Join-Path $Root $CurrentPackageName
+    if (Test-Path -LiteralPath $pkg) {
+      Remove-Item -LiteralPath $pkg -Force -ErrorAction SilentlyContinue
+    }
+  } catch {
+    Add-CollectorError "Failed to remove previous collector package: $($_.Exception.Message)"
+  }
 }
 
 <#
