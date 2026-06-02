@@ -233,7 +233,8 @@ try {
         throw "Enrich mode requires -Action or -FinalizeEnrichSession."
       }
 
-      $session = Initialize-EnrichSession -State $state -RequestedSessionId $EnrichSessionId -ForceNew:$NewEnrichSession
+      $requireOpenSessionForFinalize = [bool]($FinalizeEnrichSession -and -not $Action -and [string]::IsNullOrWhiteSpace($EnrichSessionId))
+      $session = Initialize-EnrichSession -State $state -RequestedSessionId $EnrichSessionId -ForceNew:$NewEnrichSession -RequireExistingOpenSession:$requireOpenSessionForFinalize
 
       $logStamp = Get-Date -Format "yyyyMMdd_HHmmss"
       $actionLabel = if ($Action) { $Action } else { "FinalizeSession" }
