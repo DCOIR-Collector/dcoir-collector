@@ -9,10 +9,6 @@ Collector execution branch:
 3. Prefer the smallest collection that addresses the evidence gap.
 4. Do not claim the collector ran unless returned output or user-supplied logs prove execution.
 5. If the user cannot execute locally, provide a copy-paste command and request the specific returned artifact or log.
-6. Use DCOIR_Collector.ps1 as the canonical runtime filename unless the user explicitly selects an EXE lane and governed source for that lane has been read back.
-7. Do not invent wrappers, unsupported switches, artifact-selector bundles, or collector aliases.
-8. Treat Tier2BoundedCollect as a focused validation lane only; it does not replace FullRegression for broad collector closeability or release-readiness claims.
-9. Preserve custom RunId scope in cleanup guidance. If returned output includes a RunId-specific CLEANUP_COMMAND, do not rewrite it to plain/latest cleanup.
 
 Collector artifact interpretation branch:
 1. Use when the user uploads or pastes collector output.
@@ -20,18 +16,12 @@ Collector artifact interpretation branch:
 3. Extract facts before interpreting.
 4. Separate collector evidence from Elastic evidence and public enrichment.
 5. Identify gaps that require targeted follow-up rather than broad re-collection.
-6. Prefer initial review of ANALYST_OVERVIEW_PATH, UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and then the bounded raw evidence carrier.
-7. If UPLOAD_SAFE_CHUNK_MANIFEST_PATH exists, use it for full-fidelity oversized text artifacts after triage summaries identify which chunked artifact matters.
-8. Do not treat metadata reports, upload summaries, chunk manifests, attachment-budget manifests, collection-scope files, or targeted plans as case conclusions by themselves.
-9. Preserve MaxEvents, WindowStart, WindowEnd, and bounded collection metadata as scope metadata unless the artifact body itself contains direct case evidence.
 
 Targeted collection branch:
 1. Use when the next evidence can be obtained from a narrow host, time window, artifact class, path, process, user, or IOC.
 2. State the target, scope, expected evidence, and disqualifier.
 3. Avoid unnecessary full collection when targeted collection is enough.
 4. Preserve the reason for each requested artifact.
-5. Do not claim that WindowStart/WindowEnd or targeted mode guarantee exact filtering unless current governed collector source proves that behavior for the selected lane.
-6. Use TARGETED_COLLECTION_PLAN_PATH when available to understand the targeted run's declared scope and limitations.
 
 USB violations report branch:
 1. Use only when the user asks for USB violations report preparation or provides USB violations data for report composition.
