@@ -1,7 +1,3 @@
-Verifies the attachment-budget manifest against the harness thresholds.
-
-.DESCRIPTION
-Reads the attachment-budget manifest, checks per-file and total-size values against the
 configured safe and hard thresholds, logs the result, and throws when the manifest is
 out of bounds.
 
@@ -179,3 +175,6 @@ function Invoke-TargetedCollectionVerification {
   }
 
   $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
