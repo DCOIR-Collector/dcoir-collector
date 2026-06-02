@@ -139,6 +139,50 @@ function Find-LatestDCOIRRunDirectory {
 
 <#
 .SYNOPSIS
+Loads saved collector state without broad custom discovery.
+
+.DESCRIPTION
+Preserves exact custom RunId lookup when the operator supplies a RunId, but limits blank
+RunId latest-state discovery to timestamp-style collector run roots. This keeps plain
+cleanup from selecting state-backed custom RunId roots by LastWriteTime.
+
+.FUNCTION NAME
+Load-State
+
+.INPUTS
+Root string and optional CurrentRunId string.
+
+.OUTPUTS
+Deserialized state object.
+#>
+function Load-State {
+  param([string]$Root,[string]$CurrentRunId)
+
+  if ([string]::IsNullOrWhiteSpace($CurrentRunId)) {
+    $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
+      Where-Object { Test-DCOIRBulkPurgeRunDirectoryName -Name $_.Name } |
+      Sort-Object LastWriteTime -Descending
+    if (-not $dirs) {
+      throw "No DCOIR run directories found under $Root"
+    }
+    $selected = $dirs | Select-Object -First 1
+    $statePath = Join-Path $selected.FullName "state.json"
+    if (-not (Test-Path -LiteralPath $statePath)) {
+      throw "State file not found: $statePath"
+    }
+    return (Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json)
+  }
+
+  $statePath = Get-StatePath -Root $Root -CurrentRunId $CurrentRunId
+  if (-not (Test-Path -LiteralPath $statePath)) {
+    throw "State file not found: $statePath"
+  }
+
+  return (Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json)
+}
+
+<#
+.SYNOPSIS
 Deletes prior timestamp-style collector run directories.
 
 .DESCRIPTION
