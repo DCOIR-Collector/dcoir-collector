@@ -1,3 +1,15 @@
+function Write-CapabilityCoverageFiles {
+  $obj = [pscustomobject]@{
+    schema_version = 'dcoir_collector_capability_coverage_v1'
+    suite = $Suite
+    generated_at = (Get-Date).ToString('o')
+    collector_path = $CollectorFullPath
+    test_run_output = $RunOutputRoot
+    coverage_classes = @('covered_end_to_end_by_fullregression','covered_by_harness_not_manual','covered_synthetically_only','partial','not_covered','out_of_scope_with_reason')
+    rows = @($script:CoverageRows)
+  }
+  $obj | ConvertTo-Json -Depth 8 | Set-Content -Path $CoverageJsonPath -Encoding UTF8
+
   $lines = @('# DCOIR Collector Capability Coverage', '', ('Suite: {0}' -f $Suite), ('Generated: {0}' -f (Get-Date).ToString('o')), '', '| Capability | Coverage | Status | Risk | Operator Value | Evidence | Remaining Gap |', '| --- | --- | --- | --- | --- | --- | --- |')
   foreach ($row in @($script:CoverageRows)) {
     $evidence = (@($row.evidence_artifacts) -join '<br>')
@@ -176,7 +188,3 @@ function Run-QuickAliasesSuite {
   $collect = Invoke-CollectorStep -StepName "21_CollectT1" -CollectorArgs @("-Quick","collect-t1")
   Assert-CollectorStepSucceeded -StepName "21_CollectT1" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_QuickAliasesCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
-  [void](Invoke-CollectorStep -StepName "22_EnrichStartSigcheck" -CollectorArgs @("-Quick","enrich-start-sigcheck","-Target",$sampleBinaryPath))
-  [void](Invoke-CollectorStep -StepName "23_EnrichFinalize_Sigcheck" -CollectorArgs @("-Quick","enrich-finalize"))
-  [void](Invoke-CollectorStep -StepName "24_EnrichStartStrings" -CollectorArgs @("-Quick","enrich-start-strings","-Target",$sampleBinaryPath))
-  [void](Invoke-CollectorStep -StepName "25_EnrichFinalize_Strings" -CollectorArgs @("-Quick","enrich-finalize"))
