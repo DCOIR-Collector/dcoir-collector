@@ -1,31 +1,3 @@
-      $sourceHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash
-      $sha = [System.Security.Cryptography.SHA256]::Create()
-      try {
-        $rebuiltHashBytes = $sha.ComputeHash($rebuilt.ToArray())
-      } finally {
-        $sha.Dispose()
-      }
-      $rebuiltHash = (($rebuiltHashBytes | ForEach-Object { $_.ToString('x2') }) -join '').ToUpperInvariant()
-      $lines += ('SOURCE_SHA256={0}' -f $sourceHash)
-      $lines += ('REBUILT_SHA256={0}' -f $rebuiltHash)
-      if ($rebuiltHash -ne $sourceHash) { [void]$violations.Add(('Chunk byte reconstruction hash did not match source artifact: {0}' -f $sourceKey)) }
-      if (($artifact.source_sha256) -and ([string]$artifact.source_sha256 -ne $sourceHash)) { [void]$violations.Add(('Manifest source SHA256 did not match source artifact: {0}' -f $sourceKey)) }
-    }
-    if (@($violations).Count -eq 0) {
-      $status = 'PASS'
-      $message = 'Production upload-safe chunks stayed within size budget and reconstructed source artifacts exactly.'
-    } else {
-      $message = ($violations -join '; ')
-    }
-  }
-
-  $lines += "STATUS=$status"
-  $lines += "MESSAGE=$message"
-  $end = Get-Date
-  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
-  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
-  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
-}
 
 <#
 .SYNOPSIS
@@ -139,13 +111,64 @@ function Invoke-ChunkingReconstructionVerification {
     if ([int]$manifest.chunk_count -ne @($chunkPaths).Count) {
       [void]$violations.Add('Chunk count in manifest does not match listed chunk paths.')
     }
-    $rebuilt = New-Object System.IO.MemoryStream
+    $rebuilt = New-Object System.Text.StringBuilder
     foreach ($chunkPath in $chunkPaths) {
       if (-not (Test-Path -LiteralPath $chunkPath)) {
         [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
         continue
       }
       $lines += ('RECONSTRUCT_CHUNK={0}' -f $chunkPath)
-      $chunkBytes = [System.IO.File]::ReadAllBytes($chunkPath)
-      $rebuilt.Write($chunkBytes, 0, $chunkBytes.Length)
+      [void]$rebuilt.Append((Get-Content -LiteralPath $chunkPath -Raw))
     }
+    if (@($violations).Count -eq 0) {
+      $sourceText = Get-Content -LiteralPath $CollectStep.SyntheticOversizeSourcePath -Raw
+      if ($rebuilt.ToString() -eq $sourceText) {
+        $status = 'PASS'
+        $message = 'Chunk reconstruction metadata and chunk ordering were sufficient to rebuild the synthetic oversize artifact exactly.'
+      } else {
+        $message = 'Chunk reconstruction did not match the original synthetic source artifact.'
+      }
+    } else {
+      $message = ($violations -join '; ')
+    }
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Adds one capability coverage row.
+
+.DESCRIPTION
+Records advertised-capability coverage in a reusable matrix so #187 audit evidence is
+available from the same artifact set as the harness summary.
+
+.FUNCTION NAME
+Add-CapabilityCoverage
+
+.INPUTS
+Capability metadata, coverage class, status, evidence, and remaining gap.
+
+.OUTPUTS
+No direct output. Appends one row to the coverage matrix.
+#>
+function Add-CapabilityCoverage {
+  param(
+    [string]$CapabilityId,
+    [string]$Category,
+    [string]$Claim,
+    [string[]]$AdvertisedSource,
+    [string]$CoverageClass,
+    [string[]]$Suites,
+    [string[]]$Steps,
+    [string[]]$Assertions,
+    [string[]]$EvidenceArtifacts,
+    [string]$Risk,
+    [string]$OperatorValue,
+    [string]$Status,
