@@ -105,6 +105,40 @@ function Test-DCOIRNoStateCleanupCandidate {
 
 <#
 .SYNOPSIS
+Finds the newest collector run directory under a root without broad custom deletion.
+
+.DESCRIPTION
+Preserves exact custom RunId lookup while keeping blank-RunId latest discovery limited to
+timestamp-style collector runs. This prevents plain cleanup from selecting custom-like
+no-state directories unless the operator supplied that exact RunId.
+
+.FUNCTION NAME
+Find-LatestDCOIRRunDirectory
+
+.INPUTS
+Root string and optional CurrentRunId string.
+
+.OUTPUTS
+DirectoryInfo object or null.
+#>
+function Find-LatestDCOIRRunDirectory {
+  param([string]$Root,[string]$CurrentRunId)
+
+  if ([string]::IsNullOrWhiteSpace($Root) -or -not (Test-Path -LiteralPath $Root)) { return $null }
+  if (-not [string]::IsNullOrWhiteSpace($CurrentRunId)) {
+    $expected = Get-RunRoot -Root $Root -CurrentRunId $CurrentRunId
+    if (Test-Path -LiteralPath $expected) { return Get-Item -LiteralPath $expected }
+    return $null
+  }
+
+  $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
+    Where-Object { Test-DCOIRBulkPurgeRunDirectoryName -Name $_.Name } |
+    Sort-Object LastWriteTime -Descending
+  return ($dirs | Select-Object -First 1)
+}
+
+<#
+.SYNOPSIS
 Deletes prior timestamp-style collector run directories.
 
 .DESCRIPTION
