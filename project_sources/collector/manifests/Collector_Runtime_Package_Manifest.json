@@ -16,6 +16,7 @@
     "project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1"
   ],
   "compiled_runtime_name": "DCOIR_Collector.ps1",
@@ -32,6 +33,7 @@
     "project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1"
   ],
   "delivery_zip_entries": [
@@ -53,6 +55,7 @@
     "Bounded parallel runtime execution is now part of the maintained collector source line and therefore part of the compiled runtime output.",
     "Diagnostic context and Security visibility overrides are now part of the maintained collector source line and therefore part of the compiled runtime output.",
     "PR #186 review fixes are loaded before the main entrypoint so custom RunId discovery, invalid-window fallback, and validation-only padding gates are active in the compiled runtime output.",
+    "PR #186 external review fixes are loaded before the main entrypoint so exact custom RunId collect roots are purged before reuse without broadening blank/latest cleanup.",
     "Script entries in this artifact intentionally end in .txt to bypass mail filters.",
     "Do not refresh supporting_assets/DCOIR_Collector.zip directly from this transport-safe artifact without restoring native runtime filenames first."
   ]
