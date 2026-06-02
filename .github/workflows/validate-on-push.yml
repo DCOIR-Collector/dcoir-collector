@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not treat as full regression or pre-merge proof; validate-on-pr owns the heavier PR-focused runtime and harness validation.
 # Trigger model:
-# - push paths: project_sources/collector/source/**, project_sources/collector/harness/**, project_sources/collector/tools/**, project_sources/collector/manifests/**, project_sources/gemini/bundle_source/**, project_sources/gemini/tools/**, project_sources/validation/**, knowledge/Knowledge - *.md, knowledge/README.md, DCOIR_KNOWLEDGE_INDEX.md, docs/validation/dcoir_collector_capability_coverage_matrix.md ...; workflow_dispatch
+# - push paths: project_sources/collector/source/**, project_sources/collector/harness/**, project_sources/collector/tools/**, project_sources/collector/manifests/**, project_sources/gemini/bundle_source/**, project_sources/gemini/tools/**, project_sources/validation/**, knowledge/Knowledge - *.md, knowledge/README.md, DCOIR_KNOWLEDGE_INDEX.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, governed workflow definitions ...; workflow_dispatch
 # Required inputs:
 # - none
 # Required secrets/config:
@@ -36,7 +36,7 @@ name: validate-on-push
 #
 # Restored automatic posture (2026-04-30):
 # - Push triggering is enabled only for collector, Gemini, packaging, validation,
-#   maintained knowledge, and this workflow's own definition paths.
+#   maintained knowledge, and governed workflow definition paths.
 # - Routine automatic coverage keeps lightweight syntax, governed-surface, harness
 #   assembly parity, Gemini, collector package smoke, validate_DCOIR_Run, and
 #   documentation checks on push.
@@ -65,6 +65,10 @@ on:
       - 'supporting_assets/DCOIR_Collector.zip'
       - '.github/workflows/validate-on-push.yml'
       - '.github/workflows/validate-on-pr.yml'
+      - '.github/workflows/manual-full-validation.yml'
+      - '.github/workflows/manual-collector-runtime-package-build.yml'
+      - '.github/workflows/manual-gemini-bundle-build.yml'
+      - '.github/workflows/scheduled-health-check.yml'
   workflow_dispatch:
 
 concurrency:
