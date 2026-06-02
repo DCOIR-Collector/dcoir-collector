@@ -1,5 +1,3 @@
-    if ($chunkCount -lt 2) { [void]$violations.Add('Chunk count was less than 2 for the oversized artifact.') }
-    foreach ($chunkPath in $chunkPaths) {
       if (-not (Test-Path -LiteralPath $chunkPath)) {
         [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
         continue
@@ -175,7 +173,14 @@ function Test-CoverageArtifactEvidence {
       return (Test-Path -LiteralPath $EvidenceRoot) -and @((Get-ChildItem -LiteralPath $EvidenceRoot -Recurse -File -ErrorAction SilentlyContinue)).Count -gt 0
     }
     'collector.coverage.matrix_artifact' {
-      return (Test-Path -LiteralPath $CoverageJsonPath) -and (Test-Path -LiteralPath $CoverageMdPath)
+      if (-not ((Test-Path -LiteralPath $CoverageJsonPath) -and (Test-Path -LiteralPath $CoverageMdPath))) { return $false }
+      try {
+        $coverageJson = Get-Content -LiteralPath $CoverageJsonPath -Raw | ConvertFrom-Json
+        $coverageMd = Get-Content -LiteralPath $CoverageMdPath -Raw
+        return ($coverageJson.schema_version -eq 'dcoir_collector_capability_coverage_v1') -and (-not [string]::IsNullOrWhiteSpace($coverageMd)) -and ($coverageMd -match '# DCOIR Collector Capability Coverage')
+      } catch {
+        return $false
+      }
     }
     default { return $false }
   }
@@ -188,4 +193,3 @@ function Add-CollectorCapabilityCoverageRows {
 
   $rows = @(
     @{ Id='collector.core.collect_contract'; Cat='Core collect'; Claim='Collect emits run id, metadata, upload guidance, handoff paths, cleanup/delete commands, and upload budget artifacts.'; Sources=@('project_sources/collector/source/DCOIR_Collector.ps1','knowledge/Knowledge - Collector - Feature and Output Contract Reference.md'); Class='covered_end_to_end_by_fullregression'; Suites=@('Core'); Steps=@('01_CollectT1','ZZ_CollectOutputContract','ZZ_AttachmentBudget_Collect'); Risk='high'; Value='high'; Assertions=@('collector succeeds','collect output contract paths exist','attachment budget manifest validates') },
-    @{ Id='collector.enrich.session_lifecycle.basic'; Cat='Enrich sessions'; Claim='Enrich start/add/finalize preserves session identity and finalized output contract.'; Sources=@('project_sources/collector/source/DCOIR_Collector.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('Core','SessionBehavior'); Steps=@('02_EnrichStartTcp','03_EnrichAddLogTextSecurity','04_EnrichFinalize','ZZ_EnrichFinalizedOutputContract','51_EnrichStartTcp','52_EnrichAddLogTextSecurity','ZZ_SessionBehaviorVerification'); Risk='high'; Value='high'; Assertions=@('session starts','add reuses session','finalize emits expected contract') },
