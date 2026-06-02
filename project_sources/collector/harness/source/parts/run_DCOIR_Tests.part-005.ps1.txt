@@ -1,13 +1,3 @@
-  $lines += "STATUS=$status"
-  $lines += "MESSAGE=$message"
-  $end = Get-Date
-  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
-  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $CleanupStep.RunId -EnrichSessionId $CleanupStep.EnrichSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
-  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
-}
-
-<#
-.SYNOPSIS
 Verifies the attachment-budget manifest against the harness thresholds.
 
 .DESCRIPTION
@@ -178,3 +168,14 @@ function Invoke-TargetedCollectionVerification {
       $expectedWindowValuesOk = $expectedWindowValuesOk -and ($scopeText -match ("WINDOW_END={0}" -f [regex]::Escape($expectedEndText))) -and ($metadataText -match ("WINDOW_END={0}" -f [regex]::Escape($expectedEndText)))
       $lines += ("EXPECTED_WINDOW_END={0}" -f $expectedEndText)
     }
+    if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN') -and ($scopeText -match 'WINDOW_START=') -and ($scopeText -match 'WINDOW_END=') -and ($metadataText -match 'WINDOW_START=') -and ($metadataText -match 'WINDOW_END=') -and $expectedWindowOk -and $expectedWindowValuesOk) {
+      $status = "PASS"
+      $message = "Targeted collection artifacts were produced and contained expected markers plus exact effective event-window fields."
+    } else {
+      $message = "Targeted collection artifact markers or exact effective event-window fields were missing or unexpected."
+    }
+  } else {
+    $message = ($missing -join '; ')
+  }
+
+  $lines += "STATUS=$status"
