@@ -89,6 +89,9 @@ function Initialize-EnrichSession {
   if (-not [string]::IsNullOrWhiteSpace($RequestedSessionId)) {
     $existing = Get-SessionById -State $State -SessionId $RequestedSessionId
     if ($existing) {
+      if ($existing.Finalized) {
+        throw "Requested enrichment session is finalized and cannot be appended: $RequestedSessionId"
+      }
       $existing.SessionResolutionMode = 'REUSED_REQUESTED_SESSION'
       $State.LastSessionResolutionMode = 'REUSED_REQUESTED_SESSION'
       return $existing
