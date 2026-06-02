@@ -1,4 +1,3 @@
-    @{ Id='collector.enrich.session_lifecycle.basic'; Cat='Enrich sessions'; Claim='Enrich start/add/finalize preserves session identity and finalized output contract.'; Sources=@('project_sources/collector/source/DCOIR_Collector.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('Core','SessionBehavior'); Steps=@('02_EnrichStartTcp','03_EnrichAddLogTextSecurity','04_EnrichFinalize','ZZ_EnrichFinalizedOutputContract','51_EnrichStartTcp','52_EnrichAddLogTextSecurity','ZZ_SessionBehaviorVerification'); Risk='high'; Value='high'; Assertions=@('session starts','add reuses session','finalize emits expected contract') },
     @{ Id='collector.targeted.valid_explicit_window_exact'; Cat='Targeted collection'; Claim='Valid explicit WindowStart and WindowEnd values are preserved exactly in targeted artifacts and event-window metadata.'; Sources=@('project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1','project_sources/collector/harness/run_DCOIR_Tests.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('TargetedCollection'); Steps=@('61_CollectTargetedPopup','ZZ_TargetedCollectionValidation','63_CollectTargetedNeutralWindow','ZZ_TargetedNeutralWindowValidation'); Risk='high'; Value='high'; Assertions=@('accepted explicit window is marked true','WINDOW_START equals requested normalized UTC value','WINDOW_END equals requested normalized UTC value','targeted scope and event metadata agree') },
     @{ Id='collector.targeted.invalid_window_fallback'; Cat='Targeted collection'; Claim='Invalid or inverted explicit windows degrade to partial success and do not leak rejected values into targeted scope.'; Sources=@('project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('FailureGates'); Steps=@('99_TargetedInvalidWindowStart','ZZ_TargetedInvalidWindowStartValidation','100_TargetedInvalidWindowEnd','ZZ_TargetedInvalidWindowEndValidation','101_TargetedInvertedWindow','ZZ_TargetedInvertedWindowValidation'); Risk='high'; Value='high'; Assertions=@('invalid start degrades','invalid end degrades','inverted window degrades','targeted artifacts show no explicit window') },
     @{ Id='collector.chunking.synthetic_byte_reconstruction'; Cat='Upload-safe chunking'; Claim='Synthetic oversized artifacts are chunked under budget and reconstruct byte-for-byte by SHA256.'; Sources=@('project_sources/collector/source/parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('ChunkingOversizeArtifact','ChunkingReconstructionMetadata'); Steps=@('71_CollectT1_SyntheticOversize','ZZ_ChunkingOversizeValidation','81_CollectT1_SyntheticOversizeReconstruction','ZZ_ChunkingReconstructionValidation'); Risk='high'; Value='high'; Assertions=@('source exceeds hard budget','chunks stay under safe budget','chunk order reconstructs source bytes','source and rebuilt SHA256 match') },
@@ -16,3 +15,19 @@
     $steps = @($row.Steps)
     $status = if (@($steps).Count -eq 0) { if (Test-CoverageArtifactEvidence -CapabilityId $row.Id) { 'covered' } else { 'gap' } } elseif (Test-StepsCovered -Map $map -Steps $steps) { 'covered' } else { 'gap' }
     $remainingGap = if ($row.ContainsKey('Gap')) { $row.Gap } elseif ($status -eq 'gap') { 'Mapped step evidence was not present or did not pass in this harness run.' } else { '' }
+    Add-CapabilityCoverage -CapabilityId $row.Id -Category $row.Cat -Claim $row.Claim -AdvertisedSource $row.Sources -CoverageClass $row.Class -Suites $row.Suites -Steps $steps -Assertions $row.Assertions -EvidenceArtifacts $headEvidence -Risk $row.Risk -OperatorValue $row.Value -Status $status -RemainingGap $remainingGap
+  }
+}
+
+function Write-CapabilityCoverageFiles {
+  $obj = [pscustomobject]@{
+    schema_version = 'dcoir_collector_capability_coverage_v1'
+    suite = $Suite
+    generated_at = (Get-Date).ToString('o')
+    collector_path = $CollectorFullPath
+    test_run_output = $RunOutputRoot
+    coverage_classes = @('covered_end_to_end_by_fullregression','covered_by_harness_not_manual','covered_synthetically_only','partial','not_covered','out_of_scope_with_reason')
+    rows = @($script:CoverageRows)
+  }
+  $obj | ConvertTo-Json -Depth 8 | Set-Content -Path $CoverageJsonPath -Encoding UTF8
+
