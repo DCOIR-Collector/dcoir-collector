@@ -1,4 +1,3 @@
-  $process.StartInfo.RedirectStandardOutput = $true
   $process.StartInfo.RedirectStandardError = $true
   $process.StartInfo.CreateNoWindow = $true
   $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues @($Invocation.Arguments)
@@ -150,3 +149,6 @@ Mandatory StepName string, CollectorArgs string array, and EnvOverrides hashtabl
 .OUTPUTS
 Collector step result object returned by Invoke-CollectorStep.
 #>
+function Invoke-CollectorStepWithEnvOverride {
+  param(
+    [Parameter(Mandatory=$true)][string]$StepName,
