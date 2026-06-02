@@ -193,7 +193,9 @@ The collector keeps bounded follow-up work grouped into one session until the op
 | Create new session | `enrich-start` style paths create a fresh session |
 | Reuse current open session | `enrich-add` style paths append to the current open session when appropriate |
 | Reuse by explicit id | Operators can target an existing session with `-EnrichSessionId` |
-| Finalize session | Creates a bundle and closes the active session |
+| Finalize session | Creates a bundle and closes the active non-finalized session |
+| Reject finalized requested session | Explicit `-EnrichSessionId` cannot append to a session already finalized |
+| Reject finalize without open session | `enrich-finalize` without `-EnrichSessionId` requires an existing open session |
 
 ### Session controls
 
@@ -210,7 +212,10 @@ The source-backed behavioral contract is:
 
 - `enrich-start` creates a new session;
 - `enrich-add` reuses the current open session unless explicitly overridden;
-- `enrich-finalize` finalizes the current open session.
+- `enrich-finalize` finalizes the current open session;
+- `enrich-finalize -EnrichSessionId <id>` finalizes that specific non-finalized session;
+- a finalized session cannot be appended to;
+- a finalize-only call with no open session is rejected instead of creating an empty bundle.
 
 Use one session for closely related follow-up.
 Do not mix unrelated questions into one enrich session just because the session is open.
@@ -348,6 +353,7 @@ Operators should not reduce it to “one big bundle” or “one report.”
 | optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` | Production chunk manifest for oversized real human-readable artifacts such as full-fidelity event text |
 | optional `SYNTHETIC_OVERSIZE_SOURCE_PATH` | Validation-specific oversized-artifact surface |
 | optional `CHUNK_MANIFEST_PATH` | Validation-specific chunking surface |
+| `MaxEvents` in collection metadata | Confirms the bounded event-count setting used by collect-mode event surfaces |
 | repeated `COLLECTOR_ERROR=` lines | Preserve bounded degraded-run facts without hiding them |
 
 ### Practical operator review order
@@ -389,8 +395,8 @@ A successful enrich run also emits more than one meaningful surface.
 | `NEXT_GET_FILE` | Retrieval handoff when finalized |
 | `DELETE_SCRIPT_COMMAND` | Script-removal handoff |
 
-A finalize-only enrich path is still a normal success path.
-When the operator runs `enrich-finalize` without a new action, current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`.
+A finalize-only enrich path is a normal success path only when there is an open session or a valid non-finalized `-EnrichSessionId`.
+When the operator runs `enrich-finalize` without a new action, current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`; if there is no open or requested non-finalized session, the collector rejects the command instead of producing an empty bundle.
 
 Review-style enrich actions often answer the next question directly.
 Retrieval-style enrich actions often exist to hand you the next evidence carrier to inspect offline.
