@@ -81,3 +81,52 @@ function Purge-PreviousRuns {
     Add-CollectorError "Failed to remove previous collector package: $($_.Exception.Message)"
   }
 }
+
+<#
+.SYNOPSIS
+Writes one collector artifact and a section-directory companion copy.
+
+.DESCRIPTION
+Preserves the existing prefixed root artifact path returned by Write-ArtifactText while
+also writing a same-content companion under final_artifacts/<section>/<name>. The collect
+bundle already includes the artifact directory recursively, and the section companion
+keeps bundle validation aligned with the documented section/key artifact model without
+changing existing response paths, manifests, or upload-budget behavior.
+
+.FUNCTION NAME
+Write-ArtifactText
+
+.INPUTS
+Artifact directory, section name, artifact name, and text content.
+
+.OUTPUTS
+The existing prefixed root artifact path.
+#>
+function Write-ArtifactText {
+  param(
+    [string]$ArtifactsDir,
+    [string]$Section,
+    [string]$Name,
+    [string]$Text
+  )
+
+  Ensure-Directory -Path $ArtifactsDir
+  $prefix = Get-BaselineArtifactPrefix -Name $Name
+  $safeSection = ($Section -replace '[\/:*?"<>| ]','_')
+  $safeName = ($Name -replace '[\/:*?"<>| ]','_')
+  $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
+  Set-Content -Path $path -Value $Text -Encoding UTF8
+
+  try {
+    if (-not [string]::IsNullOrWhiteSpace($safeSection) -and -not [string]::IsNullOrWhiteSpace($safeName)) {
+      $sectionDir = Join-Path $ArtifactsDir $safeSection
+      Ensure-Directory -Path $sectionDir
+      $sectionPath = Join-Path $sectionDir $safeName
+      Set-Content -Path $sectionPath -Value $Text -Encoding UTF8
+    }
+  } catch {
+    Add-CollectorError ("Failed to write section companion artifact [{0}/{1}]: {2}" -f $safeSection, $safeName, $_.Exception.Message)
+  }
+
+  return $path
+}
