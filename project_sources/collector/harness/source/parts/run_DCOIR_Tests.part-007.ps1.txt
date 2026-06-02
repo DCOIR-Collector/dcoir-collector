@@ -148,12 +148,46 @@ function Add-CapabilityCoverage {
   })
 }
 
+<#
+.SYNOPSIS
+Builds a lookup table of harness step statuses.
+
+.DESCRIPTION
+Creates a hashtable keyed by StepName from accumulated harness results so coverage rows
+can quickly test whether mapped steps passed.
+
+.FUNCTION NAME
+Get-StepStatusMap
+
+.INPUTS
+No direct parameters; reads the script-level Results collection.
+
+.OUTPUTS
+Hashtable mapping step names to status strings.
+#>
 function Get-StepStatusMap {
   $map = @{}
   foreach ($r in @($script:Results)) { $map[$r.StepName] = $r.Status }
   return $map
 }
 
+<#
+.SYNOPSIS
+Checks whether all mapped coverage steps passed.
+
+.DESCRIPTION
+Returns true only when every requested step exists in the status map and has a PASS or
+PARTIAL_SUCCESS status accepted by the coverage model.
+
+.FUNCTION NAME
+Test-StepsCovered
+
+.INPUTS
+Status map hashtable and step-name array.
+
+.OUTPUTS
+Boolean coverage result for the mapped steps.
+#>
 function Test-StepsCovered {
   param([hashtable]$Map,[string[]]$Steps)
   foreach ($step in $Steps) {
@@ -163,6 +197,23 @@ function Test-StepsCovered {
   return $true
 }
 
+<#
+.SYNOPSIS
+Checks harness-generated coverage artifact evidence.
+
+.DESCRIPTION
+Validates non-step-based coverage rows such as progress files, retained evidence files,
+and generated coverage matrix artifacts.
+
+.FUNCTION NAME
+Test-CoverageArtifactEvidence
+
+.INPUTS
+Capability identifier string.
+
+.OUTPUTS
+Boolean indicating whether required harness artifact evidence exists.
+#>
 function Test-CoverageArtifactEvidence {
   param([string]$CapabilityId)
   switch ($CapabilityId) {
@@ -186,6 +237,23 @@ function Test-CoverageArtifactEvidence {
   }
 }
 
+<#
+.SYNOPSIS
+Adds collector capability coverage rows to the harness result model.
+
+.DESCRIPTION
+Builds the advertised-capability matrix, maps rows to harness steps or artifact evidence,
+and records status and remaining-gap text for JSON and Markdown output.
+
+.FUNCTION NAME
+Add-CollectorCapabilityCoverageRows
+
+.INPUTS
+No direct parameters; reads harness results and artifact paths.
+
+.OUTPUTS
+No direct output. Appends rows to the script-level CoverageRows collection.
+#>
 function Add-CollectorCapabilityCoverageRows {
   if (@($script:CoverageRows).Count -gt 0) { return }
   $map = Get-StepStatusMap
