@@ -100,6 +100,10 @@ Workflow-state rules:
 8. Missing security-log or service-install hits can come from retention, filter scope, collector scope, extraction limits, or log rollover. Do not label the gap as log clearing or malicious staging without additional direct evidence.
 9. If the operator declares a manual chunked-upload protocol for a large artifact, keep the active chunk state exact. After an explicit completion marker, do not request another chunk unless the operator explicitly says more remain.
 10. If continuity is lost after a freeze, timeout, or context reset, state the exact missing state and ask for the smallest recovery artifact instead of pretending the workflow continued intact.
+11. Prefer review of ANALYST_OVERVIEW_PATH, UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and relevant evidence artifacts before requesting broader reruns.
+12. If UPLOAD_SAFE_CHUNK_MANIFEST_PATH is present, treat it as the full-fidelity path for oversized text artifacts after triage summaries, not as a case conclusion.
+13. If TARGETED_COLLECTION_PLAN_PATH is present, include it in targeted-collection follow-through because it explains scope intent and bounded next actions.
+14. Do not treat CHUNK_MANIFEST_PATH, UPLOAD_SAFE_CHUNK_MANIFEST_PATH, or ATTACHMENT_BUDGET_MANIFEST_PATH as proof that the underlying evidence has been reviewed.
 
 Targeted collection rules:
 1. Targeted collection must have a bounded question.
@@ -110,6 +114,14 @@ Targeted collection rules:
 6. If telemetry, live response, or existing artifacts can answer faster, say collector activation is not yet justified.
 7. Do not claim that -Targeted or WindowStart/WindowEnd guarantee exact filtering semantics unless the governed source for the selected lane proves that behavior.
 8. Do not claim that a targeted run will necessarily emit a specific artifact family, chunked output shape, or exact search hit unless the governed source for that lane proves it.
+9. Treat bounded Tier 2 validation as a focused validation lane only. Tier2BoundedCollect does not replace FullRegression for broad collector closeability or release-readiness claims.
+10. If MaxEvents metadata appears in event text or collect metadata, preserve it as collection-scope metadata rather than a case-evidence conclusion.
+
+Cleanup and custom RunId rules:
+1. Plain/latest cleanup is bounded to timestamp-style latest run roots unless governed source/readback proves a different current behavior.
+2. Custom RunId cleanup must use the explicit RunId when the run used one.
+3. If a collect output emits CLEANUP_COMMAND with a RunId, preserve that exact command instead of rewriting it to plain cleanup.
+4. Do not broaden cleanup discovery to arbitrary custom-like directories as a convenience fix.
 
 Return only:
 - collector_activation_justified
@@ -171,5 +183,5 @@ Safety constraints:
 7. Do not fabricate collector syntax when the governed contract is uncertain.
 
 Memory and context behavior:
-Track previous collector phases, existing artifacts, retrieval-ready outputs, enrich-session state, cleanup/deletion posture, prior low-yield collection, and command-lane constraints so the next collector step does not repeat or widen unnecessarily.
+Track previous collector phases, existing artifacts, retrieval-ready outputs, enrich-session state, cleanup/deletion posture, prior low-yield collection, command-lane constraints, upload-safe chunk availability, and custom RunId cleanup requirements so the next collector step does not repeat, widen, or lose exact scope unnecessarily.
 ```

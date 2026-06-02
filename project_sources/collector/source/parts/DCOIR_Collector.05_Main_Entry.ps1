@@ -75,6 +75,7 @@ try {
         TargetedCollectionPlanPath = $null
         SyntheticOversizeSourcePath = $null
         ChunkManifestPath = $null
+        UploadSafeChunkManifestPath = $null
         EnrichSessions = @()
         EnrichSessionCounter = 0
         OpenEnrichSessionId = $null
@@ -96,13 +97,14 @@ try {
       $state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath
       $state.UploadBudgetManifestPath = $uploadArtifacts.UploadManifestPath
       $state.DefaultGeminiUploadSetStatus = $uploadArtifacts.DefaultSetStatus
+      $state.UploadSafeChunkManifestPath = $uploadArtifacts.UploadSafeChunkManifestPath
       $state.AnalystOverviewPath = New-AnalystOverviewArtifact -State $state -Baseline $baseline
 
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
 
       $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.UploadSafeChunkManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $null
         analyst_overview = $state.AnalystOverviewPath
@@ -125,6 +127,7 @@ try {
         target_profile = $TargetProfile
         synthetic_oversize_source = $state.SyntheticOversizeSourcePath
         chunk_manifest = $state.ChunkManifestPath
+        upload_safe_chunk_manifest = $state.UploadSafeChunkManifestPath
       }
 
       $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId) -Paths @(
@@ -138,6 +141,7 @@ try {
         $state.NetstatPidOnlyPath,
         $state.UploadSummaryPath,
         $state.UploadBudgetManifestPath,
+        $state.UploadSafeChunkManifestPath,
         $state.ArtifactsDir,
         $Global:ExecutionTxtPath,
         $Global:ExecutionJsonlPath,
@@ -151,7 +155,7 @@ try {
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
       [void](New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+        @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.UploadSafeChunkManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $bundlePath
         analyst_overview = $state.AnalystOverviewPath
@@ -174,6 +178,7 @@ try {
         target_profile = $TargetProfile
         synthetic_oversize_source = $state.SyntheticOversizeSourcePath
         chunk_manifest = $state.ChunkManifestPath
+        upload_safe_chunk_manifest = $state.UploadSafeChunkManifestPath
       })
 
       $status = "SUCCESS"
@@ -199,6 +204,7 @@ try {
       if ($state.ParallelExecutionProofPath) { Write-Output ("PARALLEL_EXECUTION_PROOF_PATH={0}" -f $state.ParallelExecutionProofPath) }
       Write-Output ("UPLOAD_SUMMARY_PATH={0}" -f $state.UploadSummaryPath)
       Write-Output ("ATTACHMENT_BUDGET_MANIFEST_PATH={0}" -f $state.UploadBudgetManifestPath)
+      if ($state.UploadSafeChunkManifestPath) { Write-Output ("UPLOAD_SAFE_CHUNK_MANIFEST_PATH={0}" -f $state.UploadSafeChunkManifestPath) }
       Write-Output ("COLLECTION_SCOPE_PATH={0}" -f $state.CollectionScopePath)
       Write-Output ("PARALLELISM_ASSESSMENT_PATH={0}" -f $state.ParallelismAssessmentPath)
       if ($state.TargetedCollectionPlanPath) { Write-Output ("TARGETED_COLLECTION_PLAN_PATH={0}" -f $state.TargetedCollectionPlanPath) }
@@ -209,7 +215,7 @@ try {
       Write-Output ('NEXT_GET_FILE=get-file --path "{0}" --comment "Retrieve DCOIR collect bundle"' -f $bundlePath)
       Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
       Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
-      Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer ANALYST_OVERVIEW_PATH, UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
+      Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer ANALYST_OVERVIEW_PATH, UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices. If UPLOAD_SAFE_CHUNK_MANIFEST_PATH exists, use it for full-fidelity oversized text artifacts after triage summaries. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
       foreach ($collectorError in @($Global:CollectorErrors)) {
         if (-not [string]::IsNullOrWhiteSpace([string]$collectorError)) {
           Write-Output ("COLLECTOR_ERROR={0}" -f $collectorError)
@@ -227,7 +233,8 @@ try {
         throw "Enrich mode requires -Action or -FinalizeEnrichSession."
       }
 
-      $session = Initialize-EnrichSession -State $state -RequestedSessionId $EnrichSessionId -ForceNew:$NewEnrichSession
+      $requireOpenSessionForFinalize = [bool]($FinalizeEnrichSession -and -not $Action -and [string]::IsNullOrWhiteSpace($EnrichSessionId))
+      $session = Initialize-EnrichSession -State $state -RequestedSessionId $EnrichSessionId -ForceNew:$NewEnrichSession -RequireExistingOpenSession:$requireOpenSessionForFinalize
 
       $logStamp = Get-Date -Format "yyyyMMdd_HHmmss"
       $actionLabel = if ($Action) { $Action } else { "FinalizeSession" }
@@ -288,19 +295,41 @@ try {
     }
 
     "Cleanup" {
-      $loaded = Load-State -Root $OutRoot -CurrentRunId $RunId
-      $cleanupCollectorVersion = if (($loaded.PSObject.Properties.Name -contains 'CollectorVersion') -and -not [string]::IsNullOrWhiteSpace([string]$loaded.CollectorVersion)) {
-        [string]$loaded.CollectorVersion
-      } else {
-        $ScriptVersion
+      try {
+        $loaded = Load-State -Root $OutRoot -CurrentRunId $RunId
+        $cleanupCollectorVersion = if (($loaded.PSObject.Properties.Name -contains 'CollectorVersion') -and -not [string]::IsNullOrWhiteSpace([string]$loaded.CollectorVersion)) {
+          [string]$loaded.CollectorVersion
+        } else {
+          $ScriptVersion
+        }
+        Invoke-Cleanup -StateObject $loaded
+        Write-Output ("CLEANUP_STATUS=COMPLETE")
+        Write-Output ("RUN_ID={0}" -f $loaded.RunId)
+        Write-Output ("COLLECTOR_VERSION={0}" -f $cleanupCollectorVersion)
+        Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $cleanupCollectorVersion))
+        Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f (Get-CollectorDeleteScriptCommandText))
+        Write-QuickNextSteps -Phase "Cleanup"
+      } catch {
+        $loadError = $_.Exception.Message
+        if ($loadError -notmatch 'State file not found|No DCOIR run directories found') { throw }
+        $resolvedOutRoot = if ([System.IO.Path]::IsPathRooted($OutRoot)) {
+          [System.IO.Path]::GetFullPath($OutRoot)
+        } else {
+          [System.IO.Path]::GetFullPath((Join-Path (Get-Location).Path $OutRoot))
+        }
+        $cleanupResult = Invoke-NoStateCleanup -Root $resolvedOutRoot -CurrentRunId $RunId -CurrentPackageName $PackageName
+        Write-Output ("CLEANUP_STATUS={0}" -f $cleanupResult.Status)
+        if ($RunId) { Write-Output ("RUN_ID={0}" -f $RunId) }
+        if ($cleanupResult.RunRoot) { Write-Output ("CLEANUP_ORPHAN_RUN_ROOT={0}" -f $cleanupResult.RunRoot) }
+        Write-Output ("CLEANUP_TARGET_COUNT={0}" -f $cleanupResult.TargetCount)
+        foreach ($target in @($cleanupResult.RemovedTargets)) { Write-Output ("CLEANUP_REMOVED_TARGET={0}" -f $target) }
+        foreach ($target in @($cleanupResult.FailedTargets)) { Write-Output ("CLEANUP_FAILED_TARGET={0}" -f $target) }
+        Write-Output ("CLEANUP_REASON={0}" -f $loadError)
+        Write-Output ("COLLECTOR_VERSION={0}" -f $ScriptVersion)
+        Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $ScriptVersion))
+        Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f (Get-CollectorDeleteScriptCommandText))
+        Write-QuickNextSteps -Phase "Cleanup"
       }
-      Invoke-Cleanup -StateObject $loaded
-      Write-Output ("CLEANUP_STATUS=COMPLETE")
-      Write-Output ("RUN_ID={0}" -f $loaded.RunId)
-      Write-Output ("COLLECTOR_VERSION={0}" -f $cleanupCollectorVersion)
-      Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $cleanupCollectorVersion))
-      Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f (Get-CollectorDeleteScriptCommandText))
-      Write-QuickNextSteps -Phase "Cleanup"
     }
   }
 } catch {

@@ -40,10 +40,25 @@ Do not use Tier 2 as a generic escalation path just because Tier 1 produced a lo
 | --- | --- |
 | Local quick alias | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick collect-t2` |
 | Local explicit form | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T2 -Hours 72` |
+| Bounded validation form | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Mode Collect -Tier T2 -Hours 1 -MaxEvents 100` |
 | Elastic endpoint form | `execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File "".\DCOIR_Collector.ps1"" -Quick collect-t2" --comment "Run DCOIR Tier 2 collect"` |
 
 For optional EXE usage, use `Knowledge - Collector - EXE Usage and Runtime Behavior`.
 For the broader source-backed contract, use `Knowledge - Collector - Feature and Output Contract Reference`.
+
+---
+
+## Bounded Tier 2 validation shape
+
+The maintained regression harness uses a runner-safe Tier 2 shape: `-Tier T2 -Hours 1 -MaxEvents 100`.
+
+That validation shape proves three operator-relevant facts when FullRegression passes:
+
+- the collector accepts the Tier 2 path without relying on an unbounded time window;
+- collection metadata records `Tier=T2`, `Hours=1`, and `MaxEvents=100`;
+- the bundle contains the Tier 2 deep-check artifacts under `TIER2_DEEP_CHECKS`, including IFEO, Winlogon, LSA, WMI persistence, network share/session, and firewall profile outputs.
+
+For live operations, choose a wider `-Hours` value only when the case needs it. Keep `-MaxEvents` bounded when event volume or upload budget matters.
 
 ---
 
@@ -82,10 +97,11 @@ Tier 2 is still a collect-mode run, so many of the same operator-visible surface
 
 - `STATUS`
 - `RUN_ID`
-- `METADATA_REPORT_PATH`
+- `METADATA_REPORT_PATH` including `Tier`, `Hours`, and `MaxEvents` values
 - `ANALYST_OVERVIEW_PATH`
 - `UPLOAD_SUMMARY_PATH`
 - `ATTACHMENT_BUDGET_MANIFEST_PATH`
+- optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when oversized full-fidelity text artifacts were chunked
 - `COLLECTION_SCOPE_PATH`
 - `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
 - `EXECUTION_CONTEXT_PATH`
@@ -122,10 +138,12 @@ Use this order for the current build:
 2. `UPLOAD_SUMMARY_PATH`
 3. `METADATA_REPORT_PATH`
 4. `ATTACHMENT_BUDGET_MANIFEST_PATH`
-5. `COLLECTION_SCOPE_PATH`
-6. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
-7. deeper Tier-2-relevant artifacts referenced by those surfaces
-8. broader local output only after the deeper question is more clearly framed
+5. optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when full-fidelity text chunks are present
+6. `COLLECTION_SCOPE_PATH`
+7. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
+8. Tier 2 deep-check artifacts under `TIER2_DEEP_CHECKS` when present: IFEO, Winlogon, LSA, WMI persistence, network share/session, and firewall profile outputs
+9. upload-safe full-fidelity chunks only when the summary is insufficient
+10. broader local output only after the deeper question is more clearly framed
 
 If the run was launched to answer a narrow persistence or WMI question, prioritize the artifacts that most directly support that question instead of reading all deeper output uniformly.
 

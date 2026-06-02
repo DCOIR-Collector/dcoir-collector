@@ -46,6 +46,7 @@ function Get-CollectorEffectiveEventWindow {
   $now = Get-Date
   $parsedStart = $null
   $parsedEnd = $null
+  $parseFailed = $false
 
   if (-not [string]::IsNullOrWhiteSpace($WindowStart)) {
     [datetime]$tmpStart = [datetime]::MinValue
@@ -53,6 +54,7 @@ function Get-CollectorEffectiveEventWindow {
       $parsedStart = $tmpStart
     } else {
       Add-CollectorError ("Invalid WindowStart value [{0}]; falling back to hour-window behavior." -f $WindowStart)
+      $parseFailed = $true
     }
   }
 
@@ -62,10 +64,14 @@ function Get-CollectorEffectiveEventWindow {
       $parsedEnd = $tmpEnd
     } else {
       Add-CollectorError ("Invalid WindowEnd value [{0}]; falling back to hour-window behavior." -f $WindowEnd)
+      $parseFailed = $true
     }
   }
 
-  if ($parsedStart -and $parsedEnd -and $parsedEnd -lt $parsedStart) {
+  if ($parseFailed) {
+    $parsedStart = $null
+    $parsedEnd = $null
+  } elseif ($parsedStart -and $parsedEnd -and $parsedEnd -lt $parsedStart) {
     Add-CollectorError ("WindowEnd [{0}] is earlier than WindowStart [{1}]; falling back to hour-window behavior." -f $WindowEnd, $WindowStart)
     $parsedStart = $null
     $parsedEnd = $null
@@ -132,6 +138,71 @@ function Get-CollectorEventFilterHashtable {
 
 <#
 .SYNOPSIS
+Formats event-window metadata for text reports.
+
+.DESCRIPTION
+Returns stable key-value lines that make the effective event-window behavior observable in
+event text, summaries, and enrichment reports.
+
+.FUNCTION NAME
+Get-CollectorEventWindowMetadataLines
+
+.INPUTS
+Window hashtable, channel name, optional event IDs, and max-event count.
+
+.OUTPUTS
+Array of strings.
+#>
+function Get-CollectorEventWindowMetadataLines {
+  param(
+    [hashtable]$Window,
+    [string]$Channel,
+    [int[]]$Ids,
+    [int]$Take
+  )
+
+  $lines = New-Object System.Collections.ArrayList
+  if (-not [string]::IsNullOrWhiteSpace($Channel)) { [void]$lines.Add(("CHANNEL={0}" -f $Channel)) }
+  [void]$lines.Add(("WINDOW_HOURS={0}" -f $Window.EffectiveHours))
+  [void]$lines.Add(("HAS_EXPLICIT_TIME_WINDOW={0}" -f $Window.HasExplicitWindow))
+  [void]$lines.Add(("WINDOW_START={0}" -f $Window.StartTime.ToString("o")))
+  [void]$lines.Add(("WINDOW_END={0}" -f $(if ($Window.EndTime) { $Window.EndTime.ToString("o") } else { "" })))
+  if ($Ids -and @($Ids).Count -gt 0) { [void]$lines.Add(("EVENT_IDS={0}" -f ($Ids -join ','))) }
+  if ($Take -gt 0) { [void]$lines.Add(("MAX_EVENTS={0}" -f $Take)) }
+  return @($lines)
+}
+
+<#
+.SYNOPSIS
+Formats explicit event-window target details for enrich reports.
+
+.DESCRIPTION
+Builds one semicolon-delimited target-details string that includes explicit window fields
+when they were supplied by the operator.
+
+.FUNCTION NAME
+Get-CollectorEventWindowTargetDetails
+
+.INPUTS
+LogName string, Hours integer, optional EventIds, and optional MaxEvents.
+
+.OUTPUTS
+String suitable for action target-details fields.
+#>
+function Get-CollectorEventWindowTargetDetails {
+  param([string]$LogName,[int]$Hours,[int[]]$Ids,[int]$Take)
+  $parts = New-Object System.Collections.ArrayList
+  [void]$parts.Add(("LogName={0}" -f $LogName))
+  [void]$parts.Add(("Hours={0}" -f $Hours))
+  if (-not [string]::IsNullOrWhiteSpace($WindowStart)) { [void]$parts.Add(("WindowStart={0}" -f $WindowStart)) }
+  if (-not [string]::IsNullOrWhiteSpace($WindowEnd)) { [void]$parts.Add(("WindowEnd={0}" -f $WindowEnd)) }
+  if ($Ids -and @($Ids).Count -gt 0) { [void]$parts.Add(("EventIds={0}" -f ($Ids -join ','))) }
+  if ($Take -gt 0) { [void]$parts.Add(("MaxEvents={0}" -f $Take)) }
+  return ($parts -join '; ')
+}
+
+<#
+.SYNOPSIS
 Builds a condensed Security high-signal summary for the selected window.
 
 .DESCRIPTION
@@ -166,7 +237,15 @@ function Get-SecurityHighSignalSummaryText {
 
     if (@($events).Count -eq 0) {
       Add-CollectorNote "No high-signal Security events were found in the selected window."
-      return "No high-signal Security events were found in the selected window."
+      $lines = New-Object System.Collections.ArrayList
+      [void]$lines.Add("SECURITY_HIGH_SIGNAL_SUMMARY")
+      foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel 'Security' -Ids $ids -Take $Take)) { [void]$lines.Add($metadataLine) }
+      [void]$lines.Add("RAW_EVENT_COUNT=0")
+      [void]$lines.Add("INTERESTING_EVENT_COUNT=0")
+      [void]$lines.Add("SUPPRESSED_EVENT_COUNT=0")
+      [void]$lines.Add("")
+      [void]$lines.Add("No high-signal Security events were found in the selected window.")
+      return ($lines -join [Environment]::NewLine)
     }
 
     $interesting = New-Object System.Collections.ArrayList
@@ -225,10 +304,7 @@ function Get-SecurityHighSignalSummaryText {
 
     $lines = New-Object System.Collections.ArrayList
     [void]$lines.Add("SECURITY_HIGH_SIGNAL_SUMMARY")
-    [void]$lines.Add(("WINDOW_HOURS={0}" -f $window.EffectiveHours))
-    [void]$lines.Add(("HAS_EXPLICIT_TIME_WINDOW={0}" -f $window.HasExplicitWindow))
-    [void]$lines.Add(("WINDOW_START={0}" -f $window.StartTime.ToString("o")))
-    [void]$lines.Add(("WINDOW_END={0}" -f $(if ($window.EndTime) { $window.EndTime.ToString("o") } else { "" })))
+    foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel 'Security' -Ids $ids -Take $Take)) { [void]$lines.Add($metadataLine) }
     [void]$lines.Add(("RAW_EVENT_COUNT={0}" -f @($events).Count))
     [void]$lines.Add(("INTERESTING_EVENT_COUNT={0}" -f @($interesting).Count))
     [void]$lines.Add(("SUPPRESSED_EVENT_COUNT={0}" -f @($suppressed).Count))
@@ -288,8 +364,22 @@ function Get-SecurityHighSignalSummaryText {
 
     return ($lines -join [Environment]::NewLine)
   } catch {
-    Add-CollectorError "Failed to collect condensed Security summary: $($_.Exception.Message)"
-    return "ERROR collecting condensed Security summary: $($_.Exception.Message)"
+    $msg = $_.Exception.Message
+    if ($msg -match 'No events were found') {
+      $window = Get-CollectorEffectiveEventWindow -WindowHours $WindowHours
+      Add-CollectorNote "No high-signal Security events were found in the selected window."
+      $lines = New-Object System.Collections.ArrayList
+      [void]$lines.Add("SECURITY_HIGH_SIGNAL_SUMMARY")
+      foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel 'Security' -Ids $ids -Take $Take)) { [void]$lines.Add($metadataLine) }
+      [void]$lines.Add("RAW_EVENT_COUNT=0")
+      [void]$lines.Add("INTERESTING_EVENT_COUNT=0")
+      [void]$lines.Add("SUPPRESSED_EVENT_COUNT=0")
+      [void]$lines.Add("")
+      [void]$lines.Add("No high-signal Security events were found in the selected window.")
+      return ($lines -join [Environment]::NewLine)
+    }
+    Add-CollectorError "Failed to collect condensed Security summary: $msg"
+    return "ERROR collecting condensed Security summary: $msg"
   }
 }
 
@@ -328,15 +418,16 @@ function Get-EventText {
 
     if (@($events).Count -eq 0) {
       Add-CollectorNote ("No events were found for channel [{0}] in the selected window." -f $Channel)
-      return ("No events were found for channel [{0}] in the selected window." -f $Channel)
+      $lines = New-Object System.Collections.ArrayList
+      foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel $Channel -Ids $Ids -Take $Take)) { [void]$lines.Add($metadataLine) }
+      [void]$lines.Add("EVENT_COUNT=0")
+      [void]$lines.Add("")
+      [void]$lines.Add(("No events were found for channel [{0}] in the selected window." -f $Channel))
+      return ($lines -join [Environment]::NewLine)
     }
 
     $lines = New-Object System.Collections.ArrayList
-    [void]$lines.Add(("CHANNEL={0}" -f $Channel))
-    [void]$lines.Add(("WINDOW_HOURS={0}" -f $window.EffectiveHours))
-    [void]$lines.Add(("HAS_EXPLICIT_TIME_WINDOW={0}" -f $window.HasExplicitWindow))
-    [void]$lines.Add(("WINDOW_START={0}" -f $window.StartTime.ToString("o")))
-    [void]$lines.Add(("WINDOW_END={0}" -f $(if ($window.EndTime) { $window.EndTime.ToString("o") } else { "" })))
+    foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel $Channel -Ids $Ids -Take $Take)) { [void]$lines.Add($metadataLine) }
     [void]$lines.Add(("EVENT_COUNT={0}" -f @($events).Count))
     [void]$lines.Add("")
 
@@ -359,7 +450,13 @@ function Get-EventText {
     $msg = $_.Exception.Message
     if ($msg -match 'No events were found') {
       Add-CollectorNote ("No events were found for channel [{0}] in the selected window." -f $Channel)
-      return ("No events were found for channel [{0}] in the selected window." -f $Channel)
+      $window = Get-CollectorEffectiveEventWindow -WindowHours $WindowHours
+      $lines = New-Object System.Collections.ArrayList
+      foreach ($metadataLine in (Get-CollectorEventWindowMetadataLines -Window $window -Channel $Channel -Ids $Ids -Take $Take)) { [void]$lines.Add($metadataLine) }
+      [void]$lines.Add("EVENT_COUNT=0")
+      [void]$lines.Add("")
+      [void]$lines.Add(("No events were found for channel [{0}] in the selected window." -f $Channel))
+      return ($lines -join [Environment]::NewLine)
     }
     Add-CollectorError "Failed to collect event log text for [$Channel]: $msg"
     return "ERROR collecting event log text for [$Channel]: $msg"

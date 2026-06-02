@@ -95,10 +95,12 @@ Use T2 because a named question needs deeper persistence/configuration context, 
 
 ---
 
-## Quick aliases actually exposed by source
+## Quick aliases accepted by source
 
-These are the quick aliases currently visible in the collector help surface.
-They matter because operators and Gemini should not invent commands outside this supported set.
+These are the quick aliases currently accepted by the collector quick resolver. Some are
+also highlighted in the help surface as common operator shortcuts, but this table is the
+source-backed complete quick set. Operators and Gemini should not invent commands outside
+this supported set.
 
 ### Collect quick aliases
 
@@ -111,25 +113,35 @@ They matter because operators and Gemini should not invent commands outside this
 
 ### Enrich quick aliases
 
-| Quick alias | Purpose |
-| --- | --- |
-| `enrich-start-tcp` | Start a new enrich session with TCP refresh |
-| `enrich-add-tcp` | Add another TCP refresh action to the current open session |
-| `enrich-start-logtext` | Start a new enrich session with text log export |
-| `enrich-add-logtext` | Add another text log export to the current open session |
-| `enrich-start-lograw` | Start a new enrich session with raw EVTX export |
-| `enrich-add-lograw` | Add another raw EVTX export to the current open session |
-| `enrich-start-sigcheck` | Start a new enrich session with signature/hash review |
-| `enrich-add-sigcheck` | Add another signature/hash review to the current open session |
-| `enrich-start-listdlls` | Start a new enrich session with loaded-module review |
-| `enrich-add-listdlls` | Add another loaded-module review to the current open session |
-| `enrich-finalize` | Finalize and bundle the current open enrich session |
+Each `enrich-start-*` alias starts a new enrich session for that action. The matching
+`enrich-add-*` alias adds the same action to the currently open session or to the explicit
+non-finalized session supplied with `-EnrichSessionId`.
+
+| Quick alias family | Action | Required target |
+| --- | --- | --- |
+| `enrich-start-tcp`, `enrich-add-tcp` | Refresh TCP connection evidence | None |
+| `enrich-start-logtext`, `enrich-add-logtext` | Export event log text | Optional `-Target <log name>`; defaults to Security |
+| `enrich-start-lograw`, `enrich-add-lograw` | Export raw EVTX log data | Optional `-Target <log name>`; defaults to Security |
+| `enrich-start-sigcheck`, `enrich-add-sigcheck` | Run signature/hash review for a path | `-Target <path>` |
+| `enrich-start-listdlls`, `enrich-add-listdlls` | Review loaded modules for a PID | `-Target <pid>` |
+| `enrich-start-access-file`, `enrich-add-access-file` | Run access-check review for a file path | `-Target <path>` |
+| `enrich-start-access-service`, `enrich-add-access-service` | Run access-check review for a service | `-Target <service name>` |
+| `enrich-start-access-reg`, `enrich-add-access-reg` | Run access-check review for a registry path | `-Target <registry path>` |
+| `enrich-start-strings`, `enrich-add-strings` | Extract strings from a path | `-Target <path>` |
+| `enrich-start-streams`, `enrich-add-streams` | Check alternate data streams for a path | `-Target <path>` |
+| `enrich-start-pull-file`, `enrich-add-pull-file` | Retrieve a suspicious file | `-Target <path>` |
+| `enrich-start-pull-script`, `enrich-add-pull-script` | Retrieve a suspicious script or config file | `-Target <path>` |
+| `enrich-start-pull-task`, `enrich-add-pull-task` | Retrieve scheduled task XML | `-Target <task path>` |
+| `enrich-start-pull-service`, `enrich-add-pull-service` | Retrieve a service binary | `-Target <service name>` |
+| `enrich-start-pull-wmi-file`, `enrich-add-pull-wmi-file` | Retrieve a file referenced by WMI persistence evidence | `-Target <path>` |
+| `enrich-finalize` | Finalize and bundle the current open enrich session, or the explicit non-finalized session supplied with `-EnrichSessionId` | None unless finalizing an explicit session |
 
 ### Cleanup and help quick aliases
 
 | Quick alias | Purpose |
 | --- | --- |
 | `cleanup` | Run cleanup |
+| `help` | Print general help |
 | `help-collect` | Print collect-specific contextual help |
 | `help-enrich` | Print enrich-specific contextual help |
 | `help-cleanup` | Print cleanup-specific contextual help |
@@ -156,6 +168,8 @@ Use targeted collection when the question is narrower than a generic baseline an
 | `-FocusIndicator` | Name a focal indicator |
 | `-FocusIndicatorType` | Clarify indicator type |
 | `-UserReport` | Preserve the user/analyst problem statement |
+
+Exact event-window filtering is source-backed for event-log text and raw EVTX lanes that route through the explicit event-window helpers. Targeted mode still does not mean every artifact family is exact-window filtered; use the scope and plan surfaces to identify the requested boundary and event-log artifacts to verify the filtered evidence carrier.
 
 ### Targeted profiles actually exposed by source
 
@@ -191,7 +205,9 @@ The collector keeps bounded follow-up work grouped into one session until the op
 | Create new session | `enrich-start` style paths create a fresh session |
 | Reuse current open session | `enrich-add` style paths append to the current open session when appropriate |
 | Reuse by explicit id | Operators can target an existing session with `-EnrichSessionId` |
-| Finalize session | Creates a bundle and closes the active session |
+| Finalize session | Creates a bundle and closes the active non-finalized session |
+| Reject finalized requested session | Explicit `-EnrichSessionId` cannot append to a session already finalized |
+| Reject finalize without open session | `enrich-finalize` without `-EnrichSessionId` requires an existing open session |
 
 ### Session controls
 
@@ -208,7 +224,10 @@ The source-backed behavioral contract is:
 
 - `enrich-start` creates a new session;
 - `enrich-add` reuses the current open session unless explicitly overridden;
-- `enrich-finalize` finalizes the current open session.
+- `enrich-finalize` finalizes the current open session;
+- `enrich-finalize -EnrichSessionId <id>` finalizes that specific non-finalized session;
+- a finalized session cannot be appended to;
+- a finalize-only call with no open session is rejected instead of creating an empty bundle.
 
 Use one session for closely related follow-up.
 Do not mix unrelated questions into one enrich session just because the session is open.
@@ -322,6 +341,7 @@ Operators should not reduce it to “one big bundle” or “one report.”
 | `ANALYST_OVERVIEW_PATH` | Source-backed analyst-first entry surface |
 | `UPLOAD_SUMMARY_PATH` | Tells you what is recommended for upload/review first |
 | `ATTACHMENT_BUDGET_MANIFEST_PATH` | Records the recommended upload set against environment budget |
+| optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` | Lists upload-safe chunk companions for oversized real text artifacts |
 | `COLLECTION_SCOPE_PATH` | Documents the current collect scope |
 | `PARALLELISM_ASSESSMENT_PATH` | Explains bounded runtime parallelism posture |
 | optional `TARGETED_COLLECTION_PLAN_PATH` | Gives targeted analyst guidance when targeted mode is used |
@@ -342,8 +362,10 @@ Operators should not reduce it to “one big bundle” or “one report.”
 | Surface | Why it matters |
 | --- | --- |
 | `DEFAULT_GEMINI_UPLOAD_SET_STATUS` | Shows whether the default upload set fits the expected budget |
+| optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` | Production chunk manifest for oversized real human-readable artifacts such as full-fidelity event text |
 | optional `SYNTHETIC_OVERSIZE_SOURCE_PATH` | Validation-specific oversized-artifact surface |
 | optional `CHUNK_MANIFEST_PATH` | Validation-specific chunking surface |
+| `MaxEvents` in collection metadata | Confirms the bounded event-count setting used by collect-mode event surfaces |
 | repeated `COLLECTOR_ERROR=` lines | Preserve bounded degraded-run facts without hiding them |
 
 ### Practical operator review order
@@ -354,10 +376,12 @@ For current source behavior, the safest first-pass review order is:
 2. `UPLOAD_SUMMARY_PATH`
 3. `METADATA_REPORT_PATH`
 4. `ATTACHMENT_BUDGET_MANIFEST_PATH`
-5. `COLLECTION_SCOPE_PATH`
-6. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
-7. representative high-signal artifacts referenced by those surfaces
-8. bundle retrieval or deeper local review after the first-pass question is clearer
+5. optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when the upload summary reports oversized full-fidelity text chunks
+6. `COLLECTION_SCOPE_PATH`
+7. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
+8. representative high-signal artifacts referenced by those surfaces
+9. upload-safe full-fidelity chunks only when the high-signal summary is not enough
+10. bundle retrieval or deeper local review after the first-pass question is clearer
 
 Do not assume a merged baseline report is the primary review surface in the current build.
 
@@ -383,8 +407,8 @@ A successful enrich run also emits more than one meaningful surface.
 | `NEXT_GET_FILE` | Retrieval handoff when finalized |
 | `DELETE_SCRIPT_COMMAND` | Script-removal handoff |
 
-A finalize-only enrich path is still a normal success path.
-When the operator runs `enrich-finalize` without a new action, current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`.
+A finalize-only enrich path is a normal success path only when there is an open session or a valid non-finalized `-EnrichSessionId`.
+When the operator runs `enrich-finalize` without a new action, current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`; if there is no open or requested non-finalized session, the collector rejects the command instead of producing an empty bundle.
 
 Review-style enrich actions often answer the next question directly.
 Retrieval-style enrich actions often exist to hand you the next evidence carrier to inspect offline.
@@ -397,6 +421,7 @@ Cleanup exists to remove run/output material after evidence is safe.
 It is not a retrieval step, and it should not be used as a substitute for deciding what matters first.
 
 Source-backed cleanup guidance also makes clear that cleanup does not remove the uploaded collector script unless the explicit delete-script command is used.
+If collect fails before `state.json` is saved, cleanup has a bounded missing-state fallback: plain latest cleanup removes only timestamp-style latest `DCOIR_*` orphans under the selected `OutRoot` plus the configured package file, while custom `-RunId` no-state roots require cleanup with that explicit `-RunId`. The collector reports `MISSING_STATE_ORPHAN_CLEANED` or `NO_TARGET_FOUND` instead of requiring broad manual temp-folder cleanup.
 
 Practical operator rule:
 

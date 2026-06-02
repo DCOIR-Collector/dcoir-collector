@@ -16,6 +16,21 @@ _Operator entry point for the maintained DCOIR knowledge set_
 
 ---
 
+## If you have no prior collector experience
+
+Use this path when you only have the collector knowledge documents and need to understand and operate the collector safely.
+
+1. Read `knowledge/Knowledge - Collector - Feature and Output Contract Reference.md` to understand the collector modes, quick aliases, targeted boundaries, enrichment actions, cleanup behavior, and output contract.
+2. Read `knowledge/Knowledge - Core - Elastic Quick Start.md` if you will run the collector through Elastic response actions, or use the local command examples in the relevant runbook if you are operating locally.
+3. Choose one operating path: Tier 1 collect, Tier 2 collect, enrichment/retrieval, targeted follow-up, artifact review, troubleshooting, or optional EXE interpretation.
+4. After a collect run, read `knowledge/Knowledge - Core - Artifact Review Guide.md` before opening broad output trees or bundles.
+5. Before enrichment or retrieval, read `knowledge/Knowledge - Core - Enrichment Actions.md` so the session lifecycle, quick aliases, and review-style versus retrieval-style actions are clear.
+6. Before cleanup, confirm the evidence you need has already been reviewed, retrieved, or preserved.
+
+The knowledge set is meant to make the collector usable without source-code experience, but it is still evidence-first: do not invent flags, workflow results, exact filtering guarantees, or closeability claims beyond what the maintained docs and source-backed validation prove.
+
+---
+
 ## Where to start
 
 | Need | Start here | Why |

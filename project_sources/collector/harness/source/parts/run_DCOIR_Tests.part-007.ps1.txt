@@ -1,0 +1,264 @@
+      if (-not (Test-Path -LiteralPath $chunkPath)) {
+        [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
+        continue
+      }
+      $chunkSizeKB = [int][Math]::Ceiling(((Get-Item -LiteralPath $chunkPath).Length) / 1KB)
+      $lines += ('CHUNK={0} SIZE_KB={1}' -f $chunkPath, $chunkSizeKB)
+      if ($chunkSizeKB -gt $SafePerFileKB) {
+        [void]$violations.Add(('Chunk exceeded safe per-file budget: {0}' -f $chunkPath))
+      }
+    }
+    if (@($violations).Count -eq 0) {
+      $status = 'PASS'
+      $message = 'Synthetic oversized artifact was chunked into multiple smaller files within the safe per-file budget.'
+    } else {
+      $message = ($violations -join '; ')
+    }
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Verifies chunk reconstruction metadata and exact rebuild behavior.
+
+.DESCRIPTION
+Checks that the chunk manifest describes reconstruction order, that the chunk list is
+consistent, and that concatenating the chunk files reproduces the original synthetic
+source artifact exactly.
+
+.FUNCTION NAME
+Invoke-ChunkingReconstructionVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when reconstruction expectations
+fail.
+#>
+function Invoke-ChunkingReconstructionVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "SYNTHETIC_OVERSIZE_SOURCE_PATH=$($CollectStep.SyntheticOversizeSourcePath)",
+    "CHUNK_MANIFEST_PATH=$($CollectStep.ChunkManifestPath)"
+  )
+
+  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.SyntheticOversizeSourcePath) -or -not (Test-Path -LiteralPath $CollectStep.SyntheticOversizeSourcePath)) {
+    $message = 'Synthetic oversize source artifact was not emitted by the collector.'
+  } elseif ([string]::IsNullOrWhiteSpace([string]$CollectStep.ChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.ChunkManifestPath)) {
+    $message = 'Chunk manifest path was not emitted by the collector.'
+  } else {
+    $manifest = Get-Content -LiteralPath $CollectStep.ChunkManifestPath -Raw | ConvertFrom-Json
+    $chunkPaths = @($manifest.chunk_paths)
+    $violations = New-Object System.Collections.ArrayList
+    if (-not $manifest.reconstruction_order) {
+      [void]$violations.Add('Chunk manifest does not describe reconstruction order.')
+    }
+    if ([int]$manifest.chunk_count -ne @($chunkPaths).Count) {
+      [void]$violations.Add('Chunk count in manifest does not match listed chunk paths.')
+    }
+    $rebuilt = New-Object System.Text.StringBuilder
+    foreach ($chunkPath in $chunkPaths) {
+      if (-not (Test-Path -LiteralPath $chunkPath)) {
+        [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
+        continue
+      }
+      $lines += ('RECONSTRUCT_CHUNK={0}' -f $chunkPath)
+      [void]$rebuilt.Append((Get-Content -LiteralPath $chunkPath -Raw))
+    }
+    if (@($violations).Count -eq 0) {
+      $sourceText = Get-Content -LiteralPath $CollectStep.SyntheticOversizeSourcePath -Raw
+      if ($rebuilt.ToString() -eq $sourceText) {
+        $status = 'PASS'
+        $message = 'Chunk reconstruction metadata and chunk ordering were sufficient to rebuild the synthetic oversize artifact exactly.'
+      } else {
+        $message = 'Chunk reconstruction did not match the original synthetic source artifact.'
+      }
+    } else {
+      $message = ($violations -join '; ')
+    }
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Adds one capability coverage row.
+
+.DESCRIPTION
+Records advertised-capability coverage in a reusable matrix so #187 audit evidence is
+available from the same artifact set as the harness summary.
+
+.FUNCTION NAME
+Add-CapabilityCoverage
+
+.INPUTS
+Capability metadata, coverage class, status, evidence, and remaining gap.
+
+.OUTPUTS
+No direct output. Appends one row to the coverage matrix.
+#>
+function Add-CapabilityCoverage {
+  param(
+    [string]$CapabilityId,
+    [string]$Category,
+    [string]$Claim,
+    [string[]]$AdvertisedSource,
+    [string]$CoverageClass,
+    [string[]]$Suites,
+    [string[]]$Steps,
+    [string[]]$Assertions,
+    [string[]]$EvidenceArtifacts,
+    [string]$Risk,
+    [string]$OperatorValue,
+    [string]$Status,
+    [string]$RemainingGap = ''
+  )
+  [void]$script:CoverageRows.Add([pscustomobject]@{
+    capability_id = $CapabilityId
+    category = $Category
+    claim = $Claim
+    advertised_source = @($AdvertisedSource)
+    coverage_class = $CoverageClass
+    suites = @($Suites)
+    steps = @($Steps)
+    assertions = @($Assertions)
+    evidence_artifacts = @($EvidenceArtifacts)
+    risk = $Risk
+    operator_value = $OperatorValue
+    status = $Status
+    remaining_gap = $RemainingGap
+  })
+}
+
+<#
+.SYNOPSIS
+Builds a lookup table of harness step statuses.
+
+.DESCRIPTION
+Creates a hashtable keyed by StepName from accumulated harness results so coverage rows
+can quickly test whether mapped steps passed.
+
+.FUNCTION NAME
+Get-StepStatusMap
+
+.INPUTS
+No direct parameters; reads the script-level Results collection.
+
+.OUTPUTS
+Hashtable mapping step names to status strings.
+#>
+function Get-StepStatusMap {
+  $map = @{}
+  foreach ($r in @($script:Results)) { $map[$r.StepName] = $r.Status }
+  return $map
+}
+
+<#
+.SYNOPSIS
+Checks whether all mapped coverage steps passed.
+
+.DESCRIPTION
+Returns true only when every requested step exists in the status map and has a PASS or
+PARTIAL_SUCCESS status accepted by the coverage model.
+
+.FUNCTION NAME
+Test-StepsCovered
+
+.INPUTS
+Status map hashtable and step-name array.
+
+.OUTPUTS
+Boolean coverage result for the mapped steps.
+#>
+function Test-StepsCovered {
+  param([hashtable]$Map,[string[]]$Steps)
+  foreach ($step in $Steps) {
+    if (-not $Map.ContainsKey($step)) { return $false }
+    if ($Map[$step] -notin @('PASS','PARTIAL_SUCCESS')) { return $false }
+  }
+  return $true
+}
+
+<#
+.SYNOPSIS
+Checks harness-generated coverage artifact evidence.
+
+.DESCRIPTION
+Validates non-step-based coverage rows such as progress files, retained evidence files,
+and generated coverage matrix artifacts.
+
+.FUNCTION NAME
+Test-CoverageArtifactEvidence
+
+.INPUTS
+Capability identifier string.
+
+.OUTPUTS
+Boolean indicating whether required harness artifact evidence exists.
+#>
+function Test-CoverageArtifactEvidence {
+  param([string]$CapabilityId)
+  switch ($CapabilityId) {
+    'collector.progress.hang_localization' {
+      return (Test-Path -LiteralPath $ProgressJsonlPath) -and (Test-Path -LiteralPath $ProgressTxtPath)
+    }
+    'collector.evidence.retained_artifacts' {
+      return (Test-Path -LiteralPath $EvidenceRoot) -and @((Get-ChildItem -LiteralPath $EvidenceRoot -Recurse -File -ErrorAction SilentlyContinue)).Count -gt 0
+    }
+    'collector.coverage.matrix_artifact' {
+      if (-not ((Test-Path -LiteralPath $CoverageJsonPath) -and (Test-Path -LiteralPath $CoverageMdPath))) { return $false }
+      try {
+        $coverageJson = Get-Content -LiteralPath $CoverageJsonPath -Raw | ConvertFrom-Json
+        $coverageMd = Get-Content -LiteralPath $CoverageMdPath -Raw
+        return ($coverageJson.schema_version -eq 'dcoir_collector_capability_coverage_v1') -and (-not [string]::IsNullOrWhiteSpace($coverageMd)) -and ($coverageMd -match '# DCOIR Collector Capability Coverage')
+      } catch {
+        return $false
+      }
+    }
+    default { return $false }
+  }
+}
+
+<#
+.SYNOPSIS
+Adds collector capability coverage rows to the harness result model.
+
+.DESCRIPTION
+Builds the advertised-capability matrix, maps rows to harness steps or artifact evidence,
+and records status and remaining-gap text for JSON and Markdown output.
+
+.FUNCTION NAME
+Add-CollectorCapabilityCoverageRows
+
+.INPUTS
+No direct parameters; reads harness results and artifact paths.
+
+.OUTPUTS
+No direct output. Appends rows to the script-level CoverageRows collection.
+#>
+function Add-CollectorCapabilityCoverageRows {
+  if (@($script:CoverageRows).Count -gt 0) { return }
+  $map = Get-StepStatusMap
+  $headEvidence = @('summary.json','summary.txt','progress.jsonl','progress.txt')
+
+  $rows = @(
+    @{ Id='collector.core.collect_contract'; Cat='Core collect'; Claim='Collect emits run id, metadata, upload guidance, handoff paths, cleanup/delete commands, and upload budget artifacts.'; Sources=@('project_sources/collector/source/DCOIR_Collector.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('Core'); Steps=@('01_CollectT1','ZZ_CollectOutputContract','ZZ_AttachmentBudget_Collect'); Risk='high'; Value='high'; Assertions=@('collector succeeds','collect output contract paths exist','attachment budget manifest validates') },
+    @{ Id='collector.knowledge.operator_contract_alignment'; Cat='Operator documentation'; Claim='Collector operator knowledge pages accurately describe source-backed modes, quick aliases, enrichment session guardrails, output contracts, and bounded Tier 2 validation shape.'; Sources=@('knowledge/Knowledge - Collector - Feature and Output Contract Reference.md','knowledge/Knowledge - Core - Artifact Review Guide.md','knowledge/Knowledge - Core - Tier 2 Collect Runbook.md','knowledge/Knowledge - Core - Enrichment Actions.md','DCOIR_KNOWLEDGE_INDEX.md'); Class='partial'; Suites=@(); Steps=@(); Risk='medium'; Value='high'; Assertions=@('knowledge docs reviewed against source','documentation-quality validator checks source comments','index still references edited existing pages'); Gap='FullRegression does not prove knowledge-doc source alignment; closeability requires separate doc/readback review evidence.' },

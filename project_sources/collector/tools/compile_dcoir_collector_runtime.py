@@ -20,6 +20,8 @@ def build_inline_block(part_paths: List[Path]) -> str:
     blocks.append('# BEGIN COMPILED COLLECTOR PARTS')
     for part_path in part_paths:
         text = part_path.read_text(encoding='utf-8')
+        if not text.strip():
+            raise SystemExit(f'collector part file is empty: {part_path}')
         if not text.endswith('\n'):
             text += '\n'
         blocks.append(f"# BEGIN {part_path.name}")
@@ -28,6 +30,13 @@ def build_inline_block(part_paths: List[Path]) -> str:
         blocks.append('')
     blocks.append('# END COMPILED COLLECTOR PARTS')
     return '\n'.join(blocks) + '\n'
+
+
+def require_non_empty_list(manifest: dict, key: str) -> list:
+    value = manifest.get(key)
+    if not isinstance(value, list) or not value:
+        raise SystemExit(f'{key} must be a non-empty list')
+    return value
 
 
 def main() -> int:
@@ -42,9 +51,15 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     manifest = load_manifest(source_dir)
+    if manifest.get('harness_source'):
+        raise SystemExit('harness_source is not supported by the collector runtime package compiler')
+
     wrapper_path = source_dir / manifest['collector_wrapper_source']
-    harness_path = source_dir / manifest['harness_source']
-    part_paths = [source_dir / rel for rel in manifest.get('collector_part_files', [])]
+    part_rels = require_non_empty_list(manifest, 'collector_part_files')
+    part_paths = [source_dir / rel for rel in part_rels]
+    missing_parts = [rel for rel, path in zip(part_rels, part_paths) if not path.exists()]
+    if missing_parts:
+        raise SystemExit('collector_part_files references missing files: ' + ', '.join(missing_parts))
 
     wrapper_text = wrapper_path.read_text(encoding='utf-8')
     inline_block = build_inline_block(part_paths)
@@ -59,15 +74,13 @@ def main() -> int:
     compiled_root = output_dir / 'compiled_runtime'
     compiled_root.mkdir(parents=True, exist_ok=True)
     compiled_collector = compiled_root / manifest.get('compiled_runtime_name', 'DCOIR_Collector.ps1')
-    compiled_harness = compiled_root / harness_path.name
     compiled_collector.write_text(compiled_text, encoding='utf-8')
-    compiled_harness.write_text(harness_path.read_text(encoding='utf-8'), encoding='utf-8')
 
     report = {
         'success': True,
         'source_dir': str(source_dir),
         'compiled_collector_path': str(compiled_collector),
-        'compiled_harness_path': str(compiled_harness),
+        'compiled_harness_path': None,
         'compiled_runtime_name': compiled_collector.name,
         'collector_part_count': len(part_paths),
         'collector_part_files': [p.name for p in part_paths],

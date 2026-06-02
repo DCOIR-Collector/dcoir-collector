@@ -14,7 +14,7 @@
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses collector documentation validator, required surface checks, collector package build/restore, selected harness suite, and Gemini bundle smoke build.
+# - Uses collector documentation validator, required surface checks, PowerShell 7 and Windows PowerShell 5.1 syntax parsing, harness assembly parity, collector package build/restore, selected harness suite, and Gemini bundle smoke build.
 # Expected outputs/readback:
 # - Validation artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
@@ -46,6 +46,7 @@ on:
           - TargetedCollection
           - ChunkingOversizeArtifact
           - ChunkingReconstructionMetadata
+          - Tier2BoundedCollect
           - MajorVersion
           - FailureGates
           - FullRegression
@@ -124,6 +125,45 @@ jobs:
             throw 'PowerShell syntax validation failed.'
           }
 
+      - name: Validate Windows PowerShell 5.1 syntax
+        shell: pwsh
+        run: |
+          $compatScript = Join-Path $env:RUNNER_TEMP 'validate-windows-powershell-5.1-syntax.ps1'
+          @'
+          $ErrorActionPreference = 'Stop'
+          $psFiles = git ls-files "*.ps1" "*.psm1" "*.psd1"
+          if (-not $psFiles) {
+            Write-Host "No tracked PowerShell files found."
+            exit 0
+          }
+          $parseFailures = @()
+          foreach ($file in $psFiles) {
+            $tokens = $null
+            $parseErrors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$tokens, [ref]$parseErrors)
+            if ($parseErrors.Count -gt 0) {
+              $messages = ($parseErrors | ForEach-Object { $_.Message }) -join ' | '
+              $parseFailures += "${file}: $messages"
+            }
+          }
+          if ($parseFailures.Count -gt 0) {
+            $parseFailures | ForEach-Object { Write-Error $_ }
+            throw 'Windows PowerShell 5.1 syntax validation failed.'
+          }
+          '@ | Set-Content -Path $compatScript -Encoding Unicode
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File $compatScript
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Windows PowerShell 5.1 syntax validation failed.'
+          }
+
+      - name: Verify collector harness assembly parity
+        shell: pwsh
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\project_sources\collector\harness\assemble_run_DCOIR_Tests.ps1 -OutputPath .\project_sources\collector\harness\run_DCOIR_Tests.generated.ps1 -ExpectedHarnessPath .\project_sources\collector\harness\run_DCOIR_Tests.ps1
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector harness assembly parity validation failed.'
+          }
+
       - name: Verify required governed surfaces
         shell: pwsh
         run: |
@@ -135,6 +175,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw 'Gemini manifest surface validation failed.'
           }
+
 
       - name: Run validate_DCOIR_Run fixture tests
         shell: pwsh
@@ -179,10 +220,11 @@ jobs:
 
       - name: Run selected harness suite
         shell: pwsh
+        timeout-minutes: 120
         working-directory: project_sources
         run: |
           $suite = '${{ env.MANUAL_FULL_VALIDATION_SUITE }}'
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite $suite -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite $suite -MasterZipPath $env:HARNESS_RUNTIME_ZIP -CollectorStepTimeoutSeconds 600
 
       - name: Smoke-test Gemini bundle build algorithm
         shell: pwsh

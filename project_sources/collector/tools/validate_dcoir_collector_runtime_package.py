@@ -43,18 +43,26 @@ def main() -> int:
     checks['missing_collector_part_files'] = missing_parts
     if missing_parts:
         errors.append('collector_part_files references missing files: ' + ', '.join(missing_parts))
+    empty_parts = [rel for rel in collector_part_files if (source_dir / rel).exists() and not (source_dir / rel).read_text(encoding='utf-8').strip()]
+    checks['empty_collector_part_files'] = empty_parts
+    if empty_parts:
+        errors.append('collector_part_files references empty files: ' + ', '.join(empty_parts))
 
     delivery_entries = manifest.get('delivery_zip_entries', [])
     checks['delivery_entry_count'] = len(delivery_entries)
     if not delivery_entries:
         errors.append('delivery_zip_entries is empty')
 
-    expected_delivery_names = {'DCOIR_Collector.ps1.txt', 'run_DCOIR_Tests.ps1.txt'}
+    expected_delivery_names = {'DCOIR_Collector.ps1.txt'}
+    prohibited_delivery_names = {'run_DCOIR_Tests.ps1.txt'}
     actual_delivery_names = {Path(row.get('zip_path', '')).name for row in delivery_entries if row.get('zip_path')}
     checks['expected_delivery_names_present'] = expected_delivery_names.issubset(actual_delivery_names)
     checks['actual_delivery_names'] = sorted(actual_delivery_names)
+    checks['prohibited_delivery_names_absent'] = actual_delivery_names.isdisjoint(prohibited_delivery_names)
     if not expected_delivery_names.issubset(actual_delivery_names):
-        errors.append('delivery package must include DCOIR_Collector.ps1.txt and run_DCOIR_Tests.ps1.txt')
+        errors.append('delivery package must include DCOIR_Collector.ps1.txt')
+    if not actual_delivery_names.isdisjoint(prohibited_delivery_names):
+        errors.append('delivery package must not include harness files: ' + ', '.join(sorted(actual_delivery_names.intersection(prohibited_delivery_names))))
 
     delivery_rules = manifest.get('delivery_rules', {})
     require_txt = bool(delivery_rules.get('transport_safe_suffix_required_for_scripts'))

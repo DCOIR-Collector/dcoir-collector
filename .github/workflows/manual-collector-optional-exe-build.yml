@@ -14,7 +14,7 @@
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses collector runtime packaging scripts, PS2EXE availability/acquisition, and collector harness suites.
+# - Uses collector runtime packaging scripts, harness assembly parity, PS2EXE availability/acquisition, and collector harness suites.
 # Expected outputs/readback:
 # - Optional EXE package artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
@@ -117,6 +117,14 @@ jobs:
             if ($LASTEXITCODE -ne 0) {
               throw "Python syntax validation failed: $file"
             }
+          }
+
+      - name: Verify collector harness assembly parity
+        shell: pwsh
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\project_sources\collector\harness\assemble_run_DCOIR_Tests.ps1 -OutputPath .\project_sources\collector\harness\run_DCOIR_Tests.generated.ps1 -ExpectedHarnessPath .\project_sources\collector\harness\run_DCOIR_Tests.ps1
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector harness assembly parity validation failed.'
           }
 
       - name: Normalize FailureGates EXE runtime-error guard

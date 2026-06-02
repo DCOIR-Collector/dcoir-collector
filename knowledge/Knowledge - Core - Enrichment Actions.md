@@ -39,7 +39,7 @@ A session is for one investigative thread, not for every open question on the ho
 
 ## Session lifecycle
 
-The collector’s enrich behavior is session-based.
+The collector's enrich behavior is session-based.
 That matters for operator use because one session can remain open across closely related actions.
 
 | Phase | Purpose |
@@ -58,7 +58,9 @@ The current source supports these bounded statements:
 - `enrich-start` style paths create a new session;
 - `enrich-add` style paths reuse the current open session unless explicitly overridden;
 - explicit session targeting can be done with `-EnrichSessionId`;
-- `enrich-finalize` finalizes the current open session and produces a bundle.
+- a finalized requested session cannot be appended to;
+- `enrich-finalize` finalizes the current open session or a valid non-finalized requested session and produces a bundle;
+- `enrich-finalize` without an open or requested non-finalized session is rejected instead of creating an empty bundle.
 
 ---
 
@@ -145,21 +147,40 @@ If you already know the suspicious file, script, service binary, or task definit
 
 ---
 
-## Quick alias patterns actually visible in source
+## Quick aliases accepted by source
 
-The current help surface exposes several common quick paths for enrichment:
+Quick aliases are the safest way to avoid unsupported command shapes when one of the source-backed paths matches the question. Each `enrich-start-*` alias starts a new enrich session for that action. The matching `enrich-add-*` alias adds the same action to the currently open session or to the explicit non-finalized session supplied with `-EnrichSessionId`.
 
-- `enrich-start-tcp`
-- `enrich-add-tcp`
-- `enrich-start-logtext`
-- `enrich-add-logtext`
-- `enrich-start-lograw`
-- `enrich-add-lograw`
-- `enrich-start-sigcheck`
-- `enrich-add-sigcheck`
-- `enrich-start-listdlls`
-- `enrich-add-listdlls`
-- `enrich-finalize`
+For quick aliases that need a value, pass the value with `-Target`. The collector maps that target into the action-specific parameter family. Use explicit `-Mode Enrich -Action ...` parameters when you need to set more specific fields such as `-EventId`, `-MaxEvents`, `-WindowStart`, or `-WindowEnd`.
+
+| Quick alias family | Action | Required target |
+| --- | --- | --- |
+| `enrich-start-tcp`, `enrich-add-tcp` | Refresh TCP connection evidence | None |
+| `enrich-start-logtext`, `enrich-add-logtext` | Export event log text | Optional `-Target <log name>`; defaults to Security |
+| `enrich-start-lograw`, `enrich-add-lograw` | Export raw EVTX log data | Optional `-Target <log name>`; defaults to Security |
+| `enrich-start-sigcheck`, `enrich-add-sigcheck` | Run signature/hash review for a path | `-Target <path>` |
+| `enrich-start-listdlls`, `enrich-add-listdlls` | Review loaded modules for a PID | `-Target <pid>` |
+| `enrich-start-access-file`, `enrich-add-access-file` | Run access-check review for a file path | `-Target <path>` |
+| `enrich-start-access-service`, `enrich-add-access-service` | Run access-check review for a service | `-Target <service name>` |
+| `enrich-start-access-reg`, `enrich-add-access-reg` | Run access-check review for a registry path | `-Target <registry path>` |
+| `enrich-start-strings`, `enrich-add-strings` | Extract strings from a path | `-Target <path>` |
+| `enrich-start-streams`, `enrich-add-streams` | Check alternate data streams for a path | `-Target <path>` |
+| `enrich-start-pull-file`, `enrich-add-pull-file` | Retrieve a suspicious file | `-Target <path>` |
+| `enrich-start-pull-script`, `enrich-add-pull-script` | Retrieve a suspicious script or config file | `-Target <path>` |
+| `enrich-start-pull-task`, `enrich-add-pull-task` | Retrieve scheduled task XML | `-Target <task path>` |
+| `enrich-start-pull-service`, `enrich-add-pull-service` | Retrieve a service binary | `-Target <service name>` |
+| `enrich-start-pull-wmi-file`, `enrich-add-pull-wmi-file` | Retrieve a file referenced by WMI persistence evidence | `-Target <path>` |
+| `enrich-finalize` | Finalize and bundle the current open enrich session, or the explicit non-finalized session supplied with `-EnrichSessionId` | None unless finalizing an explicit session |
+
+### Common quick-alias examples
+
+| Question | Example command shape |
+| --- | --- |
+| Start a TCP follow-up session | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-tcp` |
+| Add log-text review to the open session | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-add-logtext -Target Security` |
+| Start file signature review | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-sigcheck -Target C:\Path\To\File.exe` |
+| Stage a service binary for retrieval | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-start-pull-service -Target SuspiciousService` |
+| Finalize the current open session | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\DCOIR_Collector.ps1 -Quick enrich-finalize` |
 
 These matter because operators and Gemini should prefer supported quick paths instead of inventing unsupported command shapes.
 
@@ -176,7 +197,7 @@ Confirm:
 - whether the current session should be extended or finalized;
 - whether cleanup would remove still-needed evidence.
 
-A good enrich action begins from a specific question, not a desire to “look deeper” in general.
+A good enrich action begins from a specific question, not a desire to "look deeper" in general.
 
 ---
 
@@ -198,8 +219,8 @@ Important enrich output surfaces visible in current source include:
 - `NEXT_GET_FILE` when finalized
 - `DELETE_SCRIPT_COMMAND`
 
-A finalize-only path is still a normal enrich outcome.
-When the operator runs `enrich-finalize` without a new action, the current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`.
+A finalize-only path is still a normal enrich outcome when it closes an existing open session or a valid non-finalized requested session.
+When the operator runs `enrich-finalize` without a new action, the current source emits the session report and finalization surfaces without `ACTION_ARTIFACT_PATH`; if no open or requested non-finalized session exists, the collector rejects the command so operators do not receive an empty finalized bundle.
 
 ### Practical enrich review order
 
@@ -248,6 +269,8 @@ Retrieval is usually better than another broad collection when the question is a
 - running multiple unrelated enrichments in one session;
 - starting a new session when the current one should be extended;
 - extending a session that should be finalized;
+- trying to append to a session that has already been finalized;
+- treating a rejected finalize-without-open command as a collector failure instead of a guardrail;
 - using enrichment when retrieval is already the narrower answer;
 - cleaning up before outputs are reviewed or retrieved;
 - inventing action flags not exposed by the collector;

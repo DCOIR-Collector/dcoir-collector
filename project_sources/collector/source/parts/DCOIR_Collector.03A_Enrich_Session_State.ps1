@@ -60,8 +60,9 @@ open session and last resolution mode.
 Initialize-EnrichSession
 
 .INPUTS
-Collector state hashtable, optional requested session identifier, and an optional
-ForceNew switch that suppresses reuse of the currently open session.
+Collector state hashtable, optional requested session identifier, an optional ForceNew
+switch that suppresses reuse of the currently open session, and an optional guard that
+requires an existing open session for finalize-only calls.
 
 .OUTPUTS
 Hashtable describing the resolved enrichment session, whether reused or newly created.
@@ -70,7 +71,8 @@ function Initialize-EnrichSession {
   param(
     [hashtable]$State,
     [string]$RequestedSessionId,
-    [switch]$ForceNew
+    [switch]$ForceNew,
+    [switch]$RequireExistingOpenSession
   )
 
   if (-not $State.ContainsKey("EnrichSessions") -or $null -eq $State.EnrichSessions) {
@@ -89,6 +91,9 @@ function Initialize-EnrichSession {
   if (-not [string]::IsNullOrWhiteSpace($RequestedSessionId)) {
     $existing = Get-SessionById -State $State -SessionId $RequestedSessionId
     if ($existing) {
+      if ($existing.Finalized) {
+        throw "Requested enrichment session is finalized and cannot be appended: $RequestedSessionId"
+      }
       $existing.SessionResolutionMode = 'REUSED_REQUESTED_SESSION'
       $State.LastSessionResolutionMode = 'REUSED_REQUESTED_SESSION'
       return $existing
@@ -103,6 +108,10 @@ function Initialize-EnrichSession {
       $State.LastSessionResolutionMode = 'REUSED_OPEN_SESSION'
       return $open
     }
+  }
+
+  if ($RequireExistingOpenSession) {
+    throw "No open enrichment session is available to finalize. Start an enrich session or provide -EnrichSessionId for a non-finalized session."
   }
 
   $State.EnrichSessionCounter = [int]$State.EnrichSessionCounter + 1

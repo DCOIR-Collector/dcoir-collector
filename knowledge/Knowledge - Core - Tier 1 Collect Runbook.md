@@ -89,6 +89,7 @@ For current source behavior, the important operator-visible surfaces include:
 - `ANALYST_OVERVIEW_PATH`
 - `UPLOAD_SUMMARY_PATH`
 - `ATTACHMENT_BUDGET_MANIFEST_PATH`
+- optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when oversized full-fidelity text artifacts were chunked
 - `COLLECTION_SCOPE_PATH`
 - `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
 - `EXECUTION_CONTEXT_PATH`
@@ -111,11 +112,13 @@ For the current build, use this review order:
 2. `UPLOAD_SUMMARY_PATH`
 3. `METADATA_REPORT_PATH`
 4. `ATTACHMENT_BUDGET_MANIFEST_PATH`
-5. `COLLECTION_SCOPE_PATH`
-6. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
-7. `EXECUTION_CONTEXT_PATH` when elevation/visibility affects interpretation
-8. representative high-signal artifacts referenced by the above surfaces
-9. broader flat output or the bundle only after the first-pass question is clearer
+5. optional `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when full-fidelity text chunks are present
+6. `COLLECTION_SCOPE_PATH`
+7. `SECURITY_HIGH_SIGNAL_SUMMARY_PATH`
+8. `EXECUTION_CONTEXT_PATH` when elevation/visibility affects interpretation
+9. representative high-signal artifacts referenced by the above surfaces
+10. upload-safe full-fidelity chunks only when the summary is insufficient
+11. broader flat output or the bundle only after the first-pass question is clearer
 
 Avoid jumping directly into raw files before reading the orientation surfaces.
 
@@ -131,7 +134,7 @@ Tier 1 should help you choose one of these next moves:
 - run a targeted follow-up collection path;
 - escalate to Tier 2 because a specific deeper question remains.
 
-A good Tier 1 outcome is not “more files.”
+A good Tier 1 outcome is not "more files."
 A good Tier 1 outcome is a clearer next move.
 
 ---
@@ -167,10 +170,16 @@ Use targeted follow-through when the incident is now narrow enough that a profil
 
 ## Large-output boundary
 
-Synthetic chunking reconstruction is validated for the regression fixture.
-Do not assume every real large Tier 1 output will automatically chunk unless that exact live behavior has been validated for the current path.
+The current collector can create upload-safe chunk companions for oversized real human-readable artifacts such as full-fidelity event text, and it reports those companions through `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when they exist.
 
-A very large monolithic output should be treated as a retrieval/review planning or implementation-boundary issue, not automatically as a failure.
+Use the chunk manifest when the summary points to a large source artifact that still needs full-fidelity review:
+
+1. read `UPLOAD_SUMMARY_PATH` to see whether chunk companions were recommended;
+2. read `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` to identify the original artifact, ordered chunk files, byte counts, and reconstruction metadata;
+3. upload or review the ordered chunk companions only when the high-signal summary is not enough;
+4. keep the manifest with the chunks so the reviewer can reconstruct or reason about the original artifact.
+
+This production chunking support is not a promise that every possible large artifact family is chunked. A very large monolithic output outside the supported upload-safe chunk paths should still be treated as a retrieval/review planning or implementation-boundary issue, not automatically as a collector failure.
 
 ---
 
@@ -182,7 +191,8 @@ A very large monolithic output should be treated as a retrieval/review planning 
 - assuming a merged baseline report is still the primary review surface in the current build;
 - cleaning up before retrieval or review;
 - jumping to Tier 2 without naming the unresolved question;
-- assuming all large real outputs are chunked.
+- ignoring `UPLOAD_SAFE_CHUNK_MANIFEST_PATH` when the collector reports upload-safe chunks for oversized full-fidelity text;
+- assuming every possible large artifact family is chunked.
 
 ---
 

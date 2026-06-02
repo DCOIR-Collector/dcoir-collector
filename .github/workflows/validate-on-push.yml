@@ -8,13 +8,13 @@
 # Do not use when:
 # - Do not treat as full regression or pre-merge proof; validate-on-pr owns the heavier PR-focused runtime and harness validation.
 # Trigger model:
-# - push paths: project_sources/collector/source/**, project_sources/collector/harness/**, project_sources/collector/tools/**, project_sources/collector/manifests/**, project_sources/gemini/bundle_source/**, project_sources/gemini/tools/**, project_sources/validation/**, knowledge/Knowledge - *.md ...; workflow_dispatch
+# - push paths: project_sources/collector/source/**, project_sources/collector/harness/**, project_sources/collector/tools/**, project_sources/collector/manifests/**, project_sources/gemini/bundle_source/**, project_sources/gemini/tools/**, project_sources/validation/**, knowledge/Knowledge - *.md, knowledge/README.md, DCOIR_KNOWLEDGE_INDEX.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, governed workflow definitions ...; workflow_dispatch
 # Required inputs:
 # - none
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses syntax checks, required surface checks, Gemini smoke build, validate_DCOIR_Run fixture tests, and documentation validation.
+# - Uses syntax checks, required surface checks, harness assembly parity, Gemini smoke build, collector package smoke build, validate_DCOIR_Run fixture tests, and documentation validation.
 # Expected outputs/readback:
 # - Fast validation artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
@@ -36,11 +36,12 @@ name: validate-on-push
 #
 # Restored automatic posture (2026-04-30):
 # - Push triggering is enabled only for collector, Gemini, packaging, validation,
-#   maintained knowledge, and this workflow's own definition paths.
-# - Routine automatic coverage keeps lightweight syntax, governed-surface, Gemini,
-#   validate_DCOIR_Run, and documentation checks on push.
-# - Heavier collector runtime build and core harness validation move to validate-on-pr
-#   at meaningful PR checkpoints.
+#   maintained knowledge, and governed workflow definition paths.
+# - Routine automatic coverage keeps lightweight syntax, governed-surface, harness
+#   assembly parity, Gemini, collector package smoke, validate_DCOIR_Run, and
+#   documentation checks on push.
+# - Heavier collector runtime harness validation remains in validate-on-pr and
+#   manual-full-validation at meaningful review checkpoints.
 #
 # Gemini topology rule:
 # - Gemini bundle required-file and sub-agent inventory checks are manifest-driven.
@@ -59,9 +60,16 @@ on:
       - 'project_sources/validation/**'
       - 'knowledge/Knowledge - *.md'
       - 'knowledge/README.md'
+      - 'DCOIR_KNOWLEDGE_INDEX.md'
+      - 'docs/validation/dcoir_collector_capability_coverage_matrix.md'
       - 'supporting_assets/DCOIR_Collector.zip'
       - '.github/workflows/validate-on-push.yml'
       - '.github/workflows/validate-on-pr.yml'
+      - '.github/workflows/manual-full-validation.yml'
+      - '.github/workflows/manual-collector-runtime-package-build.yml'
+      - '.github/workflows/manual-collector-optional-exe-build.yml'
+      - '.github/workflows/manual-gemini-bundle-build.yml'
+      - '.github/workflows/scheduled-health-check.yml'
   workflow_dispatch:
 
 concurrency:
@@ -135,6 +143,14 @@ jobs:
             throw 'PowerShell syntax validation failed.'
           }
 
+      - name: Verify collector harness assembly parity
+        shell: pwsh
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\project_sources\collector\harness\assemble_run_DCOIR_Tests.ps1 -OutputPath .\project_sources\collector\harness\run_DCOIR_Tests.generated.ps1 -ExpectedHarnessPath .\project_sources\collector\harness\run_DCOIR_Tests.ps1
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector harness assembly parity validation failed.'
+          }
+
       - name: Verify required governed surfaces
         shell: pwsh
         run: |
@@ -155,6 +171,16 @@ jobs:
           python project_sources/gemini/tools/build_dcoir_gemini_release.py --source-root project_sources/gemini/bundle_source --output-dir project_sources/validation/out_validate_on_push_gemini
           if ($LASTEXITCODE -ne 0) {
             throw 'Gemini bundle smoke test failed.'
+          }
+
+      - name: Smoke-test collector runtime package build
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_collector -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_collector | Out-Null
+          python project_sources/collector/tools/build_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/validation/out_validate_on_push_collector
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector runtime package smoke test failed.'
           }
 
       - name: Run validate_DCOIR_Run fixture tests
@@ -181,6 +207,7 @@ jobs:
           path: |
             project_sources/TestResults/**
             project_sources/validation/out_validate_on_push_gemini/**
+            project_sources/validation/out_validate_on_push_collector/**
             project_sources/validation/out_validate_on_push_validate_dcoir_run_fixtures/**
             project_sources/validation/out_preflight_documentation_quality/**
             project_sources/validation/out_validate_on_push_documentation_quality/**
@@ -202,9 +229,9 @@ jobs:
           - ref: $env:GITHUB_REF
           - event_name: $env:GITHUB_EVENT_NAME
           - primary_artifact: validate-on-push-results
-          - artifact_note: includes Gemini smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, and TestResults when produced.
+          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, and TestResults when produced.
 
-          The workflow conclusion is the authoritative pass/fail signal for the push validation lane. Use artifact readback for harness, documentation, or report-specific claims.
+          The workflow conclusion is the authoritative pass/fail signal for the push validation lane. Use artifact readback for harness, package, documentation, or report-specific claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
 
       - name: Upload ChatGPT workflow report section
