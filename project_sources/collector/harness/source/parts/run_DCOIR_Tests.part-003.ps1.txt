@@ -1,6 +1,3 @@
-function Invoke-CollectorStepWithEnvOverride {
-  param(
-    [Parameter(Mandatory=$true)][string]$StepName,
     [Parameter(Mandatory=$true)][string[]]$CollectorArgs,
     [Parameter(Mandatory=$true)][hashtable]$EnvOverrides
   )
@@ -221,3 +218,13 @@ function Assert-CollectorStepDegradedPartial {
     ("Missing patterns: {0}" -f (@($missingPatterns) -join '; ')),
     "Collector stdout follows:",
     $CollectorStep.StdOut
+  ) -join [Environment]::NewLine
+
+  throw $message
+}
+
+<#
+.SYNOPSIS
+Verifies the collect output contract fields.
+
+.DESCRIPTION
