@@ -954,24 +954,6 @@ function Invoke-CollectOutputContractVerification {
 
 <#
 .SYNOPSIS
-Verifies the open enrich-session output contract fields.
-
-.DESCRIPTION
-Checks that an enrich-start style step emitted the expected open-session contract values
-such as RUN_ID, ENRICH_SESSION_ID, NEXT_OPTIONS, and the delete-script command.
-
-.FUNCTION NAME
-Invoke-EnrichOpenOutputContractVerification
-
-.INPUTS
-StepName string and EnrichStep result object.
-
-.OUTPUTS
-No direct return value beyond harness logging; throws when the contract is incomplete.
-#>
-
-<#
-.SYNOPSIS
 Verifies Tier 2-specific bounded collect output.
 
 .DESCRIPTION
@@ -1376,24 +1358,21 @@ function Invoke-SessionResolutionVerification {
 
 <#
 .SYNOPSIS
-Verifies the targeted-collection artifact contract.
+Checks a timestamp field against an expected UTC instant.
 
 .DESCRIPTION
-Checks that the targeted collect step emitted the collection scope, parallelism
-assessment, and targeted collection plan paths and that the artifacts contain the
-expected markers.
+Reads a single FIELD=value line from harness artifact text, parses it as a timestamp,
+and compares its UTC instant to the expected timestamp value.
 
 .FUNCTION NAME
-Invoke-TargetedCollectionVerification
+Test-HarnessUtcTimestampLine
 
 .INPUTS
-StepName string and CollectStep result object.
+Artifact text, field name, and expected timestamp value.
 
 .OUTPUTS
-No direct return value beyond harness logging; throws when the targeted artifacts are
-missing or malformed.
+Boolean indicating whether the field exists once and matches the expected UTC instant.
 #>
-
 function Test-HarnessUtcTimestampLine {
   param([string]$Text,[string]$FieldName,[string]$ExpectedValue)
   if ([string]::IsNullOrWhiteSpace($Text) -or [string]::IsNullOrWhiteSpace($FieldName) -or [string]::IsNullOrWhiteSpace($ExpectedValue)) { return $false }
@@ -1919,7 +1898,8 @@ function Add-CollectorCapabilityCoverageRows {
   $headEvidence = @('summary.json','summary.txt','progress.jsonl','progress.txt')
 
   $rows = @(
-    @{ Id='collector.core.collect_contract'; Cat='Core collect'; Claim='Collect emits run id, metadata, upload guidance, handoff paths, cleanup/delete commands, and upload budget artifacts.'; Sources=@('project_sources/collector/source/DCOIR_Collector.ps1','knowledge/Knowledge - Collector - Feature and Output Contract Reference.md'); Class='covered_end_to_end_by_fullregression'; Suites=@('Core'); Steps=@('01_CollectT1','ZZ_CollectOutputContract','ZZ_AttachmentBudget_Collect'); Risk='high'; Value='high'; Assertions=@('collector succeeds','collect output contract paths exist','attachment budget manifest validates') },
+    @{ Id='collector.core.collect_contract'; Cat='Core collect'; Claim='Collect emits run id, metadata, upload guidance, handoff paths, cleanup/delete commands, and upload budget artifacts.'; Sources=@('project_sources/collector/source/DCOIR_Collector.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('Core'); Steps=@('01_CollectT1','ZZ_CollectOutputContract','ZZ_AttachmentBudget_Collect'); Risk='high'; Value='high'; Assertions=@('collector succeeds','collect output contract paths exist','attachment budget manifest validates') },
+    @{ Id='collector.knowledge.operator_contract_alignment'; Cat='Operator documentation'; Claim='Collector operator knowledge pages accurately describe source-backed modes, quick aliases, enrichment session guardrails, output contracts, and bounded Tier 2 validation shape.'; Sources=@('knowledge/Knowledge - Collector - Feature and Output Contract Reference.md','knowledge/Knowledge - Core - Artifact Review Guide.md','knowledge/Knowledge - Core - Tier 2 Collect Runbook.md','knowledge/Knowledge - Core - Enrichment Actions.md','DCOIR_KNOWLEDGE_INDEX.md'); Class='partial'; Suites=@(); Steps=@(); Risk='medium'; Value='high'; Assertions=@('knowledge docs reviewed against source','documentation-quality validator checks source comments','index still references edited existing pages'); Gap='FullRegression does not prove knowledge-doc source alignment; closeability requires separate doc/readback review evidence.' },
     @{ Id='collector.enrich.session_lifecycle.basic'; Cat='Enrich sessions'; Claim='Enrich start/add/finalize preserves session identity and finalized output contract.'; Sources=@('project_sources/collector/source/DCOIR_Collector.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('Core','SessionBehavior'); Steps=@('02_EnrichStartTcp','03_EnrichAddLogTextSecurity','04_EnrichFinalize','ZZ_EnrichFinalizedOutputContract','52_EnrichStartTcp','53_EnrichAddLogTextSecurity','ZZ_SessionReuseValidation','58_EnrichFinalizeOpen','ZZ_OpenFinalizeOutputContract'); Risk='high'; Value='high'; Assertions=@('session starts','add reuses session','finalize emits expected contract') },
     @{ Id='collector.targeted.valid_explicit_window_exact'; Cat='Targeted collection'; Claim='Valid explicit WindowStart and WindowEnd values are preserved as equivalent unambiguous UTC instants in targeted artifacts and event-window metadata.'; Sources=@('project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1','project_sources/collector/harness/run_DCOIR_Tests.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('TargetedCollection'); Steps=@('61_CollectTargetedPopup','ZZ_TargetedCollectionValidation','63_CollectTargetedNeutralWindow','ZZ_TargetedNeutralWindowValidation'); Risk='high'; Value='high'; Assertions=@('accepted explicit window is marked true','WINDOW_START equals requested normalized UTC instant','WINDOW_END equals requested normalized UTC instant','targeted scope and event metadata agree') },
     @{ Id='collector.targeted.invalid_window_fallback'; Cat='Targeted collection'; Claim='Invalid or inverted explicit windows degrade to partial success and do not leak rejected values into targeted scope.'; Sources=@('project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('FailureGates'); Steps=@('99_TargetedInvalidWindowStart','ZZ_TargetedInvalidWindowStartValidation','100_TargetedInvalidWindowEnd','ZZ_TargetedInvalidWindowEndValidation','101_TargetedInvertedWindow','ZZ_TargetedInvertedWindowValidation'); Risk='high'; Value='high'; Assertions=@('invalid start degrades','invalid end degrades','inverted window degrades','targeted artifacts show no explicit window') },
