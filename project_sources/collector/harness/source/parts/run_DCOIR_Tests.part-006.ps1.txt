@@ -1,6 +1,3 @@
-  $lines += "MESSAGE=$message"
-  $end = Get-Date
-  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
   Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
@@ -156,3 +153,5 @@ function Invoke-ChunkingOversizeVerification {
     $chunkCount = [int]$manifest.chunk_count
     $violations = New-Object System.Collections.ArrayList
     if ($sourceSizeKB -le $HardPerFileKB) { [void]$violations.Add('Synthetic source artifact did not exceed the hard per-file budget.') }
+    if ($chunkCount -lt 2) { [void]$violations.Add('Chunk count was less than 2 for the oversized artifact.') }
+    foreach ($chunkPath in $chunkPaths) {
