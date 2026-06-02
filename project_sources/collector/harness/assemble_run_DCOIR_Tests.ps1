@@ -18,6 +18,22 @@ param(
 Set-StrictMode -Version 2
 $ErrorActionPreference = 'Stop'
 
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+function Get-NormalizedTextSha256 {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Text
+  )
+
+  $bytes = $utf8NoBom.GetBytes($Text)
+  $sha256 = [System.Security.Cryptography.SHA256]::Create()
+  try {
+    return (($sha256.ComputeHash($bytes) | ForEach-Object { $_.ToString('x2') }) -join '')
+  } finally {
+    $sha256.Dispose()
+  }
+}
+
 if (-not (Test-Path -LiteralPath $PartsDirectory)) {
   throw "Harness parts directory not found: $PartsDirectory"
 }
@@ -32,7 +48,6 @@ if (-not (Test-Path -LiteralPath $outputDirectory)) {
   New-Item -Path $outputDirectory -ItemType Directory -Force | Out-Null
 }
 
-$writer = New-Object System.Text.UTF8Encoding($false)
 $builder = New-Object System.Text.StringBuilder
 $partDiagnostics = New-Object System.Collections.ArrayList
 foreach ($part in $parts) {
@@ -45,7 +60,8 @@ foreach ($part in $parts) {
   [void]$partDiagnostics.Add(("{0} sha256={1} bytes={2}" -f $part.Name, $partHash, (Get-Item -LiteralPath $part.FullName).Length))
 }
 
-[System.IO.File]::WriteAllText($OutputPath, $builder.ToString(), $writer)
+$assembledText = $builder.ToString()
+[System.IO.File]::WriteAllText($OutputPath, $assembledText, $utf8NoBom)
 
 $actualSha256 = (Get-FileHash -LiteralPath $OutputPath -Algorithm SHA256).Hash.ToLowerInvariant()
 if (-not [string]::IsNullOrWhiteSpace($ExpectedSha256)) {
@@ -59,13 +75,16 @@ if (-not [string]::IsNullOrWhiteSpace($ExpectedHarnessPath)) {
   if (-not (Test-Path -LiteralPath $ExpectedHarnessPath)) {
     throw "Expected checked-in harness not found: $ExpectedHarnessPath"
   }
-  $expectedHarnessSha256 = (Get-FileHash -LiteralPath $ExpectedHarnessPath -Algorithm SHA256).Hash.ToLowerInvariant()
-  if ($actualSha256 -ne $expectedHarnessSha256) {
+  $checkedInHarnessRawSha256 = (Get-FileHash -LiteralPath $ExpectedHarnessPath -Algorithm SHA256).Hash.ToLowerInvariant()
+  $checkedInHarnessText = [System.IO.File]::ReadAllText($ExpectedHarnessPath) -replace "`r`n", "`n" -replace "`r", "`n"
+  $checkedInHarnessNormalizedSha256 = Get-NormalizedTextSha256 -Text $checkedInHarnessText
+  if ($actualSha256 -ne $checkedInHarnessNormalizedSha256) {
     $diagnosticText = ($partDiagnostics -join [Environment]::NewLine)
-    throw ("Checked-in harness mismatch. Generated {0} has SHA256 {1}, but checked-in harness {2} has SHA256 {3}. Parts used, in order:{4}{5}" -f $OutputPath, $actualSha256, $ExpectedHarnessPath, $expectedHarnessSha256, [Environment]::NewLine, $diagnosticText)
+    throw ("Checked-in harness mismatch after newline/encoding normalization. Generated {0} has normalized SHA256 {1}, but checked-in harness {2} has normalized SHA256 {3} and raw file SHA256 {4}. Parts used, in order:{5}{6}" -f $OutputPath, $actualSha256, $ExpectedHarnessPath, $checkedInHarnessNormalizedSha256, $checkedInHarnessRawSha256, [Environment]::NewLine, $diagnosticText)
   }
   Write-Host ("CHECKED_IN_HARNESS_PATH={0}" -f (Resolve-Path -LiteralPath $ExpectedHarnessPath).Path)
-  Write-Host ("CHECKED_IN_HARNESS_SHA256={0}" -f $expectedHarnessSha256)
+  Write-Host ("CHECKED_IN_HARNESS_SHA256_NORMALIZED={0}" -f $checkedInHarnessNormalizedSha256)
+  Write-Host ("CHECKED_IN_HARNESS_SHA256_RAW={0}" -f $checkedInHarnessRawSha256)
 }
 
 Write-Host ("ASSEMBLED_HARNESS_PATH={0}" -f (Resolve-Path -LiteralPath $OutputPath).Path)
