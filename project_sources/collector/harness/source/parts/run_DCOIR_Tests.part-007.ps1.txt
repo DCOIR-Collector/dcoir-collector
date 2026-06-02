@@ -1,165 +1,18 @@
-
-.OUTPUTS
-No direct return value beyond harness logging; throws when the targeted artifacts are
-missing or malformed.
-#>
-function Invoke-TargetedCollectionVerification {
-  param(
-    [string]$StepName,
-    [object]$CollectStep,
-    [object]$ExpectedExplicitEventWindow = $null,
-    [string]$ExpectedWindowStart = '',
-    [string]$ExpectedWindowEnd = ''
-  )
-  $start = Get-Date
-  $status = "FAIL"
-  $message = ""
-  $lines = @(
-    "STEP=$StepName",
-    "COLLECTION_SCOPE_PATH=$($CollectStep.CollectionScopePath)",
-    "PARALLELISM_ASSESSMENT_PATH=$($CollectStep.ParallelismAssessmentPath)",
-    "TARGETED_COLLECTION_PLAN_PATH=$($CollectStep.TargetedCollectionPlanPath)"
-  )
-
-  $required = @(
-    @{ Label = "COLLECTION_SCOPE_PATH"; Path = $CollectStep.CollectionScopePath },
-    @{ Label = "PARALLELISM_ASSESSMENT_PATH"; Path = $CollectStep.ParallelismAssessmentPath },
-    @{ Label = "TARGETED_COLLECTION_PLAN_PATH"; Path = $CollectStep.TargetedCollectionPlanPath }
-  )
-
-  $missing = New-Object System.Collections.ArrayList
-  foreach ($row in $required) {
-    $candidate = [string]$row.Path
-    if ([string]::IsNullOrWhiteSpace($candidate)) {
-      [void]$missing.Add(("{0} was not emitted by the collector response." -f $row.Label))
-      continue
-    }
-    if (-not (Test-Path -LiteralPath $candidate)) {
-      [void]$missing.Add(("{0} path does not exist: {1}" -f $row.Label, $candidate))
-    }
-  }
-
-  if (@($missing).Count -eq 0) {
-    $scopeText = Get-Content -LiteralPath $CollectStep.CollectionScopePath -Raw
-    $planText = Get-Content -LiteralPath $CollectStep.TargetedCollectionPlanPath -Raw
-    $metadataText = if ($CollectStep.SecurityHighSignalSummaryPath -and (Test-Path -LiteralPath $CollectStep.SecurityHighSignalSummaryPath)) { Get-Content -LiteralPath $CollectStep.SecurityHighSignalSummaryPath -Raw } else { '' }
-    $expectedWindowOk = $true
-    if ($null -ne $ExpectedExplicitEventWindow) {
-      $expectedValue = if ([bool]$ExpectedExplicitEventWindow) { 'True' } else { 'False' }
-      $expectedWindowOk = ($metadataText -match ("HAS_EXPLICIT_TIME_WINDOW={0}" -f $expectedValue))
-      $lines += ("EXPECTED_EXPLICIT_EVENT_WINDOW={0}" -f $expectedValue)
-    }
-    $expectedWindowValuesOk = $true
-    if (-not [string]::IsNullOrWhiteSpace($ExpectedWindowStart)) {
-      $expectedStartText = ([datetime]::Parse($ExpectedWindowStart)).ToUniversalTime().ToString('o')
-      $expectedWindowValuesOk = $expectedWindowValuesOk -and ($scopeText -match ("WINDOW_START={0}" -f [regex]::Escape($expectedStartText))) -and ($metadataText -match ("WINDOW_START={0}" -f [regex]::Escape($expectedStartText)))
-      $lines += ("EXPECTED_WINDOW_START={0}" -f $expectedStartText)
-    }
-    if (-not [string]::IsNullOrWhiteSpace($ExpectedWindowEnd)) {
-      $expectedEndText = ([datetime]::Parse($ExpectedWindowEnd)).ToUniversalTime().ToString('o')
-      $expectedWindowValuesOk = $expectedWindowValuesOk -and ($scopeText -match ("WINDOW_END={0}" -f [regex]::Escape($expectedEndText))) -and ($metadataText -match ("WINDOW_END={0}" -f [regex]::Escape($expectedEndText)))
-      $lines += ("EXPECTED_WINDOW_END={0}" -f $expectedEndText)
-    }
-    if (($scopeText -match 'TARGETED_COLLECTION_SCOPE') -and ($planText -match 'TARGETED_COLLECTION_PLAN') -and ($scopeText -match 'WINDOW_START=') -and ($scopeText -match 'WINDOW_END=') -and ($metadataText -match 'WINDOW_START=') -and ($metadataText -match 'WINDOW_END=') -and $expectedWindowOk -and $expectedWindowValuesOk) {
-      $status = "PASS"
-      $message = "Targeted collection artifacts were produced and contained expected markers plus exact effective event-window fields."
-    } else {
-      $message = "Targeted collection artifact markers or exact effective event-window fields were missing or unexpected."
-    }
-  } else {
-    $message = ($missing -join '; ')
-  }
-
-  $lines += "STATUS=$status"
-  $lines += "MESSAGE=$message"
-  $end = Get-Date
-  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
-  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
-  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
-}
-
-<#
-.SYNOPSIS
-Verifies production upload-safe chunk manifest behavior.
-
-.DESCRIPTION
-Reads the production chunk manifest, verifies chunk size bounds, and reconstructs the
-source artifact text from chunk_paths in order.
-
-.FUNCTION NAME
-Invoke-ProductionChunkingVerification
-
-.INPUTS
-StepName string and CollectStep result object.
-
-.OUTPUTS
-No direct return value beyond harness logging; throws when production chunking fails.
-#>
-function Invoke-ProductionChunkingVerification {
-  param([string]$StepName,[object]$CollectStep)
-  $start = Get-Date
-  $status = 'FAIL'
-  $message = ''
-  $lines = @(
-    "STEP=$StepName",
-    "UPLOAD_SAFE_CHUNK_MANIFEST_PATH=$($CollectStep.UploadSafeChunkManifestPath)"
-  )
-
-  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.UploadSafeChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.UploadSafeChunkManifestPath)) {
-    $message = 'Production upload-safe chunk manifest path was not emitted by the collector.'
-  } else {
-    $manifest = Get-Content -LiteralPath $CollectStep.UploadSafeChunkManifestPath -Raw | ConvertFrom-Json
-    $artifacts = @($manifest.chunked_artifacts)
-    $violations = New-Object System.Collections.ArrayList
-    if (@($artifacts).Count -lt 1) { [void]$violations.Add('No chunked_artifacts were recorded in the production chunk manifest.') }
-    foreach ($artifact in $artifacts) {
-      $sourcePath = [string]$artifact.source_path
-      $sourceKey = [string]$artifact.source_artifact_key
-      $chunkPaths = @($artifact.chunk_paths)
-      $lines += ("SOURCE_KEY={0}" -f $sourceKey)
-      $lines += ("SOURCE_PATH={0}" -f $sourcePath)
-      [void](Add-HarnessEvidenceFile -StepName $StepName -Path $sourcePath -Label ("source_{0}" -f $sourceKey))
-      if ([string]::IsNullOrWhiteSpace($sourcePath) -or -not (Test-Path -LiteralPath $sourcePath)) {
-        [void]$violations.Add(('Missing source artifact for chunk row: {0}' -f $sourceKey))
+    if ($chunkCount -lt 2) { [void]$violations.Add('Chunk count was less than 2 for the oversized artifact.') }
+    foreach ($chunkPath in $chunkPaths) {
+      if (-not (Test-Path -LiteralPath $chunkPath)) {
+        [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
         continue
       }
-      if (@($chunkPaths).Count -lt 2) { [void]$violations.Add(('Chunk count was less than 2 for oversized source: {0}' -f $sourceKey)) }
-      $rebuilt = New-Object System.IO.MemoryStream
-      $chunkSha256 = @($artifact.chunk_sha256)
-      $chunkIndex = 0
-      foreach ($chunkPath in $chunkPaths) {
-        if (-not (Test-Path -LiteralPath $chunkPath)) {
-          [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
-          continue
-        }
-        [void](Add-HarnessEvidenceFile -StepName $StepName -Path $chunkPath -Label ("chunk_{0}_{1:000}" -f $sourceKey, ($chunkIndex + 1)))
-        $chunkSizeKB = [int][Math]::Ceiling(((Get-Item -LiteralPath $chunkPath).Length) / 1KB)
-        $lines += ('CHUNK={0} SIZE_KB={1}' -f $chunkPath, $chunkSizeKB)
-        if ($chunkSizeKB -gt $SafePerFileKB) { [void]$violations.Add(('Chunk exceeded safe per-file budget: {0}' -f $chunkPath)) }
-        $chunkBytes = [System.IO.File]::ReadAllBytes($chunkPath)
-        if (@($chunkSha256).Count -gt $chunkIndex) {
-          $actualChunkHash = (Get-FileHash -LiteralPath $chunkPath -Algorithm SHA256).Hash
-          if ($actualChunkHash -ne [string]$chunkSha256[$chunkIndex]) { [void]$violations.Add(('Chunk SHA256 did not match manifest for: {0}' -f $chunkPath)) }
-        }
-        $rebuilt.Write($chunkBytes, 0, $chunkBytes.Length)
-        $chunkIndex += 1
+      $chunkSizeKB = [int][Math]::Ceiling(((Get-Item -LiteralPath $chunkPath).Length) / 1KB)
+      $lines += ('CHUNK={0} SIZE_KB={1}' -f $chunkPath, $chunkSizeKB)
+      if ($chunkSizeKB -gt $SafePerFileKB) {
+        [void]$violations.Add(('Chunk exceeded safe per-file budget: {0}' -f $chunkPath))
       }
-      $sourceHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash
-      $sha = [System.Security.Cryptography.SHA256]::Create()
-      try {
-        $rebuiltHashBytes = $sha.ComputeHash($rebuilt.ToArray())
-      } finally {
-        $sha.Dispose()
-      }
-      $rebuiltHash = (($rebuiltHashBytes | ForEach-Object { $_.ToString('x2') }) -join '').ToUpperInvariant()
-      $lines += ('SOURCE_SHA256={0}' -f $sourceHash)
-      $lines += ('REBUILT_SHA256={0}' -f $rebuiltHash)
-      if ($rebuiltHash -ne $sourceHash) { [void]$violations.Add(('Chunk byte reconstruction hash did not match source artifact: {0}' -f $sourceKey)) }
-      if (($artifact.source_sha256) -and ([string]$artifact.source_sha256 -ne $sourceHash)) { [void]$violations.Add(('Manifest source SHA256 did not match source artifact: {0}' -f $sourceKey)) }
     }
     if (@($violations).Count -eq 0) {
       $status = 'PASS'
-      $message = 'Production upload-safe chunks stayed within size budget and reconstructed source artifacts exactly.'
+      $message = 'Synthetic oversized artifact was chunked into multiple smaller files within the safe per-file budget.'
     } else {
       $message = ($violations -join '; ')
     }
@@ -172,3 +25,166 @@ function Invoke-ProductionChunkingVerification {
   Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
+
+<#
+.SYNOPSIS
+Verifies chunk reconstruction metadata and exact rebuild behavior.
+
+.DESCRIPTION
+Checks that the chunk manifest describes reconstruction order, that the chunk list is
+consistent, and that concatenating the chunk files reproduces the original synthetic
+source artifact exactly.
+
+.FUNCTION NAME
+Invoke-ChunkingReconstructionVerification
+
+.INPUTS
+StepName string and CollectStep result object.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when reconstruction expectations
+fail.
+#>
+function Invoke-ChunkingReconstructionVerification {
+  param([string]$StepName,[object]$CollectStep)
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "SYNTHETIC_OVERSIZE_SOURCE_PATH=$($CollectStep.SyntheticOversizeSourcePath)",
+    "CHUNK_MANIFEST_PATH=$($CollectStep.ChunkManifestPath)"
+  )
+
+  if ([string]::IsNullOrWhiteSpace([string]$CollectStep.SyntheticOversizeSourcePath) -or -not (Test-Path -LiteralPath $CollectStep.SyntheticOversizeSourcePath)) {
+    $message = 'Synthetic oversize source artifact was not emitted by the collector.'
+  } elseif ([string]::IsNullOrWhiteSpace([string]$CollectStep.ChunkManifestPath) -or -not (Test-Path -LiteralPath $CollectStep.ChunkManifestPath)) {
+    $message = 'Chunk manifest path was not emitted by the collector.'
+  } else {
+    $manifest = Get-Content -LiteralPath $CollectStep.ChunkManifestPath -Raw | ConvertFrom-Json
+    $chunkPaths = @($manifest.chunk_paths)
+    $violations = New-Object System.Collections.ArrayList
+    if (-not $manifest.reconstruction_order) {
+      [void]$violations.Add('Chunk manifest does not describe reconstruction order.')
+    }
+    if ([int]$manifest.chunk_count -ne @($chunkPaths).Count) {
+      [void]$violations.Add('Chunk count in manifest does not match listed chunk paths.')
+    }
+    $rebuilt = New-Object System.Text.StringBuilder
+    foreach ($chunkPath in $chunkPaths) {
+      if (-not (Test-Path -LiteralPath $chunkPath)) {
+        [void]$violations.Add(('Missing chunk path: {0}' -f $chunkPath))
+        continue
+      }
+      $lines += ('RECONSTRUCT_CHUNK={0}' -f $chunkPath)
+      [void]$rebuilt.Append((Get-Content -LiteralPath $chunkPath -Raw))
+    }
+    if (@($violations).Count -eq 0) {
+      $sourceText = Get-Content -LiteralPath $CollectStep.SyntheticOversizeSourcePath -Raw
+      if ($rebuilt.ToString() -eq $sourceText) {
+        $status = 'PASS'
+        $message = 'Chunk reconstruction metadata and chunk ordering were sufficient to rebuild the synthetic oversize artifact exactly.'
+      } else {
+        $message = 'Chunk reconstruction did not match the original synthetic source artifact.'
+      }
+    } else {
+      $message = ($violations -join '; ')
+    }
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $script:CollectorSessionId -CollectorReportedStatus $null -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
+<#
+.SYNOPSIS
+Adds one capability coverage row.
+
+.DESCRIPTION
+Records advertised-capability coverage in a reusable matrix so #187 audit evidence is
+available from the same artifact set as the harness summary.
+
+.FUNCTION NAME
+Add-CapabilityCoverage
+
+.INPUTS
+Capability metadata, coverage class, status, evidence, and remaining gap.
+
+.OUTPUTS
+No direct output. Appends one row to the coverage matrix.
+#>
+function Add-CapabilityCoverage {
+  param(
+    [string]$CapabilityId,
+    [string]$Category,
+    [string]$Claim,
+    [string[]]$AdvertisedSource,
+    [string]$CoverageClass,
+    [string[]]$Suites,
+    [string[]]$Steps,
+    [string[]]$Assertions,
+    [string[]]$EvidenceArtifacts,
+    [string]$Risk,
+    [string]$OperatorValue,
+    [string]$Status,
+    [string]$RemainingGap = ''
+  )
+  [void]$script:CoverageRows.Add([pscustomobject]@{
+    capability_id = $CapabilityId
+    category = $Category
+    claim = $Claim
+    advertised_source = @($AdvertisedSource)
+    coverage_class = $CoverageClass
+    suites = @($Suites)
+    steps = @($Steps)
+    assertions = @($Assertions)
+    evidence_artifacts = @($EvidenceArtifacts)
+    risk = $Risk
+    operator_value = $OperatorValue
+    status = $Status
+    remaining_gap = $RemainingGap
+  })
+}
+
+function Get-StepStatusMap {
+  $map = @{}
+  foreach ($r in @($script:Results)) { $map[$r.StepName] = $r.Status }
+  return $map
+}
+
+function Test-StepsCovered {
+  param([hashtable]$Map,[string[]]$Steps)
+  foreach ($step in $Steps) {
+    if (-not $Map.ContainsKey($step)) { return $false }
+    if ($Map[$step] -notin @('PASS','PARTIAL_SUCCESS')) { return $false }
+  }
+  return $true
+}
+
+function Test-CoverageArtifactEvidence {
+  param([string]$CapabilityId)
+  switch ($CapabilityId) {
+    'collector.progress.hang_localization' {
+      return (Test-Path -LiteralPath $ProgressJsonlPath) -and (Test-Path -LiteralPath $ProgressTxtPath)
+    }
+    'collector.evidence.retained_artifacts' {
+      return (Test-Path -LiteralPath $EvidenceRoot) -and @((Get-ChildItem -LiteralPath $EvidenceRoot -Recurse -File -ErrorAction SilentlyContinue)).Count -gt 0
+    }
+    'collector.coverage.matrix_artifact' {
+      return (Test-Path -LiteralPath $CoverageJsonPath) -and (Test-Path -LiteralPath $CoverageMdPath)
+    }
+    default { return $false }
+  }
+}
+
+function Add-CollectorCapabilityCoverageRows {
+  if (@($script:CoverageRows).Count -gt 0) { return }
+  $map = Get-StepStatusMap
+  $headEvidence = @('summary.json','summary.txt','progress.jsonl','progress.txt')
+
+  $rows = @(
+    @{ Id='collector.core.collect_contract'; Cat='Core collect'; Claim='Collect emits run id, metadata, upload guidance, handoff paths, cleanup/delete commands, and upload budget artifacts.'; Sources=@('project_sources/collector/source/DCOIR_Collector.ps1','knowledge/Knowledge - Collector - Feature and Output Contract Reference.md'); Class='covered_end_to_end_by_fullregression'; Suites=@('Core'); Steps=@('01_CollectT1','ZZ_CollectOutputContract','ZZ_AttachmentBudget_Collect'); Risk='high'; Value='high'; Assertions=@('collector succeeds','collect output contract paths exist','attachment budget manifest validates') },
