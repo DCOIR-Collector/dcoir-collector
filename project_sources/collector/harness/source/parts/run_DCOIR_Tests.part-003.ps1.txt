@@ -1,14 +1,3 @@
-invokes one collector step, and restores the previous environment values afterward.
-
-.FUNCTION NAME
-Invoke-CollectorStepWithEnvOverride
-
-.INPUTS
-Mandatory StepName string, CollectorArgs string array, and EnvOverrides hashtable.
-
-.OUTPUTS
-Collector step result object returned by Invoke-CollectorStep.
-#>
 function Invoke-CollectorStepWithEnvOverride {
   param(
     [Parameter(Mandatory=$true)][string]$StepName,
@@ -225,3 +214,10 @@ function Assert-CollectorStepDegradedPartial {
   }
 
   $message = @(
+    ("Collector step did not show the expected degraded partial behavior: {0}" -f $StepName),
+    ("Collector harness status: {0}" -f $CollectorStep.Status),
+    ("Collector reported status: {0}" -f $CollectorStep.CollectorReportedStatus),
+    ("Collector step log: {0}" -f $CollectorStep.LogPath),
+    ("Missing patterns: {0}" -f (@($missingPatterns) -join '; ')),
+    "Collector stdout follows:",
+    $CollectorStep.StdOut
