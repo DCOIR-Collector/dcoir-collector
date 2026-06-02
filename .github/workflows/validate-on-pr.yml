@@ -167,7 +167,7 @@ jobs:
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\tools\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\collector\harness\validate_DCOIR_Run.ps1 -OutputRoot .\validation\out_validate_on_pr_validate_dcoir_run_fixtures
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\collector\\tools\\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\\collector\\harness\\validate_DCOIR_Run.ps1 -OutputRoot .\\validation\\out_validate_on_pr_validate_dcoir_run_fixtures
 
       - name: Run collector documentation quality gate
         shell: pwsh
@@ -207,7 +207,7 @@ jobs:
         shell: pwsh
         working-directory: project_sources
         run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\collector\\harness\\run_DCOIR_Tests.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
           if ($LASTEXITCODE -ne 0) {
             throw 'Collector harness suite failed: Core'
           }
