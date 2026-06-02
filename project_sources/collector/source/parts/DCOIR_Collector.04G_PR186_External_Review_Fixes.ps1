@@ -167,3 +167,92 @@ function Write-ArtifactText {
 
   return $path
 }
+
+<#
+.SYNOPSIS
+Synchronizes the collection metadata section companion before bundling.
+
+.DESCRIPTION
+Uses the existing prefixed root collection metadata artifact as the source of truth and
+rewrites final_artifacts/COLLECTION_METADATA/collection_metadata.txt immediately before
+bundle creation. This keeps the strict Tier 2 bundle verifier aligned with the emitted
+collector artifact shape without fabricating metadata when the root artifact is missing.
+
+.FUNCTION NAME
+Sync-CollectionMetadataCompanionArtifact
+
+.INPUTS
+ArtifactsDir string.
+
+.OUTPUTS
+No direct output. Writes or refreshes the section companion artifact when the root
+collection metadata artifact exists.
+#>
+function Sync-CollectionMetadataCompanionArtifact {
+  param([string]$ArtifactsDir)
+
+  if ([string]::IsNullOrWhiteSpace($ArtifactsDir) -or -not (Test-Path -LiteralPath $ArtifactsDir)) { return }
+
+  $rootPath = Join-Path $ArtifactsDir '01_COLLECTION_METADATA_collection_metadata.txt'
+  if (-not (Test-Path -LiteralPath $rootPath)) { return }
+
+  try {
+    $artifactText = Get-Content -LiteralPath $rootPath -Raw
+    $artifactText = Add-BoundedCollectFieldsToCollectionMetadataText -Name 'collection_metadata.txt' -Text $artifactText
+    Set-Content -LiteralPath $rootPath -Value $artifactText -Encoding UTF8
+
+    $sectionDir = Join-Path $ArtifactsDir 'COLLECTION_METADATA'
+    Ensure-Directory -Path $sectionDir
+    $sectionPath = Join-Path $sectionDir 'collection_metadata.txt'
+    Set-Content -LiteralPath $sectionPath -Value $artifactText -Encoding UTF8
+  } catch {
+    Add-CollectorError ("Failed to synchronize collection metadata companion artifact: {0}" -f $_.Exception.Message)
+  }
+}
+
+<#
+.SYNOPSIS
+Creates one ZIP bundle from the supplied paths after synchronizing metadata companions.
+
+.DESCRIPTION
+Preserves the original New-BundleZip behavior while refreshing collection metadata
+section companions for any final_artifacts directory in the bundle input list. This makes
+bundle-level metadata validation deterministic even when the verifier reads the section
+companion path instead of the prefixed root artifact path.
+
+.FUNCTION NAME
+New-BundleZip
+
+.INPUTS
+BundlesDir string, BundleName string, and Paths string array.
+
+.OUTPUTS
+String bundle ZIP path.
+#>
+function New-BundleZip {
+  param(
+    [string]$BundlesDir,
+    [string]$BundleName,
+    [string[]]$Paths
+  )
+
+  foreach ($candidatePath in @($Paths)) {
+    if ([string]::IsNullOrWhiteSpace($candidatePath) -or -not (Test-Path -LiteralPath $candidatePath)) { continue }
+    $item = Get-Item -LiteralPath $candidatePath -ErrorAction SilentlyContinue
+    if ($item -and $item.PSIsContainer -and ($item.Name -eq 'final_artifacts')) {
+      Sync-CollectionMetadataCompanionArtifact -ArtifactsDir $item.FullName
+    }
+  }
+
+  Ensure-Directory -Path $BundlesDir
+  $bundlePath = Join-Path $BundlesDir $BundleName
+  if (Test-Path -LiteralPath $bundlePath) {
+    Remove-Item -LiteralPath $bundlePath -Force -ErrorAction SilentlyContinue
+  }
+  $existing = @($Paths | Where-Object { $_ -and (Test-Path -LiteralPath $_) })
+  if (@($existing).Count -eq 0) {
+    throw 'No bundle inputs were found.'
+  }
+  Compress-Archive -LiteralPath $existing -DestinationPath $bundlePath -CompressionLevel Optimal -Force
+  return $bundlePath
+}
