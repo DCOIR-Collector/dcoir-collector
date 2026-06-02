@@ -148,24 +148,21 @@ function Invoke-SessionResolutionVerification {
 
 <#
 .SYNOPSIS
-Verifies the targeted-collection artifact contract.
+Checks a timestamp field against an expected UTC instant.
 
 .DESCRIPTION
-Checks that the targeted collect step emitted the collection scope, parallelism
-assessment, and targeted collection plan paths and that the artifacts contain the
-expected markers.
+Reads a single FIELD=value line from harness artifact text, parses it as a timestamp,
+and compares its UTC instant to the expected timestamp value.
 
 .FUNCTION NAME
-Invoke-TargetedCollectionVerification
+Test-HarnessUtcTimestampLine
 
 .INPUTS
-StepName string and CollectStep result object.
+Artifact text, field name, and expected timestamp value.
 
 .OUTPUTS
-No direct return value beyond harness logging; throws when the targeted artifacts are
-missing or malformed.
+Boolean indicating whether the field exists once and matches the expected UTC instant.
 #>
-
 function Test-HarnessUtcTimestampLine {
   param([string]$Text,[string]$FieldName,[string]$ExpectedValue)
   if ([string]::IsNullOrWhiteSpace($Text) -or [string]::IsNullOrWhiteSpace($FieldName) -or [string]::IsNullOrWhiteSpace($ExpectedValue)) { return $false }
