@@ -1,6 +1,3 @@
-  $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
-  $process.StartInfo.FileName = $Invocation.FileName
-  $process.StartInfo.UseShellExecute = $false
   $process.StartInfo.RedirectStandardOutput = $true
   $process.StartInfo.RedirectStandardError = $true
   $process.StartInfo.CreateNoWindow = $true
@@ -142,3 +139,14 @@ Runs one collector step with temporary environment overrides.
 
 .DESCRIPTION
 Applies the supplied process-scope environment overrides plus the harness test-mode flag,
+invokes one collector step, and restores the previous environment values afterward.
+
+.FUNCTION NAME
+Invoke-CollectorStepWithEnvOverride
+
+.INPUTS
+Mandatory StepName string, CollectorArgs string array, and EnvOverrides hashtable.
+
+.OUTPUTS
+Collector step result object returned by Invoke-CollectorStep.
+#>
