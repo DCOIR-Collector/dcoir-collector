@@ -8,13 +8,13 @@
 # Do not use when:
 # - Do not use as the quick push gate when validate-on-push is sufficient, and do not treat it as a replacement for deeper manual-full-validation coverage.
 # Trigger model:
-# - pull_request types: opened, reopened, synchronize, ready_for_review; same scoped paths as validate-on-push, including DCOIR_KNOWLEDGE_INDEX.md and docs/validation/dcoir_collector_capability_coverage_matrix.md
+# - pull_request types: opened, reopened, synchronize, ready_for_review; same scoped paths as validate-on-push, including DCOIR_KNOWLEDGE_INDEX.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, and governed workflow definitions.
 # Required inputs:
 # - none
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses syntax checks, required surface list, Gemini packaging smoke build, validation fixtures, documentation validation, collector runtime packaging, and the Core harness suite.
+# - Uses syntax checks, harness assembly parity, required surface list, Gemini packaging smoke build, validation fixtures, documentation validation, collector runtime packaging, and the Core harness suite.
 # Expected outputs/readback:
 # - PR validation artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
@@ -68,6 +68,10 @@ on:
       - 'supporting_assets/DCOIR_Collector.zip'
       - '.github/workflows/validate-on-push.yml'
       - '.github/workflows/validate-on-pr.yml'
+      - '.github/workflows/manual-full-validation.yml'
+      - '.github/workflows/manual-collector-runtime-package-build.yml'
+      - '.github/workflows/manual-gemini-bundle-build.yml'
+      - '.github/workflows/scheduled-health-check.yml'
 
 concurrency:
   group: validate-on-pr-${{ github.event.pull_request.number }}
@@ -139,6 +143,14 @@ jobs:
           if ($parseFailures.Count -gt 0) {
             $parseFailures | ForEach-Object { Write-Error $_ }
             throw 'PowerShell syntax validation failed.'
+          }
+
+      - name: Verify collector harness assembly parity
+        shell: pwsh
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\project_sources\collector\harness\assemble_run_DCOIR_Tests.ps1 -OutputPath .\project_sources\collector\harness\run_DCOIR_Tests.generated.ps1 -ExpectedHarnessPath .\project_sources\collector\harness\run_DCOIR_Tests.ps1
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector harness assembly parity validation failed.'
           }
 
       - name: Verify required governed surfaces
