@@ -88,6 +88,45 @@ function Invoke-SessionBehaviorVerification {
   if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
 }
 
+
+function Invoke-SessionResolutionVerification {
+  param(
+    [string]$StepName,
+    [object]$SessionStep,
+    [string]$ExpectedMode,
+    [string]$ExpectedSessionId = '',
+    [string]$UnexpectedSessionId = ''
+  )
+  $start = Get-Date
+  $status = 'FAIL'
+  $message = ''
+  $lines = @(
+    "STEP=$StepName",
+    "SESSION_ID=$($SessionStep.EnrichSessionId)",
+    "EXPECTED_SESSION_ID=$ExpectedSessionId",
+    "UNEXPECTED_SESSION_ID=$UnexpectedSessionId",
+    "SESSION_RESOLUTION_MODE=$($SessionStep.SessionResolutionMode)",
+    "EXPECTED_MODE=$ExpectedMode"
+  )
+
+  $modeOk = -not [string]::IsNullOrWhiteSpace($ExpectedMode) -and $SessionStep.SessionResolutionMode -eq $ExpectedMode
+  $expectedIdOk = [string]::IsNullOrWhiteSpace($ExpectedSessionId) -or $SessionStep.EnrichSessionId -eq $ExpectedSessionId
+  $unexpectedIdOk = [string]::IsNullOrWhiteSpace($UnexpectedSessionId) -or $SessionStep.EnrichSessionId -ne $UnexpectedSessionId
+  if ($SessionStep.ExitCode -eq 0 -and $SessionStep.Status -eq 'PASS' -and $modeOk -and $expectedIdOk -and $unexpectedIdOk) {
+    $status = 'PASS'
+    $message = 'Session resolution behavior matched the expected mode and session identity constraints.'
+  } else {
+    $message = 'Session resolution behavior did not match the expected mode or session identity constraints.'
+  }
+
+  $lines += "STATUS=$status"
+  $lines += "MESSAGE=$message"
+  $end = Get-Date
+  $logPath = Write-HarnessLog -StepName $StepName -Lines $lines
+  Add-Result -StepName $StepName -Status $status -ExitCode ($(if($status -eq 'PASS'){0}else{1})) -RunId $script:CollectorRunId -EnrichSessionId $SessionStep.EnrichSessionId -CollectorReportedStatus $SessionStep.CollectorReportedStatus -LogPath $logPath -Start $start -End $end
+  if ($status -ne 'PASS' -and -not $ContinueOnError) { throw $message }
+}
+
 <#
 .SYNOPSIS
 Verifies the targeted-collection artifact contract.
