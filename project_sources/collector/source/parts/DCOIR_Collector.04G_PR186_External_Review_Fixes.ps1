@@ -24,9 +24,10 @@ Deletes prior collector run directories before a new collect starts.
 .DESCRIPTION
 Keeps blank/latest automatic purge bounded to timestamp-style collector run roots. When a
 custom RunId is supplied for a new collect, also deletes only the exact expected custom
-run root before Initialize-RunStructure can reuse it. This prevents stale reports,
-artifacts, logs, or bundles from a previous custom-RunId collect from being mixed into a
-new evidence bundle without broadening blank/latest cleanup behavior.
+run root before Initialize-RunStructure can reuse it. If that exact root cannot be
+removed, collection stops before new artifacts are written or bundled. This prevents
+stale reports, artifacts, logs, or bundles from a previous custom-RunId collect from
+being mixed into a new evidence bundle without broadening blank/latest cleanup behavior.
 
 .FUNCTION NAME
 Purge-PreviousRuns
@@ -37,6 +38,7 @@ Root string and CurrentPackageName string.
 .OUTPUTS
 No direct output. Deletes prior strict-pattern collector run directories, the exact
 expected custom run root when applicable, and the previous package file as side effects.
+Throws when the exact custom run root remains after deletion.
 #>
 function Purge-PreviousRuns {
   param([string]$Root,[string]$CurrentPackageName)
@@ -50,10 +52,14 @@ function Purge-PreviousRuns {
           -not (Test-DCOIRBulkPurgeRunDirectoryName -Name $expectedRunName) -and
           (Test-Path -LiteralPath $expectedRunRoot)) {
         Remove-Item -LiteralPath $expectedRunRoot -Recurse -Force -ErrorAction SilentlyContinue
+        if (Test-Path -LiteralPath $expectedRunRoot) {
+          throw "Existing custom RunId directory could not be removed before collect: $expectedRunRoot"
+        }
       }
     }
   } catch {
     Add-CollectorError "Failed to purge exact custom RunId directory: $($_.Exception.Message)"
+    throw
   }
 
   try {
