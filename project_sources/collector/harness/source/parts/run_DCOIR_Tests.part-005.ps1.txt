@@ -1,3 +1,28 @@
+    [string]$StepName,
+    [object]$CollectorStep,
+    [string[]]$ExpectedPatterns
+  )
+
+  $missingPatterns = New-Object System.Collections.ArrayList
+  foreach ($pattern in @($ExpectedPatterns)) {
+    if (-not [string]::IsNullOrWhiteSpace($pattern) -and -not [regex]::IsMatch($CollectorStep.StdOut, [regex]::Escape($pattern))) {
+      [void]$missingPatterns.Add($pattern)
+    }
+  }
+
+  if ($CollectorStep.ExitCode -eq 0 -and $CollectorStep.CollectorReportedStatus -eq 'PARTIAL_SUCCESS' -and @($missingPatterns).Count -eq 0) {
+    return
+  }
+
+  $message = @(
+    ("Collector step did not show the expected degraded partial behavior: {0}" -f $StepName),
+    ("Collector harness status: {0}" -f $CollectorStep.Status),
+    ("Collector reported status: {0}" -f $CollectorStep.CollectorReportedStatus),
+    ("Collector step log: {0}" -f $CollectorStep.LogPath),
+    ("Missing patterns: {0}" -f (@($missingPatterns) -join '; ')),
+    "Collector stdout follows:",
+    $CollectorStep.StdOut
+  ) -join [Environment]::NewLine
 
   throw $message
 }
@@ -147,4 +172,3 @@ function Invoke-EnrichFinalizedOutputContractVerification {
   if ([string]::IsNullOrWhiteSpace($EnrichStep.DeleteScriptCommand)) { [void]$missing.Add('DELETE_SCRIPT_COMMAND missing') }
 
   if (@($missing).Count -eq 0) {
-    $status = 'PASS'
