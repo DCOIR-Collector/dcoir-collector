@@ -50,24 +50,6 @@ function Invoke-CollectOutputContractVerification {
 
 <#
 .SYNOPSIS
-Verifies the open enrich-session output contract fields.
-
-.DESCRIPTION
-Checks that an enrich-start style step emitted the expected open-session contract values
-such as RUN_ID, ENRICH_SESSION_ID, NEXT_OPTIONS, and the delete-script command.
-
-.FUNCTION NAME
-Invoke-EnrichOpenOutputContractVerification
-
-.INPUTS
-StepName string and EnrichStep result object.
-
-.OUTPUTS
-No direct return value beyond harness logging; throws when the contract is incomplete.
-#>
-
-<#
-.SYNOPSIS
 Verifies Tier 2-specific bounded collect output.
 
 .DESCRIPTION
