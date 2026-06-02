@@ -131,6 +131,7 @@ function Invoke-Tier2CollectVerification {
         try { $metadataText = $reader.ReadToEnd() } finally { $reader.Dispose() }
         if ($metadataText -notmatch '(?m)^Tier=T2$') { [void]$missing.Add('metadata Tier=T2 missing') }
         if ($metadataText -notmatch ('(?m)^Hours={0}$' -f [regex]::Escape([string]$ExpectedHours))) { [void]$missing.Add("metadata Hours=$ExpectedHours missing") }
+        if ($metadataText -notmatch ('(?m)^MaxEvents={0}$' -f [regex]::Escape([string]$ExpectedMaxEvents))) { [void]$missing.Add("metadata MaxEvents=$ExpectedMaxEvents missing") }
       }
     } finally {
       $archive.Dispose()
