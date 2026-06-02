@@ -89,6 +89,25 @@ function Invoke-SessionBehaviorVerification {
 }
 
 
+<#
+.SYNOPSIS
+Verifies one enrich-session resolution result.
+
+.DESCRIPTION
+Checks that an enrich step used the expected session-resolution mode and optional
+session identity constraints, including required or forbidden session IDs.
+
+.FUNCTION NAME
+Invoke-SessionResolutionVerification
+
+.INPUTS
+StepName string, SessionStep result object, expected mode, and optional expected or
+unexpected session IDs.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when the resolution behavior does
+not match the expected mode or identity constraints.
+#>
 function Invoke-SessionResolutionVerification {
   param(
     [string]$StepName,
@@ -163,6 +182,25 @@ function Test-HarnessUtcTimestampLine {
   }
 }
 
+<#
+.SYNOPSIS
+Verifies the targeted-collection artifact contract.
+
+.DESCRIPTION
+Checks that targeted collect emitted collection scope, parallelism assessment, targeted
+plan, high-signal metadata, and optional explicit event-window values.
+
+.FUNCTION NAME
+Invoke-TargetedCollectionVerification
+
+.INPUTS
+StepName string, CollectStep result object, optional explicit-window expectation, and
+optional expected WindowStart and WindowEnd strings.
+
+.OUTPUTS
+No direct return value beyond harness logging; throws when targeted artifacts are missing
+or malformed.
+#>
 function Invoke-TargetedCollectionVerification {
   param(
     [string]$StepName,
