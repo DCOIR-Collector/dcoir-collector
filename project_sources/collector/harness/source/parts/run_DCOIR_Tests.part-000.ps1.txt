@@ -20,7 +20,7 @@ those validation suites drive.
 #>
 
 param(
-  [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","ChunkingOversizeArtifact","ChunkingReconstructionMetadata","MajorVersion","FullRegression","FailureGates")]
+  [ValidateSet("Core","Retrieval","QuickAliases","SessionBehavior","TargetedCollection","ChunkingOversizeArtifact","ChunkingReconstructionMetadata","Tier2BoundedCollect","MajorVersion","FullRegression","FailureGates")]
   [string]$Suite = "Core",
 
   [string]$CollectorPath = ".\DCOIR_Collector.ps1",
