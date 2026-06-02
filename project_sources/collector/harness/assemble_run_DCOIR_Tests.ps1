@@ -33,12 +33,15 @@ if (-not (Test-Path -LiteralPath $outputDirectory)) {
 
 $writer = New-Object System.Text.UTF8Encoding($false)
 $builder = New-Object System.Text.StringBuilder
+$partDiagnostics = New-Object System.Collections.ArrayList
 foreach ($part in $parts) {
   $text = [System.IO.File]::ReadAllText($part.FullName) -replace "`r`n", "`n" -replace "`r", "`n"
   [void]$builder.Append($text)
   if (-not $text.EndsWith("`n")) {
     [void]$builder.Append("`n")
   }
+  $partHash = (Get-FileHash -LiteralPath $part.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+  [void]$partDiagnostics.Add(("{0} sha256={1} bytes={2}" -f $part.Name, $partHash, (Get-Item -LiteralPath $part.FullName).Length))
 }
 
 [System.IO.File]::WriteAllText($OutputPath, $builder.ToString(), $writer)
@@ -46,7 +49,8 @@ foreach ($part in $parts) {
 if (-not [string]::IsNullOrWhiteSpace($ExpectedSha256)) {
   $actualSha256 = (Get-FileHash -LiteralPath $OutputPath -Algorithm SHA256).Hash.ToLowerInvariant()
   if ($actualSha256 -ne $ExpectedSha256.ToLowerInvariant()) {
-    throw "Generated harness SHA256 mismatch. Expected $ExpectedSha256 but got $actualSha256"
+    $diagnosticText = ($partDiagnostics -join [Environment]::NewLine)
+    throw ("Generated harness SHA256 mismatch. Expected {0} but got {1}. Parts used, in order:{2}{3}" -f $ExpectedSha256, $actualSha256, [Environment]::NewLine, $diagnosticText)
   }
 }
 
