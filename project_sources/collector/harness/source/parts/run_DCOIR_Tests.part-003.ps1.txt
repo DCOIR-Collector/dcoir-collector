@@ -1,3 +1,68 @@
+  $process.StartInfo.Arguments = Build-ArgumentString -ArgumentValues @($Invocation.Arguments)
+  [void]$process.Start()
+  Write-HarnessProgress -StepName $StepName -Phase 'process_started' -Status 'RUNNING' -Command $commandDisplay -TimeoutSeconds $CollectorStepTimeoutSeconds -ProcessId $process.Id
+  $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+  $stderrTask = $process.StandardError.ReadToEndAsync()
+  $timedOut = -not $process.WaitForExit($script:CollectorStepTimeoutMilliseconds)
+  if ($timedOut) {
+    try {
+      Start-Process -FilePath 'taskkill.exe' -ArgumentList @('/PID', $process.Id.ToString(), '/T', '/F') -NoNewWindow -Wait -ErrorAction SilentlyContinue | Out-Null
+    } catch {
+      try { $process.Kill() } catch { }
+    }
+    try { [void]$process.WaitForExit(5000) } catch { }
+  }
+  $stdoutText = if ($stdoutTask.Wait(5000)) { $stdoutTask.GetAwaiter().GetResult() } else { '[HARNESS_TIMEOUT_STDOUT_DRAIN_INCOMPLETE]' }
+  $stderrText = if ($stderrTask.Wait(5000)) { $stderrTask.GetAwaiter().GetResult() } else { '[HARNESS_TIMEOUT_STDERR_DRAIN_INCOMPLETE]' }
+  $exitCode = if ($timedOut) { -1001 } else { $process.ExitCode }
+  $end = Get-Date
+  Write-Host ("HARNESS_STEP_END step={0} exit_code={1} timed_out={2} duration_ms={3}" -f $StepName, $exitCode, $timedOut, [int][Math]::Round(($end - $start).TotalMilliseconds))
+  $processStatus = if ($timedOut) { 'TIMED_OUT' } elseif ($exitCode -eq 0) { 'SUCCESS' } else { 'NONZERO_EXIT' }
+  Write-HarnessProgress -StepName $StepName -Phase 'process_completed' -Status $processStatus -Command $commandDisplay -TimeoutSeconds $CollectorStepTimeoutSeconds -ProcessId $process.Id -Message ("ExitCode={0}; TimedOut={1}" -f $exitCode, $timedOut)
+
+  return [pscustomobject]@{
+    Start = $start
+    End = $end
+    ExitCode = $exitCode
+    StdOutText = $stdoutText
+    StdErrText = $stderrText
+    TimedOut = [bool]$timedOut
+  }
+}
+
+<#
+.SYNOPSIS
+Runs one collector step and captures its contract surface.
+
+.DESCRIPTION
+Builds the collector invocation, runs it through Invoke-CollectorProcess, writes a
+per-step harness log, updates the tracked run/session identifiers, records the harness
+result, and returns the parsed collector contract values used by downstream verifiers.
+
+.FUNCTION NAME
+Invoke-CollectorStep
+
+.INPUTS
+Mandatory StepName string and CollectorArgs string array.
+
+.OUTPUTS
+PSCustomObject containing harness status, parsed collector contract fields, stdout text,
+and the step log path.
+#>
+function Invoke-CollectorStep {
+  param(
+    [Parameter(Mandatory=$true)][string]$StepName,
+    [Parameter(Mandatory=$true)][string[]]$CollectorArgs
+  )
+  Ensure-Directory -Path $LogsDir
+  $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
+  $processResult = Invoke-CollectorProcess -StepName $StepName -Invocation $invocation
+  $start = $processResult.Start
+  $end = $processResult.End
+  $stdoutText = $processResult.StdOutText
+  $stderrText = $processResult.StdErrText
+  $exitCode = $processResult.ExitCode
+  $stdout = @($stdoutText, $stderrText | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
   $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
   $logLines = New-Object System.Collections.ArrayList
   [void]$logLines.Add("STEP=$StepName")
@@ -22,7 +87,7 @@
   if ($processResult.TimedOut -and -not $ContinueOnError) {
     throw ("Collector step '{0}' timed out after {1} seconds." -f $StepName, $CollectorStepTimeoutSeconds)
   }
-  return [pscustomobject]@{
+  $result = [pscustomobject]@{
     StepName = $StepName
     Status = $status
     ExitCode = $exitCode
@@ -33,6 +98,12 @@
     LogPath = $logPath
     BaselineReportPath = Parse-OutputValue -Text $stdout -Key "BASELINE_REPORT_PATH"
     MetadataReportPath = Parse-OutputValue -Text $stdout -Key "METADATA_REPORT_PATH"
+    ExecutionContextPath = Parse-OutputValue -Text $stdout -Key "EXECUTION_CONTEXT_PATH"
+    SecurityAuditPolicyPath = Parse-OutputValue -Text $stdout -Key "SECURITY_AUDIT_POLICY_PATH"
+    SecurityFilteredPath = Parse-OutputValue -Text $stdout -Key "SECURITY_FILTERED_PATH"
+    NetstatPidOnlyPath = Parse-OutputValue -Text $stdout -Key "NETSTAT_PID_ONLY_PATH"
+    AnalystOverviewPath = Parse-OutputValue -Text $stdout -Key "ANALYST_OVERVIEW_PATH"
+    ParallelExecutionProofPath = Parse-OutputValue -Text $stdout -Key "PARALLEL_EXECUTION_PROOF_PATH"
     UploadSummaryPath = Parse-OutputValue -Text $stdout -Key "UPLOAD_SUMMARY_PATH"
     AttachmentBudgetManifestPath = Parse-OutputValue -Text $stdout -Key "ATTACHMENT_BUDGET_MANIFEST_PATH"
     UploadSafeChunkManifestPath = Parse-OutputValue -Text $stdout -Key "UPLOAD_SAFE_CHUNK_MANIFEST_PATH"
@@ -55,6 +126,8 @@
     CleanupStatus = Parse-OutputValue -Text $stdout -Key "CLEANUP_STATUS"
     HasQuickCommands = [regex]::IsMatch($stdout, '(?m)^NEXT_QUICK_COMMANDS$')
   }
+  Add-CollectorStepEvidence -StepName $StepName -CollectorStep $result
+  return $result
 }
 
 <#
@@ -99,52 +172,3 @@ function Invoke-CollectorStepWithEnvOverride {
   } finally {
     foreach ($name in $effectiveEnvOverrides.Keys) {
       [Environment]::SetEnvironmentVariable($name, $previous[$name], 'Process')
-    }
-  }
-}
-
-<#
-.SYNOPSIS
-Runs one harness step that is expected to fail in a specific way.
-
-.DESCRIPTION
-Runs the collector directly, captures stdout and stderr, compares the result to the
-expected bind-reject or runtime-error outcome, checks for required text patterns, logs
-the result, and returns the harness result object.
-
-.FUNCTION NAME
-Invoke-ExpectedFailureStep
-
-.INPUTS
-Mandatory StepName, CollectorArgs, and ExpectedOutcome, plus optional ExpectedPatterns.
-
-.OUTPUTS
-PSCustomObject containing the observed failure behavior and harness log path.
-#>
-function Invoke-ExpectedFailureStep {
-  param(
-    [Parameter(Mandatory=$true)][string]$StepName,
-    [Parameter(Mandatory=$true)][string[]]$CollectorArgs,
-    [Parameter(Mandatory=$true)][ValidateSet('BIND_REJECT','RUNTIME_ERROR')][string]$ExpectedOutcome,
-    [string[]]$ExpectedPatterns
-  )
-
-  Ensure-Directory -Path $LogsDir
-  $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
-  $processResult = Invoke-CollectorProcess -StepName $StepName -Invocation $invocation
-  $start = $processResult.Start
-  $end = $processResult.End
-  $stdoutText = $processResult.StdOutText
-  $stderrText = $processResult.StdErrText
-  $exitCode = $processResult.ExitCode
-
-  $stdout = @($stdoutText, $stderrText | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
-  $collectorReportedStatus = Parse-OutputValue -Text $stdout -Key "STATUS"
-
-  $missingPatterns = New-Object System.Collections.ArrayList
-  foreach ($pattern in @($ExpectedPatterns)) {
-    if (-not [string]::IsNullOrWhiteSpace($pattern) -and -not [regex]::IsMatch($stdout, [regex]::Escape($pattern))) {
-      [void]$missingPatterns.Add($pattern)
-    }
-  }
-
