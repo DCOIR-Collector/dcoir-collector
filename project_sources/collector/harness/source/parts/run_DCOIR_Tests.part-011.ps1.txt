@@ -31,6 +31,33 @@ function Run-ChunkingReconstructionMetadataSuite {
 
 <#
 .SYNOPSIS
+Runs the bounded Tier 2 collect validation suite.
+
+.DESCRIPTION
+Exercises the advertised Tier 2 collection path under the normal runner-safe harness
+contract and verifies the standard collect output contract plus attachment budget
+manifest when emitted.
+
+.FUNCTION NAME
+Run-Tier2BoundedCollectSuite
+
+.INPUTS
+No direct parameters.
+
+.OUTPUTS
+No direct output. Executes the suite and writes harness results.
+#>
+function Run-Tier2BoundedCollectSuite {
+  Restore-WorkingZip -Reason "Tier2BoundedCollect"
+  $collect = Invoke-CollectorStep -StepName "83_CollectT2_Bounded" -CollectorArgs @("-Tier","T2")
+  Assert-CollectorStepSucceeded -StepName "83_CollectT2_Bounded" -CollectorStep $collect
+  Invoke-CollectOutputContractVerification -StepName "ZZ_CollectT2OutputContract" -CollectStep $collect
+  if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_CollectT2" -ManifestPath $collect.AttachmentBudgetManifestPath }
+  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "84_CleanupT2" -CollectorArgs @("-Quick","cleanup")) }
+}
+
+<#
+.SYNOPSIS
 Runs the failure-gates validation suite.
 
 .DESCRIPTION
@@ -119,6 +146,7 @@ function Run-MajorVersionSuite {
   Run-TargetedCollectionSuite
   Run-ChunkingOversizeArtifactSuite
   Run-ChunkingReconstructionMetadataSuite
+  Run-Tier2BoundedCollectSuite
 }
 
 Ensure-Directory -Path $RunOutputRoot
@@ -133,6 +161,7 @@ try {
     "TargetedCollection" { Run-TargetedCollectionSuite }
     "ChunkingOversizeArtifact" { Run-ChunkingOversizeArtifactSuite }
     "ChunkingReconstructionMetadata" { Run-ChunkingReconstructionMetadataSuite }
+    "Tier2BoundedCollect" { Run-Tier2BoundedCollectSuite }
     "MajorVersion" { Run-MajorVersionSuite }
     "FailureGates" { Run-FailureGatesSuite }
     "FullRegression" {
@@ -143,6 +172,7 @@ try {
       Run-TargetedCollectionSuite
       Run-ChunkingOversizeArtifactSuite
       Run-ChunkingReconstructionMetadataSuite
+      Run-Tier2BoundedCollectSuite
       Run-FailureGatesSuite
     }
   }
