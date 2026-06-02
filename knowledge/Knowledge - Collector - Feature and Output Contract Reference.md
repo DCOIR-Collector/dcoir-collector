@@ -95,10 +95,12 @@ Use T2 because a named question needs deeper persistence/configuration context, 
 
 ---
 
-## Quick aliases actually exposed by source
+## Quick aliases accepted by source
 
-These are the quick aliases currently visible in the collector help surface.
-They matter because operators and Gemini should not invent commands outside this supported set.
+These are the quick aliases currently accepted by the collector quick resolver. Some are
+also highlighted in the help surface as common operator shortcuts, but this table is the
+source-backed complete quick set. Operators and Gemini should not invent commands outside
+this supported set.
 
 ### Collect quick aliases
 
@@ -111,25 +113,35 @@ They matter because operators and Gemini should not invent commands outside this
 
 ### Enrich quick aliases
 
-| Quick alias | Purpose |
-| --- | --- |
-| `enrich-start-tcp` | Start a new enrich session with TCP refresh |
-| `enrich-add-tcp` | Add another TCP refresh action to the current open session |
-| `enrich-start-logtext` | Start a new enrich session with text log export |
-| `enrich-add-logtext` | Add another text log export to the current open session |
-| `enrich-start-lograw` | Start a new enrich session with raw EVTX export |
-| `enrich-add-lograw` | Add another raw EVTX export to the current open session |
-| `enrich-start-sigcheck` | Start a new enrich session with signature/hash review |
-| `enrich-add-sigcheck` | Add another signature/hash review to the current open session |
-| `enrich-start-listdlls` | Start a new enrich session with loaded-module review |
-| `enrich-add-listdlls` | Add another loaded-module review to the current open session |
-| `enrich-finalize` | Finalize and bundle the current open enrich session |
+Each `enrich-start-*` alias starts a new enrich session for that action. The matching
+`enrich-add-*` alias adds the same action to the currently open session or to the explicit
+non-finalized session supplied with `-EnrichSessionId`.
+
+| Quick alias family | Action | Required target |
+| --- | --- | --- |
+| `enrich-start-tcp`, `enrich-add-tcp` | Refresh TCP connection evidence | None |
+| `enrich-start-logtext`, `enrich-add-logtext` | Export event log text | Optional `-Target <log name>`; defaults to Security |
+| `enrich-start-lograw`, `enrich-add-lograw` | Export raw EVTX log data | Optional `-Target <log name>`; defaults to Security |
+| `enrich-start-sigcheck`, `enrich-add-sigcheck` | Run signature/hash review for a path | `-Target <path>` |
+| `enrich-start-listdlls`, `enrich-add-listdlls` | Review loaded modules for a PID | `-Target <pid>` |
+| `enrich-start-access-file`, `enrich-add-access-file` | Run access-check review for a file path | `-Target <path>` |
+| `enrich-start-access-service`, `enrich-add-access-service` | Run access-check review for a service | `-Target <service name>` |
+| `enrich-start-access-reg`, `enrich-add-access-reg` | Run access-check review for a registry path | `-Target <registry path>` |
+| `enrich-start-strings`, `enrich-add-strings` | Extract strings from a path | `-Target <path>` |
+| `enrich-start-streams`, `enrich-add-streams` | Check alternate data streams for a path | `-Target <path>` |
+| `enrich-start-pull-file`, `enrich-add-pull-file` | Retrieve a suspicious file | `-Target <path>` |
+| `enrich-start-pull-script`, `enrich-add-pull-script` | Retrieve a suspicious script or config file | `-Target <path>` |
+| `enrich-start-pull-task`, `enrich-add-pull-task` | Retrieve scheduled task XML | `-Target <task path>` |
+| `enrich-start-pull-service`, `enrich-add-pull-service` | Retrieve a service binary | `-Target <service name>` |
+| `enrich-start-pull-wmi-file`, `enrich-add-pull-wmi-file` | Retrieve a file referenced by WMI persistence evidence | `-Target <path>` |
+| `enrich-finalize` | Finalize and bundle the current open enrich session, or the explicit non-finalized session supplied with `-EnrichSessionId` | None unless finalizing an explicit session |
 
 ### Cleanup and help quick aliases
 
 | Quick alias | Purpose |
 | --- | --- |
 | `cleanup` | Run cleanup |
+| `help` | Print general help |
 | `help-collect` | Print collect-specific contextual help |
 | `help-enrich` | Print enrich-specific contextual help |
 | `help-cleanup` | Print cleanup-specific contextual help |
