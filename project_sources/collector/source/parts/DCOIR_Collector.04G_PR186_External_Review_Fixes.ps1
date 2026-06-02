@@ -84,6 +84,42 @@ function Purge-PreviousRuns {
 
 <#
 .SYNOPSIS
+Adds bounded collect fields to the collection metadata artifact when absent.
+
+.DESCRIPTION
+Keeps collection_metadata.txt aligned with the run-window fields already emitted in the
+metadata report so bundle-level validators and operators can read the bounded collection
+shape from either metadata surface.
+
+.FUNCTION NAME
+Add-BoundedCollectFieldsToCollectionMetadataText
+
+.INPUTS
+Artifact name and candidate text.
+
+.OUTPUTS
+Text with Mode, Tier, Hours, and MaxEvents fields appended when the artifact is
+collection_metadata.txt and those fields are absent.
+#>
+function Add-BoundedCollectFieldsToCollectionMetadataText {
+  param([string]$Name,[string]$Text)
+
+  if ($Name -ne 'collection_metadata.txt') { return $Text }
+  $updated = [string]$Text
+  $lines = New-Object System.Collections.ArrayList
+  if ($updated -notmatch '(?m)^Mode=') { [void]$lines.Add('Mode=Collect') }
+  if ($updated -notmatch '(?m)^Tier=') { [void]$lines.Add(('Tier={0}' -f $Tier)) }
+  if ($updated -notmatch '(?m)^Hours=') { [void]$lines.Add(('Hours={0}' -f $Hours)) }
+  if ($updated -notmatch '(?m)^MaxEvents=') { [void]$lines.Add(('MaxEvents={0}' -f $MaxEvents)) }
+  if (@($lines).Count -gt 0) {
+    if (-not $updated.EndsWith([Environment]::NewLine)) { $updated += [Environment]::NewLine }
+    $updated += ((@($lines) -join [Environment]::NewLine) + [Environment]::NewLine)
+  }
+  return $updated
+}
+
+<#
+.SYNOPSIS
 Writes one collector artifact and a section-directory companion copy.
 
 .DESCRIPTION
@@ -114,15 +150,16 @@ function Write-ArtifactText {
   $prefix = Get-BaselineArtifactPrefix -Name $Name
   $safeSection = ($Section -replace '[\/:*?"<>| ]','_')
   $safeName = ($Name -replace '[\/:*?"<>| ]','_')
+  $artifactText = Add-BoundedCollectFieldsToCollectionMetadataText -Name $Name -Text $Text
   $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
-  Set-Content -Path $path -Value $Text -Encoding UTF8
+  Set-Content -Path $path -Value $artifactText -Encoding UTF8
 
   try {
     if (-not [string]::IsNullOrWhiteSpace($safeSection) -and -not [string]::IsNullOrWhiteSpace($safeName)) {
       $sectionDir = Join-Path $ArtifactsDir $safeSection
       Ensure-Directory -Path $sectionDir
       $sectionPath = Join-Path $sectionDir $safeName
-      Set-Content -Path $sectionPath -Value $Text -Encoding UTF8
+      Set-Content -Path $sectionPath -Value $artifactText -Encoding UTF8
     }
   } catch {
     Add-CollectorError ("Failed to write section companion artifact [{0}/{1}]: {2}" -f $safeSection, $safeName, $_.Exception.Message)
