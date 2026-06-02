@@ -1905,7 +1905,7 @@ function Add-CollectorCapabilityCoverageRows {
     @{ Id='collector.targeted.invalid_window_fallback'; Cat='Targeted collection'; Claim='Invalid or inverted explicit windows degrade to partial success and do not leak rejected values into targeted scope.'; Sources=@('project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('FailureGates'); Steps=@('99_TargetedInvalidWindowStart','ZZ_TargetedInvalidWindowStartValidation','100_TargetedInvalidWindowEnd','ZZ_TargetedInvalidWindowEndValidation','101_TargetedInvertedWindow','ZZ_TargetedInvertedWindowValidation'); Risk='high'; Value='high'; Assertions=@('invalid start degrades','invalid end degrades','inverted window degrades','targeted artifacts show no explicit window') },
     @{ Id='collector.chunking.synthetic_byte_reconstruction'; Cat='Upload-safe chunking'; Claim='Synthetic oversized artifacts are chunked under budget and reconstruct byte-for-byte by SHA256.'; Sources=@('project_sources/collector/source/parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('ChunkingOversizeArtifact','ChunkingReconstructionMetadata'); Steps=@('71_CollectT1_SyntheticOversize','ZZ_ChunkingOversizeValidation','81_CollectT1_SyntheticOversizeReconstruction','ZZ_ChunkingReconstructionValidation'); Risk='high'; Value='high'; Assertions=@('source exceeds hard budget','chunks stay under safe budget','chunk order reconstructs source bytes','source and rebuilt SHA256 match') },
     @{ Id='collector.chunking.production_event_text_reconstruction'; Cat='Upload-safe chunking'; Claim='Production event-text artifacts eligible for upload-safe chunking produce under-budget chunks with source and chunk SHA256 and byte-for-byte reconstruction.'; Sources=@('project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('ChunkingOversizeArtifact'); Steps=@('73_CollectT1_ProductionEventTextOversize','ZZ_ProductionEventTextChunkingValidation'); Risk='high'; Value='high'; Assertions=@('security filtered can chunk','powershell operational can chunk','taskscheduler operational can chunk','all chunk rows reconstruct by SHA256') },
-    @{ Id='collector.failure.missing_package_cleanup'; Cat='Failure gates and recovery'; Claim='Missing package diagnostics include checked paths and no-state cleanup removes only collector-owned orphan runs.'; Sources=@('project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1','project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('FailureGates'); Steps=@('98B_MissingPackageCheckedPaths','98C_CleanupAfterMissingPackageNoState','98D_CollectPreservesCustomLikeNoState','98E_CleanupExplicitCustomNoState'); Risk='high'; Value='high'; Assertions=@('missing package exits error','checked paths are printed','no-state cleanup succeeds or reports no target','unrelated DCOIR directory is preserved','collect-time purge preserves custom RunId-like no-state directory without explicit RunId','explicit custom RunId cleanup removes collector-structured no-state run root') },
+    @{ Id='collector.failure.missing_package_cleanup'; Cat='Failure gates and recovery'; Claim='Missing package diagnostics include checked paths and no-state cleanup removes only collector-owned orphan runs.'; Sources=@('project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1','project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1'); Class='covered_end_to_end_by_fullregression'; Suites=@('FailureGates'); Steps=@('98B_MissingPackageCheckedPaths','98C_CleanupAfterMissingPackageNoState','98D_CleanupPreservesCustomLikeNoStateWithoutRunId','98E_CleanupPreservesCustomStateWithoutRunId','98F_CleanupExplicitCustomNoState'); Risk='high'; Value='high'; Assertions=@('missing package exits error','checked paths are printed','no-state cleanup succeeds or reports no target','unrelated DCOIR directory is preserved','plain cleanup preserves custom RunId-like no-state directory without explicit RunId','plain cleanup preserves state-backed custom RunId directory without explicit RunId','explicit custom RunId cleanup removes collector-structured no-state run root') },
     @{ Id='collector.progress.hang_localization'; Cat='Harness evidence'; Claim='Manual FullRegression writes durable progress evidence that identifies the active suite/step/command if the long harness step stalls.'; Sources=@('project_sources/collector/harness/run_DCOIR_Tests.ps1'); Class='covered_by_harness_not_manual'; Suites=@($Suite); Steps=@(); Risk='medium'; Value='high'; Assertions=@('progress.jsonl exists','progress.txt exists','process start/completion events are flushed during execution') },
     @{ Id='collector.evidence.retained_artifacts'; Cat='Harness evidence'; Claim='Harness preserves bounded copies of collector artifacts referenced by validation logs so reviewers are not limited to transient C:\\Temp paths.'; Sources=@('project_sources/collector/harness/run_DCOIR_Tests.ps1'); Class='covered_by_harness_not_manual'; Suites=@($Suite); Steps=@(); Risk='medium'; Value='high'; Assertions=@('evidence folder exists','collector response path artifacts are copied','chunk source and chunk files are retained for reconstruction review') },
     @{ Id='collector.coverage.matrix_artifact'; Cat='Harness evidence'; Claim='Harness emits reusable capability-to-test coverage matrix artifacts for #187 and future drift checks.'; Sources=@('project_sources/collector/harness/run_DCOIR_Tests.ps1'); Class='covered_by_harness_not_manual'; Suites=@($Suite); Steps=@(); Risk='medium'; Value='high'; Assertions=@('collector_capability_coverage.json exists','collector_capability_coverage.md exists','rows include coverage class, evidence, risk, operator value, and remaining gap') },
@@ -2406,16 +2406,39 @@ function Run-FailureGatesSuite {
     New-Item -Path (Join-Path $customLikeDir $child) -ItemType Directory -Force | Out-Null
   }
   Set-Content -Path (Join-Path $customLikeDir 'keep.txt') -Value 'custom-like-must-not-delete-without-explicit-runid' -Encoding UTF8
-  Restore-WorkingZip -Reason "FailureGates_CustomLikePurgePreserve"
-  $customPreserveCollect = Invoke-CollectorStep -StepName "98D_CollectPreservesCustomLikeNoState" -CollectorArgs @("-Quick","collect-t1")
-  Assert-CollectorStepSucceeded -StepName "98D_CollectPreservesCustomLikeNoState" -CollectorStep $customPreserveCollect
+  $customNoStatePlainCleanup = Invoke-CollectorStep -StepName "98D_CleanupPreservesCustomLikeNoStateWithoutRunId" -CollectorArgs @("-Quick","cleanup")
+  Assert-CollectorStepSucceeded -StepName "98D_CleanupPreservesCustomLikeNoStateWithoutRunId" -CollectorStep $customNoStatePlainCleanup
+  if ($customNoStatePlainCleanup.CleanupStatus -notin @('NO_TARGET_FOUND','MISSING_STATE_ORPHAN_CLEANED')) {
+    throw ("Plain cleanup returned unexpected status while preserving custom no-state root: {0}" -f $customNoStatePlainCleanup.CleanupStatus)
+  }
   if (-not (Test-Path -LiteralPath (Join-Path $customLikeDir 'keep.txt'))) {
-    throw 'Collect-time purge deleted a custom RunId-like no-state directory without an explicit RunId.'
+    throw 'Plain cleanup deleted a custom RunId-like no-state directory without an explicit RunId.'
   }
 
+  $statefulCustomRunId = 'custom-state-preserve'
+  $statefulCustomDir = Join-Path 'C:\Temp' ("DCOIR_{0}_{1}" -f $env:COMPUTERNAME, $statefulCustomRunId)
+  New-Item -Path $statefulCustomDir -ItemType Directory -Force | Out-Null
+  foreach ($child in @('tools','reports','final_artifacts','logs','bundles')) {
+    New-Item -Path (Join-Path $statefulCustomDir $child) -ItemType Directory -Force | Out-Null
+  }
+  Set-Content -Path (Join-Path $statefulCustomDir 'keep.txt') -Value 'stateful-custom-must-not-delete-without-explicit-runid' -Encoding UTF8
+  $statefulCustomState = [ordered]@{
+    RunId = $statefulCustomRunId
+    RunRoot = $statefulCustomDir
+    PackagePath = (Join-Path 'C:\Temp' 'DCOIR_STATEFUL_CUSTOM_TEST_PACKAGE.zip')
+    CollectorVersion = '4.0.7'
+  }
+  Set-Content -Path (Join-Path $statefulCustomDir 'state.json') -Value ($statefulCustomState | ConvertTo-Json -Depth 5) -Encoding UTF8
+  $statefulCustomPlainCleanup = Invoke-CollectorStep -StepName "98E_CleanupPreservesCustomStateWithoutRunId" -CollectorArgs @("-Quick","cleanup")
+  Assert-CollectorStepSucceeded -StepName "98E_CleanupPreservesCustomStateWithoutRunId" -CollectorStep $statefulCustomPlainCleanup
+  if (-not (Test-Path -LiteralPath (Join-Path $statefulCustomDir 'keep.txt'))) {
+    throw 'Plain cleanup deleted a state-backed custom RunId directory without an explicit RunId.'
+  }
+  Remove-Item -LiteralPath $statefulCustomDir -Recurse -Force -ErrorAction SilentlyContinue
+
   $explicitCustomRunId = 'custom-like-preserve'
-  $explicitCleanup = Invoke-CollectorStep -StepName "98E_CleanupExplicitCustomNoState" -CollectorArgs @("-Quick","cleanup","-RunId",$explicitCustomRunId)
-  Assert-CollectorStepSucceeded -StepName "98E_CleanupExplicitCustomNoState" -CollectorStep $explicitCleanup
+  $explicitCleanup = Invoke-CollectorStep -StepName "98F_CleanupExplicitCustomNoState" -CollectorArgs @("-Quick","cleanup","-RunId",$explicitCustomRunId)
+  Assert-CollectorStepSucceeded -StepName "98F_CleanupExplicitCustomNoState" -CollectorStep $explicitCleanup
   if ($explicitCleanup.CleanupStatus -ne 'MISSING_STATE_ORPHAN_CLEANED') {
     throw ("Explicit custom RunId no-state cleanup returned unexpected status: {0}" -f $explicitCleanup.CleanupStatus)
   }
