@@ -19,15 +19,43 @@ Replacement helper functions used by the compiled collector runtime.
 
 <#
 .SYNOPSIS
+Checks whether an exact custom RunId root is safe to purge before collection.
+
+.DESCRIPTION
+Requires the expected run-root name plus collector ownership evidence before a custom
+RunId collect may remove a pre-existing exact run root. A state-backed run root is treated
+as collector-owned. A no-state run root must satisfy the same collector-created child
+structure required by no-state cleanup. Unsafe existing roots are not removed.
+
+.FUNCTION NAME
+Test-DCOIRExactCustomRunRootPurgeCandidate
+
+.INPUTS
+DirectoryInfo object.
+
+.OUTPUTS
+Boolean.
+#>
+function Test-DCOIRExactCustomRunRootPurgeCandidate {
+  param([object]$Directory)
+  if (-not $Directory) { return $false }
+  if (-not (Test-DCOIRRunDirectoryName -Name $Directory.Name)) { return $false }
+  if (Test-Path -LiteralPath (Join-Path $Directory.FullName 'state.json')) { return $true }
+  return (Test-DCOIRNoStateCleanupCandidate -Directory $Directory)
+}
+
+<#
+.SYNOPSIS
 Deletes prior collector run directories before a new collect starts.
 
 .DESCRIPTION
 Keeps blank/latest automatic purge bounded to timestamp-style collector run roots. When a
 custom RunId is supplied for a new collect, also deletes only the exact expected custom
-run root before Initialize-RunStructure can reuse it. If that exact root cannot be
-removed, collection stops before new artifacts are written or bundled. This prevents
-stale reports, artifacts, logs, or bundles from a previous custom-RunId collect from
-being mixed into a new evidence bundle without broadening blank/latest cleanup behavior.
+run root when collector ownership is proven by state.json or the no-state cleanup child
+structure. If an unsafe exact custom root exists, collection stops before new artifacts are
+written. This prevents stale reports, artifacts, logs, or bundles from a previous custom
+RunId collect from being mixed into a new evidence bundle without deleting arbitrary
+shared-root directories.
 
 .FUNCTION NAME
 Purge-PreviousRuns
@@ -36,9 +64,9 @@ Purge-PreviousRuns
 Root string and CurrentPackageName string.
 
 .OUTPUTS
-No direct output. Deletes prior strict-pattern collector run directories, the exact
-expected custom run root when applicable, and the previous package file as side effects.
-Throws when the exact custom run root remains after deletion.
+No direct output. Deletes prior strict-pattern collector run directories, a proven
+collector-owned exact custom run root when applicable, and the previous package file as
+side effects. Throws when the exact custom run root is unsafe or remains after deletion.
 #>
 function Purge-PreviousRuns {
   param([string]$Root,[string]$CurrentPackageName)
@@ -51,6 +79,10 @@ function Purge-PreviousRuns {
       if ((Test-DCOIRRunDirectoryName -Name $expectedRunName) -and
           -not (Test-DCOIRBulkPurgeRunDirectoryName -Name $expectedRunName) -and
           (Test-Path -LiteralPath $expectedRunRoot)) {
+        $expectedRunDir = Get-Item -LiteralPath $expectedRunRoot -ErrorAction SilentlyContinue
+        if (-not (Test-DCOIRExactCustomRunRootPurgeCandidate -Directory $expectedRunDir)) {
+          throw "Existing custom RunId directory is not collector-owned and will not be removed before collect: $expectedRunRoot"
+        }
         Remove-Item -LiteralPath $expectedRunRoot -Recurse -Force -ErrorAction SilentlyContinue
         if (Test-Path -LiteralPath $expectedRunRoot) {
           throw "Existing custom RunId directory could not be removed before collect: $expectedRunRoot"
