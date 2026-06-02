@@ -421,7 +421,7 @@ Cleanup exists to remove run/output material after evidence is safe.
 It is not a retrieval step, and it should not be used as a substitute for deciding what matters first.
 
 Source-backed cleanup guidance also makes clear that cleanup does not remove the uploaded collector script unless the explicit delete-script command is used.
-If collect fails before `state.json` is saved, cleanup has a bounded missing-state fallback: it removes only the latest matching `DCOIR_*` orphan under the selected `OutRoot` plus the configured package file, and reports `MISSING_STATE_ORPHAN_CLEANED` or `NO_TARGET_FOUND` instead of requiring manual temp-folder cleanup.
+If collect fails before `state.json` is saved, cleanup has a bounded missing-state fallback: plain latest cleanup removes only timestamp-style latest `DCOIR_*` orphans under the selected `OutRoot` plus the configured package file, while custom `-RunId` no-state roots require cleanup with that explicit `-RunId`. The collector reports `MISSING_STATE_ORPHAN_CLEANED` or `NO_TARGET_FOUND` instead of requiring broad manual temp-folder cleanup.
 
 Practical operator rule:
 
