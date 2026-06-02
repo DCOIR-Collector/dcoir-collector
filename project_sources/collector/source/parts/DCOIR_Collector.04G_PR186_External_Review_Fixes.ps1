@@ -202,6 +202,108 @@ function Write-ArtifactText {
 
 <#
 .SYNOPSIS
+Returns Tier 2 deep-check root artifact paths that should be present in collect manifests.
+
+.DESCRIPTION
+Finds the prefixed root artifact files emitted for Tier 2 deep checks. These paths are
+added to manifest_collect.json so the manifest inventories the same Tier 2 evidence that
+is already included in the collect bundle.
+
+.FUNCTION NAME
+Get-Tier2DeepCheckManifestArtifactPaths
+
+.INPUTS
+Collector state hashtable.
+
+.OUTPUTS
+String array of existing Tier 2 deep-check artifact paths.
+#>
+function Get-Tier2DeepCheckManifestArtifactPaths {
+  param([hashtable]$State)
+
+  if (-not $State -or [string]::IsNullOrWhiteSpace([string]$State.ArtifactsDir) -or -not (Test-Path -LiteralPath $State.ArtifactsDir)) { return @() }
+
+  $names = @(
+    '28_TIER2_DEEP_CHECKS_tier2_reg_ifeo.txt',
+    '29_TIER2_DEEP_CHECKS_tier2_reg_winlogon.txt',
+    '30_TIER2_DEEP_CHECKS_tier2_reg_lsa.txt',
+    '31_TIER2_DEEP_CHECKS_tier2_wmi_persistence.txt',
+    '32_TIER2_DEEP_CHECKS_tier2_net_share.txt',
+    '33_TIER2_DEEP_CHECKS_tier2_net_session.txt',
+    '34_TIER2_DEEP_CHECKS_tier2_firewall_profiles.txt'
+  )
+
+  $paths = New-Object System.Collections.ArrayList
+  foreach ($name in $names) {
+    $path = Join-Path $State.ArtifactsDir $name
+    if (Test-Path -LiteralPath $path) { [void]$paths.Add($path) }
+  }
+  return @($paths)
+}
+
+<#
+.SYNOPSIS
+Creates the run manifest JSON file with Tier 2 deep-check artifact inventory repair.
+
+.DESCRIPTION
+Preserves the original manifest behavior while appending existing Tier 2 deep-check root
+artifact paths for Collect/T2 manifests. This keeps manifest_collect.json aligned with the
+collect bundle contents and avoids downstream evidence-inventory gaps.
+
+.FUNCTION NAME
+New-Manifest
+
+.INPUTS
+ManifestPath, State, ModeName, TierName, Files array, ToolMap hashtable, and Extra
+hashtable.
+
+.OUTPUTS
+String manifest path.
+#>
+function New-Manifest {
+  param(
+    [string]$ManifestPath,
+    [hashtable]$State,
+    [string]$ModeName,
+    [string]$TierName,
+    [string[]]$Files,
+    [hashtable]$ToolMap,
+    [hashtable]$Extra
+  )
+
+  $manifestFiles = New-Object System.Collections.ArrayList
+  foreach ($file in @($Files)) {
+    if ([string]::IsNullOrWhiteSpace($file)) { continue }
+    if (-not @($manifestFiles).Contains($file)) { [void]$manifestFiles.Add($file) }
+  }
+
+  if (($ModeName -eq 'Collect') -and ($TierName -eq 'T2')) {
+    foreach ($tier2Path in @(Get-Tier2DeepCheckManifestArtifactPaths -State $State)) {
+      if (-not @($manifestFiles).Contains($tier2Path)) { [void]$manifestFiles.Add($tier2Path) }
+    }
+  }
+
+  $manifest = [ordered]@{
+    host = $env:COMPUTERNAME
+    run_id = $State.RunId
+    mode = $ModeName
+    tier = $TierName
+    script_version = $ScriptVersion
+    created_local = (Get-Date).ToString('o')
+    created_utc = (Get-Date).ToUniversalTime().ToString('o')
+    files = @($manifestFiles)
+    notes = @($Global:CollectorNotes)
+    errors = @($Global:CollectorErrors)
+    recommendations = @($Global:RecommendedActions)
+    tool_map = $ToolMap
+    extra = $Extra
+  }
+  Set-Content -Path $ManifestPath -Value ($manifest | ConvertTo-Json -Depth 12) -Encoding UTF8
+  return $ManifestPath
+}
+
+<#
+.SYNOPSIS
 Synchronizes the collection metadata section companion before bundling.
 
 .DESCRIPTION
