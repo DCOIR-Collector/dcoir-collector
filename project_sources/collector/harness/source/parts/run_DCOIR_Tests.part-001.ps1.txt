@@ -1,5 +1,3 @@
-  foreach ($row in @(
-    @{ Label='metadata'; Path=$CollectorStep.MetadataReportPath },
     @{ Label='execution_context'; Path=$CollectorStep.ExecutionContextPath },
     @{ Label='security_audit_policy'; Path=$CollectorStep.SecurityAuditPolicyPath },
     @{ Label='security_filtered'; Path=$CollectorStep.SecurityFilteredPath },
@@ -240,3 +238,6 @@ function Invoke-CollectorProcess {
   Write-Host ("HARNESS_STEP_START step={0} timeout_seconds={1}" -f $StepName, $CollectorStepTimeoutSeconds)
   Write-HarnessProgress -StepName $StepName -Phase 'starting' -Status 'STARTED' -Command $commandDisplay -TimeoutSeconds $CollectorStepTimeoutSeconds
   $process = New-Object System.Diagnostics.Process
+  $process.StartInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $process.StartInfo.FileName = $Invocation.FileName
+  $process.StartInfo.UseShellExecute = $false
