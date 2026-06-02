@@ -111,10 +111,12 @@ missing or malformed.
 function Test-HarnessUtcTimestampLine {
   param([string]$Text,[string]$FieldName,[string]$ExpectedValue)
   if ([string]::IsNullOrWhiteSpace($Text) -or [string]::IsNullOrWhiteSpace($FieldName) -or [string]::IsNullOrWhiteSpace($ExpectedValue)) { return $false }
-  $match = [regex]::Match($Text, ('(?m)^{0}=(.+)$' -f [regex]::Escape($FieldName)))
-  if (-not $match.Success) { return $false }
+  $matches = [regex]::Matches($Text, ('(?m)^{0}=(.+)$' -f [regex]::Escape($FieldName)))
+  if ($matches.Count -ne 1) { return $false }
+  $actualText = $matches[0].Groups[1].Value.Trim()
+  if ($actualText -notmatch '(Z|[+-]\d{2}:\d{2})$') { return $false }
   try {
-    $actualUtc = ([datetime]::Parse($match.Groups[1].Value.Trim())).ToUniversalTime()
+    $actualUtc = ([datetime]::Parse($actualText)).ToUniversalTime()
     $expectedUtc = ([datetime]::Parse($ExpectedValue)).ToUniversalTime()
     return ($actualUtc -eq $expectedUtc)
   } catch {
