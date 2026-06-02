@@ -47,13 +47,41 @@ function Run-SessionBehaviorSuite {
   $collect = Invoke-CollectorStep -StepName "51_CollectT1" -CollectorArgs @("-Quick","collect-t1")
   Assert-CollectorStepSucceeded -StepName "51_CollectT1" -CollectorStep $collect
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_SessionBehaviorCollect" -ManifestPath $collect.AttachmentBudgetManifestPath }
+
   $startStep = Invoke-CollectorStep -StepName "52_EnrichStartTcp" -CollectorArgs @("-Quick","enrich-start-tcp")
   Assert-CollectorStepSucceeded -StepName "52_EnrichStartTcp" -CollectorStep $startStep
   Invoke-EnrichOpenOutputContractVerification -StepName "ZZ_EnrichOpenOutputContract" -EnrichStep $startStep
+
   $addStep = Invoke-CollectorStep -StepName "53_EnrichAddLogTextSecurity" -CollectorArgs @("-Quick","enrich-add-logtext","-Target","Security")
+  Assert-CollectorStepSucceeded -StepName "53_EnrichAddLogTextSecurity" -CollectorStep $addStep
   Invoke-SessionBehaviorVerification -StepName "ZZ_SessionReuseValidation" -StartSessionId $startStep.EnrichSessionId -AddSessionId $addStep.EnrichSessionId -StartMode $startStep.SessionResolutionMode -AddMode $addStep.SessionResolutionMode
-  [void](Invoke-CollectorStep -StepName "54_EnrichFinalize" -CollectorArgs @("-Quick","enrich-finalize"))
-  if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "55_Cleanup" -CollectorArgs @("-Quick","cleanup")) }
+
+  $explicitStep = Invoke-CollectorStep -StepName "54_EnrichAddExplicitSession" -CollectorArgs @("-Mode","Enrich","-RunId",$script:CollectorRunId,"-EnrichSessionId",$startStep.EnrichSessionId,"-Action","LogText","-LogName","Security","-MaxEvents","5")
+  Assert-CollectorStepSucceeded -StepName "54_EnrichAddExplicitSession" -CollectorStep $explicitStep
+  Invoke-SessionResolutionVerification -StepName "ZZ_ExplicitSessionReuseValidation" -SessionStep $explicitStep -ExpectedMode 'REUSED_REQUESTED_SESSION' -ExpectedSessionId $startStep.EnrichSessionId
+
+  $forceNewStep = Invoke-CollectorStep -StepName "55_EnrichForceNewSession" -CollectorArgs @("-Mode","Enrich","-RunId",$script:CollectorRunId,"-NewEnrichSession","-Action","LogText","-LogName","Security","-MaxEvents","5")
+  Assert-CollectorStepSucceeded -StepName "55_EnrichForceNewSession" -CollectorStep $forceNewStep
+  Invoke-SessionResolutionVerification -StepName "ZZ_ForceNewSessionValidation" -SessionStep $forceNewStep -ExpectedMode 'CREATED_NEW_SESSION' -UnexpectedSessionId $startStep.EnrichSessionId
+
+  $requestedFinalize = Invoke-CollectorStep -StepName "56_EnrichFinalizeRequestedOriginal" -CollectorArgs @("-Mode","Enrich","-RunId",$script:CollectorRunId,"-EnrichSessionId",$startStep.EnrichSessionId,"-FinalizeEnrichSession")
+  Assert-CollectorStepSucceeded -StepName "56_EnrichFinalizeRequestedOriginal" -CollectorStep $requestedFinalize
+  Invoke-EnrichFinalizedOutputContractVerification -StepName "ZZ_RequestedFinalizeOutputContract" -EnrichStep $requestedFinalize
+
+  $openFinalize = Invoke-CollectorStep -StepName "57_EnrichFinalizeOpen" -CollectorArgs @("-Quick","enrich-finalize")
+  Assert-CollectorStepSucceeded -StepName "57_EnrichFinalizeOpen" -CollectorStep $openFinalize
+  Invoke-EnrichFinalizedOutputContractVerification -StepName "ZZ_OpenFinalizeOutputContract" -EnrichStep $openFinalize
+
+  $afterFinalize = Invoke-CollectorStep -StepName "58_EnrichAddAfterFinalize" -CollectorArgs @("-Quick","enrich-add-logtext","-Target","Security")
+  Assert-CollectorStepSucceeded -StepName "58_EnrichAddAfterFinalize" -CollectorStep $afterFinalize
+  Invoke-SessionResolutionVerification -StepName "ZZ_AddAfterFinalizeValidation" -SessionStep $afterFinalize -ExpectedMode 'CREATED_NEW_SESSION' -UnexpectedSessionId $forceNewStep.EnrichSessionId
+
+  [void](Invoke-ExpectedFailureStep -StepName "59_MissingRequestedEnrichSession" -CollectorArgs @("-Mode","Enrich","-RunId",$script:CollectorRunId,"-EnrichSessionId","ENRICH_DOES_NOT_EXIST","-Action","LogText","-LogName","Security") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("Requested enrichment session was not found: ENRICH_DOES_NOT_EXIST"))
+
+  if (-not $SkipCleanup) {
+    $cleanup = Invoke-CollectorStep -StepName "60_CleanupAfterOpenSession" -CollectorArgs @("-Quick","cleanup")
+    Assert-CollectorStepSucceeded -StepName "60_CleanupAfterOpenSession" -CollectorStep $cleanup
+  }
 }
 
 <#
