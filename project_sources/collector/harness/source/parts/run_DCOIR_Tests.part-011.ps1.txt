@@ -111,16 +111,39 @@ function Run-FailureGatesSuite {
     New-Item -Path (Join-Path $customLikeDir $child) -ItemType Directory -Force | Out-Null
   }
   Set-Content -Path (Join-Path $customLikeDir 'keep.txt') -Value 'custom-like-must-not-delete-without-explicit-runid' -Encoding UTF8
-  Restore-WorkingZip -Reason "FailureGates_CustomLikePurgePreserve"
-  $customPreserveCollect = Invoke-CollectorStep -StepName "98D_CollectPreservesCustomLikeNoState" -CollectorArgs @("-Quick","collect-t1")
-  Assert-CollectorStepSucceeded -StepName "98D_CollectPreservesCustomLikeNoState" -CollectorStep $customPreserveCollect
+  $customNoStatePlainCleanup = Invoke-CollectorStep -StepName "98D_CleanupPreservesCustomLikeNoStateWithoutRunId" -CollectorArgs @("-Quick","cleanup")
+  Assert-CollectorStepSucceeded -StepName "98D_CleanupPreservesCustomLikeNoStateWithoutRunId" -CollectorStep $customNoStatePlainCleanup
+  if ($customNoStatePlainCleanup.CleanupStatus -notin @('NO_TARGET_FOUND','MISSING_STATE_ORPHAN_CLEANED')) {
+    throw ("Plain cleanup returned unexpected status while preserving custom no-state root: {0}" -f $customNoStatePlainCleanup.CleanupStatus)
+  }
   if (-not (Test-Path -LiteralPath (Join-Path $customLikeDir 'keep.txt'))) {
-    throw 'Collect-time purge deleted a custom RunId-like no-state directory without an explicit RunId.'
+    throw 'Plain cleanup deleted a custom RunId-like no-state directory without an explicit RunId.'
   }
 
+  $statefulCustomRunId = 'custom-state-preserve'
+  $statefulCustomDir = Join-Path 'C:\Temp' ("DCOIR_{0}_{1}" -f $env:COMPUTERNAME, $statefulCustomRunId)
+  New-Item -Path $statefulCustomDir -ItemType Directory -Force | Out-Null
+  foreach ($child in @('tools','reports','final_artifacts','logs','bundles')) {
+    New-Item -Path (Join-Path $statefulCustomDir $child) -ItemType Directory -Force | Out-Null
+  }
+  Set-Content -Path (Join-Path $statefulCustomDir 'keep.txt') -Value 'stateful-custom-must-not-delete-without-explicit-runid' -Encoding UTF8
+  $statefulCustomState = [ordered]@{
+    RunId = $statefulCustomRunId
+    RunRoot = $statefulCustomDir
+    PackagePath = (Join-Path 'C:\Temp' 'DCOIR_STATEFUL_CUSTOM_TEST_PACKAGE.zip')
+    CollectorVersion = '4.0.7'
+  }
+  Set-Content -Path (Join-Path $statefulCustomDir 'state.json') -Value ($statefulCustomState | ConvertTo-Json -Depth 5) -Encoding UTF8
+  $statefulCustomPlainCleanup = Invoke-CollectorStep -StepName "98E_CleanupPreservesCustomStateWithoutRunId" -CollectorArgs @("-Quick","cleanup")
+  Assert-CollectorStepSucceeded -StepName "98E_CleanupPreservesCustomStateWithoutRunId" -CollectorStep $statefulCustomPlainCleanup
+  if (-not (Test-Path -LiteralPath (Join-Path $statefulCustomDir 'keep.txt'))) {
+    throw 'Plain cleanup deleted a state-backed custom RunId directory without an explicit RunId.'
+  }
+  Remove-Item -LiteralPath $statefulCustomDir -Recurse -Force -ErrorAction SilentlyContinue
+
   $explicitCustomRunId = 'custom-like-preserve'
-  $explicitCleanup = Invoke-CollectorStep -StepName "98E_CleanupExplicitCustomNoState" -CollectorArgs @("-Quick","cleanup","-RunId",$explicitCustomRunId)
-  Assert-CollectorStepSucceeded -StepName "98E_CleanupExplicitCustomNoState" -CollectorStep $explicitCleanup
+  $explicitCleanup = Invoke-CollectorStep -StepName "98F_CleanupExplicitCustomNoState" -CollectorArgs @("-Quick","cleanup","-RunId",$explicitCustomRunId)
+  Assert-CollectorStepSucceeded -StepName "98F_CleanupExplicitCustomNoState" -CollectorStep $explicitCleanup
   if ($explicitCleanup.CleanupStatus -ne 'MISSING_STATE_ORPHAN_CLEANED') {
     throw ("Explicit custom RunId no-state cleanup returned unexpected status: {0}" -f $explicitCleanup.CleanupStatus)
   }
