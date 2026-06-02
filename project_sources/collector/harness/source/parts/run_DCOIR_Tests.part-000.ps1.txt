@@ -88,7 +88,13 @@ $MasterZipFullPath = if ([System.IO.Path]::IsPathRooted($MasterZipPath)) {
 $script:CollectorRunId = $null
 $script:CollectorSessionId = $null
 $script:Results = New-Object System.Collections.ArrayList
+$script:CoverageRows = New-Object System.Collections.ArrayList
 $script:CollectorStepTimeoutMilliseconds = [int]($CollectorStepTimeoutSeconds * 1000)
+$ProgressJsonlPath = Join-Path $RunOutputRoot "progress.jsonl"
+$ProgressTxtPath = Join-Path $RunOutputRoot "progress.txt"
+$EvidenceRoot = Join-Path $RunOutputRoot "evidence"
+$CoverageJsonPath = Join-Path $RunOutputRoot "collector_capability_coverage.json"
+$CoverageMdPath = Join-Path $RunOutputRoot "collector_capability_coverage.md"
 
 <#
 .SYNOPSIS
@@ -148,3 +154,21 @@ returns the log path.
 
 .FUNCTION NAME
 Write-HarnessLog
+
+.INPUTS
+StepName string and Lines string array.
+
+.OUTPUTS
+String log-file path.
+#>
+function Write-HarnessLog {
+  param([string]$StepName,[string[]]$Lines)
+  Ensure-Directory -Path $LogsDir
+  $logPath = Join-Path $LogsDir ("{0}.txt" -f $StepName)
+  Set-Content -Path $logPath -Value $Lines -Encoding UTF8
+  return $logPath
+}
+
+
+<#
+.SYNOPSIS
