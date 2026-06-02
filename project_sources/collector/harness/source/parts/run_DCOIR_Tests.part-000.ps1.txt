@@ -272,3 +272,5 @@ No direct output. Copies available artifacts into the evidence folder.
 #>
 function Add-CollectorStepEvidence {
   param([string]$StepName,[object]$CollectorStep)
+  foreach ($row in @(
+    @{ Label='metadata'; Path=$CollectorStep.MetadataReportPath },
