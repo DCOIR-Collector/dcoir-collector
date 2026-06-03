@@ -583,7 +583,7 @@
       "contract_family": "static-validation",
       "file": ".github/workflows/validate-on-pr.yml",
       "migration_status": "active",
-      "operator_purpose": "Automatic PR-focused validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, and workflow definition changes.",
+      "operator_purpose": "Automatic PR-focused validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, GitHub intake, and workflow definition changes.",
       "permissions": {
         "contents": "read"
       },

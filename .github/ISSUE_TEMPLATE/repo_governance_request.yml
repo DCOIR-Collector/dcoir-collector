@@ -1,0 +1,46 @@
+name: Repository governance request
+description: Plan or request changes to repository guidance, intake, labels, templates, validation, or operating discipline.
+title: "[Repo governance]: "
+labels:
+  - area:repo-governance
+  - type:planning
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What repository governance or operating-discipline outcome is needed?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Proposed scope
+      description: Identify target files, labels, instructions, templates, validators, or review gates.
+    validations:
+      required: true
+  - type: checkboxes
+    id: governed_surfaces
+    attributes:
+      label: Governed surfaces
+      options:
+        - label: Agent or repository instructions
+        - label: Issue or PR templates
+        - label: Label taxonomy
+        - label: Validation scripts or playbooks
+        - label: GitHub issue or PR workflow
+        - label: Supabase ircore routing or receipt records
+  - type: textarea
+    id: approval_gates
+    attributes:
+      label: Approval or review gates
+      description: Note any operator approval, Prog/Adva, Codi, external Codex review, workflow, or Supabase readback requirements.
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or context
+      description: Add links, prior decisions, issue references, or validation findings.
+    validations:
+      required: false

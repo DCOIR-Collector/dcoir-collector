@@ -1,0 +1,150 @@
+{
+  "schema_version": "dcoir_github_intake_taxonomy_v1",
+  "approved_labels": [
+    "area:collector",
+    "area:docs",
+    "area:gemini-agent",
+    "area:github-repo",
+    "area:knowledge-docs",
+    "area:operator-tooling",
+    "area:project-tracking",
+    "area:repo-governance",
+    "area:supabase-ircore",
+    "area:validation",
+    "area:workflows",
+    "type:accidental",
+    "type:bug",
+    "type:cleanup",
+    "type:decision",
+    "type:enhancement",
+    "type:idea",
+    "type:maintenance",
+    "type:meta",
+    "type:planning",
+    "type:refactor",
+    "type:research"
+  ],
+  "retired_labels": [
+    "administrative",
+    "agent-instructions",
+    "architecture",
+    "area:airtable-ircore",
+    "area:gemini",
+    "blocked",
+    "bug",
+    "codex",
+    "collector",
+    "dependencies",
+    "documentation",
+    "duplicate",
+    "enhancement",
+    "gemini",
+    "gemini-agent",
+    "github_actions",
+    "github-actions",
+    "governance",
+    "governance-cleanup",
+    "ignore",
+    "invalid",
+    "ircore",
+    "mirror",
+    "needs-triage",
+    "prompt-pack",
+    "question",
+    "test-failure",
+    "workflow",
+    "wontfix"
+  ],
+  "issue_forms": [
+    {
+      "file": "bug_report.yml",
+      "name": "Bug report",
+      "labels": ["area:repo-governance", "type:bug"]
+    },
+    {
+      "file": "collector_issue.yml",
+      "name": "Collector issue",
+      "labels": ["area:collector", "type:bug"]
+    },
+    {
+      "file": "docs_workflow_correction.yml",
+      "name": "Documentation or workflow correction",
+      "labels": ["area:docs", "type:maintenance"]
+    },
+    {
+      "file": "feature_request.yml",
+      "name": "Feature request",
+      "labels": ["area:repo-governance", "type:enhancement"]
+    },
+    {
+      "file": "gemini_agent_issue.yml",
+      "name": "Gemini agent issue",
+      "labels": ["area:gemini-agent", "type:bug"]
+    },
+    {
+      "file": "knowledge_docs_correction.yml",
+      "name": "Knowledge docs correction",
+      "labels": ["area:knowledge-docs", "type:maintenance"]
+    },
+    {
+      "file": "operator_tooling_request.yml",
+      "name": "Operator tooling request",
+      "labels": ["area:operator-tooling", "type:maintenance"]
+    },
+    {
+      "file": "project_tracking_request.yml",
+      "name": "Project tracking request",
+      "labels": ["area:project-tracking", "type:planning"]
+    },
+    {
+      "file": "repo_governance_request.yml",
+      "name": "Repository governance request",
+      "labels": ["area:repo-governance", "type:planning"]
+    },
+    {
+      "file": "supabase_ircore_request.yml",
+      "name": "Supabase ircore request",
+      "labels": ["area:supabase-ircore", "type:maintenance"]
+    },
+    {
+      "file": "validation_finding.yml",
+      "name": "Validation finding",
+      "labels": ["area:validation", "type:bug"]
+    },
+    {
+      "file": "workflow_issue.yml",
+      "name": "Workflow issue",
+      "labels": ["area:workflows", "type:bug"]
+    }
+  ],
+  "required_pr_template_sections": [
+    "Summary",
+    "Linked Issue",
+    "Scope",
+    "Non-Scope",
+    "Changed Authority Surfaces",
+    "Label Discipline",
+    "Validation And Readback",
+    "Governed Review Gates",
+    "Workflow Boundary",
+    "Remaining Gaps",
+    "Ready-To-Undraft Gate"
+  ],
+  "required_pr_template_phrases": [
+    "Final scope-and-suggestion review completed",
+    "Do not mark ready for review until this checklist is complete",
+    "validate-on-pr is expected to run after this PR is marked ready"
+  ],
+  "required_github_readme_phrases": [
+    "API-created, connector-created, or otherwise programmatically created issues must mirror the closest issue form",
+    "Apply only that form's approved label pair",
+    "If no issue form fits, stop and ask the operator"
+  ],
+  "stale_guidance_terms": [
+    "Airtable",
+    "helper-skill",
+    "Collector test failure",
+    "Documentation / workflow correction",
+    "Gemini / prompt-pack issue"
+  ]
+}

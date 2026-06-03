@@ -1,0 +1,58 @@
+name: Gemini agent issue
+description: Report a Gemini agent, prompt-pack, routing, output-format, or collector handoff issue.
+title: "[Gemini]: "
+labels:
+  - area:gemini-agent
+  - type:bug
+body:
+  - type: checkboxes
+    id: affected_area
+    attributes:
+      label: Affected area
+      options:
+        - label: Gemini prime agent instructions
+        - label: Gemini sub-agent instructions
+        - label: Combined prompt
+        - label: Modular prompt-pack
+        - label: Agent routing
+        - label: Output contract or report format
+        - label: Collector handoff guidance
+        - label: Other
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened?
+      description: Describe the behavior, instruction gap, routing issue, missing evidence handling, or output problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened?
+      description: Describe the expected behavior. Preserve accepted benchmark language when applicable.
+    validations:
+      required: true
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - label: Blocks live Gemini testing
+        - label: Blocks collector execution guidance
+        - label: Degrades analyst output quality
+        - label: Causes command-lane confusion
+        - label: Documentation-only issue
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Paste relevant output, prompt text, screenshots, issue links, test case IDs, or validation notes.
+    validations:
+      required: false
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation expectation
+      description: Describe the scenario, fixture, or review needed to prove the repair.
+    validations:
+      required: false

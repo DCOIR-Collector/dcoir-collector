@@ -1,0 +1,61 @@
+name: Bug report
+description: Report a reproducible defect in repository behavior, guidance, automation, or governed outputs.
+title: "[Bug]: "
+labels:
+  - area:repo-governance
+  - type:bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for reproducible defects when a more specific collector, Gemini, documentation, validation, or repo-governance form does not fit.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is broken?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide commands, inputs, workflow links, or exact steps when available.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: false
+  - type: checkboxes
+    id: affected_surfaces
+    attributes:
+      label: Affected surfaces
+      options:
+        - label: Collector/runtime
+        - label: Gemini/runtime guidance
+        - label: Workflow automation
+        - label: Documentation or repository guidance
+        - label: Operator tooling
+        - label: Other or unknown
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Validation or evidence
+      description: Add logs, screenshots, links, artifacts, or validation output.
+    validations:
+      required: false

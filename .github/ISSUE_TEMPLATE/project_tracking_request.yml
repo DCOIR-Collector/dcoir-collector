@@ -1,0 +1,35 @@
+name: Project tracking request
+description: Plan, reconcile, supersede, or organize project-tracking issues, milestones, receipts, or follow-up work.
+title: "[Project tracking]: "
+labels:
+  - area:project-tracking
+  - type:planning
+body:
+  - type: textarea
+    id: tracking_goal
+    attributes:
+      label: Tracking goal
+      description: What planning, reconciliation, supersession, milestone, or follow-up outcome is needed?
+    validations:
+      required: true
+  - type: textarea
+    id: related_work
+    attributes:
+      label: Related work
+      description: List related issues, PRs, branches, receipts, or decisions.
+    validations:
+      required: false
+  - type: textarea
+    id: desired_result
+    attributes:
+      label: Desired result
+      description: Describe what should be true when this tracking work is complete.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or context
+      description: Add links, summaries, readbacks, or decision notes.
+    validations:
+      required: false

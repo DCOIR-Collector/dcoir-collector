@@ -1,0 +1,35 @@
+name: Supabase ircore request
+description: Request or report a problem with Supabase ircore routing, receipts, validation rules, preferences, or governed records.
+title: "[Supabase ircore]: "
+labels:
+  - area:supabase-ircore
+  - type:maintenance
+body:
+  - type: textarea
+    id: ircore_surface
+    attributes:
+      label: Supabase ircore surface
+      description: Name the function, record family, receipt type, validation rule, preference, or routing surface.
+    validations:
+      required: true
+  - type: textarea
+    id: goal_or_problem
+    attributes:
+      label: Goal or problem
+      description: Describe the routing, readback, validation, receipt, or governed-data outcome needed.
+    validations:
+      required: true
+  - type: textarea
+    id: authority_boundary
+    attributes:
+      label: Authority boundary
+      description: Identify whether this is Supabase operational routing, GitHub source truth, or both.
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Add query output, readback summaries, issue links, or source references.
+    validations:
+      required: false
