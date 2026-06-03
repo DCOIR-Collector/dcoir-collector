@@ -1,0 +1,79 @@
+name: Collector issue
+description: Report a DCOIR collector execution, harness, command, output, packaging, or delivery problem.
+title: "[Collector]: "
+labels:
+  - area:collector
+  - type:bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What collector behavior needs attention?
+    validations:
+      required: true
+  - type: dropdown
+    id: lane
+    attributes:
+      label: Test or execution lane
+      options:
+        - Local workstation test - Windows PowerShell 5.1
+        - Elastic Defend response action
+        - GitHub Actions workflow
+        - Gemini-guided workflow
+        - Runtime package or delivery bundle
+        - Other or unknown
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command or instruction used
+      description: Paste the local command, Elastic response-action command, workflow input, or Gemini instruction.
+    validations:
+      required: false
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: Paste the error, output, failed assertion, missing file, or observed behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: Describe what should have happened.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include OS, PowerShell version, Elastic context, package version, or collector version when known.
+    validations:
+      required: false
+  - type: checkboxes
+    id: blocking_level
+    attributes:
+      label: Blocking level
+      options:
+        - label: Blocks all collector testing
+        - label: Blocks one collector path
+        - label: Blocks packaging or retrieval only
+        - label: Non-blocking but confusing
+        - label: Documentation-only issue
+  - type: checkboxes
+    id: command_lane_check
+    attributes:
+      label: Command-lane check
+      options:
+        - label: Local PowerShell syntax was kept separate from Elastic response-action syntax
+        - label: This issue may involve command-lane confusion
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Attach screenshots, logs, output files, retrieved bundles, workflow run links, or relevant issue links.
+    validations:
+      required: false

@@ -1,0 +1,53 @@
+name: Documentation or workflow correction
+description: Report stale, unclear, conflicting, missing, or misleading documentation and operator workflow guidance.
+title: "[Docs/workflow]: "
+labels:
+  - area:docs
+  - type:maintenance
+body:
+  - type: textarea
+    id: surface
+    attributes:
+      label: Affected document, page, or guidance surface
+      description: Name the file, page, section, GitHub URL, issue, workflow, or operator-facing instruction.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is unclear, stale, missing, conflicting, or misleading?
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Correct behavior or wording
+      description: Describe what it should say instead, including exact command-lane wording when relevant.
+    validations:
+      required: false
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - label: Affects collector execution
+        - label: Affects Gemini or prompt-pack workflow
+        - label: Affects operator setup or repo usage
+        - label: Affects validation or testing
+        - label: Affects queue, authority, or governance understanding
+        - label: Minor clarity issue only
+  - type: textarea
+    id: authority_check
+    attributes:
+      label: Authority check
+      description: Identify any conflict with AGENTS.md, GitHub source, Supabase ircore routing, validation records, or promoted logs.
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Paste links, screenshots, source references, validation output, or contradictory text.
+    validations:
+      required: false

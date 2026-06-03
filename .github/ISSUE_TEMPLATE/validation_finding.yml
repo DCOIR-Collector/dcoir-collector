@@ -1,0 +1,59 @@
+name: Validation finding
+description: Report a live-test, regression-test, acceptance-test, or workflow validation finding.
+title: "[Validation]: "
+labels:
+  - area:validation
+  - type:bug
+body:
+  - type: textarea
+    id: tested_surface
+    attributes:
+      label: What was being tested?
+      description: Describe the test case, workflow, issue, branch, file, prompt, collector path, or validation gate.
+    validations:
+      required: true
+  - type: dropdown
+    id: test_source
+    attributes:
+      label: Test source
+      options:
+        - GitHub Actions workflow
+        - Local harness or script
+        - Gemini workflow review
+        - Operator live test
+        - Supabase ircore readback
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: Describe what happened and paste relevant output.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: Describe what should have happened.
+    validations:
+      required: true
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - label: Blocks release or promotion
+        - label: Blocks live testing
+        - label: Requires agent or instruction refresh
+        - label: Requires documentation refresh
+        - label: Requires collector or harness repair
+        - label: Non-blocking observation
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Paste logs, screenshots, file names, issue links, PR links, artifact names, or workflow run links.
+    validations:
+      required: false

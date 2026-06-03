@@ -1,0 +1,54 @@
+name: Feature request
+description: Propose a DCOIR capability, workflow improvement, or repository enhancement.
+title: "[Feature]: "
+labels:
+  - area:repo-governance
+  - type:enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: Describe the operator, analyst, validation, collector, Gemini, packaging, or governance gap this would address.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_capability
+    attributes:
+      label: Proposed capability
+      description: Describe the requested behavior or deliverable.
+    validations:
+      required: true
+  - type: checkboxes
+    id: affected_surfaces
+    attributes:
+      label: Affected surfaces
+      options:
+        - label: Collector runtime or harness
+        - label: Gemini or prompt-pack workflow
+        - label: GitHub workflow or packaging pipeline
+        - label: Supabase ircore routing or records
+        - label: Documentation or knowledge surface
+        - label: Operator tooling
+        - label: Other
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe any simpler or safer alternative that could achieve a similar result.
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or examples
+      description: Paste supporting notes, screenshots, issue links, test cases, or workflow references.
+    validations:
+      required: false
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation expectation
+      description: Describe how the change should be tested before it is considered ready.
+    validations:
+      required: false
