@@ -59,7 +59,6 @@ on:
       - 63 Ops - Restructure Map Scaffold
       - 20 Operator - Publish Knowledge to Wiki
       - 24 Validation - Workflow Reporting
-      - 80 Reporting - Workflow Run Reporter
     types:
       - completed
   workflow_dispatch:
