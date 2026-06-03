@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "26898641870",
   "github_sha": "28e18b9a88c1b7d688b4a44e2cebd297d5d45f1b",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "exec-20260603-issue197-label-migration-dry-run-001",
   "request_path": "chatgpt_staging/exec_requests/exec-20260603-issue197-label-migration-dry-run-001.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-06-03T16:32:35Z",
+  "updated_utc": "2026-06-03T16:32:39Z",
   "workflow": "chatgpt-exec"
 }
