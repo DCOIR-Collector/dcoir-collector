@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: chatgpt-staging-cleanup.yml
 # Purpose: reusable implementation module for chatgpt-staging-cleanup; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-chatgpt-staging-cleanup
+name: 99 Module - Chatgpt Staging Cleanup
+run-name: Module Chatgpt Staging Cleanup | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

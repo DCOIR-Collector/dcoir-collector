@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: manual-collector-optional-exe-build.yml
 # Purpose: reusable implementation module for manual-collector-optional-exe-build; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-manual-collector-optional-exe-build
+name: 99 Module - Manual Collector Optional Exe Build
+run-name: Module Manual Collector Optional Exe Build | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

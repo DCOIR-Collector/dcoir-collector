@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: ops-restructure-map.yml
 # Purpose: reusable implementation module for Ops restructure map request; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-Ops restructure map request
+name: 99 Module - Ops Restructure Map
+run-name: Module Ops Restructure Map | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

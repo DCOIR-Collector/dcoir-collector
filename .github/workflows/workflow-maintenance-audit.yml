@@ -26,7 +26,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: Workflow maintenance audit
+name: 30 Maintenance - Workflow Audit
+run-name: Workflow Audit | ${{ github.event_name }} | #${{ github.run_number }}
 
 on:
   workflow_dispatch:

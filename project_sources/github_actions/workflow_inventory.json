@@ -4,8 +4,8 @@
   "existing_workflow_count_expected": 29,
   "governing_issue": 194,
   "local_composite_action_calls": 98,
-  "local_reusable_workflow_calls": 33,
-  "reusable_workflow_count": 32,
+  "local_reusable_workflow_calls": 29,
+  "reusable_workflow_count": 28,
   "schema_version": "dcoir_workflow_inventory_v1",
   "workflow_count": 29,
   "workflows": [
@@ -29,7 +29,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "chatgpt-apply-in"
+      "workflow_name": "10 Operator - ChatGPT Apply-In"
     },
     {
       "artifacts": [
@@ -52,7 +52,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "chatgpt-exec"
+      "workflow_name": "11 Operator - ChatGPT Exec"
     },
     {
       "artifacts": [],
@@ -74,7 +74,7 @@
         "schedule",
         "workflow_dispatch"
       ],
-      "workflow_name": "chatgpt-report-retention-cleanup"
+      "workflow_name": "31 Maintenance - ChatGPT Report Retention Cleanup"
     },
     {
       "artifacts": [
@@ -96,7 +96,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "chatgpt-stage-out"
+      "workflow_name": "12 Operator - ChatGPT Stage-Out"
     },
     {
       "artifacts": [],
@@ -116,7 +116,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "chatgpt-staging-cleanup"
+      "workflow_name": "32 Maintenance - ChatGPT Staging Cleanup"
     },
     {
       "artifacts": [
@@ -140,7 +140,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "chatgpt-workflow-reporting-validation"
+      "workflow_name": "24 Validation - Workflow Reporting"
     },
     {
       "artifacts": [],
@@ -161,7 +161,7 @@
         "workflow_dispatch",
         "workflow_run"
       ],
-      "workflow_name": "chatgpt-workflow-run-reporter"
+      "workflow_name": "80 Reporting - Workflow Run Reporter"
     },
     {
       "artifacts": [
@@ -188,7 +188,7 @@
         "schedule",
         "workflow_dispatch"
       ],
-      "workflow_name": "collector-documentation-quality"
+      "workflow_name": "23 Validation - Collector Documentation Quality"
     },
     {
       "artifacts": [],
@@ -208,7 +208,7 @@
       "trigger_events": [
         "pull_request"
       ],
-      "workflow_name": "Dependabot auto-merge"
+      "workflow_name": "40 Automation - Dependabot Auto-Merge"
     },
     {
       "artifacts": [],
@@ -228,7 +228,7 @@
       "trigger_events": [
         "pull_request"
       ],
-      "workflow_name": "Dependency Review"
+      "workflow_name": "41 Automation - Dependency Review"
     },
     {
       "artifacts": [
@@ -250,7 +250,7 @@
       "trigger_events": [
         "workflow_dispatch"
       ],
-      "workflow_name": "manual-collector-optional-exe-build"
+      "workflow_name": "03 Operator - Build Optional Collector EXE"
     },
     {
       "artifacts": [
@@ -273,7 +273,7 @@
       "trigger_events": [
         "workflow_dispatch"
       ],
-      "workflow_name": "manual-collector-runtime-package-build"
+      "workflow_name": "01 Operator - Build Collector Runtime Bundle"
     },
     {
       "artifacts": [
@@ -298,7 +298,7 @@
         "schedule",
         "workflow_dispatch"
       ],
-      "workflow_name": "manual-full-validation"
+      "workflow_name": "00 Operator - Full Validation"
     },
     {
       "artifacts": [
@@ -321,7 +321,7 @@
       "trigger_events": [
         "workflow_dispatch"
       ],
-      "workflow_name": "manual-gemini-bundle-build"
+      "workflow_name": "02 Operator - Build Gemini Agent Bundle"
     },
     {
       "artifacts": [
@@ -343,7 +343,7 @@
       "trigger_events": [
         "workflow_dispatch"
       ],
-      "workflow_name": "manual-gemini-model-comparison"
+      "workflow_name": "04 Operator - Gemini Model Comparison"
     },
     {
       "artifacts": [
@@ -366,7 +366,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "chatgpt-github-artifact-readback"
+      "workflow_name": "10 Operator - GitHub Artifact Readback"
     },
     {
       "artifacts": [
@@ -389,7 +389,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "manual-test-framework-validate"
+      "workflow_name": "05 Operator - Test Framework Validation"
     },
     {
       "artifacts": [],
@@ -406,7 +406,7 @@
       "trigger_events": [
         "workflow_dispatch"
       ],
-      "workflow_name": "Ops apply zip request"
+      "workflow_name": "60 Ops - Apply ZIP Request Scaffold"
     },
     {
       "artifacts": [],
@@ -423,7 +423,7 @@
       "trigger_events": [
         "workflow_dispatch"
       ],
-      "workflow_name": "Ops dispatch request"
+      "workflow_name": "61 Ops - Dispatch Request Scaffold"
     },
     {
       "artifacts": [],
@@ -440,7 +440,7 @@
       "trigger_events": [
         "workflow_dispatch"
       ],
-      "workflow_name": "Ops file delete request"
+      "workflow_name": "62 Ops - File Delete Request Scaffold"
     },
     {
       "artifacts": [],
@@ -457,7 +457,7 @@
       "trigger_events": [
         "workflow_dispatch"
       ],
-      "workflow_name": "Ops restructure map request"
+      "workflow_name": "63 Ops - Restructure Map Scaffold"
     },
     {
       "artifacts": [],
@@ -477,7 +477,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "Publish Knowledge to Wiki"
+      "workflow_name": "20 Operator - Publish Knowledge to Wiki"
     },
     {
       "artifacts": [
@@ -499,7 +499,7 @@
       "trigger_events": [
         "workflow_dispatch"
       ],
-      "workflow_name": "run-gemini-behavioral-replay-manual"
+      "workflow_name": "06 Operator - Gemini Behavioral Replay"
     },
     {
       "artifacts": [
@@ -524,7 +524,7 @@
         "schedule",
         "workflow_dispatch"
       ],
-      "workflow_name": "scheduled-health-check"
+      "workflow_name": "30 Maintenance - Scheduled Health Check"
     },
     {
       "artifacts": [
@@ -548,7 +548,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "validate-gemini-behavioral-replay"
+      "workflow_name": "22 Validation - Gemini Behavioral Replay"
     },
     {
       "artifacts": [
@@ -572,7 +572,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "validate-gemini-production-like-harness"
+      "workflow_name": "21 Validation - Gemini Production-Like Harness"
     },
     {
       "artifacts": [
@@ -594,7 +594,7 @@
       "trigger_events": [
         "pull_request"
       ],
-      "workflow_name": "validate-on-pr"
+      "workflow_name": "20 Validation - Pull Request"
     },
     {
       "artifacts": [
@@ -617,7 +617,7 @@
         "push",
         "workflow_dispatch"
       ],
-      "workflow_name": "validate-on-push"
+      "workflow_name": "21 Validation - Main Push"
     },
     {
       "artifacts": [
@@ -643,7 +643,7 @@
         "schedule",
         "workflow_dispatch"
       ],
-      "workflow_name": "Workflow maintenance audit"
+      "workflow_name": "30 Maintenance - Workflow Audit"
     }
   ]
 }

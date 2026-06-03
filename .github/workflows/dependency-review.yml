@@ -29,7 +29,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: Dependency Review
+name: 41 Automation - Dependency Review
+run-name: Dependency Review | ${{ github.event.pull_request.number || github.ref_name }} | #${{ github.run_number }}
 
 on:
   pull_request:

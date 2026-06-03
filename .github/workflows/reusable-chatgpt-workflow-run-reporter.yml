@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: chatgpt-workflow-run-reporter.yml
 # Purpose: reusable implementation module for chatgpt-workflow-run-reporter; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-chatgpt-workflow-run-reporter
+name: 99 Module - Chatgpt Workflow Run Reporter
+run-name: Module Chatgpt Workflow Run Reporter | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:
@@ -25,7 +26,7 @@ permissions:
 jobs:
   report-workflow-run:
     runs-on: ubuntu-latest
-    if: ${{ inputs.caller_event_name == 'workflow_dispatch' || github.event.workflow_run.name != 'chatgpt-workflow-run-reporter' }}
+    if: ${{ inputs.caller_event_name == 'workflow_dispatch' || github.event.workflow_run.name != '80 Reporting - Workflow Run Reporter' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -102,14 +103,14 @@ jobs:
           set -euo pipefail
           mkdir -p .github/tmp
           if [[ "${{ inputs.caller_event_name }}" == "workflow_dispatch" ]]; then
-            report_path="chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-run-reporter/manual-${GITHUB_RUN_ID}/workflow_report.md"
+            report_path="chatgpt_staging/status_reports/repo-workflows/80 Reporting - Workflow Run Reporter/manual-${GITHUB_RUN_ID}/workflow_report.md"
             mkdir -p "$(dirname "$report_path")"
             cat > "$report_path" <<REPORT
           # ChatGPT workflow report
 
           ## Result
 
-          - workflow: chatgpt-workflow-run-reporter
+          - workflow: 80 Reporting - Workflow Run Reporter
           - report_scope: repo-workflows
           - report_family: completed-run-summary
           - assistant_polling_target: false

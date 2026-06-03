@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: chatgpt-stage-out.yml
 # Purpose: reusable implementation module for chatgpt-stage-out; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-chatgpt-stage-out
+name: 99 Module - Chatgpt Stage Out
+run-name: Module Chatgpt Stage Out | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

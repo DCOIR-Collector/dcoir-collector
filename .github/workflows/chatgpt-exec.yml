@@ -26,7 +26,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: chatgpt-exec
+name: 11 Operator - ChatGPT Exec
+run-name: ChatGPT Exec | ${{ github.event.inputs.request_path || github.event.head_commit.id || 'push' }} | #${{ github.run_number }}
 
 on:
   workflow_dispatch:

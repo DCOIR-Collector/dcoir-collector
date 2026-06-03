@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: run-gemini-behavioral-replay-manual.yml
 # Purpose: reusable implementation module for run-gemini-behavioral-replay-manual; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-run-gemini-behavioral-replay-manual
+name: 99 Module - Run Gemini Behavioral Replay Manual
+run-name: Module Run Gemini Behavioral Replay Manual | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

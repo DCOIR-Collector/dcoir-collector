@@ -32,7 +32,8 @@
 # Authority routing:
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
-name: chatgpt-github-artifact-readback
+name: 10 Operator - GitHub Artifact Readback
+run-name: Artifact Readback | run ${{ github.event.inputs.source_run_id || 'request-file' }} | #${{ github.run_number }}
 
 on:
   workflow_dispatch:

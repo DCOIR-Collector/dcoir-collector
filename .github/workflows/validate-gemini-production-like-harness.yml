@@ -27,7 +27,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: validate-gemini-production-like-harness
+name: 21 Validation - Gemini Production-Like Harness
+run-name: Gemini Production-Like Harness | ${{ github.event.inputs.harness_mode || 'event-default' }} | #${{ github.run_number }}
 
 on:
   push:

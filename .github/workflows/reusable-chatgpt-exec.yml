@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: chatgpt-exec.yml
 # Purpose: reusable implementation module for chatgpt-exec; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-chatgpt-exec
+name: 99 Module - Chatgpt Exec
+run-name: Module Chatgpt Exec | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

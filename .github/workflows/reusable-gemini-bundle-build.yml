@@ -1,6 +1,7 @@
 # DCOIR reusable workflow module.
 # Entry workflow keeps manual trigger inputs, permissions, and concurrency visible.
-name: reusable-gemini-bundle-build
+name: 99 Module - Gemini Bundle Build
+run-name: Module Gemini Bundle Build | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: validate-gemini-production-like-harness.yml
 # Purpose: reusable implementation module for validate-gemini-production-like-harness; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-validate-gemini-production-like-harness
+name: 99 Module - Validate Gemini Production Like Harness
+run-name: Module Validate Gemini Production Like Harness | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: ops-file-delete.yml
 # Purpose: reusable implementation module for Ops file delete request; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-Ops file delete request
+name: 99 Module - Ops File Delete
+run-name: Module Ops File Delete | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

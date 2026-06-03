@@ -26,7 +26,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: manual-gemini-bundle-build
+name: 02 Operator - Build Gemini Agent Bundle
+run-name: Gemini Agent Bundle | ${{ github.event.inputs.bundle_version_override || 'default-version' }} | skip_validation=${{ github.event.inputs.skip_validation || false }} | #${{ github.run_number }}
 
 on:
   workflow_dispatch:
@@ -51,10 +52,9 @@ concurrency:
 
 jobs:
   build_gemini_bundle:
-    uses: ./.github/workflows/reusable-manual-gemini-bundle-build.yml
+    uses: ./.github/workflows/reusable-gemini-bundle-build.yml
     permissions:
       contents: read
     with:
-      caller_event_name: ${{ github.event_name }}
       bundle_version_override: ${{ inputs.bundle_version_override || '' }}
       skip_validation: ${{ github.event_name == 'workflow_dispatch' && inputs.skip_validation || false }}

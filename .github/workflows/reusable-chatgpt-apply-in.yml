@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: chatgpt-apply-in.yml
 # Purpose: reusable implementation module for chatgpt-apply-in; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-chatgpt-apply-in
+name: 99 Module - Chatgpt Apply In
+run-name: Module Chatgpt Apply In | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

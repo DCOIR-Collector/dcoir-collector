@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: publish_knowledge_to_wiki.yml
 # Purpose: reusable implementation module for Publish Knowledge to Wiki; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-Publish Knowledge to Wiki
+name: 99 Module - Publish Knowledge To Wiki
+run-name: Module Publish Knowledge To Wiki | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

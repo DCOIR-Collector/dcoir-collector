@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: manual-github-artifact-readback.yml
 # Purpose: reusable implementation module for chatgpt-github-artifact-readback; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-chatgpt-github-artifact-readback
+name: 99 Module - Manual Github Artifact Readback
+run-name: Module Manual Github Artifact Readback | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

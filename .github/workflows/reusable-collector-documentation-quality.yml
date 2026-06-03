@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: collector-documentation-quality.yml
 # Purpose: reusable implementation module for collector-documentation-quality; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-collector-documentation-quality
+name: 99 Module - Collector Documentation Quality
+run-name: Module Collector Documentation Quality | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

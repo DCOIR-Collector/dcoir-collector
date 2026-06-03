@@ -26,7 +26,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: scheduled-health-check
+name: 30 Maintenance - Scheduled Health Check
+run-name: Scheduled Health Check | ${{ github.event_name }} | #${{ github.run_number }}
 
 on:
   schedule:
@@ -42,8 +43,24 @@ concurrency:
 
 jobs:
   health_check:
-    uses: ./.github/workflows/reusable-scheduled-health-check.yml
+    uses: ./.github/workflows/reusable-collector-validation.yml
     permissions:
       contents: read
     with:
-      caller_event_name: ${{ github.event_name }}
+      workflow_name: scheduled-health-check
+      surface_profile: scheduled_health_check
+      validation_prefix: health
+      artifact_name: scheduled-health-check-results
+      artifact_paths: |
+        project_sources/validation/out_health_gemini/**
+        project_sources/validation/out_health_validate_dcoir_run_fixtures/**
+        project_sources/validation/out_health_documentation_quality/**
+        project_sources/validation/out_health_collector/**
+      artifact_retention_days: 14
+      report_title: Scheduled health-check summary
+      report_scope: routine health-check validation
+      report_note: includes Gemini smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, and collector package smoke-build output when produced.
+      report_claim: The workflow conclusion is the authoritative pass/fail signal for this health lane. Treat this as a routine health signal, not FullRegression or release-readiness proof.
+      run_packaging_residue_check: true
+      run_harness_assembly_parity: false
+      run_collector_package_smoke: true

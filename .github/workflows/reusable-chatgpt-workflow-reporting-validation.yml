@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: chatgpt-workflow-reporting-validation.yml
 # Purpose: reusable implementation module for chatgpt-workflow-reporting-validation; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-chatgpt-workflow-reporting-validation
+name: 99 Module - Chatgpt Workflow Reporting Validation
+run-name: Module Chatgpt Workflow Reporting Validation | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

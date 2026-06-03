@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: workflow-maintenance-audit.yml
 # Purpose: reusable implementation module for Workflow maintenance audit; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-Workflow maintenance audit
+name: 99 Module - Workflow Maintenance Audit
+run-name: Module Workflow Maintenance Audit | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

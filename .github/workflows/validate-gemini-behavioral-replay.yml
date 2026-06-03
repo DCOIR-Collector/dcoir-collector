@@ -25,7 +25,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: validate-gemini-behavioral-replay
+name: 22 Validation - Gemini Behavioral Replay
+run-name: Validate Gemini Behavioral Replay | ${{ github.event_name }} | #${{ github.run_number }}
 
 on:
   push:

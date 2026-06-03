@@ -25,39 +25,41 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: chatgpt-workflow-run-reporter
+name: 80 Reporting - Workflow Run Reporter
+run-name: Workflow Report for ${{ github.event.workflow_run.name || github.workflow }} #${{ github.event.workflow_run.run_number || github.run_number }}
 
 on:
   workflow_run:
     workflows:
-      - validate-on-push
-      - validate-on-pr
-      - chatgpt-apply-in
-      - chatgpt-exec
-      - chatgpt-stage-out
-      - chatgpt-staging-cleanup
-      - chatgpt-report-retention-cleanup
-      - validate-gemini-behavioral-replay
-      - validate-gemini-production-like-harness
-      - run-gemini-behavioral-replay-manual
-      - Dependency Review
-      - Dependabot auto-merge
-      - scheduled-health-check
-      - collector-documentation-quality
-      - Workflow maintenance audit
-      - manual-gemini-bundle-build
-      - manual-gemini-model-comparison
-      - chatgpt-github-artifact-readback
-      - manual-collector-runtime-package-build
-      - manual-collector-optional-exe-build
-      - manual-test-framework-validate
-      - manual-full-validation
-      - Ops apply zip request
-      - Ops dispatch request
-      - Ops file delete request
-      - Ops restructure map request
-      - Publish Knowledge to Wiki
-      - chatgpt-workflow-reporting-validation
+      - 20 Validation - Pull Request
+      - 21 Validation - Main Push
+      - 10 Operator - ChatGPT Apply-In
+      - 11 Operator - ChatGPT Exec
+      - 12 Operator - ChatGPT Stage-Out
+      - 32 Maintenance - ChatGPT Staging Cleanup
+      - 31 Maintenance - ChatGPT Report Retention Cleanup
+      - 22 Validation - Gemini Behavioral Replay
+      - 21 Validation - Gemini Production-Like Harness
+      - 06 Operator - Gemini Behavioral Replay
+      - 41 Automation - Dependency Review
+      - 40 Automation - Dependabot Auto-Merge
+      - 30 Maintenance - Scheduled Health Check
+      - 23 Validation - Collector Documentation Quality
+      - 30 Maintenance - Workflow Audit
+      - 02 Operator - Build Gemini Agent Bundle
+      - 04 Operator - Gemini Model Comparison
+      - 10 Operator - GitHub Artifact Readback
+      - 01 Operator - Build Collector Runtime Bundle
+      - 03 Operator - Build Optional Collector EXE
+      - 05 Operator - Test Framework Validation
+      - 00 Operator - Full Validation
+      - 60 Ops - Apply ZIP Request Scaffold
+      - 61 Ops - Dispatch Request Scaffold
+      - 62 Ops - File Delete Request Scaffold
+      - 63 Ops - Restructure Map Scaffold
+      - 20 Operator - Publish Knowledge to Wiki
+      - 24 Validation - Workflow Reporting
+      - 80 Reporting - Workflow Run Reporter
     types:
       - completed
   workflow_dispatch:

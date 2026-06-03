@@ -1,6 +1,7 @@
 # DCOIR reusable workflow module.
 # Entry workflow keeps manual trigger inputs, permissions, and concurrency visible.
-name: reusable-collector-runtime-package-build
+name: 99 Module - Collector Runtime Package Build
+run-name: Module Collector Runtime Package Build | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

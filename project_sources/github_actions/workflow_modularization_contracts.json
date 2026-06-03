@@ -31,7 +31,7 @@
     "wiki-publish",
     "maintenance-audit"
   ],
-  "reusable_workflow_count": 32,
+  "reusable_workflow_count": 28,
   "schema_version": "dcoir_workflow_modularization_contracts_v1",
   "workflow_contracts": [
     {

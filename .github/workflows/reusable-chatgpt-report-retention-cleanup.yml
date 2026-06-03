@@ -1,7 +1,8 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: chatgpt-report-retention-cleanup.yml
 # Purpose: reusable implementation module for chatgpt-report-retention-cleanup; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
-name: reusable-chatgpt-report-retention-cleanup
+name: 99 Module - Chatgpt Report Retention Cleanup
+run-name: Module Chatgpt Report Retention Cleanup | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:

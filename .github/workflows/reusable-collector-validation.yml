@@ -1,6 +1,7 @@
 # DCOIR reusable workflow module.
 # Entry workflows keep triggers, permissions, concurrency, and operator-facing inputs.
-name: reusable-collector-validation
+name: 99 Module - Collector Validation
+run-name: Module Collector Validation | ${{ github.workflow }} | #${{ github.run_number }}
 
 on:
   workflow_call:
