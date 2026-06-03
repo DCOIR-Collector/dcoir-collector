@@ -1,0 +1,114 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: manual-test-framework-validate.yml
+# Purpose: reusable implementation module for manual-test-framework-validate; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: reusable-manual-test-framework-validate
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate_manual_test_framework:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          python-version: '3.11'
+
+      - name: Validate manual-test framework Python syntax
+        shell: pwsh
+        run: |
+          $pyFiles = Get-ChildItem -LiteralPath project_sources/validation/manual_test_framework -File -Filter '*.py'
+          if (-not $pyFiles) {
+            throw 'No manual-test framework Python files found.'
+          }
+          foreach ($file in $pyFiles) {
+            python -m py_compile $file.FullName
+            if ($LASTEXITCODE -ne 0) {
+              throw "Python syntax validation failed: $($file.FullName)"
+            }
+          }
+
+      - name: Validate manual-test framework PowerShell syntax
+        shell: pwsh
+        run: |
+          $psFiles = Get-ChildItem -LiteralPath project_sources/validation/manual_test_framework -File -Filter '*.ps1'
+          if (-not $psFiles) {
+            throw 'No manual-test framework PowerShell files found.'
+          }
+          foreach ($file in $psFiles) {
+            $tokens = $null
+            $parseErrors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$tokens, [ref]$parseErrors)
+            if ($parseErrors.Count -gt 0) {
+              $messages = ($parseErrors | ForEach-Object { $_.Message }) -join ' | '
+              throw "PowerShell syntax validation failed: $($file.FullName): $messages"
+            }
+          }
+
+      - name: Build manual-test framework download bundle
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force project_sources/validation/manual_test_framework/out_manual_test_framework_bundle -ErrorAction SilentlyContinue
+          python project_sources/validation/manual_test_framework/build_dcoir_manual_test_framework_bundle.py --source-dir project_sources/validation/manual_test_framework --output-dir project_sources/validation/manual_test_framework/out_manual_test_framework_bundle --version v9
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Manual-test framework bundle build failed.'
+          }
+          $bundle = Get-ChildItem -LiteralPath project_sources/validation/manual_test_framework/out_manual_test_framework_bundle -File -Filter 'dcoir_manual_test_framework_bundle_v9_full.zip' | Select-Object -First 1
+          if (-not $bundle) {
+            throw 'Manual-test framework bundle zip was not produced.'
+          }
+
+      - name: Upload manual-test framework bundle artifacts
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: manual-test-framework-bundle
+          path: |
+            project_sources/validation/manual_test_framework/out_manual_test_framework_bundle/**
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null
+          @"
+          ## Validation summary
+
+          - workflow: manual-test-framework-validate
+          - validation_scope: manual-test framework validation
+          - workflow_run_id: $env:GITHUB_RUN_ID
+          - workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT
+          - head_sha: $env:GITHUB_SHA
+          - ref: $env:GITHUB_REF
+          - primary_artifact: manual-test-framework-bundle
+          - artifact_note: includes the manual-test framework bundle output when produced.
+
+          The workflow conclusion is the authoritative pass/fail signal. Use this section to locate the validation artifact bundle without opening the full job log first.
+          "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,79 @@
+name: Validate PowerShell syntax
+description: Validate PowerShell parser syntax for tracked or caller-supplied files.
+inputs:
+  paths:
+    description: Newline-separated PowerShell files. When empty, all tracked ps1/psm1/psd1 files are checked.
+    required: false
+    default: ""
+  include-collector-parts:
+    description: Include collector source part files under project_sources/collector/source/parts.
+    required: false
+    default: "false"
+  require-files:
+    description: Fail when no matching files are found.
+    required: false
+    default: "false"
+  use-windows-powershell:
+    description: Run parser validation through Windows PowerShell 5.1.
+    required: false
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Validate PowerShell syntax
+      shell: pwsh
+      env:
+        POWERSHELL_SYNTAX_PATHS: ${{ inputs.paths }}
+        INCLUDE_COLLECTOR_PARTS: ${{ inputs.include-collector-parts }}
+        REQUIRE_FILES: ${{ inputs.require-files }}
+        USE_WINDOWS_POWERSHELL: ${{ inputs.use-windows-powershell }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $validator = @'
+        $ErrorActionPreference = 'Stop'
+        $rawPaths = $env:POWERSHELL_SYNTAX_PATHS
+        if ([string]::IsNullOrWhiteSpace($rawPaths)) {
+          $psFiles = @(git ls-files "*.ps1" "*.psm1" "*.psd1")
+        } else {
+          $psFiles = @($rawPaths -split "`r?`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+        }
+        if ($env:INCLUDE_COLLECTOR_PARTS -eq 'true' -and (Test-Path -LiteralPath 'project_sources/collector/source/parts')) {
+          $psFiles += Get-ChildItem -LiteralPath 'project_sources/collector/source/parts' -File -Filter '*.ps1' | ForEach-Object { $_.FullName }
+        }
+        $psFiles = @($psFiles | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -Unique)
+        if (-not $psFiles) {
+          if ($env:REQUIRE_FILES -eq 'true') {
+            throw 'No PowerShell files found for syntax validation.'
+          }
+          Write-Host 'No PowerShell files found.'
+          exit 0
+        }
+        $parseFailures = @()
+        foreach ($file in $psFiles) {
+          $tokens = $null
+          $parseErrors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$tokens, [ref]$parseErrors)
+          if ($parseErrors.Count -gt 0) {
+            $messages = ($parseErrors | ForEach-Object { $_.Message }) -join ' | '
+            $parseFailures += "${file}: $messages"
+          }
+        }
+        if ($parseFailures.Count -gt 0) {
+          $parseFailures | ForEach-Object { Write-Error $_ }
+          throw 'PowerShell syntax validation failed.'
+        }
+        '@
+        if ($env:USE_WINDOWS_POWERSHELL -eq 'true') {
+          $compatScript = Join-Path $env:RUNNER_TEMP 'validate-windows-powershell-syntax.ps1'
+          Set-Content -Path $compatScript -Value $validator -Encoding Unicode
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File $compatScript
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Windows PowerShell syntax validation failed.'
+          }
+        } else {
+          Invoke-Expression $validator
+        }
+
+# Compensating evidence: caller-visible step name, stdout markers, explicit inputs,
+# and generated output paths/artifacts preserve review evidence despite composite
+# action grouping.

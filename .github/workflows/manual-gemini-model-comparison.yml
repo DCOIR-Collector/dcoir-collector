@@ -83,102 +83,17 @@ concurrency:
 
 jobs:
   compare_models:
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/reusable-manual-gemini-model-comparison.yml
     permissions:
       contents: read
-    env:
+    with:
+      caller_event_name: ${{ github.event_name }}
+      reference_model: ${{ inputs.reference_model || 'gemini-3.1-pro-preview' }}
+      candidate_models: ${{ inputs.candidate_models || 'gemini-3.1-pro-preview,gemini-3-flash-preview,gemini-3.5-flash,gemini-2.5-pro,gemini-2.5-flash' }}
+      fixture_path: ${{ inputs.fixture_path || 'project_sources/gemini/tools/fixtures/gemini_phase1_model_comparison_cases.json' }}
+      model_profile_path: ${{ inputs.model_profile_path || 'project_sources/gemini/tools/fixtures/gemini_model_candidate_profiles.json' }}
+      repeat_count: ${{ inputs.repeat_count || '1' }}
+      max_cases: ${{ inputs.max_cases || '0' }}
+      inter_request_delay_seconds: ${{ inputs.inter_request_delay_seconds || '3' }}
+    secrets:
       DCOIR_GEMINI_API: ${{ secrets.DCOIR_GEMINI_API }}
-      REFERENCE_MODEL: ${{ github.event.inputs.reference_model }}
-      CANDIDATE_MODELS: ${{ github.event.inputs.candidate_models }}
-      FIXTURE_PATH: ${{ github.event.inputs.fixture_path }}
-      MODEL_PROFILE_PATH: ${{ github.event.inputs.model_profile_path }}
-      REPEAT_COUNT: ${{ github.event.inputs.repeat_count }}
-      MAX_CASES: ${{ github.event.inputs.max_cases }}
-      INTER_REQUEST_DELAY_SECONDS: ${{ github.event.inputs.inter_request_delay_seconds }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.11"
-
-      - name: Validate Python syntax
-        shell: bash
-        run: |
-          set -euo pipefail
-          python -m py_compile project_sources/gemini/tools/run_gemini_model_comparison.py
-
-      - name: Verify required governed surfaces
-        shell: bash
-        run: |
-          set -euo pipefail
-          python project_sources/github_actions/tools/check_required_surfaces.py --profile manual_gemini_model_comparison
-
-      - name: Create output directory
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p project_sources/validation/out_manual_gemini_model_comparison
-
-      - name: Run Gemini model comparison
-        shell: bash
-        run: |
-          set -euo pipefail
-          python project_sources/gemini/tools/run_gemini_model_comparison.py \
-            --fixtures "$FIXTURE_PATH" \
-            --output-dir project_sources/validation/out_manual_gemini_model_comparison \
-            --model-profile-path "$MODEL_PROFILE_PATH" \
-            --reference-model "$REFERENCE_MODEL" \
-            --candidate-models "$CANDIDATE_MODELS" \
-            --repeat-count "$REPEAT_COUNT" \
-            --max-cases "$MAX_CASES" \
-            --inter-request-delay-seconds "$INTER_REQUEST_DELAY_SECONDS"
-
-      - name: Prepare ChatGPT workflow report section
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          out_dir="project_sources/validation/out_manual_gemini_model_comparison"
-          section="$out_dir/chatgpt_workflow_report_section.md"
-          summary="$out_dir/gemini_model_comparison_summary.md"
-          mkdir -p "$out_dir"
-          {
-            echo "## Gemini model comparison"
-            echo
-            echo "- reference_model: $REFERENCE_MODEL"
-            echo "- candidate_models: $CANDIDATE_MODELS"
-            echo "- fixture_path: $FIXTURE_PATH"
-            echo "- model_profile_path: $MODEL_PROFILE_PATH"
-            echo "- repeat_count: $REPEAT_COUNT"
-            echo "- max_cases: $MAX_CASES"
-            echo "- inter_request_delay_seconds: $INTER_REQUEST_DELAY_SECONDS"
-            echo
-            if [[ -f "$summary" ]]; then
-              cat "$summary"
-            else
-              echo "No model comparison summary markdown was produced. Use the uploaded model-comparison artifact for detailed readback."
-            fi
-          } > "$section"
-
-      - name: Upload model comparison artifacts
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: manual-gemini-model-comparison
-          path: |
-            project_sources/validation/out_manual_gemini_model_comparison/**
-          if-no-files-found: warn
-          retention-days: 21
-
-      - name: Upload ChatGPT workflow report section
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: chatgpt-workflow-report-section
-          path: |
-            project_sources/validation/out_manual_gemini_model_comparison/chatgpt_workflow_report_section.md
-          if-no-files-found: warn
-          retention-days: 21

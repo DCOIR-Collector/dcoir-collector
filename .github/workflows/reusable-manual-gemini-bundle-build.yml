@@ -1,0 +1,37 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: manual-gemini-bundle-build.yml
+# Purpose: reusable implementation module for manual-gemini-bundle-build; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: reusable-manual-gemini-bundle-build
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+      bundle_version_override:
+        description: Forwarded `bundle_version_override` input from the entry workflow.
+        required: false
+        type: string
+        default: ''
+      skip_validation:
+        description: Forwarded `skip_validation` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: read
+
+jobs:
+  build_gemini_bundle:
+    uses: ./.github/workflows/reusable-gemini-bundle-build.yml
+    permissions:
+      contents: read
+    with:
+      bundle_version_override: ${{ inputs.bundle_version_override }}
+      skip_validation: ${{ inputs.skip_validation }}

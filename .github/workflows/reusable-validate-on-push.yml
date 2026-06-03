@@ -1,0 +1,122 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: validate-on-push.yml
+# Purpose: reusable implementation module for validate-on-push; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: reusable-validate-on-push
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          python-version: '3.11'
+
+      - name: Validate Python syntax
+        uses: ./.github/actions/validate-python-syntax
+
+      - name: Run documentation validator self-tests
+        shell: pwsh
+        run: |
+          python project_sources/collector/tools/test_verify_collector_documentation_quality.py
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Documentation validator self-tests failed.'
+          }
+
+      - name: Validate PowerShell syntax
+        uses: ./.github/actions/validate-powershell-syntax
+
+      - name: Verify collector harness assembly parity
+        shell: pwsh
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\project_sources\collector\harness\assemble_run_DCOIR_Tests.ps1 -OutputPath .\project_sources\collector\harness\run_DCOIR_Tests.generated.ps1 -ExpectedHarnessPath .\project_sources\collector\harness\run_DCOIR_Tests.ps1
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector harness assembly parity validation failed.'
+          }
+
+      - name: Verify required governed surfaces
+        uses: ./.github/actions/verify-required-surfaces
+        with:
+          profile: validate_on_push
+
+      - name: Smoke-test Gemini bundle build algorithm
+        uses: ./.github/actions/smoke-build-gemini-bundle
+        with:
+          output-dir: project_sources/validation/out_validate_on_push_gemini
+
+      - name: Smoke-test collector runtime package build
+        uses: ./.github/actions/smoke-build-collector-package
+        with:
+          output-dir: project_sources/validation/out_validate_on_push_collector
+
+      - name: Run validate_DCOIR_Run fixture tests
+        uses: ./.github/actions/run-validate-dcoir-fixtures
+        with:
+          output-root: .\validation\out_validate_on_push_validate_dcoir_run_fixtures
+
+      - name: Run collector documentation quality gate
+        uses: ./.github/actions/run-collector-documentation-quality
+        with:
+          output-json: project_sources/validation/out_validate_on_push_documentation_quality/collector_documentation_quality.json
+
+      - name: Upload validation artifacts
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: validate-on-push-results
+          path: |
+            project_sources/TestResults/**
+            project_sources/validation/out_validate_on_push_gemini/**
+            project_sources/validation/out_validate_on_push_collector/**
+            project_sources/validation/out_validate_on_push_validate_dcoir_run_fixtures/**
+            project_sources/validation/out_preflight_documentation_quality/**
+            project_sources/validation/out_validate_on_push_documentation_quality/**
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null
+          @"
+          ## Push validation summary
+
+          - workflow: validate-on-push
+          - workflow_run_id: $env:GITHUB_RUN_ID
+          - workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT
+          - head_sha: $env:GITHUB_SHA
+          - ref: $env:GITHUB_REF
+          - event_name: $env:GITHUB_EVENT_NAME
+          - primary_artifact: validate-on-push-results
+          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, and TestResults when produced.
+
+          The workflow conclusion is the authoritative pass/fail signal for the push validation lane. Use artifact readback for harness, package, documentation, or report-specific claims.
+          "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14

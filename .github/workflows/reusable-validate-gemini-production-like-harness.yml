@@ -1,0 +1,86 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: validate-gemini-production-like-harness.yml
+# Purpose: reusable implementation module for validate-gemini-production-like-harness; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: reusable-validate-gemini-production-like-harness
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+      harness_mode:
+        description: Forwarded `harness_mode` input from the entry workflow.
+        required: false
+        type: string
+        default: 'medium'
+      require_stored_artifacts:
+        description: Forwarded `require_stored_artifacts` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+    outputs: {}
+    secrets: {}
+
+env:
+  GEMINI_PRODUCTION_HARNESS_MODE: ${{ inputs.harness_mode || 'medium' }}
+  GEMINI_REQUIRE_STORED_ARTIFACTS: ${{ inputs.require_stored_artifacts || 'false' }}
+
+permissions:
+  contents: read
+
+jobs:
+  validate_harness:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          python-version: '3.11'
+
+      - name: Validate Python syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile project_sources/gemini/tools/validate_gemini_production_like_harness.py
+
+      - name: Run production-like harness validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p project_sources/validation/out_validate_gemini_production_like_harness
+          args=(
+            --repo-root .
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay
+            --output-dir project_sources/validation/out_validate_gemini_production_like_harness
+            --mode "$GEMINI_PRODUCTION_HARNESS_MODE"
+          )
+          if [[ "$GEMINI_REQUIRE_STORED_ARTIFACTS" == "true" ]]; then
+            args+=(--require-stored-artifacts)
+          fi
+          python project_sources/gemini/tools/validate_gemini_production_like_harness.py "${args[@]}"
+
+      - name: Upload production-like harness artifacts
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: validate-gemini-production-like-harness-results
+          path: |
+            project_sources/validation/out_validate_gemini_production_like_harness/**
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section
+          path: project_sources/validation/out_validate_gemini_production_like_harness/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14

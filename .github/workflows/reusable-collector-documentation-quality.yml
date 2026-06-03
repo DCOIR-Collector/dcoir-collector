@@ -1,0 +1,93 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: collector-documentation-quality.yml
+# Purpose: reusable implementation module for collector-documentation-quality; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: reusable-collector-documentation-quality
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: read
+
+jobs:
+  documentation_quality:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          python-version: '3.11'
+
+      - name: Validate Python syntax
+        uses: ./.github/actions/validate-python-syntax
+        with:
+          paths: |
+            project_sources/collector/tools/verify_collector_documentation_quality.py
+            project_sources/collector/tools/test_verify_collector_documentation_quality.py
+          require-files: "true"
+
+      - name: Validate PowerShell syntax for collector sources
+        uses: ./.github/actions/validate-powershell-syntax
+        with:
+          paths: |
+            project_sources/collector/source/DCOIR_Collector.ps1
+            project_sources/collector/harness/run_DCOIR_Tests.ps1
+          include-collector-parts: "true"
+          require-files: "true"
+
+      - name: Run auto-discovery documentation audit
+        uses: ./.github/actions/run-collector-documentation-quality
+        with:
+          output-json: project_sources/validation/out_collector_documentation_quality/collector_documentation_quality.json
+          run-self-tests: "true"
+
+      - name: Upload documentation audit artifacts
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: collector-documentation-quality
+          path: |
+            project_sources/validation/out_collector_documentation_quality/**
+          if-no-files-found: warn
+          retention-days: 21
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null
+          @"
+          ## Validation summary
+
+          - workflow: collector-documentation-quality
+          - validation_scope: collector documentation quality validation
+          - workflow_run_id: $env:GITHUB_RUN_ID
+          - workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT
+          - head_sha: $env:GITHUB_SHA
+          - ref: $env:GITHUB_REF
+          - primary_artifact: collector-documentation-quality
+          - artifact_note: includes the documentation quality JSON output when produced.
+
+          The workflow conclusion is the authoritative pass/fail signal. Use this section to locate the validation artifact bundle without opening the full job log first.
+          "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14

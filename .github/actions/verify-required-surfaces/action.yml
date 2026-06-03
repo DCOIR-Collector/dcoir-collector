@@ -1,0 +1,34 @@
+name: Verify required governed surfaces
+description: Run governed surface checks and optional Gemini manifest checks.
+inputs:
+  profile:
+    description: check_required_surfaces.py profile.
+    required: true
+  include-gemini-manifest:
+    description: Run check_gemini_manifest_surfaces.py against the Gemini bundle source.
+    required: false
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - name: Verify required governed surfaces
+      shell: pwsh
+      env:
+        REQUIRED_SURFACES_PROFILE: ${{ inputs.profile }}
+        INCLUDE_GEMINI_MANIFEST: ${{ inputs.include-gemini-manifest }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+        python project_sources/github_actions/tools/check_required_surfaces.py --profile $env:REQUIRED_SURFACES_PROFILE
+        if ($LASTEXITCODE -ne 0) {
+          throw 'Required surface validation failed.'
+        }
+        if ($env:INCLUDE_GEMINI_MANIFEST -eq 'true') {
+          python project_sources/github_actions/tools/check_gemini_manifest_surfaces.py --source-root project_sources/gemini/bundle_source
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Gemini manifest surface validation failed.'
+          }
+        }
+
+# Compensating evidence: caller-visible step name, stdout markers, explicit inputs,
+# and generated output paths/artifacts preserve review evidence despite composite
+# action grouping.

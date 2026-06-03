@@ -1,0 +1,41 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: dependabot-auto-merge.yml
+# Purpose: reusable implementation module for Dependabot auto-merge; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: reusable-Dependabot auto-merge
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  enable_auto_merge:
+    name: Enable auto-merge for safe Dependabot PRs
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.repository == 'malwaredevil/dcoir-collector' &&
+      github.event.pull_request.draft == false
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v3
+        with:
+          github-token: ${{ github.token }}
+
+      - name: Enable auto-merge for GitHub Actions updates
+        if: steps.metadata.outputs.package-ecosystem == 'github_actions'
+        shell: bash
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ github.token }}

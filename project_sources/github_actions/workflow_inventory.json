@@ -1,15 +1,22 @@
 {
+  "composite_action_count": 13,
   "contract_registry": "project_sources/github_actions/workflow_modularization_contracts.json",
   "existing_workflow_count_expected": 29,
   "governing_issue": 194,
+  "local_composite_action_calls": 96,
+  "local_reusable_workflow_calls": 33,
+  "reusable_workflow_count": 32,
   "schema_version": "dcoir_workflow_inventory_v1",
   "workflow_count": 29,
   "workflows": [
     {
+      "artifacts": [
+        "chatgpt-apply-in-failure-${{ github.run_id }}"
+      ],
       "concurrency_declared": true,
       "contract_family": "staging-apply-in",
       "file": ".github/workflows/chatgpt-apply-in.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Apply an operator-approved single base64 ZIP payload from chatgpt_staging/in into governed repo paths with manifest, hash, and path-safety checks.",
       "permissions": {
         "contents": "write"
@@ -25,10 +32,13 @@
       "workflow_name": "chatgpt-apply-in"
     },
     {
+      "artifacts": [
+        "${{ env.DCOIR_EXEC_ARTIFACT_NAME }}"
+      ],
       "concurrency_declared": true,
       "contract_family": "staging-exec",
       "file": ".github/workflows/chatgpt-exec.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Run a reviewed operator-approved command request on a Windows GitHub Actions runner and commit ChatGPT-readable execution reports.",
       "permissions": {
         "actions": "read",
@@ -45,10 +55,11 @@
       "workflow_name": "chatgpt-exec"
     },
     {
+      "artifacts": [],
       "concurrency_declared": true,
       "contract_family": "staging-retention-cleanup",
       "file": ".github/workflows/chatgpt-report-retention-cleanup.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Clean old ChatGPT workflow status reports, stale staged request JSON files, and aged staged output bundles according to retention windows.",
       "permissions": {
         "contents": "write"
@@ -66,10 +77,13 @@
       "workflow_name": "chatgpt-report-retention-cleanup"
     },
     {
+      "artifacts": [
+        "chatgpt-stage-out"
+      ],
       "concurrency_declared": true,
       "contract_family": "staging-stage-out",
       "file": ".github/workflows/chatgpt-stage-out.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Stage a reviewed output bundle from a request JSON into chatgpt_staging/out for ChatGPT/operator download and readback.",
       "permissions": {
         "contents": "write"
@@ -85,10 +99,11 @@
       "workflow_name": "chatgpt-stage-out"
     },
     {
+      "artifacts": [],
       "concurrency_declared": true,
       "contract_family": "staging-cleanup",
       "file": ".github/workflows/chatgpt-staging-cleanup.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Clean selected ChatGPT staging request, inbound, outbound, apply, failure, and status-report surfaces.",
       "permissions": {
         "contents": "write"
@@ -104,10 +119,14 @@
       "workflow_name": "chatgpt-staging-cleanup"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "chatgpt-workflow-reporting-validation-${{ env.CHATGPT_VALIDATION_SCENARIO }}"
+      ],
       "concurrency_declared": true,
       "contract_family": "report-section",
       "file": ".github/workflows/chatgpt-workflow-reporting-validation.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Validate the repo-wide workflow reporting path, including success and deliberate failure report behavior.",
       "permissions": {
         "contents": "read"
@@ -124,10 +143,11 @@
       "workflow_name": "chatgpt-workflow-reporting-validation"
     },
     {
+      "artifacts": [],
       "concurrency_declared": true,
       "contract_family": "central-reporter",
       "file": ".github/workflows/chatgpt-workflow-run-reporter.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Create ChatGPT-readable completed-run reports for allowlisted workflows, including optional source-workflow custom markdown sections when uploaded as artifacts.",
       "permissions": {
         "actions": "read",
@@ -136,7 +156,7 @@
       "report_family": "repo-workflows completed summary",
       "risk": "high",
       "schedules": [],
-      "secret_or_var_count": 1,
+      "secret_or_var_count": 0,
       "trigger_events": [
         "workflow_dispatch",
         "workflow_run"
@@ -144,10 +164,14 @@
       "workflow_name": "chatgpt-workflow-run-reporter"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "collector-documentation-quality"
+      ],
       "concurrency_declared": true,
       "contract_family": "static-validation",
       "file": ".github/workflows/collector-documentation-quality.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Run the collector documentation quality validator and upload documentation-quality evidence.",
       "permissions": {
         "contents": "read"
@@ -167,10 +191,11 @@
       "workflow_name": "collector-documentation-quality"
     },
     {
+      "artifacts": [],
       "concurrency_declared": false,
       "contract_family": "dependabot-auto-merge",
       "file": ".github/workflows/dependabot-auto-merge.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Enable auto-merge for qualifying Dependabot GitHub Actions update pull requests.",
       "permissions": {
         "contents": "write",
@@ -179,17 +204,18 @@
       "report_family": "none declared",
       "risk": "medium",
       "schedules": [],
-      "secret_or_var_count": 1,
+      "secret_or_var_count": 0,
       "trigger_events": [
         "pull_request"
       ],
       "workflow_name": "Dependabot auto-merge"
     },
     {
+      "artifacts": [],
       "concurrency_declared": false,
       "contract_family": "dependency-review",
       "file": ".github/workflows/dependency-review.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Run GitHub Dependency Review on pull requests targeting main when repository support is explicitly enabled.",
       "permissions": {
         "contents": "read",
@@ -198,17 +224,21 @@
       "report_family": "none declared",
       "risk": "low",
       "schedules": [],
-      "secret_or_var_count": 1,
+      "secret_or_var_count": 0,
       "trigger_events": [
         "pull_request"
       ],
       "workflow_name": "Dependency Review"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "optional-collector-exe-variant"
+      ],
       "concurrency_declared": true,
       "contract_family": "collector-optional-exe",
       "file": ".github/workflows/manual-collector-optional-exe-build.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Build the optional collector EXE variant and validate it with a selected harness suite.",
       "permissions": {
         "contents": "read"
@@ -223,10 +253,14 @@
       "workflow_name": "manual-collector-optional-exe-build"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "manual-collector-runtime-package-build"
+      ],
       "concurrency_declared": true,
       "contract_family": "collector-runtime-package",
       "file": ".github/workflows/manual-collector-runtime-package-build.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Build the standard DCOIR Collector runtime package from repo source.",
       "permissions": {
         "contents": "read"
@@ -241,10 +275,14 @@
       "workflow_name": "manual-collector-runtime-package-build"
     },
     {
+      "artifacts": [
+        "${{ inputs.artifact_name }}",
+        "chatgpt-workflow-report-section"
+      ],
       "concurrency_declared": true,
       "contract_family": "required-surfaces",
       "file": ".github/workflows/manual-full-validation.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Run selected deep validation suite for collector/Gemini governed surfaces.",
       "permissions": {
         "contents": "read"
@@ -262,10 +300,14 @@
       "workflow_name": "manual-full-validation"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "manual-gemini-bundle-build"
+      ],
       "concurrency_declared": true,
       "contract_family": "gemini-bundle",
       "file": ".github/workflows/manual-gemini-bundle-build.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Build and optionally validate the DCOIR Gemini runtime bundle.",
       "permissions": {
         "contents": "read"
@@ -280,10 +322,14 @@
       "workflow_name": "manual-gemini-bundle-build"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "manual-gemini-model-comparison"
+      ],
       "concurrency_declared": true,
       "contract_family": "gemini-model-comparison",
       "file": ".github/workflows/manual-gemini-model-comparison.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Run the Phase 1 Gemini model-comparison harness against transcript-derived fixtures, using Gemini 3.1 Pro as the reference baseline and ranking candidates by behavioral closeness plus operational fit.",
       "permissions": {
         "contents": "read"
@@ -298,10 +344,13 @@
       "workflow_name": "manual-gemini-model-comparison"
     },
     {
+      "artifacts": [
+        "${{ steps.plan.outputs.artifact_name }}"
+      ],
       "concurrency_declared": true,
       "contract_family": "staging-artifact-readback",
       "file": ".github/workflows/manual-github-artifact-readback.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Download a bounded GitHub Actions artifact from a specified workflow run, extract it into a cleanup-managed repo path, and commit a ChatGPT-readable status report.",
       "permissions": {
         "actions": "write",
@@ -310,7 +359,7 @@
       "report_family": "live heartbeat",
       "risk": "high",
       "schedules": [],
-      "secret_or_var_count": 1,
+      "secret_or_var_count": 0,
       "trigger_events": [
         "push",
         "workflow_dispatch"
@@ -318,10 +367,14 @@
       "workflow_name": "chatgpt-github-artifact-readback"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "manual-test-framework-bundle"
+      ],
       "concurrency_declared": true,
       "contract_family": "static-validation",
       "file": ".github/workflows/manual-test-framework-validate.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Validate the manual test framework when its source or workflow changes.",
       "permissions": {
         "contents": "read"
@@ -337,10 +390,11 @@
       "workflow_name": "manual-test-framework-validate"
     },
     {
+      "artifacts": [],
       "concurrency_declared": false,
       "contract_family": "ops-guard",
       "file": ".github/workflows/ops-apply-zip.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Minimal scaffold/dry-run placeholder for ops apply-zip request handling.",
       "permissions": null,
       "report_family": "central reporter only when applicable",
@@ -353,10 +407,11 @@
       "workflow_name": "Ops apply zip request"
     },
     {
+      "artifacts": [],
       "concurrency_declared": false,
       "contract_family": "ops-guard",
       "file": ".github/workflows/ops-dispatch-request.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Minimal scaffold/dry-run placeholder for ops dispatch request handling.",
       "permissions": null,
       "report_family": "central reporter only when applicable",
@@ -369,10 +424,11 @@
       "workflow_name": "Ops dispatch request"
     },
     {
+      "artifacts": [],
       "concurrency_declared": false,
       "contract_family": "ops-guard",
       "file": ".github/workflows/ops-file-delete.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Minimal scaffold/dry-run placeholder for ops file-delete request handling.",
       "permissions": null,
       "report_family": "central reporter only when applicable",
@@ -385,10 +441,11 @@
       "workflow_name": "Ops file delete request"
     },
     {
+      "artifacts": [],
       "concurrency_declared": false,
       "contract_family": "ops-guard",
       "file": ".github/workflows/ops-restructure-map.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Minimal scaffold/dry-run placeholder for ops restructure-map request handling.",
       "permissions": null,
       "report_family": "central reporter only when applicable",
@@ -401,10 +458,11 @@
       "workflow_name": "Ops restructure map request"
     },
     {
+      "artifacts": [],
       "concurrency_declared": true,
       "contract_family": "wiki-publish",
       "file": ".github/workflows/publish_knowledge_to_wiki.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Publish maintained knowledge markdown to the repository wiki through a dedicated git worktree.",
       "permissions": {
         "contents": "read"
@@ -420,10 +478,14 @@
       "workflow_name": "Publish Knowledge to Wiki"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "run-gemini-behavioral-replay-manual-results"
+      ],
       "concurrency_declared": true,
       "contract_family": "gemini-behavioral-replay",
       "file": ".github/workflows/run-gemini-behavioral-replay-manual.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Run the governed Gemini behavioral replay harness against selected live Gemini API model and fixture combinations, or produce a diagnostic/fallback report when live evidence cannot be collected.",
       "permissions": {
         "contents": "read"
@@ -438,10 +500,14 @@
       "workflow_name": "run-gemini-behavioral-replay-manual"
     },
     {
+      "artifacts": [
+        "${{ inputs.artifact_name }}",
+        "chatgpt-workflow-report-section"
+      ],
       "concurrency_declared": true,
       "contract_family": "required-surfaces",
       "file": ".github/workflows/scheduled-health-check.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Run scheduled or manual health checks for required repo surfaces and quick smoke validation.",
       "permissions": {
         "contents": "read"
@@ -459,10 +525,14 @@
       "workflow_name": "scheduled-health-check"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "validate-gemini-behavioral-replay-results"
+      ],
       "concurrency_declared": true,
       "contract_family": "gemini-behavioral-replay",
       "file": ".github/workflows/validate-gemini-behavioral-replay.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Automatic deterministic validation for Gemini behavioral replay fixtures, response-pack regression checks, and replay reporting surfaces.",
       "permissions": {
         "contents": "read"
@@ -479,10 +549,14 @@
       "workflow_name": "validate-gemini-behavioral-replay"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "validate-gemini-production-like-harness-results"
+      ],
       "concurrency_declared": true,
       "contract_family": "gemini-production-like-harness",
       "file": ".github/workflows/validate-gemini-production-like-harness.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Validate the #179 production-like Gemini Agent behavioral harness, blind scenario prompt boundaries, stored-artifact boundaries, and manifest-based construct loading.",
       "permissions": {
         "contents": "read"
@@ -499,10 +573,14 @@
       "workflow_name": "validate-gemini-production-like-harness"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "validate-on-pr-results"
+      ],
       "concurrency_declared": true,
       "contract_family": "static-validation",
       "file": ".github/workflows/validate-on-pr.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Automatic PR-focused validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, and workflow definition changes.",
       "permissions": {
         "contents": "read"
@@ -517,10 +595,14 @@
       "workflow_name": "validate-on-pr"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "validate-on-push-results"
+      ],
       "concurrency_declared": true,
       "contract_family": "required-surfaces",
       "file": ".github/workflows/validate-on-push.yml",
-      "migration_status": "planned",
+      "migration_status": "active",
       "operator_purpose": "Automatic fast validation for collector, Gemini, validation, maintained knowledge, supporting asset, and workflow definition changes.",
       "permissions": {
         "contents": "read"
@@ -536,10 +618,13 @@
       "workflow_name": "validate-on-push"
     },
     {
+      "artifacts": [
+        "chatgpt-workflow-report-section"
+      ],
       "concurrency_declared": true,
       "contract_family": "maintenance-audit",
       "file": ".github/workflows/workflow-maintenance-audit.yml",
-      "migration_status": "foundation",
+      "migration_status": "active",
       "operator_purpose": "Audit GitHub Action version posture, workflow consistency drift, workflow inventory freshness, and the repo-local workflow modularization contract.",
       "permissions": {
         "contents": "read"

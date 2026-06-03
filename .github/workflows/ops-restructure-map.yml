@@ -31,7 +31,6 @@ on:
   workflow_dispatch:
 jobs:
   dry_run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - run: python ops/tools/ops_request_guard.py ops/requests/restructure_map.json
+    uses: ./.github/workflows/reusable-ops-restructure-map.yml
+    with:
+      caller_event_name: ${{ github.event_name }}

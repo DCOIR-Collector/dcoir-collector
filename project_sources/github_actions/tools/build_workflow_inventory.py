@@ -22,6 +22,7 @@ DEFAULT_MARKDOWN_OUTPUT = Path("project_sources/github_actions/workflow_inventor
 
 SECRET_RE = re.compile(r"(?:secrets|vars)\.([A-Za-z_][A-Za-z0-9_]*)")
 USES_RE = re.compile(r"^\s*uses:\s*([^\s#]+)", re.IGNORECASE)
+LOCAL_REUSABLE_RE = re.compile(r"^\s*uses:\s*(\./\.github/workflows/[^@\s#]+)", re.IGNORECASE | re.MULTILINE)
 SCRIPT_RE = re.compile(
     r"((?:\.github/scripts|project_sources/github_actions/tools|ops/tools|tools)/[A-Za-z0-9_./-]+\.(?:py|ps1|psm1|json))"
 )
@@ -37,7 +38,9 @@ def iter_workflow_files() -> list[Path]:
         return []
     return sorted(
         path for path in WORKFLOW_DIR.iterdir()
-        if path.is_file() and path.suffix.lower() in {".yml", ".yaml"}
+        if path.is_file()
+        and path.suffix.lower() in {".yml", ".yaml"}
+        and not path.name.startswith("reusable-")
     )
 
 
@@ -170,7 +173,11 @@ def extract_jobs(lines: list[str]) -> list[str]:
 def extract_artifact_names(lines: list[str]) -> list[str]:
     artifacts: set[str] = set()
     for index, line in enumerate(lines):
-        if "actions/upload-artifact" not in line and "actions/download-artifact" not in line:
+        if (
+            "actions/upload-artifact" not in line
+            and "actions/download-artifact" not in line
+            and "./.github/actions/upload-chatgpt-artifact" not in line
+        ):
             continue
         for follow in lines[index + 1:index + 12]:
             stripped = follow.strip()
@@ -196,9 +203,24 @@ def classify_report_family(path: Path, text: str) -> str:
     return "none declared"
 
 
+def expanded_workflow_text(path: Path, seen: set[Path] | None = None) -> str:
+    seen = seen or set()
+    if path in seen or not path.exists():
+        return ""
+    seen.add(path)
+    text = path.read_text(encoding="utf-8")
+    chunks = [text]
+    for match in LOCAL_REUSABLE_RE.finditer(text):
+        target = Path(match.group(1).removeprefix("./"))
+        chunks.append(expanded_workflow_text(target, seen))
+    return "\n".join(chunks)
+
+
 def workflow_entry(path: Path, contract_by_file: dict[str, dict[str, Any]]) -> dict[str, Any]:
     text = path.read_text(encoding="utf-8")
+    expanded_text = expanded_workflow_text(path)
     lines = text.splitlines()
+    expanded_lines = expanded_text.splitlines()
     header = collect_header(lines)
     contract = contract_by_file.get(path.as_posix(), {})
     secrets = sorted({match.group(1) for match in SECRET_RE.finditer(text)})
@@ -215,7 +237,8 @@ def workflow_entry(path: Path, contract_by_file: dict[str, dict[str, Any]]) -> d
         "permissions": extract_permissions(lines),
         "concurrency_declared": bool(collect_top_level_block(lines, "concurrency")),
         "secret_or_var_count": len(secrets),
-        "report_family": classify_report_family(path, text),
+        "artifacts": extract_artifact_names(expanded_lines),
+        "report_family": classify_report_family(path, expanded_text),
         "contract_family": contract.get("contract_family"),
         "migration_status": contract.get("migration_status"),
         "risk": contract.get("risk"),
@@ -229,11 +252,30 @@ def build_inventory() -> dict[str, Any]:
         for entry in contracts.get("workflow_contracts", [])
     }
     workflows = [workflow_entry(path, contract_by_file) for path in iter_workflow_files()]
+    reusable_workflows = sorted(WORKFLOW_DIR.glob("reusable-*.yml")) if WORKFLOW_DIR.exists() else []
+    composite_actions = sorted(Path(".github/actions").glob("*/action.yml"))
+    action_call_sources = iter_workflow_files() + reusable_workflows + composite_actions
+    local_reusable_calls = sum(
+        1
+        for path in iter_workflow_files() + reusable_workflows
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if "uses: ./.github/workflows/reusable-" in line
+    )
+    local_action_calls = sum(
+        1
+        for path in action_call_sources
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if "uses: ./.github/actions/" in line
+    )
     return {
         "schema_version": "dcoir_workflow_inventory_v1",
         "governing_issue": contracts.get("governing_issue"),
         "existing_workflow_count_expected": contracts.get("existing_workflow_count"),
         "workflow_count": len(workflows),
+        "reusable_workflow_count": len(reusable_workflows),
+        "composite_action_count": len(composite_actions),
+        "local_reusable_workflow_calls": local_reusable_calls,
+        "local_composite_action_calls": local_action_calls,
         "contract_registry": CONTRACT_PATH.as_posix(),
         "workflows": workflows,
     }
@@ -255,23 +297,28 @@ def render_markdown(inventory: dict[str, Any]) -> str:
         "",
         f"- schema_version: `{inventory['schema_version']}`",
         f"- governing_issue: `#{inventory['governing_issue']}`",
-        f"- workflow_count: `{inventory['workflow_count']}`",
+        f"- primary_workflow_count: `{inventory['workflow_count']}`",
+        f"- reusable_workflow_count: `{inventory['reusable_workflow_count']}`",
+        f"- composite_action_count: `{inventory['composite_action_count']}`",
+        f"- local_reusable_workflow_calls: `{inventory['local_reusable_workflow_calls']}`",
+        f"- local_composite_action_calls: `{inventory['local_composite_action_calls']}`",
         f"- contract_registry: `{inventory['contract_registry']}`",
         "",
         "This inventory is generated by `project_sources/github_actions/tools/build_workflow_inventory.py`.",
         "Regenerate it after workflow, reusable workflow, composite action, report, or workflow-tooling changes.",
         "",
-        "| File | Workflow name | Triggers | Permissions | Secrets/vars | Report family | Contract family | Status | Risk |",
-        "|---|---|---|---|---|---|---|---|---|",
+        "| File | Workflow name | Triggers | Permissions | Secrets/vars | Artifacts | Report family | Contract family | Status | Risk |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for item in inventory["workflows"]:
         lines.append(
-            "| {file} | {name} | {triggers} | {permissions} | {secrets} | {report} | {contract} | {status} | {risk} |".format(
+            "| {file} | {name} | {triggers} | {permissions} | {secrets} | {artifacts} | {report} | {contract} | {status} | {risk} |".format(
                 file=f"`{item['file']}`",
                 name=markdown_value(item["workflow_name"]),
                 triggers=markdown_value(item["trigger_events"]),
                 permissions=markdown_value(item["permissions"]),
                 secrets=markdown_value(item["secret_or_var_count"]),
+                artifacts=markdown_value(item["artifacts"]),
                 report=markdown_value(item["report_family"]),
                 contract=markdown_value(item["contract_family"]),
                 status=markdown_value(item["migration_status"]),

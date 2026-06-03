@@ -1,0 +1,25 @@
+name: Smoke build collector package
+description: Build the collector runtime package into a caller-owned validation output directory.
+inputs:
+  output-dir:
+    description: Output directory for collector package artifacts.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Smoke build collector package
+      shell: pwsh
+      env:
+        COLLECTOR_OUTPUT_DIR: ${{ inputs.output-dir }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+        Remove-Item -Recurse -Force $env:COLLECTOR_OUTPUT_DIR -ErrorAction SilentlyContinue
+        New-Item -ItemType Directory -Force -Path $env:COLLECTOR_OUTPUT_DIR | Out-Null
+        python project_sources/collector/tools/build_dcoir_collector_runtime_package.py --source-dir . --output-dir $env:COLLECTOR_OUTPUT_DIR
+        if ($LASTEXITCODE -ne 0) {
+          throw 'Collector runtime package smoke test failed.'
+        }
+
+# Compensating evidence: caller-visible step name, stdout markers, explicit inputs,
+# and generated output paths/artifacts preserve review evidence despite composite
+# action grouping.

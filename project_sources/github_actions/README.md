@@ -32,11 +32,23 @@ python project_sources/github_actions/tools/check_workflow_modularization_contra
 
 Entry workflows must keep operator-visible contract surfaces visible: workflow name, triggers, path filters, schedules, dispatch inputs, permissions, concurrency, secret names, artifact names, report path shapes, and central-reporter compatibility. Reusable workflows should be family-specific contract surfaces, composite actions should be mechanical step bundles only, and complex safety/reporting logic should remain script-backed and testable.
 
-This foundation slice introduces non-calling `.github/actions` composite action
-scaffolds for repeated mechanical step bundles. Existing workflows do not call
-those actions yet. Add callers and any `.github/workflows/reusable-*` workflow
-files only in a later behavior-migration slice with explicit input, output,
-permission, secret, shell, runner, artifact, report, and readback contracts.
+Phase 1 established the inventory, contract registry, and audit foundation.
+The bundled Phase 2+ implementation now makes the architecture executable:
+
+- all 29 primary entry workflows call repo-local `reusable-*` workflows;
+- reusable workflows own moved job bodies while entry workflows retain triggers,
+  path filters, schedules, dispatch inputs, permissions, concurrency, and
+  operator-facing headers;
+- repeated mechanical step bundles use repo-local composite actions for shared
+  runtime setup, artifact upload, validation, packaging, and report mechanics;
+- reusable workflow and composite action contracts are audited for local target
+  existence, caller input/secret compatibility, checkout-before-local-action
+  posture, compensating evidence notes, and stale inventory/readback drift.
+
+Future workflow changes should prefer updating the reusable workflow or
+composite action module that owns the shared mechanic before editing many
+entry workflows. Keep entry workflow contracts visible, and regenerate the
+inventory after module, caller, artifact, report, or audit changes.
 
 `tools/generate_workflow_inventory.py` is a compatibility wrapper for
 `tools/build_workflow_inventory.py`; both names use the same canonical inventory

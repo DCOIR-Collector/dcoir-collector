@@ -80,61 +80,12 @@ concurrency:
   group: validate-gemini-production-like-harness-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  GEMINI_PRODUCTION_HARNESS_MODE: ${{ github.event.inputs.harness_mode || 'medium' }}
-  GEMINI_REQUIRE_STORED_ARTIFACTS: ${{ github.event.inputs.require_stored_artifacts || 'false' }}
-
 jobs:
   validate_harness:
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/reusable-validate-gemini-production-like-harness.yml
     permissions:
       contents: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.11"
-
-      - name: Validate Python syntax
-        shell: bash
-        run: |
-          set -euo pipefail
-          python -m py_compile project_sources/gemini/tools/validate_gemini_production_like_harness.py
-
-      - name: Run production-like harness validation
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p project_sources/validation/out_validate_gemini_production_like_harness
-          args=(
-            --repo-root .
-            --fixtures-root project_sources/gemini/fixtures/behavioral_replay
-            --output-dir project_sources/validation/out_validate_gemini_production_like_harness
-            --mode "$GEMINI_PRODUCTION_HARNESS_MODE"
-          )
-          if [[ "$GEMINI_REQUIRE_STORED_ARTIFACTS" == "true" ]]; then
-            args+=(--require-stored-artifacts)
-          fi
-          python project_sources/gemini/tools/validate_gemini_production_like_harness.py "${args[@]}"
-
-      - name: Upload production-like harness artifacts
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: validate-gemini-production-like-harness-results
-          path: |
-            project_sources/validation/out_validate_gemini_production_like_harness/**
-          if-no-files-found: warn
-          retention-days: 14
-
-      - name: Upload ChatGPT workflow report section
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: chatgpt-workflow-report-section
-          path: project_sources/validation/out_validate_gemini_production_like_harness/chatgpt_workflow_report_section.md
-          if-no-files-found: error
-          retention-days: 14
+    with:
+      caller_event_name: ${{ github.event_name }}
+      harness_mode: ${{ inputs.harness_mode || 'medium' }}
+      require_stored_artifacts: ${{ github.event_name == 'workflow_dispatch' && inputs.require_stored_artifacts || false }}

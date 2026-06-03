@@ -1,0 +1,63 @@
+name: Run collector documentation quality
+description: Run collector documentation quality validation with a caller-owned output path.
+inputs:
+  output-json:
+    description: Output JSON path for verify_collector_documentation_quality.py.
+    required: true
+  run-self-tests:
+    description: Run documentation validator self-tests before the quality gate.
+    required: false
+    default: "false"
+  fail-on-missing-file-help:
+    description: Forward --fail-on-missing-file-help.
+    required: false
+    default: "true"
+  fail-on-undocumented-functions:
+    description: Forward --fail-on-undocumented-functions.
+    required: false
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - name: Run documentation validator self-tests
+      if: ${{ inputs.run-self-tests == 'true' }}
+      shell: pwsh
+      run: |
+        python project_sources/collector/tools/test_verify_collector_documentation_quality.py
+        if ($LASTEXITCODE -ne 0) {
+          throw 'Documentation validator self-tests failed.'
+        }
+    - name: Run collector documentation quality gate
+      shell: pwsh
+      env:
+        OUTPUT_JSON: ${{ inputs.output-json }}
+        FAIL_ON_MISSING_FILE_HELP: ${{ inputs.fail-on-missing-file-help }}
+        FAIL_ON_UNDOCUMENTED_FUNCTIONS: ${{ inputs.fail-on-undocumented-functions }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $outputDir = Split-Path -Parent $env:OUTPUT_JSON
+        if ([string]::IsNullOrWhiteSpace($outputDir)) {
+          throw 'output-json must include a directory.'
+        }
+        Remove-Item -Recurse -Force $outputDir -ErrorAction SilentlyContinue
+        New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
+        $cmd = @(
+          'python',
+          'project_sources/collector/tools/verify_collector_documentation_quality.py',
+          '--repo-root', '.',
+          '--output-json', $env:OUTPUT_JSON
+        )
+        if ($env:FAIL_ON_MISSING_FILE_HELP -eq 'true') {
+          $cmd += '--fail-on-missing-file-help'
+        }
+        if ($env:FAIL_ON_UNDOCUMENTED_FUNCTIONS -eq 'true') {
+          $cmd += '--fail-on-undocumented-functions'
+        }
+        & $cmd[0] $cmd[1..($cmd.Count - 1)]
+        if ($LASTEXITCODE -ne 0) {
+          throw 'Collector documentation quality gate failed.'
+        }
+
+# Compensating evidence: caller-visible step name, stdout markers, explicit inputs,
+# and generated output paths/artifacts preserve review evidence despite composite
+# action grouping.

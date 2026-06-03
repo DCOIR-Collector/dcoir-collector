@@ -67,6 +67,8 @@ def check_file(path: Path) -> list[str]:
         if not match:
             continue
         ref = match.group(1).strip().strip('"\'')
+        if ref.startswith("./"):
+            continue
         if "@" not in ref:
             findings.append(f"{path}:{line_no}: action reference is not pinned with @version: {ref}")
             continue

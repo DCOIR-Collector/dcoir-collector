@@ -1,0 +1,179 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: chatgpt-workflow-run-reporter.yml
+# Purpose: reusable implementation module for chatgpt-workflow-run-reporter; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: reusable-chatgpt-workflow-run-reporter
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+      note:
+        description: Forwarded `note` input from the entry workflow.
+        required: false
+        type: string
+        default: 'manual reporter smoke check'
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: write
+  actions: read
+jobs:
+  report-workflow-run:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.caller_event_name == 'workflow_dispatch' || github.event.workflow_run.name != 'chatgpt-workflow-run-reporter' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          setup-python: 'false'
+
+      - name: Set up Python runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          python-version: '3.11'
+
+      - name: Fetch source workflow logs for failed non-PR runs
+        if: ${{ inputs.caller_event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' && github.event.workflow_run.event != 'pull_request' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          set +e
+          mkdir -p .github/tmp
+          gh run view "$SOURCE_RUN_ID" --repo "$REPO" --log > .github/tmp/source_workflow.log 2> .github/tmp/source_workflow_log_fetch_error.txt
+          rc=$?
+          echo "LOG_FETCH_EXIT_CODE=$rc" >> "$GITHUB_ENV"
+          exit 0
+
+      - name: Fetch source workflow custom report section
+        if: ${{ inputs.caller_event_name == 'workflow_run' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          set +e
+          mkdir -p .github/tmp/source_workflow_report_section
+          if gh run download "$SOURCE_RUN_ID" --repo "$REPO" --name chatgpt-workflow-report-section -D .github/tmp/source_workflow_report_section > .github/tmp/source_workflow_report_section_download.txt 2> .github/tmp/source_workflow_report_section_error.txt; then
+            rc=0
+          else
+            rc=$?
+          fi
+          status="not_available"
+          note="The source workflow did not provide a readable chatgpt-workflow-report-section artifact. This is expected for workflows that do not produce custom markdown; for custom markdown producers, treat this as a readback gap."
+          if [[ "$rc" -eq 0 && -f .github/tmp/source_workflow_report_section/chatgpt_workflow_report_section.md ]]; then
+            echo "CUSTOM_MARKDOWN_FILE=.github/tmp/source_workflow_report_section/chatgpt_workflow_report_section.md" >> "$GITHUB_ENV"
+            status="downloaded"
+            note="The source workflow provided chatgpt-workflow-report-section/chatgpt_workflow_report_section.md and it was appended below."
+          else
+            echo "CUSTOM_MARKDOWN_FILE=" >> "$GITHUB_ENV"
+            if [[ "$rc" -eq 0 ]]; then
+              status="missing_expected_file"
+              note="The artifact download command succeeded, but chatgpt_workflow_report_section.md was not found at the expected path."
+            fi
+          fi
+          cat > .github/tmp/source_workflow_report_section_status.md <<STATUS
+          ## Custom report section artifact
+
+          - artifact_name: chatgpt-workflow-report-section
+          - expected_file: chatgpt_workflow_report_section.md
+          - status: ${status}
+          - gh_download_exit_code: ${rc}
+
+          ${note}
+          STATUS
+          exit 0
+
+      - name: Write ChatGPT-readable workflow report
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .github/tmp
+          if [[ "${{ inputs.caller_event_name }}" == "workflow_dispatch" ]]; then
+            report_path="chatgpt_staging/status_reports/repo-workflows/chatgpt-workflow-run-reporter/manual-${GITHUB_RUN_ID}/workflow_report.md"
+            mkdir -p "$(dirname "$report_path")"
+            cat > "$report_path" <<REPORT
+          # ChatGPT workflow report
+
+          ## Result
+
+          - workflow: chatgpt-workflow-run-reporter
+          - report_scope: repo-workflows
+          - report_family: completed-run-summary
+          - assistant_polling_target: false
+          - identifier_type: github_run_id
+          - do_not_use_for_live_polling: true
+          - live_heartbeat_report_scope: progressive-in-session
+          - result: success
+          - conclusion: success
+          - source_event: workflow_dispatch
+          - workflow_run_id: ${GITHUB_RUN_ID}
+          - reporter_run_id: ${GITHUB_RUN_ID}
+          - reporter_sha: ${GITHUB_SHA}
+          - report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          ## Report routing
+
+          This is a completed-run summary under repo-workflows. Use it after completion or for reporter smoke validation. For active ChatGPT-staged jobs, poll the live-heartbeat report path by request_id instead.
+
+          ## Troubleshooting context
+
+          Manual reporter smoke check.
+
+          ## Next ChatGPT action
+
+          Verify this report by GitHub readback, then allow retention cleanup to remove it after the configured success-report retention window. Do not use this completed-run summary for live polling.
+          REPORT
+            echo "$report_path" > .github/tmp/chatgpt_workflow_report_path.txt
+          else
+            report_path="$(python .github/scripts/write_workflow_report.py workflow-run \
+              --event-json "$GITHUB_EVENT_PATH" \
+              --log-file .github/tmp/source_workflow.log \
+              --log-error-file .github/tmp/source_workflow_log_fetch_error.txt \
+              --max-log-lines 300 \
+              --max-log-chars 40000 | tail -n 1)"
+            echo "$report_path" > .github/tmp/chatgpt_workflow_report_path.txt
+            if [[ -f .github/tmp/source_workflow_report_section_status.md ]]; then
+              {
+                echo ""
+                cat .github/tmp/source_workflow_report_section_status.md
+              } >> "$report_path"
+            fi
+            if [[ -n "${CUSTOM_MARKDOWN_FILE:-}" && -f "${CUSTOM_MARKDOWN_FILE:-}" ]]; then
+              {
+                echo ""
+                cat "$CUSTOM_MARKDOWN_FILE"
+              } >> "$report_path"
+            fi
+          fi
+
+      - name: Commit workflow report
+        shell: pwsh
+        run: |
+          .github/scripts/Invoke-ChatGptReportPush.ps1 -CommitMessage "Record ChatGPT workflow run report [skip ci]" -Paths "chatgpt_staging/status_reports/repo-workflows" -RequirePush
+
+      - name: Output full URL path
+        shell: bash
+        run: |
+          set -euo pipefail
+          report_path="$(cat .github/tmp/chatgpt_workflow_report_path.txt)"
+          branch_name="$(git branch --show-current || true)"
+          if [[ -z "$branch_name" ]]; then
+            branch_name="main"
+          fi
+          report_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${branch_name}/${report_path}"
+          echo "ChatGPT workflow report: $report_url"
+          echo "## ChatGPT workflow report" >> "$GITHUB_STEP_SUMMARY"
+          echo "$report_url" >> "$GITHUB_STEP_SUMMARY"

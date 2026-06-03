@@ -50,6 +50,17 @@ def iter_workflow_files() -> list[Path]:
         return []
     return sorted(
         path for path in WORKFLOW_DIR.iterdir()
+        if path.is_file()
+        and path.suffix.lower() in {".yml", ".yaml"}
+        and not path.name.startswith("reusable-")
+    )
+
+
+def iter_all_workflow_files() -> list[Path]:
+    if not WORKFLOW_DIR.exists():
+        return []
+    return sorted(
+        path for path in WORKFLOW_DIR.iterdir()
         if path.is_file() and path.suffix.lower() in {".yml", ".yaml"}
     )
 
@@ -230,10 +241,11 @@ def main() -> int:
         return 1
 
     workflow_files = iter_workflow_files()
+    all_workflow_files = iter_all_workflow_files()
     contracts = load_json(CONTRACT_PATH)
     check_contract_registry(findings, contracts, workflow_files)
     check_inventory(findings, contracts, workflow_files)
-    check_reusable_workflows(findings, workflow_files)
+    check_reusable_workflows(findings, all_workflow_files)
     check_workflow_headers(findings, workflow_files)
     check_reporter_allowlist(findings, contracts)
     check_composite_actions(findings)

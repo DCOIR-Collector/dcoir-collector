@@ -1,10 +1,14 @@
 name: Setup workflow runtime
-description: Prepare the shared DCOIR workflow runtime for mechanical validation steps.
+description: Prepare post-checkout Python runtime and evidence for DCOIR GitHub Actions jobs.
 inputs:
-  python-version:
-    description: Python version already expected by the caller workflow.
+  setup-python:
+    description: Whether to run actions/setup-python for the caller job.
     required: false
-    default: "3.x"
+    default: "true"
+  python-version:
+    description: Python version expected by the caller workflow.
+    required: false
+    default: "3.11"
   emit-summary:
     description: Whether to emit a short setup summary for caller-visible evidence.
     required: false
@@ -12,23 +16,33 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Set up Python
+      if: ${{ inputs.setup-python == 'true' }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ inputs.python-version }}
     - name: Record runtime setup contract
       shell: bash
       env:
+        SETUP_PYTHON: ${{ inputs.setup-python }}
         PYTHON_VERSION: ${{ inputs.python-version }}
         EMIT_SUMMARY: ${{ inputs.emit-summary }}
       run: |
         set -euo pipefail
         echo "DCOIR workflow runtime setup contract"
+        printf 'setup-python: %s\n' "$SETUP_PYTHON"
         printf 'python-version: %s\n' "$PYTHON_VERSION"
         if [ "$EMIT_SUMMARY" = "true" ]; then
           {
             echo "## Runtime setup"
             echo
             echo "- composite_action: setup-workflow-runtime"
+            printf -- '- setup_python: %s\n' "$SETUP_PYTHON"
             printf -- '- python_version: %s\n' "$PYTHON_VERSION"
+            echo "- prerequisite: caller reusable workflow performs checkout before local actions"
             echo "- caller_retains_contracts: triggers, permissions, secrets, artifacts, and report paths"
           } >> "${GITHUB_STEP_SUMMARY}"
         fi
-# Compensating evidence: caller-visible step name, stdout contract lines, and optional
-# GITHUB_STEP_SUMMARY entry replace the reduced granularity inside this composite action.
+# Compensating evidence: checkout remains caller-visible before this local action;
+# this action emits stdout contract lines and optional GITHUB_STEP_SUMMARY evidence
+# for the shared post-checkout runtime setup.
