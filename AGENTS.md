@@ -130,6 +130,7 @@ Keep only backbone identity facts here: repo, repo URL, Supabase project, schema
 ## Working rules
 - Start substantive `ircore` work with compact preflight, startup-pack read, targeted retrieval, action, validation/readback, and optional short lesson capture only when reusable.
 - Start GitHub issue and PR work read-only. Mutate only after scope, authority, lane, and validation expectations are clear.
+- For governed GitHub issue and PR creation, updates, or relabeling outside an operator-approved label taxonomy implementation task, use only labels that already exist in the live GitHub repository label inventory. Apply exactly one approved existing `area:` label and exactly one approved existing `type:` label unless the operator explicitly approves an exception for the current task. Do not invent, guess, create, or silently skip labels. If no existing approved label fits, stop and ask the operator. Treat GitHub as source truth for label existence; treat Supabase `ircore` as routing guidance only, not proof that a label exists.
 - Keep changes small, reviewable, and scoped to the task.
 - Prefer one scoped branch and one draft PR per coherent issue-sized update.
 - Use a direct GitHub connector update to agent instruction or repository adapter text only when the operator explicitly approves that direct lane for the current task, explains that a branch/PR path would create a session or governance risk, and limits the direct update to the approved instruction surface.
