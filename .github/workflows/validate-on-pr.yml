@@ -2,13 +2,13 @@
 # Workflow key:
 # - workflow-validation-validate-on-pr-0001
 # Purpose:
-# - Automatic PR-focused validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, and workflow definition changes.
+# - Automatic PR-focused validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, GitHub intake, and workflow definition changes.
 # Use when:
 # - Use at meaningful PR checkpoints to run the heavier runtime build and core harness proof before merge.
 # Do not use when:
 # - Do not use as the quick push gate when validate-on-push is sufficient, and do not treat it as a replacement for deeper manual-full-validation coverage.
 # Trigger model:
-# - pull_request types: opened, reopened, synchronize, ready_for_review; same scoped paths as validate-on-push, including DCOIR_KNOWLEDGE_INDEX.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, and governed workflow definitions.
+# - pull_request types: opened, reopened, synchronize, ready_for_review; scoped paths include maintained source, GitHub intake templates, DCOIR_KNOWLEDGE_INDEX.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, and governed workflow definitions.
 # Required inputs:
 # - none
 # Required secrets/config:
@@ -37,7 +37,7 @@ run-name: Pull Request Validation | PR #${{ github.event.pull_request.number || 
 #
 # PR checkpoint posture (2026-05-25):
 # - Pull-request triggering is enabled only for collector, Gemini, packaging, validation,
-#   maintained knowledge, and workflow definition paths covered by this lane split.
+#   maintained knowledge, GitHub intake, and workflow definition paths covered by this lane split.
 # - Draft pull requests do not run the heavy lane until a meaningful checkpoint such as
 #   ready_for_review, opened non-draft, reopened, or later synchronize events.
 # - The heavier collector runtime build and Core harness validation now live here.
@@ -67,6 +67,9 @@ on:
       - 'DCOIR_KNOWLEDGE_INDEX.md'
       - 'docs/validation/dcoir_collector_capability_coverage_matrix.md'
       - 'supporting_assets/DCOIR_Collector.zip'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
+      - '.github/dependabot.yml'
       - '.github/workflows/**'
       - '.github/actions/**'
       - 'project_sources/github_actions/**'
