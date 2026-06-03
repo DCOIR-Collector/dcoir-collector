@@ -162,9 +162,14 @@ jobs:
       - name: Commit workflow report
         shell: pwsh
         run: |
-          .github/scripts/Invoke-ChatGptReportPush.ps1 -CommitMessage "Record ChatGPT workflow run report [skip ci]" -Paths "chatgpt_staging/status_reports/repo-workflows" -RequirePush
+          $reportPath = Get-Content -Path .github/tmp/chatgpt_workflow_report_path.txt -Raw
+          $reportPath = $reportPath.Trim()
+          if ([string]::IsNullOrWhiteSpace($reportPath)) {
+            throw 'Current workflow report path was not written.'
+          }
+          .github/scripts/Invoke-ChatGptReportPush.ps1 -CommitMessage "Record ChatGPT workflow run report [skip ci]" -Paths $reportPath -RequirePush
 
-      - name: Output full URL path
+      - name: Confirm current workflow report URL
         shell: bash
         run: |
           set -euo pipefail
@@ -174,6 +179,4 @@ jobs:
             branch_name="main"
           fi
           report_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${branch_name}/${report_path}"
-          echo "ChatGPT workflow report: $report_url"
-          echo "## ChatGPT workflow report" >> "$GITHUB_STEP_SUMMARY"
-          echo "$report_url" >> "$GITHUB_STEP_SUMMARY"
+          echo "Current ChatGPT workflow report: $report_url"
