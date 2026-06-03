@@ -89,6 +89,26 @@ jobs:
             throw 'Collector runtime package build failed.'
           }
 
+      - name: Surface collector delivery zip
+        shell: pwsh
+        run: |
+          python project_sources/github_actions/tools/surface_delivery_zip.py `
+            --build-report project_sources/validation/out/build_dcoir_collector_runtime_package_report.json `
+            --output-dir project_sources/validation/delivery_artifact/collector-runtime `
+            --artifact-label dcoir-collector-runtime-delivery-zip `
+            --workflow-name manual-collector-runtime-package-build
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector delivery zip surfacing failed.'
+          }
+
+      - name: Upload collector delivery zip
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: dcoir-collector-runtime-delivery-zip
+          path: project_sources/validation/delivery_artifact/collector-runtime/**
+          if-no-files-found: error
+          retention-days: 21
+
       - name: Upload collector runtime package artifacts
         if: always()
         uses: ./.github/actions/upload-chatgpt-artifact
@@ -117,8 +137,11 @@ jobs:
           - ref: $env:GITHUB_REF
           - package_version_override: $env:PACKAGE_VERSION_OVERRIDE
           - primary_artifact: manual-collector-runtime-package-build
+          - direct_delivery_artifact: dcoir-collector-runtime-delivery-zip
+          - direct_delivery_manifest: project_sources/validation/delivery_artifact/collector-runtime/delivery_manifest.md
           - artifact_note: includes delivery package zips, package reports, compiled runtime output, and documentation-quality output when produced.
 
+          Download dcoir-collector-runtime-delivery-zip when the operator needs only the production collector runtime zip. Use manual-collector-runtime-package-build for the full evidence package.
           The workflow conclusion is the authoritative pass/fail signal for packaging only. Harness regression validation belongs in manual-full-validation.
           Package validity still requires artifact readback before release or operator-distribution claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
