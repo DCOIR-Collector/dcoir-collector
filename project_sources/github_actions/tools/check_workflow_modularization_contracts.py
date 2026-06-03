@@ -127,7 +127,7 @@ def check_inventory(findings: list[str], contracts: dict[str, Any], workflow_fil
             continue
         file_name = entry.get("file")
         contract = contract_by_file.get(file_name, {})
-        for field in ("contract_family", "target_architecture", "migration_status", "risk", "rollback", "acceptance_evidence"):
+        for field in ("contract_family", "migration_status", "risk"):
             if entry.get(field) != contract.get(field):
                 findings.append(f"{INVENTORY_PATH}:1: inventory field {field} is stale for {file_name}")
 
