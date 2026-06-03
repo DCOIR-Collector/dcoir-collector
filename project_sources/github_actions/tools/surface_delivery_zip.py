@@ -76,9 +76,7 @@ def extract_zip(path: Path, output_dir: Path) -> None:
         zf.extractall(output_dir)
 
 
-def write_manifest(manifest_dir: Path, manifest: dict[str, Any], *, clean: bool = False) -> None:
-    if clean and manifest_dir.exists():
-        shutil.rmtree(manifest_dir)
+def write_manifest(manifest_dir: Path, manifest: dict[str, Any]) -> None:
     manifest_dir.mkdir(parents=True, exist_ok=True)
     (manifest_dir / "delivery_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     (manifest_dir / "delivery_manifest.md").write_text(
@@ -100,10 +98,6 @@ def write_manifest(manifest_dir: Path, manifest: dict[str, Any], *, clean: bool 
         ),
         encoding="utf-8",
     )
-
-
-def paths_match(left: Path, right: Path) -> bool:
-    return left.resolve() == right.resolve()
 
 
 def main() -> int:
@@ -161,7 +155,7 @@ def main() -> int:
     }
     if args.manifest_dir:
         manifest_dir = Path(args.manifest_dir)
-        write_manifest(manifest_dir, manifest, clean=not paths_match(manifest_dir, output_dir))
+        write_manifest(manifest_dir, manifest)
         manifest["manifest_dir"] = manifest_dir.as_posix()
     else:
         write_manifest(output_dir, manifest)
