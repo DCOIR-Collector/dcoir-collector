@@ -3,7 +3,7 @@
   "contract_registry": "project_sources/github_actions/workflow_modularization_contracts.json",
   "existing_workflow_count_expected": 29,
   "governing_issue": 194,
-  "local_composite_action_calls": 96,
+  "local_composite_action_calls": 98,
   "local_reusable_workflow_calls": 33,
   "reusable_workflow_count": 32,
   "schema_version": "dcoir_workflow_inventory_v1",
@@ -255,6 +255,7 @@
     {
       "artifacts": [
         "chatgpt-workflow-report-section",
+        "dcoir-collector-runtime-delivery-zip",
         "manual-collector-runtime-package-build"
       ],
       "concurrency_declared": true,
@@ -302,6 +303,7 @@
     {
       "artifacts": [
         "chatgpt-workflow-report-section",
+        "dcoir-gemini-agent-delivery-zip",
         "manual-gemini-bundle-build"
       ],
       "concurrency_declared": true,
