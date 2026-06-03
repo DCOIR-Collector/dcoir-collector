@@ -1,0 +1,324 @@
+{
+  "schema_version": "dcoir_workflow_modularization_contracts_v1",
+  "governing_issue": 194,
+  "existing_workflow_count": 29,
+  "inventory_outputs": {
+    "json": "project_sources/github_actions/workflow_inventory.json",
+    "markdown": "project_sources/github_actions/workflow_inventory.md"
+  },
+  "required_contract_families": [
+    "static-validation",
+    "required-surfaces",
+    "collector-runtime-package",
+    "collector-optional-exe",
+    "gemini-bundle",
+    "gemini-model-comparison",
+    "gemini-behavioral-replay",
+    "gemini-production-like-harness",
+    "report-section",
+    "central-reporter",
+    "staging-apply-in",
+    "staging-stage-out",
+    "staging-exec",
+    "staging-artifact-readback",
+    "staging-cleanup",
+    "staging-retention-cleanup",
+    "ops-guard",
+    "dependency-review",
+    "dependabot-auto-merge",
+    "wiki-publish",
+    "maintenance-audit"
+  ],
+  "workflow_contracts": [
+    {
+      "file": ".github/workflows/chatgpt-apply-in.yml",
+      "family": "high-risk governed mutation",
+      "contract_family": "staging-apply-in",
+      "target_architecture": "Entry workflow plus a family-specific reusable apply-in workflow and script-backed manifest, hash, path, and workflow-change validation.",
+      "migration_status": "planned",
+      "risk": "high",
+      "rollback": "Restore the prior inline apply-in workflow body and keep old helper scripts until happy-path and failure-path readback pass.",
+      "acceptance_evidence": "Happy-path and failure-path run readback, committed report, artifact behavior, stale-write/hash/path/workflow-change gate evidence."
+    },
+    {
+      "file": ".github/workflows/chatgpt-exec.yml",
+      "family": "high-risk exec and secret lane",
+      "contract_family": "staging-exec",
+      "target_architecture": "Entry workflow plus a family-specific reusable exec workflow and script-backed approval, secret-name-only, artifact, cleanup, and report handling.",
+      "migration_status": "planned",
+      "risk": "high",
+      "rollback": "Restore the prior inline exec workflow body and request cleanup behavior.",
+      "acceptance_evidence": "Approval gate, secret-name-only bridging, sanitized report behavior, artifact retention, request cleanup, and live heartbeat readback."
+    },
+    {
+      "file": ".github/workflows/chatgpt-stage-out.yml",
+      "family": "high-risk staging output",
+      "contract_family": "staging-stage-out",
+      "target_architecture": "Entry workflow plus a family-specific reusable stage-out workflow and script-backed request and bundle validation.",
+      "migration_status": "planned",
+      "risk": "high",
+      "rollback": "Restore the prior inline stage-out workflow body and bundle/report path behavior.",
+      "acceptance_evidence": "Bundle report readback, request schema preservation, artifact behavior, and rollback note."
+    },
+    {
+      "file": ".github/workflows/chatgpt-staging-cleanup.yml",
+      "family": "high-risk cleanup",
+      "contract_family": "staging-cleanup",
+      "target_architecture": "Entry workflow plus a family-specific reusable cleanup workflow and script-backed cleanup planner.",
+      "migration_status": "planned",
+      "risk": "high",
+      "rollback": "Restore prior inline cleanup workflow and keep previous cleanup scripts until scoped deletion evidence passes.",
+      "acceptance_evidence": "Dry-run, scoped deletion, latest-report preservation, evidence-retention, and cleanup report readback."
+    },
+    {
+      "file": ".github/workflows/chatgpt-report-retention-cleanup.yml",
+      "family": "retention cleanup",
+      "contract_family": "staging-retention-cleanup",
+      "target_architecture": "Family-specific reusable retention cleanup workflow plus script-backed retention policy.",
+      "migration_status": "planned",
+      "risk": "high",
+      "rollback": "Restore the prior inline retention cleanup workflow body.",
+      "acceptance_evidence": "Keep/latest/report policy readback and standalone retention cleanup report."
+    },
+    {
+      "file": ".github/workflows/manual-github-artifact-readback.yml",
+      "family": "artifact readback",
+      "contract_family": "staging-artifact-readback",
+      "target_architecture": "Family-specific reusable artifact-readback workflow plus strict artifact selector, subpath, and bounded extraction validation.",
+      "migration_status": "planned",
+      "risk": "high",
+      "rollback": "Restore the prior inline artifact-readback workflow body and staging paths.",
+      "acceptance_evidence": "Artifact id/name selection, subpath validation, bounded extraction, staged output readback, and cleanup guidance."
+    },
+    {
+      "file": ".github/workflows/chatgpt-workflow-run-reporter.yml",
+      "family": "central reporter",
+      "contract_family": "central-reporter",
+      "target_architecture": "Family-specific reusable central reporter workflow plus script-backed report rendering while preserving allowlists and report families.",
+      "migration_status": "planned",
+      "risk": "high",
+      "rollback": "Restore the prior inline central reporter workflow body and allowlist behavior.",
+      "acceptance_evidence": "Completed-run repo-workflows report creation, custom markdown append, bounded failure-log excerpts, manual dispatch, and no live-heartbeat confusion."
+    },
+    {
+      "file": ".github/workflows/chatgpt-workflow-reporting-validation.yml",
+      "family": "reporting validation",
+      "contract_family": "report-section",
+      "target_architecture": "Reporter validation reusable workflow and fixture scripts for report-section artifact behavior.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline reporting validation body.",
+      "acceptance_evidence": "Report-section artifact and deliberate failure behavior."
+    },
+    {
+      "file": ".github/workflows/validate-on-pr.yml",
+      "family": "validation",
+      "contract_family": "static-validation",
+      "target_architecture": "Thin entry workflow calling family-specific reusable validation contracts with PR triggers and path filters visible.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline validation workflow body.",
+      "acceptance_evidence": "PR trigger/path filters, required-surface coverage, artifacts, report section, run ID, and job outcomes."
+    },
+    {
+      "file": ".github/workflows/validate-on-push.yml",
+      "family": "validation",
+      "contract_family": "required-surfaces",
+      "target_architecture": "Thin entry workflow calling family-specific reusable validation contracts with push/schedule/manual behavior visible.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline push validation workflow body.",
+      "acceptance_evidence": "Push, schedule, manual behavior, required-surface coverage, artifacts, and report readback."
+    },
+    {
+      "file": ".github/workflows/manual-full-validation.yml",
+      "family": "full validation",
+      "contract_family": "required-surfaces",
+      "target_architecture": "Deep-validation orchestration across reusable validation contracts.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline manual full validation workflow body.",
+      "acceptance_evidence": "Suite coverage, artifact/report readback, run ID, and job outcomes."
+    },
+    {
+      "file": ".github/workflows/scheduled-health-check.yml",
+      "family": "health and maintenance",
+      "contract_family": "required-surfaces",
+      "target_architecture": "Health-check entry workflow plus reusable validation contracts with schedule preserved.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline health-check workflow body.",
+      "acceptance_evidence": "Schedule preservation, manual dispatch, run ID, job outcome, and report readback."
+    },
+    {
+      "file": ".github/workflows/collector-documentation-quality.yml",
+      "family": "documentation validation",
+      "contract_family": "static-validation",
+      "target_architecture": "Doc-quality reusable workflow or script-backed validator with report-section behavior preserved.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline documentation quality workflow body.",
+      "acceptance_evidence": "Doc-quality output and report readback."
+    },
+    {
+      "file": ".github/workflows/manual-test-framework-validate.yml",
+      "family": "test framework validation",
+      "contract_family": "static-validation",
+      "target_architecture": "Manual test-framework reusable workflow with artifacts and report section preserved.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline test-framework workflow body.",
+      "acceptance_evidence": "Test output and artifact/report evidence."
+    },
+    {
+      "file": ".github/workflows/manual-collector-runtime-package-build.yml",
+      "family": "collector packaging",
+      "contract_family": "collector-runtime-package",
+      "target_architecture": "Collector runtime package reusable workflow.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline runtime package workflow body.",
+      "acceptance_evidence": "Package artifact and report readback."
+    },
+    {
+      "file": ".github/workflows/manual-collector-optional-exe-build.yml",
+      "family": "optional executable packaging",
+      "contract_family": "collector-optional-exe",
+      "target_architecture": "Collector optional executable reusable workflow with PS2EXE and harness gates preserved.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline optional executable workflow body.",
+      "acceptance_evidence": "PS2EXE/harness gates and package evidence."
+    },
+    {
+      "file": ".github/workflows/manual-gemini-bundle-build.yml",
+      "family": "Gemini packaging",
+      "contract_family": "gemini-bundle",
+      "target_architecture": "Gemini bundle reusable workflow.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline Gemini bundle workflow body.",
+      "acceptance_evidence": "Bundle artifact and report evidence."
+    },
+    {
+      "file": ".github/workflows/manual-gemini-model-comparison.yml",
+      "family": "Gemini model comparison",
+      "contract_family": "gemini-model-comparison",
+      "target_architecture": "Gemini model comparison reusable workflow with explicit live API secret handling.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline model comparison workflow body.",
+      "acceptance_evidence": "Live/model comparison report and secret handling."
+    },
+    {
+      "file": ".github/workflows/validate-gemini-behavioral-replay.yml",
+      "family": "Gemini deterministic replay",
+      "contract_family": "gemini-behavioral-replay",
+      "target_architecture": "Gemini behavioral replay reusable workflow.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline behavioral replay validation body.",
+      "acceptance_evidence": "Deterministic replay results and report evidence."
+    },
+    {
+      "file": ".github/workflows/validate-gemini-production-like-harness.yml",
+      "family": "Gemini production-like harness",
+      "contract_family": "gemini-production-like-harness",
+      "target_architecture": "Gemini production-like harness reusable workflow.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline production-like harness workflow body.",
+      "acceptance_evidence": "Harness evidence and reports."
+    },
+    {
+      "file": ".github/workflows/run-gemini-behavioral-replay-manual.yml",
+      "family": "Gemini live/manual replay",
+      "contract_family": "gemini-behavioral-replay",
+      "target_architecture": "Gemini live/manual replay reusable workflow with live API fallback evidence contract.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline live replay workflow body.",
+      "acceptance_evidence": "Happy/failure evidence and API fallback handling."
+    },
+    {
+      "file": ".github/workflows/workflow-maintenance-audit.yml",
+      "family": "maintenance audit",
+      "contract_family": "maintenance-audit",
+      "target_architecture": "Maintenance audit workflow expanded to validate workflow inventory, modularization contracts, and reusable/composite contract posture.",
+      "migration_status": "foundation",
+      "risk": "medium",
+      "rollback": "Remove the added inventory/contract audit steps if the new audit tooling fails independently.",
+      "acceptance_evidence": "Workflow action-version audit, consistency drift audit, inventory check, contract audit, and report section."
+    },
+    {
+      "file": ".github/workflows/dependabot-auto-merge.yml",
+      "family": "Dependabot governance",
+      "contract_family": "dependabot-auto-merge",
+      "target_architecture": "Keep thin unless reusable/script extraction preserves explicit permissions and merge behavior.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior inline Dependabot auto-merge workflow body.",
+      "acceptance_evidence": "Permission and auto-merge scope readback."
+    },
+    {
+      "file": ".github/workflows/dependency-review.yml",
+      "family": "dependency review",
+      "contract_family": "dependency-review",
+      "target_architecture": "Thin dependency-review entry or dependency-review reusable contract while preserving action visibility.",
+      "migration_status": "planned",
+      "risk": "low",
+      "rollback": "Restore prior inline dependency review workflow body.",
+      "acceptance_evidence": "Dependency-review action visibility and PR readback."
+    },
+    {
+      "file": ".github/workflows/publish_knowledge_to_wiki.yml",
+      "family": "external publishing",
+      "contract_family": "wiki-publish",
+      "target_architecture": "Wiki publish reusable workflow with explicit external side-effect contract and token handling.",
+      "migration_status": "planned",
+      "risk": "high",
+      "rollback": "Restore prior inline wiki publish workflow body.",
+      "acceptance_evidence": "Wiki target, token handling, publish report, and external side-effect readback."
+    },
+    {
+      "file": ".github/workflows/ops-apply-zip.yml",
+      "family": "ops scaffold",
+      "contract_family": "ops-guard",
+      "target_architecture": "Ops guard reusable workflow while keeping scaffold/non-production status visible.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior placeholder ops workflow body.",
+      "acceptance_evidence": "Guard behavior and non-production labeling."
+    },
+    {
+      "file": ".github/workflows/ops-dispatch-request.yml",
+      "family": "ops scaffold",
+      "contract_family": "ops-guard",
+      "target_architecture": "Ops guard reusable workflow while keeping dispatch request boundary visible.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior placeholder ops workflow body.",
+      "acceptance_evidence": "Guard behavior."
+    },
+    {
+      "file": ".github/workflows/ops-file-delete.yml",
+      "family": "ops scaffold",
+      "contract_family": "ops-guard",
+      "target_architecture": "Ops guard reusable workflow with delete-specific approval boundary.",
+      "migration_status": "planned",
+      "risk": "high",
+      "rollback": "Restore prior placeholder ops workflow body.",
+      "acceptance_evidence": "Delete approval boundary."
+    },
+    {
+      "file": ".github/workflows/ops-restructure-map.yml",
+      "family": "ops scaffold",
+      "contract_family": "ops-guard",
+      "target_architecture": "Ops guard reusable workflow with restructure-specific approval boundary.",
+      "migration_status": "planned",
+      "risk": "medium",
+      "rollback": "Restore prior placeholder ops workflow body.",
+      "acceptance_evidence": "Restructure approval boundary."
+    }
+  ]
+}
