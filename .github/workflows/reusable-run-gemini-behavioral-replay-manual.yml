@@ -1,0 +1,286 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: run-gemini-behavioral-replay-manual.yml
+# Purpose: reusable implementation module for run-gemini-behavioral-replay-manual; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - Run Gemini Behavioral Replay Manual
+run-name: Module Run Gemini Behavioral Replay Manual | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+      run_all_viable_catalog_models:
+        description: Forwarded `run_all_viable_catalog_models` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      run_gemini_2_5_flash:
+        description: Forwarded `run_gemini_2_5_flash` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      run_gemini_2_5_flash_lite:
+        description: Forwarded `run_gemini_2_5_flash_lite` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      run_gemini_2_5_pro:
+        description: Forwarded `run_gemini_2_5_pro` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      run_gemini_3_flash_preview:
+        description: Forwarded `run_gemini_3_flash_preview` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      run_gemini_3_1_flash_lite:
+        description: Forwarded `run_gemini_3_1_flash_lite` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      run_gemini_3_1_flash_lite_preview:
+        description: Forwarded `run_gemini_3_1_flash_lite_preview` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      run_gemini_3_1_pro_preview:
+        description: Forwarded `run_gemini_3_1_pro_preview` input from the entry workflow.
+        required: false
+        type: boolean
+        default: true
+      run_gemini_3_1_pro_preview_customtools:
+        description: Forwarded `run_gemini_3_1_pro_preview_customtools` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      run_gemini_3_5_flash:
+        description: Forwarded `run_gemini_3_5_flash` input from the entry workflow.
+        required: false
+        type: boolean
+        default: true
+      custom_models_csv:
+        description: Forwarded `custom_models_csv` input from the entry workflow.
+        required: false
+        type: string
+        default: ''
+      baseline_model:
+        description: Forwarded `baseline_model` input from the entry workflow.
+        required: false
+        type: string
+        default: 'gemini-3.1-pro-preview'
+      run_all_active_fixtures:
+        description: Forwarded `run_all_active_fixtures` input from the entry workflow.
+        required: false
+        type: boolean
+        default: true
+      run_fixture_issue_124_operator_state:
+        description: Forwarded `run_fixture_issue_124_operator_state` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      run_fixture_issue_122_byovd_evidence:
+        description: Forwarded `run_fixture_issue_122_byovd_evidence` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      run_fixture_issue_123_long_transcript:
+        description: Forwarded `run_fixture_issue_123_long_transcript` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      custom_fixtures_csv:
+        description: Forwarded `custom_fixtures_csv` input from the entry workflow.
+        required: false
+        type: string
+        default: ''
+      allow_fallback:
+        description: Forwarded `allow_fallback` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+      temperature:
+        description: Forwarded `temperature` input from the entry workflow.
+        required: false
+        type: string
+        default: '1.0'
+    outputs: {}
+    secrets:
+      DCOIR_GEMINI_API:
+        description: Explicit forwarded secret `DCOIR_GEMINI_API` from the entry workflow.
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  live_replay:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DCOIR_GEMINI_API: ${{ secrets.DCOIR_GEMINI_API }}
+      RUN_ALL_VIABLE_CATALOG_MODELS: ${{ inputs.run_all_viable_catalog_models }}
+      CUSTOM_MODELS_CSV: ${{ inputs.custom_models_csv }}
+      BASELINE_MODEL: ${{ inputs.baseline_model }}
+      RUN_ALL_ACTIVE_FIXTURES: ${{ inputs.run_all_active_fixtures }}
+      CUSTOM_FIXTURES_CSV: ${{ inputs.custom_fixtures_csv }}
+      ALLOW_FALLBACK: ${{ inputs.allow_fallback }}
+      TEMPERATURE: ${{ inputs.temperature }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          python-version: '3.11'
+
+      - name: Validate Python syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            project_sources/gemini/tools/run_gemini_behavioral_replay.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_schema.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_runner.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_scoring.py \
+            project_sources/gemini/tools/lib/gemini_behavioral_replay_reporting.py
+
+      - name: Resolve replay selections
+        shell: bash
+        run: |
+          set -euo pipefail
+          selected_models=()
+          if [[ "${{ inputs.run_gemini_2_5_flash }}" == "true" ]]; then selected_models+=("gemini-2.5-flash"); fi
+          if [[ "${{ inputs.run_gemini_2_5_flash_lite }}" == "true" ]]; then selected_models+=("gemini-2.5-flash-lite"); fi
+          if [[ "${{ inputs.run_gemini_2_5_pro }}" == "true" ]]; then selected_models+=("gemini-2.5-pro"); fi
+          if [[ "${{ inputs.run_gemini_3_flash_preview }}" == "true" ]]; then selected_models+=("gemini-3-flash-preview"); fi
+          if [[ "${{ inputs.run_gemini_3_1_flash_lite }}" == "true" ]]; then selected_models+=("gemini-3.1-flash-lite"); fi
+          if [[ "${{ inputs.run_gemini_3_1_flash_lite_preview }}" == "true" ]]; then selected_models+=("gemini-3.1-flash-lite-preview"); fi
+          if [[ "${{ inputs.run_gemini_3_1_pro_preview }}" == "true" ]]; then selected_models+=("gemini-3.1-pro-preview"); fi
+          if [[ "${{ inputs.run_gemini_3_1_pro_preview_customtools }}" == "true" ]]; then selected_models+=("gemini-3.1-pro-preview-customtools"); fi
+          if [[ "${{ inputs.run_gemini_3_5_flash }}" == "true" ]]; then selected_models+=("gemini-3.5-flash"); fi
+          selected_fixtures=()
+          if [[ "${{ inputs.run_fixture_issue_124_operator_state }}" == "true" ]]; then selected_fixtures+=("dcoir_operator_state_first_issue_124"); fi
+          if [[ "${{ inputs.run_fixture_issue_122_byovd_evidence }}" == "true" ]]; then selected_fixtures+=("dcoir_byovd_evidence_discipline_issue_122"); fi
+          if [[ "${{ inputs.run_fixture_issue_123_long_transcript }}" == "true" ]]; then selected_fixtures+=("dcoir_long_transcript_continuity_issue_123"); fi
+          IFS=,; echo "SELECTED_MODELS_CSV=${selected_models[*]}" >> "$GITHUB_ENV"
+          IFS=,; echo "SELECTED_FIXTURES_CSV=${selected_fixtures[*]}" >> "$GITHUB_ENV"
+
+      - name: Create output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p project_sources/validation/out_run_gemini_behavioral_replay_manual
+
+      - name: Viable model check
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay
+            --output-dir project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check
+            --mode live
+            --models-csv "$SELECTED_MODELS_CSV"
+            --custom-models-csv "$CUSTOM_MODELS_CSV"
+            --fixture-ids-csv "$SELECTED_FIXTURES_CSV"
+            --custom-fixtures-csv "$CUSTOM_FIXTURES_CSV"
+            --baseline-model "$BASELINE_MODEL"
+            --selection-report-only
+          )
+          if [[ "$RUN_ALL_VIABLE_CATALOG_MODELS" == "true" ]]; then
+            args+=(--run-all-viable-catalog-models)
+          fi
+          if [[ "$RUN_ALL_ACTIVE_FIXTURES" == "true" ]]; then
+            args+=(--run-all-active-fixtures)
+          fi
+          model_check_report="project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/chatgpt_workflow_report_section.md"
+          top_level_report="project_sources/validation/out_run_gemini_behavioral_replay_manual/chatgpt_workflow_report_section.md"
+          if ! python project_sources/gemini/tools/run_gemini_behavioral_replay.py "${args[@]}"; then
+            if [[ -f "$model_check_report" ]]; then
+              cp "$model_check_report" "$top_level_report"
+            fi
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = Path("project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/gemini_behavioral_replay_run_report.json")
+          section = Path("project_sources/validation/out_run_gemini_behavioral_replay_manual/model_check/chatgpt_workflow_report_section.md")
+          top_level = Path("project_sources/validation/out_run_gemini_behavioral_replay_manual/chatgpt_workflow_report_section.md")
+          if section.is_file():
+              top_level.write_text(section.read_text(encoding="utf-8"), encoding="utf-8")
+          payload = json.loads(report.read_text(encoding="utf-8"))
+          model_resolution = payload.get("metadata", {}).get("model_resolution", {})
+          rejected = model_resolution.get("rejected_selected_models") or []
+          selected = set(model_resolution.get("selected_models_to_run") or [])
+          baseline = os.environ.get("BASELINE_MODEL", "gemini-3.1-pro-preview")
+          if rejected:
+              raise SystemExit(f"Selected model(s) rejected by catalog or checkbox gate: {rejected}")
+          if baseline not in selected:
+              raise SystemExit(f"Baseline model {baseline!r} is not selected for replay.")
+          PY
+
+      - name: Run live or fallback Gemini behavioral replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(
+            --fixtures-root project_sources/gemini/fixtures/behavioral_replay
+            --output-dir project_sources/validation/out_run_gemini_behavioral_replay_manual
+            --mode live
+            --models-csv "$SELECTED_MODELS_CSV"
+            --custom-models-csv "$CUSTOM_MODELS_CSV"
+            --fixture-ids-csv "$SELECTED_FIXTURES_CSV"
+            --custom-fixtures-csv "$CUSTOM_FIXTURES_CSV"
+            --baseline-model "$BASELINE_MODEL"
+            --temperature "$TEMPERATURE"
+          )
+          if [[ "$RUN_ALL_VIABLE_CATALOG_MODELS" == "true" ]]; then
+            args+=(--run-all-viable-catalog-models)
+          fi
+          if [[ "$RUN_ALL_ACTIVE_FIXTURES" == "true" ]]; then
+            args+=(--run-all-active-fixtures)
+          fi
+          if [[ "$ALLOW_FALLBACK" == "true" ]]; then
+            args+=(--allow-fallback)
+          fi
+          python project_sources/gemini/tools/run_gemini_behavioral_replay.py "${args[@]}"
+
+      - name: Publish replay summary to job summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="project_sources/validation/out_run_gemini_behavioral_replay_manual/chatgpt_workflow_report_section.md"
+          if [[ -f "$report" ]]; then
+            cat "$report" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## Gemini Behavioral Replay" >> "$GITHUB_STEP_SUMMARY"
+            echo "No replay report section was produced." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload live replay artifacts
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: run-gemini-behavioral-replay-manual-results
+          path: |
+            project_sources/validation/out_run_gemini_behavioral_replay_manual/**
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section
+          path: |
+            project_sources/validation/out_run_gemini_behavioral_replay_manual/chatgpt_workflow_report_section.md
+          if-no-files-found: warn
+          retention-days: 14

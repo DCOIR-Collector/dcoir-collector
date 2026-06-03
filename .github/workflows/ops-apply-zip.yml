@@ -26,12 +26,12 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: Ops apply zip request
+name: 60 Ops - Apply ZIP Request Scaffold
+run-name: Apply ZIP Scaffold | #${{ github.run_number }}
 on:
   workflow_dispatch:
 jobs:
   dry_run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - run: test -d ops/requests/apply_zip || mkdir -p ops/requests/apply_zip
+    uses: ./.github/workflows/reusable-ops-apply-zip.yml
+    with:
+      caller_event_name: ${{ github.event_name }}

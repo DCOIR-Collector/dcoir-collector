@@ -29,7 +29,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: Dependency Review
+name: 41 Automation - Dependency Review
+run-name: Dependency Review | ${{ github.event.pull_request.number || github.ref_name }} | #${{ github.run_number }}
 
 on:
   pull_request:
@@ -42,24 +43,9 @@ permissions:
 
 jobs:
   dependency_review:
-    if: ${{ vars.ENABLE_DEPENDENCY_REVIEW == 'true' }}
-    name: Dependency Review
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Review dependency changes
-        uses: actions/dependency-review-action@v5
-        with:
-          fail-on-severity: moderate
-
-  dependency_review_not_enabled:
-    if: ${{ vars.ENABLE_DEPENDENCY_REVIEW != 'true' }}
-    name: Dependency Review Not Enabled
-    runs-on: ubuntu-latest
-    steps:
-      - name: Explain why dependency review is skipped
-        run: |
-          echo "Dependency Review is not enabled for this repository."
-          echo "Set the repository variable ENABLE_DEPENDENCY_REVIEW=true only after confirming the repository supports GitHub Dependency Review for private repositories."
+    uses: ./.github/workflows/reusable-dependency-review.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      caller_event_name: ${{ github.event_name }}

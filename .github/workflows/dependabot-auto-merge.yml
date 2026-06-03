@@ -26,7 +26,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: Dependabot auto-merge
+name: 40 Automation - Dependabot Auto-Merge
+run-name: Dependabot Auto-Merge | ${{ github.actor }} | #${{ github.run_number }}
 
 on:
   pull_request:
@@ -42,23 +43,9 @@ permissions:
 
 jobs:
   enable_auto_merge:
-    name: Enable auto-merge for safe Dependabot PRs
-    runs-on: ubuntu-latest
-    if: >-
-      github.event.pull_request.user.login == 'dependabot[bot]' &&
-      github.repository == 'malwaredevil/dcoir-collector' &&
-      github.event.pull_request.draft == false
-    steps:
-      - name: Fetch Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Enable auto-merge for GitHub Actions updates
-        if: steps.metadata.outputs.package-ecosystem == 'github_actions'
-        shell: bash
-        run: gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    uses: ./.github/workflows/reusable-dependabot-auto-merge.yml
+    permissions:
+      contents: write
+      pull-requests: write
+    with:
+      caller_event_name: ${{ github.event_name }}

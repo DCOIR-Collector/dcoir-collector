@@ -1,0 +1,142 @@
+# DCOIR reusable workflow module.
+# Entry workflow keeps manual trigger inputs, permissions, and concurrency visible.
+name: 99 Module - Gemini Bundle Build
+run-name: Module Gemini Bundle Build | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      bundle_version_override:
+        required: false
+        default: ""
+        type: string
+      skip_validation:
+        required: false
+        default: false
+        type: boolean
+
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: read
+
+jobs:
+  build_gemini_bundle:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    env:
+      BUNDLE_VERSION_OVERRIDE: ${{ inputs.bundle_version_override }}
+      SKIP_VALIDATION: ${{ inputs.skip_validation }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          setup-python: 'false'
+
+      - name: Set up Python runtime
+        uses: ./.github/actions/setup-python-runtime
+        with:
+          python-version: "3.11"
+
+      - name: Validate Python syntax
+        uses: ./.github/actions/validate-python-syntax
+
+      - name: Verify Gemini bundle required surfaces
+        uses: ./.github/actions/verify-required-surfaces
+        with:
+          profile: manual_gemini_bundle_build
+
+      - name: Create output directory
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path project_sources/validation/out | Out-Null
+
+      - name: Run Gemini validation and build
+        shell: pwsh
+        run: |
+          $skipValidation = $env:SKIP_VALIDATION
+          $versionOverride = $env:BUNDLE_VERSION_OVERRIDE
+          $cmd = @(
+            'python',
+            'project_sources/gemini/tools/build_dcoir_gemini_release.py',
+            '--source-root', 'project_sources/gemini/bundle_source',
+            '--output-dir', 'project_sources/validation/out'
+          )
+          if ($skipValidation -eq 'true') {
+            $cmd += '--skip-validation'
+          }
+          if (-not [string]::IsNullOrWhiteSpace($versionOverride)) {
+            $cmd += @('--version', $versionOverride)
+          }
+          & $cmd[0] $cmd[1..($cmd.Count - 1)]
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Gemini bundle build failed.'
+          }
+
+      - name: Surface Gemini delivery zip
+        shell: pwsh
+        run: |
+          python project_sources/github_actions/tools/surface_delivery_zip.py `
+            --build-report project_sources/validation/out/build_dcoir_gemini_release_report.json `
+            --output-dir project_sources/validation/delivery_artifact/gemini-bundle `
+            --artifact-label dcoir-gemini-agent-delivery-zip `
+            --workflow-name manual-gemini-bundle-build
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Gemini delivery zip surfacing failed.'
+          }
+
+      - name: Upload Gemini delivery zip
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: dcoir-gemini-agent-delivery-zip
+          path: project_sources/validation/delivery_artifact/gemini-bundle/**
+          if-no-files-found: error
+          retention-days: 21
+
+      - name: Upload Gemini bundle artifacts
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: manual-gemini-bundle-build
+          path: |
+            project_sources/validation/out/*.zip
+            project_sources/validation/out/*report.json
+          if-no-files-found: warn
+          retention-days: 21
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null
+          @"
+          ## Gemini bundle build summary
+
+          - workflow: manual-gemini-bundle-build
+          - workflow_run_id: $env:GITHUB_RUN_ID
+          - workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT
+          - head_sha: $env:GITHUB_SHA
+          - ref: $env:GITHUB_REF
+          - bundle_version_override: $env:BUNDLE_VERSION_OVERRIDE
+          - skip_validation: $env:SKIP_VALIDATION
+          - primary_artifact: manual-gemini-bundle-build
+          - direct_delivery_artifact: dcoir-gemini-agent-delivery-zip
+          - direct_delivery_manifest: project_sources/validation/delivery_artifact/gemini-bundle/delivery_manifest.md
+          - artifact_note: includes Gemini bundle zip and build/validation report JSON when produced.
+
+          Download dcoir-gemini-agent-delivery-zip when the operator needs only the production Gemini agent bundle zip. Use manual-gemini-bundle-build for the full evidence package.
+          The workflow conclusion is the authoritative pass/fail signal. If skip_validation is true, record follow-up validation before making broad Gemini readiness claims.
+          "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14

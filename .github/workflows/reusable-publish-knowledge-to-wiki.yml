@@ -1,0 +1,96 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: publish_knowledge_to_wiki.yml
+# Purpose: reusable implementation module for Publish Knowledge to Wiki; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - Publish Knowledge To Wiki
+run-name: Module Publish Knowledge To Wiki | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+    outputs: {}
+    secrets:
+      DCOIR_WIKI_PUSH_TOKEN:
+        description: Explicit forwarded secret `DCOIR_WIKI_PUSH_TOKEN` from the entry workflow.
+        required: false
+
+env:
+  USER_TOKEN: ${{ secrets.DCOIR_WIKI_PUSH_TOKEN }}
+  USER_NAME: github-actions[bot]
+  USER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+  OWNER: ${{ github.repository_owner }}
+  REPOSITORY_NAME: ${{ github.event.repository.name }}
+
+permissions:
+  contents: read
+
+jobs:
+  publish_knowledge_to_wiki:
+    name: Publish Knowledge to Wiki
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          setup-python: 'false'
+
+      - name: Verify Knowledge source folder
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d knowledge
+          test -f knowledge/README.md
+
+      - name: Validate maintained knowledge inventory with Gemini validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          validator_output_dir="$RUNNER_TEMP/publish_knowledge_to_wiki_validator"
+          mkdir -p "$validator_output_dir"
+          python3 project_sources/gemini/tools/validate_dcoir_gemini_bundle.py \
+            --source-root project_sources/gemini/bundle_source \
+            --output-dir "$validator_output_dir"
+
+      - name: Pull content from wiki
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${USER_TOKEN}" ]; then
+            echo "Missing repository secret DCOIR_WIKI_PUSH_TOKEN."
+            exit 1
+          fi
+
+          wiki_url="https://x-access-token:${USER_TOKEN}@github.com/${OWNER}/${REPOSITORY_NAME}.wiki.git"
+          git clone "$wiki_url" tmp_wiki
+          cd tmp_wiki
+          git config user.name "$USER_NAME"
+          git config user.email "$USER_EMAIL"
+
+      - name: Push Knowledge content to wiki
+        shell: bash
+        run: |
+          set -euo pipefail
+          wiki_url="https://x-access-token:${USER_TOKEN}@github.com/${OWNER}/${REPOSITORY_NAME}.wiki.git"
+
+          # Mirror the maintained knowledge folder into the wiki.
+          # README.md becomes Home.md so the wiki landing page is useful.
+          rsync -av --delete --exclude '.git' --exclude 'README.md' knowledge/ tmp_wiki/
+          cp knowledge/README.md tmp_wiki/Home.md
+          rm -f tmp_wiki/README.md
+
+          cd tmp_wiki
+          git add .
+          if git diff --cached --quiet; then
+            echo "No wiki content changes to publish."
+            exit 0
+          fi
+
+          git commit -m "Update Knowledge wiki content"
+          git push "$wiki_url" HEAD

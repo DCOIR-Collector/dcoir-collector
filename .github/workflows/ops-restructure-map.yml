@@ -26,12 +26,12 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: Ops restructure map request
+name: 63 Ops - Restructure Map Scaffold
+run-name: Restructure Map Scaffold | #${{ github.run_number }}
 on:
   workflow_dispatch:
 jobs:
   dry_run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - run: python ops/tools/ops_request_guard.py ops/requests/restructure_map.json
+    uses: ./.github/workflows/reusable-ops-restructure-map.yml
+    with:
+      caller_event_name: ${{ github.event_name }}

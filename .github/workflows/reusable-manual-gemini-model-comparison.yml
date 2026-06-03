@@ -1,0 +1,158 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: manual-gemini-model-comparison.yml
+# Purpose: reusable implementation module for manual-gemini-model-comparison; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - Manual Gemini Model Comparison
+run-name: Module Manual Gemini Model Comparison | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+      reference_model:
+        description: Forwarded `reference_model` input from the entry workflow.
+        required: false
+        type: string
+        default: 'gemini-3.1-pro-preview'
+      candidate_models:
+        description: Forwarded `candidate_models` input from the entry workflow.
+        required: false
+        type: string
+        default: 'gemini-3.1-pro-preview,gemini-3-flash-preview,gemini-3.5-flash,gemini-2.5-pro,gemini-2.5-flash'
+      fixture_path:
+        description: Forwarded `fixture_path` input from the entry workflow.
+        required: false
+        type: string
+        default: 'project_sources/gemini/tools/fixtures/gemini_phase1_model_comparison_cases.json'
+      model_profile_path:
+        description: Forwarded `model_profile_path` input from the entry workflow.
+        required: false
+        type: string
+        default: 'project_sources/gemini/tools/fixtures/gemini_model_candidate_profiles.json'
+      repeat_count:
+        description: Forwarded `repeat_count` input from the entry workflow.
+        required: false
+        type: string
+        default: '1'
+      max_cases:
+        description: Forwarded `max_cases` input from the entry workflow.
+        required: false
+        type: string
+        default: '0'
+      inter_request_delay_seconds:
+        description: Forwarded `inter_request_delay_seconds` input from the entry workflow.
+        required: false
+        type: string
+        default: '3'
+    outputs: {}
+    secrets:
+      DCOIR_GEMINI_API:
+        description: Explicit forwarded secret `DCOIR_GEMINI_API` from the entry workflow.
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  compare_models:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DCOIR_GEMINI_API: ${{ secrets.DCOIR_GEMINI_API }}
+      REFERENCE_MODEL: ${{ inputs.reference_model }}
+      CANDIDATE_MODELS: ${{ inputs.candidate_models }}
+      FIXTURE_PATH: ${{ inputs.fixture_path }}
+      MODEL_PROFILE_PATH: ${{ inputs.model_profile_path }}
+      REPEAT_COUNT: ${{ inputs.repeat_count }}
+      MAX_CASES: ${{ inputs.max_cases }}
+      INTER_REQUEST_DELAY_SECONDS: ${{ inputs.inter_request_delay_seconds }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          python-version: '3.11'
+
+      - name: Validate Python syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile project_sources/gemini/tools/run_gemini_model_comparison.py
+
+      - name: Verify required governed surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          python project_sources/github_actions/tools/check_required_surfaces.py --profile manual_gemini_model_comparison
+
+      - name: Create output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p project_sources/validation/out_manual_gemini_model_comparison
+
+      - name: Run Gemini model comparison
+        shell: bash
+        run: |
+          set -euo pipefail
+          python project_sources/gemini/tools/run_gemini_model_comparison.py \
+            --fixtures "$FIXTURE_PATH" \
+            --output-dir project_sources/validation/out_manual_gemini_model_comparison \
+            --model-profile-path "$MODEL_PROFILE_PATH" \
+            --reference-model "$REFERENCE_MODEL" \
+            --candidate-models "$CANDIDATE_MODELS" \
+            --repeat-count "$REPEAT_COUNT" \
+            --max-cases "$MAX_CASES" \
+            --inter-request-delay-seconds "$INTER_REQUEST_DELAY_SECONDS"
+
+      - name: Prepare ChatGPT workflow report section
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out_dir="project_sources/validation/out_manual_gemini_model_comparison"
+          section="$out_dir/chatgpt_workflow_report_section.md"
+          summary="$out_dir/gemini_model_comparison_summary.md"
+          mkdir -p "$out_dir"
+          {
+            echo "## Gemini model comparison"
+            echo
+            echo "- reference_model: $REFERENCE_MODEL"
+            echo "- candidate_models: $CANDIDATE_MODELS"
+            echo "- fixture_path: $FIXTURE_PATH"
+            echo "- model_profile_path: $MODEL_PROFILE_PATH"
+            echo "- repeat_count: $REPEAT_COUNT"
+            echo "- max_cases: $MAX_CASES"
+            echo "- inter_request_delay_seconds: $INTER_REQUEST_DELAY_SECONDS"
+            echo
+            if [[ -f "$summary" ]]; then
+              cat "$summary"
+            else
+              echo "No model comparison summary markdown was produced. Use the uploaded model-comparison artifact for detailed readback."
+            fi
+          } > "$section"
+
+      - name: Upload model comparison artifacts
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: manual-gemini-model-comparison
+          path: |
+            project_sources/validation/out_manual_gemini_model_comparison/**
+          if-no-files-found: warn
+          retention-days: 21
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section
+          path: |
+            project_sources/validation/out_manual_gemini_model_comparison/chatgpt_workflow_report_section.md
+          if-no-files-found: warn
+          retention-days: 21

@@ -1,0 +1,31 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: ops-apply-zip.yml
+# Purpose: reusable implementation module for Ops apply zip request; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - Ops Apply Zip
+run-name: Module Ops Apply Zip | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: read
+
+jobs:
+  dry_run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          setup-python: 'false'
+      - run: test -d ops/requests/apply_zip || mkdir -p ops/requests/apply_zip

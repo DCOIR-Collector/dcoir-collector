@@ -26,7 +26,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: Workflow maintenance audit
+name: 30 Maintenance - Workflow Audit
+run-name: Workflow Audit | ${{ github.event_name }} | #${{ github.run_number }}
 
 on:
   workflow_dispatch:
@@ -65,64 +66,8 @@ concurrency:
 
 jobs:
   audit_workflow_actions:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Check workflow action versions
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 project_sources/github_actions/tools/check_workflow_action_versions.py
-
-      - name: Check workflow consistency drift
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 project_sources/github_actions/tools/check_workflow_consistency_drift.py
-
-      - name: Check workflow inventory freshness
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 project_sources/github_actions/tools/build_workflow_inventory.py --check
-
-      - name: Check workflow modularization contracts
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 project_sources/github_actions/tools/check_workflow_modularization_contracts.py
-
-      - name: Check reusable and composite contract posture
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 project_sources/github_actions/tools/audit_reusable_contracts.py
-
-      - name: Write ChatGPT workflow report section
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p maintenance_audit_artifacts
-          {
-            echo "## Workflow maintenance audit"
-            echo
-            echo "- workflow: Workflow maintenance audit"
-            echo "- workflow_run_id: ${GITHUB_RUN_ID}"
-            echo "- workflow_run_attempt: ${GITHUB_RUN_ATTEMPT}"
-            echo "- head_sha: ${GITHUB_SHA}"
-            echo "- ref: ${GITHUB_REF}"
-            echo
-            echo "Use the job conclusion and preceding audit steps as the authoritative pass/fail signal. This custom section lets the central completed-run reporter surface the maintenance-audit context without requiring log screenshots."
-          } > maintenance_audit_artifacts/chatgpt_workflow_report_section.md
-
-      - name: Upload ChatGPT workflow report section
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: chatgpt-workflow-report-section
-          path: maintenance_audit_artifacts/chatgpt_workflow_report_section.md
-          if-no-files-found: warn
-          retention-days: 7
+    uses: ./.github/workflows/reusable-workflow-maintenance-audit.yml
+    permissions:
+      contents: read
+    with:
+      caller_event_name: ${{ github.event_name }}

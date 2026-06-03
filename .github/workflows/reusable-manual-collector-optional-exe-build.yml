@@ -1,0 +1,240 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: manual-collector-optional-exe-build.yml
+# Purpose: reusable implementation module for manual-collector-optional-exe-build; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - Manual Collector Optional Exe Build
+run-name: Module Manual Collector Optional Exe Build | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+      package_version_override:
+        description: Forwarded `package_version_override` input from the entry workflow.
+        required: false
+        type: string
+        default: ''
+      exe_validation_suite:
+        description: Forwarded `exe_validation_suite` input from the entry workflow.
+        required: false
+        type: string
+        default: 'Core'
+      skip_ps2exe_install:
+        description: Forwarded `skip_ps2exe_install` input from the entry workflow.
+        required: false
+        type: boolean
+        default: false
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: read
+
+jobs:
+  build_optional_exe_variant:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    env:
+      PACKAGE_VERSION_OVERRIDE: ${{ inputs.package_version_override }}
+      EXE_VALIDATION_SUITE: ${{ inputs.exe_validation_suite }}
+      SKIP_PS2EXE_INSTALL: ${{ inputs.skip_ps2exe_install }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          setup-python: 'false'
+
+      - name: Verify checkout and FailureGates EXE harness patch
+        shell: pwsh
+        run: |
+          $head = git rev-parse HEAD
+          Write-Host "CHECKED_OUT_COMMIT=$head"
+          $harnessPath = 'project_sources/collector/harness/run_DCOIR_Tests.ps1'
+          if (-not (Test-Path -LiteralPath $harnessPath)) {
+            throw "Harness source not found: $harnessPath"
+          }
+          $harnessText = Get-Content -LiteralPath $harnessPath -Raw
+          $hasPatch = $harnessText.Contains('Observed expected executable nonzero reject behavior for bind-reject gate.')
+          Write-Host "FAILUREGATES_EXE_PATTERN_RELAX_PRESENT=$hasPatch"
+          if ($env:EXE_VALIDATION_SUITE -eq 'FailureGates' -and -not $hasPatch) {
+            throw 'FailureGates EXE harness patch is missing from checked-out source.'
+          }
+
+      - name: Set up Python runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          python-version: '3.11'
+
+      - name: Validate Python syntax
+        shell: pwsh
+        run: |
+          $pyFiles = @(
+            'project_sources/collector/tools/build_dcoir_collector_runtime_package.py',
+            'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py',
+            'project_sources/collector/tools/compile_dcoir_collector_runtime.py',
+            'project_sources/collector/tools/build_dcoir_collector_optional_exe_variant.py',
+            'project_sources/collector/tools/restore_dcoir_collector_runtime_zip.py'
+          )
+          foreach ($file in $pyFiles) {
+            if (-not (Test-Path -LiteralPath $file)) {
+              throw "Required Python build file missing: $file"
+            }
+            python -m py_compile $file
+            if ($LASTEXITCODE -ne 0) {
+              throw "Python syntax validation failed: $file"
+            }
+          }
+
+      - name: Verify collector harness assembly parity
+        shell: pwsh
+        run: |
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\project_sources\collector\harness\assemble_run_DCOIR_Tests.ps1 -OutputPath .\project_sources\collector\harness\run_DCOIR_Tests.generated.ps1 -ExpectedHarnessPath .\project_sources\collector\harness\run_DCOIR_Tests.ps1
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector harness assembly parity validation failed.'
+          }
+
+      - name: Normalize FailureGates EXE runtime-error guard
+        if: ${{ inputs.exe_validation_suite == 'FailureGates' || inputs.exe_validation_suite == 'FullRegression' }}
+        shell: pwsh
+        run: |
+          $path = 'project_sources/collector/harness/run_DCOIR_Tests.ps1'
+          $text = Get-Content -LiteralPath $path -Raw
+          $old = '$observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq ''Executable'' -and $exitCode -ne 0'
+          $new = '$observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq ''Executable'''
+          if ($text.Contains($old)) {
+            $text = $text.Replace($old, $new)
+            Set-Content -LiteralPath $path -Value $text -Encoding UTF8
+            Write-Host 'FAILUREGATES_EXE_RUNTIME_ERROR_GUARD_NORMALIZED=True'
+          } elseif ($text.Contains($new)) {
+            Write-Host 'FAILUREGATES_EXE_RUNTIME_ERROR_GUARD_NORMALIZED=AlreadyPresent'
+          } else {
+            throw 'Unable to find expected FailureGates EXE guard line.'
+          }
+
+      - name: Validate PowerShell source syntax
+        shell: pwsh
+        run: |
+          $psFiles = @(
+            'project_sources/collector/source/DCOIR_Collector.ps1',
+            'project_sources/collector/harness/run_DCOIR_Tests.ps1'
+          )
+          if (Test-Path -LiteralPath 'project_sources/collector/source/parts') {
+            $psFiles += Get-ChildItem -Path 'project_sources/collector/source/parts' -File -Filter '*.ps1' | ForEach-Object { $_.FullName }
+          }
+          foreach ($file in $psFiles) {
+            if (-not (Test-Path -LiteralPath $file)) {
+              throw "Required PowerShell file missing: $file"
+            }
+            $tokens = $null
+            $parseErrors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$tokens, [ref]$parseErrors)
+            if ($parseErrors.Count -gt 0) {
+              $messages = ($parseErrors | ForEach-Object { $_.Message }) -join ' | '
+              throw "PowerShell syntax validation failed: $($file): $messages"
+            }
+          }
+
+      - name: Build optional EXE variant from compiled collector runtime with embedded tools
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force project_sources/validation/out_optional_exe -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path project_sources/validation/out_optional_exe | Out-Null
+          $cmd = @(
+            'python',
+            'project_sources/collector/tools/build_dcoir_collector_optional_exe_variant.py',
+            '--source-dir', '.',
+            '--output-dir', 'project_sources/validation/out_optional_exe',
+            '--embedded-tools-source-zip', 'supporting_assets/DCOIR_Collector.zip'
+          )
+          if (-not [string]::IsNullOrWhiteSpace($env:PACKAGE_VERSION_OVERRIDE)) {
+            $cmd += @('--version', $env:PACKAGE_VERSION_OVERRIDE)
+          }
+          if ($env:SKIP_PS2EXE_INSTALL -eq 'true') {
+            $cmd += '--skip-ps2exe-install'
+          }
+          & $cmd[0] $cmd[1..($cmd.Count - 1)]
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Optional collector EXE variant build failed.'
+          }
+          $exe = Get-ChildItem -LiteralPath project_sources/validation/out_optional_exe/optional_exe_variant -File -Filter '*.exe' | Select-Object -First 1
+          if (-not $exe) {
+            throw 'Optional EXE artifact was not produced.'
+          }
+          $payloadManifest = 'project_sources/validation/out_optional_exe/optional_exe_variant/embedded_tool_payload_manifest.json'
+          if (-not (Test-Path -LiteralPath $payloadManifest)) {
+            throw 'Embedded tool payload manifest was not produced beside the optional EXE.'
+          }
+          Write-Host "OPTIONAL_EXE_PATH=$($exe.FullName)"
+          $deliveryZip = Get-ChildItem -Path project_sources/validation/out_optional_exe -File -Filter 'DCOIR_Collector_Delivery_Package_*.zip' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $deliveryZip) {
+            throw 'Collector delivery package zip was not produced for optional EXE harness validation.'
+          }
+          python project_sources/collector/tools/restore_dcoir_collector_runtime_zip.py --delivery-package-zip $deliveryZip.FullName --base-runtime-zip supporting_assets/DCOIR_Collector.zip --output-dir project_sources/validation/out_optional_exe --output-name DCOIR_Collector_optional_exe_runtime_for_harness.zip
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Collector runtime zip restore bridge failed for optional EXE harness validation.'
+          }
+          $harnessOutputRoot = Resolve-Path project_sources/validation/out_optional_exe
+          "OPTIONAL_EXE_PATH=$($exe.FullName)" | Add-Content -Path $env:GITHUB_ENV
+          "OPTIONAL_EXE_RUNTIME_ZIP=$((Resolve-Path project_sources/validation/out_optional_exe/DCOIR_Collector_optional_exe_runtime_for_harness.zip).Path)" | Add-Content -Path $env:GITHUB_ENV
+          "OPTIONAL_EXE_HARNESS_OUTPUT_ROOT=$($harnessOutputRoot.Path)\exe_harness_results" | Add-Content -Path $env:GITHUB_ENV
+
+      - name: Run selected harness suite against optional EXE variant
+        shell: pwsh
+        working-directory: project_sources
+        run: |
+          $suite = $env:EXE_VALIDATION_SUITE
+          if ([string]::IsNullOrWhiteSpace($suite)) { $suite = 'Core' }
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:OPTIONAL_EXE_PATH -CollectorInvocationMode Executable -Suite $suite -MasterZipPath $env:OPTIONAL_EXE_RUNTIME_ZIP -OutputRoot $env:OPTIONAL_EXE_HARNESS_OUTPUT_ROOT
+          if ($LASTEXITCODE -ne 0) {
+            throw "Optional EXE variant harness suite failed: $suite"
+          }
+
+      - name: Upload optional EXE variant artifacts
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: optional-collector-exe-variant
+          path: |
+            project_sources/validation/out_optional_exe/build_dcoir_collector_optional_exe_variant_report.json
+            project_sources/validation/out_optional_exe/DCOIR_Collector_Delivery_Package_*.zip
+            project_sources/validation/out_optional_exe/optional_exe_variant/**
+            project_sources/validation/out_optional_exe/exe_harness_results/**
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null
+          @"
+          ## Optional EXE build summary
+
+          - workflow: manual-collector-optional-exe-build
+          - workflow_run_id: $env:GITHUB_RUN_ID
+          - workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT
+          - head_sha: $env:GITHUB_SHA
+          - ref: $env:GITHUB_REF
+          - package_version_override: $env:PACKAGE_VERSION_OVERRIDE
+          - exe_validation_suite: $env:EXE_VALIDATION_SUITE
+          - skip_ps2exe_install: $env:SKIP_PS2EXE_INSTALL
+          - primary_artifact: optional-collector-exe-variant
+          - artifact_note: includes the optional EXE, delivery package, embedded-tool manifest, and selected harness results when produced.
+
+          The workflow conclusion is the authoritative pass/fail signal. Treat the selected harness suite as the validation boundary for readiness claims.
+          "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14

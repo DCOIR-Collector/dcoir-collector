@@ -1,0 +1,20 @@
+name: Run validate_DCOIR_Run fixtures
+description: Run validate_DCOIR_Run fixture tests with a caller-owned output root.
+inputs:
+  output-root:
+    description: Output root under project_sources.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Run validate_DCOIR_Run fixture tests
+      shell: pwsh
+      working-directory: project_sources
+      env:
+        FIXTURE_OUTPUT_ROOT: ${{ inputs.output-root }}
+      run: |
+        powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\tools\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\collector\harness\validate_DCOIR_Run.ps1 -OutputRoot $env:FIXTURE_OUTPUT_ROOT
+
+# Compensating evidence: caller-visible step name, stdout markers, explicit inputs,
+# and generated output paths/artifacts preserve review evidence despite composite
+# action grouping.

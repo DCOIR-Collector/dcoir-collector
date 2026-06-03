@@ -1,0 +1,493 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: manual-github-artifact-readback.yml
+# Purpose: reusable implementation module for chatgpt-github-artifact-readback; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - Manual Github Artifact Readback
+run-name: Module Manual Github Artifact Readback | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+      request_path:
+        description: Forwarded `request_path` input from the entry workflow.
+        required: false
+        type: string
+        default: ''
+      source_run_id:
+        description: Forwarded `source_run_id` input from the entry workflow.
+        required: false
+        type: string
+        default: ''
+      artifact_name:
+        description: Forwarded `artifact_name` input from the entry workflow.
+        required: false
+        type: string
+        default: ''
+      artifact_id:
+        description: Forwarded `artifact_id` input from the entry workflow.
+        required: false
+        type: string
+        default: ''
+      request_id:
+        description: Forwarded `request_id` input from the entry workflow.
+        required: false
+        type: string
+        default: ''
+      artifact_subpath:
+        description: Forwarded `artifact_subpath` input from the entry workflow.
+        required: false
+        type: string
+        default: ''
+      commit_outputs:
+        description: Forwarded `commit_outputs` input from the entry workflow.
+        required: false
+        type: boolean
+        default: true
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: write
+  actions: write
+jobs:
+  artifact_readback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          setup-python: 'false'
+
+      - name: Verify report helpers and artifact-readback scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .github/scripts/write_chatgpt_progress_report.py
+          test -f .github/scripts/Invoke-ChatGptReportPush.ps1
+          test -f .github/scripts/parse_github_artifact_readback_request.py
+          test -f .github/scripts/stage_github_artifact_readback.py
+
+      - name: Resolve artifact readback plan
+        id: plan
+        shell: bash
+        env:
+          INPUT_REQUEST_PATH: ${{ inputs.request_path }}
+          INPUT_SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+          INPUT_ARTIFACT_NAME: ${{ inputs.artifact_name }}
+          INPUT_ARTIFACT_ID: ${{ inputs.artifact_id }}
+          INPUT_REQUEST_ID: ${{ inputs.request_id }}
+          INPUT_ARTIFACT_SUBPATH: ${{ inputs.artifact_subpath }}
+          INPUT_COMMIT_OUTPUTS: ${{ inputs.commit_outputs }}
+          EVENT_NAME: ${{ inputs.caller_event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+
+          append_output() {
+            printf '%s=%s\n' "$1" "$2" >> "$GITHUB_OUTPUT"
+          }
+
+          validate_request_id() {
+            local request_id="$1"
+            if [[ -n "$request_id" && ( "$request_id" == '.' || "$request_id" == '..' ) ]]; then
+              echo "request_id must not be . or .." >&2
+              exit 1
+            fi
+            if [[ -n "$request_id" && ! "$request_id" =~ ^[A-Za-z0-9._-]+$ ]]; then
+              echo "Unsafe request_id: $request_id" >&2
+              exit 1
+            fi
+          }
+
+          REQUEST_PATH_INPUT="${INPUT_REQUEST_PATH}"
+          SOURCE_RUN_ID="${INPUT_SOURCE_RUN_ID}"
+          ARTIFACT_NAME="${INPUT_ARTIFACT_NAME}"
+          ARTIFACT_ID="${INPUT_ARTIFACT_ID}"
+          REQUEST_ID="${INPUT_REQUEST_ID}"
+          ARTIFACT_SUBPATH="${INPUT_ARTIFACT_SUBPATH}"
+          COMMIT_OUTPUTS="${INPUT_COMMIT_OUTPUTS}"
+          REQUEST_PATH=""
+          NEXT_REQUEST_PATH=""
+
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            consider_changed_request_path() {
+              local p="$1"
+              if [[ -z "$REQUEST_PATH" && "$p" == chatgpt_staging/requests/github_artifact_readback/*.json && -f "$p" ]]; then
+                REQUEST_PATH="$p"
+              fi
+            }
+            if [[ -n "$BEFORE_SHA" && "$BEFORE_SHA" != '0000000000000000000000000000000000000000' ]]; then
+              while IFS= read -r p; do
+                consider_changed_request_path "$p"
+              done < <(git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA")
+            else
+              while IFS= read -r p; do
+                consider_changed_request_path "$p"
+              done < <(git ls-tree -r --name-only "$GITHUB_SHA")
+            fi
+            if [[ -z "$REQUEST_PATH" ]]; then
+              echo "No artifact-readback request JSON found in pushed range; exiting successfully."
+              append_output skip true
+              exit 0
+            fi
+            COMMIT_OUTPUTS='true'
+          elif [[ -n "$REQUEST_PATH_INPUT" && -f "$REQUEST_PATH_INPUT" ]]; then
+            REQUEST_PATH="$REQUEST_PATH_INPUT"
+          fi
+
+          if [[ -n "$REQUEST_PATH" ]]; then
+            while IFS= read -r p; do
+              if [[ "$p" != "$REQUEST_PATH" ]]; then
+                NEXT_REQUEST_PATH="$p"
+                break
+              fi
+            done < <(find chatgpt_staging/requests/github_artifact_readback -maxdepth 1 -type f -name '*.json' | sort)
+            python .github/scripts/parse_github_artifact_readback_request.py "$REQUEST_PATH" --output "$GITHUB_OUTPUT"
+            extract_output_value() {
+              local key="$1"
+              awk -F= -v wanted="$key" '$1 == wanted { value = substr($0, index($0, "=") + 1) } END { print value }' "$GITHUB_OUTPUT"
+            }
+            REQUEST_PATH="$(extract_output_value request_path)"
+            SOURCE_RUN_ID="$(extract_output_value source_run_id)"
+            ARTIFACT_NAME="$(extract_output_value artifact_name)"
+            ARTIFACT_ID="$(extract_output_value artifact_id)"
+            REQUEST_ID="$(extract_output_value request_id)"
+            ARTIFACT_SUBPATH="$(extract_output_value artifact_subpath)"
+          else
+            [[ -n "$SOURCE_RUN_ID" && "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]] || { echo "source_run_id must be numeric" >&2; exit 1; }
+            if [[ -z "$ARTIFACT_NAME" && -z "$ARTIFACT_ID" ]]; then
+              echo "artifact_name or artifact_id is required" >&2
+              exit 1
+            fi
+            [[ -z "$ARTIFACT_ID" || "$ARTIFACT_ID" =~ ^[0-9]+$ ]] || { echo "artifact_id must be numeric when provided" >&2; exit 1; }
+            validate_request_id "$REQUEST_ID"
+            if [[ -n "$ARTIFACT_SUBPATH" ]]; then
+              [[ "$ARTIFACT_SUBPATH" != /* ]] || { echo "artifact_subpath must be relative" >&2; exit 1; }
+              [[ "$ARTIFACT_SUBPATH" != *..* ]] || { echo "artifact_subpath must not contain parent traversal" >&2; exit 1; }
+            fi
+            append_output request_path ""
+            append_output source_run_id "$SOURCE_RUN_ID"
+            append_output artifact_name "$ARTIFACT_NAME"
+            append_output artifact_id "$ARTIFACT_ID"
+            append_output request_id "$REQUEST_ID"
+            append_output artifact_subpath "$ARTIFACT_SUBPATH"
+          fi
+
+          validate_request_id "$REQUEST_ID"
+
+          if [[ -z "$REQUEST_ID" ]]; then
+            RAW_ID="${ARTIFACT_NAME:-artifact-$ARTIFACT_ID}"
+            SAFE_ID="$(printf '%s' "$RAW_ID" | tr ' ' '-' | tr -cd 'A-Za-z0-9._-')"
+            [[ -n "$SAFE_ID" ]] || SAFE_ID='artifact'
+            REQUEST_ID="artifact-readback-${SOURCE_RUN_ID}-${SAFE_ID}"
+            append_output request_id "$REQUEST_ID"
+          fi
+
+          append_output commit_outputs "$COMMIT_OUTPUTS"
+          append_output next_request_path "$NEXT_REQUEST_PATH"
+          append_output download_dir "$RUNNER_TEMP/chatgpt_github_artifact_readback_download"
+          append_output out_dir "chatgpt_staging/out/$REQUEST_ID"
+          append_output report_dir "chatgpt_staging/status_reports/chatgpt-github-artifact-readback/$REQUEST_ID"
+          append_output skip false
+
+      - name: Write heartbeat - request resolved
+        if: steps.plan.outputs.skip != 'true'
+        shell: bash
+        env:
+          REQUEST_ID: ${{ steps.plan.outputs.request_id }}
+          REQUEST_PATH: ${{ steps.plan.outputs.request_path }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+          ARTIFACT_NAME: ${{ steps.plan.outputs.artifact_name }}
+          ARTIFACT_ID: ${{ steps.plan.outputs.artifact_id }}
+          ARTIFACT_SUBPATH: ${{ steps.plan.outputs.artifact_subpath }}
+          REPORT_DIR: ${{ steps.plan.outputs.report_dir }}
+        run: |
+          set -euo pipefail
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-github-artifact-readback \
+            --request-id "$REQUEST_ID" \
+            --request-path "$REQUEST_PATH" \
+            --phase request-resolved \
+            --result running \
+            --artifact-name "$ARTIFACT_NAME" \
+            --message 'Artifact readback inputs resolved. Artifact download is next.' \
+            --extra "source_run_id: $SOURCE_RUN_ID" \
+            --extra "artifact_id: $ARTIFACT_ID" \
+            --extra "artifact_subpath: ${ARTIFACT_SUBPATH:-.}"
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Progress chatgpt-github-artifact-readback $REQUEST_ID request-resolved [skip ci]" \
+            -Paths "$REPORT_DIR"
+
+      - name: Write heartbeat - downloading artifact
+        if: steps.plan.outputs.skip != 'true'
+        shell: bash
+        env:
+          REQUEST_ID: ${{ steps.plan.outputs.request_id }}
+          REQUEST_PATH: ${{ steps.plan.outputs.request_path }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+          ARTIFACT_NAME: ${{ steps.plan.outputs.artifact_name }}
+          ARTIFACT_ID: ${{ steps.plan.outputs.artifact_id }}
+          REPORT_DIR: ${{ steps.plan.outputs.report_dir }}
+        run: |
+          set -euo pipefail
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-github-artifact-readback \
+            --request-id "$REQUEST_ID" \
+            --request-path "$REQUEST_PATH" \
+            --phase downloading-artifact \
+            --result running \
+            --artifact-name "$ARTIFACT_NAME" \
+            --message 'The bounded GitHub Actions artifact download is starting.' \
+            --extra "source_run_id: $SOURCE_RUN_ID" \
+            --extra "artifact_id: $ARTIFACT_ID"
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Progress chatgpt-github-artifact-readback $REQUEST_ID downloading-artifact [skip ci]" \
+            -Paths "$REPORT_DIR"
+
+      - name: Download artifact by id
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.artifact_id != ''
+        uses: actions/download-artifact@v8
+        with:
+          run-id: ${{ steps.plan.outputs.source_run_id }}
+          artifact-ids: ${{ steps.plan.outputs.artifact_id }}
+          github-token: ${{ github.token }}
+          path: ${{ steps.plan.outputs.download_dir }}
+
+      - name: Download artifact by name
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.artifact_id == ''
+        uses: actions/download-artifact@v8
+        with:
+          run-id: ${{ steps.plan.outputs.source_run_id }}
+          name: ${{ steps.plan.outputs.artifact_name }}
+          github-token: ${{ github.token }}
+          path: ${{ steps.plan.outputs.download_dir }}
+
+      - name: Write heartbeat - artifact downloaded
+        if: steps.plan.outputs.skip != 'true'
+        shell: bash
+        env:
+          REQUEST_ID: ${{ steps.plan.outputs.request_id }}
+          REQUEST_PATH: ${{ steps.plan.outputs.request_path }}
+          ARTIFACT_NAME: ${{ steps.plan.outputs.artifact_name }}
+          REPORT_DIR: ${{ steps.plan.outputs.report_dir }}
+        run: |
+          set -euo pipefail
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-github-artifact-readback \
+            --request-id "$REQUEST_ID" \
+            --request-path "$REQUEST_PATH" \
+            --phase artifact-downloaded \
+            --result running \
+            --artifact-name "$ARTIFACT_NAME" \
+            --message 'The artifact download completed. Extraction and manifest staging are next.'
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Progress chatgpt-github-artifact-readback $REQUEST_ID artifact-downloaded [skip ci]" \
+            -Paths "$REPORT_DIR"
+
+      - name: Stage extracted artifact into cleanup-managed path
+        if: steps.plan.outputs.skip != 'true'
+        shell: bash
+        env:
+          DOWNLOAD_DIR: ${{ steps.plan.outputs.download_dir }}
+          OUT_DIR: ${{ steps.plan.outputs.out_dir }}
+          REPORT_DIR: ${{ steps.plan.outputs.report_dir }}
+          REQUEST_ID: ${{ steps.plan.outputs.request_id }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+          ARTIFACT_NAME: ${{ steps.plan.outputs.artifact_name }}
+          ARTIFACT_ID: ${{ steps.plan.outputs.artifact_id }}
+          ARTIFACT_SUBPATH: ${{ steps.plan.outputs.artifact_subpath }}
+        run: |
+          set -euo pipefail
+          python .github/scripts/stage_github_artifact_readback.py \
+            --download-dir "$DOWNLOAD_DIR" \
+            --out-dir "$OUT_DIR" \
+            --report-dir "$REPORT_DIR" \
+            --request-id "$REQUEST_ID" \
+            --source-run-id "$SOURCE_RUN_ID" \
+            --artifact-name "$ARTIFACT_NAME" \
+            --artifact-id "$ARTIFACT_ID" \
+            --artifact-subpath "$ARTIFACT_SUBPATH"
+
+      - name: Write artifact readback success report
+        if: steps.plan.outputs.skip != 'true'
+        shell: bash
+        env:
+          REQUEST_ID: ${{ steps.plan.outputs.request_id }}
+          REQUEST_PATH: ${{ steps.plan.outputs.request_path }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+          ARTIFACT_NAME: ${{ steps.plan.outputs.artifact_name }}
+          ARTIFACT_ID: ${{ steps.plan.outputs.artifact_id }}
+          ARTIFACT_SUBPATH: ${{ steps.plan.outputs.artifact_subpath }}
+          OUT_DIR: ${{ steps.plan.outputs.out_dir }}
+          REPORT_DIR: ${{ steps.plan.outputs.report_dir }}
+          REPORT_PATH: ${{ steps.plan.outputs.report_dir }}/workflow_report.md
+        run: |
+          set -euo pipefail
+          NATIVE_REPORT_PATH="$REPORT_DIR/native_artifact_readback_report.md"
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-github-artifact-readback \
+            --request-id "$REQUEST_ID" \
+            --request-path "$REQUEST_PATH" \
+            --phase artifact-staged \
+            --result success \
+            --artifact-name "$ARTIFACT_NAME" \
+            --message 'The artifact was downloaded, extracted, and staged successfully for ChatGPT readback.' \
+            --extra "source_run_id: $SOURCE_RUN_ID" \
+            --extra "artifact_id: $ARTIFACT_ID" \
+            --extra "artifact_subpath: ${ARTIFACT_SUBPATH:-.}" \
+            --extra "staged_manifest_md: $OUT_DIR/artifact_manifest.md"
+          {
+            echo "# Native artifact readback report"
+            echo
+            echo "## Result"
+            echo
+            echo "- workflow: chatgpt-github-artifact-readback"
+            echo "- result: success"
+            echo "- phase: artifact-staged"
+            echo "- request_id: $REQUEST_ID"
+            echo "- request_path: ${REQUEST_PATH:-'(direct dispatch inputs)'}"
+            echo "- source_run_id: $SOURCE_RUN_ID"
+            echo "- artifact_name: $ARTIFACT_NAME"
+            echo "- artifact_id: $ARTIFACT_ID"
+            echo "- artifact_subpath: ${ARTIFACT_SUBPATH:-.}"
+            echo "- out_dir: $OUT_DIR"
+            echo "- github_run_id: $GITHUB_RUN_ID"
+            echo "- github_run_attempt: $GITHUB_RUN_ATTEMPT"
+            echo "- github_sha: $GITHUB_SHA"
+            echo "- github_ref: $GITHUB_REF"
+            echo "- report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo "## Readback"
+            echo
+            echo "- heartbeat_report: $REPORT_PATH"
+            echo "- progress_history: $REPORT_DIR/progress_history.jsonl"
+            echo "- latest_progress_marker: $REPORT_DIR/latest_progress_marker.json"
+            echo "- staged_manifest_json: $OUT_DIR/artifact_manifest.json"
+            echo "- staged_manifest_md: $OUT_DIR/artifact_manifest.md"
+            echo "- staged_files_root: $OUT_DIR"
+            echo
+            echo "## Cleanup guidance"
+            echo
+            echo "After ChatGPT reads the needed files, create a cleanup marker for request id '$REQUEST_ID' with cleanup_out_bundles=true and cleanup_status_reports=true."
+            echo
+            echo "## Next ChatGPT action"
+            echo
+            echo "Read artifact_manifest.md and the staged files under $OUT_DIR. Record evidence, then request cleanup when safe."
+          } > "$NATIVE_REPORT_PATH"
+          {
+            echo
+            echo "## Native artifact readback report"
+            echo
+            cat "$NATIVE_REPORT_PATH"
+          } >> "$REPORT_PATH"
+
+      - name: Commit staged artifact readback and report
+        if: steps.plan.outputs.skip != 'true' && (inputs.caller_event_name == 'push' || steps.plan.outputs.commit_outputs == 'true')
+        shell: bash
+        env:
+          REQUEST_PATH: ${{ steps.plan.outputs.request_path }}
+          OUT_DIR: ${{ steps.plan.outputs.out_dir }}
+          REPORT_DIR: ${{ steps.plan.outputs.report_dir }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$REQUEST_PATH" ]]; then
+            rm -f "$REQUEST_PATH" || true
+          fi
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Stage GitHub artifact readback bundle and report [skip ci]" \
+            -Paths "$OUT_DIR" "$REPORT_DIR" "$REQUEST_PATH" \
+            -RequirePush
+
+      - name: Dispatch next queued artifact readback request
+        if: steps.plan.outputs.skip != 'true' && (inputs.caller_event_name == 'push' || steps.plan.outputs.commit_outputs == 'true') && steps.plan.outputs.next_request_path != ''
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NEXT_REQUEST_PATH: ${{ steps.plan.outputs.next_request_path }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          PAYLOAD="$(python -c "import json, os; print(json.dumps({'ref': os.environ['REF_NAME'], 'inputs': {'request_path': os.environ['NEXT_REQUEST_PATH'], 'source_run_id': '', 'artifact_name': '', 'artifact_id': '', 'request_id': '', 'artifact_subpath': '', 'commit_outputs': 'true'}}))")"
+          curl --fail-with-body -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/manual-github-artifact-readback.yml/dispatches" \
+            -d "$PAYLOAD"
+
+      - name: Capture failure report
+        if: failure() && steps.plan.outputs.skip != 'true'
+        shell: bash
+        env:
+          REQUEST_ID: ${{ steps.plan.outputs.request_id }}
+          REQUEST_PATH: ${{ steps.plan.outputs.request_path }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+          ARTIFACT_NAME: ${{ steps.plan.outputs.artifact_name }}
+          ARTIFACT_ID: ${{ steps.plan.outputs.artifact_id }}
+          ARTIFACT_SUBPATH: ${{ steps.plan.outputs.artifact_subpath }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$REQUEST_ID" ]]; then
+            REQUEST_ID="artifact_readback_failure_$GITHUB_RUN_ID"
+          fi
+          REPORT_DIR="chatgpt_staging/status_reports/chatgpt-github-artifact-readback/$REQUEST_ID"
+          REPORT_PATH="$REPORT_DIR/workflow_report.md"
+          NATIVE_REPORT_PATH="$REPORT_DIR/native_artifact_readback_failure_report.md"
+          mkdir -p "$REPORT_DIR"
+          python .github/scripts/write_chatgpt_progress_report.py \
+            --workflow chatgpt-github-artifact-readback \
+            --request-id "$REQUEST_ID" \
+            --request-path "$REQUEST_PATH" \
+            --phase artifact-readback-failure \
+            --result failure \
+            --artifact-name "$ARTIFACT_NAME" \
+            --message 'The artifact could not be downloaded, validated, or staged. Read the native failure report and inspect the run URL if needed.' \
+            --extra "source_run_id: $SOURCE_RUN_ID" \
+            --extra "artifact_id: $ARTIFACT_ID" \
+            --extra "artifact_subpath: ${ARTIFACT_SUBPATH:-.}"
+          {
+            echo "# Native artifact readback failure report"
+            echo
+            echo "## Result"
+            echo
+            echo "- workflow: chatgpt-github-artifact-readback"
+            echo "- result: failure"
+            echo "- phase: artifact-readback"
+            echo "- request_id: $REQUEST_ID"
+            echo "- request_path: ${REQUEST_PATH:-'(direct dispatch inputs)'}"
+            echo "- source_run_id: $SOURCE_RUN_ID"
+            echo "- artifact_name: $ARTIFACT_NAME"
+            echo "- artifact_id: $ARTIFACT_ID"
+            echo "- artifact_subpath: ${ARTIFACT_SUBPATH:-.}"
+            echo "- github_run_id: $GITHUB_RUN_ID"
+            echo "- github_run_attempt: $GITHUB_RUN_ATTEMPT"
+            echo "- github_sha: $GITHUB_SHA"
+            echo "- github_ref: $GITHUB_REF"
+            echo "- report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo "## Troubleshooting notes"
+            echo
+            echo "The artifact could not be downloaded, validated, or staged into chatgpt_staging/out. Common causes include wrong run id, wrong artifact name/id, missing artifact_subpath, malformed request JSON, or a permissions/download failure."
+            echo
+            echo "## Next ChatGPT action"
+            echo
+            echo "Read this report, inspect the run URL or logs if needed, correct the bounded inputs, and retry with the same source run if appropriate."
+          } > "$NATIVE_REPORT_PATH"
+          {
+            echo
+            echo "## Native artifact readback failure report"
+            echo
+            cat "$NATIVE_REPORT_PATH"
+          } >> "$REPORT_PATH"
+          pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
+            -CommitMessage "Record GitHub artifact readback failure report [skip ci]" \
+            -Paths "$REPORT_DIR"

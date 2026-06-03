@@ -1,0 +1,47 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: dependency-review.yml
+# Purpose: reusable implementation module for Dependency Review; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - Dependency Review
+run-name: Module Dependency Review | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: read
+
+jobs:
+  dependency_review:
+    if: ${{ vars.ENABLE_DEPENDENCY_REVIEW == 'true' }}
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          setup-python: 'false'
+
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: moderate
+
+  dependency_review_not_enabled:
+    if: ${{ vars.ENABLE_DEPENDENCY_REVIEW != 'true' }}
+    name: Dependency Review Not Enabled
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain why dependency review is skipped
+        run: |
+          echo "Dependency Review is not enabled for this repository."
+          echo "Set the repository variable ENABLE_DEPENDENCY_REVIEW=true only after confirming the repository supports GitHub Dependency Review for private repositories."

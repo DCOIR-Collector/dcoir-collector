@@ -1,0 +1,87 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: workflow-maintenance-audit.yml
+# Purpose: reusable implementation module for Workflow maintenance audit; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - Workflow Maintenance Audit
+run-name: Module Workflow Maintenance Audit | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: read
+
+jobs:
+  audit_workflow_actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          setup-python: 'false'
+
+      - name: Check workflow action versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/check_workflow_action_versions.py
+
+      - name: Check workflow consistency drift
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/check_workflow_consistency_drift.py
+
+      - name: Check workflow inventory freshness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/build_workflow_inventory.py --check
+
+      - name: Check workflow modularization contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/check_workflow_modularization_contracts.py
+
+      - name: Check reusable and composite contract posture
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/audit_reusable_contracts.py
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p maintenance_audit_artifacts
+          {
+            echo "## Workflow maintenance audit"
+            echo
+            echo "- workflow: Workflow maintenance audit"
+            echo "- workflow_run_id: ${GITHUB_RUN_ID}"
+            echo "- workflow_run_attempt: ${GITHUB_RUN_ATTEMPT}"
+            echo "- head_sha: ${GITHUB_SHA}"
+            echo "- ref: ${GITHUB_REF}"
+            echo
+            echo "Use the job conclusion and preceding audit steps as the authoritative pass/fail signal. This custom section lets the central completed-run reporter surface the maintenance-audit context without requiring log screenshots."
+          } > maintenance_audit_artifacts/chatgpt_workflow_report_section.md
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section
+          path: maintenance_audit_artifacts/chatgpt_workflow_report_section.md
+          if-no-files-found: warn
+          retention-days: 7

@@ -26,7 +26,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: validate-on-push
+name: 21 Validation - Main Push
+run-name: Main Push Validation | ${{ github.ref_name }} | #${{ github.run_number }}
 
 # Coverage rule:
 # - If a maintained source, artifact, or behavior is intended to be verified by this
@@ -78,164 +79,8 @@ permissions:
 
 jobs:
   validate:
-    runs-on: windows-latest
+    uses: ./.github/workflows/reusable-validate-on-push.yml
     permissions:
       contents: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
-
-      - name: Validate Python syntax
-        shell: pwsh
-        run: |
-          $pyFiles = git ls-files "*.py"
-          if (-not $pyFiles) {
-            Write-Host "No tracked Python files found."
-            exit 0
-          }
-          $failed = @()
-          foreach ($file in $pyFiles) {
-            python -m py_compile $file
-            if ($LASTEXITCODE -ne 0) {
-              $failed += $file
-            }
-          }
-          if ($failed.Count -gt 0) {
-            throw "Python syntax validation failed: $($failed -join ', ')"
-          }
-
-      - name: Run documentation validator self-tests
-        shell: pwsh
-        run: |
-          python project_sources/collector/tools/test_verify_collector_documentation_quality.py
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Documentation validator self-tests failed.'
-          }
-
-      - name: Validate PowerShell syntax
-        shell: pwsh
-        run: |
-          $psFiles = git ls-files "*.ps1" "*.psm1" "*.psd1"
-          if (-not $psFiles) {
-            Write-Host "No tracked PowerShell files found."
-            exit 0
-          }
-          $parseFailures = @()
-          foreach ($file in $psFiles) {
-            $tokens = $null
-            $parseErrors = $null
-            [void][System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$tokens, [ref]$parseErrors)
-            if ($parseErrors.Count -gt 0) {
-              $messages = ($parseErrors | ForEach-Object { $_.Message }) -join ' | '
-              $parseFailures += "${file}: $messages"
-            }
-          }
-          if ($parseFailures.Count -gt 0) {
-            $parseFailures | ForEach-Object { Write-Error $_ }
-            throw 'PowerShell syntax validation failed.'
-          }
-
-      - name: Verify collector harness assembly parity
-        shell: pwsh
-        run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\project_sources\collector\harness\assemble_run_DCOIR_Tests.ps1 -OutputPath .\project_sources\collector\harness\run_DCOIR_Tests.generated.ps1 -ExpectedHarnessPath .\project_sources\collector\harness\run_DCOIR_Tests.ps1
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector harness assembly parity validation failed.'
-          }
-
-      - name: Verify required governed surfaces
-        shell: pwsh
-        run: |
-          python project_sources/github_actions/tools/check_required_surfaces.py --profile validate_on_push
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Required surface validation failed.'
-          }
-          python project_sources/github_actions/tools/check_gemini_manifest_surfaces.py --source-root project_sources/gemini/bundle_source
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Gemini manifest surface validation failed.'
-          }
-
-      - name: Smoke-test Gemini bundle build algorithm
-        shell: pwsh
-        run: |
-          Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_gemini -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_gemini | Out-Null
-          python project_sources/gemini/tools/build_dcoir_gemini_release.py --source-root project_sources/gemini/bundle_source --output-dir project_sources/validation/out_validate_on_push_gemini
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Gemini bundle smoke test failed.'
-          }
-
-      - name: Smoke-test collector runtime package build
-        shell: pwsh
-        run: |
-          Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_collector -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_collector | Out-Null
-          python project_sources/collector/tools/build_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/validation/out_validate_on_push_collector
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector runtime package smoke test failed.'
-          }
-
-      - name: Run validate_DCOIR_Run fixture tests
-        shell: pwsh
-        working-directory: project_sources
-        run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\collector\\tools\\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\\collector\\harness\\validate_DCOIR_Run.ps1 -OutputRoot .\\validation\\out_validate_on_push_validate_dcoir_run_fixtures
-
-      - name: Run collector documentation quality gate
-        shell: pwsh
-        run: |
-          Remove-Item -Recurse -Force project_sources/validation/out_validate_on_push_documentation_quality -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force -Path project_sources/validation/out_validate_on_push_documentation_quality | Out-Null
-          python project_sources/collector/tools/verify_collector_documentation_quality.py --repo-root . --output-json project_sources/validation/out_validate_on_push_documentation_quality/collector_documentation_quality.json --fail-on-missing-file-help --fail-on-undocumented-functions
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector documentation quality gate failed before collector build.'
-          }
-
-      - name: Upload validation artifacts
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: validate-on-push-results
-          path: |
-            project_sources/TestResults/**
-            project_sources/validation/out_validate_on_push_gemini/**
-            project_sources/validation/out_validate_on_push_collector/**
-            project_sources/validation/out_validate_on_push_validate_dcoir_run_fixtures/**
-            project_sources/validation/out_preflight_documentation_quality/**
-            project_sources/validation/out_validate_on_push_documentation_quality/**
-          if-no-files-found: warn
-          retention-days: 14
-
-      - name: Write ChatGPT workflow report section
-        if: always()
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null
-          @"
-          ## Push validation summary
-
-          - workflow: validate-on-push
-          - workflow_run_id: $env:GITHUB_RUN_ID
-          - workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT
-          - head_sha: $env:GITHUB_SHA
-          - ref: $env:GITHUB_REF
-          - event_name: $env:GITHUB_EVENT_NAME
-          - primary_artifact: validate-on-push-results
-          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, and TestResults when produced.
-
-          The workflow conclusion is the authoritative pass/fail signal for the push validation lane. Use artifact readback for harness, package, documentation, or report-specific claims.
-          "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
-
-      - name: Upload ChatGPT workflow report section
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: chatgpt-workflow-report-section
-          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
-          if-no-files-found: error
-          retention-days: 14
+    with:
+      caller_event_name: ${{ github.event_name }}

@@ -2,6 +2,7 @@
 """Audit DCOIR workflow surfaces for known consistency drift patterns."""
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -59,6 +60,8 @@ SHARED_CONTRACT_FILES = [
     Path("project_sources/github_actions/workflow_inventory.md"),
 ]
 
+LOCAL_USES_RE = re.compile(r"^\s*uses:\s*(\./\.github/(?:workflows/[^@\s#]+|actions/[^@\s#]+))", re.MULTILINE)
+
 
 def iter_workflow_files() -> list[Path]:
     if not WORKFLOW_DIR.exists():
@@ -75,6 +78,23 @@ def find_lines_with_substring(path: Path, needle: str) -> list[int]:
         for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1)
         if needle in line
     ]
+
+
+def expanded_local_text(path: Path, seen: set[Path] | None = None) -> str:
+    """Return workflow text plus local reusable workflow/action bodies it calls."""
+    seen = seen or set()
+    if path in seen or not path.exists():
+        return ""
+    seen.add(path)
+    text = path.read_text(encoding="utf-8")
+    chunks = [text]
+    for match in LOCAL_USES_RE.finditer(text):
+        ref = match.group(1)
+        target = Path(ref.removeprefix("./"))
+        if "/actions/" in ref:
+            target = target / "action.yml"
+        chunks.append(expanded_local_text(target, seen))
+    return "\n".join(chunks)
 
 
 def add_string_findings(findings: list[str], path: Path, needle: str) -> None:
@@ -109,7 +129,7 @@ def main() -> int:
     for path in TARGETED_WORKFLOWS:
         if not ensure_exists(findings, path):
             continue
-        text = path.read_text(encoding="utf-8")
+        text = expanded_local_text(path)
         if REQUIRED_SURFACES_HELPER not in text:
             findings.append(f"{path}:1: missing required shared required-surface helper call: {REQUIRED_SURFACES_HELPER}")
         add_string_findings(findings, path, INLINE_REQUIRED_MARKER)
@@ -117,7 +137,7 @@ def main() -> int:
     for path in GEMINI_TARGETED_WORKFLOWS:
         if not ensure_exists(findings, path):
             continue
-        text = path.read_text(encoding="utf-8")
+        text = expanded_local_text(path)
         if GEMINI_MANIFEST_HELPER not in text:
             findings.append(f"{path}:1: missing required shared Gemini manifest helper call: {GEMINI_MANIFEST_HELPER}")
         for needle in INLINE_GEMINI_MARKERS:

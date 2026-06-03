@@ -26,7 +26,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: chatgpt-report-retention-cleanup
+name: 31 Maintenance - ChatGPT Report Retention Cleanup
+run-name: Report Retention Cleanup | dry_run=${{ github.event.inputs.dry_run || false }} | #${{ github.run_number }}
 
 on:
   schedule:
@@ -80,105 +81,15 @@ concurrency:
 
 jobs:
   cleanup-reports:
-    name: Cleanup ChatGPT staging retention surfaces
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
-
-      - name: Build retention cleanup plan
-        shell: bash
-        run: |
-          set -euo pipefail
-          DRY_RUN="false"
-          SUCCESS_DAYS="1"
-          FAILURE_DAYS="7"
-          CLEANUP_DAYS="2"
-          REQUEST_DAYS="1"
-          BUNDLE_DAYS="2"
-          WORKFLOW_FILTER=""
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            DRY_RUN="${{ inputs.dry_run }}"
-            SUCCESS_DAYS="${{ inputs.success_days }}"
-            FAILURE_DAYS="${{ inputs.failure_days }}"
-            CLEANUP_DAYS="${{ inputs.cleanup_days }}"
-            REQUEST_DAYS="${{ inputs.request_days }}"
-            BUNDLE_DAYS="${{ inputs.bundle_days }}"
-            WORKFLOW_FILTER="${{ inputs.workflow_filter }}"
-          fi
-          mkdir -p .github/tmp
-          ARGS=(cleanup --success-days "$SUCCESS_DAYS" --failure-days "$FAILURE_DAYS" --cleanup-days "$CLEANUP_DAYS" --request-days "$REQUEST_DAYS" --bundle-days "$BUNDLE_DAYS" --workflow-filter "$WORKFLOW_FILTER" --removed-paths-file .github/tmp/chatgpt_report_cleanup_removed.txt --report-id "retention-cleanup-${GITHUB_RUN_ID}")
-          if [[ "$DRY_RUN" == "true" ]]; then
-            ARGS+=(--dry-run)
-          fi
-          REPORT_PATH="$(python .github/scripts/write_workflow_report.py "${ARGS[@]}")"
-          echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
-
-      - name: Remove expired staged paths from cleanup plan
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ -s .github/tmp/chatgpt_report_cleanup_removed.txt ]]; then
-            while IFS= read -r path; do
-              [[ -n "$path" ]] || continue
-              case "$path" in
-                chatgpt_staging/status_reports/*/workflow_report.md|chatgpt_staging/status_reports/*/*/workflow_report.md|chatgpt_staging/status_reports/*/*/*/workflow_report.md)
-                  git rm -f "$path" || true
-                  ;;
-                chatgpt_staging/requests/*.json|chatgpt_staging/requests/*/*.json|chatgpt_staging/requests/*/*/*.json)
-                  git rm -f "$path" || true
-                  ;;
-                chatgpt_staging/out/*)
-                  if [[ -d "$path" ]]; then
-                    git rm -r -f "$path" || true
-                  else
-                    echo "Refusing to remove unexpected non-directory staged output path: $path" >&2
-                    exit 1
-                  fi
-                  ;;
-                *)
-                  echo "Refusing to remove unexpected path: $path" >&2
-                  exit 1
-                  ;;
-              esac
-            done < .github/tmp/chatgpt_report_cleanup_removed.txt
-          fi
-
-      - name: Commit retention cleanup report and deletions
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add chatgpt_staging/status_reports/retention-cleanup || true
-          git add -u chatgpt_staging/status_reports chatgpt_staging/requests chatgpt_staging/out || true
-          git commit -m "Clean ChatGPT staging retention surfaces by policy [skip ci]" || exit 0
-          git push
-
-      - name: Output final retention cleanup report URL
-        shell: bash
-        run: |
-          set -euo pipefail
-          report_path="${REPORT_PATH:-}"
-          if [[ -z "$report_path" || ! -f "$report_path" ]]; then
-            echo "No retention cleanup report path available for final URL output."
-            exit 0
-          fi
-          branch_name="${GITHUB_REF_NAME:-}"
-          if [[ -z "$branch_name" ]]; then
-            branch_name="$(git branch --show-current || true)"
-          fi
-          if [[ -z "$branch_name" ]]; then
-            branch_name="main"
-          fi
-          report_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${branch_name}/${report_path}"
-          echo "ChatGPT retention cleanup report: $report_url"
-          echo "## ChatGPT retention cleanup report" >> "$GITHUB_STEP_SUMMARY"
-          echo "$report_url" >> "$GITHUB_STEP_SUMMARY"
+    uses: ./.github/workflows/reusable-chatgpt-report-retention-cleanup.yml
+    permissions:
+      contents: write
+    with:
+      caller_event_name: ${{ github.event_name }}
+      dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+      success_days: ${{ inputs.success_days || 1 }}
+      failure_days: ${{ inputs.failure_days || 7 }}
+      cleanup_days: ${{ inputs.cleanup_days || 2 }}
+      request_days: ${{ inputs.request_days || 1 }}
+      bundle_days: ${{ inputs.bundle_days || 2 }}
+      workflow_filter: ${{ inputs.workflow_filter || '' }}

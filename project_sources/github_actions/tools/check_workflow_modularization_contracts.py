@@ -50,6 +50,17 @@ def iter_workflow_files() -> list[Path]:
         return []
     return sorted(
         path for path in WORKFLOW_DIR.iterdir()
+        if path.is_file()
+        and path.suffix.lower() in {".yml", ".yaml"}
+        and not path.name.startswith("reusable-")
+    )
+
+
+def iter_all_workflow_files() -> list[Path]:
+    if not WORKFLOW_DIR.exists():
+        return []
+    return sorted(
+        path for path in WORKFLOW_DIR.iterdir()
         if path.is_file() and path.suffix.lower() in {".yml", ".yaml"}
     )
 
@@ -187,12 +198,14 @@ def check_reporter_allowlist(findings: list[str], contracts: dict[str, Any]) -> 
         path = Path(file_name)
         if not path.exists():
             continue
+        if path == REPORTER_PATH:
+            continue
         workflow_name = None
         for line in path.read_text(encoding="utf-8").splitlines():
             if line.startswith("name:"):
                 workflow_name = line.split(":", 1)[1].strip().strip("'\"")
                 break
-        if not workflow_name or workflow_name == "chatgpt-workflow-run-reporter":
+        if not workflow_name:
             continue
         if entry.get("migration_status") in {"planned", "foundation", "active"} and workflow_name not in allowlist:
             findings.append(f"{REPORTER_PATH}:1: reporter allowlist missing workflow name from contract registry: {workflow_name}")
@@ -230,10 +243,11 @@ def main() -> int:
         return 1
 
     workflow_files = iter_workflow_files()
+    all_workflow_files = iter_all_workflow_files()
     contracts = load_json(CONTRACT_PATH)
     check_contract_registry(findings, contracts, workflow_files)
     check_inventory(findings, contracts, workflow_files)
-    check_reusable_workflows(findings, workflow_files)
+    check_reusable_workflows(findings, all_workflow_files)
     check_workflow_headers(findings, workflow_files)
     check_reporter_allowlist(findings, contracts)
     check_composite_actions(findings)

@@ -1,0 +1,247 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: chatgpt-exec.yml
+# Purpose: reusable implementation module for chatgpt-exec; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - Chatgpt Exec
+run-name: Module Chatgpt Exec | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+      request_path:
+        description: Forwarded `request_path` input from the entry workflow.
+        required: false
+        type: string
+        default: 'chatgpt_staging/exec_requests/request.json'
+    outputs: {}
+    secrets:
+      DCOIR_AIRTABLE_BASE_ID:
+        description: Explicit forwarded secret `DCOIR_AIRTABLE_BASE_ID` from the entry workflow.
+        required: false
+      DCOIR_AIRTABLE_TOKEN:
+        description: Explicit forwarded secret `DCOIR_AIRTABLE_TOKEN` from the entry workflow.
+        required: false
+      DCOIR_GEMINI_API:
+        description: Explicit forwarded secret `DCOIR_GEMINI_API` from the entry workflow.
+        required: false
+      DCOIR_GITHUB_CL_TOKEN:
+        description: Explicit forwarded secret `DCOIR_GITHUB_CL_TOKEN` from the entry workflow.
+        required: false
+      DCOIR_GITHUB_FG_TOKEN:
+        description: Explicit forwarded secret `DCOIR_GITHUB_FG_TOKEN` from the entry workflow.
+        required: false
+      DCOIR_OPENAI_API_KEY:
+        description: Explicit forwarded secret `DCOIR_OPENAI_API_KEY` from the entry workflow.
+        required: false
+      DCOIR_OPENAI_PROJECT_ID:
+        description: Explicit forwarded secret `DCOIR_OPENAI_PROJECT_ID` from the entry workflow.
+        required: false
+      OPENAI_API_KEY:
+        description: Explicit forwarded secret `OPENAI_API_KEY` from the entry workflow.
+        required: false
+
+permissions:
+  contents: write
+  actions: read
+jobs:
+  exec:
+    runs-on: windows-latest
+    env:
+      DCOIR_AIRTABLE_TOKEN: ${{ secrets.DCOIR_AIRTABLE_TOKEN }}
+      DCOIR_AIRTABLE_BASE_ID: ${{ secrets.DCOIR_AIRTABLE_BASE_ID }}
+      DCOIR_GITHUB_FG_TOKEN: ${{ secrets.DCOIR_GITHUB_FG_TOKEN }}
+      DCOIR_GITHUB_CL_TOKEN: ${{ secrets.DCOIR_GITHUB_CL_TOKEN }}
+      DCOIR_GEMINI_API: ${{ secrets.DCOIR_GEMINI_API }}
+      DCOIR_OPENAI_API_KEY: ${{ secrets.DCOIR_OPENAI_API_KEY }}
+      DCOIR_OPENAI_PROJECT_ID: ${{ secrets.DCOIR_OPENAI_PROJECT_ID }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          setup-python: 'false'
+
+      - name: Verify report push helper
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not (Test-Path -LiteralPath '.github/scripts/Invoke-ChatGptReportPush.ps1' -PathType Leaf)) {
+            throw 'Missing report push helper .github/scripts/Invoke-ChatGptReportPush.ps1'
+          }
+
+      - name: Resolve exec request path
+        id: request
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ('${{ inputs.caller_event_name }}' -eq 'workflow_dispatch') {
+            $requestPath = '${{ inputs.request_path }}'
+          } else {
+            $changed = git diff-tree --no-commit-id --name-only -r $env:GITHUB_SHA
+            $requestPath = ($changed | Where-Object { $_ -like 'chatgpt_staging/exec_requests/*.json' } | Select-Object -First 1)
+          }
+          if ([string]::IsNullOrWhiteSpace($requestPath)) {
+            "skip=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+            exit 0
+          }
+          if ($requestPath -notmatch '^chatgpt_staging/exec_requests/[A-Za-z0-9._-]+\.json$') {
+            throw "Exec request path must match chatgpt_staging/exec_requests/<request_id>.json. Got: $requestPath"
+          }
+          if (-not (Test-Path -LiteralPath $requestPath -PathType Leaf)) {
+            throw "Exec request file not found: $requestPath"
+          }
+          $requestId = [IO.Path]::GetFileNameWithoutExtension($requestPath)
+          "skip=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "request_path=$requestPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "request_id=$requestId" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Write progressive report - request resolved
+        if: steps.request.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python .github/scripts/write_chatgpt_progress_report.py `
+            --workflow chatgpt-exec `
+            --request-id '${{ steps.request.outputs.request_id }}' `
+            --request-path '${{ steps.request.outputs.request_path }}' `
+            --phase request-resolved `
+            --result running `
+            --message 'Exec request path resolved. The workflow is preparing to run the approved command harness.'
+          & .\.github\scripts\Invoke-ChatGptReportPush.ps1 `
+            -CommitMessage "Progress chatgpt-exec ${{ steps.request.outputs.request_id }} request-resolved [skip ci]" `
+            -Paths @('chatgpt_staging/status_reports/chatgpt-exec/${{ steps.request.outputs.request_id }}')
+
+      - name: Write progressive report - running harness
+        if: steps.request.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python .github/scripts/write_chatgpt_progress_report.py `
+            --workflow chatgpt-exec `
+            --request-id '${{ steps.request.outputs.request_id }}' `
+            --request-path '${{ steps.request.outputs.request_path }}' `
+            --phase running-harness `
+            --result running `
+            --message 'Approved command harness is about to run. If this report remains in this phase, inspect the GitHub run URL for harness/runtime progress.'
+          & .\.github\scripts\Invoke-ChatGptReportPush.ps1 `
+            -CommitMessage "Progress chatgpt-exec ${{ steps.request.outputs.request_id }} running-harness [skip ci]" `
+            -Paths @('chatgpt_staging/status_reports/chatgpt-exec/${{ steps.request.outputs.request_id }}')
+
+      - name: Run approved command request
+        if: steps.request.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $outRoot = Join-Path $env:RUNNER_TEMP 'dcoir_chatgpt_exec'
+          $resultJson = Join-Path $env:RUNNER_TEMP 'dcoir_chatgpt_exec_result.json'
+          & .\operator_tools\github_desktop_lane\scripts\Invoke-DcoirActionsExecHarness.ps1 `
+            -RequestPath '${{ steps.request.outputs.request_path }}' `
+            -RepoRoot $env:GITHUB_WORKSPACE `
+            -OutputRoot $outRoot `
+            -JsonResultPath $resultJson `
+            -SecretEnvNames @('DCOIR_AIRTABLE_TOKEN','DCOIR_AIRTABLE_BASE_ID','DCOIR_GITHUB_FG_TOKEN','DCOIR_GITHUB_CL_TOKEN','DCOIR_GEMINI_API','DCOIR_OPENAI_API_KEY','DCOIR_OPENAI_PROJECT_ID','OPENAI_API_KEY')
+
+      - name: Write progressive report - harness finished
+        if: steps.request.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $result = if ($env:DCOIR_EXEC_EXIT_CODE -eq '0') { 'success' } else { 'failure' }
+          python .github/scripts/write_chatgpt_progress_report.py `
+            --workflow chatgpt-exec `
+            --request-id '${{ steps.request.outputs.request_id }}' `
+            --request-path '${{ steps.request.outputs.request_path }}' `
+            --phase harness-finished `
+            --result $result `
+            --exit-code $env:DCOIR_EXEC_EXIT_CODE `
+            --artifact-name $env:DCOIR_EXEC_ARTIFACT_NAME `
+            --message "Approved command harness finished with exit code $env:DCOIR_EXEC_EXIT_CODE. Final native exec status commit is next."
+          & .\.github\scripts\Invoke-ChatGptReportPush.ps1 `
+            -CommitMessage "Progress chatgpt-exec ${{ steps.request.outputs.request_id }} harness-finished [skip ci]" `
+            -Paths @('chatgpt_staging/status_reports/chatgpt-exec/${{ steps.request.outputs.request_id }}')
+
+      - name: Commit exec status report and cleanup request
+        if: steps.request.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $requestId = '${{ steps.request.outputs.request_id }}'
+          $requestPath = '${{ steps.request.outputs.request_path }}'
+          $result = if ($env:DCOIR_EXEC_EXIT_CODE -eq '0') { 'success' } else { 'failure' }
+          $reportDir = Join-Path 'chatgpt_staging/status_reports/chatgpt-exec' $requestId
+          $reportPath = Join-Path $reportDir 'workflow_report.md'
+          New-Item -ItemType Directory -Force -Path $reportDir | Out-Null
+          python .github/scripts/write_chatgpt_progress_report.py `
+            --workflow chatgpt-exec `
+            --request-id $requestId `
+            --request-path $requestPath `
+            --phase final-readback-commit `
+            --result $result `
+            --exit-code $env:DCOIR_EXEC_EXIT_CODE `
+            --artifact-name $env:DCOIR_EXEC_ARTIFACT_NAME `
+            --message 'Final exec status is being committed with workflow report, progress history, marker, and any tracked summary files already produced by the request/tool. Full output remains in the uploaded GitHub Actions artifact.'
+          if (Test-Path -LiteralPath $reportPath -PathType Leaf) {
+            @(
+              '',
+              '## GitHub Actions run',
+              '',
+              "- github_run_id: $env:GITHUB_RUN_ID",
+              "- github_run_attempt: $env:GITHUB_RUN_ATTEMPT",
+              "- github_sha: $env:GITHUB_SHA",
+              "- github_ref: $env:GITHUB_REF",
+              "- workflow_run_url: https://github.com/${{ github.repository }}/actions/runs/$env:GITHUB_RUN_ID",
+              '',
+              '## Output readback contract',
+              '',
+              '- heartbeat_report: committed in this request-scoped status directory',
+              '- tracked_summaries: read any concise summary files beside this report when present',
+              '- full_output: uploaded GitHub Actions artifact named in this report',
+              '- artifact_readback: optional and normally not committed for chatgpt-exec because .gitignore intentionally excludes unzipped artifact_readback trees'
+            ) | Out-File -FilePath $reportPath -Encoding utf8 -Append
+          }
+          $markerPath = Join-Path $reportDir 'final_readback_marker.json'
+          [ordered]@{
+            schema = 'dcoir.chatgpt_staging.exec_final_readback_marker.v2'
+            request_id = $requestId
+            result = $result
+            exit_code = $env:DCOIR_EXEC_EXIT_CODE
+            artifact_name = $env:DCOIR_EXEC_ARTIFACT_NAME
+            artifact_readback_committed = $false
+            artifact_readback_policy = 'not_committed_for_chatgpt_exec; .gitignore intentionally excludes artifact_readback to avoid long-path checkout problems'
+            tracked_summary_policy = 'requests/tools should write concise sanitized summaries beside workflow_report.md when ChatGPT connector-readable results are needed'
+            github_run_id = $env:GITHUB_RUN_ID
+            github_run_attempt = $env:GITHUB_RUN_ATTEMPT
+            github_sha = $env:GITHUB_SHA
+            github_ref = $env:GITHUB_REF
+            created_utc = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+          } | ConvertTo-Json -Depth 6 | Out-File -FilePath $markerPath -Encoding utf8
+          if ($env:DCOIR_EXEC_CLEANUP_REQUEST_AFTER_RUN -ne 'False' -and $env:DCOIR_EXEC_CLEANUP_REQUEST_AFTER_RUN -ne 'false') {
+            Remove-Item -LiteralPath $requestPath -Force -ErrorAction SilentlyContinue
+          }
+          & .\.github\scripts\Invoke-ChatGptReportPush.ps1 `
+            -CommitMessage "Record ChatGPT exec final readback [skip ci]" `
+            -Paths @($reportDir, $requestPath) `
+            -RequirePush
+
+      - name: Upload exec artifact
+        if: steps.request.outputs.skip != 'true' && env.DCOIR_EXEC_ARTIFACT_DIR != ''
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: ${{ env.DCOIR_EXEC_ARTIFACT_NAME }}
+          path: ${{ env.DCOIR_EXEC_ARTIFACT_DIR }}/**
+          retention-days: ${{ env.DCOIR_EXEC_ARTIFACT_RETENTION_DAYS }}
+          if-no-files-found: warn
+
+      - name: Fail workflow if approved command failed
+        if: steps.request.outputs.skip != 'true' && env.DCOIR_EXEC_EXIT_CODE != '0'
+        shell: pwsh
+        run: |
+          Write-Error "Approved command failed. See chatgpt_staging/status_reports/chatgpt-exec/$env:DCOIR_EXEC_REQUEST_ID/workflow_report.md and uploaded artifact $env:DCOIR_EXEC_ARTIFACT_NAME."
