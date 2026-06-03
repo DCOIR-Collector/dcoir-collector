@@ -96,16 +96,28 @@ jobs:
           python project_sources/github_actions/tools/surface_delivery_zip.py `
             --build-report project_sources/validation/out/build_dcoir_collector_runtime_package_report.json `
             --output-dir project_sources/validation/delivery_artifact/collector-runtime `
+            --manifest-dir project_sources/validation/out/delivery_manifest `
+            --extract-for-artifact `
             --artifact-label dcoir-collector-runtime-delivery-zip `
             --workflow-name manual-collector-runtime-package-build
           if ($LASTEXITCODE -ne 0) {
             throw 'Collector delivery zip surfacing failed.'
           }
 
+      - name: Set collector delivery artifact name
+        shell: pwsh
+        run: |
+          $manifest = Get-Content -Raw -Path project_sources/validation/out/delivery_manifest/delivery_manifest.json | ConvertFrom-Json
+          $artifactName = [System.IO.Path]::GetFileNameWithoutExtension([string]$manifest.delivery_zip_name)
+          if ([string]::IsNullOrWhiteSpace($artifactName)) {
+            throw 'Collector delivery artifact name could not be derived from delivery manifest.'
+          }
+          "COLLECTOR_DELIVERY_ARTIFACT_NAME=$artifactName" | Add-Content -Path $env:GITHUB_ENV
+
       - name: Upload collector delivery zip
         uses: ./.github/actions/upload-chatgpt-artifact
         with:
-          name: dcoir-collector-runtime-delivery-zip
+          name: ${{ env.COLLECTOR_DELIVERY_ARTIFACT_NAME || 'dcoir-collector-runtime-delivery-zip' }}
           path: project_sources/validation/delivery_artifact/collector-runtime/**
           if-no-files-found: error
           retention-days: 21
@@ -118,6 +130,7 @@ jobs:
           path: |
             project_sources/validation/out/*.zip
             project_sources/validation/out/*report.json
+            project_sources/validation/out/delivery_manifest/**
             project_sources/validation/out/compiled_runtime/**
             project_sources/validation/out_preflight_documentation_quality/**
           if-no-files-found: warn
@@ -138,11 +151,12 @@ jobs:
           - ref: $env:GITHUB_REF
           - package_version_override: $env:PACKAGE_VERSION_OVERRIDE
           - primary_artifact: manual-collector-runtime-package-build
-          - direct_delivery_artifact: dcoir-collector-runtime-delivery-zip
-          - direct_delivery_manifest: project_sources/validation/delivery_artifact/collector-runtime/delivery_manifest.md
-          - artifact_note: includes delivery package zips, package reports, compiled runtime output, and documentation-quality output when produced.
+          - direct_delivery_artifact: $env:COLLECTOR_DELIVERY_ARTIFACT_NAME
+          - direct_delivery_artifact_path: project_sources/validation/delivery_artifact/collector-runtime/**
+          - direct_delivery_manifest: project_sources/validation/out/delivery_manifest/delivery_manifest.md
+          - artifact_note: full evidence artifact includes delivery package zips, package reports, delivery manifest, compiled runtime output, and documentation-quality output when produced.
 
-          Download dcoir-collector-runtime-delivery-zip when the operator needs only the production collector runtime zip. Use manual-collector-runtime-package-build for the full evidence package.
+          Download the direct delivery artifact when the operator needs the production collector runtime package without a nested ZIP. Use manual-collector-runtime-package-build for the full evidence package and delivery manifest.
           The workflow conclusion is the authoritative pass/fail signal for packaging only. Harness regression validation belongs in manual-full-validation.
           Package validity still requires artifact readback before release or operator-distribution claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8

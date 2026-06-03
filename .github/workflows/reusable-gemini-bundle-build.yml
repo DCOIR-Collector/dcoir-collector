@@ -83,16 +83,28 @@ jobs:
           python project_sources/github_actions/tools/surface_delivery_zip.py `
             --build-report project_sources/validation/out/build_dcoir_gemini_release_report.json `
             --output-dir project_sources/validation/delivery_artifact/gemini-bundle `
+            --manifest-dir project_sources/validation/out/delivery_manifest `
+            --extract-for-artifact `
             --artifact-label dcoir-gemini-agent-delivery-zip `
             --workflow-name manual-gemini-bundle-build
           if ($LASTEXITCODE -ne 0) {
             throw 'Gemini delivery zip surfacing failed.'
           }
 
+      - name: Set Gemini delivery artifact name
+        shell: pwsh
+        run: |
+          $manifest = Get-Content -Raw -Path project_sources/validation/out/delivery_manifest/delivery_manifest.json | ConvertFrom-Json
+          $artifactName = [System.IO.Path]::GetFileNameWithoutExtension([string]$manifest.delivery_zip_name)
+          if ([string]::IsNullOrWhiteSpace($artifactName)) {
+            throw 'Gemini delivery artifact name could not be derived from delivery manifest.'
+          }
+          "GEMINI_DELIVERY_ARTIFACT_NAME=$artifactName" | Add-Content -Path $env:GITHUB_ENV
+
       - name: Upload Gemini delivery zip
         uses: ./.github/actions/upload-chatgpt-artifact
         with:
-          name: dcoir-gemini-agent-delivery-zip
+          name: ${{ env.GEMINI_DELIVERY_ARTIFACT_NAME || 'dcoir-gemini-agent-delivery-zip' }}
           path: project_sources/validation/delivery_artifact/gemini-bundle/**
           if-no-files-found: error
           retention-days: 21
@@ -105,6 +117,7 @@ jobs:
           path: |
             project_sources/validation/out/*.zip
             project_sources/validation/out/*report.json
+            project_sources/validation/out/delivery_manifest/**
           if-no-files-found: warn
           retention-days: 21
 
@@ -124,11 +137,12 @@ jobs:
           - bundle_version_override: $env:BUNDLE_VERSION_OVERRIDE
           - skip_validation: $env:SKIP_VALIDATION
           - primary_artifact: manual-gemini-bundle-build
-          - direct_delivery_artifact: dcoir-gemini-agent-delivery-zip
-          - direct_delivery_manifest: project_sources/validation/delivery_artifact/gemini-bundle/delivery_manifest.md
-          - artifact_note: includes Gemini bundle zip and build/validation report JSON when produced.
+          - direct_delivery_artifact: $env:GEMINI_DELIVERY_ARTIFACT_NAME
+          - direct_delivery_artifact_path: project_sources/validation/delivery_artifact/gemini-bundle/**
+          - direct_delivery_manifest: project_sources/validation/out/delivery_manifest/delivery_manifest.md
+          - artifact_note: full evidence artifact includes Gemini bundle zip, delivery manifest, and build/validation report JSON when produced.
 
-          Download dcoir-gemini-agent-delivery-zip when the operator needs only the production Gemini agent bundle zip. Use manual-gemini-bundle-build for the full evidence package.
+          Download the direct delivery artifact when the operator needs the production Gemini agent bundle without a nested ZIP. Use manual-gemini-bundle-build for the full evidence package and delivery manifest.
           The workflow conclusion is the authoritative pass/fail signal. If skip_validation is true, record follow-up validation before making broad Gemini readiness claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
 
