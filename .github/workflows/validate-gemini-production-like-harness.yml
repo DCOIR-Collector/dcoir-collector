@@ -9,6 +9,24 @@
 # - Do not treat this as proof of live Gemini behavior; manual live replay artifacts remain separate evidence.
 # Result semantics:
 # - Workflow success means the harness produced trustworthy static/construct evidence. Behavior success is reported separately and may be not_scored when no live/deterministic model replay ran.
+# Trigger model:
+# - push and pull_request on Gemini harness tools, blind fixtures, collector blind fixtures, Gemini bundle source, maintained knowledge, workflow path, and .gitignore; workflow_dispatch with harness depth inputs.
+# Required inputs:
+# - harness_mode and require_stored_artifacts when manually dispatched.
+# Required secrets/config:
+# - none
+# Runtime dependencies:
+# - Uses project_sources/gemini/tools/validate_gemini_production_like_harness.py, blind fixture trees, Gemini bundle source, and maintained knowledge files.
+# Expected outputs/readback:
+# - Production-like harness output, validation artifacts, chatgpt-workflow-report-section artifact, and repo-workflows report.
+# Safety notes:
+# - Do not treat static/construct harness success as proof of live Gemini behavior.
+# Maintenance notes:
+# - Keep harness inputs, path filters, artifact names, and report-section behavior aligned with the workflow inventory and production-like harness contract.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
 name: validate-gemini-production-like-harness
 
 on:
