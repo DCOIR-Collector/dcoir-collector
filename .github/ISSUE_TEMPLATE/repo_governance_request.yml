@@ -34,7 +34,7 @@ body:
     id: approval_gates
     attributes:
       label: Approval or review gates
-      description: Note any operator approval, Prog/Adva, Codi, external @codex, workflow, or Supabase readback requirements.
+      description: Note any operator approval, Prog/Adva, Codi, external Codex review, workflow, or Supabase readback requirements.
     validations:
       required: false
   - type: textarea
