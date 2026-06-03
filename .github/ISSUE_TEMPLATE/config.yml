@@ -3,4 +3,4 @@ blank_issues_enabled: false
 contact_links:
   - name: DCOIR workflow question
     url: https://github.com/malwaredevil/dcoir-collector/discussions
-    about: Use Discussions for questions that are not actionable bugs, validation findings, collector failures, or prompt-pack issues.
+    about: Use Discussions for questions that are not actionable bugs, validation findings, collector failures, or Gemini agent issues.
