@@ -136,7 +136,7 @@
     "validate-on-pr is expected to run after this PR is marked ready"
   ],
   "required_github_readme_phrases": [
-    "API-created issues must mirror the closest issue form",
+    "API-created, connector-created, or otherwise programmatically created issues must mirror the closest issue form",
     "Apply only that form's approved label pair",
     "If no issue form fits, stop and ask the operator"
   ],
