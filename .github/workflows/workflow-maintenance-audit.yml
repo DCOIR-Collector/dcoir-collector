@@ -2,19 +2,19 @@
 # Workflow key:
 # - workflow-maintenance-workflow-maintenance-audit-0024
 # Purpose:
-# - Audit GitHub Action version posture, workflow consistency drift, and the repo-local workflow maintenance contract.
+# - Audit GitHub Action version posture, workflow consistency drift, workflow inventory freshness, and the repo-local workflow modularization contract.
 # Use when:
 # - Use after workflow, dependabot, guidance, or workflow-tooling changes and on the weekly schedule to catch workflow-maintenance regressions.
 # Do not use when:
 # - Do not use as behavioral workflow validation or release-readiness proof; it checks maintenance drift and hygiene.
 # Trigger model:
-# - workflow_dispatch; schedule: 17 6 * * 1; push branches: main paths: .github/workflows/**, .github/dependabot.yml, project_sources/github_actions/**, AGENTS.md, .github/README.md
+# - workflow_dispatch; pull_request on workflow/tooling guidance paths; schedule: 17 6 * * 1; push branches: main paths: .github/workflows/**, .github/actions/**, .github/dependabot.yml, project_sources/github_actions/**, AGENTS.md, .github/README.md
 # Required inputs:
 # - none
 # Required secrets/config:
 # - Use secret/config names only as defined in this workflow body and Local Configuration Registry; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses project_sources/github_actions/tools/check_workflow_action_versions.py and project_sources/github_actions/tools/check_workflow_consistency_drift.py.
+# - Uses project_sources/github_actions/tools/check_workflow_action_versions.py, project_sources/github_actions/tools/check_workflow_consistency_drift.py, project_sources/github_actions/tools/build_workflow_inventory.py, project_sources/github_actions/tools/check_workflow_modularization_contracts.py, and project_sources/github_actions/tools/audit_reusable_contracts.py.
 # Expected outputs/readback:
 # - Maintenance audit result, repo-workflows report, and chatgpt-workflow-report-section custom markdown artifact.
 # Safety notes:
@@ -30,6 +30,19 @@ name: Workflow maintenance audit
 
 on:
   workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - '.github/dependabot.yml'
+      - 'project_sources/github_actions/**'
+      - 'AGENTS.md'
+      - '.github/README.md'
   schedule:
     - cron: '17 6 * * 1'
   push:
@@ -37,6 +50,7 @@ on:
       - main
     paths:
       - '.github/workflows/**'
+      - '.github/actions/**'
       - '.github/dependabot.yml'
       - 'project_sources/github_actions/**'
       - 'AGENTS.md'
@@ -67,6 +81,24 @@ jobs:
         run: |
           set -euo pipefail
           python3 project_sources/github_actions/tools/check_workflow_consistency_drift.py
+
+      - name: Check workflow inventory freshness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/build_workflow_inventory.py --check
+
+      - name: Check workflow modularization contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/check_workflow_modularization_contracts.py
+
+      - name: Check reusable and composite contract posture
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/audit_reusable_contracts.py
 
       - name: Write ChatGPT workflow report section
         if: always()
