@@ -7,6 +7,24 @@
 # - Use as the normal deterministic replay gate when replay tools, replay fixtures, or replay reporting surfaces change.
 # Do not use when:
 # - Do not treat this as the live Gemini replay lane; use run-gemini-behavioral-replay-manual for live API evidence.
+# Trigger model:
+# - push and pull_request on Gemini replay tools, replay fixtures, and replay workflow paths; workflow_dispatch for manual deterministic replay validation.
+# Required inputs:
+# - none
+# Required secrets/config:
+# - none
+# Runtime dependencies:
+# - Uses Gemini replay Python tools and committed behavioral replay fixtures.
+# Expected outputs/readback:
+# - validate-gemini-behavioral-replay-results artifact, chatgpt-workflow-report-section artifact, and repo-workflows report.
+# Safety notes:
+# - Do not treat deterministic fixture replay as live Gemini API evidence.
+# Maintenance notes:
+# - Keep paths, artifact names, and report-section behavior aligned with the workflow inventory and Gemini replay tooling.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
 name: validate-gemini-behavioral-replay
 
 on:
