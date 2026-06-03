@@ -254,8 +254,8 @@
     },
     {
       "artifacts": [
+        "${{ env.COLLECTOR_DELIVERY_ARTIFACT_NAME || 'dcoir-collector-runtime-delivery-zip' }}",
         "chatgpt-workflow-report-section",
-        "dcoir-collector-runtime-delivery-zip",
         "manual-collector-runtime-package-build"
       ],
       "concurrency_declared": true,
@@ -302,8 +302,8 @@
     },
     {
       "artifacts": [
+        "${{ env.GEMINI_DELIVERY_ARTIFACT_NAME || 'dcoir-gemini-agent-delivery-zip' }}",
         "chatgpt-workflow-report-section",
-        "dcoir-gemini-agent-delivery-zip",
         "manual-gemini-bundle-build"
       ],
       "concurrency_declared": true,
