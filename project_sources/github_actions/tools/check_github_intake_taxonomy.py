@@ -66,6 +66,28 @@ def quoted_label_tokens(text: str) -> set[str]:
     return tokens
 
 
+def line_label_tokens(text: str) -> list[tuple[str, str]]:
+    tokens: list[tuple[str, str]] = []
+    for line in text.splitlines():
+        line_tokens = set(re.findall(r"['\"]([^'\"]+)['\"]", line))
+        line_tokens.update(re.findall(r"`([^`]+)`", line))
+        list_match = re.match(r"\s*-\s+([A-Za-z0-9:_-]+)\s*$", line)
+        if list_match:
+            line_tokens.add(list_match.group(1))
+        tokens.extend((token, line) for token in line_tokens)
+    return tokens
+
+
+def is_allowed_wildcard_example(token: str, line: str) -> bool:
+    if token not in {"area:*", "type:*"}:
+        return False
+    return (
+        "approved `area:*` label and one approved `type:*` label" in line
+        or "approved `area:*` and `type:*` taxonomy" in line
+        or "Exactly one `area:*` label and exactly one `type:*` label" in line
+    )
+
+
 def markdown_headings(text: str) -> set[str]:
     return set(re.findall(r"(?m)^##\s+(.+?)\s*$", text))
 
@@ -144,9 +166,11 @@ def validate_label_references(root: Path, taxonomy: dict[str, Any], errors: list
             continue
         rel = path.relative_to(root)
         text = path.read_text(encoding="utf-8")
-        tokens = quoted_label_tokens(text)
-        tokens.discard("area:*")
-        tokens.discard("type:*")
+        tokens = [
+            token
+            for token, line in line_label_tokens(text)
+            if not is_allowed_wildcard_example(token, line)
+        ]
         retired = sorted(token for token in tokens if token in retired_labels)
         if retired:
             fail(errors, rel, f"retired label references: {', '.join(retired)}")
