@@ -32,6 +32,8 @@ run-name: Workflow Reporting Validation | ${{ github.event.inputs.scenario || gi
 on:
   pull_request:
     paths:
+      - '.github/actions/setup-workflow-runtime/**'
+      - '.github/actions/upload-chatgpt-artifact/**'
       - '.github/scripts/write_workflow_report.py'
       - '.github/scripts/write_chatgpt_progress_report.py'
       - '.github/workflows/chatgpt-workflow-run-reporter.yml'
@@ -41,6 +43,8 @@ on:
       - 'chatgpt_staging/status_reports/README.md'
   push:
     paths:
+      - '.github/actions/setup-workflow-runtime/**'
+      - '.github/actions/upload-chatgpt-artifact/**'
       - '.github/scripts/write_workflow_report.py'
       - '.github/scripts/write_chatgpt_progress_report.py'
       - '.github/workflows/chatgpt-workflow-run-reporter.yml'
