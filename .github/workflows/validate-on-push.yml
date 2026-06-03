@@ -63,13 +63,10 @@ on:
       - 'DCOIR_KNOWLEDGE_INDEX.md'
       - 'docs/validation/dcoir_collector_capability_coverage_matrix.md'
       - 'supporting_assets/DCOIR_Collector.zip'
-      - '.github/workflows/validate-on-push.yml'
-      - '.github/workflows/validate-on-pr.yml'
-      - '.github/workflows/manual-full-validation.yml'
-      - '.github/workflows/manual-collector-runtime-package-build.yml'
-      - '.github/workflows/manual-collector-optional-exe-build.yml'
-      - '.github/workflows/manual-gemini-bundle-build.yml'
-      - '.github/workflows/scheduled-health-check.yml'
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - 'project_sources/github_actions/**'
+      - '.github/README.md'
   workflow_dispatch:
 
 concurrency:

@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 WORKFLOW_DIR = Path(".github/workflows")
+ACTION_DIR = Path(".github/actions")
 
 # Minimum majors selected to avoid GitHub Actions Node.js 20 deprecation warnings
 # and catch unsupported action tags for the actions used in this repository.
@@ -22,6 +23,8 @@ MINIMUM_ACTION_MAJORS = {
     "actions/download-artifact": 6,
     "actions/cache": 5,
     "actions/github-script": 8,
+    "actions/dependency-review-action": 5,
+    "dependabot/fetch-metadata": 3,
     "github/codeql-action/init": 4,
     "github/codeql-action/analyze": 4,
     "github/codeql-action/upload-sarif": 4,
@@ -45,6 +48,16 @@ def iter_workflow_files() -> list[Path]:
         p for p in WORKFLOW_DIR.iterdir()
         if p.is_file() and p.suffix.lower() in {".yml", ".yaml"}
     )
+
+
+def iter_composite_action_files() -> list[Path]:
+    if not ACTION_DIR.exists():
+        return []
+    return sorted(ACTION_DIR.glob("*/action.y*ml"))
+
+
+def iter_audited_files() -> list[Path]:
+    return iter_workflow_files() + iter_composite_action_files()
 
 
 def check_file(path: Path) -> list[str]:
@@ -85,13 +98,13 @@ def check_file(path: Path) -> list[str]:
 
 
 def main() -> int:
-    workflow_files = iter_workflow_files()
-    if not workflow_files:
-        print("No workflow files found.")
+    audited_files = iter_audited_files()
+    if not audited_files:
+        print("No workflow or composite action files found.")
         return 0
 
     findings: list[str] = []
-    for path in workflow_files:
+    for path in audited_files:
         findings.extend(check_file(path))
 
     if findings:
@@ -100,7 +113,12 @@ def main() -> int:
             print(f"- {finding}")
         return 1
 
-    print(f"Workflow action maintenance audit passed for {len(workflow_files)} workflow files.")
+    workflow_count = len(iter_workflow_files())
+    action_count = len(iter_composite_action_files())
+    print(
+        "Workflow action maintenance audit passed for "
+        f"{workflow_count} workflow files and {action_count} composite action files."
+    )
     return 0
 
 
