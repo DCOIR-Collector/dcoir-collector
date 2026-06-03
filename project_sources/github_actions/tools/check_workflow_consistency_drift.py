@@ -50,6 +50,13 @@ SHARED_CONTRACT_FILES = [
     Path(REQUIRED_SURFACES_HELPER),
     Path(GEMINI_MANIFEST_HELPER),
     Path("project_sources/github_actions/workflow_required_surface_profiles.json"),
+    Path("project_sources/github_actions/tools/build_workflow_inventory.py"),
+    Path("project_sources/github_actions/tools/check_workflow_modularization_contracts.py"),
+    Path("project_sources/github_actions/tools/generate_workflow_inventory.py"),
+    Path("project_sources/github_actions/tools/audit_reusable_contracts.py"),
+    Path("project_sources/github_actions/workflow_modularization_contracts.json"),
+    Path("project_sources/github_actions/workflow_inventory.json"),
+    Path("project_sources/github_actions/workflow_inventory.md"),
 ]
 
 
