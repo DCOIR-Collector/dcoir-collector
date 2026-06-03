@@ -23,8 +23,8 @@
 
 - [ ] Prog implementation/fix pass is complete or not applicable
 - [ ] Adva adversarial review pass is complete or not applicable
-- [ ] Codi review is complete or explicitly waived before external `@codex`
-- [ ] External `@codex` review is requested before ready-for-review or merge when governed source changed
+- [ ] Codi review is complete or explicitly waived before external Codex review
+- [ ] External Codex review is requested before ready-for-review or merge when governed source changed
 
 ## Notes
 
