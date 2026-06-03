@@ -11,12 +11,12 @@ Regenerate it after workflow, reusable workflow, composite action, report, or wo
 | File | Workflow name | Triggers | Permissions | Secrets/vars | Report family | Contract family | Status | Risk |
 |---|---|---|---|---|---|---|---|---|
 | `.github/workflows/chatgpt-apply-in.yml` | chatgpt-apply-in | push, workflow_dispatch | contents:write | 0 | standalone workflow report | staging-apply-in | planned | high |
-| `.github/workflows/chatgpt-exec.yml` | chatgpt-exec | push, workflow_dispatch | actions:read, contents:write | 8 | standalone workflow report | staging-exec | planned | high |
+| `.github/workflows/chatgpt-exec.yml` | chatgpt-exec | push, workflow_dispatch | contents:write, actions:read | 8 | standalone workflow report | staging-exec | planned | high |
 | `.github/workflows/chatgpt-report-retention-cleanup.yml` | chatgpt-report-retention-cleanup | schedule, workflow_dispatch | contents:write | 0 | standalone workflow report | staging-retention-cleanup | planned | high |
 | `.github/workflows/chatgpt-stage-out.yml` | chatgpt-stage-out | push, workflow_dispatch | contents:write | 0 | standalone workflow report | staging-stage-out | planned | high |
 | `.github/workflows/chatgpt-staging-cleanup.yml` | chatgpt-staging-cleanup | push, workflow_dispatch | contents:write | 0 | standalone workflow report | staging-cleanup | planned | high |
 | `.github/workflows/chatgpt-workflow-reporting-validation.yml` | chatgpt-workflow-reporting-validation | pull_request, push, workflow_dispatch | contents:read | 0 | chatgpt workflow report section | report-section | planned | medium |
-| `.github/workflows/chatgpt-workflow-run-reporter.yml` | chatgpt-workflow-run-reporter | workflow_dispatch, workflow_run | actions:read, contents:write | 1 | repo-workflows completed summary | central-reporter | planned | high |
+| `.github/workflows/chatgpt-workflow-run-reporter.yml` | chatgpt-workflow-run-reporter | workflow_dispatch, workflow_run | contents:write, actions:read | 1 | repo-workflows completed summary | central-reporter | planned | high |
 | `.github/workflows/collector-documentation-quality.yml` | collector-documentation-quality | pull_request, push, schedule, workflow_dispatch | contents:read | 0 | chatgpt workflow report section | static-validation | planned | medium |
 | `.github/workflows/dependabot-auto-merge.yml` | Dependabot auto-merge | pull_request | contents:write, pull-requests:write | 1 | none declared | dependabot-auto-merge | planned | medium |
 | `.github/workflows/dependency-review.yml` | Dependency Review | pull_request | contents:read, pull-requests:read | 1 | none declared | dependency-review | planned | low |
@@ -25,7 +25,7 @@ Regenerate it after workflow, reusable workflow, composite action, report, or wo
 | `.github/workflows/manual-full-validation.yml` | manual-full-validation | schedule, workflow_dispatch | contents:read | 0 | chatgpt workflow report section | required-surfaces | planned | medium |
 | `.github/workflows/manual-gemini-bundle-build.yml` | manual-gemini-bundle-build | workflow_dispatch | contents:read | 0 | chatgpt workflow report section | gemini-bundle | planned | medium |
 | `.github/workflows/manual-gemini-model-comparison.yml` | manual-gemini-model-comparison | workflow_dispatch | contents:read | 1 | chatgpt workflow report section | gemini-model-comparison | planned | medium |
-| `.github/workflows/manual-github-artifact-readback.yml` | chatgpt-github-artifact-readback | push, workflow_dispatch | actions:write, contents:write | 1 | live heartbeat | staging-artifact-readback | planned | high |
+| `.github/workflows/manual-github-artifact-readback.yml` | chatgpt-github-artifact-readback | push, workflow_dispatch | contents:write, actions:write | 1 | live heartbeat | staging-artifact-readback | planned | high |
 | `.github/workflows/manual-test-framework-validate.yml` | manual-test-framework-validate | push, workflow_dispatch | contents:read | 0 | chatgpt workflow report section | static-validation | planned | medium |
 | `.github/workflows/ops-apply-zip.yml` | Ops apply zip request | workflow_dispatch | none | 0 | central reporter only when applicable | ops-guard | planned | medium |
 | `.github/workflows/ops-dispatch-request.yml` | Ops dispatch request | workflow_dispatch | none | 0 | central reporter only when applicable | ops-guard | planned | medium |
