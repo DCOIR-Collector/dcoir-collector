@@ -6,10 +6,12 @@ Use a private reporting path when a finding includes credentials, tokens, sensit
 
 If the finding is not sensitive, use the closest GitHub issue template:
 
-- Bug report for reproducible code or workflow defects.
-- Collector test failure for collector execution, harness, command, output, or packaging failures.
+- Bug report for reproducible repository defects that do not fit a more specific form.
+- Collector issue for collector execution, harness, command, output, packaging, or delivery problems.
+- Workflow issue for GitHub Actions trigger, job, artifact, validation, or reporting defects.
 - Validation finding for live-test, regression-test, acceptance-test, or workflow validation results.
-- Documentation / workflow correction for misleading, stale, or conflicting operator guidance.
+- Documentation or workflow correction for misleading, stale, or conflicting operator guidance.
+- Supabase ircore request for governed routing, receipt, validation-rule, or operational-control-plane concerns.
 
 ## DCOIR review priorities
 
