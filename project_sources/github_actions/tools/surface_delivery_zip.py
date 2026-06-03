@@ -137,10 +137,12 @@ def main() -> int:
         extract_zip(zip_path, output_dir)
         surfaced_path = output_dir
         surfaced_mode = "extracted_zip_contents"
+        manifest_delivery_zip = zip_path
     else:
         shutil.copy2(zip_path, delivery_zip)
         surfaced_path = delivery_zip
         surfaced_mode = "copied_zip_file"
+        manifest_delivery_zip = delivery_zip
 
     manifest = {
         "success": True,
@@ -149,7 +151,7 @@ def main() -> int:
         "source_build_report": report_path.as_posix(),
         "source_zip_path": zip_path.as_posix(),
         "source_zip_name": zip_path.name,
-        "delivery_zip": zip_path.as_posix(),
+        "delivery_zip": manifest_delivery_zip.as_posix(),
         "delivery_zip_name": zip_path.name,
         "delivery_zip_size_bytes": zip_path.stat().st_size,
         "delivery_zip_sha256": sha256_file(zip_path),
