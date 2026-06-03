@@ -35,6 +35,14 @@ jobs:
       - name: Validate Python syntax
         uses: ./.github/actions/validate-python-syntax
 
+      - name: Validate GitHub intake taxonomy
+        shell: pwsh
+        run: |
+          python project_sources/github_actions/tools/check_github_intake_taxonomy.py
+          if ($LASTEXITCODE -ne 0) {
+            throw 'GitHub intake taxonomy validation failed.'
+          }
+
       - name: Run documentation validator self-tests
         shell: pwsh
         run: |
