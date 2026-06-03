@@ -78,7 +78,7 @@ jobs:
           reporter_combined = reporter_entry + '\n' + reporter_reusable
           required = {
               'entry workflow_run trigger': ('workflow_run:', reporter_entry),
-              'entry workflow filter': ('chatgpt-workflow-reporting-validation', reporter_entry),
+              'entry workflow filter': ('24 Validation - Workflow Reporting', reporter_entry),
               'reusable report writer invocation': ('write_workflow_report.py workflow-run', reporter_combined),
               'reusable custom report artifact readback': ('chatgpt-workflow-report-section', reporter_combined),
           }
@@ -91,7 +91,7 @@ jobs:
           {
             "workflow_run": {
               "id": 123456789,
-              "name": "chatgpt-workflow-reporting-validation",
+              "name": "24 Validation - Workflow Reporting",
               "conclusion": "success",
               "event": "pull_request",
               "head_branch": "pr-head-reporter-smoke",
@@ -108,7 +108,7 @@ jobs:
           JSON
           report_path="$(python .github/scripts/write_workflow_report.py workflow-run --event-json .github/tmp/pr_head_workflow_run_event.json | tail -n 1)"
           test -f "$report_path"
-          grep -F -- '- workflow: chatgpt-workflow-reporting-validation' "$report_path"
+          grep -F -- '- workflow: 24 Validation - Workflow Reporting' "$report_path"
           grep -F -- '- report_family: completed-run-summary' "$report_path"
           grep -F -- '- result: success' "$report_path"
           {
@@ -150,7 +150,7 @@ jobs:
           {
             echo "## ChatGPT workflow reporting validation"
             echo
-            echo "- workflow: chatgpt-workflow-reporting-validation"
+            echo "- workflow: 24 Validation - Workflow Reporting"
             echo "- scenario: ${CHATGPT_VALIDATION_SCENARIO}"
             echo "- marker: ${CHATGPT_VALIDATION_MARKER}"
             echo "- workflow_run_id: ${GITHUB_RUN_ID}"
