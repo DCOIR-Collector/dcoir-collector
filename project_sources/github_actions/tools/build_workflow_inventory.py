@@ -281,14 +281,20 @@ def build_inventory() -> dict[str, Any]:
     }
 
 
+def escape_markdown_table_value(value: str) -> str:
+    return value.replace("|", "\\|")
+
+
 def markdown_value(value: Any) -> str:
     if value is None or value == [] or value == {}:
         return "none"
     if isinstance(value, dict):
-        return ", ".join(f"{key}:{item}" for key, item in value.items())
-    if isinstance(value, list):
-        return ", ".join(str(item) for item in value) or "none"
-    return str(value)
+        rendered = ", ".join(f"{key}:{item}" for key, item in value.items())
+    elif isinstance(value, list):
+        rendered = ", ".join(str(item) for item in value) or "none"
+    else:
+        rendered = str(value)
+    return escape_markdown_table_value(rendered)
 
 
 def render_markdown(inventory: dict[str, Any]) -> str:
