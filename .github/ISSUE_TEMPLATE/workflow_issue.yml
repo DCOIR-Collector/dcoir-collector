@@ -1,0 +1,42 @@
+name: Workflow issue
+description: Report a GitHub Actions workflow trigger, job, artifact, validation, or reporting defect.
+title: "[Workflow]: "
+labels:
+  - area:workflows
+  - type:bug
+body:
+  - type: textarea
+    id: workflow_surface
+    attributes:
+      label: Workflow or automation surface
+      description: Name the workflow, reusable workflow, local action, report, artifact, or trigger path.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Describe the failed run, missing trigger, wrong artifact, stale report, or confusing behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe the workflow behavior or readback that should have occurred.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Add run URLs, run IDs, job names, artifact names, logs, reports, or changed paths.
+    validations:
+      required: false
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Workflow boundary
+      description: Note whether this requires workflow mutation, readback only, or operator approval before mutation.
+    validations:
+      required: false
