@@ -25,7 +25,7 @@ Use the closest issue form instead of a generic issue whenever possible. Each fo
 - Feature request: `area:repo-governance`, `type:enhancement`
 - Bug report: `area:repo-governance`, `type:bug`
 
-API-created issues must mirror the closest issue form. Apply only that form's approved label pair. If no issue form fits, stop and ask the operator before creating, relabeling, or silently broadening the issue.
+API-created, connector-created, or otherwise programmatically created issues must mirror the closest issue form. Apply only that form's approved label pair. If no issue form fits, stop and ask the operator before creating, relabeling, or silently broadening the issue.
 
 ## Operating rules
 
