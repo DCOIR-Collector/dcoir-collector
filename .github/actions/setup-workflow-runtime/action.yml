@@ -1,0 +1,34 @@
+name: Setup workflow runtime
+description: Prepare the shared DCOIR workflow runtime for mechanical validation steps.
+inputs:
+  python-version:
+    description: Python version already expected by the caller workflow.
+    required: false
+    default: "3.x"
+  emit-summary:
+    description: Whether to emit a short setup summary for caller-visible evidence.
+    required: false
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - name: Record runtime setup contract
+      shell: bash
+      env:
+        PYTHON_VERSION: ${{ inputs.python-version }}
+        EMIT_SUMMARY: ${{ inputs.emit-summary }}
+      run: |
+        set -euo pipefail
+        echo "DCOIR workflow runtime setup contract"
+        printf 'python-version: %s\n' "$PYTHON_VERSION"
+        if [ "$EMIT_SUMMARY" = "true" ]; then
+          {
+            echo "## Runtime setup"
+            echo
+            echo "- composite_action: setup-workflow-runtime"
+            printf -- '- python_version: %s\n' "$PYTHON_VERSION"
+            echo "- caller_retains_contracts: triggers, permissions, secrets, artifacts, and report paths"
+          } >> "${GITHUB_STEP_SUMMARY}"
+        fi
+# Compensating evidence: caller-visible step name, stdout contract lines, and optional
+# GITHUB_STEP_SUMMARY entry replace the reduced granularity inside this composite action.
