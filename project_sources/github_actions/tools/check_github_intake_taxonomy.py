@@ -197,8 +197,6 @@ def validate_guidance(root: Path, taxonomy: dict[str, Any], errors: list[str]) -
     guidance_paths.extend((root / ".github" / "ISSUE_TEMPLATE").glob("*.yml"))
     guidance_paths.extend((root / ".github" / "ISSUE_TEMPLATE").glob("*.yaml"))
     for path in guidance_paths:
-        if path.name == "config.yml":
-            continue
         text = path.read_text(encoding="utf-8")
         stale = sorted(term for term in taxonomy["stale_guidance_terms"] if term in text)
         if stale:
