@@ -90,4 +90,3 @@ jobs:
       contents: read
     with:
       caller_event_name: ${{ github.event_name }}
-      caller_is_draft: ${{ github.event.pull_request.draft }}
