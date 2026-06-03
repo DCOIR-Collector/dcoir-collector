@@ -134,7 +134,7 @@ def validate_issue_forms(root: Path, errors: list[str]) -> None:
 
 def quoted_label_tokens(text: str) -> set[str]:
     tokens = set(re.findall(r"['\"]([^'\"]+)['\"]", text))
-    tokens.update(re.findall(r"(?m)^\\s*-\\s+([A-Za-z0-9:_-]+)\\s*$", text))
+    tokens.update(re.findall(r"(?m)^\s*-\s+([A-Za-z0-9:_-]+)\s*$", text))
     return tokens
 
 
