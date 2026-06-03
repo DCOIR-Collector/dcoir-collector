@@ -61,6 +61,7 @@ def extract_scalar(text: str, key: str) -> str | None:
 
 def quoted_label_tokens(text: str) -> set[str]:
     tokens = set(re.findall(r"['\"]([^'\"]+)['\"]", text))
+    tokens.update(re.findall(r"`([^`]+)`", text))
     tokens.update(re.findall(r"(?m)^\s*-\s+([A-Za-z0-9:_-]+)\s*$", text))
     return tokens
 
@@ -131,6 +132,7 @@ def validate_label_references(root: Path, taxonomy: dict[str, Any], errors: list
     approved_labels = set(taxonomy["approved_labels"])
     retired_labels = set(taxonomy["retired_labels"])
     paths = [
+        root / ".github" / "README.md",
         root / ".github" / "PULL_REQUEST_TEMPLATE.md",
         root / ".github" / "dependabot.yml",
     ]
@@ -143,6 +145,8 @@ def validate_label_references(root: Path, taxonomy: dict[str, Any], errors: list
         rel = path.relative_to(root)
         text = path.read_text(encoding="utf-8")
         tokens = quoted_label_tokens(text)
+        tokens.discard("area:*")
+        tokens.discard("type:*")
         retired = sorted(token for token in tokens if token in retired_labels)
         if retired:
             fail(errors, rel, f"retired label references: {', '.join(retired)}")
