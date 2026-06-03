@@ -102,6 +102,10 @@ def write_manifest(manifest_dir: Path, manifest: dict[str, Any], *, clean: bool 
     )
 
 
+def paths_match(left: Path, right: Path) -> bool:
+    return left.resolve() == right.resolve()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--build-report", required=True, help="Build report JSON containing the generated zip_path.")
@@ -154,8 +158,9 @@ def main() -> int:
         "zip_inspection": inspect_zip(zip_path),
     }
     if args.manifest_dir:
-        write_manifest(Path(args.manifest_dir), manifest, clean=True)
-        manifest["manifest_dir"] = Path(args.manifest_dir).as_posix()
+        manifest_dir = Path(args.manifest_dir)
+        write_manifest(manifest_dir, manifest, clean=not paths_match(manifest_dir, output_dir))
+        manifest["manifest_dir"] = manifest_dir.as_posix()
     else:
         write_manifest(output_dir, manifest)
         manifest["manifest_dir"] = output_dir.as_posix()
