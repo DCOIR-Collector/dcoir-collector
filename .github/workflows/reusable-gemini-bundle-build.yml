@@ -76,6 +76,26 @@ jobs:
             throw 'Gemini bundle build failed.'
           }
 
+      - name: Surface Gemini delivery zip
+        shell: pwsh
+        run: |
+          python project_sources/github_actions/tools/surface_delivery_zip.py `
+            --build-report project_sources/validation/out/build_dcoir_gemini_release_report.json `
+            --output-dir project_sources/validation/delivery_artifact/gemini-bundle `
+            --artifact-label dcoir-gemini-agent-delivery-zip `
+            --workflow-name manual-gemini-bundle-build
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Gemini delivery zip surfacing failed.'
+          }
+
+      - name: Upload Gemini delivery zip
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: dcoir-gemini-agent-delivery-zip
+          path: project_sources/validation/delivery_artifact/gemini-bundle/**
+          if-no-files-found: error
+          retention-days: 21
+
       - name: Upload Gemini bundle artifacts
         if: always()
         uses: ./.github/actions/upload-chatgpt-artifact
@@ -103,8 +123,11 @@ jobs:
           - bundle_version_override: $env:BUNDLE_VERSION_OVERRIDE
           - skip_validation: $env:SKIP_VALIDATION
           - primary_artifact: manual-gemini-bundle-build
+          - direct_delivery_artifact: dcoir-gemini-agent-delivery-zip
+          - direct_delivery_manifest: project_sources/validation/delivery_artifact/gemini-bundle/delivery_manifest.md
           - artifact_note: includes Gemini bundle zip and build/validation report JSON when produced.
 
+          Download dcoir-gemini-agent-delivery-zip when the operator needs only the production Gemini agent bundle zip. Use manual-gemini-bundle-build for the full evidence package.
           The workflow conclusion is the authoritative pass/fail signal. If skip_validation is true, record follow-up validation before making broad Gemini readiness claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
 
