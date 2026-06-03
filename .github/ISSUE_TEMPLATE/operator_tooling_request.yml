@@ -1,0 +1,35 @@
+name: Operator tooling request
+description: Request or report a problem with operator tools, staging lanes, scripts, manifests, or readback helpers.
+title: "[Operator tooling]: "
+labels:
+  - area:operator-tooling
+  - type:maintenance
+body:
+  - type: textarea
+    id: tooling_surface
+    attributes:
+      label: Tooling surface
+      description: Name the tool, script, manifest, staging lane, or operator workflow helper.
+    validations:
+      required: true
+  - type: textarea
+    id: goal_or_problem
+    attributes:
+      label: Goal or problem
+      description: Describe the needed tooling behavior, defect, gap, or maintenance outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: operator_impact
+    attributes:
+      label: Operator impact
+      description: Explain how this affects execution, safety, readback, repeatability, or operator time.
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Add command output, workflow links, script paths, reports, or examples.
+    validations:
+      required: false
