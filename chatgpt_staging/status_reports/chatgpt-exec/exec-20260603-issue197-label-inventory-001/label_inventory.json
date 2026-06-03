@@ -1,0 +1,635 @@
+﻿{
+    "schema":  "dcoir.issue197.label_inventory.v1",
+    "repo":  "malwaredevil/dcoir-collector",
+    "request_id":  "exec-20260603-issue197-label-inventory-001",
+    "collected_utc":  "2026-06-03T16:19:50Z",
+    "label_count":  62,
+    "keep_area_candidates":  [
+                                 "area:airtable-ircore",
+                                 "area:collector",
+                                 "area:docs",
+                                 "area:gemini",
+                                 "area:github-repo",
+                                 "area:knowledge-docs",
+                                 "area:operator-tooling",
+                                 "area:project-tracking",
+                                 "area:repo-governance",
+                                 "area:validation",
+                                 "area:workflows"
+                             ],
+    "keep_type_candidates":  [
+                                 "type:accidental",
+                                 "type:bug",
+                                 "type:cleanup",
+                                 "type:decision",
+                                 "type:enhancement",
+                                 "type:idea",
+                                 "type:maintenance",
+                                 "type:meta",
+                                 "type:planning",
+                                 "type:refactor",
+                                 "type:research"
+                             ],
+    "delete_candidates":  [
+                              "administrative",
+                              "agent-instructions",
+                              "architecture",
+                              "blocked",
+                              "bug",
+                              "codex",
+                              "dependencies",
+                              "documentation",
+                              "duplicate",
+                              "enhancement",
+                              "gemini-agent",
+                              "github_actions",
+                              "github-actions",
+                              "good first issue",
+                              "governance",
+                              "governance-cleanup",
+                              "help wanted",
+                              "ignore",
+                              "invalid",
+                              "ircore",
+                              "mirror",
+                              "priority:P0",
+                              "priority:P1",
+                              "priority:P2",
+                              "priority:P3",
+                              "question",
+                              "source:airtable-idea",
+                              "source:airtable-work-item",
+                              "source:governed-repo",
+                              "source:mirror-initiative",
+                              "track:automation",
+                              "track:collector",
+                              "track:delivery",
+                              "track:docs",
+                              "track:governance",
+                              "track:research",
+                              "track:skills",
+                              "track:validation",
+                              "track:workflow",
+                              "wontfix"
+                          ],
+    "labels":  [
+                   {
+                       "name":  "track:automation",
+                       "color":  "b65b24",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "source:mirror-initiative",
+                       "color":  "d6a7eb",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  4,
+                       "issue_usage_count":  4,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "source:governed-repo",
+                       "color":  "9ba4ac",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  5,
+                       "issue_usage_count":  5,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "track:collector",
+                       "color":  "991b4c",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "track:governance",
+                       "color":  "15a479",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  9,
+                       "issue_usage_count":  9,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "track:docs",
+                       "color":  "115f1d",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  4,
+                       "issue_usage_count":  4,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "track:delivery",
+                       "color":  "8ca364",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "source:airtable-work-item",
+                       "color":  "e8b2a4",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  17,
+                       "issue_usage_count":  17,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "priority:P1",
+                       "color":  "71e8ab",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  7,
+                       "issue_usage_count":  7,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "priority:P0",
+                       "color":  "9af25b",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  2,
+                       "issue_usage_count":  2,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "mirror",
+                       "color":  "78ddb3",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  27,
+                       "issue_usage_count":  27,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "priority:P2",
+                       "color":  "8d9bef",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  18,
+                       "issue_usage_count":  18,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "source:airtable-idea",
+                       "color":  "53a54e",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "question",
+                       "color":  "d876e3",
+                       "description":  "Further information is requested",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "priority:P3",
+                       "color":  "2ab573",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "track:research",
+                       "color":  "e47e6b",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  3,
+                       "issue_usage_count":  3,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:meta",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:maintenance",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  6,
+                       "issue_usage_count":  6,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:idea",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  7,
+                       "issue_usage_count":  7,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:planning",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  4,
+                       "issue_usage_count":  4,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "wontfix",
+                       "color":  "ffffff",
+                       "description":  "This will not be worked on",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:research",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  6,
+                       "issue_usage_count":  6,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:refactor",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  7,
+                       "issue_usage_count":  7,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:enhancement",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  18,
+                       "issue_usage_count":  18,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "track:workflow",
+                       "color":  "051df8",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  7,
+                       "issue_usage_count":  7,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "track:validation",
+                       "color":  "a6f689",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "track:skills",
+                       "color":  "f36a3e",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  2,
+                       "issue_usage_count":  2,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:accidental",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:decision",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  3,
+                       "issue_usage_count":  3,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:cleanup",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "type:bug",
+                       "color":  "d4c5f9",
+                       "description":  "",
+                       "classification":  "keep-type-candidate",
+                       "total_issue_or_pr_usage_count":  14,
+                       "issue_usage_count":  14,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:project-tracking",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  3,
+                       "issue_usage_count":  3,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:operator-tooling",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  10,
+                       "issue_usage_count":  10,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:knowledge-docs",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  4,
+                       "issue_usage_count":  4,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:repo-governance",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  2,
+                       "issue_usage_count":  2,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "blocked",
+                       "color":  "dff330",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:workflows",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  16,
+                       "issue_usage_count":  16,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:validation",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  15,
+                       "issue_usage_count":  15,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:github-repo",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  3,
+                       "issue_usage_count":  3,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "architecture",
+                       "color":  "ededed",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  4,
+                       "issue_usage_count":  4,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "agent-instructions",
+                       "color":  "ededed",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "administrative",
+                       "color":  "ededed",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  4,
+                       "issue_usage_count":  4,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:airtable-ircore",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  7,
+                       "issue_usage_count":  7,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:gemini",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:docs",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "area:collector",
+                       "color":  "5319e7",
+                       "description":  "",
+                       "classification":  "keep-area-candidate",
+                       "total_issue_or_pr_usage_count":  9,
+                       "issue_usage_count":  9,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "bug",
+                       "color":  "d73a4a",
+                       "description":  "Something isn\u0027t working",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "governance-cleanup",
+                       "color":  "ededed",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "governance",
+                       "color":  "ededed",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "good first issue",
+                       "color":  "7057ff",
+                       "description":  "Good for newcomers",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "help wanted",
+                       "color":  "008672",
+                       "description":  "Extra attention is needed",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "ircore",
+                       "color":  "ededed",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "invalid",
+                       "color":  "e4e669",
+                       "description":  "This doesn\u0027t seem right",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "ignore",
+                       "color":  "ededed",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  1,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "github-actions",
+                       "color":  "1cce3a",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  1
+                   },
+                   {
+                       "name":  "documentation",
+                       "color":  "0075ca",
+                       "description":  "Improvements or additions to documentation",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "dependencies",
+                       "color":  "13a215",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  2,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  2
+                   },
+                   {
+                       "name":  "codex",
+                       "color":  "ededed",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  5,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  5
+                   },
+                   {
+                       "name":  "duplicate",
+                       "color":  "cfd3d7",
+                       "description":  "This issue or pull request already exists",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  0,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "github_actions",
+                       "color":  "000000",
+                       "description":  "Pull requests that update GitHub Actions code",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  1,
+                       "issue_usage_count":  0,
+                       "pr_usage_count":  1
+                   },
+                   {
+                       "name":  "gemini-agent",
+                       "color":  "ededed",
+                       "description":  "",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  5,
+                       "issue_usage_count":  5,
+                       "pr_usage_count":  0
+                   },
+                   {
+                       "name":  "enhancement",
+                       "color":  "a2eeef",
+                       "description":  "New feature or request",
+                       "classification":  "delete-candidate",
+                       "total_issue_or_pr_usage_count":  5,
+                       "issue_usage_count":  4,
+                       "pr_usage_count":  1
+                   }
+               ]
+}
