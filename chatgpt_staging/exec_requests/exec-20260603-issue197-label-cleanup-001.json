@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260603-issue197-label-cleanup-001",
+  "operator_approved": true,
+  "script_path": "chatgpt_staging/exec_scripts/issue197_label_cleanup.ps1",
+  "approved_command_preview": "Issue #197 approved label cleanup: run the staged script to keep only the final 22 area:/type: taxonomy labels, rename drifted area labels when possible, delete all labels outside that final set, and write post-mutation readback summaries. GitHub issues and PRs are not deleted or closed.",
+  "shell": "pwsh",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true
+}
