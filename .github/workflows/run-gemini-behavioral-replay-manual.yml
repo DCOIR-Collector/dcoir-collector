@@ -9,6 +9,24 @@
 # - Do not use as the deterministic replay gate; validate-gemini-behavioral-replay owns deterministic fixture and known-bad validation.
 # Result semantics:
 # - A successful workflow means the workflow produced trustworthy evidence/report artifacts. Model scorer failures are reported inside the matrix and should not by themselves make the workflow red.
+# Trigger model:
+# - workflow_dispatch with explicit model, fixture, baseline, and replay controls.
+# Required inputs:
+# - model selection, custom_models_csv, baseline_model, fixture selection, and replay controls defined in the workflow_dispatch block.
+# Required secrets/config:
+# - Uses DCOIR_GEMINI_API when live model replay is requested; do not place secret values in reports, logs, or artifacts.
+# Runtime dependencies:
+# - Uses Gemini behavioral replay Python tools, fixture catalogs, live API configuration, and replay report renderers.
+# Expected outputs/readback:
+# - Replay response packs/reports, JSON summary, chatgpt-workflow-report-section artifact, and repo-workflows report.
+# Safety notes:
+# - Report model and fixture evidence without exposing live API secret values.
+# Maintenance notes:
+# - Keep dispatch inputs, model catalog assumptions, artifact names, and report-section behavior aligned with the workflow inventory and Gemini replay contract.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
 name: run-gemini-behavioral-replay-manual
 
 on:
