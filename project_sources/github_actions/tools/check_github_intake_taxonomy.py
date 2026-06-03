@@ -1,73 +1,22 @@
 #!/usr/bin/env python3
-"""Validate GitHub issue/PR intake surfaces against the approved label taxonomy."""
+"""Validate GitHub issue/PR intake surfaces against the approved taxonomy."""
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
-
-
-APPROVED_LABELS = {
-    "area:collector",
-    "area:docs",
-    "area:gemini-agent",
-    "area:github-repo",
-    "area:knowledge-docs",
-    "area:operator-tooling",
-    "area:project-tracking",
-    "area:repo-governance",
-    "area:supabase-ircore",
-    "area:validation",
-    "area:workflows",
-    "type:accidental",
-    "type:bug",
-    "type:cleanup",
-    "type:decision",
-    "type:enhancement",
-    "type:idea",
-    "type:maintenance",
-    "type:meta",
-    "type:planning",
-    "type:refactor",
-    "type:research",
-}
-
-RETIRED_LABELS = {
-    "administrative",
-    "agent-instructions",
-    "architecture",
-    "area:airtable-ircore",
-    "area:gemini",
-    "blocked",
-    "bug",
-    "codex",
-    "collector",
-    "dependencies",
-    "documentation",
-    "duplicate",
-    "enhancement",
-    "gemini",
-    "gemini-agent",
-    "github_actions",
-    "github-actions",
-    "governance",
-    "governance-cleanup",
-    "ignore",
-    "invalid",
-    "ircore",
-    "mirror",
-    "needs-triage",
-    "prompt-pack",
-    "question",
-    "test-failure",
-    "workflow",
-    "wontfix",
-}
+from typing import Any
 
 
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
+
+
+def load_taxonomy(root: Path) -> dict[str, Any]:
+    path = root / "project_sources" / "github_actions" / "github_intake_taxonomy.json"
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def fail(errors: list[str], path: Path, message: str) -> None:
@@ -103,25 +52,63 @@ def extract_top_level_labels(text: str) -> list[str]:
     return labels
 
 
-def validate_issue_forms(root: Path, errors: list[str]) -> None:
+def extract_scalar(text: str, key: str) -> str | None:
+    match = re.search(rf"(?m)^{re.escape(key)}:\s*(.+?)\s*$", text)
+    if not match:
+        return None
+    return match.group(1).strip().strip("'\"")
+
+
+def quoted_label_tokens(text: str) -> set[str]:
+    tokens = set(re.findall(r"['\"]([^'\"]+)['\"]", text))
+    tokens.update(re.findall(r"(?m)^\s*-\s+([A-Za-z0-9:_-]+)\s*$", text))
+    return tokens
+
+
+def markdown_headings(text: str) -> set[str]:
+    return set(re.findall(r"(?m)^##\s+(.+?)\s*$", text))
+
+
+def validate_config(root: Path, errors: list[str]) -> None:
+    path = root / ".github" / "ISSUE_TEMPLATE" / "config.yml"
+    rel = path.relative_to(root)
+    if not path.exists():
+        fail(errors, rel, "issue-template config.yml is required")
+        return
+    text = path.read_text(encoding="utf-8")
+    if not re.search(r"(?m)^blank_issues_enabled:\s*false\s*$", text):
+        fail(errors, rel, "blank_issues_enabled must be false")
+
+
+def validate_issue_forms(root: Path, taxonomy: dict[str, Any], errors: list[str]) -> None:
     template_dir = root / ".github" / "ISSUE_TEMPLATE"
-    markdown_templates = sorted(template_dir.glob("*.md"))
-    for path in markdown_templates:
+    approved_labels = set(taxonomy["approved_labels"])
+    expected_forms = {entry["file"]: entry for entry in taxonomy["issue_forms"]}
+
+    for path in sorted(template_dir.glob("*.md")):
         fail(errors, path.relative_to(root), "Markdown issue templates are retired; use YAML issue forms")
 
-    forms = sorted(template_dir.glob("*.yml")) + sorted(template_dir.glob("*.yaml"))
-    forms = [path for path in forms if path.name != "config.yml"]
-    if not forms:
-        fail(errors, template_dir.relative_to(root), "No YAML issue forms found")
+    actual_forms = {
+        path.name: path
+        for path in sorted(template_dir.glob("*.yml")) + sorted(template_dir.glob("*.yaml"))
+        if path.name != "config.yml"
+    }
 
-    for path in forms:
+    missing = sorted(set(expected_forms) - set(actual_forms))
+    extra = sorted(set(actual_forms) - set(expected_forms))
+    for name in missing:
+        fail(errors, template_dir / name, "expected issue form is missing")
+    for name in extra:
+        fail(errors, actual_forms[name].relative_to(root), "issue form is not declared in taxonomy manifest")
+
+    for name, path in actual_forms.items():
         rel = path.relative_to(root)
         text = path.read_text(encoding="utf-8")
         labels = extract_top_level_labels(text)
         if not labels:
             fail(errors, rel, "issue form must declare labels")
             continue
-        unknown = [label for label in labels if label not in APPROVED_LABELS]
+        unknown = [label for label in labels if label not in approved_labels]
         if unknown:
             fail(errors, rel, f"unknown labels: {', '.join(unknown)}")
         area = [label for label in labels if label.startswith("area:")]
@@ -131,14 +118,18 @@ def validate_issue_forms(root: Path, errors: list[str]) -> None:
         if len(kind) != 1:
             fail(errors, rel, f"expected exactly one type label, got {len(kind)}")
 
+        expected = expected_forms.get(name)
+        if expected:
+            if labels != expected["labels"]:
+                fail(errors, rel, f"labels must match taxonomy manifest: {expected['labels']}; got {labels}")
+            form_name = extract_scalar(text, "name")
+            if form_name != expected["name"]:
+                fail(errors, rel, f"name must match taxonomy manifest: {expected['name']}; got {form_name}")
 
-def quoted_label_tokens(text: str) -> set[str]:
-    tokens = set(re.findall(r"['\"]([^'\"]+)['\"]", text))
-    tokens.update(re.findall(r"(?m)^\s*-\s+([A-Za-z0-9:_-]+)\s*$", text))
-    return tokens
 
-
-def validate_label_references(root: Path, errors: list[str]) -> None:
+def validate_label_references(root: Path, taxonomy: dict[str, Any], errors: list[str]) -> None:
+    approved_labels = set(taxonomy["approved_labels"])
+    retired_labels = set(taxonomy["retired_labels"])
     paths = [
         root / ".github" / "PULL_REQUEST_TEMPLATE.md",
         root / ".github" / "dependabot.yml",
@@ -152,13 +143,13 @@ def validate_label_references(root: Path, errors: list[str]) -> None:
         rel = path.relative_to(root)
         text = path.read_text(encoding="utf-8")
         tokens = quoted_label_tokens(text)
-        retired = sorted(token for token in tokens if token in RETIRED_LABELS)
+        retired = sorted(token for token in tokens if token in retired_labels)
         if retired:
             fail(errors, rel, f"retired label references: {', '.join(retired)}")
         label_like = sorted(
             token
             for token in tokens
-            if token.startswith(("area:", "type:")) and token not in APPROVED_LABELS
+            if token.startswith(("area:", "type:")) and token not in approved_labels
         )
         if label_like:
             fail(errors, rel, f"unapproved taxonomy labels: {', '.join(label_like)}")
@@ -178,12 +169,52 @@ def validate_dependabot(root: Path, errors: list[str]) -> None:
         )
 
 
+def validate_pr_template(root: Path, taxonomy: dict[str, Any], errors: list[str]) -> None:
+    path = root / ".github" / "PULL_REQUEST_TEMPLATE.md"
+    rel = path.relative_to(root)
+    text = path.read_text(encoding="utf-8")
+    headings = markdown_headings(text)
+    for section in taxonomy["required_pr_template_sections"]:
+        if section not in headings:
+            fail(errors, rel, f"missing required PR template section: {section}")
+    for phrase in taxonomy["required_pr_template_phrases"]:
+        if phrase not in text:
+            fail(errors, rel, f"missing required PR template phrase: {phrase}")
+
+
+def validate_guidance(root: Path, taxonomy: dict[str, Any], errors: list[str]) -> None:
+    readme = root / ".github" / "README.md"
+    readme_text = readme.read_text(encoding="utf-8")
+    for phrase in taxonomy["required_github_readme_phrases"]:
+        if phrase not in readme_text:
+            fail(errors, readme.relative_to(root), f"missing required API-created issue guidance: {phrase}")
+
+    guidance_paths = [
+        root / ".github" / "README.md",
+        root / ".github" / "SECURITY.md",
+        root / ".github" / "PULL_REQUEST_TEMPLATE.md",
+    ]
+    guidance_paths.extend((root / ".github" / "ISSUE_TEMPLATE").glob("*.yml"))
+    guidance_paths.extend((root / ".github" / "ISSUE_TEMPLATE").glob("*.yaml"))
+    for path in guidance_paths:
+        if path.name == "config.yml":
+            continue
+        text = path.read_text(encoding="utf-8")
+        stale = sorted(term for term in taxonomy["stale_guidance_terms"] if term in text)
+        if stale:
+            fail(errors, path.relative_to(root), f"stale guidance terms: {', '.join(stale)}")
+
+
 def main() -> int:
     root = repo_root()
+    taxonomy = load_taxonomy(root)
     errors: list[str] = []
-    validate_issue_forms(root, errors)
-    validate_label_references(root, errors)
+    validate_config(root, errors)
+    validate_issue_forms(root, taxonomy, errors)
+    validate_label_references(root, taxonomy, errors)
     validate_dependabot(root, errors)
+    validate_pr_template(root, taxonomy, errors)
+    validate_guidance(root, taxonomy, errors)
     if errors:
         print("GitHub intake taxonomy validation failed:")
         for error in errors:
