@@ -201,8 +201,6 @@ def workflow_entry(path: Path, contract_by_file: dict[str, dict[str, Any]]) -> d
     lines = text.splitlines()
     header = collect_header(lines)
     contract = contract_by_file.get(path.as_posix(), {})
-    uses = sorted({USES_RE.match(line).group(1).strip().strip("'\"") for line in lines if USES_RE.match(line)})
-    scripts = sorted({match.group(1) for match in SCRIPT_RE.finditer(text)})
     secrets = sorted({match.group(1) for match in SECRET_RE.finditer(text)})
     trigger_info = extract_triggers(lines)
     return {
@@ -216,18 +214,11 @@ def workflow_entry(path: Path, contract_by_file: dict[str, dict[str, Any]]) -> d
         "schedules": trigger_info["schedules"],
         "permissions": extract_permissions(lines),
         "concurrency_declared": bool(collect_top_level_block(lines, "concurrency")),
-        "jobs": extract_jobs(lines),
-        "secrets_or_vars": secrets,
-        "actions_used": uses,
-        "artifact_names": extract_artifact_names(lines),
-        "scripts_and_tools": scripts,
+        "secret_or_var_count": len(secrets),
         "report_family": classify_report_family(path, text),
         "contract_family": contract.get("contract_family"),
-        "target_architecture": contract.get("target_architecture"),
         "migration_status": contract.get("migration_status"),
         "risk": contract.get("risk"),
-        "rollback": contract.get("rollback"),
-        "acceptance_evidence": contract.get("acceptance_evidence"),
     }
 
 
@@ -280,29 +271,20 @@ def render_markdown(inventory: dict[str, Any]) -> str:
                 name=markdown_value(item["workflow_name"]),
                 triggers=markdown_value(item["trigger_events"]),
                 permissions=markdown_value(item["permissions"]),
-                secrets=markdown_value(item["secrets_or_vars"]),
+                secrets=markdown_value(item["secret_or_var_count"]),
                 report=markdown_value(item["report_family"]),
                 contract=markdown_value(item["contract_family"]),
                 status=markdown_value(item["migration_status"]),
                 risk=markdown_value(item["risk"]),
             )
         )
-    lines.extend(["", "## Contract Matrix", ""])
-    for item in inventory["workflows"]:
-        lines.extend([
-            f"### {item['file']}",
-            "",
-            f"- workflow_name: `{markdown_value(item['workflow_name'])}`",
-            f"- jobs: `{markdown_value(item['jobs'])}`",
-            f"- schedules: `{markdown_value(item['schedules'])}`",
-            f"- concurrency_declared: `{item['concurrency_declared']}`",
-            f"- artifact_names: `{markdown_value(item['artifact_names'])}`",
-            f"- scripts_and_tools: `{markdown_value(item['scripts_and_tools'])}`",
-            f"- target_architecture: {markdown_value(item['target_architecture'])}",
-            f"- rollback: {markdown_value(item['rollback'])}",
-            f"- acceptance_evidence: {markdown_value(item['acceptance_evidence'])}",
-            "",
-        ])
+    lines.extend([
+        "",
+        "The full per-workflow target architecture, rollback, and acceptance-evidence plan lives in",
+        "`project_sources/github_actions/workflow_modularization_contracts.json` so the generated",
+        "inventory stays compact and reviewable.",
+        "",
+    ])
     return "\n".join(lines).rstrip() + "\n"
 
 
