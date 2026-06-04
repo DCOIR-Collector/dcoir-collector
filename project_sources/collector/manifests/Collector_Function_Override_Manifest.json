@@ -1,0 +1,215 @@
+{
+  "schema_version": "dcoir_collector_function_override_manifest_v1",
+  "source_strategy": "compile_single_runtime_then_package",
+  "load_order_source": "project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json:collector_wrapper_source_then_collector_part_files",
+  "notes": [
+    "PowerShell uses last-definition-wins semantics when the wrapper dot-sources collector parts.",
+    "This manifest documents intentional duplicate function definitions and the active definition selected by wrapper/manifest load order.",
+    "Validation must fail when source duplicates and this manifest drift from each other."
+  ],
+  "overrides": [
+    {
+      "function_name": "Export-FilteredEvtx",
+      "override_status": "long_term",
+      "rationale": "Explicit event-window support replaces the baseline EVTX export helper so collect output honors caller-supplied time windows.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 2231, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1", "line": 485, "load_order": 8, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1", "line": 485}
+    },
+    {
+      "function_name": "Find-LatestDCOIRRunDirectory",
+      "override_status": "long_term",
+      "rationale": "PR #186 review fixes tighten run-directory discovery and cleanup safety over the original core helper.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 691, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 124, "load_order": 11, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 124}
+    },
+    {
+      "function_name": "Get-CmdText",
+      "override_status": "long_term",
+      "rationale": "Bounded parallel runtime support replaces the serial command collection helper with the active command-capture behavior used by the maintained runtime.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 2021, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1", "line": 361, "load_order": 9, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1", "line": 361}
+    },
+    {
+      "function_name": "Get-CollectorDeleteScriptCommandText",
+      "override_status": "long_term",
+      "rationale": "Quick-interface guidance replaces the core delete command text with user-facing command text aligned to the current shortcut interface.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 291, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1", "line": 153, "load_order": 6, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1", "line": 153}
+    },
+    {
+      "function_name": "Get-CollectorEffectiveEventWindow",
+      "override_status": "long_term",
+      "rationale": "PR #186 review fixes preserve explicit event-window support while adding invalid-window fallback behavior.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1", "line": 40, "load_order": 8, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 303, "load_order": 11, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 303}
+    },
+    {
+      "function_name": "Get-CollectorEventWindowTargetDetails",
+      "override_status": "long_term",
+      "rationale": "PR #186 review fixes refine event-window target details while keeping the explicit-window override path active.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1", "line": 192, "load_order": 8, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 499, "load_order": 11, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 499}
+    },
+    {
+      "function_name": "Get-CollectorResponseActionCommandBase",
+      "override_status": "long_term",
+      "rationale": "PR #186 review fixes replace quick-interface command construction so response-action guidance resolves against the active runtime path.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1", "line": 132, "load_order": 6, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 276, "load_order": 11, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 276}
+    },
+    {
+      "function_name": "Get-EventText",
+      "override_status": "long_term",
+      "rationale": "Diagnostic-context overrides supersede baseline and explicit-window event text so the active event artifact includes current visibility and diagnostic context.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 1918, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1", "line": 403, "load_order": 8, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1", "line": 375, "load_order": 10, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1", "line": 375}
+    },
+    {
+      "function_name": "Get-SecurityAuditPolicyText",
+      "override_status": "long_term",
+      "rationale": "Diagnostic-context overrides replace baseline audit-policy text with the active security visibility context used by maintained collect output.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1", "line": 393, "load_order": 2, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1", "line": 89, "load_order": 10, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1", "line": 89}
+    },
+    {
+      "function_name": "Get-SecurityHighSignalSummaryText",
+      "override_status": "long_term",
+      "rationale": "Diagnostic-context overrides supersede earlier security summaries so the active summary reflects current visibility and event-window handling.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 1659, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1", "line": 223, "load_order": 8, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1", "line": 138, "load_order": 10, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1", "line": 138}
+    },
+    {
+      "function_name": "Get-TargetedCollectionScopeObject",
+      "override_status": "long_term",
+      "rationale": "PR #186 review fixes refine targeted-scope behavior over the feature-wave implementation while keeping targeted collection active.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1", "line": 40, "load_order": 7, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 390, "load_order": 11, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 390}
+    },
+    {
+      "function_name": "Get-TestTextPaddingFromEnvironment",
+      "override_status": "long_term",
+      "rationale": "PR #186 review fixes centralize validation-only padding behavior over the earlier baseline helper.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1", "line": 118, "load_order": 2, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 463, "load_order": 11, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 463}
+    },
+    {
+      "function_name": "Get-ValidationSyntheticOversizeArtifactKB",
+      "override_status": "long_term",
+      "rationale": "PR #186 review fixes refine synthetic oversize-artifact sizing over the targeted-collection feature-wave helper.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1", "line": 339, "load_order": 7, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 437, "load_order": 11, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 437}
+    },
+    {
+      "function_name": "Load-State",
+      "override_status": "long_term",
+      "rationale": "PR #186 review fixes replace state loading with safer latest-run and custom-run discovery behavior.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 648, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 158, "load_order": 11, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 158}
+    },
+    {
+      "function_name": "New-BundleZip",
+      "override_status": "long_term",
+      "rationale": "PR #186 external review fixes replace bundle creation so collection metadata companion artifacts are synchronized before compression.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 2398, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1", "line": 422, "load_order": 12, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1", "line": 422}
+    },
+    {
+      "function_name": "New-Manifest",
+      "override_status": "long_term",
+      "rationale": "PR #186 external review fixes replace manifest creation so Tier 2 deep-check paths and bundle metadata remain aligned.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 2350, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1", "line": 320, "load_order": 12, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1", "line": 320}
+    },
+    {
+      "function_name": "Purge-PreviousRuns",
+      "override_status": "long_term",
+      "rationale": "PR #186 and external review fixes progressively tighten cleanup behavior; the final active version guards exact custom RunId purge ownership before reuse.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 1054, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 203, "load_order": 11, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1", "line": 71, "load_order": 12, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1", "line": 71}
+    },
+    {
+      "function_name": "Test-DCOIRNoStateCleanupCandidate",
+      "override_status": "long_term",
+      "rationale": "PR #186 review fixes tighten no-state cleanup candidate checks over the baseline helper.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 575, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 94, "load_order": 11, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 94}
+    },
+    {
+      "function_name": "Test-DCOIRRunDirectoryName",
+      "override_status": "long_term",
+      "rationale": "PR #186 review fixes tighten run-directory-name ownership checks over the baseline helper.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 551, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 41, "load_order": 11, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1", "line": 41}
+    },
+    {
+      "function_name": "Write-ArtifactText",
+      "override_status": "long_term",
+      "rationale": "PR #186 external review fixes replace artifact writing for collection metadata so exact UTF-8/no-BOM and LF-normalized metadata are emitted where required.",
+      "definitions": [
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1", "line": 1222, "load_order": 1, "role": "superseded"},
+        {"path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1", "line": 219, "load_order": 12, "role": "active"}
+      ],
+      "active_definition": {"path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1", "line": 219}
+    }
+  ]
+}
