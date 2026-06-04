@@ -2,14 +2,13 @@
 
 This folder is the maintained readable source for the shared DCOIR knowledge set that feeds operator guidance and Gemini bundle attachments.
 
-Use this file as the maintained knowledge-set index. The former repo-root `DCOIR_KNOWLEDGE_INDEX.md` was removed under #204 because it duplicated this folder inventory without serving collector runtime, control-plane, governance, or required packaging behavior.
+For the repo-level starting point, use `DCOIR_KNOWLEDGE_INDEX.md`.
 
 ## Authority
 
 - `knowledge/*.md` files are the editable maintained source.
 - Gemini attachment files are generated at package time from `knowledge/Knowledge - *.md` and written into the release ZIP under `02_PRIME_AGENT_ATTACHMENTS/*.md.txt`.
 - The attachment files are generated from this folder at release package time and should not be treated as a primary editing surface.
-- This README helps operators choose the correct maintained page without duplicating page content.
 - Knowledge docs support operators and Gemini, but they do not override Project Instructions, governed GitHub source, implemented source behavior, or Supabase `ircore` operational records.
 
 ## Current pages and owners
@@ -40,7 +39,7 @@ The maintained knowledge set currently uses four stable groups instead of a renu
 | Reference | OSQuery Process and Execution Tables | Exact process and execution table reference |
 | Reference | OSQuery File and Filesystem Tables | Exact file and filesystem table reference |
 | Reference | OSQuery Network and Connection Tables | Exact network and connection table reference |
-| Reference | OSQuery User, Auth, and Account Tables | Exact user, auth, and account context table reference |
+| Reference | OSQuery User, Auth, and Account Tables | Exact user, auth, and account table reference |
 | Reference | OSQuery Persistence and Startup Tables | Exact persistence and startup table reference |
 | Reference | OSQuery System, Hardware, and Platform Tables | Exact system and hardware table reference |
 | Reference | OSQuery Security, Detection, and Event Tables | Exact security and event table reference |
