@@ -183,25 +183,6 @@ function Load-State {
 
 <#
 .SYNOPSIS
-Deletes prior timestamp-style collector run directories.
-
-.DESCRIPTION
-Restricts automatic bulk cleanup so it does not delete arbitrary custom-named
-directories under OutRoot. Exact custom RunId cleanup remains available through
-Find-LatestDCOIRRunDirectory and Test-DCOIRNoStateCleanupCandidate.
-
-.FUNCTION NAME
-Purge-PreviousRuns
-
-.INPUTS
-Root string and CurrentPackageName string.
-
-.OUTPUTS
-No direct output. Deletes prior strict-pattern collector run directories and package file
-as a side effect.
-#>
-<#
-.SYNOPSIS
 Checks whether collector validation-only behavior is explicitly enabled.
 
 .DESCRIPTION

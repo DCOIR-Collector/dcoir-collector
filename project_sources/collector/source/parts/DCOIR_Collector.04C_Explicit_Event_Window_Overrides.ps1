@@ -21,24 +21,6 @@ EVTX exports.
 
 <#
 .SYNOPSIS
-Resolves the effective event window for the current collector call.
-
-.DESCRIPTION
-Combines the current WindowHours value with explicit WindowStart and WindowEnd inputs,
-normalizes invalid or partial windows into safe fallback behavior, and returns one
-window object that downstream event readers can consume consistently.
-
-.FUNCTION NAME
-Get-CollectorEffectiveEventWindow
-
-.INPUTS
-WindowHours integer plus the current WindowStart and WindowEnd globals.
-
-.OUTPUTS
-Hashtable containing HasExplicitWindow, StartTime, EndTime, and EffectiveHours.
-#>
-<#
-.SYNOPSIS
 Builds a Get-WinEvent filter hashtable from a normalized window object.
 
 .DESCRIPTION
@@ -114,59 +96,6 @@ function Get-CollectorEventWindowMetadataLines {
   return @($lines)
 }
 
-<#
-.SYNOPSIS
-Formats explicit event-window target details for enrich reports.
-
-.DESCRIPTION
-Builds one semicolon-delimited target-details string that includes explicit window fields
-when they were supplied by the operator.
-
-.FUNCTION NAME
-Get-CollectorEventWindowTargetDetails
-
-.INPUTS
-LogName string, Hours integer, optional EventIds, and optional MaxEvents.
-
-.OUTPUTS
-String suitable for action target-details fields.
-#>
-<#
-.SYNOPSIS
-Builds a condensed Security high-signal summary for the selected window.
-
-.DESCRIPTION
-Queries key Security event IDs, suppresses routine machine/service noise, summarizes the
-remaining interesting events, and returns analyst-facing text with explicit window
-markers and per-event summaries.
-
-.FUNCTION NAME
-Get-SecurityHighSignalSummaryText
-
-.INPUTS
-WindowHours integer and Take integer limiting the returned summary volume.
-
-.OUTPUTS
-String containing the Security high-signal summary or an explicit error/nothing-found
-message.
-#>
-<#
-.SYNOPSIS
-Exports event-log text for the requested channel and window.
-
-.DESCRIPTION
-Resolves the effective event window, queries the requested channel with optional event
-IDs, and renders the result into analyst-facing text with explicit window metadata.
-
-.FUNCTION NAME
-Get-EventText
-
-.INPUTS
-Channel string, WindowHours integer, optional integer event IDs, and Take integer.
-
-.OUTPUTS
-String containing event-log text or an explicit nothing-found/error message.
-#>
 <#
 .SYNOPSIS
 Exports a filtered EVTX file for the requested channel and window.

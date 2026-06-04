@@ -115,22 +115,6 @@ function Get-CollectorVersionText {
 
 <#
 .SYNOPSIS
-Builds the response-action-safe collector command base.
-
-.DESCRIPTION
-Returns the endpoint response-action-safe collector command using the runtime filename.
-
-.FUNCTION NAME
-Get-CollectorResponseActionCommandBase
-
-.INPUTS
-No direct parameters.
-
-.OUTPUTS
-String containing the response-action-safe command base.
-#>
-<#
-.SYNOPSIS
 Builds the delete-script command text.
 
 .DESCRIPTION

@@ -99,24 +99,6 @@ function Get-FileSha256 {
 
 <#
 .SYNOPSIS
-Builds deterministic test padding for a text artifact.
-
-.DESCRIPTION
-Reads a process-scoped environment variable containing a requested KB value and returns
-repeatable text content of at least that size. Used only by harness tests to make a real
-collector artifact key exceed the upload-safe chunk threshold.
-
-.FUNCTION NAME
-Get-TestTextPaddingFromEnvironment
-
-.INPUTS
-Environment variable name.
-
-.OUTPUTS
-String containing deterministic padding or an empty string.
-#>
-<#
-.SYNOPSIS
 Chooses a UTF-8 safe byte length for one upload-safe chunk.
 
 .DESCRIPTION
@@ -356,23 +338,6 @@ function Get-CollectorExecutionContextText {
   return ($lines -join [Environment]::NewLine)
 }
 
-<#
-.SYNOPSIS
-Collects the audit-policy text artifact.
-
-.DESCRIPTION
-Runs auditpol for the key Security auditing subcategories and returns the combined
-captured output text.
-
-.FUNCTION NAME
-Get-SecurityAuditPolicyText
-
-.INPUTS
-No direct parameters.
-
-.OUTPUTS
-String containing the combined audit-policy command output.
-#>
 <#
 .SYNOPSIS
 Builds the netstat capture bundle for the current run.

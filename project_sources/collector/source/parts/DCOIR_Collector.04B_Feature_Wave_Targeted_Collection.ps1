@@ -22,23 +22,6 @@ to the baseline artifact map and report builder.
 
 <#
 .SYNOPSIS
-Builds the targeted collection scope object.
-
-.DESCRIPTION
-Normalizes the current targeted-collection globals into one ordered scope object for
-artifact generation and analyst-facing planning.
-
-.FUNCTION NAME
-Get-TargetedCollectionScopeObject
-
-.INPUTS
-State hashtable.
-
-.OUTPUTS
-Ordered hashtable describing the targeted collection scope.
-#>
-<#
-.SYNOPSIS
 Builds the targeted collection scope text artifact.
 
 .DESCRIPTION
@@ -293,23 +276,6 @@ function New-AnalystOverviewArtifact {
   return $overviewPath
 }
 
-<#
-.SYNOPSIS
-Reads the synthetic oversized-artifact validation size.
-
-.DESCRIPTION
-Returns the requested synthetic oversized artifact size in KB from the process
-environment or zero when the override is absent or invalid.
-
-.FUNCTION NAME
-Get-ValidationSyntheticOversizeArtifactKB
-
-.INPUTS
-No direct parameters.
-
-.OUTPUTS
-Integer requested synthetic artifact size in KB.
-#>
 <#
 .SYNOPSIS
 Builds the synthetic oversized artifact text.

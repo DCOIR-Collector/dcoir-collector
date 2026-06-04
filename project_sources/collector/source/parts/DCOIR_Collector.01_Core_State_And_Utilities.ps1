@@ -273,23 +273,6 @@ function Get-CollectorPowerShellCommandBase {
 
 <#
 .SYNOPSIS
-Builds the response-action delete-script command text.
-
-.DESCRIPTION
-Returns the operator-facing Elastic response-action string used to delete the uploaded
-collector script explicitly when cleanup should remove the script too.
-
-.FUNCTION NAME
-Get-CollectorDeleteScriptCommandText
-
-.INPUTS
-No direct parameters.
-
-.OUTPUTS
-String response-action command text.
-#>
-<#
-.SYNOPSIS
 Writes one execution-step log record.
 
 .DESCRIPTION
@@ -529,39 +512,6 @@ function Get-RunRoot {
 
 <#
 .SYNOPSIS
-Checks whether a directory name matches the collector run-root pattern.
-
-.DESCRIPTION
-Limits cleanup discovery to run roots created by this collector on the current host.
-
-.FUNCTION NAME
-Test-DCOIRRunDirectoryName
-
-.INPUTS
-Directory name string.
-
-.OUTPUTS
-Boolean.
-#>
-<#
-.SYNOPSIS
-Checks whether a no-state directory is safe for fallback cleanup.
-
-.DESCRIPTION
-Requires both a strict collector run-root name and collector-created child structure
-before no-state cleanup may remove the directory.
-
-.FUNCTION NAME
-Test-DCOIRNoStateCleanupCandidate
-
-.INPUTS
-DirectoryInfo object.
-
-.OUTPUTS
-Boolean.
-#>
-<#
-.SYNOPSIS
 Builds the state-file path for one run.
 
 .DESCRIPTION
@@ -604,40 +554,6 @@ function Save-State {
   Set-Content -Path $State.StatePath -Value $json -Encoding UTF8
 }
 
-<#
-.SYNOPSIS
-Loads a saved collector state object from disk.
-
-.DESCRIPTION
-Loads the latest run state when no run ID is supplied, or the specific run state when a
-run ID is given, and returns the deserialized state object.
-
-.FUNCTION NAME
-Load-State
-
-.INPUTS
-Root string and optional CurrentRunId string.
-
-.OUTPUTS
-Deserialized state object.
-#>
-<#
-.SYNOPSIS
-Finds the newest collector run directory under a root.
-
-.DESCRIPTION
-Selects only directories matching the collector run-root naming pattern under the supplied
-root. When a RunId is supplied, only the expected host/run-id directory is considered.
-
-.FUNCTION NAME
-Find-LatestDCOIRRunDirectory
-
-.INPUTS
-Root string and optional CurrentRunId string.
-
-.OUTPUTS
-DirectoryInfo object or null.
-#>
 <#
 .SYNOPSIS
 Removes a bounded no-state collector run directory.
@@ -970,23 +886,6 @@ function Initialize-RunStructure {
 
 <#
 .SYNOPSIS
-Purges prior DCOIR run folders and the previous package file.
-
-.DESCRIPTION
-Deletes prior collector run directories under the out-root and removes the prior package ZIP when
-present so a fresh collect run starts from a clean workspace.
-
-.FUNCTION NAME
-Purge-PreviousRuns
-
-.INPUTS
-Root string and CurrentPackageName string.
-
-.OUTPUTS
-No direct output. Deletes prior strict-pattern collector run directories and package file as a side effect.
-#>
-<#
-.SYNOPSIS
 Moves the package ZIP into the out-root when needed.
 
 .DESCRIPTION
@@ -1113,23 +1012,6 @@ function Get-BaselineArtifactPrefix {
   }
 }
 
-<#
-.SYNOPSIS
-Writes one named artifact text file.
-
-.DESCRIPTION
-Builds the prefixed artifact filename from the section and name, writes the supplied
-text into the artifacts directory, and returns the artifact path.
-
-.FUNCTION NAME
-Write-ArtifactText
-
-.INPUTS
-ArtifactsDir string, Section string, Name string, and Text string.
-
-.OUTPUTS
-String artifact path.
-#>
 <#
 .SYNOPSIS
 Returns the next enrichment-session action sequence number.
@@ -1536,23 +1418,6 @@ function Get-EventMapValue {
 
 <#
 .SYNOPSIS
-Builds the baseline Security high-signal summary.
-
-.DESCRIPTION
-Queries the key Security event IDs for the last WindowHours, suppresses routine machine
-and service noise, and returns the analyst-facing high-signal summary text.
-
-.FUNCTION NAME
-Get-SecurityHighSignalSummaryText
-
-.INPUTS
-WindowHours integer and Take integer limiting the returned summary volume.
-
-.OUTPUTS
-String containing the Security high-signal summary or an explanatory/error message.
-#>
-<#
-.SYNOPSIS
 Returns suspicious-process heuristic findings from the process inventory.
 
 .DESCRIPTION
@@ -1650,23 +1515,6 @@ function Get-BaselineNetText {
 
 <#
 .SYNOPSIS
-Exports baseline event-log text for the requested channel.
-
-.DESCRIPTION
-Queries the requested event channel for the last WindowHours with optional event IDs and
-renders the results into analyst-facing text.
-
-.FUNCTION NAME
-Get-EventText
-
-.INPUTS
-Channel string, WindowHours integer, optional event IDs, and Take integer.
-
-.OUTPUTS
-String containing event-log text or an explanatory/error message.
-#>
-<#
-.SYNOPSIS
 Collects Microsoft Defender status text.
 
 .DESCRIPTION
@@ -1694,23 +1542,6 @@ function Get-DefenderStatusText {
   }
 }
 
-<#
-.SYNOPSIS
-Runs one cmd.exe step and returns its combined output text.
-
-.DESCRIPTION
-Wraps Invoke-CmdCapture and formats the result into the durable combined process-output
-text block.
-
-.FUNCTION NAME
-Get-CmdText
-
-.INPUTS
-Command string, StepName string, and optional allowed exit-code list.
-
-.OUTPUTS
-String containing the combined command output text.
-#>
 <#
 .SYNOPSIS
 Collects registry-query text with bounded absent-key handling.
@@ -1895,24 +1726,6 @@ function Get-TaskXml {
 
 <#
 .SYNOPSIS
-Exports a filtered EVTX file for the requested channel.
-
-.DESCRIPTION
-Builds the timediff-based XPath query for the requested window and optional event IDs,
-invokes wevtutil.exe, and verifies that the EVTX file was created.
-
-.FUNCTION NAME
-Export-FilteredEvtx
-
-.INPUTS
-LogChannel string, WindowHours integer, optional event IDs, OutPath string, and
-ScratchDir string.
-
-.OUTPUTS
-No direct output. Writes the EVTX file to OutPath or throws on failure.
-#>
-<#
-.SYNOPSIS
 Builds the tool map for the staged tools directory.
 
 .DESCRIPTION
@@ -1972,39 +1785,3 @@ function Get-CommandAvailabilityTable {
   return ($rows | Format-Table -AutoSize | Out-String -Width 500)
 }
 
-<#
-.SYNOPSIS
-Creates the run manifest JSON file.
-
-.DESCRIPTION
-Builds the standard manifest object for the current run, including files, notes, errors,
-recommendations, tool map, and extra metadata, writes it to disk, and returns the path.
-
-.FUNCTION NAME
-New-Manifest
-
-.INPUTS
-ManifestPath, State, ModeName, TierName, Files array, ToolMap hashtable, and Extra
-hashtable.
-
-.OUTPUTS
-String manifest path.
-#>
-<#
-.SYNOPSIS
-Creates one ZIP bundle from the supplied paths.
-
-.DESCRIPTION
-Ensures the bundles directory exists, removes any prior bundle with the same name,
-filters the input list to existing paths, creates the ZIP archive, and returns the final
-bundle path.
-
-.FUNCTION NAME
-New-BundleZip
-
-.INPUTS
-BundlesDir string, BundleName string, and Paths string array.
-
-.OUTPUTS
-String bundle ZIP path.
-#>
