@@ -8,7 +8,7 @@ summaries, verifies output contracts and failure gates, and writes machine-reada
 human-readable summary artifacts for regression review.
 
 .FILE NAME
-run_DCOIR_Tests.ps1
+run_DCOIR_Tests.generated.ps1
 
 .INPUTS
 Suite selection, collector path, output root, master ZIP path, live-response mode flag,
