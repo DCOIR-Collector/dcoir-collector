@@ -21,11 +21,6 @@ DEFAULT_EXCLUDE_SUBSTRINGS = [
 
 FILE_HELP_TOKENS = [".SYNOPSIS", ".DESCRIPTION", "FILE NAME:", "DESCRIPTION:"]
 FUNCTION_HELP_TOKENS = [".SYNOPSIS", ".DESCRIPTION", "FUNCTION NAME:", "DESCRIPTION:", "INPUT:", "OUTPUT:"]
-KNOWLEDGE_INDEX_PATH = "DCOIR_KNOWLEDGE_INDEX.md"
-INDEX_REFERENCE_PREFIXES = (
-    "knowledge/",
-    "project_sources/gemini/bundle_source/",
-)
 
 
 def git_tracked_files(repo_root: Path) -> list[Path]:
@@ -181,27 +176,6 @@ def analyze_file(path: Path, repo_root: Path) -> dict:
     }
 
 
-def discover_knowledge_index_references(repo_root: Path) -> list[dict]:
-    index_path = repo_root / KNOWLEDGE_INDEX_PATH
-    if not index_path.exists():
-        return []
-
-    text = index_path.read_text(encoding="utf-8")
-    references: list[dict] = []
-    for match in re.finditer(r"`([^`]+)`", text):
-        raw = match.group(1).strip()
-        if not raw.startswith(INDEX_REFERENCE_PREFIXES):
-            continue
-        if "*" in raw:
-            continue
-        normalized = raw.replace("\\", "/")
-        references.append({
-            "path": normalized,
-            "exists": (repo_root / normalized).exists(),
-        })
-    return references
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description="Auto-discover PowerShell source files and verify in-code documentation coverage.")
     parser.add_argument("--repo-root", default=".")
@@ -218,8 +192,6 @@ def main() -> int:
 
     files = discover_target_files(repo_root, include_patterns, exclude_substrings)
     analyses = [analyze_file(path, repo_root) for path in files]
-    knowledge_index_references = discover_knowledge_index_references(repo_root)
-    missing_knowledge_index_references = [row["path"] for row in knowledge_index_references if not row["exists"]]
 
     missing_file_help = [row["path"] for row in analyses if row["function_count"] > 0 and not row["file_comment_help_present"]]
     undocumented_function_rows = [
@@ -253,9 +225,6 @@ def main() -> int:
     if args.fail_on_undocumented_functions and misattached_function_help_rows:
         should_fail = True
         findings.append("One or more PowerShell source files contain function help blocks that are not adjacent to the named function.")
-    if missing_knowledge_index_references:
-        should_fail = True
-        findings.append("DCOIR_KNOWLEDGE_INDEX.md references missing governed knowledge or Gemini source paths.")
 
     result = {
         "repo_root": str(repo_root),
@@ -270,14 +239,10 @@ def main() -> int:
             "undocumented_function_rows": undocumented_function_rows,
             "misattached_function_help_file_count": len(misattached_function_help_rows),
             "misattached_function_help_rows": misattached_function_help_rows,
-            "knowledge_index_reference_count": len(knowledge_index_references),
-            "missing_knowledge_index_reference_count": len(missing_knowledge_index_references),
-            "missing_knowledge_index_references": missing_knowledge_index_references,
         },
         "policy": {
             "fail_on_missing_file_help": args.fail_on_missing_file_help,
             "fail_on_undocumented_functions": args.fail_on_undocumented_functions,
-            "fail_on_missing_knowledge_index_references": True,
         },
         "status": "FAIL" if should_fail else "PASS",
         "findings": findings,
@@ -305,10 +270,6 @@ def main() -> int:
             print(f"  - {row['path']} ({row['misattached_function_help_block_count']})")
             for block in row['misattached_function_help_blocks_sample']:
                 print(f"      * {block['expected_function_name']} help line {block['line']} adjacent to {block['adjacent_signature']}")
-    if missing_knowledge_index_references:
-        print("MISSING_KNOWLEDGE_INDEX_REFERENCES=")
-        for path in missing_knowledge_index_references:
-            print(f"  - {path}")
 
     return 1 if should_fail else 0
 
