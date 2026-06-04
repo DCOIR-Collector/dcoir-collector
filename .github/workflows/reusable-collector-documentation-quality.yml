@@ -39,12 +39,16 @@ jobs:
             project_sources/collector/tools/test_verify_collector_documentation_quality.py
           require-files: "true"
 
+      - name: Assemble generated collector harness
+        uses: ./.github/actions/assemble-collector-harness
+
       - name: Validate PowerShell syntax for collector sources
         uses: ./.github/actions/validate-powershell-syntax
         with:
           paths: |
             project_sources/collector/source/DCOIR_Collector.ps1
-            project_sources/collector/harness/run_DCOIR_Tests.ps1
+            project_sources/collector/harness/assemble_run_DCOIR_Tests.ps1
+            project_sources/collector/harness/run_DCOIR_Tests.generated.ps1
           include-collector-parts: "true"
           require-files: "true"
 
