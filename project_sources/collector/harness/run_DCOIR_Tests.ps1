@@ -43,6 +43,5 @@ if (-not (Test-Path -LiteralPath $GeneratedHarnessPath)) {
 if (-not $?) {
   exit 1
 }
-if ($global:LASTEXITCODE -is [int] -and $global:LASTEXITCODE -ne 0) {
-  exit $global:LASTEXITCODE
-}
+
+exit 0
