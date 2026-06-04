@@ -13,6 +13,9 @@ FUNCTION_PATTERN = re.compile(r'^\s*function\s+([-A-Za-z0-9_]+)\b')
 def load_manifest(source_dir: Path) -> Dict:
     return json.loads((source_dir / 'project_sources' / 'collector' / 'manifests' / MANIFEST_NAME).read_text(encoding='utf-8'))
 
+def normalize_function_name(name: str) -> str:
+    return name.casefold()
+
 def find_function_definitions(source_dir: Path, manifest: Dict) -> Dict[str, List[Dict[str, object]]]:
     source_rels = [manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])
     definitions: Dict[str, List[Dict[str, object]]] = {}
@@ -24,7 +27,11 @@ def find_function_definitions(source_dir: Path, manifest: Dict) -> Dict[str, Lis
             match = FUNCTION_PATTERN.match(line)
             if not match:
                 continue
-            definitions.setdefault(match.group(1), []).append({
+            function_name = match.group(1)
+            normalized_name = normalize_function_name(function_name)
+            definitions.setdefault(normalized_name, []).append({
+                'name': function_name,
+                'normalized_name': normalized_name,
                 'path': rel,
                 'line': line_number,
                 'load_order': load_order,
@@ -38,6 +45,9 @@ def validate_unique_function_definitions(source_dir: Path, manifest: Dict, check
     checks['unique_function_count'] = len(definitions)
     checks['duplicate_function_count'] = len(duplicate_definitions)
     checks['duplicate_function_names'] = sorted(duplicate_definitions)
+    checks['duplicate_function_original_names'] = {
+        name: sorted({row['name'] for row in rows}) for name, rows in sorted(duplicate_definitions.items())
+    }
     checks['duplicate_function_definitions'] = {
         name: rows for name, rows in sorted(duplicate_definitions.items())
     }
