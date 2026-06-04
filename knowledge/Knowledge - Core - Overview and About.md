@@ -16,7 +16,7 @@ DCOIR uses GitHub as governed source/readback for repository files and Supabase 
 | GitHub repo | Source/readback for collector, harness, Gemini bundle, workflows, and promoted history |
 | Supabase `ircore` | Operational routing, retrieval profiles, validation rules, receipts, preferences, and active session state |
 | `knowledge/*.md` | Maintained human-readable knowledge source |
-| Gemini `.md.txt` attachments | Runtime attachment files generated in the release ZIP from `knowledge/*.md` |
+| Gemini `.md.txt` attachments | Runtime attachment files generated in the release ZIP from `knowledge/Knowledge - *.md` |
 
 Knowledge docs explain the system. They do not override Project Instructions, governed GitHub source, implemented source behavior, or Supabase `ircore` operational records.
 
@@ -39,7 +39,7 @@ Use one owner per topic to avoid duplicate guidance.
 
 | Topic | Owner | Supporting references |
 | --- | --- | --- |
-| Authority model and source classes | Knowledge - Core - Overview and About | `DCOIR_KNOWLEDGE_INDEX.md`, README |
+| Authority model and source classes | Knowledge - Core - Overview and About | README and `knowledge/README.md` |
 | Endpoint command lane | Knowledge - Core - Elastic Quick Start | Knowledge - Gemini - Output Contract and Command-Lane Discipline |
 | Local and CI validation | Knowledge - Collector - Local Test and Regression | `validate-on-push.yml`, `manual-full-validation.yml`, Knowledge - Collector - EXE Usage and Runtime Behavior, and Knowledge - Collector - Feature and Output Contract Reference |
 | Tier 1 procedure | Knowledge - Core - Tier 1 Collect Runbook | Knowledge - Collector - Feature and Output Contract Reference for feature/output facts |
