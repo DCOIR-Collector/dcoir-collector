@@ -10,7 +10,7 @@ Purpose
 Current source model
 - `project_sources/collector/source/DCOIR_Collector.ps1` is the wrapper entry and part-loader source.
 - `project_sources/collector/source/parts/*.ps1` is the maintained collector source-part set.
-- `project_sources/collector/harness/run_DCOIR_Tests.ps1` is the maintained PowerShell harness source.
+- `project_sources/collector/harness/source/parts/*.ps1.txt` is the maintained PowerShell harness source; `assemble_run_DCOIR_Tests.ps1` generates `run_DCOIR_Tests.generated.ps1` for execution.
 - `project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json` defines the compiled-runtime and delivery-package contract.
 - `supporting_assets/DCOIR_Collector.zip` is the governed retained runtime/tool ZIP used as the curated support-tool payload source for the optional embedded EXE build.
 
@@ -22,7 +22,7 @@ Major-version feature wave focus
 Primary delivery contract
 - The primary supported collector delivery remains PS1-first:
   - compiled single-runtime `DCOIR_Collector.ps1`
-  - maintained `run_DCOIR_Tests.ps1` harness
+  - generated `run_DCOIR_Tests.generated.ps1` harness assembled from checked-in harness parts
   - transport-safe delivery package with script entries suffixed as `.txt`
 - The PS1 transport-safe delivery package is the normal operator-facing collector package until a later explicit promotion decision changes the contract.
 
