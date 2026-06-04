@@ -10,7 +10,7 @@ from typing import Iterable
 
 DEFAULT_INCLUDE_PATTERNS = [
     "project_sources/collector/source/DCOIR_Collector.ps1",
-    "project_sources/collector/harness/run_DCOIR_Tests.ps1",
+    "project_sources/collector/harness/run_DCOIR_Tests.generated.ps1",
     "project_sources/collector/source/parts/*.ps1",
 ]
 
@@ -49,8 +49,13 @@ def matches_any_glob(path: Path, repo_root: Path, patterns: Iterable[str]) -> bo
 
 def discover_target_files(repo_root: Path, include_patterns: list[str], exclude_substrings: list[str]) -> list[Path]:
     tracked = git_tracked_files(repo_root)
+    discovered = list(tracked)
+    for pattern in include_patterns:
+        discovered.extend(repo_root.glob(pattern))
     selected = []
-    for path in tracked:
+    for path in discovered:
+        if not path.exists() or not path.is_file():
+            continue
         rel = path.relative_to(repo_root).as_posix()
         if any(token in rel for token in exclude_substrings):
             continue
