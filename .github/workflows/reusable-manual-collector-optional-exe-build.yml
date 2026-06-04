@@ -50,14 +50,17 @@ jobs:
         with:
           setup-python: 'false'
 
+      - name: Assemble generated collector harness
+        uses: ./.github/actions/assemble-collector-harness
+
       - name: Verify checkout and FailureGates EXE harness patch
         shell: pwsh
         run: |
           $head = git rev-parse HEAD
           Write-Host "CHECKED_OUT_COMMIT=$head"
-          $harnessPath = 'project_sources/collector/harness/run_DCOIR_Tests.ps1'
+          $harnessPath = 'project_sources/collector/harness/run_DCOIR_Tests.generated.ps1'
           if (-not (Test-Path -LiteralPath $harnessPath)) {
-            throw "Harness source not found: $harnessPath"
+            throw "Generated harness not found: $harnessPath"
           }
           $harnessText = Get-Content -LiteralPath $harnessPath -Raw
           $hasPatch = $harnessText.Contains('Observed expected executable nonzero reject behavior for bind-reject gate.')
@@ -91,19 +94,11 @@ jobs:
             }
           }
 
-      - name: Verify collector harness assembly parity
-        shell: pwsh
-        run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\project_sources\collector\harness\assemble_run_DCOIR_Tests.ps1 -OutputPath .\project_sources\collector\harness\run_DCOIR_Tests.generated.ps1 -ExpectedHarnessPath .\project_sources\collector\harness\run_DCOIR_Tests.ps1
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector harness assembly parity validation failed.'
-          }
-
       - name: Normalize FailureGates EXE runtime-error guard
         if: ${{ inputs.exe_validation_suite == 'FailureGates' || inputs.exe_validation_suite == 'FullRegression' }}
         shell: pwsh
         run: |
-          $path = 'project_sources/collector/harness/run_DCOIR_Tests.ps1'
+          $path = 'project_sources/collector/harness/run_DCOIR_Tests.generated.ps1'
           $text = Get-Content -LiteralPath $path -Raw
           $old = '$observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq ''Executable'' -and $exitCode -ne 0'
           $new = '$observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq ''Executable'''
@@ -122,7 +117,7 @@ jobs:
         run: |
           $psFiles = @(
             'project_sources/collector/source/DCOIR_Collector.ps1',
-            'project_sources/collector/harness/run_DCOIR_Tests.ps1'
+            'project_sources/collector/harness/run_DCOIR_Tests.generated.ps1'
           )
           if (Test-Path -LiteralPath 'project_sources/collector/source/parts') {
             $psFiles += Get-ChildItem -Path 'project_sources/collector/source/parts' -File -Filter '*.ps1' | ForEach-Object { $_.FullName }
@@ -190,7 +185,7 @@ jobs:
         run: |
           $suite = $env:EXE_VALIDATION_SUITE
           if ([string]::IsNullOrWhiteSpace($suite)) { $suite = 'Core' }
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.ps1 -CollectorPath $env:OPTIONAL_EXE_PATH -CollectorInvocationMode Executable -Suite $suite -MasterZipPath $env:OPTIONAL_EXE_RUNTIME_ZIP -OutputRoot $env:OPTIONAL_EXE_HARNESS_OUTPUT_ROOT
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.generated.ps1 -CollectorPath $env:OPTIONAL_EXE_PATH -CollectorInvocationMode Executable -Suite $suite -MasterZipPath $env:OPTIONAL_EXE_RUNTIME_ZIP -OutputRoot $env:OPTIONAL_EXE_HARNESS_OUTPUT_ROOT
           if ($LASTEXITCODE -ne 0) {
             throw "Optional EXE variant harness suite failed: $suite"
           }
