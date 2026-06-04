@@ -1,0 +1,41 @@
+name: Assemble collector harness
+description: Assemble the generated collector harness from checked-in source parts and optionally validate syntax.
+inputs:
+  output-path:
+    description: Generated harness output path.
+    required: false
+    default: project_sources/collector/harness/run_DCOIR_Tests.generated.ps1
+  validate-syntax:
+    description: Parse the generated harness after assembly.
+    required: false
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - name: Assemble collector harness from source parts
+      shell: pwsh
+      env:
+        HARNESS_OUTPUT_PATH: ${{ inputs.output-path }}
+        VALIDATE_GENERATED_SYNTAX: ${{ inputs.validate-syntax }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+        powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\project_sources\collector\harness\assemble_run_DCOIR_Tests.ps1 -OutputPath $env:HARNESS_OUTPUT_PATH
+        if ($LASTEXITCODE -ne 0) {
+          throw 'Collector harness assembly failed.'
+        }
+        if (-not (Test-Path -LiteralPath $env:HARNESS_OUTPUT_PATH)) {
+          throw "Generated collector harness not found: $env:HARNESS_OUTPUT_PATH"
+        }
+        if ($env:VALIDATE_GENERATED_SYNTAX -eq 'true') {
+          $tokens = $null
+          $parseErrors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile($env:HARNESS_OUTPUT_PATH, [ref]$tokens, [ref]$parseErrors)
+          if ($parseErrors.Count -gt 0) {
+            $messages = ($parseErrors | ForEach-Object { $_.Message }) -join ' | '
+            throw "Generated collector harness syntax validation failed: $messages"
+          }
+        }
+
+# Compensating evidence: caller-visible step name, explicit output path,
+# assembler stdout markers, and generated harness syntax parsing preserve review
+# evidence while keeping the generated monolith out of source control.
