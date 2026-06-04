@@ -22,49 +22,6 @@ to the baseline artifact map and report builder.
 
 <#
 .SYNOPSIS
-Builds the targeted collection scope object.
-
-.DESCRIPTION
-Normalizes the current targeted-collection globals into one ordered scope object for
-artifact generation and analyst-facing planning.
-
-.FUNCTION NAME
-Get-TargetedCollectionScopeObject
-
-.INPUTS
-State hashtable.
-
-.OUTPUTS
-Ordered hashtable describing the targeted collection scope.
-#>
-function Get-TargetedCollectionScopeObject {
-  param([hashtable]$State)
-
-  $hasWindow = (-not [string]::IsNullOrWhiteSpace($WindowStart)) -or (-not [string]::IsNullOrWhiteSpace($WindowEnd))
-  $hasFocus = (-not [string]::IsNullOrWhiteSpace($FocusProcess)) -or (-not [string]::IsNullOrWhiteSpace($FocusPath)) -or (-not [string]::IsNullOrWhiteSpace($FocusIndicator)) -or (-not [string]::IsNullOrWhiteSpace($UserReport))
-  $categories = @()
-  if ($IncludeArtifactCategory) { $categories = @($IncludeArtifactCategory | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) }
-
-  return [ordered]@{
-    targeted_mode_enabled = [bool]$Targeted
-    target_profile = $TargetProfile
-    has_explicit_time_window = $hasWindow
-    window_start = $WindowStart
-    window_end = $WindowEnd
-    requested_hours = $Hours
-    included_artifact_categories = $categories
-    focus_process = $FocusProcess
-    focus_path = $FocusPath
-    focus_indicator = $FocusIndicator
-    focus_indicator_type = $FocusIndicatorType
-    user_report = $UserReport
-    has_focus_context = $hasFocus
-    implementation_boundary = "This major-version targeted collection feature currently narrows analyst guidance, collection scope intent, artifact prioritization, and recommended next actions. It does not yet rewrite every baseline collection helper into exact start-end timestamp filtering across all artifact families."
-  }
-}
-
-<#
-.SYNOPSIS
 Builds the targeted collection scope text artifact.
 
 .DESCRIPTION
@@ -317,31 +274,6 @@ function New-AnalystOverviewArtifact {
 
   Set-Content -Path $overviewPath -Value $lines -Encoding UTF8
   return $overviewPath
-}
-
-<#
-.SYNOPSIS
-Reads the synthetic oversized-artifact validation size.
-
-.DESCRIPTION
-Returns the requested synthetic oversized artifact size in KB from the process
-environment or zero when the override is absent or invalid.
-
-.FUNCTION NAME
-Get-ValidationSyntheticOversizeArtifactKB
-
-.INPUTS
-No direct parameters.
-
-.OUTPUTS
-Integer requested synthetic artifact size in KB.
-#>
-function Get-ValidationSyntheticOversizeArtifactKB {
-  $raw = [Environment]::GetEnvironmentVariable('DCOIR_TEST_SYNTHETIC_OVERSIZE_ARTIFACT_KB', 'Process')
-  if ([string]::IsNullOrWhiteSpace($raw)) { return 0 }
-  $parsed = 0
-  if ([int]::TryParse($raw, [ref]$parsed) -and $parsed -gt 0) { return $parsed }
-  return 0
 }
 
 <#

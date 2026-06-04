@@ -1,0 +1,23 @@
+name: Run collector runtime package validation
+description: Validate collector runtime package rules before build, documentation, or release workflows continue.
+inputs:
+  output-dir:
+    description: Output directory for collector runtime package validation artifacts.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Run collector runtime package validation
+      shell: pwsh
+      env:
+        COLLECTOR_VALIDATION_OUTPUT_DIR: ${{ inputs.output-dir }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+        New-Item -ItemType Directory -Force -Path $env:COLLECTOR_VALIDATION_OUTPUT_DIR | Out-Null
+        python project_sources/collector/tools/validate_dcoir_collector_runtime_package.py --source-dir . --output-dir $env:COLLECTOR_VALIDATION_OUTPUT_DIR
+        if ($LASTEXITCODE -ne 0) {
+          throw 'Collector runtime package validation failed.'
+        }
+
+# Compensating evidence: callers provide the output directory and upload the
+# generated validation report through their existing artifact bundles.

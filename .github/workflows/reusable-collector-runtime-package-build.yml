@@ -60,12 +60,9 @@ jobs:
           New-Item -ItemType Directory -Force -Path project_sources/validation/out | Out-Null
 
       - name: Run collector runtime package validation
-        shell: pwsh
-        run: |
-          python project_sources/collector/tools/validate_dcoir_collector_runtime_package.py --source-dir . --output-dir project_sources/validation/out
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector runtime package validation failed.'
-          }
+        uses: ./.github/actions/run-collector-runtime-package-validation
+        with:
+          output-dir: project_sources/validation/out
 
       - name: Run collector documentation quality gate
         uses: ./.github/actions/run-collector-documentation-quality

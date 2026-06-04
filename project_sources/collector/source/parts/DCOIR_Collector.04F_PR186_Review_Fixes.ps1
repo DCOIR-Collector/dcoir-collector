@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-DCOIR collector PR #186 review-fix overrides.
+DCOIR collector PR #186 review-fix helpers.
 
 .DESCRIPTION
-Applies narrowly scoped helper overrides for PR #186 review findings before the main
+Applies narrowly scoped helper refinements for PR #186 review findings before the main
 collector entrypoint runs. Keeps custom run-id discovery compatible with collector-created
 run roots, normalizes invalid explicit-window state across downstream scope surfaces, and
 gates synthetic validation padding behind an explicit harness test-mode flag.
@@ -16,7 +16,7 @@ Current collector globals, process environment variables, run-root directory nam
 state hashtables.
 
 .OUTPUTS
-Replacement helper functions used by the compiled collector runtime.
+Maintained helper functions used by the compiled collector runtime.
 #>
 
 <#
@@ -179,48 +179,6 @@ function Load-State {
   }
 
   return (Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json)
-}
-
-<#
-.SYNOPSIS
-Deletes prior timestamp-style collector run directories.
-
-.DESCRIPTION
-Overrides the core purge helper so automatic bulk cleanup does not delete arbitrary
-custom-named directories under OutRoot. Exact custom RunId cleanup remains available
-through Find-LatestDCOIRRunDirectory and Test-DCOIRNoStateCleanupCandidate.
-
-.FUNCTION NAME
-Purge-PreviousRuns
-
-.INPUTS
-Root string and CurrentPackageName string.
-
-.OUTPUTS
-No direct output. Deletes prior strict-pattern collector run directories and package file
-as a side effect.
-#>
-function Purge-PreviousRuns {
-  param([string]$Root,[string]$CurrentPackageName)
-
-  try {
-    $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
-      Where-Object { Test-DCOIRBulkPurgeRunDirectoryName -Name $_.Name }
-    foreach ($dir in $dirs) {
-      Remove-Item -LiteralPath $dir.FullName -Recurse -Force -ErrorAction SilentlyContinue
-    }
-  } catch {
-    Add-CollectorError "Failed to purge previous DCOIR directories: $($_.Exception.Message)"
-  }
-
-  try {
-    $pkg = Join-Path $Root $CurrentPackageName
-    if (Test-Path -LiteralPath $pkg) {
-      Remove-Item -LiteralPath $pkg -Force -ErrorAction SilentlyContinue
-    }
-  } catch {
-    Add-CollectorError "Failed to remove previous collector package: $($_.Exception.Message)"
-  }
 }
 
 <#

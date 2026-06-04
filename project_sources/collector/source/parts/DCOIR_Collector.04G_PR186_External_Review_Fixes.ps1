@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-DCOIR collector PR #186 external-review fix overrides.
+DCOIR collector PR #186 external-review fix helpers.
 
 .DESCRIPTION
-Applies narrowly scoped helper overrides for external review findings after the initial
-PR #186 review-fix overrides and before the main collector entrypoint runs.
+Applies narrowly scoped helper refinements for external review findings after the initial
+PR #186 review fixes and before the main collector entrypoint runs.
 
 .FILE NAME
 DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1
@@ -14,7 +14,7 @@ Current collector globals, run-root directory names, package name, and operator-
 or generated RunId value.
 
 .OUTPUTS
-Replacement helper functions used by the compiled collector runtime.
+Maintained helper functions used by the compiled collector runtime.
 #>
 
 <#

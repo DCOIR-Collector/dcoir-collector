@@ -99,41 +99,6 @@ function Get-FileSha256 {
 
 <#
 .SYNOPSIS
-Builds deterministic test padding for a text artifact.
-
-.DESCRIPTION
-Reads a process-scoped environment variable containing a requested KB value and returns
-repeatable text content of at least that size. Used only by harness tests to make a real
-collector artifact key exceed the upload-safe chunk threshold.
-
-.FUNCTION NAME
-Get-TestTextPaddingFromEnvironment
-
-.INPUTS
-Environment variable name.
-
-.OUTPUTS
-String containing deterministic padding or an empty string.
-#>
-function Get-TestTextPaddingFromEnvironment {
-  param([string]$Name)
-  $raw = [Environment]::GetEnvironmentVariable($Name, 'Process')
-  if ([string]::IsNullOrWhiteSpace($raw)) { return "" }
-  [int]$requestedKB = 0
-  if (-not [int]::TryParse($raw, [ref]$requestedKB) -or $requestedKB -le 0) { return "" }
-
-  $line = 'DCOIR_PRODUCTION_CHUNK_TEST_PAYLOAD|ABCDEFGHIJKLMNOPQRSTUVWXYZ|0123456789|line='
-  $sb = New-Object System.Text.StringBuilder
-  $index = 0
-  while ([System.Text.Encoding]::UTF8.GetByteCount($sb.ToString()) -lt ($requestedKB * 1024)) {
-    [void]$sb.AppendLine(('{0}{1:000000}' -f $line, $index))
-    $index += 1
-  }
-  return $sb.ToString()
-}
-
-<#
-.SYNOPSIS
 Chooses a UTF-8 safe byte length for one upload-safe chunk.
 
 .DESCRIPTION
@@ -371,28 +336,6 @@ function Get-CollectorExecutionContextText {
     $lines += 'DiagnosticContext=Non-elevated execution can restrict owner-aware netstat capture and Security log visibility on some hosts.'
   }
   return ($lines -join [Environment]::NewLine)
-}
-
-<#
-.SYNOPSIS
-Collects the audit-policy text artifact.
-
-.DESCRIPTION
-Runs auditpol for the key Security auditing subcategories and returns the combined
-captured output text.
-
-.FUNCTION NAME
-Get-SecurityAuditPolicyText
-
-.INPUTS
-No direct parameters.
-
-.OUTPUTS
-String containing the combined audit-policy command output.
-#>
-function Get-SecurityAuditPolicyText {
-  $result = Invoke-CmdCapture -Command 'auditpol /get /subcategory:"Logon","Logoff","Special Logon","Process Creation"' -StepName 'SECURITY_AUDIT_POLICY' -AllowedExitCodes @(0)
-  return (Get-CombinedProcessOutput -Result $result)
 }
 
 <#

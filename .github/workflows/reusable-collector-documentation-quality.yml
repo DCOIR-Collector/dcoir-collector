@@ -52,6 +52,11 @@ jobs:
           include-collector-parts: "true"
           require-files: "true"
 
+      - name: Run collector runtime package validation
+        uses: ./.github/actions/run-collector-runtime-package-validation
+        with:
+          output-dir: project_sources/validation/out_collector_documentation_quality
+
       - name: Run auto-discovery documentation audit
         uses: ./.github/actions/run-collector-documentation-quality
         with:
@@ -77,13 +82,13 @@ jobs:
           ## Validation summary
 
           - workflow: collector-documentation-quality
-          - validation_scope: collector documentation quality validation
+          - validation_scope: collector documentation quality validation plus collector no-overrides runtime package validation
           - workflow_run_id: $env:GITHUB_RUN_ID
           - workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT
           - head_sha: $env:GITHUB_SHA
           - ref: $env:GITHUB_REF
           - primary_artifact: collector-documentation-quality
-          - artifact_note: includes the documentation quality JSON output when produced.
+          - artifact_note: includes the documentation quality JSON output and runtime package validation report when produced.
 
           The workflow conclusion is the authoritative pass/fail signal. Use this section to locate the validation artifact bundle without opening the full job log first.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
