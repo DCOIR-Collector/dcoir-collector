@@ -6,7 +6,6 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 
 - GitHub is the canonical source for repository content, workflows, tooling, and durable documentation.
 - The current operating model is the compact `ircore` model: targeted retrieval, explicit authority checks, reuse before invention, and validation by readback.
-- Supabase `ircore` is the operational readback and control-plane surface for routing, validation rules, receipts, preferences, reusable lessons, and active state.
 - Legacy DCOIR helper-skill mirror and parity-maintenance surfaces have been retired from the active repository model.
 - DCOIR naming remains valid where it identifies the collector, repo, product lineage, or historical artifacts.
 
@@ -20,13 +19,6 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 - Materialize `/workspace/.ircore-bootstrap.json` only when fallback is needed.
 - Do not rely on memory-folder continuity as the sole startup source when the workspace-local startup pointers can be created from the canonical project ID.
 
-## Documentation map
-
-- Use `knowledge/README.md` as the maintained knowledge-set index.
-- Use `knowledge/Knowledge - *.md` files as editable human-readable knowledge sources.
-- Treat generated Gemini `.md.txt` attachment files as runtime packaging outputs, not primary editing surfaces.
-- Do not use repo docs to duplicate Supabase `ircore` operational routing, validation rules, receipts, preferences, reusable lessons, or active state.
-
 ## What this repo is for
 
 - collector source and packaging
@@ -39,8 +31,7 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 
 - live queue control
 - chat-session continuity memory
-- broad operational state mirrors that duplicate repo guidance or Supabase `ircore`
-- redundant root-level indexes for knowledge surfaces already indexed in `knowledge/README.md`
+- broad operational state mirrors that duplicate repo guidance
 
 ## Change discipline
 

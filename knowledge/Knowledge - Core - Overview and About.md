@@ -31,8 +31,6 @@ The maintained set currently contains 28 pages grouped by role:
 - Collector pages for validation, EXE behavior, and output-contract reference
 - Reference pages for exact Elastic and OSQuery lookup material
 
-`knowledge/README.md` is the maintained knowledge-set index.
-
 ---
 
 ## Knowledge ownership map
@@ -41,7 +39,7 @@ Use one owner per topic to avoid duplicate guidance.
 
 | Topic | Owner | Supporting references |
 | --- | --- | --- |
-| Authority model and source classes | Knowledge - Core - Overview and About | root README, `knowledge/README.md` |
+| Authority model and source classes | Knowledge - Core - Overview and About | `DCOIR_KNOWLEDGE_INDEX.md`, README |
 | Endpoint command lane | Knowledge - Core - Elastic Quick Start | Knowledge - Gemini - Output Contract and Command-Lane Discipline |
 | Local and CI validation | Knowledge - Collector - Local Test and Regression | `validate-on-push.yml`, `manual-full-validation.yml`, Knowledge - Collector - EXE Usage and Runtime Behavior, and Knowledge - Collector - Feature and Output Contract Reference |
 | Tier 1 procedure | Knowledge - Core - Tier 1 Collect Runbook | Knowledge - Collector - Feature and Output Contract Reference for feature/output facts |

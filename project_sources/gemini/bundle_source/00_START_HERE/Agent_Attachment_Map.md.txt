@@ -54,7 +54,7 @@ This map is intentionally explicit. It exists so the operator, the maintainer, a
 - Purpose: preserve the governed exact Elastic field-name reference so Gemini can use a maintained attachment for exact KQL and ESQL field-name construction instead of relying on hard-coded prompt lists or memory.
 
 18. Knowledge - Reference - Elastic Response Actions Reference
-- Purpose: preserve the governed native response-action command reference so Gemini can distinguish native response actions from execute-wrapped shell commands without relying on memory.
+- Purpose: preserve the governed native Elastic response-action command reference so Gemini can distinguish native response actions from execute-wrapped shell commands without relying on memory.
 
 19. Knowledge - Reference - OSQuery Reference Index
 - Purpose: preserve the routing map that tells Gemini which sharded OSQuery reference page to consult first by investigative objective.
@@ -88,4 +88,4 @@ This map is intentionally explicit. It exists so the operator, the maintainer, a
 
 ## Maintenance rule
 
-The maintained source is `knowledge/*.md`. `knowledge/README.md` is the maintained knowledge-set index. The build process packages those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` inside the generated release ZIP by appending `.txt` to the source filename. Do not maintain duplicate Knowledge attachment source files under `bundle_source`.
+The maintained source is `knowledge/*.md`. The build process packages those files directly into `02_PRIME_AGENT_ATTACHMENTS/*.md.txt` inside the generated release ZIP by appending `.txt` to the source filename. Do not maintain duplicate Knowledge attachment source files under `bundle_source`. `DCOIR_KNOWLEDGE_INDEX.md` is a repo-level operator entry point and is not part of the Gemini attachment set unless the manifest is intentionally expanded.
