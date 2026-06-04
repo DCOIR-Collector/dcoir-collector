@@ -288,11 +288,6 @@ No direct parameters.
 .OUTPUTS
 String response-action command text.
 #>
-function Get-CollectorDeleteScriptCommandText {
-  $collectorPath = Get-CollectorAbsolutePath
-  return ('execute --command "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Remove-Item -LiteralPath ''{0}'' -Force" --comment "Remove uploaded DCOIR_Collector script"' -f $collectorPath)
-}
-
 <#
 .SYNOPSIS
 Writes one execution-step log record.
@@ -548,13 +543,6 @@ Directory name string.
 .OUTPUTS
 Boolean.
 #>
-function Test-DCOIRRunDirectoryName {
-  param([string]$Name)
-  if ([string]::IsNullOrWhiteSpace($Name)) { return $false }
-  $hostPattern = [regex]::Escape([string]$env:COMPUTERNAME)
-  return [regex]::IsMatch($Name, ("^DCOIR_{0}_\d{{8}}_\d{{6}}$" -f $hostPattern))
-}
-
 <#
 .SYNOPSIS
 Checks whether a no-state directory is safe for fallback cleanup.
@@ -572,18 +560,6 @@ DirectoryInfo object.
 .OUTPUTS
 Boolean.
 #>
-function Test-DCOIRNoStateCleanupCandidate {
-  param([object]$Directory)
-  if (-not $Directory) { return $false }
-  if (-not (Test-DCOIRRunDirectoryName -Name $Directory.Name)) { return $false }
-  if (Test-Path -LiteralPath (Join-Path $Directory.FullName 'state.json')) { return $false }
-  $requiredChildren = @('tools','reports','final_artifacts','logs','bundles')
-  foreach ($child in $requiredChildren) {
-    if (-not (Test-Path -LiteralPath (Join-Path $Directory.FullName $child))) { return $false }
-  }
-  return $true
-}
-
 <#
 .SYNOPSIS
 Builds the state-file path for one run.
@@ -645,32 +621,6 @@ Root string and optional CurrentRunId string.
 .OUTPUTS
 Deserialized state object.
 #>
-function Load-State {
-  param([string]$Root,[string]$CurrentRunId)
-
-  if ([string]::IsNullOrWhiteSpace($CurrentRunId)) {
-    $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
-      Where-Object { Test-DCOIRRunDirectoryName -Name $_.Name } |
-      Sort-Object LastWriteTime -Descending
-    if (-not $dirs) {
-      throw "No DCOIR run directories found under $Root"
-    }
-    $selected = $dirs | Select-Object -First 1
-    $statePath = Join-Path $selected.FullName "state.json"
-    if (-not (Test-Path -LiteralPath $statePath)) {
-      throw "State file not found: $statePath"
-    }
-    return (Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json)
-  }
-
-  $statePath = Get-StatePath -Root $Root -CurrentRunId $CurrentRunId
-  if (-not (Test-Path -LiteralPath $statePath)) {
-    throw "State file not found: $statePath"
-  }
-
-  return (Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json)
-}
-
 <#
 .SYNOPSIS
 Finds the newest collector run directory under a root.
@@ -688,22 +638,6 @@ Root string and optional CurrentRunId string.
 .OUTPUTS
 DirectoryInfo object or null.
 #>
-function Find-LatestDCOIRRunDirectory {
-  param([string]$Root,[string]$CurrentRunId)
-
-  if ([string]::IsNullOrWhiteSpace($Root) -or -not (Test-Path -LiteralPath $Root)) { return $null }
-  if (-not [string]::IsNullOrWhiteSpace($CurrentRunId)) {
-    $expected = Get-RunRoot -Root $Root -CurrentRunId $CurrentRunId
-    if (Test-Path -LiteralPath $expected) { return Get-Item -LiteralPath $expected }
-    return $null
-  }
-
-  $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
-    Where-Object { Test-DCOIRRunDirectoryName -Name $_.Name } |
-    Sort-Object LastWriteTime -Descending
-  return ($dirs | Select-Object -First 1)
-}
-
 <#
 .SYNOPSIS
 Removes a bounded no-state collector run directory.
@@ -1051,29 +985,6 @@ Root string and CurrentPackageName string.
 .OUTPUTS
 No direct output. Deletes prior strict-pattern collector run directories and package file as a side effect.
 #>
-function Purge-PreviousRuns {
-  param([string]$Root,[string]$CurrentPackageName)
-
-  try {
-    $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
-      Where-Object { Test-DCOIRRunDirectoryName -Name $_.Name }
-    foreach ($dir in $dirs) {
-      Remove-Item -LiteralPath $dir.FullName -Recurse -Force -ErrorAction SilentlyContinue
-    }
-  } catch {
-    Add-CollectorError "Failed to purge previous DCOIR directories: $($_.Exception.Message)"
-  }
-
-  try {
-    $pkg = Join-Path $Root $CurrentPackageName
-    if (Test-Path -LiteralPath $pkg) {
-      Remove-Item -LiteralPath $pkg -Force -ErrorAction SilentlyContinue
-    }
-  } catch {
-    Add-CollectorError "Failed to purge previous package file: $($_.Exception.Message)"
-  }
-}
-
 <#
 .SYNOPSIS
 Moves the package ZIP into the out-root when needed.
@@ -1219,22 +1130,6 @@ ArtifactsDir string, Section string, Name string, and Text string.
 .OUTPUTS
 String artifact path.
 #>
-function Write-ArtifactText {
-  param(
-    [string]$ArtifactsDir,
-    [string]$Section,
-    [string]$Name,
-    [string]$Text
-  )
-  Ensure-Directory -Path $ArtifactsDir
-  $prefix = Get-BaselineArtifactPrefix -Name $Name
-  $safeSection = ($Section -replace '[\\/:*?"<>| ]','_')
-  $safeName = ($Name -replace '[\\/:*?"<>| ]','_')
-  $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
-  Set-Content -Path $path -Value $Text -Encoding UTF8
-  return $path
-}
-
 <#
 .SYNOPSIS
 Returns the next enrichment-session action sequence number.
@@ -1656,151 +1551,6 @@ WindowHours integer and Take integer limiting the returned summary volume.
 .OUTPUTS
 String containing the Security high-signal summary or an explanatory/error message.
 #>
-function Get-SecurityHighSignalSummaryText {
-  param(
-    [int]$WindowHours = 24,
-    [int]$Take = 200
-  )
-
-  try {
-    $ids = @(4624,4625,4648,4672,4688,4697,4698)
-    $startTime = (Get-Date).AddHours(-1 * [math]::Abs($WindowHours))
-    $fh = @{
-      LogName = "Security"
-      StartTime = $startTime
-      Id = $ids
-    }
-
-    $events = @(Get-WinEvent -FilterHashtable $fh -ErrorAction Stop |
-      Sort-Object TimeCreated -Descending |
-      Select-Object -First ($Take * 4))
-
-    if (@($events).Count -eq 0) {
-      Add-CollectorNote "No high-signal Security events were found in the selected window."
-      return "No high-signal Security events were found in the selected window."
-    }
-
-    $interesting = New-Object System.Collections.ArrayList
-    $suppressed = New-Object System.Collections.ArrayList
-
-    foreach ($ev in $events) {
-      $m = Get-EventDataMap -EventRecord $ev
-
-      $subjectUser = Get-EventMapValue -Map $m -Key 'SubjectUserName'
-      $subjectDomain = Get-EventMapValue -Map $m -Key 'SubjectDomainName'
-      $targetUser = Get-EventMapValue -Map $m -Key 'TargetUserName'
-      $targetDomain = Get-EventMapValue -Map $m -Key 'TargetDomainName'
-      $logonType = Get-EventMapValue -Map $m -Key 'LogonType'
-
-      $subjectIsMachine = ($subjectUser -like '*$')
-      $targetIsMachine = ($targetUser -like '*$')
-      $subjectIsBuiltinService = $subjectUser -in @('SYSTEM','LOCAL SERVICE','NETWORK SERVICE','ANONYMOUS LOGON')
-      $targetIsBuiltinService = $targetUser -in @('SYSTEM','LOCAL SERVICE','NETWORK SERVICE','ANONYMOUS LOGON')
-      $isServiceStyleLogon = $logonType -in @('0','5')
-
-      $suppress = $false
-      $suppressReason = $null
-
-      switch ([int]$ev.Id) {
-        4624 {
-          if (($subjectIsMachine -or $targetIsMachine -or $subjectIsBuiltinService -or $targetIsBuiltinService) -and $isServiceStyleLogon) {
-            $suppress = $true
-            $suppressReason = "routine successful service or machine logon"
-          }
-        }
-        4672 {
-          if ($subjectIsMachine -or $subjectIsBuiltinService) {
-            $suppress = $true
-            $suppressReason = "routine special privileges assignment for service or machine account"
-          }
-        }
-      }
-
-      if ($suppress) {
-        [void]$suppressed.Add([pscustomobject]@{
-          Id = $ev.Id
-          TimeCreated = $ev.TimeCreated
-          Reason = $suppressReason
-          Account = ("{0}\{1}" -f $subjectDomain, $subjectUser).Trim('\\')
-          LogonType = $logonType
-        })
-      } else {
-        [void]$interesting.Add([pscustomobject]@{
-          EventRecord = $ev
-          EventData = $m
-        })
-      }
-    }
-
-    $interesting = @($interesting | Sort-Object { $_.EventRecord.TimeCreated } -Descending | Select-Object -First $Take)
-
-    $lines = New-Object System.Collections.ArrayList
-    [void]$lines.Add("SECURITY_HIGH_SIGNAL_SUMMARY")
-    [void]$lines.Add(("WINDOW_HOURS={0}" -f $WindowHours))
-    [void]$lines.Add(("RAW_EVENT_COUNT={0}" -f @($events).Count))
-    [void]$lines.Add(("INTERESTING_EVENT_COUNT={0}" -f @($interesting).Count))
-    [void]$lines.Add(("SUPPRESSED_EVENT_COUNT={0}" -f @($suppressed).Count))
-    [void]$lines.Add("")
-
-    $counts = $interesting | Group-Object { $_.EventRecord.Id } | Sort-Object Name
-    [void]$lines.Add("INTERESTING_EVENT_COUNTS")
-    foreach ($g in $counts) {
-      [void]$lines.Add(("Id={0} Count={1}" -f $g.Name, $g.Count))
-    }
-
-    if (@($suppressed).Count -gt 0) {
-      [void]$lines.Add("")
-      [void]$lines.Add("SUPPRESSED_EVENT_COUNTS")
-      $suppressedCounts = $suppressed | Group-Object Id, Reason | Sort-Object Name
-      foreach ($g in $suppressedCounts) {
-        [void]$lines.Add(("{0} Count={1}" -f $g.Name, $g.Count))
-      }
-    }
-
-    [void]$lines.Add("")
-    [void]$lines.Add("EVENT_SUMMARY")
-
-    foreach ($item in $interesting) {
-      $ev = $item.EventRecord
-      $m = $item.EventData
-      $summary = ""
-      switch ([int]$ev.Id) {
-        4624 {
-          $summary = "Successful logon Target={0}\\{1} LogonType={2} SourceIp={3} Workstation={4}" -f (Get-EventMapValue -Map $m -Key 'TargetDomainName'), (Get-EventMapValue -Map $m -Key 'TargetUserName'), (Get-EventMapValue -Map $m -Key 'LogonType'), (Get-EventMapValue -Map $m -Key 'IpAddress'), (Get-EventMapValue -Map $m -Key 'WorkstationName')
-        }
-        4625 {
-          $summary = "Failed logon Target={0}\\{1} LogonType={2} SourceIp={3} Status={4} SubStatus={5}" -f (Get-EventMapValue -Map $m -Key 'TargetDomainName'), (Get-EventMapValue -Map $m -Key 'TargetUserName'), (Get-EventMapValue -Map $m -Key 'LogonType'), (Get-EventMapValue -Map $m -Key 'IpAddress'), (Get-EventMapValue -Map $m -Key 'Status'), (Get-EventMapValue -Map $m -Key 'SubStatus')
-        }
-        4648 {
-          $summary = "Explicit credentials Subject={0}\\{1} TargetServer={2} Process={3} SourceIp={4}" -f (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName'), (Get-EventMapValue -Map $m -Key 'TargetServerName'), (Get-EventMapValue -Map $m -Key 'ProcessName'), (Get-EventMapValue -Map $m -Key 'IpAddress')
-        }
-        4672 {
-          $summary = "Special privileges assigned Subject={0}\\{1} Privileges={2}" -f (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName'), (Get-EventMapValue -Map $m -Key 'PrivilegeList')
-        }
-        4688 {
-          $summary = "Process created NewProcess={0} ParentProcess={1} Subject={2}\\{3} CommandLine={4}" -f (Get-EventMapValue -Map $m -Key 'NewProcessName'), (Get-EventMapValue -Map $m -Key 'ParentProcessName'), (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName'), (Get-EventMapValue -Map $m -Key 'CommandLine')
-        }
-        4697 {
-          $summary = "Service installed Name={0} File={1} Subject={2}\\{3}" -f (Get-EventMapValue -Map $m -Key 'ServiceName'), (Get-EventMapValue -Map $m -Key 'ServiceFileName'), (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName')
-        }
-        4698 {
-          $summary = "Scheduled task created TaskName={0} Subject={1}\\{2}" -f (Get-EventMapValue -Map $m -Key 'TaskName'), (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName')
-        }
-        default {
-          $summary = ($ev.Message -replace "`r", "" -replace "`n", " ")
-        }
-      }
-
-      [void]$lines.Add(("[{0}] Id={1} {2}" -f $ev.TimeCreated.ToString("o"), $ev.Id, $summary.Trim()))
-    }
-
-    return ($lines -join [Environment]::NewLine)
-  } catch {
-    Add-CollectorError "Failed to collect condensed Security summary: $($_.Exception.Message)"
-    return "ERROR collecting condensed Security summary: $($_.Exception.Message)"
-  }
-}
-
 <#
 .SYNOPSIS
 Returns suspicious-process heuristic findings from the process inventory.
@@ -1915,63 +1665,6 @@ Channel string, WindowHours integer, optional event IDs, and Take integer.
 .OUTPUTS
 String containing event-log text or an explanatory/error message.
 #>
-function Get-EventText {
-  param(
-    [Parameter(Mandatory=$true)][string]$Channel,
-    [int]$WindowHours = 24,
-    [int[]]$Ids,
-    [int]$Take = 500
-  )
-
-  try {
-    $startTime = (Get-Date).AddHours(-1 * [math]::Abs($WindowHours))
-    $fh = @{
-      LogName = $Channel
-      StartTime = $startTime
-    }
-    if ($Ids -and @($Ids).Count -gt 0) { $fh.Id = $Ids }
-
-    $events = Get-WinEvent -FilterHashtable $fh -ErrorAction Stop |
-      Sort-Object TimeCreated -Descending |
-      Select-Object -First $Take
-
-    if (@($events).Count -eq 0) {
-      Add-CollectorNote ("No events were found for channel [{0}] in the selected window." -f $Channel)
-      return ("No events were found for channel [{0}] in the selected window." -f $Channel)
-    }
-
-    $lines = New-Object System.Collections.ArrayList
-    [void]$lines.Add(("CHANNEL={0}" -f $Channel))
-    [void]$lines.Add(("WINDOW_HOURS={0}" -f $WindowHours))
-    [void]$lines.Add(("EVENT_COUNT={0}" -f @($events).Count))
-    [void]$lines.Add("")
-
-    foreach ($ev in $events) {
-      [void]$lines.Add(("TimeCreated={0}" -f $ev.TimeCreated.ToString("o")))
-      [void]$lines.Add(("Id={0}" -f $ev.Id))
-      [void]$lines.Add(("Provider={0}" -f $ev.ProviderName))
-      [void]$lines.Add(("Level={0}" -f $ev.LevelDisplayName))
-      [void]$lines.Add(("RecordId={0}" -f $ev.RecordId))
-      [void]$lines.Add(("MachineName={0}" -f $ev.MachineName))
-      if ($ev.TaskDisplayName) { [void]$lines.Add(("Task={0}" -f $ev.TaskDisplayName)) }
-      if ($ev.UserId) { [void]$lines.Add(("UserId={0}" -f $ev.UserId.Value)) }
-      [void]$lines.Add("Message:")
-      [void]$lines.Add(($ev.Message -replace "`r", ""))
-      [void]$lines.Add("-" * 60)
-    }
-
-    return ($lines -join [Environment]::NewLine)
-  } catch {
-    $msg = $_.Exception.Message
-    if ($msg -match 'No events were found') {
-      Add-CollectorNote ("No events were found for channel [{0}] in the selected window." -f $Channel)
-      return ("No events were found for channel [{0}] in the selected window." -f $Channel)
-    }
-    Add-CollectorError "Failed to collect event log text for [$Channel]: $msg"
-    return "ERROR collecting event log text for [$Channel]: $msg"
-  }
-}
-
 <#
 .SYNOPSIS
 Collects Microsoft Defender status text.
@@ -2018,16 +1711,6 @@ Command string, StepName string, and optional allowed exit-code list.
 .OUTPUTS
 String containing the combined command output text.
 #>
-function Get-CmdText {
-  param(
-    [string]$Command,
-    [string]$StepName,
-    [int[]]$AllowedExitCodes = @(0)
-  )
-  $result = Invoke-CmdCapture -Command $Command -StepName $StepName -AllowedExitCodes $AllowedExitCodes
-  return (Get-CombinedProcessOutput -Result $result)
-}
-
 <#
 .SYNOPSIS
 Collects registry-query text with bounded absent-key handling.
@@ -2228,46 +1911,6 @@ ScratchDir string.
 .OUTPUTS
 No direct output. Writes the EVTX file to OutPath or throws on failure.
 #>
-function Export-FilteredEvtx {
-  param(
-    [string]$LogChannel,
-    [int]$WindowHours,
-    [int[]]$Ids,
-    [string]$OutPath,
-    [string]$ScratchDir
-  )
-
-  Ensure-Directory -Path $ScratchDir
-  $parentDir = Split-Path -Parent $OutPath
-  if (-not [string]::IsNullOrWhiteSpace($parentDir)) {
-    Ensure-Directory -Path $parentDir
-  }
-
-  $ms = [math]::Abs($WindowHours) * 3600000
-  $systemParts = @("TimeCreated[timediff(@SystemTime) <= $ms]")
-  if ($Ids -and @($Ids).Count -gt 0) {
-    $idExpr = "(" + (($Ids | ForEach-Object { "EventID=$_"} ) -join " or ") + ")"
-    $systemParts += $idExpr
-  }
-  $xpath = "*[System[" + ($systemParts -join " and ") + "]]"
-
-  $args = @(
-    "epl",
-    $LogChannel,
-    $OutPath,
-    "/q:$xpath",
-    "/ow:true"
-  )
-
-  $result = Invoke-ProcessCapture -FilePath "wevtutil.exe" -Arguments $args -StepName ("ENRICH_LOGRAW_{0}" -f ($LogChannel -replace '[\\/:*?"<>|]','_'))
-  if ($result.ExitCode -ne 0) {
-    throw "wevtutil.exe returned exit code $($result.ExitCode)"
-  }
-  if (-not (Test-Path -LiteralPath $OutPath)) {
-    throw "EVTX export did not create output file."
-  }
-}
-
 <#
 .SYNOPSIS
 Builds the tool map for the staged tools directory.
@@ -2347,36 +1990,6 @@ hashtable.
 .OUTPUTS
 String manifest path.
 #>
-function New-Manifest {
-  param(
-    [string]$ManifestPath,
-    [hashtable]$State,
-    [string]$ModeName,
-    [string]$TierName,
-    [string[]]$Files,
-    [hashtable]$ToolMap,
-    [hashtable]$Extra
-  )
-
-  $manifest = [ordered]@{
-    host = $env:COMPUTERNAME
-    run_id = $State.RunId
-    mode = $ModeName
-    tier = $TierName
-    script_version = $ScriptVersion
-    created_local = (Get-Date).ToString("o")
-    created_utc = (Get-Date).ToUniversalTime().ToString("o")
-    files = @($Files)
-    notes = @($Global:CollectorNotes)
-    errors = @($Global:CollectorErrors)
-    recommendations = @($Global:RecommendedActions)
-    tool_map = $ToolMap
-    extra = $Extra
-  }
-  Set-Content -Path $ManifestPath -Value ($manifest | ConvertTo-Json -Depth 12) -Encoding UTF8
-  return $ManifestPath
-}
-
 <#
 .SYNOPSIS
 Creates one ZIP bundle from the supplied paths.
@@ -2395,22 +2008,3 @@ BundlesDir string, BundleName string, and Paths string array.
 .OUTPUTS
 String bundle ZIP path.
 #>
-function New-BundleZip {
-  param(
-    [string]$BundlesDir,
-    [string]$BundleName,
-    [string[]]$Paths
-  )
-
-  Ensure-Directory -Path $BundlesDir
-  $bundlePath = Join-Path $BundlesDir $BundleName
-  if (Test-Path -LiteralPath $bundlePath) {
-    Remove-Item -LiteralPath $bundlePath -Force -ErrorAction SilentlyContinue
-  }
-  $existing = @($Paths | Where-Object { $_ -and (Test-Path -LiteralPath $_) })
-  if (@($existing).Count -eq 0) {
-    throw "No bundle inputs were found."
-  }
-  Compress-Archive -LiteralPath $existing -DestinationPath $bundlePath -CompressionLevel Optimal -Force
-  return $bundlePath
-}

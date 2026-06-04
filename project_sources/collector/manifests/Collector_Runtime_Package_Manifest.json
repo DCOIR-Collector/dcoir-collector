@@ -53,9 +53,10 @@
     "The collector delivery package is built from a compiled single-runtime DCOIR_Collector.ps1 only; harness regression validation is maintained separately under project_sources/collector/harness and manual-full-validation.",
     "Targeted collection parameterization is now part of the maintained collector source line and therefore part of the compiled runtime output.",
     "Bounded parallel runtime execution is now part of the maintained collector source line and therefore part of the compiled runtime output.",
-    "Diagnostic context and Security visibility overrides are now part of the maintained collector source line and therefore part of the compiled runtime output.",
+    "Diagnostic context and security visibility refinements are now integrated into single maintained function definitions in the compiled runtime output.",
     "PR #186 review fixes are loaded before the main entrypoint so custom RunId discovery, invalid-window fallback, and validation-only padding gates are active in the compiled runtime output.",
     "PR #186 external review fixes are loaded before the main entrypoint so exact custom RunId collect roots are purged before reuse without broadening blank/latest cleanup.",
+    "Collector part files must not define the same PowerShell function name more than once across wrapper and part load order; duplicate function definitions are a package-validation failure.",
     "Script entries in this artifact intentionally end in .txt to bypass mail filters.",
     "Do not refresh supporting_assets/DCOIR_Collector.zip directly from this transport-safe artifact without restoring native runtime filenames first."
   ]

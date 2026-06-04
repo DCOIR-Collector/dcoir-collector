@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-DCOIR collector diagnostic-context override helpers.
+DCOIR collector diagnostic-context helpers.
 
 .DESCRIPTION
 Provides the elevated-context checks and diagnostic-friendly Security/event-log readers

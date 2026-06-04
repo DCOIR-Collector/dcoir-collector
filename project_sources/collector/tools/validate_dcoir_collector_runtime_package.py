@@ -3,13 +3,52 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Dict, List
 
 MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json'
+FUNCTION_PATTERN = re.compile(r'^\s*function\s+([-A-Za-z0-9_]+)\b')
 
 def load_manifest(source_dir: Path) -> Dict:
     return json.loads((source_dir / 'project_sources' / 'collector' / 'manifests' / MANIFEST_NAME).read_text(encoding='utf-8'))
+
+def find_function_definitions(source_dir: Path, manifest: Dict) -> Dict[str, List[Dict[str, object]]]:
+    source_rels = [manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])
+    definitions: Dict[str, List[Dict[str, object]]] = {}
+    for load_order, rel in enumerate(source_rels):
+        path = source_dir / rel
+        if not path.exists():
+            continue
+        for line_number, line in enumerate(path.read_text(encoding='utf-8', errors='ignore').splitlines(), 1):
+            match = FUNCTION_PATTERN.match(line)
+            if not match:
+                continue
+            definitions.setdefault(match.group(1), []).append({
+                'path': rel,
+                'line': line_number,
+                'load_order': load_order,
+            })
+    return definitions
+
+def validate_unique_function_definitions(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
+    definitions = find_function_definitions(source_dir, manifest)
+    duplicate_definitions = {name: rows for name, rows in definitions.items() if len(rows) > 1}
+    checks['function_definition_count'] = sum(len(rows) for rows in definitions.values())
+    checks['unique_function_count'] = len(definitions)
+    checks['duplicate_function_count'] = len(duplicate_definitions)
+    checks['duplicate_function_names'] = sorted(duplicate_definitions)
+    checks['duplicate_function_definitions'] = {
+        name: rows for name, rows in sorted(duplicate_definitions.items())
+    }
+    if duplicate_definitions:
+        errors.append(
+            'duplicate function definitions are not allowed: '
+            + ', '.join(sorted(duplicate_definitions))
+        )
+
+    if manifest.get('function_override_manifest'):
+        errors.append('function_override_manifest is obsolete; collector functions must be defined once')
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -47,6 +86,8 @@ def main() -> int:
     checks['empty_collector_part_files'] = empty_parts
     if empty_parts:
         errors.append('collector_part_files references empty files: ' + ', '.join(empty_parts))
+
+    validate_unique_function_definitions(source_dir, manifest, checks, errors)
 
     delivery_entries = manifest.get('delivery_zip_entries', [])
     checks['delivery_entry_count'] = len(delivery_entries)

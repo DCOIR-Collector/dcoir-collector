@@ -115,23 +115,6 @@ Environment variable name.
 .OUTPUTS
 String containing deterministic padding or an empty string.
 #>
-function Get-TestTextPaddingFromEnvironment {
-  param([string]$Name)
-  $raw = [Environment]::GetEnvironmentVariable($Name, 'Process')
-  if ([string]::IsNullOrWhiteSpace($raw)) { return "" }
-  [int]$requestedKB = 0
-  if (-not [int]::TryParse($raw, [ref]$requestedKB) -or $requestedKB -le 0) { return "" }
-
-  $line = 'DCOIR_PRODUCTION_CHUNK_TEST_PAYLOAD|ABCDEFGHIJKLMNOPQRSTUVWXYZ|0123456789|line='
-  $sb = New-Object System.Text.StringBuilder
-  $index = 0
-  while ([System.Text.Encoding]::UTF8.GetByteCount($sb.ToString()) -lt ($requestedKB * 1024)) {
-    [void]$sb.AppendLine(('{0}{1:000000}' -f $line, $index))
-    $index += 1
-  }
-  return $sb.ToString()
-}
-
 <#
 .SYNOPSIS
 Chooses a UTF-8 safe byte length for one upload-safe chunk.
@@ -390,11 +373,6 @@ No direct parameters.
 .OUTPUTS
 String containing the combined audit-policy command output.
 #>
-function Get-SecurityAuditPolicyText {
-  $result = Invoke-CmdCapture -Command 'auditpol /get /subcategory:"Logon","Logoff","Special Logon","Process Creation"' -StepName 'SECURITY_AUDIT_POLICY' -AllowedExitCodes @(0)
-  return (Get-CombinedProcessOutput -Result $result)
-}
-
 <#
 .SYNOPSIS
 Builds the netstat capture bundle for the current run.
