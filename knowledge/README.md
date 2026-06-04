@@ -2,7 +2,7 @@
 
 This folder is the maintained readable source for the shared DCOIR knowledge set that feeds operator guidance and Gemini bundle attachments.
 
-For the repo-level starting point, use `DCOIR_KNOWLEDGE_INDEX.md`.
+Use this README as the knowledge-set entry point. Keep detailed operating guidance in the owned `Knowledge - <Group> - <Topic>.md` pages below instead of recreating a second repo-root index.
 
 ## Authority
 

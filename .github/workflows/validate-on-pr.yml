@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not use as the quick push gate when validate-on-push is sufficient, and do not treat it as a replacement for deeper manual-full-validation coverage.
 # Trigger model:
-# - pull_request types: opened, reopened, synchronize, ready_for_review; scoped paths include maintained source, GitHub intake templates, DCOIR_KNOWLEDGE_INDEX.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, and governed workflow definitions.
+# - pull_request types: opened, reopened, synchronize, ready_for_review; scoped paths include maintained source, GitHub intake templates, knowledge/README.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, and governed workflow definitions.
 # Required inputs:
 # - none
 # Required secrets/config:
@@ -64,7 +64,6 @@ on:
       - 'project_sources/validation/**'
       - 'knowledge/Knowledge - *.md'
       - 'knowledge/README.md'
-      - 'DCOIR_KNOWLEDGE_INDEX.md'
       - 'docs/validation/dcoir_collector_capability_coverage_matrix.md'
       - 'supporting_assets/DCOIR_Collector.zip'
       - '.github/ISSUE_TEMPLATE/**'

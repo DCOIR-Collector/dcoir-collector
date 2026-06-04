@@ -4,15 +4,15 @@ Assembles the DCOIR collector harness from checked-in source parts.
 
 .DESCRIPTION
 Concatenates the ordered harness source parts into a generated run_DCOIR_Tests script.
-This keeps the harness reviewable in smaller chunks while preserving the existing
-script invocation contract for validation workflows and direct operator runs.
+This keeps the harness reviewable in smaller chunks while producing the runnable
+harness used by validation workflows and direct operator runs.
 #>
 
 param(
   [string]$PartsDirectory = (Join-Path $PSScriptRoot 'source\parts'),
   [string]$OutputPath = (Join-Path $PSScriptRoot 'run_DCOIR_Tests.generated.ps1'),
-  [string]$ExpectedSha256 = '154d9adca38cccbe8ab089bfee4d4421eb0e2107a977f600360b7a94fc17ecf7',
-  [string]$ExpectedHarnessPath = (Join-Path $PSScriptRoot 'run_DCOIR_Tests.ps1')
+  [string]$ExpectedSha256 = '',
+  [string]$ExpectedHarnessPath = ''
 )
 
 Set-StrictMode -Version 2
@@ -73,14 +73,14 @@ if (-not [string]::IsNullOrWhiteSpace($ExpectedSha256)) {
 
 if (-not [string]::IsNullOrWhiteSpace($ExpectedHarnessPath)) {
   if (-not (Test-Path -LiteralPath $ExpectedHarnessPath)) {
-    throw "Expected checked-in harness not found: $ExpectedHarnessPath"
+    throw "Expected comparison harness not found: $ExpectedHarnessPath"
   }
   $checkedInHarnessRawSha256 = (Get-FileHash -LiteralPath $ExpectedHarnessPath -Algorithm SHA256).Hash.ToLowerInvariant()
   $checkedInHarnessText = [System.IO.File]::ReadAllText($ExpectedHarnessPath) -replace "`r`n", "`n" -replace "`r", "`n"
   $checkedInHarnessNormalizedSha256 = Get-NormalizedTextSha256 -Text $checkedInHarnessText
   if ($actualSha256 -ne $checkedInHarnessNormalizedSha256) {
     $diagnosticText = ($partDiagnostics -join [Environment]::NewLine)
-    throw ("Checked-in harness mismatch after newline/encoding normalization. Generated {0} has normalized SHA256 {1}, but checked-in harness {2} has normalized SHA256 {3} and raw file SHA256 {4}. Parts used, in order:{5}{6}" -f $OutputPath, $actualSha256, $ExpectedHarnessPath, $checkedInHarnessNormalizedSha256, $checkedInHarnessRawSha256, [Environment]::NewLine, $diagnosticText)
+    throw ("Expected comparison harness mismatch after newline/encoding normalization. Generated {0} has normalized SHA256 {1}, but comparison harness {2} has normalized SHA256 {3} and raw file SHA256 {4}. Parts used, in order:{5}{6}" -f $OutputPath, $actualSha256, $ExpectedHarnessPath, $checkedInHarnessNormalizedSha256, $checkedInHarnessRawSha256, [Environment]::NewLine, $diagnosticText)
   }
   Write-Host ("CHECKED_IN_HARNESS_PATH={0}" -f (Resolve-Path -LiteralPath $ExpectedHarnessPath).Path)
   Write-Host ("CHECKED_IN_HARNESS_SHA256_NORMALIZED={0}" -f $checkedInHarnessNormalizedSha256)
