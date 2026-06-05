@@ -337,8 +337,8 @@ function Write-ArtifactTextExact {
 
   Ensure-Directory -Path $ArtifactsDir
   $prefix = Get-BaselineArtifactPrefix -Name $Name
-  $safeSection = ($Section -replace '[\/:*?"<>| ]','_')
-  $safeName = ($Name -replace '[\/:*?"<>| ]','_')
+  $safeSection = ($Section -replace '[\\/:*?"<>| ]','_')
+  $safeName = ($Name -replace '[\\/:*?"<>| ]','_')
   $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
   $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
   [System.IO.File]::WriteAllText($path, $Text, $utf8NoBom)
