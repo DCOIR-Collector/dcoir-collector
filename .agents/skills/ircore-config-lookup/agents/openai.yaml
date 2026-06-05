@@ -1,0 +1,13 @@
+interface:
+  display_name: ircore config lookup
+  short_description: Lookup helper for ircore config names, tool/workflow/source references,
+    and governed Supabase records before action.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

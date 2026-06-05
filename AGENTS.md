@@ -127,6 +127,23 @@ Do not copy dynamic registries into this file. Redirect to Supabase instead:
 
 Keep only backbone identity facts here: repo, repo URL, Supabase project, schema, active continuity path, pointer-file shapes, and canonical function names.
 
+## Codex and ChatGPT platform adapter
+For Codex Desktop/CLI/IDE work in this repository, use repo-scoped skills from `.agents/skills` when present. The expected minimal `ircore` helper skills are:
+
+- `.agents/skills/ircore-preflight`
+- `.agents/skills/ircore-config-lookup`
+- `.agents/skills/ircore-validation`
+
+If these repo-scoped skills are missing, unavailable, or not discovered in the active Codex session, follow the Supabase startup-pack and validation/readback rules in this file directly instead of blocking on skill availability.
+
+Do not vendor or install duplicate generic skills in this repository when equivalent Codex system or plugin skills are already available, including `openai-docs`, `yeet`, `gh-fix-ci`, and `supabase-postgres-best-practices`, unless the operator explicitly approves a current-session replacement or fork.
+
+ChatGPT staging workflows such as `chatgpt-exec`, `chatgpt-stage-out`, `chatgpt-apply-in`, artifact readback, and staging cleanup are webUI/GitHub connector enablement lanes. Use them when that staging lane is the task. For normal Codex local implementation work, prefer local repo edits, local validation, Git branches, and PRs.
+
+The ChatGPT webUI agent core-instruction reference snapshot lives at `.github/agent-governance/chatgpt_agent_core_reference.md`. Treat it as a parity and audit reference, not as an automatically current authority surface and not as a dynamic registry. If the webUI Core Agent Instructions change, update that reference through an approved repo lane, read it back, and state any remaining webUI reload/restart gap before claiming parity.
+
+Do not claim the ChatGPT webUI agent can automatically update this repository on session boot. If webUI instruction parity matters, require explicit current-core readback from the operator or live configured surface, then update/read back the repo reference and any related Supabase `ircore` records.
+
 ## Working rules
 - Start substantive `ircore` work with compact preflight, startup-pack read, targeted retrieval, action, validation/readback, and optional short lesson capture only when reusable.
 - Start GitHub issue and PR work read-only. Mutate only after scope, authority, lane, and validation expectations are clear.
