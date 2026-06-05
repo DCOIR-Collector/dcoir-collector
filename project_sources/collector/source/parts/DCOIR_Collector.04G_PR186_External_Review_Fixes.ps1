@@ -368,6 +368,9 @@ Uses the existing prefixed root collection metadata artifact as the source of tr
 rewrites final_artifacts/COLLECTION_METADATA/collection_metadata.txt immediately before
 bundle creation. This keeps the strict Tier 2 bundle verifier aligned with the emitted
 collector artifact shape without fabricating metadata when the root artifact is missing.
+If the companion cannot be refreshed after manifest_collect.json has been written, bundle
+creation stops so the collector does not emit a successful ZIP with a manifest that omits
+the bundle-time error.
 
 .FUNCTION NAME
 Sync-CollectionMetadataCompanionArtifact
@@ -396,7 +399,9 @@ function Sync-CollectionMetadataCompanionArtifact {
     $sectionPath = Join-Path $sectionDir 'collection_metadata.txt'
     Write-DCOIRUtf8NoBomText -Path $sectionPath -Text $artifactText
   } catch {
-    Add-CollectorError ("Failed to synchronize collection metadata companion artifact: {0}" -f $_.Exception.Message)
+    $message = "Failed to synchronize collection metadata companion artifact: $($_.Exception.Message)"
+    Add-CollectorError $message
+    throw $message
   }
 }
 
