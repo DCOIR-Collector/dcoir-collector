@@ -900,7 +900,7 @@ function Convert-StateObjectToHashtable {
       $list += ,(Convert-StateObjectToHashtable -InputObject $item -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath)
       $index += 1
     }
-    return $list
+    return ,$list
   }
 
   $psProps = @()
