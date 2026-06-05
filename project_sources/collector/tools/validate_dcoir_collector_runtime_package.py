@@ -92,9 +92,14 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
         return
 
     text = main_entry_path.read_text(encoding='utf-8', errors='ignore')
+    metadata_path_placeholder_marker = '[void](New-Item -ItemType File -Path $metadataReportPath -Force)'
+    upload_artifacts_marker = '$uploadArtifacts = New-CollectUploadArtifacts -State $state -Baseline $baseline'
     metadata_marker = '$metadataText = New-MetadataReport -State $state -ToolMap $toolMap'
     write_marker = 'Write-ReportFile -Path $metadataReportPath -Text $metadataText'
     upload_summary_marker = '$state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath'
+    upload_budget_marker = '$state.UploadBudgetManifestPath = $uploadArtifacts.UploadManifestPath'
+    default_upload_set_marker = '$state.DefaultGeminiUploadSetStatus = $uploadArtifacts.DefaultSetStatus'
+    upload_safe_chunk_marker = '$state.UploadSafeChunkManifestPath = $uploadArtifacts.UploadSafeChunkManifestPath'
     analyst_overview_marker = '$state.AnalystOverviewPath = New-AnalystOverviewArtifact -State $state -Baseline $baseline'
     bundle_name_marker = '$bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)'
     bundle_path_marker = '$bundlePath = Join-Path $state.BundlesDir $bundleName'
@@ -102,9 +107,15 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     manifest_marker = 'New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json")'
     bundle_call_marker = 'New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName'
 
+    metadata_path_placeholder_positions = [match.start() for match in re.finditer(re.escape(metadata_path_placeholder_marker), text)]
     metadata_positions = [match.start() for match in re.finditer(re.escape(metadata_marker), text)]
     write_positions = [match.start() for match in re.finditer(re.escape(write_marker), text)]
+    metadata_path_placeholder_pos = metadata_path_placeholder_positions[0] if metadata_path_placeholder_positions else -1
+    upload_artifacts_pos = text.find(upload_artifacts_marker)
     upload_summary_pos = text.find(upload_summary_marker)
+    upload_budget_pos = text.find(upload_budget_marker)
+    default_upload_set_pos = text.find(default_upload_set_marker)
+    upload_safe_chunk_pos = text.find(upload_safe_chunk_marker)
     analyst_overview_pos = text.find(analyst_overview_marker)
     bundle_name_pos = text.find(bundle_name_marker)
     bundle_path_pos = text.find(bundle_path_marker)
@@ -113,9 +124,19 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     bundle_call_pos = text.find(bundle_call_marker)
 
     metadata_checks['checked'] = True
+    metadata_checks['metadata_path_placeholder_count'] = len(metadata_path_placeholder_positions)
     metadata_checks['metadata_report_call_count'] = len(metadata_positions)
     metadata_checks['metadata_report_write_count'] = len(write_positions)
+    metadata_checks['metadata_path_available_before_upload_artifacts'] = (
+        metadata_path_placeholder_pos != -1 and upload_artifacts_pos != -1 and metadata_path_placeholder_pos < upload_artifacts_pos
+    )
+    metadata_checks['metadata_path_available_before_analyst_overview'] = (
+        metadata_path_placeholder_pos != -1 and analyst_overview_pos != -1 and metadata_path_placeholder_pos < analyst_overview_pos
+    )
     metadata_checks['upload_summary_before_metadata'] = bool(metadata_positions) and upload_summary_pos != -1 and upload_summary_pos < metadata_positions[0]
+    metadata_checks['upload_budget_manifest_before_metadata'] = bool(metadata_positions) and upload_budget_pos != -1 and upload_budget_pos < metadata_positions[0]
+    metadata_checks['default_upload_set_status_before_metadata'] = bool(metadata_positions) and default_upload_set_pos != -1 and default_upload_set_pos < metadata_positions[0]
+    metadata_checks['upload_safe_chunk_manifest_before_metadata'] = bool(metadata_positions) and upload_safe_chunk_pos != -1 and upload_safe_chunk_pos < metadata_positions[0]
     metadata_checks['analyst_overview_before_metadata'] = bool(metadata_positions) and analyst_overview_pos != -1 and analyst_overview_pos < metadata_positions[0]
     metadata_checks['bundle_name_before_metadata'] = bool(metadata_positions) and bundle_name_pos != -1 and bundle_name_pos < metadata_positions[0]
     metadata_checks['bundle_path_before_metadata'] = bool(metadata_positions) and bundle_path_pos != -1 and bundle_path_pos < metadata_positions[0]
@@ -126,12 +147,19 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     metadata_checks['metadata_write_before_bundle'] = bool(write_positions) and bundle_call_pos != -1 and write_positions[0] < bundle_call_pos
     metadata_checks['metadata_write_follows_metadata_call'] = bool(metadata_positions) and bool(write_positions) and metadata_positions[0] < write_positions[0]
 
+    if len(metadata_path_placeholder_positions) != 1:
+        errors.append('collect mode must publish the metadata report path exactly once before upload and overview guidance are built')
     if len(metadata_positions) != 1:
         errors.append('collect mode must call New-MetadataReport exactly once after late-bound collect fields are populated')
     if len(write_positions) != 1:
         errors.append('collect mode must write the metadata report exactly once')
     for key in (
+        'metadata_path_available_before_upload_artifacts',
+        'metadata_path_available_before_analyst_overview',
         'upload_summary_before_metadata',
+        'upload_budget_manifest_before_metadata',
+        'default_upload_set_status_before_metadata',
+        'upload_safe_chunk_manifest_before_metadata',
         'analyst_overview_before_metadata',
         'bundle_name_before_metadata',
         'bundle_path_before_metadata',
