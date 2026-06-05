@@ -157,7 +157,7 @@ function Initialize-EnrichSession {
     "SessionCreatedLocal=$(Get-Date -Format o)"
     "SessionRoot=$sessionRoot"
   ) -join [Environment]::NewLine
-  Set-Content -Path $session.SummaryPath -Value $header -Encoding UTF8
+  Set-Content -Path $session.SummaryPath -Value $header -Encoding UTF8 -ErrorAction Stop
 
   return $session
 }
