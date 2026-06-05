@@ -231,30 +231,45 @@ function Initialize-ParallelBaselineCache {
     .DESCRIPTION
     Runs inside the isolated Start-Job worker scriptblock where parent helper functions
     are not loaded. Worker result objects are collector-controlled, so an exact "..."
-    string in emitted JSON is treated as a ConvertTo-Json depth truncation sentinel.
+    string in emitted JSON is treated as a ConvertTo-Json depth truncation sentinel. The
+    recursive scan is bounded so unexpected object graphs fail visibly instead of relying
+    on engine recursion behavior.
 
     .FUNCTION NAME
     Test-WorkerJsonContainsEllipsisSentinel
 
     .INPUTS
-    InputObject.
+    InputObject, optional max traversal depth, current recursion depth, and current path.
 
     .OUTPUTS
     Boolean.
     #>
     function Test-WorkerJsonContainsEllipsisSentinel {
-      param([object]$InputObject)
+      param(
+        [object]$InputObject,
+        [int]$MaxDepth = 25,
+        [int]$CurrentDepth = 0,
+        [string]$Path = '$'
+      )
 
       if ($null -eq $InputObject) { return $false }
+      if ([string]::IsNullOrWhiteSpace($Path)) { $Path = '$' }
       if ($InputObject -is [string]) { return ([string]$InputObject -eq '...') }
+      if ($CurrentDepth -ge $MaxDepth) {
+        throw ('Parallel worker result JSON sentinel scan exceeded configured depth {0} at path {1}.' -f $MaxDepth, $Path)
+      }
       if (($InputObject -is [System.Collections.IEnumerable]) -and -not ($InputObject -is [string])) {
+        $index = 0
         foreach ($item in @($InputObject)) {
-          if (Test-WorkerJsonContainsEllipsisSentinel -InputObject $item) { return $true }
+          $childPath = ('{0}[{1}]' -f $Path, $index)
+          if (Test-WorkerJsonContainsEllipsisSentinel -InputObject $item -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Path $childPath) { return $true }
+          $index += 1
         }
         return $false
       }
       foreach ($prop in @($InputObject.PSObject.Properties)) {
-        if (Test-WorkerJsonContainsEllipsisSentinel -InputObject $prop.Value) { return $true }
+        $childPath = ('{0}.{1}' -f $Path, [string]$prop.Name)
+        if (Test-WorkerJsonContainsEllipsisSentinel -InputObject $prop.Value -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Path $childPath) { return $true }
       }
       return $false
     }

@@ -252,6 +252,202 @@ Assert-Condition ($jsonl.EndsWith([Environment]::NewLine)) 'AppendNewline did no
         result['status'] = 'passed_without_windows_powershell_5_1'
     return result
 
+def run_state_recursion_behavior_tests(source_dir: Path, core_rel: str, worker_sentinel_body: str) -> Dict[str, object]:
+    result: Dict[str, object] = {
+        'available': False,
+        'status': 'skipped_powershell_unavailable',
+        'preferred_target': 'windows_powershell_5_1',
+        'shell_results': [],
+    }
+    shell_candidates = [
+        ('windows_powershell_5_1', shutil.which('powershell') or shutil.which('powershell.exe')),
+        ('pwsh', shutil.which('pwsh')),
+    ]
+    available_shells = [(label, path) for label, path in shell_candidates if path]
+    if not available_shells:
+        return result
+
+    result['available'] = True
+    core_path = (source_dir / core_rel).resolve()
+    if not worker_sentinel_body:
+        result['status'] = 'failed'
+        result['shell_results'] = [{
+            'target': 'source_extraction',
+            'command': 'extract_function_body',
+            'status': 'failed',
+            'returncode': 1,
+            'stdout': '',
+            'stderr': 'Test-WorkerJsonContainsEllipsisSentinel body could not be extracted',
+        }]
+        return result
+    script = f"""
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version 2
+$Global:CollectorErrors = New-Object System.Collections.ArrayList
+$Global:CollectorNotes = New-Object System.Collections.ArrayList
+$Global:ErrorsLogPath = $null
+. '{str(core_path).replace("'", "''")}'
+
+function Test-WorkerJsonContainsEllipsisSentinel {worker_sentinel_body}
+
+function Assert-Condition {{
+  param([bool]$Condition,[string]$Message)
+  if (-not $Condition) {{ throw $Message }}
+}}
+
+$nested = [pscustomobject]@{{
+  alpha = [ordered]@{{
+    beta = @(
+      [pscustomobject]@{{ gamma = 'leaf' }}
+    )
+  }}
+}}
+$converted = Convert-StateObjectToHashtable -InputObject $nested -Depth 8
+Assert-Condition ($converted -is [hashtable]) 'converted root is not a hashtable'
+Assert-Condition ($converted.alpha -is [hashtable]) 'nested dictionary was not preserved as hashtable'
+Assert-Condition ($converted.alpha.beta[0].gamma -eq 'leaf') 'nested array/object value was not preserved'
+
+$tooDeep = [ordered]@{{ a = [ordered]@{{ b = [ordered]@{{ c = [ordered]@{{ d = 'leaf' }} }} }} }}
+$threw = $false
+$message = ''
+try {{
+  Convert-StateObjectToHashtable -InputObject $tooDeep -Depth 3 | Out-Null
+}} catch {{
+  $threw = $true
+  $message = [string]$_.Exception.Message
+}}
+Assert-Condition $threw 'state conversion depth overflow was not rejected'
+Assert-Condition ($message -like '*Convert-StateObjectToHashtable*') 'depth error did not identify the converter'
+Assert-Condition ($message -like '*depth 3*') 'depth error did not include the configured depth'
+Assert-Condition ($message -like '*$.a.b.c*') 'depth error did not include the recursive path'
+
+$workerNormal = [pscustomobject]@{{ step_results = @([pscustomobject]@{{ text = 'normal output' }}) }}
+Assert-Condition (-not (Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerNormal -MaxDepth 8)) 'normal worker object was treated as an ellipsis sentinel'
+$workerEllipsis = [pscustomobject]@{{ step_results = @([pscustomobject]@{{ text = '...' }}) }}
+Assert-Condition (Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerEllipsis -MaxDepth 8) 'nested worker ellipsis sentinel was not detected'
+
+$workerTooDeep = [pscustomobject]@{{ a = [pscustomobject]@{{ b = [pscustomobject]@{{ c = 'leaf' }} }} }}
+$workerThrew = $false
+$workerMessage = ''
+try {{
+  Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerTooDeep -MaxDepth 2 | Out-Null
+}} catch {{
+  $workerThrew = $true
+  $workerMessage = [string]$_.Exception.Message
+}}
+Assert-Condition $workerThrew 'worker sentinel depth overflow was not rejected'
+Assert-Condition ($workerMessage -like '*Parallel worker result JSON sentinel scan*') 'worker sentinel depth error did not identify the scanner'
+Assert-Condition ($workerMessage -like '*depth 2*') 'worker sentinel depth error did not include the configured depth'
+Assert-Condition ($workerMessage -like '*$.a.b*') 'worker sentinel depth error did not include the recursive path'
+"""
+    shell_results: List[Dict[str, object]] = []
+    for label, shell_path in available_shells:
+        with tempfile.NamedTemporaryFile('w', suffix='.ps1', encoding='utf-8', delete=False) as handle:
+            handle.write(script)
+            script_path = Path(handle.name)
+        try:
+            cmd = [shell_path, '-NoProfile']
+            if label == 'pwsh':
+                cmd.append('-NonInteractive')
+            if label == 'windows_powershell_5_1':
+                cmd.extend(['-ExecutionPolicy', 'Bypass'])
+            cmd.extend(['-File', str(script_path)])
+            completed = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        finally:
+            script_path.unlink(missing_ok=True)
+        shell_results.append({
+            'target': label,
+            'command': Path(shell_path).name,
+            'status': 'passed' if completed.returncode == 0 else 'failed',
+            'returncode': completed.returncode,
+            'stdout': completed.stdout[-4000:],
+            'stderr': completed.stderr[-4000:],
+        })
+
+    result['shell_results'] = shell_results
+    failed_results = [row for row in shell_results if row['status'] == 'failed']
+    windows_result = next((row for row in shell_results if row['target'] == 'windows_powershell_5_1'), None)
+    if failed_results:
+        result['status'] = 'failed'
+    elif windows_result:
+        result['status'] = 'passed'
+    else:
+        result['status'] = 'passed_without_windows_powershell_5_1'
+    return result
+
+def validate_state_recursion_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
+    recursion_checks: Dict[str, object] = {}
+    checks['state_recursion_policy'] = recursion_checks
+
+    source_rels = [manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])
+    source_text_by_rel: Dict[str, str] = {}
+    for rel in source_rels:
+        path = source_dir / rel
+        if path.exists():
+            source_text_by_rel[rel] = path.read_text(encoding='utf-8', errors='ignore')
+
+    core_rel = 'project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1'
+    parallel_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1'
+    main_entry_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
+
+    core_text = source_text_by_rel.get(core_rel, '')
+    parallel_text = source_text_by_rel.get(parallel_rel, '')
+    main_entry_text = source_text_by_rel.get(main_entry_rel, '')
+    converter_body = extract_function_body(core_text, 'Convert-StateObjectToHashtable')
+    worker_sentinel_body = extract_function_body(parallel_text, 'Test-WorkerJsonContainsEllipsisSentinel')
+
+    recursion_checks['convert_state_object_to_hashtable_present'] = bool(converter_body)
+    recursion_checks['converter_default_depth_20'] = '[int]$Depth = 20' in converter_body
+    recursion_checks['converter_tracks_current_depth'] = '[int]$CurrentDepth = 0' in converter_body
+    recursion_checks['converter_tracks_path'] = "[string]$Path = '$'" in converter_body
+    recursion_checks['converter_throws_at_depth_limit'] = 'Convert-StateObjectToHashtable exceeded configured depth {0} at path {1}.' in converter_body
+    recursion_checks['converter_dictionary_recursion_passes_depth_path'] = (
+        'Convert-StateObjectToHashtable -InputObject $InputObject[$key] -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in converter_body
+    )
+    recursion_checks['converter_enumerable_recursion_passes_depth_path'] = (
+        'Convert-StateObjectToHashtable -InputObject $item -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in converter_body
+    )
+    recursion_checks['converter_property_recursion_passes_depth_path'] = (
+        'Convert-StateObjectToHashtable -InputObject $prop.Value -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in converter_body
+    )
+    recursion_checks['load_state_uses_default_converter_policy'] = 'Convert-StateObjectToHashtable -InputObject $loaded' in main_entry_text
+
+    recursion_checks['worker_sentinel_present'] = bool(worker_sentinel_body)
+    recursion_checks['worker_sentinel_default_max_depth_25'] = '[int]$MaxDepth = 25' in worker_sentinel_body
+    recursion_checks['worker_sentinel_tracks_current_depth'] = '[int]$CurrentDepth = 0' in worker_sentinel_body
+    recursion_checks['worker_sentinel_tracks_path'] = "[string]$Path = '$'" in worker_sentinel_body
+    recursion_checks['worker_sentinel_throws_at_depth_limit'] = 'Parallel worker result JSON sentinel scan exceeded configured depth {0} at path {1}.' in worker_sentinel_body
+    recursion_checks['worker_sentinel_enumerable_recursion_passes_depth_path'] = (
+        'Test-WorkerJsonContainsEllipsisSentinel -InputObject $item -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in worker_sentinel_body
+    )
+    recursion_checks['worker_sentinel_property_recursion_passes_depth_path'] = (
+        'Test-WorkerJsonContainsEllipsisSentinel -InputObject $prop.Value -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in worker_sentinel_body
+    )
+    recursion_checks['state_recursion_behavior_tests'] = run_state_recursion_behavior_tests(source_dir, core_rel, worker_sentinel_body)
+
+    for key in (
+        'convert_state_object_to_hashtable_present',
+        'converter_default_depth_20',
+        'converter_tracks_current_depth',
+        'converter_tracks_path',
+        'converter_throws_at_depth_limit',
+        'converter_dictionary_recursion_passes_depth_path',
+        'converter_enumerable_recursion_passes_depth_path',
+        'converter_property_recursion_passes_depth_path',
+        'load_state_uses_default_converter_policy',
+        'worker_sentinel_present',
+        'worker_sentinel_default_max_depth_25',
+        'worker_sentinel_tracks_current_depth',
+        'worker_sentinel_tracks_path',
+        'worker_sentinel_throws_at_depth_limit',
+        'worker_sentinel_enumerable_recursion_passes_depth_path',
+        'worker_sentinel_property_recursion_passes_depth_path',
+    ):
+        if not recursion_checks[key]:
+            errors.append('collector state recursion policy check failed: ' + key)
+    if recursion_checks['state_recursion_behavior_tests']['status'] == 'failed':
+        errors.append('collector state recursion policy behavior tests failed')
+
 def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Dict[str, object], errors: List[str]) -> None:
     main_entry_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
     helper_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1'
@@ -583,6 +779,7 @@ def main() -> int:
     validate_collect_manifest_bundle_ordering(source_dir, manifest, checks, errors)
     validate_bundle_metadata_sync_terminates(source_dir, checks, errors)
     validate_json_serialization_policy(source_dir, manifest, checks, errors)
+    validate_state_recursion_policy(source_dir, manifest, checks, errors)
 
     delivery_entries = manifest.get('delivery_zip_entries', [])
     checks['delivery_entry_count'] = len(delivery_entries)
