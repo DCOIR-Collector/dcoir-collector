@@ -164,7 +164,11 @@ $script:ContextualHelpTopic = $null
 
 $collectorPartsRoot = Join-Path (Split-Path -Parent $ScriptFilePath) "parts"
 $collectorPartFiles = @(
-  "DCOIR_Collector.01_Core_State_And_Utilities.ps1",
+  "DCOIR_Collector.01A_Core_Logging_And_Process_Capture.ps1",
+  "DCOIR_Collector.01B_Json_State_And_Array_Utilities.ps1",
+  "DCOIR_Collector.01C_Runtime_Paths_Artifacts_And_Reports.ps1",
+  "DCOIR_Collector.01D_Process_Event_And_Baseline_Utilities.ps1",
+  "DCOIR_Collector.01E_Tool_Staging_And_Availability.ps1",
   "DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1",
   "DCOIR_Collector.03A_Enrich_Session_State.ps1",
   "DCOIR_Collector.03B_Enrich_Actions_Review.ps1",

@@ -41,6 +41,38 @@ def find_function_definitions(source_dir: Path, manifest: Dict) -> Dict[str, Lis
             })
     return definitions
 
+def load_manifest_source_texts(source_dir: Path, manifest: Dict) -> Dict[str, str]:
+    source_rels = [manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])
+    source_text_by_rel: Dict[str, str] = {}
+    for rel in source_rels:
+        path = source_dir / rel
+        if path.exists():
+            source_text_by_rel[rel] = path.read_text(encoding='utf-8', errors='ignore')
+    return source_text_by_rel
+
+def get_combined_source_text(source_text_by_rel: Dict[str, str]) -> str:
+    return '\n'.join(source_text_by_rel.values())
+
+def build_dot_source_lines_for_functions(source_dir: Path, manifest: Dict, function_names: List[str]) -> str:
+    targets = {normalize_function_name(name) for name in function_names}
+    source_rels: List[str] = []
+    for rel in manifest.get('collector_part_files', []):
+        path = source_dir / rel
+        if not path.exists():
+            continue
+        text = path.read_text(encoding='utf-8', errors='ignore')
+        for line in text.splitlines():
+            match = FUNCTION_PATTERN.match(line)
+            if match and normalize_function_name(match.group(1)) in targets:
+                source_rels.append(rel)
+                break
+
+    lines: List[str] = []
+    for rel in source_rels:
+        part_path = (source_dir / rel).resolve()
+        lines.append(". '{0}'".format(str(part_path).replace("'", "''")))
+    return '\n'.join(lines)
+
 def validate_unique_function_definitions(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
     definitions = find_function_definitions(source_dir, manifest)
     duplicate_definitions = {name: rows for name, rows in definitions.items() if len(rows) > 1}
@@ -169,7 +201,7 @@ def find_convert_to_json_calls(rel: str, text: str) -> List[Dict[str, object]]:
         calls.append({'path': rel, 'line': line_number, 'text': line.strip()})
     return calls
 
-def run_json_policy_behavior_tests(source_dir: Path, core_rel: str) -> Dict[str, object]:
+def run_json_policy_behavior_tests(source_dir: Path, manifest: Dict) -> Dict[str, object]:
     result: Dict[str, object] = {
         'available': False,
         'status': 'skipped_powershell_unavailable',
@@ -185,14 +217,19 @@ def run_json_policy_behavior_tests(source_dir: Path, core_rel: str) -> Dict[str,
         return result
 
     result['available'] = True
-    core_path = (source_dir / core_rel).resolve()
+    dot_source_lines = build_dot_source_lines_for_functions(
+        source_dir,
+        manifest,
+        ['Add-CollectorError', 'Add-CollectorJsonEllipsisPaths', 'Convert-ToCollectorJsonText'],
+    )
+    result['dotted_source_line_count'] = len([line for line in dot_source_lines.splitlines() if line.strip()])
     script = f"""
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList
 $Global:ErrorsLogPath = $null
-. '{str(core_path).replace("'", "''")}'
+{dot_source_lines}
 
 function Assert-Condition {{
   param([bool]$Condition,[string]$Message)
@@ -252,7 +289,7 @@ Assert-Condition ($jsonl.EndsWith([Environment]::NewLine)) 'AppendNewline did no
         result['status'] = 'passed_without_windows_powershell_5_1'
     return result
 
-def run_state_recursion_behavior_tests(source_dir: Path, core_rel: str, worker_sentinel_body: str) -> Dict[str, object]:
+def run_state_recursion_behavior_tests(source_dir: Path, manifest: Dict, worker_sentinel_body: str) -> Dict[str, object]:
     result: Dict[str, object] = {
         'available': False,
         'status': 'skipped_powershell_unavailable',
@@ -268,7 +305,6 @@ def run_state_recursion_behavior_tests(source_dir: Path, core_rel: str, worker_s
         return result
 
     result['available'] = True
-    core_path = (source_dir / core_rel).resolve()
     if not worker_sentinel_body:
         result['status'] = 'failed'
         result['shell_results'] = [{
@@ -280,13 +316,19 @@ def run_state_recursion_behavior_tests(source_dir: Path, core_rel: str, worker_s
             'stderr': 'Test-WorkerJsonContainsEllipsisSentinel body could not be extracted',
         }]
         return result
+    dot_source_lines = build_dot_source_lines_for_functions(
+        source_dir,
+        manifest,
+        ['Add-CollectorError', 'Convert-StateObjectToHashtable'],
+    )
+    result['dotted_source_line_count'] = len([line for line in dot_source_lines.splitlines() if line.strip()])
     script = f"""
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList
 $Global:ErrorsLogPath = $null
-. '{str(core_path).replace("'", "''")}'
+{dot_source_lines}
 
 function Test-WorkerJsonContainsEllipsisSentinel {worker_sentinel_body}
 
@@ -379,21 +421,14 @@ def validate_state_recursion_policy(source_dir: Path, manifest: Dict, checks: Di
     recursion_checks: Dict[str, object] = {}
     checks['state_recursion_policy'] = recursion_checks
 
-    source_rels = [manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])
-    source_text_by_rel: Dict[str, str] = {}
-    for rel in source_rels:
-        path = source_dir / rel
-        if path.exists():
-            source_text_by_rel[rel] = path.read_text(encoding='utf-8', errors='ignore')
-
-    core_rel = 'project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1'
+    source_text_by_rel = load_manifest_source_texts(source_dir, manifest)
+    collector_text = get_combined_source_text(source_text_by_rel)
     parallel_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1'
     main_entry_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
 
-    core_text = source_text_by_rel.get(core_rel, '')
     parallel_text = source_text_by_rel.get(parallel_rel, '')
     main_entry_text = source_text_by_rel.get(main_entry_rel, '')
-    converter_body = extract_function_body(core_text, 'Convert-StateObjectToHashtable')
+    converter_body = extract_function_body(collector_text, 'Convert-StateObjectToHashtable')
     worker_sentinel_body = extract_function_body(parallel_text, 'Test-WorkerJsonContainsEllipsisSentinel')
 
     recursion_checks['convert_state_object_to_hashtable_present'] = bool(converter_body)
@@ -423,7 +458,7 @@ def validate_state_recursion_policy(source_dir: Path, manifest: Dict, checks: Di
     recursion_checks['worker_sentinel_property_recursion_passes_depth_path'] = (
         'Test-WorkerJsonContainsEllipsisSentinel -InputObject $prop.Value -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in worker_sentinel_body
     )
-    recursion_checks['state_recursion_behavior_tests'] = run_state_recursion_behavior_tests(source_dir, core_rel, worker_sentinel_body)
+    recursion_checks['state_recursion_behavior_tests'] = run_state_recursion_behavior_tests(source_dir, manifest, worker_sentinel_body)
 
     for key in (
         'convert_state_object_to_hashtable_present',
@@ -650,19 +685,12 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
     policy_checks: Dict[str, object] = {}
     checks['json_serialization_policy'] = policy_checks
 
-    source_rels = [manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])
-    source_text_by_rel: Dict[str, str] = {}
-    for rel in source_rels:
-        path = source_dir / rel
-        if path.exists():
-            source_text_by_rel[rel] = path.read_text(encoding='utf-8', errors='ignore')
-
-    core_rel = 'project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1'
+    source_text_by_rel = load_manifest_source_texts(source_dir, manifest)
+    collector_text = get_combined_source_text(source_text_by_rel)
     reports_rel = 'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'
     parallel_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1'
     manifest_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1'
 
-    core_text = source_text_by_rel.get(core_rel, '')
     reports_text = source_text_by_rel.get(reports_rel, '')
     parallel_text = source_text_by_rel.get(parallel_rel, '')
     manifest_text = source_text_by_rel.get(manifest_rel, '')
@@ -674,18 +702,23 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
         'Get-CollectorJsonDepthRiskPathSet',
         'Convert-ToCollectorJsonText',
     ):
-        policy_checks[f'{function_name}_present'] = bool(extract_function_body(core_text, function_name))
+        policy_checks[f'{function_name}_present'] = bool(extract_function_body(collector_text, function_name))
         if not policy_checks[f'{function_name}_present']:
             errors.append(f'collector JSON serialization helper is missing: {function_name}')
 
-    policy_checks['shared_helper_default_depth_20'] = '[int]$Depth = 20' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
-    policy_checks['shared_helper_checks_source_depth_risks'] = 'Get-CollectorJsonDepthRiskPathSet -InputObject $InputObject -MaxDepth $Depth' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
-    policy_checks['shared_helper_parses_emitted_json'] = 'ConvertFrom-Json -ErrorAction Stop' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
-    policy_checks['shared_helper_compares_source_ellipsis_paths'] = '$sourceEllipsis.ContainsKey($_)' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
-    policy_checks['shared_helper_records_collector_error'] = 'Add-CollectorError $message' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
-    policy_checks['shared_helper_can_throw'] = 'if ($ThrowOnTruncation) { throw $message }' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
-    policy_checks['save_state_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $State -Label 'state.json' -ThrowOnTruncation" in core_text
-    policy_checks['step_log_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $obj -Compress -Label 'execution step JSONL'" in core_text
+    shared_helper_body = extract_function_body(collector_text, 'Convert-ToCollectorJsonText')
+    json_helper_rel = next(
+        (rel for rel, text in source_text_by_rel.items() if extract_function_body(text, 'Convert-ToCollectorJsonText')),
+        '',
+    )
+    policy_checks['shared_helper_default_depth_20'] = '[int]$Depth = 20' in shared_helper_body
+    policy_checks['shared_helper_checks_source_depth_risks'] = 'Get-CollectorJsonDepthRiskPathSet -InputObject $InputObject -MaxDepth $Depth' in shared_helper_body
+    policy_checks['shared_helper_parses_emitted_json'] = 'ConvertFrom-Json -ErrorAction Stop' in shared_helper_body
+    policy_checks['shared_helper_compares_source_ellipsis_paths'] = '$sourceEllipsis.ContainsKey($_)' in shared_helper_body
+    policy_checks['shared_helper_records_collector_error'] = 'Add-CollectorError $message' in shared_helper_body
+    policy_checks['shared_helper_can_throw'] = 'if ($ThrowOnTruncation) { throw $message }' in shared_helper_body
+    policy_checks['save_state_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $State -Label 'state.json' -ThrowOnTruncation" in collector_text
+    policy_checks['step_log_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $obj -Compress -Label 'execution step JSONL'" in collector_text
     policy_checks['safe_json_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $InputObject -Label 'safe JSON artifact' -AppendNewline -ThrowOnTruncation" in reports_text
     policy_checks['manifest_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $manifest -Label 'manifest JSON' -ThrowOnTruncation" in manifest_text
     policy_checks['worker_uses_depth_20'] = '$workerJson = $workerResult | ConvertTo-Json -Depth 20 -ErrorAction Stop' in parallel_text
@@ -694,7 +727,7 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
         and 'Test-WorkerJsonContainsEllipsisSentinel' in parallel_text
         and 'Parallel worker result JSON' in parallel_text
     )
-    policy_checks['shared_helper_behavior_tests'] = run_json_policy_behavior_tests(source_dir, core_rel)
+    policy_checks['shared_helper_behavior_tests'] = run_json_policy_behavior_tests(source_dir, manifest)
 
     for key in (
         'shared_helper_default_depth_20',
@@ -716,7 +749,7 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
         errors.append('collector JSON serialization policy behavior tests failed')
 
     approved_raw_calls = {
-        (core_rel, '$json = $InputObject | ConvertTo-Json @jsonArgs'),
+        (json_helper_rel, '$json = $InputObject | ConvertTo-Json @jsonArgs'),
         (parallel_rel, '$workerJson = $workerResult | ConvertTo-Json -Depth 20 -ErrorAction Stop'),
     }
     raw_calls: List[Dict[str, object]] = []
@@ -736,6 +769,55 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
             'collector source must route JSON serialization through the approved policy helpers; unapproved raw ConvertTo-Json calls: '
             + ', '.join(f"{row['path']}:{row['line']}" for row in unapproved_raw_calls)
         )
+
+def validate_suspicious_process_parent_context_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
+    policy_checks: Dict[str, object] = {}
+    checks['suspicious_process_parent_context_policy'] = policy_checks
+
+    source_text_by_rel = load_manifest_source_texts(source_dir, manifest)
+    collector_text = get_combined_source_text(source_text_by_rel)
+    reports_rel = 'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'
+    reports_text = source_text_by_rel.get(reports_rel, '')
+
+    convert_body = extract_function_body(collector_text, 'Convert-ProcessObjectToText')
+    inventory_body = extract_function_body(collector_text, 'Get-ProcessInventory')
+    suspicious_body = extract_function_body(collector_text, 'Get-SuspiciousProcessFindings')
+
+    policy_checks['convert_process_object_present'] = bool(convert_body)
+    policy_checks['process_inventory_present'] = bool(inventory_body)
+    policy_checks['suspicious_process_findings_present'] = bool(suspicious_body)
+    policy_checks['convert_accepts_process_name_lookup'] = '[hashtable]$ProcessNameById' in convert_body
+    policy_checks['parent_process_id_normalized'] = '$parentProcessId = [int]$Proc.ParentProcessId' in convert_body
+    policy_checks['parent_process_name_resolved'] = '$parentName = [string]$ProcessNameById[$parentProcessId]' in convert_body
+    policy_checks['inventory_builds_parent_name_map'] = '$processNameById[[int]$p.ProcessId] = [string]$p.Name' in inventory_body
+    policy_checks['inventory_passes_parent_name_map'] = '-ProcessNameById $processNameById' in inventory_body
+    policy_checks['finding_reads_parent_name'] = '$parentNameValue = [string]$proc.ParentProcessName' in suspicious_body
+    policy_checks['name_only_lolbin_pattern_present'] = '$nameOnlyLolbinPattern' in suspicious_body
+    policy_checks['benign_name_only_lolbin_limited_to_common_shells'] = (
+        "$benignNameOnlyLolbinPattern = '^(powershell|pwsh|cmd|wmic)(\\.exe)?$'" in suspicious_body
+    )
+    policy_checks['known_benign_parent_pattern_present'] = (
+        '$knownBenignLolbinParentPattern' in suspicious_body
+        and 'svchost' in suspicious_body
+        and 'services' in suspicious_body
+        and 'trustedinstaller' in suspicious_body
+        and 'tiworker' in suspicious_body
+        and 'wuauclt' in suspicious_body
+        and 'msiexec' in suspicious_body
+    )
+    policy_checks['suppresses_only_known_benign_name_only_hits'] = (
+        'if (-not $isKnownBenignNameOnlyLolbin -or @($reasons).Count -gt 0)' in suspicious_body
+    )
+    policy_checks['finding_includes_parent_process_id'] = 'ParentProcessId = $proc.ParentProcessId' in suspicious_body
+    policy_checks['finding_includes_parent_process_name'] = 'ParentProcessName = $proc.ParentProcessName' in suspicious_body
+    policy_checks['process_inventory_reports_parent_name'] = (
+        'Select-Object ProcessId, ParentProcessId, ParentProcessName, Name' in reports_text
+    )
+    policy_checks['recommendations_include_parent_context'] = 'parent={0} ({1})' in reports_text
+
+    for key, value in policy_checks.items():
+        if not value:
+            errors.append('collector suspicious-process parent-context policy check failed: ' + key)
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -780,6 +862,7 @@ def main() -> int:
     validate_bundle_metadata_sync_terminates(source_dir, checks, errors)
     validate_json_serialization_policy(source_dir, manifest, checks, errors)
     validate_state_recursion_policy(source_dir, manifest, checks, errors)
+    validate_suspicious_process_parent_context_policy(source_dir, manifest, checks, errors)
 
     delivery_entries = manifest.get('delivery_zip_entries', [])
     checks['delivery_entry_count'] = len(delivery_entries)
