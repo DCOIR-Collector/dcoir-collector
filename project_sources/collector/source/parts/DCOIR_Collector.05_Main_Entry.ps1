@@ -90,9 +90,6 @@ try {
       $baseline = New-BaselineReport -State $state -ToolMap $toolMap
       Apply-FeatureWaveCollectEnhancements -State $state -Baseline $baseline
 
-      $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
-      Write-ReportFile -Path $metadataReportPath -Text $metadataText
-
       $uploadArtifacts = New-CollectUploadArtifacts -State $state -Baseline $baseline
       $state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath
       $state.UploadBudgetManifestPath = $uploadArtifacts.UploadManifestPath
@@ -100,13 +97,11 @@ try {
       $state.UploadSafeChunkManifestPath = $uploadArtifacts.UploadSafeChunkManifestPath
       $state.AnalystOverviewPath = New-AnalystOverviewArtifact -State $state -Baseline $baseline
 
-      $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
-      Write-ReportFile -Path $metadataReportPath -Text $metadataText
-
       $bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)
       $bundlePath = Join-Path $state.BundlesDir $bundleName
       $state.CollectBundlePath = $bundlePath
 
+      # Write metadata once after late-bound collect fields are populated and before manifest/bundle packaging.
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
 
