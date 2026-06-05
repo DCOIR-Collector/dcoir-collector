@@ -855,34 +855,50 @@ Recursively converts a deserialized state object into plain hashtables and array
 
 .DESCRIPTION
 Normalizes dictionaries, enumerable collections, and PSObject properties into plain
-PowerShell hashtables and arrays so saved state can be reused consistently.
+PowerShell hashtables and arrays so saved state can be reused consistently. Stops with a
+descriptive error when the object graph exceeds the configured depth limit.
 
 .FUNCTION NAME
 Convert-StateObjectToHashtable
 
 .INPUTS
-InputObject to normalize.
+InputObject to normalize, optional maximum depth, current recursion depth, and current
+object path.
 
 .OUTPUTS
 Hashtable, array, scalar, or null matching the normalized input structure.
 #>
 function Convert-StateObjectToHashtable {
-  param([object]$InputObject)
+  param(
+    [object]$InputObject,
+    [int]$Depth = 20,
+    [int]$CurrentDepth = 0,
+    [string]$Path = '$'
+  )
 
   if ($null -eq $InputObject) { return $null }
+  if ([string]::IsNullOrWhiteSpace($Path)) { $Path = '$' }
+  if (($InputObject -is [string]) -or ($InputObject -is [System.ValueType])) { return $InputObject }
+  if ($CurrentDepth -ge $Depth) {
+    throw ('Convert-StateObjectToHashtable exceeded configured depth {0} at path {1}.' -f $Depth, $Path)
+  }
 
   if ($InputObject -is [System.Collections.IDictionary]) {
     $hash = @{}
-    foreach ($key in $InputObject.Keys) {
-      $hash[$key] = Convert-StateObjectToHashtable -InputObject $InputObject[$key]
+    foreach ($key in @($InputObject.Keys)) {
+      $childPath = ('{0}.{1}' -f $Path, [string]$key)
+      $hash[$key] = Convert-StateObjectToHashtable -InputObject $InputObject[$key] -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath
     }
     return $hash
   }
 
   if (($InputObject -is [System.Collections.IEnumerable]) -and -not ($InputObject -is [string])) {
     $list = @()
-    foreach ($item in $InputObject) {
-      $list += ,(Convert-StateObjectToHashtable -InputObject $item)
+    $index = 0
+    foreach ($item in @($InputObject)) {
+      $childPath = ('{0}[{1}]' -f $Path, $index)
+      $list += ,(Convert-StateObjectToHashtable -InputObject $item -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath)
+      $index += 1
     }
     return $list
   }
@@ -892,7 +908,8 @@ function Convert-StateObjectToHashtable {
   if (@($psProps).Count -gt 0 -and -not ($InputObject -is [string])) {
     $hash = @{}
     foreach ($prop in $psProps) {
-      $hash[$prop.Name] = Convert-StateObjectToHashtable -InputObject $prop.Value
+      $childPath = ('{0}.{1}' -f $Path, [string]$prop.Name)
+      $hash[$prop.Name] = Convert-StateObjectToHashtable -InputObject $prop.Value -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath
     }
     return $hash
   }
