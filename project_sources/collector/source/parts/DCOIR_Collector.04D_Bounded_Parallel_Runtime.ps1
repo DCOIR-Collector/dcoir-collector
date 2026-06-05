@@ -91,6 +91,10 @@ No direct parameters.
 Array of ordered worker-definition hashtables.
 #>
 function Get-ParallelBaselineWorkerDefinitions {
+  # Start-Job runs each worker in a separate PowerShell job context. Keep worker
+  # scriptblocks self-contained, or explicitly pass/import every dependency they
+  # need; worker code must not assume collector part-file helper functions are
+  # loaded in the job process.
   return @(
     [ordered]@{
       Name = 'host_baseline'
