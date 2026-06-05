@@ -474,6 +474,8 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
     for function_name in (
         'Add-CollectorJsonEllipsisPaths',
         'Get-CollectorJsonEllipsisPathSet',
+        'Add-CollectorJsonDepthRiskPaths',
+        'Get-CollectorJsonDepthRiskPathSet',
         'Convert-ToCollectorJsonText',
     ):
         policy_checks[f'{function_name}_present'] = bool(extract_function_body(core_text, function_name))
@@ -481,6 +483,7 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
             errors.append(f'collector JSON serialization helper is missing: {function_name}')
 
     policy_checks['shared_helper_default_depth_20'] = '[int]$Depth = 20' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
+    policy_checks['shared_helper_checks_source_depth_risks'] = 'Get-CollectorJsonDepthRiskPathSet -InputObject $InputObject -MaxDepth $Depth' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
     policy_checks['shared_helper_parses_emitted_json'] = 'ConvertFrom-Json -ErrorAction Stop' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
     policy_checks['shared_helper_compares_source_ellipsis_paths'] = '$sourceEllipsis.ContainsKey($_)' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
     policy_checks['shared_helper_records_collector_error'] = 'Add-CollectorError $message' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
@@ -499,6 +502,7 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
 
     for key in (
         'shared_helper_default_depth_20',
+        'shared_helper_checks_source_depth_risks',
         'shared_helper_parses_emitted_json',
         'shared_helper_compares_source_ellipsis_paths',
         'shared_helper_records_collector_error',
