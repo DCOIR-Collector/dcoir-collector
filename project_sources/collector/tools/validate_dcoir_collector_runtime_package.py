@@ -417,6 +417,112 @@ Assert-Condition ($workerMessage -like '*$.a.b*') 'worker sentinel depth error d
         result['status'] = 'passed_without_windows_powershell_5_1'
     return result
 
+def run_suspicious_process_parent_context_behavior_tests(source_dir: Path, manifest: Dict) -> Dict[str, object]:
+    result: Dict[str, object] = {
+        'available': False,
+        'status': 'skipped_powershell_unavailable',
+        'preferred_target': 'windows_powershell_5_1',
+        'shell_results': [],
+    }
+    shell_candidates = [
+        ('windows_powershell_5_1', shutil.which('powershell') or shutil.which('powershell.exe')),
+        ('pwsh', shutil.which('pwsh')),
+    ]
+    available_shells = [(label, path) for label, path in shell_candidates if path]
+    if not available_shells:
+        return result
+
+    result['available'] = True
+    dot_source_lines = build_dot_source_lines_for_functions(
+        source_dir,
+        manifest,
+        ['Get-SuspiciousProcessFindings'],
+    )
+    result['dotted_source_line_count'] = len([line for line in dot_source_lines.splitlines() if line.strip()])
+    script = f"""
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version 2
+{dot_source_lines}
+
+function Assert-Condition {{
+  param([bool]$Condition,[string]$Message)
+  if (-not $Condition) {{ throw $Message }}
+}}
+
+function New-TestProcess {{
+  param(
+    [int]$ProcessId,
+    [int]$ParentProcessId,
+    [string]$ParentProcessName,
+    [string]$Name,
+    [string]$ExecutablePath,
+    [string]$CommandLine
+  )
+  [pscustomobject]@{{
+    ProcessId = $ProcessId
+    ParentProcessId = $ParentProcessId
+    ParentProcessName = $ParentProcessName
+    Name = $Name
+    ExecutablePath = $ExecutablePath
+    CommandLine = $CommandLine
+  }}
+}}
+
+$benignParentShell = New-TestProcess -ProcessId 101 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' -CommandLine 'powershell.exe -NoLogo'
+$benignFindings = @(Get-SuspiciousProcessFindings -Processes @($benignParentShell) -ExcludedPids @())
+Assert-Condition ($benignFindings.Count -eq 0) 'benign-parent name-only PowerShell was not suppressed'
+
+$encodedShell = New-TestProcess -ProcessId 102 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' -CommandLine 'powershell.exe -EncodedCommand AAAA'
+$encodedFindings = @(Get-SuspiciousProcessFindings -Processes @($encodedShell) -ExcludedPids @())
+Assert-Condition ($encodedFindings.Count -eq 1) 'PowerShell command-line indicator was suppressed'
+Assert-Condition ($encodedFindings[0].Reasons -like '*suspicious PowerShell style command line*') 'PowerShell command-line reason missing'
+Assert-Condition ($encodedFindings[0].ParentProcessName -eq 'services.exe') 'PowerShell parent context missing'
+
+$wmicCreate = New-TestProcess -ProcessId 103 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'wmic.exe' -ExecutablePath 'C:\\Windows\\System32\\wbem\\wmic.exe' -CommandLine 'wmic process call create \"cmd.exe /c whoami\"'
+$wmicFindings = @(Get-SuspiciousProcessFindings -Processes @($wmicCreate) -ExcludedPids @())
+Assert-Condition ($wmicFindings.Count -eq 1) 'WMIC process creation indicator was suppressed'
+Assert-Condition ($wmicFindings[0].Reasons -like '*suspicious LOLBin usage*') 'WMIC LOLBin reason missing'
+
+$cmdHighRiskPath = New-TestProcess -ProcessId 104 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'cmd.exe' -ExecutablePath 'C:\\Temp\\cmd.exe' -CommandLine 'cmd.exe /c whoami'
+$pathFindings = @(Get-SuspiciousProcessFindings -Processes @($cmdHighRiskPath) -ExcludedPids @())
+Assert-Condition ($pathFindings.Count -eq 1) 'High-risk path indicator was suppressed'
+Assert-Condition ($pathFindings[0].Reasons -like '*process running from high-risk path*') 'High-risk path reason missing'
+"""
+    shell_results: List[Dict[str, object]] = []
+    for label, shell_path in available_shells:
+        with tempfile.NamedTemporaryFile('w', suffix='.ps1', encoding='utf-8', delete=False) as handle:
+            handle.write(script)
+            script_path = Path(handle.name)
+        try:
+            cmd = [shell_path, '-NoProfile']
+            if label == 'pwsh':
+                cmd.append('-NonInteractive')
+            if label == 'windows_powershell_5_1':
+                cmd.extend(['-ExecutionPolicy', 'Bypass'])
+            cmd.extend(['-File', str(script_path)])
+            completed = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        finally:
+            script_path.unlink(missing_ok=True)
+        shell_results.append({
+            'target': label,
+            'command': Path(shell_path).name,
+            'status': 'passed' if completed.returncode == 0 else 'failed',
+            'returncode': completed.returncode,
+            'stdout': completed.stdout[-4000:],
+            'stderr': completed.stderr[-4000:],
+        })
+
+    result['shell_results'] = shell_results
+    failed_results = [row for row in shell_results if row['status'] == 'failed']
+    windows_result = next((row for row in shell_results if row['target'] == 'windows_powershell_5_1'), None)
+    if failed_results:
+        result['status'] = 'failed'
+    elif windows_result:
+        result['status'] = 'passed'
+    else:
+        result['status'] = 'passed_without_windows_powershell_5_1'
+    return result
+
 def validate_state_recursion_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
     recursion_checks: Dict[str, object] = {}
     checks['state_recursion_policy'] = recursion_checks
@@ -796,6 +902,11 @@ def validate_suspicious_process_parent_context_policy(source_dir: Path, manifest
     policy_checks['benign_name_only_lolbin_limited_to_common_shells'] = (
         "$benignNameOnlyLolbinPattern = '^(powershell|pwsh|cmd|wmic)(\\.exe)?$'" in suspicious_body
     )
+    policy_checks['wmic_command_line_indicators_present'] = (
+        'wmic' in suspicious_body
+        and 'process\\s+call\\s+create' in suspicious_body
+        and '/node:' in suspicious_body
+    )
     policy_checks['known_benign_parent_pattern_present'] = (
         '$knownBenignLolbinParentPattern' in suspicious_body
         and 'svchost' in suspicious_body
@@ -814,10 +925,13 @@ def validate_suspicious_process_parent_context_policy(source_dir: Path, manifest
         'Select-Object ProcessId, ParentProcessId, ParentProcessName, Name' in reports_text
     )
     policy_checks['recommendations_include_parent_context'] = 'parent={0} ({1})' in reports_text
+    policy_checks['parent_context_behavior_tests'] = run_suspicious_process_parent_context_behavior_tests(source_dir, manifest)
 
     for key, value in policy_checks.items():
         if not value:
             errors.append('collector suspicious-process parent-context policy check failed: ' + key)
+    if policy_checks['parent_context_behavior_tests']['status'] == 'failed':
+        errors.append('collector suspicious-process parent-context behavior tests failed')
 
 def main() -> int:
     ap = argparse.ArgumentParser()
