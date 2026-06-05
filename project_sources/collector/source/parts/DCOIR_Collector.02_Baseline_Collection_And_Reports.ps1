@@ -66,7 +66,7 @@ Integer file size in KB.
 function Get-FileSizeKB {
   param([string]$Path)
   if (-not (Test-Path -LiteralPath $Path)) { return 0 }
-  return [int][Math]::Ceiling(((Get-Item -LiteralPath $Path).Length) / 1KB)
+  return [int][Math]::Ceiling(((Get-Item -LiteralPath $Path -ErrorAction Stop).Length) / 1KB)
 }
 
 <#
@@ -90,7 +90,7 @@ function Get-FileSha256 {
   param([string]$Path)
   if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path)) { return "" }
   try {
-    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash
+    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256 -ErrorAction Stop).Hash
   } catch {
     Add-CollectorError ("Failed to hash file [{0}]: {1}" -f $Path, $_.Exception.Message)
     return ""
@@ -466,7 +466,7 @@ function New-CollectUploadArtifacts {
       chunked_artifact_count = @($chunkCompanions).Count
       chunked_artifacts = @($chunkCompanions)
     }
-    Set-Content -Path $chunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8
+    Set-Content -Path $chunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8 -ErrorAction Stop
     $State.UploadSafeChunkManifestPath = $chunkManifestPath
     $Baseline.ArtifactMap['upload_safe_chunk_manifest'] = $chunkManifestPath
     [void]$Baseline.ArtifactPaths.Add($chunkManifestPath)
@@ -513,7 +513,7 @@ function New-CollectUploadArtifacts {
     $summaryLines += "- Upload the high-signal summary first for triage; use full-fidelity chunk companions when the oversized source artifact is needed."
   }
 
-  Set-Content -Path $uploadSummaryPath -Value $summaryLines -Encoding UTF8
+  Set-Content -Path $uploadSummaryPath -Value $summaryLines -Encoding UTF8 -ErrorAction Stop
 
   $manifestObj = [ordered]@{
     run_id = $State.RunId
@@ -529,7 +529,7 @@ function New-CollectUploadArtifacts {
     metadata_report_path = $State.MetadataReportPath
     note = 'The merged baseline report may be useful for local analyst review but is no longer the default Gemini-facing upload surface.'
   }
-  Set-Content -Path $uploadManifestPath -Value (Convert-ToSafeJsonText -InputObject $manifestObj) -Encoding UTF8
+  Set-Content -Path $uploadManifestPath -Value (Convert-ToSafeJsonText -InputObject $manifestObj) -Encoding UTF8 -ErrorAction Stop
 
   return @{
     UploadSummaryPath = $uploadSummaryPath
@@ -1029,5 +1029,5 @@ No direct output. Writes the report file as a side effect.
 #>
 function Write-ReportFile {
   param([string]$Path,[string]$Text)
-  Set-Content -Path $Path -Value $Text -Encoding UTF8
+  Set-Content -Path $Path -Value $Text -Encoding UTF8 -ErrorAction Stop
 }

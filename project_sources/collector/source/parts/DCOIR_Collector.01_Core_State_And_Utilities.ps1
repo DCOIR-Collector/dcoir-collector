@@ -41,7 +41,11 @@ function Add-CollectorError {
   if ([string]::IsNullOrWhiteSpace($Message)) { return }
   [void]$Global:CollectorErrors.Add($Message)
   if ($Global:ErrorsLogPath) {
-    Add-Content -Path $Global:ErrorsLogPath -Value ("[{0}] ERROR {1}" -f ((Get-Date).ToUniversalTime().ToString("o")), $Message) -Encoding UTF8
+    try {
+      Add-Content -Path $Global:ErrorsLogPath -Value ("[{0}] ERROR {1}" -f ((Get-Date).ToUniversalTime().ToString("o")), $Message) -Encoding UTF8 -ErrorAction Stop
+    } catch {
+      [void]$Global:CollectorNotes.Add(("Failed to append collector error log: {0}" -f $_.Exception.Message))
+    }
   }
 }
 
@@ -109,7 +113,7 @@ No direct output. Creates the directory as a side effect when needed.
 function Ensure-Directory {
   param([Parameter(Mandatory=$true)][string]$Path)
   if (-not (Test-Path -LiteralPath $Path)) {
-    New-Item -Path $Path -ItemType Directory -Force | Out-Null
+    New-Item -Path $Path -ItemType Directory -Force -ErrorAction Stop | Out-Null
   }
 }
 
@@ -307,9 +311,9 @@ function Write-StepLog {
   if ($Message) { $txtLine += (" message={0}" -f $Message) }
 
   if ($Global:ExecutionTxtPath) {
-    Add-Content -Path $Global:ExecutionTxtPath -Value $txtLine -Encoding UTF8
+    Add-Content -Path $Global:ExecutionTxtPath -Value $txtLine -Encoding UTF8 -ErrorAction Stop
     if ($Command) {
-      Add-Content -Path $Global:ExecutionTxtPath -Value ("  COMMAND={0}" -f $Command) -Encoding UTF8
+      Add-Content -Path $Global:ExecutionTxtPath -Value ("  COMMAND={0}" -f $Command) -Encoding UTF8 -ErrorAction Stop
     }
   }
 
@@ -325,7 +329,7 @@ function Write-StepLog {
       artifact_path = $ArtifactPath
       message = $Message
     }
-    Add-Content -Path $Global:ExecutionJsonlPath -Value ($obj | ConvertTo-Json -Compress) -Encoding UTF8
+    Add-Content -Path $Global:ExecutionJsonlPath -Value ($obj | ConvertTo-Json -Compress) -Encoding UTF8 -ErrorAction Stop
   }
 }
 
@@ -551,7 +555,7 @@ No direct output. Writes state.json as a side effect.
 function Save-State {
   param([Parameter(Mandatory=$true)][hashtable]$State)
   $json = $State | ConvertTo-Json -Depth 12
-  Set-Content -Path $State.StatePath -Value $json -Encoding UTF8
+  Set-Content -Path $State.StatePath -Value $json -Encoding UTF8 -ErrorAction Stop
 }
 
 <#
@@ -946,7 +950,7 @@ function Expand-PackageToTools {
   try {
     Remove-IfExists -LiteralPath $ToolsDir
     Ensure-Directory -Path $ToolsDir
-    Expand-Archive -LiteralPath $PackagePath -DestinationPath $ToolsDir -Force
+    Expand-Archive -LiteralPath $PackagePath -DestinationPath $ToolsDir -Force -ErrorAction Stop
   } catch {
     throw "Failed to expand package [$PackagePath] to [$ToolsDir]: $($_.Exception.Message)"
   }
@@ -1066,7 +1070,7 @@ function Write-SessionArtifactText {
   if ([string]::IsNullOrWhiteSpace($safeTarget)) { $safeTarget = "artifact" }
   if ($safeTarget.Length -gt 80) { $safeTarget = $safeTarget.Substring(0,80) }
   $path = Join-Path $SessionArtifactsDir ("{0:D2}_ENRICH_{1}_{2}.txt" -f $seq, $safeAction, $safeTarget)
-  Set-Content -Path $path -Value $Text -Encoding UTF8
+  Set-Content -Path $path -Value $Text -Encoding UTF8 -ErrorAction Stop
   return $path
 }
 
@@ -1692,7 +1696,7 @@ function Stage-PathCopy {
   Ensure-Directory -Path $StagedDir
   $leaf = Split-Path -Leaf $SourcePath
   $dest = Join-Path $StagedDir (New-StageName -Prefix ("STAGED_" + $leaf) -Extension "")
-  Copy-Item -LiteralPath $SourcePath -Destination $dest -Force
+  Copy-Item -LiteralPath $SourcePath -Destination $dest -Force -ErrorAction Stop
   return $dest
 }
 
