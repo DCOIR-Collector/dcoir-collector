@@ -153,9 +153,11 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     metadata_checks['late_bound_metadata_manifest_flag'] = 'metadata_report_late_bound_after_upload_artifacts = $true' in helper_text
     metadata_checks['late_bound_recommended_row_flag'] = 'late_bound_after_upload_artifacts = [bool]$isLateBoundMetadata' in helper_text
     metadata_checks['late_bound_metadata_not_budgeted'] = 'if (-not $isLateBoundMetadata) { $safeTotal += $sizeKB }' in helper_text
-    metadata_checks['late_bound_metadata_not_resolved'] = 'if ($pathExists)' in helper_text and 'else {
-      $pathText
-    }' in helper_text
+    metadata_checks['late_bound_metadata_not_resolved'] = (
+        'if ($pathExists)' in helper_text
+        and 'Resolve-Path -LiteralPath $pathText' in helper_text
+        and '$pathText' in helper_text
+    )
     metadata_checks['overview_includes_late_bound_metadata_path'] = "($pair.Label -eq 'METADATA_REPORT_PATH')" in helper_text
 
     if len(metadata_positions) != 1:
