@@ -432,7 +432,7 @@ function Get-SuspiciousProcessFindings {
     if ($cmd -match '(?i)(-enc\b|-encodedcommand\b|downloadstring|frombase64string|iex\b|invoke-expression\b|-w\s+hidden|-nop\b|-noni\b)') {
       [void]$reasons.Add("suspicious PowerShell style command line")
     }
-    if ($cmd -match '(?i)(mshta\.exe.*http|regsvr32\.exe.*(http|scrobj)|rundll32\.exe.*(appdata|temp|programdata)|wscript\.exe|cscript\.exe)') {
+    if ($cmd -match '(?i)(mshta\.exe.*http|regsvr32\.exe.*(http|scrobj)|rundll32\.exe.*(appdata|temp|programdata)|wscript\.exe|cscript\.exe|wmic(?:\.exe)?["\s]+.*(process\s+call\s+create|/node:))') {
       [void]$reasons.Add("suspicious LOLBin usage")
     }
     if ($pathValue -match '(?i)\\AppData\\|\\Temp\\|\\ProgramData\\') {
