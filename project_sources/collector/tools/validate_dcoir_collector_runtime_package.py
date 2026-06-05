@@ -96,6 +96,8 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     write_marker = 'Write-ReportFile -Path $metadataReportPath -Text $metadataText'
     upload_summary_marker = '$state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath'
     analyst_overview_marker = '$state.AnalystOverviewPath = New-AnalystOverviewArtifact -State $state -Baseline $baseline'
+    bundle_name_marker = '$bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)'
+    bundle_path_marker = '$bundlePath = Join-Path $state.BundlesDir $bundleName'
     collect_bundle_marker = '$state.CollectBundlePath = $bundlePath'
     manifest_marker = 'New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json")'
     bundle_call_marker = 'New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName'
@@ -104,6 +106,8 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     write_positions = [match.start() for match in re.finditer(re.escape(write_marker), text)]
     upload_summary_pos = text.find(upload_summary_marker)
     analyst_overview_pos = text.find(analyst_overview_marker)
+    bundle_name_pos = text.find(bundle_name_marker)
+    bundle_path_pos = text.find(bundle_path_marker)
     collect_bundle_pos = text.find(collect_bundle_marker)
     manifest_pos = text.find(manifest_marker)
     bundle_call_pos = text.find(bundle_call_marker)
@@ -113,10 +117,13 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     metadata_checks['metadata_report_write_count'] = len(write_positions)
     metadata_checks['upload_summary_before_metadata'] = bool(metadata_positions) and upload_summary_pos != -1 and upload_summary_pos < metadata_positions[0]
     metadata_checks['analyst_overview_before_metadata'] = bool(metadata_positions) and analyst_overview_pos != -1 and analyst_overview_pos < metadata_positions[0]
+    metadata_checks['bundle_name_before_metadata'] = bool(metadata_positions) and bundle_name_pos != -1 and bundle_name_pos < metadata_positions[0]
+    metadata_checks['bundle_path_before_metadata'] = bool(metadata_positions) and bundle_path_pos != -1 and bundle_path_pos < metadata_positions[0]
     metadata_checks['collect_bundle_path_before_metadata'] = bool(metadata_positions) and collect_bundle_pos != -1 and collect_bundle_pos < metadata_positions[0]
     metadata_checks['metadata_before_manifest'] = bool(metadata_positions) and manifest_pos != -1 and metadata_positions[0] < manifest_pos
     metadata_checks['metadata_write_before_manifest'] = bool(write_positions) and manifest_pos != -1 and write_positions[0] < manifest_pos
     metadata_checks['metadata_before_bundle'] = bool(metadata_positions) and bundle_call_pos != -1 and metadata_positions[0] < bundle_call_pos
+    metadata_checks['metadata_write_before_bundle'] = bool(write_positions) and bundle_call_pos != -1 and write_positions[0] < bundle_call_pos
     metadata_checks['metadata_write_follows_metadata_call'] = bool(metadata_positions) and bool(write_positions) and metadata_positions[0] < write_positions[0]
 
     if len(metadata_positions) != 1:
@@ -126,10 +133,13 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     for key in (
         'upload_summary_before_metadata',
         'analyst_overview_before_metadata',
+        'bundle_name_before_metadata',
+        'bundle_path_before_metadata',
         'collect_bundle_path_before_metadata',
         'metadata_before_manifest',
         'metadata_write_before_manifest',
         'metadata_before_bundle',
+        'metadata_write_before_bundle',
         'metadata_write_follows_metadata_call',
     ):
         if not metadata_checks[key]:
