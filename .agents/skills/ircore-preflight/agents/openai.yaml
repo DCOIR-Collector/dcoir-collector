@@ -1,0 +1,14 @@
+interface:
+  display_name: ircore preflight
+  short_description: compact startup and task-time router for ircore work, authority
+    checks, lane selection, GitHub work-item context, direct instruction-update lane
+    detection, and internal review gate awareness.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

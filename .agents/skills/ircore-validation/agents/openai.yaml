@@ -1,0 +1,14 @@
+interface:
+  display_name: ircore validation
+  short_description: validation and readback helper for ircore work. use for validation-rule
+    lookup, readiness gating, post-change readback discipline, workflow completion
+    evidence, and bounded claim language.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
