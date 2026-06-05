@@ -60,6 +60,58 @@ def validate_unique_function_definitions(source_dir: Path, manifest: Dict, check
     if manifest.get('function_override_manifest'):
         errors.append('function_override_manifest is obsolete; collector functions must be defined once')
 
+def validate_collect_manifest_bundle_ordering(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
+    main_entry_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
+    main_entry_path = source_dir / main_entry_rel
+    ordering_checks: Dict[str, object] = {'path': main_entry_rel}
+    checks['collect_manifest_bundle_ordering'] = ordering_checks
+    if not main_entry_path.exists():
+        ordering_checks['checked'] = False
+        errors.append('collect manifest ordering source is missing: ' + main_entry_rel)
+        return
+
+    text = main_entry_path.read_text(encoding='utf-8', errors='ignore')
+    manifest_marker = 'New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json")'
+    bundle_name_marker = '$bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)'
+    bundle_path_marker = '$bundlePath = Join-Path $state.BundlesDir $bundleName'
+    state_path_marker = '$state.CollectBundlePath = $bundlePath'
+    bundle_call_marker = 'New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName'
+
+    manifest_call_count = text.count(manifest_marker)
+    ordering_checks['checked'] = True
+    ordering_checks['collect_manifest_call_count'] = manifest_call_count
+    ordering_checks['collect_bundle_null_present'] = 'collect_bundle = $null' in text
+
+    bundle_name_pos = text.find(bundle_name_marker)
+    bundle_path_pos = text.find(bundle_path_marker)
+    state_path_pos = text.find(state_path_marker)
+    manifest_pos = text.find(manifest_marker)
+    bundle_call_pos = text.find(bundle_call_marker)
+
+    ordering_checks['bundle_name_precomputed_before_manifest'] = bundle_name_pos != -1 and bundle_name_pos < manifest_pos
+    ordering_checks['bundle_path_precomputed_before_manifest'] = bundle_path_pos != -1 and bundle_path_pos < manifest_pos
+    ordering_checks['state_collect_bundle_path_set_before_manifest'] = state_path_pos != -1 and state_path_pos < manifest_pos
+    ordering_checks['manifest_written_before_bundle'] = manifest_pos != -1 and bundle_call_pos != -1 and manifest_pos < bundle_call_pos
+    ordering_checks['bundle_call_uses_precomputed_name'] = bundle_call_pos != -1
+    ordering_checks['manifest_in_bundle_inputs'] = (
+        bundle_call_pos != -1 and '$collectManifest' in text[bundle_call_pos:bundle_call_pos + 1200]
+    )
+
+    if manifest_call_count != 1:
+        errors.append('collect mode must write manifest_collect.json exactly once before bundle creation')
+    if ordering_checks['collect_bundle_null_present']:
+        errors.append('collect mode must not write manifest_collect.json with collect_bundle = $null')
+    for key in (
+        'bundle_name_precomputed_before_manifest',
+        'bundle_path_precomputed_before_manifest',
+        'state_collect_bundle_path_set_before_manifest',
+        'manifest_written_before_bundle',
+        'bundle_call_uses_precomputed_name',
+        'manifest_in_bundle_inputs',
+    ):
+        if not ordering_checks[key]:
+            errors.append('collect manifest/bundle ordering check failed: ' + key)
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--source-dir', required=True)
@@ -98,6 +150,7 @@ def main() -> int:
         errors.append('collector_part_files references empty files: ' + ', '.join(empty_parts))
 
     validate_unique_function_definitions(source_dir, manifest, checks, errors)
+    validate_collect_manifest_bundle_ordering(source_dir, manifest, checks, errors)
 
     delivery_entries = manifest.get('delivery_zip_entries', [])
     checks['delivery_entry_count'] = len(delivery_entries)
