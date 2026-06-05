@@ -17,6 +17,7 @@
     "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1"
   ],
   "compiled_runtime_name": "DCOIR_Collector.ps1",
@@ -34,6 +35,7 @@
     "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1"
   ],
   "delivery_zip_entries": [
@@ -56,6 +58,7 @@
     "Diagnostic context and security visibility refinements are now integrated into single maintained function definitions in the compiled runtime output.",
     "PR #186 review fixes are loaded before the main entrypoint so custom RunId discovery, invalid-window fallback, and validation-only padding gates are active in the compiled runtime output.",
     "PR #186 external review fixes are loaded before the main entrypoint so exact custom RunId collect roots are purged before reuse without broadening blank/latest cleanup.",
+    "PR #212 metadata finalization fixes are loaded before the main entrypoint so collect upload guidance can reference the final metadata report path without snapshotting a placeholder file.",
     "Collector part files must not define the same PowerShell function name more than once across wrapper and part load order; duplicate function definitions are a package-validation failure.",
     "Script entries in this artifact intentionally end in .txt to bypass mail filters.",
     "Do not refresh supporting_assets/DCOIR_Collector.zip directly from this transport-safe artifact without restoring native runtime filenames first."
