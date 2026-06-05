@@ -127,7 +127,7 @@ function Find-LatestDCOIRRunDirectory {
   if ([string]::IsNullOrWhiteSpace($Root) -or -not (Test-Path -LiteralPath $Root)) { return $null }
   if (-not [string]::IsNullOrWhiteSpace($CurrentRunId)) {
     $expected = Get-RunRoot -Root $Root -CurrentRunId $CurrentRunId
-    if (Test-Path -LiteralPath $expected) { return Get-Item -LiteralPath $expected }
+    if (Test-Path -LiteralPath $expected) { return Get-Item -LiteralPath $expected -ErrorAction Stop }
     return $null
   }
 
@@ -170,7 +170,7 @@ function Load-State {
     if (-not (Test-Path -LiteralPath $statePath)) {
       throw "State file not found: $statePath"
     }
-    return (Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json)
+    return (Get-Content -LiteralPath $statePath -Raw -ErrorAction Stop | ConvertFrom-Json)
   }
 
   $statePath = Get-StatePath -Root $Root -CurrentRunId $CurrentRunId
@@ -178,7 +178,7 @@ function Load-State {
     throw "State file not found: $statePath"
   }
 
-  return (Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json)
+  return (Get-Content -LiteralPath $statePath -Raw -ErrorAction Stop | ConvertFrom-Json)
 }
 
 <#
