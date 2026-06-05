@@ -528,13 +528,100 @@ function Get-CollectorJsonEllipsisPathSet {
 
 <#
 .SYNOPSIS
+Records object paths that exceed one ConvertTo-Json depth policy.
+
+.DESCRIPTION
+Walks dictionaries, arrays, and PSObject properties before serialization. PowerShell does
+not consistently emit an exact "..." sentinel when ConvertTo-Json exceeds depth, so this
+preflight identifies non-scalar objects that would be serialized at or beyond the policy
+depth and records their paths as truncation risks.
+
+.FUNCTION NAME
+Add-CollectorJsonDepthRiskPaths
+
+.INPUTS
+InputObject, current path, destination path set, max JSON depth, and current depth.
+
+.OUTPUTS
+No direct output. Updates PathSet as a side effect.
+#>
+function Add-CollectorJsonDepthRiskPaths {
+  param(
+    [object]$InputObject,
+    [string]$Path,
+    [hashtable]$PathSet,
+    [int]$MaxDepth,
+    [int]$CurrentDepth = 0
+  )
+
+  if ($null -eq $InputObject) { return }
+  if ([string]::IsNullOrWhiteSpace($Path)) { $Path = '$' }
+  if (($InputObject -is [string]) -or ($InputObject -is [System.ValueType])) { return }
+  if ($CurrentDepth -ge $MaxDepth) {
+    $PathSet[$Path] = $true
+    return
+  }
+
+  if ($InputObject -is [System.Collections.IDictionary]) {
+    foreach ($key in @($InputObject.Keys)) {
+      $childPath = ('{0}.{1}' -f $Path, [string]$key)
+      Add-CollectorJsonDepthRiskPaths -InputObject $InputObject[$key] -Path $childPath -PathSet $PathSet -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1)
+    }
+    return
+  }
+
+  if (($InputObject -is [System.Collections.IEnumerable]) -and -not ($InputObject -is [string])) {
+    $index = 0
+    foreach ($item in @($InputObject)) {
+      $childPath = ('{0}[{1}]' -f $Path, $index)
+      Add-CollectorJsonDepthRiskPaths -InputObject $item -Path $childPath -PathSet $PathSet -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1)
+      $index += 1
+    }
+    return
+  }
+
+  $psProps = @()
+  try { $psProps = @($InputObject.PSObject.Properties) } catch { $psProps = @() }
+  foreach ($prop in $psProps) {
+    $childPath = ('{0}.{1}' -f $Path, [string]$prop.Name)
+    Add-CollectorJsonDepthRiskPaths -InputObject $prop.Value -Path $childPath -PathSet $PathSet -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1)
+  }
+}
+
+<#
+.SYNOPSIS
+Returns object paths that exceed one ConvertTo-Json depth policy.
+
+.DESCRIPTION
+Creates a path set for non-scalar source objects that would be serialized at or beyond the
+configured JSON depth.
+
+.FUNCTION NAME
+Get-CollectorJsonDepthRiskPathSet
+
+.INPUTS
+InputObject and max JSON depth.
+
+.OUTPUTS
+Hashtable keyed by path.
+#>
+function Get-CollectorJsonDepthRiskPathSet {
+  param([object]$InputObject,[int]$MaxDepth = 20)
+  $paths = @{}
+  Add-CollectorJsonDepthRiskPaths -InputObject $InputObject -Path '$' -PathSet $paths -MaxDepth $MaxDepth
+  return $paths
+}
+
+<#
+.SYNOPSIS
 Serializes one collector object to JSON with truncation detection.
 
 .DESCRIPTION
-Uses one collector-wide JSON depth policy, parses the emitted JSON back, and compares
-exact ellipsis-string paths against the original object. If ConvertTo-Json introduced an
-ellipsis sentinel at a path that was not already an exact ellipsis string, the helper
-records an operator-visible collector error and can throw for truth surfaces.
+Uses one collector-wide JSON depth policy, checks the source graph for depth-risk paths,
+parses the emitted JSON back, and compares exact ellipsis-string paths against the
+original object. If source depth exceeds policy or ConvertTo-Json introduced an ellipsis
+sentinel at a path that was not already an exact ellipsis string, the helper records an
+operator-visible collector error and can throw for truth surfaces.
 
 .FUNCTION NAME
 Convert-ToCollectorJsonText
@@ -557,6 +644,13 @@ function Convert-ToCollectorJsonText {
 
   $jsonArgs = @{ Depth = $Depth; ErrorAction = 'Stop' }
   if ($Compress) { $jsonArgs['Compress'] = $true }
+  $sourceDepthRisks = Get-CollectorJsonDepthRiskPathSet -InputObject $InputObject -MaxDepth $Depth
+  if (@($sourceDepthRisks.Keys).Count -gt 0) {
+    $depthRiskPaths = @($sourceDepthRisks.Keys | Sort-Object)
+    $message = ('JSON serialization for [{0}] exceeds configured depth {1}; non-scalar source object paths at risk: {2}' -f $Label, $Depth, ($depthRiskPaths -join ', '))
+    Add-CollectorError $message
+    if ($ThrowOnTruncation) { throw $message }
+  }
   $json = $InputObject | ConvertTo-Json @jsonArgs
 
   try {
