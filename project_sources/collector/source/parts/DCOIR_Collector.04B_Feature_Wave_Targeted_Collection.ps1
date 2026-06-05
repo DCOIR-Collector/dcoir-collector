@@ -181,7 +181,7 @@ function Get-CollectorParallelismAssessmentText {
   $lines += "4. Security posture worker for firewall profile capture."
   $lines += ""
   $lines += "SAFETY GUARDRAILS"
-  $lines += "1. Each worker writes its own durable artifact under final_artifacts\\parallel_workers."
+  $lines += "1. Each worker writes its own durable artifact under final_artifacts\parallel_workers."
   $lines += "2. The parent waits for all workers to finish before continuing deterministic report assembly."
   $lines += "3. Steps not successfully cached by a worker fall back to serial execution when needed."
   $lines += ""
@@ -272,7 +272,7 @@ function New-AnalystOverviewArtifact {
   [void]$lines.Add("NO_MERGED_BASELINE_REPORT")
   [void]$lines.Add("No merged baseline report is emitted in this build. Use metadata plus representative artifacts for broader local review.")
 
-  Set-Content -Path $overviewPath -Value $lines -Encoding UTF8
+  Set-Content -Path $overviewPath -Value $lines -Encoding UTF8 -ErrorAction Stop
   return $overviewPath
 }
 
@@ -372,7 +372,7 @@ function Split-ValidationTextArtifactIntoChunks {
 
   $chunkPaths = New-Object System.Collections.ArrayList
   $targetBytes = $TargetChunkKB * 1024
-  $lines = Get-Content -LiteralPath $SourcePath
+  $lines = Get-Content -LiteralPath $SourcePath -ErrorAction Stop
   $chunkIndex = 1
   $currentBytes = 0
   $sb = New-Object System.Text.StringBuilder

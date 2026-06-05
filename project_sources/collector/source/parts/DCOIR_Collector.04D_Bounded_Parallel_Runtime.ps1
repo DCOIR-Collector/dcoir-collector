@@ -247,7 +247,7 @@ function Initialize-ParallelBaselineCache {
     }
 
     $resultPath = Join-Path $ParallelWorkerDir ('parallel_worker_{0}.json.txt' -f [string]$WorkerDefinition.Name)
-    Set-Content -Path $resultPath -Value (($workerResult | ConvertTo-Json -Depth 10) + [Environment]::NewLine) -Encoding UTF8
+    Set-Content -Path $resultPath -Value (($workerResult | ConvertTo-Json -Depth 10) + [Environment]::NewLine) -Encoding UTF8 -ErrorAction Stop
     return $resultPath
   }
 
@@ -271,7 +271,7 @@ function Initialize-ParallelBaselineCache {
         foreach ($resultPath in $jobOutput) {
           if (-not [string]::IsNullOrWhiteSpace([string]$resultPath) -and (Test-Path -LiteralPath $resultPath)) {
             [void]$Global:ParallelBaselineWorkerArtifacts.Add([string]$resultPath)
-            $workerObject = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+            $workerObject = Get-Content -LiteralPath $resultPath -Raw -ErrorAction Stop | ConvertFrom-Json
             [void]$workerObjects.Add($workerObject)
             foreach ($stepResult in @($workerObject.step_results)) {
               if ($stepResult.within_allowed_exit_codes) {

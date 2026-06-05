@@ -92,12 +92,12 @@ function Invoke-EnrichmentAction-Retrieval {
       $nextStep = "If the file references other paths or URLs, follow the next most suspicious reference."
     }
     "PullTaskXml" {
-      if (-not $Path) { throw "PullTaskXml requires -Path with the task name, for example \\Microsoft\\Windows\\TaskName" }
+      if (-not $Path) { throw "PullTaskXml requires -Path with the task name, for example \Microsoft\Windows\TaskName" }
       $reason = "Export scheduled task XML for analyst review."
       $targetDetails = "TaskName=$Path"
       $taskXml = Get-TaskXml -TaskName $Path
       $stagedPath = Join-Path $sessionStagedDir (New-StageName -Prefix "STAGED_TASK_XML" -Extension ".xml")
-      Set-Content -Path $stagedPath -Value $taskXml -Encoding UTF8
+      Set-Content -Path $stagedPath -Value $taskXml -Encoding UTF8 -ErrorAction Stop
       $outputText = "Task XML exported and staged for retrieval.`r`nSTAGED_PATH=$stagedPath"
       $interpretation = "Review author, principal, triggers, actions, working directory, and command arguments."
       $nextStep = "If the action points to a file path, stage that file next."
@@ -158,7 +158,7 @@ function Invoke-EnrichmentAction-Retrieval {
   }
 
   $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString()
-  Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8
+  Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
 
   $Session.ActionCount = [int]$Session.ActionCount + 1
 
