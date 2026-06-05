@@ -4,6 +4,9 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
+import subprocess
+import tempfile
 from pathlib import Path
 from typing import Dict, List
 
@@ -80,6 +83,122 @@ def extract_function_body(text: str, function_name: str) -> str:
             if depth == 0:
                 return text[brace_start:index + 1]
     return text[brace_start:]
+
+def strip_powershell_comments(text: str) -> str:
+    text = re.sub(r'<#.*?#>', '', text, flags=re.DOTALL)
+    lines: List[str] = []
+    for line in text.splitlines():
+        if line.lstrip().startswith('#'):
+            lines.append('')
+            continue
+        lines.append(line)
+    return '\n'.join(lines)
+
+def strip_powershell_quoted_text(text: str) -> str:
+    output: List[str] = []
+    index = 0
+    quote_char = ''
+    while index < len(text):
+        char = text[index]
+        if quote_char:
+            if char == quote_char:
+                if quote_char == "'" and index + 1 < len(text) and text[index + 1] == "'":
+                    output.extend((' ', ' '))
+                    index += 2
+                    continue
+                if quote_char == '"' and index > 0 and text[index - 1] == '`':
+                    output.append(' ')
+                    index += 1
+                    continue
+                quote_char = ''
+            output.append('\n' if char == '\n' else ' ')
+            index += 1
+            continue
+        if char in ("'", '"'):
+            quote_char = char
+            output.append(' ')
+            index += 1
+            continue
+        output.append(char)
+        index += 1
+    return ''.join(output)
+
+def find_convert_to_json_calls(rel: str, text: str) -> List[Dict[str, object]]:
+    command_pattern = re.compile(r'(?<![-.\w])(?:[-A-Za-z0-9_.]+\\)?ConvertTo-Json\b', re.IGNORECASE)
+    clean_text = strip_powershell_quoted_text(strip_powershell_comments(text))
+    calls: List[Dict[str, object]] = []
+    for line_number, line in enumerate(clean_text.splitlines(), 1):
+        if not command_pattern.search(line):
+            continue
+        calls.append({'path': rel, 'line': line_number, 'text': line.strip()})
+    return calls
+
+def run_json_policy_behavior_tests(source_dir: Path, core_rel: str) -> Dict[str, object]:
+    result: Dict[str, object] = {
+        'available': False,
+        'status': 'skipped_powershell_unavailable',
+        'command': None,
+        'stdout': '',
+        'stderr': '',
+    }
+    shell_path = shutil.which('pwsh') or shutil.which('powershell')
+    if not shell_path:
+        return result
+
+    result['available'] = True
+    result['command'] = Path(shell_path).name
+    core_path = (source_dir / core_rel).resolve()
+    script = f"""
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version 2
+$Global:CollectorErrors = New-Object System.Collections.ArrayList
+$Global:CollectorNotes = New-Object System.Collections.ArrayList
+$Global:ErrorsLogPath = $null
+. '{str(core_path).replace("'", "''")}'
+
+function Assert-Condition {{
+  param([bool]$Condition,[string]$Message)
+  if (-not $Condition) {{ throw $Message }}
+}}
+
+$deep = [ordered]@{{ a = [ordered]@{{ b = [ordered]@{{ c = [ordered]@{{ d = [ordered]@{{ e = 'leaf' }} }} }} }} }}
+$threw = $false
+try {{
+  Convert-ToCollectorJsonText -InputObject $deep -Depth 3 -Label 'behavior deep object' -ThrowOnTruncation | Out-Null
+}} catch {{
+  $threw = $true
+}}
+Assert-Condition $threw 'deep object truncation was not detected'
+Assert-Condition ($Global:CollectorErrors.Count -ge 1) 'deep object truncation was not recorded'
+
+$Global:CollectorErrors.Clear()
+$legitimateEllipsis = [ordered]@{{ outer = [ordered]@{{ marker = '...' }} }}
+Convert-ToCollectorJsonText -InputObject $legitimateEllipsis -Depth 5 -Label 'legitimate ellipsis' -ThrowOnTruncation | Out-Null
+Assert-Condition ($Global:CollectorErrors.Count -eq 0) 'legitimate ellipsis string was treated as truncation'
+
+$jsonl = Convert-ToCollectorJsonText -InputObject ([ordered]@{{ x = 1 }}) -Compress -AppendNewline -Label 'newline behavior'
+Assert-Condition ($jsonl.EndsWith([Environment]::NewLine)) 'AppendNewline did not append the platform newline'
+"""
+    with tempfile.NamedTemporaryFile('w', suffix='.ps1', encoding='utf-8', delete=False) as handle:
+        handle.write(script)
+        script_path = Path(handle.name)
+    try:
+        cmd = [shell_path, '-NoProfile', '-NonInteractive']
+        if Path(shell_path).name.lower().startswith('powershell'):
+            cmd.extend(['-ExecutionPolicy', 'Bypass'])
+        cmd.extend(['-File', str(script_path)])
+        completed = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    finally:
+        script_path.unlink(missing_ok=True)
+
+    result['stdout'] = completed.stdout[-4000:]
+    result['stderr'] = completed.stderr[-4000:]
+    if completed.returncode == 0:
+        result['status'] = 'passed'
+    else:
+        result['status'] = 'failed'
+        result['returncode'] = completed.returncode
+    return result
 
 def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Dict[str, object], errors: List[str]) -> None:
     main_entry_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
@@ -279,6 +398,93 @@ def validate_bundle_metadata_sync_terminates(source_dir: Path, checks: Dict[str,
     if not sync_checks['sync_catch_throws_after_error']:
         errors.append('metadata companion sync failures must terminate bundle creation after recording the error')
 
+def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
+    policy_checks: Dict[str, object] = {}
+    checks['json_serialization_policy'] = policy_checks
+
+    source_rels = [manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])
+    source_text_by_rel: Dict[str, str] = {}
+    for rel in source_rels:
+        path = source_dir / rel
+        if path.exists():
+            source_text_by_rel[rel] = path.read_text(encoding='utf-8', errors='ignore')
+
+    core_rel = 'project_sources/collector/source/parts/DCOIR_Collector.01_Core_State_And_Utilities.ps1'
+    reports_rel = 'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'
+    parallel_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1'
+    manifest_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1'
+
+    core_text = source_text_by_rel.get(core_rel, '')
+    reports_text = source_text_by_rel.get(reports_rel, '')
+    parallel_text = source_text_by_rel.get(parallel_rel, '')
+    manifest_text = source_text_by_rel.get(manifest_rel, '')
+
+    for function_name in (
+        'Add-CollectorJsonEllipsisPaths',
+        'Get-CollectorJsonEllipsisPathSet',
+        'Convert-ToCollectorJsonText',
+    ):
+        policy_checks[f'{function_name}_present'] = bool(extract_function_body(core_text, function_name))
+        if not policy_checks[f'{function_name}_present']:
+            errors.append(f'collector JSON serialization helper is missing: {function_name}')
+
+    policy_checks['shared_helper_default_depth_20'] = '[int]$Depth = 20' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
+    policy_checks['shared_helper_parses_emitted_json'] = 'ConvertFrom-Json -ErrorAction Stop' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
+    policy_checks['shared_helper_compares_source_ellipsis_paths'] = '$sourceEllipsis.ContainsKey($_)' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
+    policy_checks['shared_helper_records_collector_error'] = 'Add-CollectorError $message' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
+    policy_checks['shared_helper_can_throw'] = 'if ($ThrowOnTruncation) { throw $message }' in extract_function_body(core_text, 'Convert-ToCollectorJsonText')
+    policy_checks['save_state_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $State -Label 'state.json' -ThrowOnTruncation" in core_text
+    policy_checks['step_log_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $obj -Compress -Label 'execution step JSONL'" in core_text
+    policy_checks['safe_json_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $InputObject -Label 'safe JSON artifact' -AppendNewline -ThrowOnTruncation" in reports_text
+    policy_checks['manifest_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $manifest -Label 'manifest JSON' -ThrowOnTruncation" in manifest_text
+    policy_checks['worker_uses_depth_20'] = '$workerJson = $workerResult | ConvertTo-Json -Depth 20 -ErrorAction Stop' in parallel_text
+    policy_checks['worker_parses_and_checks_sentinel'] = (
+        'ConvertFrom-Json -ErrorAction Stop' in parallel_text
+        and 'Test-WorkerJsonContainsEllipsisSentinel' in parallel_text
+        and 'Parallel worker result JSON' in parallel_text
+    )
+    policy_checks['shared_helper_behavior_tests'] = run_json_policy_behavior_tests(source_dir, core_rel)
+
+    for key in (
+        'shared_helper_default_depth_20',
+        'shared_helper_parses_emitted_json',
+        'shared_helper_compares_source_ellipsis_paths',
+        'shared_helper_records_collector_error',
+        'shared_helper_can_throw',
+        'save_state_uses_shared_helper',
+        'step_log_uses_shared_helper',
+        'safe_json_uses_shared_helper',
+        'manifest_uses_shared_helper',
+        'worker_uses_depth_20',
+        'worker_parses_and_checks_sentinel',
+    ):
+        if not policy_checks[key]:
+            errors.append('collector JSON serialization policy check failed: ' + key)
+    if policy_checks['shared_helper_behavior_tests']['status'] == 'failed':
+        errors.append('collector JSON serialization policy behavior tests failed')
+
+    approved_raw_calls = {
+        (core_rel, '$json = $InputObject | ConvertTo-Json @jsonArgs'),
+        (parallel_rel, '$workerJson = $workerResult | ConvertTo-Json -Depth 20 -ErrorAction Stop'),
+    }
+    raw_calls: List[Dict[str, object]] = []
+    unapproved_raw_calls: List[Dict[str, object]] = []
+    for rel, text in source_text_by_rel.items():
+        for row in find_convert_to_json_calls(rel, text):
+            raw_calls.append(row)
+            if (rel, row['text']) not in approved_raw_calls:
+                unapproved_raw_calls.append(row)
+
+    policy_checks['raw_convert_to_json_calls'] = raw_calls
+    policy_checks['raw_convert_to_json_detector'] = 'broad_unqualified_or_module_qualified_command_scan_with_comment_stripping'
+    policy_checks['unapproved_raw_convert_to_json_calls'] = unapproved_raw_calls
+    policy_checks['unapproved_raw_convert_to_json_absent'] = len(unapproved_raw_calls) == 0
+    if unapproved_raw_calls:
+        errors.append(
+            'collector source must route JSON serialization through the approved policy helpers; unapproved raw ConvertTo-Json calls: '
+            + ', '.join(f"{row['path']}:{row['line']}" for row in unapproved_raw_calls)
+        )
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--source-dir', required=True)
@@ -320,6 +526,7 @@ def main() -> int:
     validate_collect_metadata_report_write_ordering(source_dir, checks, errors)
     validate_collect_manifest_bundle_ordering(source_dir, manifest, checks, errors)
     validate_bundle_metadata_sync_terminates(source_dir, checks, errors)
+    validate_json_serialization_policy(source_dir, manifest, checks, errors)
 
     delivery_entries = manifest.get('delivery_zip_entries', [])
     checks['delivery_entry_count'] = len(delivery_entries)
