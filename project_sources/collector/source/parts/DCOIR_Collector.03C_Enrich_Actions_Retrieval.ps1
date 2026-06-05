@@ -66,7 +66,7 @@ function Invoke-EnrichmentAction-Retrieval {
       if (-not $LogName) { throw "LogRaw requires -LogName" }
       $reason = "Raw EVTX export for analyst workstation review."
       $targetDetails = Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take $MaxEvents
-      $safeLogName = ($LogName -replace '[\/:*?"<>|]','_')
+      $safeLogName = ($LogName -replace '[\\/:*?"<>|]','_')
       $stagedPath = Join-Path $sessionStagedDir (New-StageName -Prefix ("STAGED_LogRaw_" + $safeLogName) -Extension ".evtx")
       Export-FilteredEvtx -LogChannel $LogName -WindowHours $Hours -Ids $EventId -OutPath $stagedPath -ScratchDir $sessionLogsDir
       $outputText = "Raw EVTX exported and staged for retrieval.`r`nSTAGED_PATH=$stagedPath"
