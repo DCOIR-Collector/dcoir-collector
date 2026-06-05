@@ -83,34 +83,39 @@ def extract_function_body(text: str, function_name: str) -> str:
 
 def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Dict[str, object], errors: List[str]) -> None:
     main_entry_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
+    helper_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1'
     main_entry_path = source_dir / main_entry_rel
-    metadata_checks: Dict[str, object] = {'path': main_entry_rel}
+    helper_path = source_dir / helper_rel
+    metadata_checks: Dict[str, object] = {'path': main_entry_rel, 'helper_path': helper_rel}
     checks['collect_metadata_report_write_ordering'] = metadata_checks
     if not main_entry_path.exists():
         metadata_checks['checked'] = False
         errors.append('collect metadata report source is missing: ' + main_entry_rel)
         return
+    if not helper_path.exists():
+        metadata_checks['checked'] = False
+        errors.append('collect metadata late-bound helper source is missing: ' + helper_rel)
+        return
 
     text = main_entry_path.read_text(encoding='utf-8', errors='ignore')
-    metadata_path_placeholder_marker = '[void](New-Item -ItemType File -Path $metadataReportPath -Force)'
-    upload_artifacts_marker = '$uploadArtifacts = New-CollectUploadArtifacts -State $state -Baseline $baseline'
+    helper_text = helper_path.read_text(encoding='utf-8', errors='ignore')
     metadata_marker = '$metadataText = New-MetadataReport -State $state -ToolMap $toolMap'
     write_marker = 'Write-ReportFile -Path $metadataReportPath -Text $metadataText'
+    placeholder_marker = 'New-Item -ItemType File -Path $metadataReportPath'
+    upload_artifacts_marker = '$uploadArtifacts = New-CollectUploadArtifactsWithLateMetadataReport -State $state -Baseline $baseline'
     upload_summary_marker = '$state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath'
     upload_budget_marker = '$state.UploadBudgetManifestPath = $uploadArtifacts.UploadManifestPath'
     default_upload_set_marker = '$state.DefaultGeminiUploadSetStatus = $uploadArtifacts.DefaultSetStatus'
     upload_safe_chunk_marker = '$state.UploadSafeChunkManifestPath = $uploadArtifacts.UploadSafeChunkManifestPath'
-    analyst_overview_marker = '$state.AnalystOverviewPath = New-AnalystOverviewArtifact -State $state -Baseline $baseline'
+    analyst_overview_marker = '$state.AnalystOverviewPath = New-AnalystOverviewArtifactWithLateMetadataReport -State $state -Baseline $baseline'
     bundle_name_marker = '$bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)'
     bundle_path_marker = '$bundlePath = Join-Path $state.BundlesDir $bundleName'
     collect_bundle_marker = '$state.CollectBundlePath = $bundlePath'
     manifest_marker = 'New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json")'
     bundle_call_marker = 'New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName'
 
-    metadata_path_placeholder_positions = [match.start() for match in re.finditer(re.escape(metadata_path_placeholder_marker), text)]
     metadata_positions = [match.start() for match in re.finditer(re.escape(metadata_marker), text)]
     write_positions = [match.start() for match in re.finditer(re.escape(write_marker), text)]
-    metadata_path_placeholder_pos = metadata_path_placeholder_positions[0] if metadata_path_placeholder_positions else -1
     upload_artifacts_pos = text.find(upload_artifacts_marker)
     upload_summary_pos = text.find(upload_summary_marker)
     upload_budget_pos = text.find(upload_budget_marker)
@@ -124,15 +129,14 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     bundle_call_pos = text.find(bundle_call_marker)
 
     metadata_checks['checked'] = True
-    metadata_checks['metadata_path_placeholder_count'] = len(metadata_path_placeholder_positions)
     metadata_checks['metadata_report_call_count'] = len(metadata_positions)
     metadata_checks['metadata_report_write_count'] = len(write_positions)
-    metadata_checks['metadata_path_available_before_upload_artifacts'] = (
-        metadata_path_placeholder_pos != -1 and upload_artifacts_pos != -1 and metadata_path_placeholder_pos < upload_artifacts_pos
-    )
-    metadata_checks['metadata_path_available_before_analyst_overview'] = (
-        metadata_path_placeholder_pos != -1 and analyst_overview_pos != -1 and metadata_path_placeholder_pos < analyst_overview_pos
-    )
+    metadata_checks['placeholder_metadata_file_absent'] = placeholder_marker not in text
+    metadata_checks['late_bound_upload_builder_used'] = upload_artifacts_pos != -1
+    metadata_checks['late_bound_overview_builder_used'] = analyst_overview_pos != -1
+    metadata_checks['old_upload_builder_not_used_in_collect'] = 'New-CollectUploadArtifacts -State $state -Baseline $baseline' not in text
+    metadata_checks['old_overview_builder_not_used_in_collect'] = 'New-AnalystOverviewArtifact -State $state -Baseline $baseline' not in text
+    metadata_checks['upload_artifacts_before_metadata'] = bool(metadata_positions) and upload_artifacts_pos != -1 and upload_artifacts_pos < metadata_positions[0]
     metadata_checks['upload_summary_before_metadata'] = bool(metadata_positions) and upload_summary_pos != -1 and upload_summary_pos < metadata_positions[0]
     metadata_checks['upload_budget_manifest_before_metadata'] = bool(metadata_positions) and upload_budget_pos != -1 and upload_budget_pos < metadata_positions[0]
     metadata_checks['default_upload_set_status_before_metadata'] = bool(metadata_positions) and default_upload_set_pos != -1 and default_upload_set_pos < metadata_positions[0]
@@ -146,16 +150,25 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     metadata_checks['metadata_before_bundle'] = bool(metadata_positions) and bundle_call_pos != -1 and metadata_positions[0] < bundle_call_pos
     metadata_checks['metadata_write_before_bundle'] = bool(write_positions) and bundle_call_pos != -1 and write_positions[0] < bundle_call_pos
     metadata_checks['metadata_write_follows_metadata_call'] = bool(metadata_positions) and bool(write_positions) and metadata_positions[0] < write_positions[0]
+    metadata_checks['late_bound_metadata_manifest_flag'] = 'metadata_report_late_bound_after_upload_artifacts = $true' in helper_text
+    metadata_checks['late_bound_recommended_row_flag'] = 'late_bound_after_upload_artifacts = [bool]$isLateBoundMetadata' in helper_text
+    metadata_checks['late_bound_metadata_not_budgeted'] = 'if (-not $isLateBoundMetadata) { $safeTotal += $sizeKB }' in helper_text
+    metadata_checks['late_bound_metadata_not_resolved'] = 'if ($pathExists)' in helper_text and 'else {
+      $pathText
+    }' in helper_text
+    metadata_checks['overview_includes_late_bound_metadata_path'] = "($pair.Label -eq 'METADATA_REPORT_PATH')" in helper_text
 
-    if len(metadata_path_placeholder_positions) != 1:
-        errors.append('collect mode must publish the metadata report path exactly once before upload and overview guidance are built')
     if len(metadata_positions) != 1:
         errors.append('collect mode must call New-MetadataReport exactly once after late-bound collect fields are populated')
     if len(write_positions) != 1:
         errors.append('collect mode must write the metadata report exactly once')
     for key in (
-        'metadata_path_available_before_upload_artifacts',
-        'metadata_path_available_before_analyst_overview',
+        'placeholder_metadata_file_absent',
+        'late_bound_upload_builder_used',
+        'late_bound_overview_builder_used',
+        'old_upload_builder_not_used_in_collect',
+        'old_overview_builder_not_used_in_collect',
+        'upload_artifacts_before_metadata',
         'upload_summary_before_metadata',
         'upload_budget_manifest_before_metadata',
         'default_upload_set_status_before_metadata',
@@ -169,6 +182,11 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
         'metadata_before_bundle',
         'metadata_write_before_bundle',
         'metadata_write_follows_metadata_call',
+        'late_bound_metadata_manifest_flag',
+        'late_bound_recommended_row_flag',
+        'late_bound_metadata_not_budgeted',
+        'late_bound_metadata_not_resolved',
+        'overview_includes_late_bound_metadata_path',
     ):
         if not metadata_checks[key]:
             errors.append('collect metadata report write ordering check failed: ' + key)
