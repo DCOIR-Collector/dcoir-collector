@@ -236,7 +236,7 @@ function Write-ArtifactText {
   if ($Name -eq 'collection_metadata.txt') {
     Write-DCOIRUtf8NoBomText -Path $path -Text $artifactText
   } else {
-    Set-Content -Path $path -Value $artifactText -Encoding UTF8
+    Set-Content -Path $path -Value $artifactText -Encoding UTF8 -ErrorAction Stop
   }
 
   try {
@@ -247,7 +247,7 @@ function Write-ArtifactText {
       if ($Name -eq 'collection_metadata.txt') {
         Write-DCOIRUtf8NoBomText -Path $sectionPath -Text $artifactText
       } else {
-        Set-Content -Path $sectionPath -Value $artifactText -Encoding UTF8
+        Set-Content -Path $sectionPath -Value $artifactText -Encoding UTF8 -ErrorAction Stop
       }
     }
   } catch {
@@ -355,7 +355,7 @@ function New-Manifest {
     tool_map = $ToolMap
     extra = $Extra
   }
-  Set-Content -Path $ManifestPath -Value ($manifest | ConvertTo-Json -Depth 12) -Encoding UTF8
+  Set-Content -Path $ManifestPath -Value ($manifest | ConvertTo-Json -Depth 12) -Encoding UTF8 -ErrorAction Stop
   return $ManifestPath
 }
 
@@ -388,7 +388,7 @@ function Sync-CollectionMetadataCompanionArtifact {
   if (-not (Test-Path -LiteralPath $rootPath)) { return }
 
   try {
-    $artifactText = Get-Content -LiteralPath $rootPath -Raw
+    $artifactText = Get-Content -LiteralPath $rootPath -Raw -ErrorAction Stop
     $artifactText = Add-BoundedCollectFieldsToCollectionMetadataText -Name 'collection_metadata.txt' -Text $artifactText
     $artifactText = Convert-CollectionMetadataValidationText -Text $artifactText
     $sectionDir = Join-Path $ArtifactsDir 'COLLECTION_METADATA'
@@ -443,6 +443,6 @@ function New-BundleZip {
   if (@($existing).Count -eq 0) {
     throw 'No bundle inputs were found.'
   }
-  Compress-Archive -LiteralPath $existing -DestinationPath $bundlePath -CompressionLevel Optimal -Force
+  Compress-Archive -LiteralPath $existing -DestinationPath $bundlePath -CompressionLevel Optimal -Force -ErrorAction Stop
   return $bundlePath
 }
