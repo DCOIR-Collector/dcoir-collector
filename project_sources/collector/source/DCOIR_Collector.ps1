@@ -66,7 +66,7 @@ param(
 )
 
 Set-StrictMode -Version 2
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = "Stop"
 
 <#
 .SYNOPSIS
