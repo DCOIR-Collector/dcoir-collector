@@ -252,7 +252,7 @@ Assert-Condition ($jsonl.EndsWith([Environment]::NewLine)) 'AppendNewline did no
         result['status'] = 'passed_without_windows_powershell_5_1'
     return result
 
-def run_state_recursion_behavior_tests(source_dir: Path, core_rel: str) -> Dict[str, object]:
+def run_state_recursion_behavior_tests(source_dir: Path, core_rel: str, worker_sentinel_body: str) -> Dict[str, object]:
     result: Dict[str, object] = {
         'available': False,
         'status': 'skipped_powershell_unavailable',
@@ -269,6 +269,17 @@ def run_state_recursion_behavior_tests(source_dir: Path, core_rel: str) -> Dict[
 
     result['available'] = True
     core_path = (source_dir / core_rel).resolve()
+    if not worker_sentinel_body:
+        result['status'] = 'failed'
+        result['shell_results'] = [{
+            'target': 'source_extraction',
+            'command': 'extract_function_body',
+            'status': 'failed',
+            'returncode': 1,
+            'stdout': '',
+            'stderr': 'Test-WorkerJsonContainsEllipsisSentinel body could not be extracted',
+        }]
+        return result
     script = f"""
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
@@ -276,6 +287,8 @@ $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList
 $Global:ErrorsLogPath = $null
 . '{str(core_path).replace("'", "''")}'
+
+function Test-WorkerJsonContainsEllipsisSentinel {worker_sentinel_body}
 
 function Assert-Condition {{
   param([bool]$Condition,[string]$Message)
@@ -307,6 +320,25 @@ Assert-Condition $threw 'state conversion depth overflow was not rejected'
 Assert-Condition ($message -like '*Convert-StateObjectToHashtable*') 'depth error did not identify the converter'
 Assert-Condition ($message -like '*depth 3*') 'depth error did not include the configured depth'
 Assert-Condition ($message -like '*$.a.b.c*') 'depth error did not include the recursive path'
+
+$workerNormal = [pscustomobject]@{{ step_results = @([pscustomobject]@{{ text = 'normal output' }}) }}
+Assert-Condition (-not (Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerNormal -MaxDepth 8)) 'normal worker object was treated as an ellipsis sentinel'
+$workerEllipsis = [pscustomobject]@{{ step_results = @([pscustomobject]@{{ text = '...' }}) }}
+Assert-Condition (Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerEllipsis -MaxDepth 8) 'nested worker ellipsis sentinel was not detected'
+
+$workerTooDeep = [pscustomobject]@{{ a = [pscustomobject]@{{ b = [pscustomobject]@{{ c = 'leaf' }} }} }}
+$workerThrew = $false
+$workerMessage = ''
+try {{
+  Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerTooDeep -MaxDepth 2 | Out-Null
+}} catch {{
+  $workerThrew = $true
+  $workerMessage = [string]$_.Exception.Message
+}}
+Assert-Condition $workerThrew 'worker sentinel depth overflow was not rejected'
+Assert-Condition ($workerMessage -like '*Parallel worker result JSON sentinel scan*') 'worker sentinel depth error did not identify the scanner'
+Assert-Condition ($workerMessage -like '*depth 2*') 'worker sentinel depth error did not include the configured depth'
+Assert-Condition ($workerMessage -like '*$.a.b*') 'worker sentinel depth error did not include the recursive path'
 """
     shell_results: List[Dict[str, object]] = []
     for label, shell_path in available_shells:
@@ -391,7 +423,7 @@ def validate_state_recursion_policy(source_dir: Path, manifest: Dict, checks: Di
     recursion_checks['worker_sentinel_property_recursion_passes_depth_path'] = (
         'Test-WorkerJsonContainsEllipsisSentinel -InputObject $prop.Value -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in worker_sentinel_body
     )
-    recursion_checks['state_recursion_behavior_tests'] = run_state_recursion_behavior_tests(source_dir, core_rel)
+    recursion_checks['state_recursion_behavior_tests'] = run_state_recursion_behavior_tests(source_dir, core_rel, worker_sentinel_body)
 
     for key in (
         'convert_state_object_to_hashtable_present',
