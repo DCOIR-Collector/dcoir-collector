@@ -12,7 +12,8 @@
     @{ Label='parallelism_assessment'; Path=$CollectorStep.ParallelismAssessmentPath },
     @{ Label='targeted_collection_plan'; Path=$CollectorStep.TargetedCollectionPlanPath },
     @{ Label='synthetic_oversize_source'; Path=$CollectorStep.SyntheticOversizeSourcePath },
-    @{ Label='synthetic_chunk_manifest'; Path=$CollectorStep.ChunkManifestPath }
+    @{ Label='synthetic_chunk_manifest'; Path=$CollectorStep.ChunkManifestPath },
+    @{ Label='collect_bundle'; Path=$CollectorStep.CollectBundlePath }
   )) {
     [void](Add-HarnessEvidenceFile -StepName $StepName -Path $row.Path -Label $row.Label)
   }

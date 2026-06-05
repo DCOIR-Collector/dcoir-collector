@@ -52,6 +52,7 @@ function Run-Tier2BoundedCollectSuite {
   $collect = Invoke-CollectorStep -StepName "83_CollectT2_Bounded" -CollectorArgs @("-Tier","T2","-Hours","1","-MaxEvents","100")
   Assert-CollectorStepSucceeded -StepName "83_CollectT2_Bounded" -CollectorStep $collect
   Invoke-CollectOutputContractVerification -StepName "ZZ_CollectT2OutputContract" -CollectStep $collect
+  Invoke-CollectManifestBundleComparison -StepName "ZZ_CollectT2ManifestBundleComparison" -CollectStep $collect
   Invoke-Tier2CollectVerification -StepName "ZZ_Tier2SpecificOutputValidation" -CollectStep $collect -ExpectedHours 1 -ExpectedMaxEvents 100
   if ($collect.AttachmentBudgetManifestPath) { Invoke-AttachmentBudgetVerification -StepName "ZZ_AttachmentBudget_CollectT2" -ManifestPath $collect.AttachmentBudgetManifestPath }
   if (-not $SkipCleanup) { [void](Invoke-CollectorStep -StepName "84_CleanupT2" -CollectorArgs @("-Quick","cleanup")) }
