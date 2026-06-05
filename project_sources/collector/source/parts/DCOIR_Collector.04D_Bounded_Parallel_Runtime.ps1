@@ -224,6 +224,41 @@ function Initialize-ParallelBaselineCache {
       }
     }
 
+    <#
+    .SYNOPSIS
+    Detects exact ellipsis-string values in a worker JSON object.
+
+    .DESCRIPTION
+    Runs inside the isolated Start-Job worker scriptblock where parent helper functions
+    are not loaded. Worker result objects are collector-controlled, so an exact "..."
+    string in emitted JSON is treated as a ConvertTo-Json depth truncation sentinel.
+
+    .FUNCTION NAME
+    Test-WorkerJsonContainsEllipsisSentinel
+
+    .INPUTS
+    InputObject.
+
+    .OUTPUTS
+    Boolean.
+    #>
+    function Test-WorkerJsonContainsEllipsisSentinel {
+      param([object]$InputObject)
+
+      if ($null -eq $InputObject) { return $false }
+      if ($InputObject -is [string]) { return ([string]$InputObject -eq '...') }
+      if (($InputObject -is [System.Collections.IEnumerable]) -and -not ($InputObject -is [string])) {
+        foreach ($item in @($InputObject)) {
+          if (Test-WorkerJsonContainsEllipsisSentinel -InputObject $item) { return $true }
+        }
+        return $false
+      }
+      foreach ($prop in @($InputObject.PSObject.Properties)) {
+        if (Test-WorkerJsonContainsEllipsisSentinel -InputObject $prop.Value) { return $true }
+      }
+      return $false
+    }
+
     $started = Get-Date
     $stepResults = New-Object System.Collections.ArrayList
     foreach ($stepDefinition in @($WorkerDefinition.Steps)) {
@@ -247,7 +282,12 @@ function Initialize-ParallelBaselineCache {
     }
 
     $resultPath = Join-Path $ParallelWorkerDir ('parallel_worker_{0}.json.txt' -f [string]$WorkerDefinition.Name)
-    Set-Content -Path $resultPath -Value (($workerResult | ConvertTo-Json -Depth 10) + [Environment]::NewLine) -Encoding UTF8 -ErrorAction Stop
+    $workerJson = $workerResult | ConvertTo-Json -Depth 20 -ErrorAction Stop
+    $workerJsonObject = $workerJson | ConvertFrom-Json -ErrorAction Stop
+    if (Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerJsonObject) {
+      throw ('Parallel worker result JSON for [{0}] appears truncated; ConvertTo-Json emitted an ellipsis sentinel.' -f [string]$WorkerDefinition.Name)
+    }
+    Set-Content -Path $resultPath -Value ($workerJson + [Environment]::NewLine) -Encoding UTF8 -ErrorAction Stop
     return $resultPath
   }
 

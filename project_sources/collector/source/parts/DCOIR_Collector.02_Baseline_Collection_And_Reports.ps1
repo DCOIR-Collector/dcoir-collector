@@ -270,7 +270,7 @@ String containing newline-terminated JSON text.
 #>
 function Convert-ToSafeJsonText {
   param([object]$InputObject)
-  return (($InputObject | ConvertTo-Json -Depth 12) + [Environment]::NewLine)
+  return (Convert-ToCollectorJsonText -InputObject $InputObject -Label 'safe JSON artifact' -AppendNewline -ThrowOnTruncation)
 }
 
 <#

@@ -355,7 +355,7 @@ function New-Manifest {
     tool_map = $ToolMap
     extra = $Extra
   }
-  Set-Content -Path $ManifestPath -Value ($manifest | ConvertTo-Json -Depth 12) -Encoding UTF8 -ErrorAction Stop
+  Set-Content -Path $ManifestPath -Value (Convert-ToCollectorJsonText -InputObject $manifest -Label 'manifest JSON' -ThrowOnTruncation) -Encoding UTF8 -ErrorAction Stop
   return $ManifestPath
 }
 
