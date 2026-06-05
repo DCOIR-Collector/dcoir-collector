@@ -103,58 +103,14 @@ try {
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
 
-      $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.UploadSafeChunkManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
-      ) -ToolMap $toolMap -Extra @{
-        collect_bundle = $null
-        analyst_overview = $state.AnalystOverviewPath
-        parallel_execution_proof = $state.ParallelExecutionProofPath
-        execution_context = $state.ExecutionContextPath
-        security_audit_policy = $state.SecurityAuditPolicyPath
-        audit_policy_access_status = $state.AuditPolicyAccessStatus
-        security_filtered = $state.SecurityFilteredPath
-        security_high_signal_summary = $state.SecurityHighSignalSummaryPath
-        netstat_owner_aware_status = $state.NetstatOwnerAwareStatus
-        netstat_pid_only = $state.NetstatPidOnlyPath
-        is_elevated = $state.IsElevated
-        upload_summary = $state.UploadSummaryPath
-        attachment_budget_manifest = $state.UploadBudgetManifestPath
-        default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
-        collection_scope = $state.CollectionScopePath
-        parallelism_assessment = $state.ParallelismAssessmentPath
-        targeted_collection_plan = $state.TargetedCollectionPlanPath
-        targeted_mode = [bool]$Targeted
-        target_profile = $TargetProfile
-        synthetic_oversize_source = $state.SyntheticOversizeSourcePath
-        chunk_manifest = $state.ChunkManifestPath
-        upload_safe_chunk_manifest = $state.UploadSafeChunkManifestPath
-      }
-
-      $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId) -Paths @(
-        $metadataReportPath,
-        $state.AnalystOverviewPath,
-        $state.ParallelExecutionProofPath,
-        $state.ExecutionContextPath,
-        $state.SecurityAuditPolicyPath,
-        $state.SecurityFilteredPath,
-        $state.SecurityHighSignalSummaryPath,
-        $state.NetstatPidOnlyPath,
-        $state.UploadSummaryPath,
-        $state.UploadBudgetManifestPath,
-        $state.UploadSafeChunkManifestPath,
-        $state.ArtifactsDir,
-        $Global:ExecutionTxtPath,
-        $Global:ExecutionJsonlPath,
-        $Global:ErrorsLogPath,
-        $collectManifest
-      )
-
+      $bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)
+      $bundlePath = Join-Path $state.BundlesDir $bundleName
       $state.CollectBundlePath = $bundlePath
-      Save-State -State $state
 
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       Write-ReportFile -Path $metadataReportPath -Text $metadataText
-      [void](New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
+
+      $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
         @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.UploadSafeChunkManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
         collect_bundle = $bundlePath
@@ -179,7 +135,28 @@ try {
         synthetic_oversize_source = $state.SyntheticOversizeSourcePath
         chunk_manifest = $state.ChunkManifestPath
         upload_safe_chunk_manifest = $state.UploadSafeChunkManifestPath
-      })
+      }
+
+      $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName -Paths @(
+        $metadataReportPath,
+        $state.AnalystOverviewPath,
+        $state.ParallelExecutionProofPath,
+        $state.ExecutionContextPath,
+        $state.SecurityAuditPolicyPath,
+        $state.SecurityFilteredPath,
+        $state.SecurityHighSignalSummaryPath,
+        $state.NetstatPidOnlyPath,
+        $state.UploadSummaryPath,
+        $state.UploadBudgetManifestPath,
+        $state.UploadSafeChunkManifestPath,
+        $state.ArtifactsDir,
+        $Global:ExecutionTxtPath,
+        $Global:ExecutionJsonlPath,
+        $Global:ErrorsLogPath,
+        $collectManifest
+      )
+
+      Save-State -State $state
 
       $status = "SUCCESS"
       if (@($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
