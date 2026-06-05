@@ -84,22 +84,23 @@ def extract_function_body(text: str, function_name: str) -> str:
                 return text[brace_start:index + 1]
     return text[brace_start:]
 
-def strip_powershell_comments(text: str) -> str:
-    text = re.sub(r'<#.*?#>', '', text, flags=re.DOTALL)
-    lines: List[str] = []
-    for line in text.splitlines():
-        if line.lstrip().startswith('#'):
-            lines.append('')
-            continue
-        lines.append(line)
-    return '\n'.join(lines)
-
-def strip_powershell_quoted_text(text: str) -> str:
+def mask_powershell_non_code(text: str) -> str:
     output: List[str] = []
     index = 0
     quote_char = ''
+    block_comment = False
     while index < len(text):
         char = text[index]
+        next_char = text[index + 1] if index + 1 < len(text) else ''
+        if block_comment:
+            if char == '#' and next_char == '>':
+                output.extend((' ', ' '))
+                block_comment = False
+                index += 2
+                continue
+            output.append('\n' if char == '\n' else ' ')
+            index += 1
+            continue
         if quote_char:
             if char == quote_char:
                 if quote_char == "'" and index + 1 < len(text) and text[index + 1] == "'":
@@ -114,6 +115,16 @@ def strip_powershell_quoted_text(text: str) -> str:
             output.append('\n' if char == '\n' else ' ')
             index += 1
             continue
+        if char == '<' and next_char == '#':
+            output.extend((' ', ' '))
+            block_comment = True
+            index += 2
+            continue
+        if char == '#':
+            while index < len(text) and text[index] != '\n':
+                output.append(' ')
+                index += 1
+            continue
         if char in ("'", '"'):
             quote_char = char
             output.append(' ')
@@ -125,7 +136,7 @@ def strip_powershell_quoted_text(text: str) -> str:
 
 def find_convert_to_json_calls(rel: str, text: str) -> List[Dict[str, object]]:
     command_pattern = re.compile(r'(?<![-.\w])(?:[-A-Za-z0-9_.]+\\)?ConvertTo-Json\b', re.IGNORECASE)
-    clean_text = strip_powershell_quoted_text(strip_powershell_comments(text))
+    clean_text = mask_powershell_non_code(text)
     calls: List[Dict[str, object]] = []
     for line_number, line in enumerate(clean_text.splitlines(), 1):
         if not command_pattern.search(line):
@@ -137,16 +148,18 @@ def run_json_policy_behavior_tests(source_dir: Path, core_rel: str) -> Dict[str,
     result: Dict[str, object] = {
         'available': False,
         'status': 'skipped_powershell_unavailable',
-        'command': None,
-        'stdout': '',
-        'stderr': '',
+        'preferred_target': 'windows_powershell_5_1',
+        'shell_results': [],
     }
-    shell_path = shutil.which('pwsh') or shutil.which('powershell')
-    if not shell_path:
+    shell_candidates = [
+        ('windows_powershell_5_1', shutil.which('powershell') or shutil.which('powershell.exe')),
+        ('pwsh', shutil.which('pwsh')),
+    ]
+    available_shells = [(label, path) for label, path in shell_candidates if path]
+    if not available_shells:
         return result
 
     result['available'] = True
-    result['command'] = Path(shell_path).name
     core_path = (source_dir / core_rel).resolve()
     script = f"""
 $ErrorActionPreference = 'Stop'
@@ -179,25 +192,39 @@ Assert-Condition ($Global:CollectorErrors.Count -eq 0) 'legitimate ellipsis stri
 $jsonl = Convert-ToCollectorJsonText -InputObject ([ordered]@{{ x = 1 }}) -Compress -AppendNewline -Label 'newline behavior'
 Assert-Condition ($jsonl.EndsWith([Environment]::NewLine)) 'AppendNewline did not append the platform newline'
 """
-    with tempfile.NamedTemporaryFile('w', suffix='.ps1', encoding='utf-8', delete=False) as handle:
-        handle.write(script)
-        script_path = Path(handle.name)
-    try:
-        cmd = [shell_path, '-NoProfile', '-NonInteractive']
-        if Path(shell_path).name.lower().startswith('powershell'):
-            cmd.extend(['-ExecutionPolicy', 'Bypass'])
-        cmd.extend(['-File', str(script_path)])
-        completed = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
-    finally:
-        script_path.unlink(missing_ok=True)
+    shell_results: List[Dict[str, object]] = []
+    for label, shell_path in available_shells:
+        with tempfile.NamedTemporaryFile('w', suffix='.ps1', encoding='utf-8', delete=False) as handle:
+            handle.write(script)
+            script_path = Path(handle.name)
+        try:
+            cmd = [shell_path, '-NoProfile']
+            if label == 'pwsh':
+                cmd.append('-NonInteractive')
+            if label == 'windows_powershell_5_1':
+                cmd.extend(['-ExecutionPolicy', 'Bypass'])
+            cmd.extend(['-File', str(script_path)])
+            completed = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        finally:
+            script_path.unlink(missing_ok=True)
+        shell_results.append({
+            'target': label,
+            'command': Path(shell_path).name,
+            'status': 'passed' if completed.returncode == 0 else 'failed',
+            'returncode': completed.returncode,
+            'stdout': completed.stdout[-4000:],
+            'stderr': completed.stderr[-4000:],
+        })
 
-    result['stdout'] = completed.stdout[-4000:]
-    result['stderr'] = completed.stderr[-4000:]
-    if completed.returncode == 0:
+    result['shell_results'] = shell_results
+    failed_results = [row for row in shell_results if row['status'] == 'failed']
+    windows_result = next((row for row in shell_results if row['target'] == 'windows_powershell_5_1'), None)
+    if failed_results:
+        result['status'] = 'failed'
+    elif windows_result:
         result['status'] = 'passed'
     else:
-        result['status'] = 'failed'
-        result['returncode'] = completed.returncode
+        result['status'] = 'passed_without_windows_powershell_5_1'
     return result
 
 def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Dict[str, object], errors: List[str]) -> None:
