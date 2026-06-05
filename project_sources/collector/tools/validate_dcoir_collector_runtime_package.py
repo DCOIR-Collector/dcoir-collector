@@ -60,6 +60,27 @@ def validate_unique_function_definitions(source_dir: Path, manifest: Dict, check
     if manifest.get('function_override_manifest'):
         errors.append('function_override_manifest is obsolete; collector functions must be defined once')
 
+def extract_function_body(text: str, function_name: str) -> str:
+    pattern = re.compile(r'^\s*function\s+' + re.escape(function_name) + r'\b', re.MULTILINE)
+    match = pattern.search(text)
+    if not match:
+        return ''
+
+    brace_start = text.find('{', match.end())
+    if brace_start == -1:
+        return ''
+
+    depth = 0
+    for index in range(brace_start, len(text)):
+        char = text[index]
+        if char == '{':
+            depth += 1
+        elif char == '}':
+            depth -= 1
+            if depth == 0:
+                return text[brace_start:index + 1]
+    return text[brace_start:]
+
 def validate_collect_manifest_bundle_ordering(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
     main_entry_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
     main_entry_path = source_dir / main_entry_rel
@@ -112,6 +133,40 @@ def validate_collect_manifest_bundle_ordering(source_dir: Path, manifest: Dict, 
         if not ordering_checks[key]:
             errors.append('collect manifest/bundle ordering check failed: ' + key)
 
+def validate_bundle_metadata_sync_terminates(source_dir: Path, checks: Dict[str, object], errors: List[str]) -> None:
+    helper_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1'
+    helper_path = source_dir / helper_rel
+    sync_checks: Dict[str, object] = {'path': helper_rel}
+    checks['bundle_metadata_sync_error_handling'] = sync_checks
+    if not helper_path.exists():
+        sync_checks['checked'] = False
+        errors.append('bundle metadata sync helper source is missing: ' + helper_rel)
+        return
+
+    text = helper_path.read_text(encoding='utf-8', errors='ignore')
+    sync_body = extract_function_body(text, 'Sync-CollectionMetadataCompanionArtifact')
+    bundle_body = extract_function_body(text, 'New-BundleZip')
+    catch_match = re.search(r'catch\s*{(?P<body>.*?)^\s*}', sync_body, re.DOTALL | re.MULTILINE)
+    catch_body = catch_match.group('body') if catch_match else ''
+
+    sync_checks['checked'] = True
+    sync_checks['sync_function_present'] = bool(sync_body)
+    sync_checks['bundle_function_present'] = bool(bundle_body)
+    sync_checks['bundle_invokes_sync'] = 'Sync-CollectionMetadataCompanionArtifact' in bundle_body
+    sync_checks['sync_catch_records_collector_error'] = 'Add-CollectorError' in catch_body
+    sync_checks['sync_catch_throws_after_error'] = re.search(r'\bthrow\b', catch_body) is not None
+
+    if not sync_checks['sync_function_present']:
+        errors.append('Sync-CollectionMetadataCompanionArtifact function is missing')
+    if not sync_checks['bundle_function_present']:
+        errors.append('New-BundleZip function is missing')
+    if not sync_checks['bundle_invokes_sync']:
+        errors.append('New-BundleZip must synchronize collection metadata companions before compression')
+    if not sync_checks['sync_catch_records_collector_error']:
+        errors.append('metadata companion sync failures must be recorded with Add-CollectorError')
+    if not sync_checks['sync_catch_throws_after_error']:
+        errors.append('metadata companion sync failures must terminate bundle creation after recording the error')
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--source-dir', required=True)
@@ -151,6 +206,7 @@ def main() -> int:
 
     validate_unique_function_definitions(source_dir, manifest, checks, errors)
     validate_collect_manifest_bundle_ordering(source_dir, manifest, checks, errors)
+    validate_bundle_metadata_sync_terminates(source_dir, checks, errors)
 
     delivery_entries = manifest.get('delivery_zip_entries', [])
     checks['delivery_entry_count'] = len(delivery_entries)
