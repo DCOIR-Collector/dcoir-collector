@@ -90,17 +90,12 @@ try {
       $baseline = New-BaselineReport -State $state -ToolMap $toolMap
       Apply-FeatureWaveCollectEnhancements -State $state -Baseline $baseline
 
-      # Publish the metadata report path for upload/overview guidance; final content is written once below.
-      if (-not (Test-Path -LiteralPath $metadataReportPath)) {
-        [void](New-Item -ItemType File -Path $metadataReportPath -Force)
-      }
-
-      $uploadArtifacts = New-CollectUploadArtifacts -State $state -Baseline $baseline
+      $uploadArtifacts = New-CollectUploadArtifactsWithLateMetadataReport -State $state -Baseline $baseline
       $state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath
       $state.UploadBudgetManifestPath = $uploadArtifacts.UploadManifestPath
       $state.DefaultGeminiUploadSetStatus = $uploadArtifacts.DefaultSetStatus
       $state.UploadSafeChunkManifestPath = $uploadArtifacts.UploadSafeChunkManifestPath
-      $state.AnalystOverviewPath = New-AnalystOverviewArtifact -State $state -Baseline $baseline
+      $state.AnalystOverviewPath = New-AnalystOverviewArtifactWithLateMetadataReport -State $state -Baseline $baseline
 
       $bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)
       $bundlePath = Join-Path $state.BundlesDir $bundleName
