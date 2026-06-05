@@ -90,6 +90,11 @@ try {
       $baseline = New-BaselineReport -State $state -ToolMap $toolMap
       Apply-FeatureWaveCollectEnhancements -State $state -Baseline $baseline
 
+      # Publish the metadata report path for upload/overview guidance; final content is written once below.
+      if (-not (Test-Path -LiteralPath $metadataReportPath)) {
+        [void](New-Item -ItemType File -Path $metadataReportPath -Force)
+      }
+
       $uploadArtifacts = New-CollectUploadArtifacts -State $state -Baseline $baseline
       $state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath
       $state.UploadBudgetManifestPath = $uploadArtifacts.UploadManifestPath
