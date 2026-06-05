@@ -181,7 +181,7 @@ function Invoke-EnrichmentAction {
   }
 
   $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString()
-  Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8
+  Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
 
   $Session.ActionCount = [int]$Session.ActionCount + 1
 
