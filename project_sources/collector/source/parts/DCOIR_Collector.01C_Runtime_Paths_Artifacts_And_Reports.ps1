@@ -232,9 +232,11 @@ function Move-PackageToOutRoot {
     if ($sourcePath -ne $destPath) {
       if ($PSCmdlet.ShouldProcess($destPath, ("Move collector package from {0}" -f $sourcePath))) {
         Move-Item -LiteralPath $sourcePath -Destination $destPath -Force
+        return $destPath
       }
+      return $sourcePath
     }
-    return $destPath
+    return $sourcePath
   }
 
   if (Test-Path -LiteralPath $destPath) {
