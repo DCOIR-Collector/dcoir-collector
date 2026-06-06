@@ -225,6 +225,33 @@ Use `codex-env-check` to verify the Codex environment when environment behavior 
 
 Use `codex-push-smoke` only when the operator explicitly asks to validate push capability. Do not run push smoke tests during routine PR work because the smoke test creates and deletes a temporary branch.
 
+## Review guidelines
+
+When reviewing pull requests, focus on serious, actionable issues.
+
+Flag P0 or P1 issues for:
+
+- Security vulnerabilities, credential exposure, command injection, path traversal, unsafe deserialization, unsafe subprocess usage, SSRF, or unsafe file handling.
+- GitHub Actions risks, including unsafe use of pull_request_target, untrusted PR input in shell commands, overbroad token permissions, or secret exposure in logs.
+- PowerShell compatibility risks, especially differences between Windows PowerShell 5.1 and PowerShell 7 on Linux.
+- Broken collector behavior, data loss, incorrect evidence handling, degraded DCOIR output integrity, or unreliable incident-response workflows.
+- Validation gaps where changed behavior lacks a relevant test or the existing tests no longer cover the changed path.
+- Governance violations, including workflow mutation without explicit approval, stale repo authority claims, invented labels, or bypassed readback requirements.
+
+Do not flag purely stylistic issues as review findings unless they create correctness, security, maintainability, or governance risk.
+
+For fix requests in PR comments, use the Codex cloud helper commands installed by the environment. Finish changes with:
+
+```bash
+codex-pr-finish -m "Address PR review comments"
+````
+
+If the branch cannot be detected, use the PR branch from live context:
+
+```bash
+codex-pr-finish -b <pr-branch-name> -m "Address PR review comments"
+```
+
 ## Working rules
 
 * Start substantive `ircore` work with compact preflight, startup-pack read, targeted retrieval, action, validation/readback, and optional short lesson capture only when reusable.
@@ -306,3 +333,4 @@ Push:
 * The memory folder is supplemental continuity only and must not become a competing policy or registry surface.
 * Historical artifacts may remain when they are clearly evidence or release history.
 * Active guidance, workflow validation, and support files must not depend on retired parity or skill-mirror surfaces.
+
