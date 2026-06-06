@@ -22,6 +22,10 @@ function Set-CollectPrepSkipReason {
   $script:CollectPrepSkipReason = $Reason
 }
 
+function Set-UploadSafeChunkCompanionSkipped {
+  $script:UploadSafeChunkCompanionSkipped = $true
+}
+
 <#
 .SYNOPSIS
 Deletes prior collector run directories before a new collect starts.
@@ -167,6 +171,7 @@ function Split-TextArtifactIntoUploadSafeChunks {
       [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
       [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
     } else {
+      Set-UploadSafeChunkCompanionSkipped
       Remove-UploadSafeChunkCompanionSet -ChunkPaths $chunkPaths
       return $null
     }
@@ -184,6 +189,7 @@ function Split-TextArtifactIntoUploadSafeChunks {
       [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
       [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
     } else {
+      Set-UploadSafeChunkCompanionSkipped
       Remove-UploadSafeChunkCompanionSet -ChunkPaths $chunkPaths
       return $null
     }
@@ -212,8 +218,8 @@ function Split-TextArtifactIntoUploadSafeChunks {
 Creates upload-safe chunk companions for selected oversized real artifacts.
 
 .DESCRIPTION
-Overrides the earlier companion builder so skipped chunk sets are simply omitted from the
-manifest row list instead of being treated as successful empty companions.
+Overrides the earlier companion builder so skipped chunk sets are omitted from the
+manifest row list and surfaced back to collect status logic.
 
 .FUNCTION NAME
 New-ProductionUploadSafeChunkCompanions
@@ -228,6 +234,9 @@ function New-ProductionUploadSafeChunkCompanions {
   [CmdletBinding()]
   param([hashtable]$State,[hashtable]$ArtifactMap,[hashtable]$Budget)
 
+  $script:UploadSafeChunkCompanionSkipped = $false
+  if ($State) { $State.UploadSafeChunkCompanionSkipped = $false }
+
   $rows = New-Object System.Collections.ArrayList
   foreach ($key in @('security_filtered','powershell_operational_filtered','taskscheduler_operational_filtered')) {
     if (-not $ArtifactMap.ContainsKey($key)) { continue }
@@ -237,7 +246,10 @@ function New-ProductionUploadSafeChunkCompanions {
     if ($sourceSizeKB -le [int]$Budget.SafePerFileKB) { continue }
 
     $chunkResult = Split-TextArtifactIntoUploadSafeChunks -SourcePath $sourcePath -ArtifactsDir $State.ArtifactsDir -SourceKey $key -TargetChunkKB ([Math]::Min(700, [int]$Budget.SafePerFileKB))
-    if (-not $chunkResult) { continue }
+    if (-not $chunkResult) {
+      if ($script:UploadSafeChunkCompanionSkipped -and $State) { $State.UploadSafeChunkCompanionSkipped = $true }
+      continue
+    }
     if ([int]$chunkResult.chunk_count -le 0) { continue }
     [void]$rows.Add($chunkResult)
     foreach ($chunkPath in @($chunkResult.chunk_paths)) {
@@ -245,5 +257,6 @@ function New-ProductionUploadSafeChunkCompanions {
     }
   }
 
+  if ($script:UploadSafeChunkCompanionSkipped -and $State) { $State.UploadSafeChunkCompanionSkipped = $true }
   return @($rows)
 }
