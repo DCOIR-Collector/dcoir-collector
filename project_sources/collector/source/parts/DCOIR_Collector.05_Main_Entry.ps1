@@ -156,76 +156,83 @@ try {
       $bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)
       $bundlePath = Join-Path $state.BundlesDir $bundleName
       $state.CollectBundlePath = $bundlePath
+      $bundleCreationApproved = $PSCmdlet.ShouldProcess($bundlePath, 'Create collector ZIP bundle')
+      $collectManifestSkipped = -not $bundleCreationApproved
+      $collectManifestFinalized = $false
+      $metadataReportSkipped = -not $bundleCreationApproved
+      $collectManifest = $null
 
-      # Write metadata once after late-bound collect fields are populated and before manifest/bundle packaging.
-      $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
-      $metadataReportPath = Write-ReportFile -Path $metadataReportPath -Text $metadataText
-      $metadataReportSkipped = -not $metadataReportPath
-      $metadataReportFinalizationSkipped = $false
-      $state.MetadataReportPath = $metadataReportPath
+      if ($bundleCreationApproved) {
+        # Write metadata once after late-bound collect fields are populated and before manifest/bundle packaging.
+        $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
+        $metadataReportPath = Write-ReportFile -Path $metadataReportPath -Text $metadataText
+        $metadataReportSkipped = -not $metadataReportPath
+        $state.MetadataReportPath = $metadataReportPath
 
-      $collectManifestPath = Join-Path $state.RunRoot "manifest_collect.json"
-      $collectManifestFiles = @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.UploadSafeChunkManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
-      $collectManifestExtra = @{
-        collect_bundle = $state.CollectBundlePath
-        analyst_overview = $state.AnalystOverviewPath
-        parallel_execution_proof = $state.ParallelExecutionProofPath
-        execution_context = $state.ExecutionContextPath
-        security_audit_policy = $state.SecurityAuditPolicyPath
-        audit_policy_access_status = $state.AuditPolicyAccessStatus
-        security_filtered = $state.SecurityFilteredPath
-        security_high_signal_summary = $state.SecurityHighSignalSummaryPath
-        netstat_owner_aware_status = $state.NetstatOwnerAwareStatus
-        netstat_pid_only = $state.NetstatPidOnlyPath
-        is_elevated = $state.IsElevated
-        upload_summary = $state.UploadSummaryPath
-        attachment_budget_manifest = $state.UploadBudgetManifestPath
-        default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
-        collection_scope = $state.CollectionScopePath
-        parallelism_assessment = $state.ParallelismAssessmentPath
-        targeted_collection_plan = $state.TargetedCollectionPlanPath
-        targeted_mode = [bool]$Targeted
-        target_profile = $TargetProfile
-        synthetic_oversize_source = $state.SyntheticOversizeSourcePath
-        chunk_manifest = $state.ChunkManifestPath
-        upload_safe_chunk_manifest = $state.UploadSafeChunkManifestPath
-      }
-      $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files $collectManifestFiles -ToolMap $toolMap -Extra $collectManifestExtra
-
-      $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName -Paths @(
-        $metadataReportPath,
-        $state.AnalystOverviewPath,
-        $state.ParallelExecutionProofPath,
-        $state.ExecutionContextPath,
-        $state.SecurityAuditPolicyPath,
-        $state.SecurityFilteredPath,
-        $state.SecurityHighSignalSummaryPath,
-        $state.NetstatPidOnlyPath,
-        $state.UploadSummaryPath,
-        $state.UploadBudgetManifestPath,
-        $state.UploadSafeChunkManifestPath,
-        $state.ArtifactsDir,
-        $Global:ExecutionTxtPath,
-        $Global:ExecutionJsonlPath,
-        $Global:ErrorsLogPath,
-        $collectManifest
-      )
-      if ($bundlePath) {
-        $state.CollectBundlePath = $bundlePath
-      } else {
-        $state.CollectBundlePath = $null
         if ($metadataReportPath) {
-          $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
-          $metadataReportPath = Write-ReportFile -Path $metadataReportPath -Text $metadataText
-          $metadataReportFinalizationSkipped = -not $metadataReportPath
-          $state.MetadataReportPath = $metadataReportPath
+          $collectManifestFiles = @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.UploadSafeChunkManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+          $collectManifestExtra = @{
+            collect_bundle = $state.CollectBundlePath
+            analyst_overview = $state.AnalystOverviewPath
+            parallel_execution_proof = $state.ParallelExecutionProofPath
+            execution_context = $state.ExecutionContextPath
+            security_audit_policy = $state.SecurityAuditPolicyPath
+            audit_policy_access_status = $state.AuditPolicyAccessStatus
+            security_filtered = $state.SecurityFilteredPath
+            security_high_signal_summary = $state.SecurityHighSignalSummaryPath
+            netstat_owner_aware_status = $state.NetstatOwnerAwareStatus
+            netstat_pid_only = $state.NetstatPidOnlyPath
+            is_elevated = $state.IsElevated
+            upload_summary = $state.UploadSummaryPath
+            attachment_budget_manifest = $state.UploadBudgetManifestPath
+            default_gemini_upload_set_status = $state.DefaultGeminiUploadSetStatus
+            collection_scope = $state.CollectionScopePath
+            parallelism_assessment = $state.ParallelismAssessmentPath
+            targeted_collection_plan = $state.TargetedCollectionPlanPath
+            targeted_mode = [bool]$Targeted
+            target_profile = $TargetProfile
+            synthetic_oversize_source = $state.SyntheticOversizeSourcePath
+            chunk_manifest = $state.ChunkManifestPath
+            upload_safe_chunk_manifest = $state.UploadSafeChunkManifestPath
+          }
+          $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files $collectManifestFiles -ToolMap $toolMap -Extra $collectManifestExtra
+          $collectManifestSkipped = -not $collectManifest
+          $collectManifestFinalized = [bool]$collectManifest
         }
-      }
-      $collectManifestFinalized = [bool]$collectManifest
-      if (-not $bundlePath -and $collectManifest) {
-        $collectManifestExtra.collect_bundle = $null
-        $collectManifest = New-Manifest -ManifestPath $collectManifestPath -State $state -ModeName "Collect" -TierName $Tier -Files $collectManifestFiles -ToolMap $toolMap -Extra $collectManifestExtra
-        $collectManifestFinalized = [bool]$collectManifest
+
+        if ($collectManifest) {
+          $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName -Confirm:$false -Paths @(
+            $metadataReportPath,
+            $state.AnalystOverviewPath,
+            $state.ParallelExecutionProofPath,
+            $state.ExecutionContextPath,
+            $state.SecurityAuditPolicyPath,
+            $state.SecurityFilteredPath,
+            $state.SecurityHighSignalSummaryPath,
+            $state.NetstatPidOnlyPath,
+            $state.UploadSummaryPath,
+            $state.UploadBudgetManifestPath,
+            $state.UploadSafeChunkManifestPath,
+            $state.ArtifactsDir,
+            $Global:ExecutionTxtPath,
+            $Global:ExecutionJsonlPath,
+            $Global:ErrorsLogPath,
+            $collectManifest
+          )
+        } else {
+          $bundlePath = $null
+        }
+
+        if ($bundlePath) {
+          $state.CollectBundlePath = $bundlePath
+        } else {
+          $state.CollectBundlePath = $null
+        }
+      } else {
+        $metadataReportPath = $null
+        $state.MetadataReportPath = $null
+        $state.CollectBundlePath = $null
+        $bundlePath = $null
       }
 
       $stateSavePath = Save-State -State $state
@@ -234,7 +241,7 @@ try {
       $stateSaveSkipped = -not $stateSavePath
 
       $status = "SUCCESS"
-      if ($collectPackageSkipped -or $collectManifestFinalizationSkipped -or $metadataReportSkipped -or $metadataReportFinalizationSkipped -or $stateSaveSkipped -or $collectGuidanceSkipped) { $status = "PARTIAL_SUCCESS" }
+      if ($collectPackageSkipped -or $collectManifestFinalizationSkipped -or $metadataReportSkipped -or $stateSaveSkipped -or $collectGuidanceSkipped) { $status = "PARTIAL_SUCCESS" }
       if ($status -eq "SUCCESS" -and @($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
 
       $collectorCommandBase = Get-CollectorResponseActionCommandBase
@@ -248,9 +255,9 @@ try {
         Write-Output "COLLECT_PACKAGE_STATUS=CREATED"
         Write-Output "COLLECT_BUNDLE_STATUS=CREATED"
       }
-      if ($collectManifestFinalizationSkipped) { Write-Output "COLLECT_MANIFEST_STATUS=PARTIAL" }
+      if ($collectManifestSkipped) { Write-Output "COLLECT_MANIFEST_STATUS=SKIPPED" }
+      elseif ($collectManifestFinalizationSkipped) { Write-Output "COLLECT_MANIFEST_STATUS=PARTIAL" }
       if ($metadataReportSkipped) { Write-Output "METADATA_REPORT_STATUS=SKIPPED" }
-      elseif ($metadataReportFinalizationSkipped) { Write-Output "METADATA_REPORT_STATUS=PARTIAL" }
       if ($stateSaveSkipped) { Write-Output "STATE_SAVE_STATUS=SKIPPED" }
       if ($uploadSummarySkipped) { Write-Output "UPLOAD_SUMMARY_STATUS=SKIPPED" }
       if ($attachmentBudgetManifestSkipped) { Write-Output "ATTACHMENT_BUDGET_MANIFEST_STATUS=SKIPPED" }
