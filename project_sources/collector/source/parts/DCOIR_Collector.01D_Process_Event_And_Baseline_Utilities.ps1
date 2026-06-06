@@ -245,7 +245,11 @@ function Convert-ProcessObjectToText {
     if ($StartTimeMap -and $StartTimeMap.ContainsKey($procId)) {
       $created = $StartTimeMap[$procId]
     } elseif ($Proc.CreationDate) {
-      $created = [System.Management.ManagementDateTimeConverter]::ToDateTime($Proc.CreationDate)
+      if ($Proc.CreationDate -is [datetime]) {
+        $created = [datetime]$Proc.CreationDate
+      } else {
+        $created = [System.Management.ManagementDateTimeConverter]::ToDateTime([string]$Proc.CreationDate)
+      }
     }
   } catch { }
 
@@ -324,7 +328,11 @@ function Get-ProcessInventory {
         if ($null -eq $p.ProcessId) { continue }
         $processId = [int]$p.ProcessId
         if (-not $startTimeMap.ContainsKey($processId) -and $p.CreationDate) {
-          $startTimeMap[$processId] = [System.Management.ManagementDateTimeConverter]::ToDateTime($p.CreationDate)
+          if ($p.CreationDate -is [datetime]) {
+            $startTimeMap[$processId] = [datetime]$p.CreationDate
+          } else {
+            $startTimeMap[$processId] = [System.Management.ManagementDateTimeConverter]::ToDateTime([string]$p.CreationDate)
+          }
         }
       } catch { }
     }
