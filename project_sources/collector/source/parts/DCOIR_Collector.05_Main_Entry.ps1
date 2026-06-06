@@ -98,7 +98,11 @@ try {
       $state.AnalystOverviewPath = New-AnalystOverviewArtifactWithLateMetadataReport -State $state -Baseline $baseline
 
       $bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)
+      $bundlePath = Join-Path $state.BundlesDir $bundleName
+      $state.CollectBundlePath = $bundlePath
+      # Precompute the deterministic bundle location, but keep published collect metadata null until the archive exists.
       $bundlePath = $null
+      $state.CollectBundlePath = $null
 
       # Write metadata once after late-bound collect fields are populated and before manifest/bundle packaging.
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
@@ -131,7 +135,7 @@ try {
         chunk_manifest = $state.ChunkManifestPath
         upload_safe_chunk_manifest = $state.UploadSafeChunkManifestPath
       }
-      $collectManifest = New-Manifest -ManifestPath $collectManifestPath -State $state -ModeName "Collect" -TierName $Tier -Files $collectManifestFiles -ToolMap $toolMap -Extra $collectManifestExtra
+      $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files $collectManifestFiles -ToolMap $toolMap -Extra $collectManifestExtra
 
       $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName -Paths @(
         $metadataReportPath,
@@ -151,7 +155,11 @@ try {
         $Global:ErrorsLogPath,
         $collectManifest
       )
-      $state.CollectBundlePath = $bundlePath
+      if ($bundlePath) {
+        $state.CollectBundlePath = $bundlePath
+      } else {
+        $state.CollectBundlePath = $null
+      }
       if ($bundlePath -and $collectManifest) {
         $collectManifestExtra.collect_bundle = $state.CollectBundlePath
         $collectManifest = New-Manifest -ManifestPath $collectManifestPath -State $state -ModeName "Collect" -TierName $Tier -Files $collectManifestFiles -ToolMap $toolMap -Extra $collectManifestExtra
