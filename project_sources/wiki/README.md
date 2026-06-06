@@ -5,7 +5,7 @@ This folder documents the DCOIR GitHub Actions workflow that publishes the maint
 ## Source model
 
 - Maintained source: `knowledge/`
-- Wiki target: `malwaredevil/dcoir-collector.wiki.git`
+- Wiki target: `DCOIR-Collector/dcoir-collector.wiki.git`
 - Workflow file: `.github/workflows/publish_knowledge_to_wiki.yml`
 - Required repository secret: `DCOIR_WIKI_PUSH_TOKEN`
 

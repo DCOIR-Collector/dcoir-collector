@@ -46,7 +46,7 @@ foreach ($suite in $Suites) {
     $safeSuite = ConvertTo-DcoirSafeName -Text $suite
     $runs += [ordered]@{ run_id="gate-$safeSuite"; workflow=$Workflow; ref=$Ref; inputs=[ordered]@{ suite=$suite }; capture=[ordered]@{ summary=$true; jobs=$true; logs=$true; artifacts=[bool]$DownloadArtifacts } }
 }
-$manifest = [ordered]@{ run_set_id=$runSetId; mode='dispatch'; repo='malwaredevil/dcoir-collector'; default_ref=$Ref; dry_run=$false; require_dispatch_confirmation=$true; allow_multiple_live_dispatches=$true; max_dispatch_count=$runs.Count; fail_fast=$true; poll_interval_seconds=$PollIntervalSeconds; timeout_minutes=$TimeoutMinutes; max_parallel=1; output=[ordered]@{ folder='%DCOIR_DOWNLOADS_DIR%'; create_chatgpt_friendly_zip=$true; cleanup_output_folder_after_zip=(-not [bool]$KeepOutputFolders); download_artifacts=[bool]$DownloadArtifacts; zip_name=$zipName }; runs=$runs }
+$manifest = [ordered]@{ run_set_id=$runSetId; mode='dispatch'; repo='DCOIR-Collector/dcoir-collector'; default_ref=$Ref; dry_run=$false; require_dispatch_confirmation=$true; allow_multiple_live_dispatches=$true; max_dispatch_count=$runs.Count; fail_fast=$true; poll_interval_seconds=$PollIntervalSeconds; timeout_minutes=$TimeoutMinutes; max_parallel=1; output=[ordered]@{ folder='%DCOIR_DOWNLOADS_DIR%'; create_chatgpt_friendly_zip=$true; cleanup_output_folder_after_zip=(-not [bool]$KeepOutputFolders); download_artifacts=[bool]$DownloadArtifacts; zip_name=$zipName }; runs=$runs }
 Save-DcoirJson -Path $manifestPath -Object $manifest
 Write-DcoirConsoleStep "DCOIR Actions Mode Ladder Runner v$ToolVersion"
 Write-DcoirConsoleStep "Created manifest: $manifestPath"

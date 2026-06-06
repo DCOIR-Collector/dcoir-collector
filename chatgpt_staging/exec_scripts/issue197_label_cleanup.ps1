@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $requestId = 'exec-20260603-issue197-label-cleanup-001'
-$repo = 'malwaredevil/dcoir-collector'
-$repoApi = '/repos/malwaredevil/dcoir-collector'
+$repo = 'DCOIR-Collector/dcoir-collector'
+$repoApi = '/repos/DCOIR-Collector/dcoir-collector'
 $finalLabels = @(
   'area:collector',
   'area:docs',

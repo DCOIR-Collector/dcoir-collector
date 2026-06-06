@@ -9,7 +9,7 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$Owner = "malwaredevil",
+    [string]$Owner = "DCOIR-Collector",
     [string]$Repo = "dcoir-collector",
     [string]$TokenEnvName = "",
     [switch]$Apply,

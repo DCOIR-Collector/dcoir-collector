@@ -1,7 +1,7 @@
 {
   "run_set_id": "dcoir-actions-dispatch-dry-run-sample",
   "mode": "dispatch",
-  "repo": "malwaredevil/dcoir-collector",
+  "repo": "DCOIR-Collector/dcoir-collector",
   "default_ref": "main",
   "dry_run": true,
   "require_dispatch_confirmation": true,
