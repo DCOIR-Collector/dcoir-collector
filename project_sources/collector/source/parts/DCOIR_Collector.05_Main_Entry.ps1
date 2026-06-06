@@ -291,9 +291,16 @@ try {
         } else {
           $ScriptVersion
         }
-        Invoke-Cleanup -StateObject $loaded
-        Write-Output ("CLEANUP_STATUS=COMPLETE")
+        $cleanupResult = Invoke-Cleanup -StateObject $loaded
+        Write-Output ("CLEANUP_STATUS={0}" -f $cleanupResult.Status)
         Write-Output ("RUN_ID={0}" -f $loaded.RunId)
+        Write-Output ("CLEANUP_TARGET_COUNT={0}" -f $cleanupResult.TargetCount)
+        Write-Output ("CLEANUP_REMOVED_COUNT={0}" -f $cleanupResult.RemovedCount)
+        Write-Output ("CLEANUP_SKIPPED_COUNT={0}" -f $cleanupResult.SkippedCount)
+        Write-Output ("CLEANUP_FAILED_COUNT={0}" -f $cleanupResult.FailedCount)
+        foreach ($target in @($cleanupResult.RemovedTargets)) { Write-Output ("CLEANUP_REMOVED_TARGET={0}" -f $target) }
+        foreach ($target in @($cleanupResult.SkippedTargets)) { Write-Output ("CLEANUP_SKIPPED_TARGET={0}" -f $target) }
+        foreach ($target in @($cleanupResult.FailedTargets)) { Write-Output ("CLEANUP_FAILED_TARGET={0}" -f $target) }
         Write-Output ("COLLECTOR_VERSION={0}" -f $cleanupCollectorVersion)
         Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $cleanupCollectorVersion))
         Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f (Get-CollectorDeleteScriptCommandText))
