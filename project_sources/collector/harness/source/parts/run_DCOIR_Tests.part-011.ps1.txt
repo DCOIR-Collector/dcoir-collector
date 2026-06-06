@@ -170,6 +170,21 @@ function Run-FailureGatesSuite {
     throw 'Explicit custom RunId no-state cleanup did not remove the collector-structured custom run root.'
   }
 
+  $dottedCustomRunId = 'custom.safe-01'
+  $dottedCustomDir = Join-Path 'C:\Temp' ("DCOIR_{0}_{1}" -f $env:COMPUTERNAME, $dottedCustomRunId)
+  New-Item -Path $dottedCustomDir -ItemType Directory -Force | Out-Null
+  foreach ($child in @('tools','reports','final_artifacts','logs','bundles')) {
+    New-Item -Path (Join-Path $dottedCustomDir $child) -ItemType Directory -Force | Out-Null
+  }
+  $dottedCustomCleanup = Invoke-CollectorStep -StepName "98G_CleanupExplicitDottedCustomNoState" -CollectorArgs @("-Quick","cleanup","-RunId",$dottedCustomRunId)
+  Assert-CollectorStepSucceeded -StepName "98G_CleanupExplicitDottedCustomNoState" -CollectorStep $dottedCustomCleanup
+  if ($dottedCustomCleanup.CleanupStatus -ne 'MISSING_STATE_ORPHAN_CLEANED') {
+    throw ("Explicit dotted custom RunId no-state cleanup returned unexpected status: {0}" -f $dottedCustomCleanup.CleanupStatus)
+  }
+  if (Test-Path -LiteralPath $dottedCustomDir) {
+    throw 'Explicit dotted custom RunId no-state cleanup did not remove the collector-structured custom run root.'
+  }
+
   Restore-WorkingZip -Reason "FailureGates_AfterMissingPackageCleanup"
   $invalidStart = Invoke-CollectorStep -StepName "99_TargetedInvalidWindowStart" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","not-a-date","-WindowEnd","2026-04-08T09:15:00Z")
   Assert-CollectorStepDegradedPartial -StepName "99_TargetedInvalidWindowStart" -CollectorStep $invalidStart -ExpectedPatterns @("Invalid WindowStart value [not-a-date]; falling back to hour-window behavior.")
