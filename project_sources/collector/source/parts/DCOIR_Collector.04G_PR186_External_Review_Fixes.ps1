@@ -64,9 +64,9 @@ Purge-PreviousRuns
 Root string and CurrentPackageName string.
 
 .OUTPUTS
-No direct output. Deletes prior strict-pattern collector run directories, a proven
-collector-owned exact custom run root when applicable, and the previous package file as
-side effects. Throws when the exact custom run root is unsafe or remains after deletion.
+Boolean true when prior run/package purge did not block collect startup, false when
+package purge was skipped or left a stale package in place. Throws when the exact custom
+run root is unsafe or remains after deletion.
 #>
 function Purge-PreviousRuns {
   [CmdletBinding(SupportsShouldProcess=$true)]
@@ -116,11 +116,17 @@ function Purge-PreviousRuns {
     if (Test-Path -LiteralPath $pkg) {
       if ($PSCmdlet.ShouldProcess($pkg, 'Remove previous collector package')) {
         Remove-Item -LiteralPath $pkg -Force -ErrorAction SilentlyContinue
+        if (Test-Path -LiteralPath $pkg) { return $false }
+      } else {
+        return $false
       }
     }
   } catch {
     Add-CollectorError "Failed to remove previous collector package: $($_.Exception.Message)"
+    return $false
   }
+
+  return $true
 }
 
 <#
