@@ -11,7 +11,9 @@ if ($ShowHelp) {
 }
 
 try {
-  Ensure-Directory -Path $OutRoot
+  if (-not $WhatIfPreference) {
+    Ensure-Directory -Path $OutRoot
+  }
 
   switch ($Mode) {
     "Collect" {
@@ -48,17 +50,9 @@ try {
         return
       }
 
-      $dirs = Initialize-RunStructure -Root $resolvedOutRoot -CurrentRunId $RunId
-      $Global:CurrentRunId = $RunId
-      $Global:ExecutionTxtPath = Join-Path $dirs.LogsDir "collect_execution_log.txt"
-      $Global:ExecutionJsonlPath = Join-Path $dirs.LogsDir "collect_execution_log.jsonl"
-      $Global:ErrorsLogPath = Join-Path $dirs.LogsDir "errors.log"
-      Set-Content -Path $Global:ExecutionTxtPath -Value ("DCOIR Collect Execution Log`r`nRunId={0}" -f $RunId) -Encoding UTF8 -ErrorAction Stop
-      Set-Content -Path $Global:ExecutionJsonlPath -Value "" -Encoding UTF8 -ErrorAction Stop
-      Set-Content -Path $Global:ErrorsLogPath -Value "" -Encoding UTF8 -ErrorAction Stop
-
       $packagePath = Move-PackageToOutRoot -Root $resolvedOutRoot -CurrentPackageName $PackageName
       if (-not $packagePath) {
+        $Global:CurrentRunId = $RunId
         $collectorCommandBase = Get-CollectorResponseActionCommandBase
         $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
         Write-Output "STATUS=SKIPPED"
@@ -72,6 +66,31 @@ try {
         Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
         return
       }
+
+      if ($WhatIfPreference) {
+        $Global:CurrentRunId = $RunId
+        $collectorCommandBase = Get-CollectorResponseActionCommandBase
+        $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
+        Write-Output "STATUS=SKIPPED"
+        Write-Output "COLLECT_PREP_STATUS=SKIPPED"
+        Write-Output "COLLECT_SETUP_STATUS=SKIPPED"
+        Write-Output ("RUN_ID={0}" -f $RunId)
+        Write-Output ("COLLECTOR_VERSION={0}" -f $ScriptVersion)
+        Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $ScriptVersion))
+        Write-Output "NEXT_OPTIONS=Re-run without -WhatIf to create the collect run structure and continue collect mode."
+        Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
+        Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
+        return
+      }
+
+      $dirs = Initialize-RunStructure -Root $resolvedOutRoot -CurrentRunId $RunId
+      $Global:CurrentRunId = $RunId
+      $Global:ExecutionTxtPath = Join-Path $dirs.LogsDir "collect_execution_log.txt"
+      $Global:ExecutionJsonlPath = Join-Path $dirs.LogsDir "collect_execution_log.jsonl"
+      $Global:ErrorsLogPath = Join-Path $dirs.LogsDir "errors.log"
+      Set-Content -Path $Global:ExecutionTxtPath -Value ("DCOIR Collect Execution Log`r`nRunId={0}" -f $RunId) -Encoding UTF8 -ErrorAction Stop
+      Set-Content -Path $Global:ExecutionJsonlPath -Value "" -Encoding UTF8 -ErrorAction Stop
+      Set-Content -Path $Global:ErrorsLogPath -Value "" -Encoding UTF8 -ErrorAction Stop
 
       $toolsExpanded = Expand-PackageToTools -PackagePath $packagePath -ToolsDir $dirs.ToolsDir
       if (-not $toolsExpanded) {
