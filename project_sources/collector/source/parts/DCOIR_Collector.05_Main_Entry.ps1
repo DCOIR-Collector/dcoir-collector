@@ -161,6 +161,7 @@ try {
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       $metadataReportPath = Write-ReportFile -Path $metadataReportPath -Text $metadataText
       $metadataReportSkipped = -not $metadataReportPath
+      $metadataReportFinalizationSkipped = $false
       $state.MetadataReportPath = $metadataReportPath
 
       $collectManifestPath = Join-Path $state.RunRoot "manifest_collect.json"
@@ -213,6 +214,12 @@ try {
         $state.CollectBundlePath = $bundlePath
       } else {
         $state.CollectBundlePath = $null
+        if ($metadataReportPath) {
+          $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
+          $metadataReportPath = Write-ReportFile -Path $metadataReportPath -Text $metadataText
+          $metadataReportFinalizationSkipped = -not $metadataReportPath
+          $state.MetadataReportPath = $metadataReportPath
+        }
       }
       $collectManifestFinalized = [bool]$collectManifest
       if (-not $bundlePath -and $collectManifest) {
@@ -227,7 +234,7 @@ try {
       $stateSaveSkipped = -not $stateSavePath
 
       $status = "SUCCESS"
-      if ($collectPackageSkipped -or $collectManifestFinalizationSkipped -or $metadataReportSkipped -or $stateSaveSkipped -or $collectGuidanceSkipped) { $status = "PARTIAL_SUCCESS" }
+      if ($collectPackageSkipped -or $collectManifestFinalizationSkipped -or $metadataReportSkipped -or $metadataReportFinalizationSkipped -or $stateSaveSkipped -or $collectGuidanceSkipped) { $status = "PARTIAL_SUCCESS" }
       if ($status -eq "SUCCESS" -and @($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
 
       $collectorCommandBase = Get-CollectorResponseActionCommandBase
@@ -243,6 +250,7 @@ try {
       }
       if ($collectManifestFinalizationSkipped) { Write-Output "COLLECT_MANIFEST_STATUS=PARTIAL" }
       if ($metadataReportSkipped) { Write-Output "METADATA_REPORT_STATUS=SKIPPED" }
+      elseif ($metadataReportFinalizationSkipped) { Write-Output "METADATA_REPORT_STATUS=PARTIAL" }
       if ($stateSaveSkipped) { Write-Output "STATE_SAVE_STATUS=SKIPPED" }
       if ($uploadSummarySkipped) { Write-Output "UPLOAD_SUMMARY_STATUS=SKIPPED" }
       if ($attachmentBudgetManifestSkipped) { Write-Output "ATTACHMENT_BUDGET_MANIFEST_STATUS=SKIPPED" }
