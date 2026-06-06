@@ -422,9 +422,9 @@ function Invoke-NoStateCleanup {
   $status = if (@($targets).Count -eq 0) {
     'NO_TARGET_FOUND'
   } elseif (@($skipped).Count -gt 0 -and @($removed).Count -eq 0 -and @($failed).Count -eq 0) {
-    'NO_STATE_CLEANUP_SKIPPED'
-  } elseif (@($failed).Count -gt 0) {
-    'PARTIAL_FAILED'
+    'SKIPPED'
+  } elseif (@($skipped).Count -gt 0 -or @($failed).Count -gt 0) {
+    'PARTIAL'
   } else {
     'MISSING_STATE_ORPHAN_CLEANED'
   }
@@ -436,6 +436,9 @@ function Invoke-NoStateCleanup {
     FailedTargets = @($failed)
     SkippedTargets = @($skipped)
     TargetCount = @($targets).Count
+    RemovedCount = @($removed).Count
+    SkippedCount = @($skipped).Count
+    FailedCount = @($failed).Count
   }
 }
 
