@@ -328,6 +328,7 @@ function Test-DCOIRRunIdLeaf {
   if ($CurrentRunId.Length -gt 128) { return $false }
   if ($CurrentRunId.Trim() -ne $CurrentRunId) { return $false }
   if ($CurrentRunId -in @(".", "..")) { return $false }
+  if ($CurrentRunId.EndsWith(".")) { return $false }
   if ($CurrentRunId.Contains("..")) { return $false }
   if ([regex]::IsMatch($CurrentRunId, '[\\/]')) { return $false }
   if ([System.IO.Path]::IsPathRooted($CurrentRunId)) { return $false }
