@@ -48,6 +48,12 @@
 - [ ] Codi review is complete or explicitly waived before external Codex review
 - [ ] External Codex review is requested before ready-for-review or merge when governed source changed
 
+## Codex Review And Fix Context
+
+- [ ] External `@codex` request is a top-level PR comment when a Codex action is required
+- [ ] Codex fix requests include exact scope, files, commands, and finish command when a push is expected
+- [ ] Codex PR fix tasks are expected to use `codex-pr-context`, relevant validation, and `codex-pr-finish` when available
+
 ## Workflow Boundary
 
 - [ ] Workflow files were not changed

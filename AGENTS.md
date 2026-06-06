@@ -158,11 +158,18 @@ Expected helper commands:
 
 * `codex-pr-finish`
 * `codex-pr-push`
+* `codex-pr-context`
+* `codex-review-checks`
 * `codex-run-windows-ps51`
+* `codex-wait-pr-checks`
 * `codex-env-check`
 * `codex-push-smoke`
 
 When a top-level GitHub PR comment invokes `@codex` and asks for code changes, review-comment fixes, requested changes, patches, or PR updates, complete the requested work and push back to the PR branch using the helper command.
+
+Before changing files for a PR task, run `codex-pr-context` when available to capture PR metadata, comments, reviews, changed-file names, and patch context.
+
+Before finishing a PR task, run `codex-review-checks` when relevant to the changed file types and report any remaining validation gaps.
 
 Required finish command for normal PR change tasks:
 
@@ -223,6 +230,12 @@ Do not create or edit workflow files unless the operator explicitly approves wor
 
 Use `codex-env-check` to verify the Codex environment when environment behavior is part of the task.
 
+Use `codex-pr-context` at the start of PR fix tasks when PR context, review comments, changed files, or branch detection matter.
+
+Use `codex-review-checks` before finishing PR fix tasks when the changed file types make local checks useful. Treat failures as findings to fix or report as validation gaps.
+
+Use `codex-wait-pr-checks` only when the PR has checks running and the task requires waiting for GitHub Actions readback.
+
 Use `codex-push-smoke` only when the operator explicitly asks to validate push capability. Do not run push smoke tests during routine PR work because the smoke test creates and deletes a temporary branch.
 
 ## Review guidelines
@@ -244,7 +257,7 @@ For fix requests in PR comments, use the Codex cloud helper commands installed b
 
 ```bash
 codex-pr-finish -m "Address PR review comments"
-````
+```
 
 If the branch cannot be detected, use the PR branch from live context:
 
