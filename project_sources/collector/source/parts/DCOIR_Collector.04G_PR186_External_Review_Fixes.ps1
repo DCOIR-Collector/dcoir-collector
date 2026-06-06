@@ -89,6 +89,8 @@ function Purge-PreviousRuns {
           if (Test-Path -LiteralPath $expectedRunRoot) {
             throw "Existing custom RunId directory could not be removed before collect: $expectedRunRoot"
           }
+        } elseif (-not $WhatIfPreference) {
+          throw "Existing custom RunId directory removal was skipped before collect: $expectedRunRoot"
         }
       }
     }
@@ -449,7 +451,7 @@ New-BundleZip
 BundlesDir string, BundleName string, and Paths string array.
 
 .OUTPUTS
-String bundle ZIP path.
+String bundle ZIP path, or null when archive creation is skipped.
 #>
 function New-BundleZip {
   [CmdletBinding(SupportsShouldProcess=$true)]
@@ -460,25 +462,27 @@ function New-BundleZip {
   )
 
   $bundlePath = Join-Path $BundlesDir $BundleName
+  if (-not $PSCmdlet.ShouldProcess($bundlePath, 'Create collector ZIP bundle')) {
+    return $null
+  }
+
   $existing = @($Paths | Where-Object { $_ -and (Test-Path -LiteralPath $_) })
   if (@($existing).Count -eq 0) {
     throw 'No bundle inputs were found.'
   }
-  if ($PSCmdlet.ShouldProcess($bundlePath, 'Create collector ZIP bundle')) {
-    foreach ($candidatePath in @($Paths)) {
-      if ([string]::IsNullOrWhiteSpace($candidatePath) -or -not (Test-Path -LiteralPath $candidatePath)) { continue }
-      $item = Get-Item -LiteralPath $candidatePath -ErrorAction SilentlyContinue
-      if ($item -and $item.PSIsContainer -and ($item.Name -eq 'final_artifacts')) {
-        Sync-CollectionMetadataCompanionArtifact -ArtifactsDir $item.FullName
-      }
-    }
 
-    Ensure-Directory -Path $BundlesDir
-    if (Test-Path -LiteralPath $bundlePath) {
-      Remove-Item -LiteralPath $bundlePath -Force -ErrorAction SilentlyContinue
+  foreach ($candidatePath in @($Paths)) {
+    if ([string]::IsNullOrWhiteSpace($candidatePath) -or -not (Test-Path -LiteralPath $candidatePath)) { continue }
+    $item = Get-Item -LiteralPath $candidatePath -ErrorAction SilentlyContinue
+    if ($item -and $item.PSIsContainer -and ($item.Name -eq 'final_artifacts')) {
+      Sync-CollectionMetadataCompanionArtifact -ArtifactsDir $item.FullName
     }
-    Compress-Archive -LiteralPath $existing -DestinationPath $bundlePath -CompressionLevel Optimal -Force -ErrorAction Stop
-    return $bundlePath
   }
-  return $null
+
+  Ensure-Directory -Path $BundlesDir
+  if (Test-Path -LiteralPath $bundlePath) {
+    Remove-Item -LiteralPath $bundlePath -Force -ErrorAction SilentlyContinue
+  }
+  Compress-Archive -LiteralPath $existing -DestinationPath $bundlePath -CompressionLevel Optimal -Force -ErrorAction Stop
+  return $bundlePath
 }
