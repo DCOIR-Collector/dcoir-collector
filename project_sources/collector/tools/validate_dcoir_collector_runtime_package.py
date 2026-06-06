@@ -11,100 +11,57 @@ from pathlib import Path
 from typing import Dict, List
 
 MANIFEST_NAME = 'Collector_Runtime_Package_Manifest.json'
-FUNCTION_PATTERN = re.compile(r'^\s*function\s+([-A-Za-z0-9_]+)\b')
+FUNCTION_PATTERN = re.compile(r'^\s*function\s+([-A-Za-z0-9_]+)\b', re.MULTILINE)
+
 
 def load_manifest(source_dir: Path) -> Dict:
     return json.loads((source_dir / 'project_sources' / 'collector' / 'manifests' / MANIFEST_NAME).read_text(encoding='utf-8'))
 
+
 def normalize_function_name(name: str) -> str:
     return name.casefold()
 
+
+def read_text(path: Path) -> str:
+    return path.read_text(encoding='utf-8', errors='ignore') if path.exists() else ''
+
+
+def load_manifest_source_texts(source_dir: Path, manifest: Dict) -> Dict[str, str]:
+    rels = [manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])
+    return {rel: read_text(source_dir / rel) for rel in rels if (source_dir / rel).exists()}
+
+
+def get_combined_source_text(source_text_by_rel: Dict[str, str]) -> str:
+    return '\n'.join(source_text_by_rel.values())
+
+
 def find_function_definitions(source_dir: Path, manifest: Dict) -> Dict[str, List[Dict[str, object]]]:
-    source_rels = [manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])
     definitions: Dict[str, List[Dict[str, object]]] = {}
-    for load_order, rel in enumerate(source_rels):
-        path = source_dir / rel
-        if not path.exists():
-            continue
-        for line_number, line in enumerate(path.read_text(encoding='utf-8', errors='ignore').splitlines(), 1):
-            match = FUNCTION_PATTERN.match(line)
+    for load_order, rel in enumerate([manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])):
+        text = read_text(source_dir / rel)
+        for line_number, line in enumerate(text.splitlines(), 1):
+            match = re.match(r'^\s*function\s+([-A-Za-z0-9_]+)\b', line)
             if not match:
                 continue
-            function_name = match.group(1)
-            normalized_name = normalize_function_name(function_name)
-            definitions.setdefault(normalized_name, []).append({
-                'name': function_name,
-                'normalized_name': normalized_name,
+            name = match.group(1)
+            normalized = normalize_function_name(name)
+            definitions.setdefault(normalized, []).append({
+                'name': name,
+                'normalized_name': normalized,
                 'path': rel,
                 'line': line_number,
                 'load_order': load_order,
             })
     return definitions
 
-def load_manifest_source_texts(source_dir: Path, manifest: Dict) -> Dict[str, str]:
-    source_rels = [manifest['collector_wrapper_source']] + manifest.get('collector_part_files', [])
-    source_text_by_rel: Dict[str, str] = {}
-    for rel in source_rels:
-        path = source_dir / rel
-        if path.exists():
-            source_text_by_rel[rel] = path.read_text(encoding='utf-8', errors='ignore')
-    return source_text_by_rel
-
-def get_combined_source_text(source_text_by_rel: Dict[str, str]) -> str:
-    return '\n'.join(source_text_by_rel.values())
-
-def build_dot_source_lines_for_functions(source_dir: Path, manifest: Dict, function_names: List[str]) -> str:
-    targets = {normalize_function_name(name) for name in function_names}
-    source_rels: List[str] = []
-    for rel in manifest.get('collector_part_files', []):
-        path = source_dir / rel
-        if not path.exists():
-            continue
-        text = path.read_text(encoding='utf-8', errors='ignore')
-        for line in text.splitlines():
-            match = FUNCTION_PATTERN.match(line)
-            if match and normalize_function_name(match.group(1)) in targets:
-                source_rels.append(rel)
-                break
-
-    lines: List[str] = []
-    for rel in source_rels:
-        part_path = (source_dir / rel).resolve()
-        lines.append(". '{0}'".format(str(part_path).replace("'", "''")))
-    return '\n'.join(lines)
-
-def validate_unique_function_definitions(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
-    definitions = find_function_definitions(source_dir, manifest)
-    duplicate_definitions = {name: rows for name, rows in definitions.items() if len(rows) > 1}
-    checks['function_definition_count'] = sum(len(rows) for rows in definitions.values())
-    checks['unique_function_count'] = len(definitions)
-    checks['duplicate_function_count'] = len(duplicate_definitions)
-    checks['duplicate_function_names'] = sorted(duplicate_definitions)
-    checks['duplicate_function_original_names'] = {
-        name: sorted({row['name'] for row in rows}) for name, rows in sorted(duplicate_definitions.items())
-    }
-    checks['duplicate_function_definitions'] = {
-        name: rows for name, rows in sorted(duplicate_definitions.items())
-    }
-    if duplicate_definitions:
-        errors.append(
-            'duplicate function definitions are not allowed: '
-            + ', '.join(sorted(duplicate_definitions))
-        )
-
-    if manifest.get('function_override_manifest'):
-        errors.append('function_override_manifest is obsolete; collector functions must be defined once')
 
 def extract_function_body(text: str, function_name: str) -> str:
-    pattern = re.compile(r'^\s*function\s+' + re.escape(function_name) + r'\b', re.MULTILINE)
-    match = pattern.search(text)
+    match = re.search(r'^\s*function\s+' + re.escape(function_name) + r'\b', text, re.MULTILINE)
     if not match:
         return ''
-
     brace_start = text.find('{', match.end())
     if brace_start == -1:
         return ''
-
     depth = 0
     for index in range(brace_start, len(text)):
         char = text[index]
@@ -115,6 +72,7 @@ def extract_function_body(text: str, function_name: str) -> str:
             if depth == 0:
                 return text[brace_start:index + 1]
     return text[brace_start:]
+
 
 def mask_powershell_non_code(text: str) -> str:
     output: List[str] = []
@@ -134,7 +92,7 @@ def mask_powershell_non_code(text: str) -> str:
                 at_line_start = False
                 continue
             output.append('\n' if char == '\n' else ' ')
-            at_line_start = (char == '\n')
+            at_line_start = char == '\n'
             index += 1
             continue
         if block_comment:
@@ -145,7 +103,7 @@ def mask_powershell_non_code(text: str) -> str:
                 at_line_start = False
                 continue
             output.append('\n' if char == '\n' else ' ')
-            at_line_start = (char == '\n')
+            at_line_start = char == '\n'
             index += 1
             continue
         if quote_char:
@@ -160,7 +118,7 @@ def mask_powershell_non_code(text: str) -> str:
                     continue
                 quote_char = ''
             output.append('\n' if char == '\n' else ' ')
-            at_line_start = (char == '\n')
+            at_line_start = char == '\n'
             index += 1
             continue
         if char == '@' and next_char in ("'", '"'):
@@ -187,19 +145,30 @@ def mask_powershell_non_code(text: str) -> str:
             at_line_start = False
             continue
         output.append(char)
-        at_line_start = (char == '\n')
+        at_line_start = char == '\n'
         index += 1
     return ''.join(output)
 
+
 def find_convert_to_json_calls(rel: str, text: str) -> List[Dict[str, object]]:
-    command_pattern = re.compile(r'(?<![-.\w])(?:[-A-Za-z0-9_.]+\\)?ConvertTo-Json\b', re.IGNORECASE)
     clean_text = mask_powershell_non_code(text)
-    calls: List[Dict[str, object]] = []
-    for line_number, line in enumerate(clean_text.splitlines(), 1):
-        if not command_pattern.search(line):
-            continue
-        calls.append({'path': rel, 'line': line_number, 'text': line.strip()})
-    return calls
+    command_pattern = re.compile(r'(?<![-.\w])(?:[-A-Za-z0-9_.]+\\)?ConvertTo-Json\b', re.IGNORECASE)
+    return [
+        {'path': rel, 'line': line_number, 'text': line.strip()}
+        for line_number, line in enumerate(clean_text.splitlines(), 1)
+        if command_pattern.search(line)
+    ]
+
+
+def build_dot_source_lines_for_functions(source_dir: Path, manifest: Dict, function_names: List[str]) -> str:
+    targets = {normalize_function_name(name) for name in function_names}
+    rels: List[str] = []
+    for rel in manifest.get('collector_part_files', []):
+        text = read_text(source_dir / rel)
+        if any(normalize_function_name(match.group(1)) in targets for match in FUNCTION_PATTERN.finditer(text)):
+            rels.append(rel)
+    return '\n'.join(". '{0}'".format(str((source_dir / rel).resolve()).replace("'", "''")) for rel in rels)
+
 
 def probe_powershell_behavior_shell(shell_path: str, requested_label: str) -> Dict[str, object]:
     result: Dict[str, object] = {
@@ -212,6 +181,45 @@ def probe_powershell_behavior_shell(shell_path: str, requested_label: str) -> Di
     }
     probe_script = "$PSVersionTable.PSEdition + '|' + $PSVersionTable.PSVersion.ToString()"
     try:
+        completed = subprocess.run(
+            [shell_path, '-NoProfile', '-Command', probe_script],
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+        result['probe_returncode'] = completed.returncode
+        result['probe_stdout'] = completed.stdout[-1000:]
+        result['probe_stderr'] = completed.stderr[-1000:]
+        if completed.returncode == 0:
+            parts = next((line.strip() for line in completed.stdout.splitlines() if line.strip()), '').split('|', 1)
+            if len(parts) == 2:
+                result['edition'] = parts[0].strip()
+                result['version'] = parts[1].strip()
+    except Exception as exc:
+        result['probe_error'] = str(exc)[-1000:]
+
+    edition = str(result.get('edition', '')).casefold()
+    version = str(result.get('version', ''))
+    if edition == 'desktop' and version.startswith('5.1'):
+        result['target'] = 'windows_powershell_5_1'
+    elif edition == 'core':
+        result['target'] = 'pwsh' if requested_label == 'pwsh' else 'powershell_core'
+    elif requested_label == 'pwsh':
+        result['target'] = 'pwsh'
+    return result
+
+
+def get_powershell_behavior_shells() -> List[Dict[str, object]]:
+    candidates = [
+        ('powershell', shutil.which('powershell') or shutil.which('powershell.exe')),
+        ('pwsh', shutil.which('pwsh')),
+    ]
+    shells: List[Dict[str, object]] = []
+    seen_paths = set()
+    for requested_label, shell_path in candidates:
+        if not shell_path:
+            continue
+        try:
             stable_path = str(Path(shell_path).resolve(strict=False))
         except Exception:
             stable_path = str(shell_path)
@@ -221,8 +229,9 @@ def probe_powershell_behavior_shell(shell_path: str, requested_label: str) -> Di
         shells.append(probe_powershell_behavior_shell(shell_path, requested_label))
     return shells
 
+
 def run_powershell_behavior_script(script: str, available_shells: List[Dict[str, object]]) -> List[Dict[str, object]]:
-    shell_results: List[Dict[str, object]] = []
+    results: List[Dict[str, object]] = []
     for shell in available_shells:
         label = str(shell.get('target', 'powershell_unclassified'))
         shell_path = str(shell.get('path', ''))
@@ -237,8 +246,19 @@ def run_powershell_behavior_script(script: str, available_shells: List[Dict[str,
                 cmd.extend(['-ExecutionPolicy', 'Bypass'])
             cmd.extend(['-File', str(script_path)])
             completed = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            results.append({
+                'target': label,
+                'requested_label': shell.get('requested_label', ''),
+                'command': shell.get('command', Path(shell_path).name),
+                'edition': shell.get('edition', ''),
+                'version': shell.get('version', ''),
+                'status': 'passed' if completed.returncode == 0 else 'failed',
+                'returncode': completed.returncode,
+                'stdout': completed.stdout[-4000:],
+                'stderr': completed.stderr[-4000:],
+            })
         except Exception as exc:
-            shell_results.append({
+            results.append({
                 'target': label,
                 'requested_label': shell.get('requested_label', ''),
                 'command': shell.get('command', Path(shell_path).name),
@@ -249,32 +269,18 @@ def run_powershell_behavior_script(script: str, available_shells: List[Dict[str,
                 'stdout': '',
                 'stderr': str(exc)[-4000:],
             })
-            continue
         finally:
             script_path.unlink(missing_ok=True)
-        shell_results.append({
-            'target': label,
-            'requested_label': shell.get('requested_label', ''),
-            'command': shell.get('command', Path(shell_path).name),
-            'edition': shell.get('edition', ''),
-            'version': shell.get('version', ''),
-            'status': 'passed' if completed.returncode == 0 else 'failed',
-            'returncode': completed.returncode,
-            'stdout': completed.stdout[-4000:],
-            'stderr': completed.stderr[-4000:],
-        })
-    return shell_results
+    return results
+
 
 def finalize_powershell_behavior_result(result: Dict[str, object], shell_results: List[Dict[str, object]]) -> Dict[str, object]:
     result['shell_results'] = shell_results
-    failed_results = [row for row in shell_results if row['status'] == 'failed']
-    windows_result = next(
-        (row for row in shell_results if row['target'] == 'windows_powershell_5_1' and row['status'] == 'passed'),
-        None,
-    )
-    if failed_results:
+    failed = [row for row in shell_results if row['status'] == 'failed']
+    win51 = next((row for row in shell_results if row['target'] == 'windows_powershell_5_1' and row['status'] == 'passed'), None)
+    if failed:
         result['status'] = 'failed'
-    elif windows_result:
+    elif win51:
         result['status'] = 'passed'
     elif shell_results:
         result['status'] = 'passed_without_windows_powershell_5_1'
@@ -282,657 +288,450 @@ def finalize_powershell_behavior_result(result: Dict[str, object], shell_results
         result['status'] = 'skipped_powershell_unavailable'
     return result
 
-def run_json_policy_behavior_tests(source_dir: Path, manifest: Dict) -> Dict[str, object]:
-    result: Dict[str, object] = {
-        'available': False,
-        'status': 'skipped_powershell_unavailable',
-        'preferred_target': 'windows_powershell_5_1',
-        'shell_results': [],
-    }
-    available_shells = get_powershell_behavior_shells()
-    if not available_shells:
-        return result
 
+def behavior_base() -> Dict[str, object]:
+    return {'available': False, 'status': 'skipped_powershell_unavailable', 'preferred_target': 'windows_powershell_5_1', 'shell_results': []}
+
+
+def run_json_policy_behavior_tests(source_dir: Path, manifest: Dict) -> Dict[str, object]:
+    result = behavior_base()
+    shells = get_powershell_behavior_shells()
+    if not shells:
+        return result
     result['available'] = True
-    dot_source_lines = build_dot_source_lines_for_functions(
-        source_dir,
-        manifest,
-        ['Add-CollectorError', 'Add-CollectorJsonEllipsisPaths', 'Convert-ToCollectorJsonText'],
-    )
-    result['dotted_source_line_count'] = len([line for line in dot_source_lines.splitlines() if line.strip()])
+    dot_source = build_dot_source_lines_for_functions(source_dir, manifest, ['Add-CollectorError', 'Add-CollectorJsonEllipsisPaths', 'Convert-ToCollectorJsonText'])
+    result['dotted_source_line_count'] = len([line for line in dot_source.splitlines() if line.strip()])
     script = f"""
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList
 $Global:ErrorsLogPath = $null
-{dot_source_lines}
-
-function Assert-Condition {{
-  param([bool]$Condition,[string]$Message)
-  if (-not $Condition) {{ throw $Message }}
-}}
-
+{dot_source}
+function Assert-Condition {{ param([bool]$Condition,[string]$Message) if (-not $Condition) {{ throw $Message }} }}
 $deep = [ordered]@{{ a = [ordered]@{{ b = [ordered]@{{ c = [ordered]@{{ d = [ordered]@{{ e = 'leaf' }} }} }} }} }}
 $threw = $false
-try {{
-  Convert-ToCollectorJsonText -InputObject $deep -Depth 3 -Label 'behavior deep object' -ThrowOnTruncation | Out-Null
-}} catch {{
-  $threw = $true
-}}
+try {{ Convert-ToCollectorJsonText -InputObject $deep -Depth 3 -Label 'behavior deep object' -ThrowOnTruncation | Out-Null }} catch {{ $threw = $true }}
 Assert-Condition $threw 'deep object truncation was not detected'
 Assert-Condition ($Global:CollectorErrors.Count -ge 1) 'deep object truncation was not recorded'
-
 $Global:CollectorErrors.Clear()
 $legitimateEllipsis = [ordered]@{{ outer = [ordered]@{{ marker = '...' }} }}
 Convert-ToCollectorJsonText -InputObject $legitimateEllipsis -Depth 5 -Label 'legitimate ellipsis' -ThrowOnTruncation | Out-Null
 Assert-Condition ($Global:CollectorErrors.Count -eq 0) 'legitimate ellipsis string was treated as truncation'
-
 $jsonl = Convert-ToCollectorJsonText -InputObject ([ordered]@{{ x = 1 }}) -Compress -AppendNewline -Label 'newline behavior'
 Assert-Condition ($jsonl.EndsWith([Environment]::NewLine)) 'AppendNewline did not append the platform newline'
 """
-    shell_results = run_powershell_behavior_script(script, available_shells)
-    return finalize_powershell_behavior_result(result, shell_results)
+    return finalize_powershell_behavior_result(result, run_powershell_behavior_script(script, shells))
+
 
 def run_state_recursion_behavior_tests(source_dir: Path, manifest: Dict, worker_sentinel_body: str) -> Dict[str, object]:
-    result: Dict[str, object] = {
-        'available': False,
-        'status': 'skipped_powershell_unavailable',
-        'preferred_target': 'windows_powershell_5_1',
-        'shell_results': [],
-    }
-    available_shells = get_powershell_behavior_shells()
-    if not available_shells:
+    result = behavior_base()
+    shells = get_powershell_behavior_shells()
+    if not shells:
         return result
-
     result['available'] = True
     if not worker_sentinel_body:
         result['status'] = 'failed'
-        result['shell_results'] = [{
-            'target': 'source_extraction',
-            'command': 'extract_function_body',
-            'status': 'failed',
-            'returncode': 1,
-            'stdout': '',
-            'stderr': 'Test-WorkerJsonContainsEllipsisSentinel body could not be extracted',
-        }]
+        result['shell_results'] = [{'target': 'source_extraction', 'command': 'extract_function_body', 'status': 'failed', 'returncode': 1, 'stdout': '', 'stderr': 'Test-WorkerJsonContainsEllipsisSentinel body could not be extracted'}]
         return result
-    dot_source_lines = build_dot_source_lines_for_functions(
-        source_dir,
-        manifest,
-        ['Add-CollectorError', 'Convert-StateObjectToHashtable'],
-    )
-    result['dotted_source_line_count'] = len([line for line in dot_source_lines.splitlines() if line.strip()])
+    dot_source = build_dot_source_lines_for_functions(source_dir, manifest, ['Add-CollectorError', 'Convert-StateObjectToHashtable'])
+    result['dotted_source_line_count'] = len([line for line in dot_source.splitlines() if line.strip()])
     script = f"""
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
 $Global:CollectorNotes = New-Object System.Collections.ArrayList
 $Global:ErrorsLogPath = $null
-{dot_source_lines}
-
+{dot_source}
 function Test-WorkerJsonContainsEllipsisSentinel {worker_sentinel_body}
-
-function Assert-Condition {{
-  param([bool]$Condition,[string]$Message)
-  if (-not $Condition) {{ throw $Message }}
-}}
-
-$nested = [pscustomobject]@{{
-  alpha = [ordered]@{{
-    beta = @(
-      [pscustomobject]@{{ gamma = 'leaf' }}
-    )
-  }}
-}}
+function Assert-Condition {{ param([bool]$Condition,[string]$Message) if (-not $Condition) {{ throw $Message }} }}
+$nested = [pscustomobject]@{{ alpha = [ordered]@{{ beta = @([pscustomobject]@{{ gamma = 'leaf' }}) }} }}
 $converted = Convert-StateObjectToHashtable -InputObject $nested -Depth 8
 Assert-Condition ($converted -is [hashtable]) 'converted root is not a hashtable'
 Assert-Condition ($converted.alpha -is [hashtable]) 'nested dictionary was not preserved as hashtable'
 Assert-Condition ($converted.alpha.beta[0].gamma -eq 'leaf') 'nested array/object value was not preserved'
-
 $tooDeep = [ordered]@{{ a = [ordered]@{{ b = [ordered]@{{ c = [ordered]@{{ d = 'leaf' }} }} }} }}
-$threw = $false
-$message = ''
-try {{
-  Convert-StateObjectToHashtable -InputObject $tooDeep -Depth 3 | Out-Null
-}} catch {{
-  $threw = $true
-  $message = [string]$_.Exception.Message
-}}
+$threw = $false; $message = ''
+try {{ Convert-StateObjectToHashtable -InputObject $tooDeep -Depth 3 | Out-Null }} catch {{ $threw = $true; $message = [string]$_.Exception.Message }}
 Assert-Condition $threw 'state conversion depth overflow was not rejected'
 Assert-Condition ($message -like '*Convert-StateObjectToHashtable*') 'depth error did not identify the converter'
 Assert-Condition ($message -like '*depth 3*') 'depth error did not include the configured depth'
 Assert-Condition ($message -like '*$.a.b.c*') 'depth error did not include the recursive path'
-
 $workerNormal = [pscustomobject]@{{ step_results = @([pscustomobject]@{{ text = 'normal output' }}) }}
 Assert-Condition (-not (Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerNormal -MaxDepth 8)) 'normal worker object was treated as an ellipsis sentinel'
 $workerEllipsis = [pscustomobject]@{{ step_results = @([pscustomobject]@{{ text = '...' }}) }}
 Assert-Condition (Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerEllipsis -MaxDepth 8) 'nested worker ellipsis sentinel was not detected'
-
 $workerTooDeep = [pscustomobject]@{{ a = [pscustomobject]@{{ b = [pscustomobject]@{{ c = 'leaf' }} }} }}
-$workerThrew = $false
-$workerMessage = ''
-try {{
-  Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerTooDeep -MaxDepth 2 | Out-Null
-}} catch {{
-  $workerThrew = $true
-  $workerMessage = [string]$_.Exception.Message
-}}
+$workerThrew = $false; $workerMessage = ''
+try {{ Test-WorkerJsonContainsEllipsisSentinel -InputObject $workerTooDeep -MaxDepth 2 | Out-Null }} catch {{ $workerThrew = $true; $workerMessage = [string]$_.Exception.Message }}
 Assert-Condition $workerThrew 'worker sentinel depth overflow was not rejected'
 Assert-Condition ($workerMessage -like '*Parallel worker result JSON sentinel scan*') 'worker sentinel depth error did not identify the scanner'
 Assert-Condition ($workerMessage -like '*depth 2*') 'worker sentinel depth error did not include the configured depth'
 Assert-Condition ($workerMessage -like '*$.a.b*') 'worker sentinel depth error did not include the recursive path'
 """
-    shell_results = run_powershell_behavior_script(script, available_shells)
-    return finalize_powershell_behavior_result(result, shell_results)
+    return finalize_powershell_behavior_result(result, run_powershell_behavior_script(script, shells))
+
 
 def run_suspicious_process_parent_context_behavior_tests(source_dir: Path, manifest: Dict) -> Dict[str, object]:
-    result: Dict[str, object] = {
-        'available': False,
-        'status': 'skipped_powershell_unavailable',
-        'preferred_target': 'windows_powershell_5_1',
-        'shell_results': [],
-    }
-    available_shells = get_powershell_behavior_shells()
-    if not available_shells:
+    result = behavior_base()
+    shells = get_powershell_behavior_shells()
+    if not shells:
         return result
-
     result['available'] = True
-    dot_source_lines = build_dot_source_lines_for_functions(
-        source_dir,
-        manifest,
-        ['Convert-ProcessObjectToText', 'Get-SuspiciousProcessFindings'],
-    )
-    result['dotted_source_line_count'] = len([line for line in dot_source_lines.splitlines() if line.strip()])
+    dot_source = build_dot_source_lines_for_functions(source_dir, manifest, ['Convert-ProcessObjectToText', 'Get-SuspiciousProcessFindings'])
+    result['dotted_source_line_count'] = len([line for line in dot_source.splitlines() if line.strip()])
     script = f"""
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
-{dot_source_lines}
-
-function Assert-Condition {{
-  param([bool]$Condition,[string]$Message)
-  if (-not $Condition) {{ throw $Message }}
-}}
-
+{dot_source}
+function Assert-Condition {{ param([bool]$Condition,[string]$Message) if (-not $Condition) {{ throw $Message }} }}
 function New-TestProcess {{
-  param(
-    [int]$ProcessId,
-    [int]$ParentProcessId,
-    [string]$ParentProcessName,
-    [string]$Name,
-    [string]$ExecutablePath,
-    [string]$CommandLine
-  )
-  [pscustomobject]@{{
-    ProcessId = $ProcessId
-    ParentProcessId = $ParentProcessId
-    ParentProcessName = $ParentProcessName
-    Name = $Name
-    ExecutablePath = $ExecutablePath
-    CommandLine = $CommandLine
-  }}
+  param([int]$ProcessId,[int]$ParentProcessId,[string]$ParentProcessName,[string]$Name,[string]$ExecutablePath,[string]$CommandLine)
+  [pscustomobject]@{{ ProcessId = $ProcessId; ParentProcessId = $ParentProcessId; ParentProcessName = $ParentProcessName; Name = $Name; ExecutablePath = $ExecutablePath; CommandLine = $CommandLine }}
 }}
-
-$childWithCurrentParent = [pscustomobject]@{{
-  ProcessId = 201
-  ParentProcessId = 200
-  Name = 'powershell.exe'
-  ExecutablePath = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
-  CommandLine = 'powershell.exe -NoLogo'
-}}
+$childWithCurrentParent = [pscustomobject]@{{ ProcessId = 201; ParentProcessId = 200; Name = 'powershell.exe'; ExecutablePath = 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'; CommandLine = 'powershell.exe -NoLogo' }}
 $processNameById = @{{ 200 = 'services.exe' }}
 $validParentTimes = @{{ 200 = [datetime]'2026-01-01T00:00:00Z'; 201 = [datetime]'2026-01-01T00:00:10Z' }}
 $validParentRow = Convert-ProcessObjectToText -Proc $childWithCurrentParent -StartTimeMap $validParentTimes -ProcessNameById $processNameById -ProcessStartTimeById $validParentTimes
 Assert-Condition ($validParentRow.ParentProcessName -eq 'services.exe') 'current parent process name was not resolved'
-
 $reusedParentTimes = @{{ 200 = [datetime]'2026-01-01T00:01:00Z'; 201 = [datetime]'2026-01-01T00:00:10Z' }}
 $reusedParentRow = Convert-ProcessObjectToText -Proc $childWithCurrentParent -StartTimeMap $reusedParentTimes -ProcessNameById $processNameById -ProcessStartTimeById $reusedParentTimes
 Assert-Condition ([string]::IsNullOrWhiteSpace([string]$reusedParentRow.ParentProcessName)) 'reused parent PID name was trusted'
-
-$benignParentShell = New-TestProcess -ProcessId 101 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' -CommandLine 'powershell.exe -NoLogo'
-$benignFindings = @(Get-SuspiciousProcessFindings -Processes @($benignParentShell) -ExcludedPids @())
-Assert-Condition ($benignFindings.Count -eq 0) 'benign-parent name-only PowerShell was not suppressed'
-
-$encodedShell = New-TestProcess -ProcessId 102 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' -CommandLine 'powershell.exe -EncodedCommand AAAA'
+$benignParentShell = New-TestProcess -ProcessId 101 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -CommandLine 'powershell.exe -NoLogo'
+Assert-Condition (@(Get-SuspiciousProcessFindings -Processes @($benignParentShell) -ExcludedPids @()).Count -eq 0) 'benign-parent name-only PowerShell was not suppressed'
+$encodedShell = New-TestProcess -ProcessId 102 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -CommandLine 'powershell.exe -EncodedCommand AAAA'
 $encodedFindings = @(Get-SuspiciousProcessFindings -Processes @($encodedShell) -ExcludedPids @())
 Assert-Condition ($encodedFindings.Count -eq 1) 'PowerShell command-line indicator was suppressed'
 Assert-Condition ($encodedFindings[0].Reasons -like '*suspicious PowerShell style command line*') 'PowerShell command-line reason missing'
 Assert-Condition ($encodedFindings[0].ParentProcessName -eq 'services.exe') 'PowerShell parent context missing'
-
-$wmicCreate = New-TestProcess -ProcessId 103 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'wmic.exe' -ExecutablePath 'C:\\Windows\\System32\\wbem\\wmic.exe' -CommandLine 'wmic process call create \"cmd.exe /c whoami\"'
+$wmicCreate = New-TestProcess -ProcessId 103 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'wmic.exe' -ExecutablePath 'C:\Windows\System32\wbem\wmic.exe' -CommandLine 'wmic process call create "cmd.exe /c whoami"'
 $wmicFindings = @(Get-SuspiciousProcessFindings -Processes @($wmicCreate) -ExcludedPids @())
 Assert-Condition ($wmicFindings.Count -eq 1) 'WMIC process creation indicator was suppressed'
 Assert-Condition ($wmicFindings[0].Reasons -like '*suspicious LOLBin usage*') 'WMIC LOLBin reason missing'
-
-$cmdHighRiskPath = New-TestProcess -ProcessId 104 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'cmd.exe' -ExecutablePath 'C:\\Temp\\cmd.exe' -CommandLine 'cmd.exe /c whoami'
+$cmdHighRiskPath = New-TestProcess -ProcessId 104 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'cmd.exe' -ExecutablePath 'C:\Temp\cmd.exe' -CommandLine 'cmd.exe /c whoami'
 $pathFindings = @(Get-SuspiciousProcessFindings -Processes @($cmdHighRiskPath) -ExcludedPids @())
 Assert-Condition ($pathFindings.Count -eq 1) 'High-risk path indicator was suppressed'
 Assert-Condition ($pathFindings[0].Reasons -like '*process running from high-risk path*') 'High-risk path reason missing'
 """
-    shell_results = run_powershell_behavior_script(script, available_shells)
-    return finalize_powershell_behavior_result(result, shell_results)
+    return finalize_powershell_behavior_result(result, run_powershell_behavior_script(script, shells))
 
-def validate_state_recursion_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
-    recursion_checks: Dict[str, object] = {}
-    checks['state_recursion_policy'] = recursion_checks
 
-    source_text_by_rel = load_manifest_source_texts(source_dir, manifest)
-    collector_text = get_combined_source_text(source_text_by_rel)
-    parallel_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1'
-    main_entry_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
+def add_missing_errors(prefix: str, check_map: Dict[str, object], required_keys: List[str], errors: List[str]) -> None:
+    for key in required_keys:
+        if not check_map.get(key):
+            errors.append(prefix + key)
 
-    parallel_text = source_text_by_rel.get(parallel_rel, '')
-    main_entry_text = source_text_by_rel.get(main_entry_rel, '')
-    converter_body = extract_function_body(collector_text, 'Convert-StateObjectToHashtable')
-    worker_sentinel_body = extract_function_body(parallel_text, 'Test-WorkerJsonContainsEllipsisSentinel')
 
-    recursion_checks['convert_state_object_to_hashtable_present'] = bool(converter_body)
-    recursion_checks['converter_default_depth_20'] = '[int]$Depth = 20' in converter_body
-    recursion_checks['converter_tracks_current_depth'] = '[int]$CurrentDepth = 0' in converter_body
-    recursion_checks['converter_tracks_path'] = "[string]$Path = '$'" in converter_body
-    recursion_checks['converter_throws_at_depth_limit'] = 'Convert-StateObjectToHashtable exceeded configured depth {0} at path {1}.' in converter_body
-    recursion_checks['converter_dictionary_recursion_passes_depth_path'] = (
-        'Convert-StateObjectToHashtable -InputObject $InputObject[$key] -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in converter_body
-    )
-    recursion_checks['converter_enumerable_recursion_passes_depth_path'] = (
-        'Convert-StateObjectToHashtable -InputObject $item -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in converter_body
-    )
-    recursion_checks['converter_property_recursion_passes_depth_path'] = (
-        'Convert-StateObjectToHashtable -InputObject $prop.Value -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in converter_body
-    )
-    recursion_checks['load_state_uses_default_converter_policy'] = 'Convert-StateObjectToHashtable -InputObject $loaded' in main_entry_text
+def validate_unique_function_definitions(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
+    definitions = find_function_definitions(source_dir, manifest)
+    duplicates = {name: rows for name, rows in definitions.items() if len(rows) > 1}
+    checks['function_definition_count'] = sum(len(rows) for rows in definitions.values())
+    checks['unique_function_count'] = len(definitions)
+    checks['duplicate_function_count'] = len(duplicates)
+    checks['duplicate_function_names'] = sorted(duplicates)
+    checks['duplicate_function_original_names'] = {name: sorted({row['name'] for row in rows}) for name, rows in sorted(duplicates.items())}
+    checks['duplicate_function_definitions'] = {name: rows for name, rows in sorted(duplicates.items())}
+    if duplicates:
+        errors.append('duplicate function definitions are not allowed: ' + ', '.join(sorted(duplicates)))
+    if manifest.get('function_override_manifest'):
+        errors.append('function_override_manifest is obsolete; collector functions must be defined once')
 
-    recursion_checks['worker_sentinel_present'] = bool(worker_sentinel_body)
-    recursion_checks['worker_sentinel_default_max_depth_25'] = '[int]$MaxDepth = 25' in worker_sentinel_body
-    recursion_checks['worker_sentinel_tracks_current_depth'] = '[int]$CurrentDepth = 0' in worker_sentinel_body
-    recursion_checks['worker_sentinel_tracks_path'] = "[string]$Path = '$'" in worker_sentinel_body
-    recursion_checks['worker_sentinel_throws_at_depth_limit'] = 'Parallel worker result JSON sentinel scan exceeded configured depth {0} at path {1}.' in worker_sentinel_body
-    recursion_checks['worker_sentinel_enumerable_recursion_passes_depth_path'] = (
-        'Test-WorkerJsonContainsEllipsisSentinel -InputObject $item -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in worker_sentinel_body
-    )
-    recursion_checks['worker_sentinel_property_recursion_passes_depth_path'] = (
-        'Test-WorkerJsonContainsEllipsisSentinel -InputObject $prop.Value -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in worker_sentinel_body
-    )
-    recursion_checks['state_recursion_behavior_tests'] = run_state_recursion_behavior_tests(source_dir, manifest, worker_sentinel_body)
-
-    for key in (
-        'convert_state_object_to_hashtable_present',
-        'converter_default_depth_20',
-        'converter_tracks_current_depth',
-        'converter_tracks_path',
-        'converter_throws_at_depth_limit',
-        'converter_dictionary_recursion_passes_depth_path',
-        'converter_enumerable_recursion_passes_depth_path',
-        'converter_property_recursion_passes_depth_path',
-        'load_state_uses_default_converter_policy',
-        'worker_sentinel_present',
-        'worker_sentinel_default_max_depth_25',
-        'worker_sentinel_tracks_current_depth',
-        'worker_sentinel_tracks_path',
-        'worker_sentinel_throws_at_depth_limit',
-        'worker_sentinel_enumerable_recursion_passes_depth_path',
-        'worker_sentinel_property_recursion_passes_depth_path',
-    ):
-        if not recursion_checks[key]:
-            errors.append('collector state recursion policy check failed: ' + key)
-    if recursion_checks['state_recursion_behavior_tests']['status'] == 'failed':
-        errors.append('collector state recursion policy behavior tests failed')
 
 def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Dict[str, object], errors: List[str]) -> None:
-    main_entry_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
+    main_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
     helper_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1'
-    main_entry_path = source_dir / main_entry_rel
-    helper_path = source_dir / helper_rel
-    metadata_checks: Dict[str, object] = {'path': main_entry_rel, 'helper_path': helper_rel}
-    checks['collect_metadata_report_write_ordering'] = metadata_checks
-    if not main_entry_path.exists():
-        metadata_checks['checked'] = False
-        errors.append('collect metadata report source is missing: ' + main_entry_rel)
+    text = read_text(source_dir / main_rel)
+    helper = read_text(source_dir / helper_rel)
+    out: Dict[str, object] = {'path': main_rel, 'helper_path': helper_rel}
+    checks['collect_metadata_report_write_ordering'] = out
+    if not text or not helper:
+        out['checked'] = False
+        errors.append('collect metadata report source/helper is missing')
         return
-    if not helper_path.exists():
-        metadata_checks['checked'] = False
-        errors.append('collect metadata late-bound helper source is missing: ' + helper_rel)
-        return
-
-    text = main_entry_path.read_text(encoding='utf-8', errors='ignore')
-    helper_text = helper_path.read_text(encoding='utf-8', errors='ignore')
-    metadata_marker = '$metadataText = New-MetadataReport -State $state -ToolMap $toolMap'
-    write_marker = 'Write-ReportFile -Path $metadataReportPath -Text $metadataText'
-    placeholder_marker = 'New-Item -ItemType File -Path $metadataReportPath'
-    upload_artifacts_marker = '$uploadArtifacts = New-CollectUploadArtifactsWithLateMetadataReport -State $state -Baseline $baseline'
-    upload_summary_marker = '$state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath'
-    upload_budget_marker = '$state.UploadBudgetManifestPath = $uploadArtifacts.UploadManifestPath'
-    default_upload_set_marker = '$state.DefaultGeminiUploadSetStatus = $uploadArtifacts.DefaultSetStatus'
-    upload_safe_chunk_marker = '$state.UploadSafeChunkManifestPath = $uploadArtifacts.UploadSafeChunkManifestPath'
-    analyst_overview_marker = '$state.AnalystOverviewPath = New-AnalystOverviewArtifactWithLateMetadataReport -State $state -Baseline $baseline'
-    bundle_name_marker = '$bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)'
-    bundle_path_marker = '$bundlePath = Join-Path $state.BundlesDir $bundleName'
-    collect_bundle_marker = '$state.CollectBundlePath = $bundlePath'
-    manifest_marker = 'New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json")'
-    bundle_call_marker = 'New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName'
-
-    metadata_positions = [match.start() for match in re.finditer(re.escape(metadata_marker), text)]
-    write_positions = [match.start() for match in re.finditer(re.escape(write_marker), text)]
-    upload_artifacts_pos = text.find(upload_artifacts_marker)
-    upload_summary_pos = text.find(upload_summary_marker)
-    upload_budget_pos = text.find(upload_budget_marker)
-    default_upload_set_pos = text.find(default_upload_set_marker)
-    upload_safe_chunk_pos = text.find(upload_safe_chunk_marker)
-    analyst_overview_pos = text.find(analyst_overview_marker)
-    bundle_name_pos = text.find(bundle_name_marker)
-    bundle_path_pos = text.find(bundle_path_marker)
-    collect_bundle_pos = text.find(collect_bundle_marker)
-    manifest_pos = text.find(manifest_marker)
-    bundle_call_pos = text.find(bundle_call_marker)
-
-    metadata_checks['checked'] = True
-    metadata_checks['metadata_report_call_count'] = len(metadata_positions)
-    metadata_checks['metadata_report_write_count'] = len(write_positions)
-    metadata_checks['placeholder_metadata_file_absent'] = placeholder_marker not in text
-    metadata_checks['late_bound_upload_builder_used'] = upload_artifacts_pos != -1
-    metadata_checks['late_bound_overview_builder_used'] = analyst_overview_pos != -1
-    metadata_checks['old_upload_builder_not_used_in_collect'] = 'New-CollectUploadArtifacts -State $state -Baseline $baseline' not in text
-    metadata_checks['old_overview_builder_not_used_in_collect'] = 'New-AnalystOverviewArtifact -State $state -Baseline $baseline' not in text
-    metadata_checks['upload_artifacts_before_metadata'] = bool(metadata_positions) and upload_artifacts_pos != -1 and upload_artifacts_pos < metadata_positions[0]
-    metadata_checks['upload_summary_before_metadata'] = bool(metadata_positions) and upload_summary_pos != -1 and upload_summary_pos < metadata_positions[0]
-    metadata_checks['upload_budget_manifest_before_metadata'] = bool(metadata_positions) and upload_budget_pos != -1 and upload_budget_pos < metadata_positions[0]
-    metadata_checks['default_upload_set_status_before_metadata'] = bool(metadata_positions) and default_upload_set_pos != -1 and default_upload_set_pos < metadata_positions[0]
-    metadata_checks['upload_safe_chunk_manifest_before_metadata'] = bool(metadata_positions) and upload_safe_chunk_pos != -1 and upload_safe_chunk_pos < metadata_positions[0]
-    metadata_checks['analyst_overview_before_metadata'] = bool(metadata_positions) and analyst_overview_pos != -1 and analyst_overview_pos < metadata_positions[0]
-    metadata_checks['bundle_name_before_metadata'] = bool(metadata_positions) and bundle_name_pos != -1 and bundle_name_pos < metadata_positions[0]
-    metadata_checks['bundle_path_before_metadata'] = bool(metadata_positions) and bundle_path_pos != -1 and bundle_path_pos < metadata_positions[0]
-    metadata_checks['collect_bundle_path_before_metadata'] = bool(metadata_positions) and collect_bundle_pos != -1 and collect_bundle_pos < metadata_positions[0]
-    metadata_checks['metadata_before_manifest'] = bool(metadata_positions) and manifest_pos != -1 and metadata_positions[0] < manifest_pos
-    metadata_checks['metadata_write_before_manifest'] = bool(write_positions) and manifest_pos != -1 and write_positions[0] < manifest_pos
-    metadata_checks['metadata_before_bundle'] = bool(metadata_positions) and bundle_call_pos != -1 and metadata_positions[0] < bundle_call_pos
-    metadata_checks['metadata_write_before_bundle'] = bool(write_positions) and bundle_call_pos != -1 and metadata_positions[0] < bundle_call_pos
-    metadata_checks['metadata_write_follows_metadata_call'] = bool(metadata_positions) and bool(write_positions) and metadata_positions[0] < write_positions[0]
-    metadata_checks['late_bound_metadata_manifest_flag'] = 'metadata_report_late_bound_after_upload_artifacts = $true' in helper_text
-    metadata_checks['late_bound_recommended_row_flag'] = 'late_bound_after_upload_artifacts = [bool]$isLateBoundMetadata' in helper_text
-    metadata_checks['late_bound_metadata_not_budgeted'] = 'if (-not $isLateBoundMetadata) { $safeTotal += $sizeKB }' in helper_text
-    metadata_checks['late_bound_metadata_not_resolved'] = (
-        'if ($pathExists)' in helper_text
-        and 'Resolve-Path -LiteralPath $pathText' in helper_text
-        and '$pathText' in helper_text
-    )
-    metadata_checks['overview_includes_late_bound_metadata_path'] = "($pair.Label -eq 'METADATA_REPORT_PATH')" in helper_text
-
+    markers = {
+        'metadata': '$metadataText = New-MetadataReport -State $state -ToolMap $toolMap',
+        'write': 'Write-ReportFile -Path $metadataReportPath -Text $metadataText',
+        'upload_artifacts': '$uploadArtifacts = New-CollectUploadArtifactsWithLateMetadataReport -State $state -Baseline $baseline',
+        'upload_summary': '$state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath',
+        'upload_budget': '$state.UploadBudgetManifestPath = $uploadArtifacts.UploadManifestPath',
+        'default_upload_set': '$state.DefaultGeminiUploadSetStatus = $uploadArtifacts.DefaultSetStatus',
+        'upload_safe_chunk': '$state.UploadSafeChunkManifestPath = $uploadArtifacts.UploadSafeChunkManifestPath',
+        'analyst_overview': '$state.AnalystOverviewPath = New-AnalystOverviewArtifactWithLateMetadataReport -State $state -Baseline $baseline',
+        'bundle_name': '$bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)',
+        'bundle_path': '$bundlePath = Join-Path $state.BundlesDir $bundleName',
+        'collect_bundle': '$state.CollectBundlePath = $bundlePath',
+        'manifest': 'New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json")',
+        'bundle_call': 'New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName',
+    }
+    pos = {key: text.find(value) for key, value in markers.items()}
+    metadata_positions = [m.start() for m in re.finditer(re.escape(markers['metadata']), text)]
+    write_positions = [m.start() for m in re.finditer(re.escape(markers['write']), text)]
+    out.update({
+        'checked': True,
+        'metadata_report_call_count': len(metadata_positions),
+        'metadata_report_write_count': len(write_positions),
+        'placeholder_metadata_file_absent': 'New-Item -ItemType File -Path $metadataReportPath' not in text,
+        'late_bound_upload_builder_used': pos['upload_artifacts'] != -1,
+        'late_bound_overview_builder_used': pos['analyst_overview'] != -1,
+        'old_upload_builder_not_used_in_collect': 'New-CollectUploadArtifacts -State $state -Baseline $baseline' not in text,
+        'old_overview_builder_not_used_in_collect': 'New-AnalystOverviewArtifact -State $state -Baseline $baseline' not in text,
+        'late_bound_metadata_manifest_flag': 'metadata_report_late_bound_after_upload_artifacts = $true' in helper,
+        'late_bound_recommended_row_flag': 'late_bound_after_upload_artifacts = [bool]$isLateBoundMetadata' in helper,
+        'late_bound_metadata_not_budgeted': 'if (-not $isLateBoundMetadata) { $safeTotal += $sizeKB }' in helper,
+        'late_bound_metadata_not_resolved': 'if ($pathExists)' in helper and 'Resolve-Path -LiteralPath $pathText' in helper and '$pathText' in helper,
+        'overview_includes_late_bound_metadata_path': "($pair.Label -eq 'METADATA_REPORT_PATH')" in helper,
+    })
     if len(metadata_positions) != 1:
         errors.append('collect mode must call New-MetadataReport exactly once after late-bound collect fields are populated')
     if len(write_positions) != 1:
         errors.append('collect mode must write the metadata report exactly once')
-    for key in (
-        'placeholder_metadata_file_absent',
-        'late_bound_upload_builder_used',
-        'late_bound_overview_builder_used',
-        'old_upload_builder_not_used_in_collect',
-        'old_overview_builder_not_used_in_collect',
-        'upload_artifacts_before_metadata',
-        'upload_summary_before_metadata',
-        'upload_budget_manifest_before_metadata',
-        'default_upload_set_status_before_metadata',
-        'upload_safe_chunk_manifest_before_metadata',
-        'analyst_overview_before_metadata',
-        'bundle_name_before_metadata',
-        'bundle_path_before_metadata',
-        'collect_bundle_path_before_metadata',
-        'metadata_before_manifest',
-        'metadata_write_before_manifest',
-        'metadata_before_bundle',
-        'metadata_write_before_bundle',
-        'metadata_write_follows_metadata_call',
-        'late_bound_metadata_manifest_flag',
-        'late_bound_recommended_row_flag',
-        'late_bound_metadata_not_budgeted',
-        'late_bound_metadata_not_resolved',
-        'overview_includes_late_bound_metadata_path',
-    ):
-        if not metadata_checks[key]:
-            errors.append('collect metadata report write ordering check failed: ' + key)
+    if metadata_positions:
+        first_metadata = metadata_positions[0]
+        for key in ('upload_artifacts', 'upload_summary', 'upload_budget', 'default_upload_set', 'upload_safe_chunk', 'analyst_overview', 'bundle_name', 'bundle_path', 'collect_bundle'):
+            out[f'{key}_before_metadata'] = pos[key] != -1 and pos[key] < first_metadata
+        out['metadata_before_manifest'] = pos['manifest'] != -1 and first_metadata < pos['manifest']
+        out['metadata_before_bundle'] = pos['bundle_call'] != -1 and first_metadata < pos['bundle_call']
+    else:
+        for key in ('upload_artifacts', 'upload_summary', 'upload_budget_manifest', 'default_upload_set_status', 'upload_safe_chunk_manifest', 'analyst_overview', 'bundle_name', 'bundle_path', 'collect_bundle_path'):
+            out[f'{key}_before_metadata'] = False
+        out['metadata_before_manifest'] = False
+        out['metadata_before_bundle'] = False
+    if write_positions:
+        out['metadata_write_before_manifest'] = pos['manifest'] != -1 and write_positions[0] < pos['manifest']
+        out['metadata_write_before_bundle'] = pos['bundle_call'] != -1 and write_positions[0] < pos['bundle_call']
+    else:
+        out['metadata_write_before_manifest'] = False
+        out['metadata_write_before_bundle'] = False
+    out['metadata_write_follows_metadata_call'] = bool(metadata_positions and write_positions and metadata_positions[0] < write_positions[0])
+    alias = {
+        'upload_budget_manifest_before_metadata': out.get('upload_budget_before_metadata', False),
+        'default_upload_set_status_before_metadata': out.get('default_upload_set_before_metadata', False),
+        'upload_safe_chunk_manifest_before_metadata': out.get('upload_safe_chunk_before_metadata', False),
+        'collect_bundle_path_before_metadata': out.get('collect_bundle_before_metadata', False),
+    }
+    out.update(alias)
+    add_missing_errors('collect metadata report write ordering check failed: ', out, [
+        'placeholder_metadata_file_absent', 'late_bound_upload_builder_used', 'late_bound_overview_builder_used',
+        'old_upload_builder_not_used_in_collect', 'old_overview_builder_not_used_in_collect',
+        'upload_artifacts_before_metadata', 'upload_summary_before_metadata', 'upload_budget_manifest_before_metadata',
+        'default_upload_set_status_before_metadata', 'upload_safe_chunk_manifest_before_metadata', 'analyst_overview_before_metadata',
+        'bundle_name_before_metadata', 'bundle_path_before_metadata', 'collect_bundle_path_before_metadata',
+        'metadata_before_manifest', 'metadata_write_before_manifest', 'metadata_before_bundle', 'metadata_write_before_bundle',
+        'metadata_write_follows_metadata_call', 'late_bound_metadata_manifest_flag', 'late_bound_recommended_row_flag',
+        'late_bound_metadata_not_budgeted', 'late_bound_metadata_not_resolved', 'overview_includes_late_bound_metadata_path',
+    ], errors)
+
 
 def validate_collect_manifest_bundle_ordering(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
-    main_entry_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
-    main_entry_path = source_dir / main_entry_rel
-    ordering_checks: Dict[str, object] = {'path': main_entry_rel}
-    checks['collect_manifest_bundle_ordering'] = ordering_checks
-    if not main_entry_path.exists():
-        ordering_checks['checked'] = False
-        errors.append('collect manifest ordering source is missing: ' + main_entry_rel)
+    rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
+    text = read_text(source_dir / rel)
+    out: Dict[str, object] = {'path': rel}
+    checks['collect_manifest_bundle_ordering'] = out
+    if not text:
+        out['checked'] = False
+        errors.append('collect manifest ordering source is missing: ' + rel)
         return
-
-    text = main_entry_path.read_text(encoding='utf-8', errors='ignore')
     manifest_marker = 'New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json")'
     bundle_name_marker = '$bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)'
     bundle_path_marker = '$bundlePath = Join-Path $state.BundlesDir $bundleName'
     state_path_marker = '$state.CollectBundlePath = $bundlePath'
     bundle_call_marker = 'New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName'
-
-    manifest_call_count = text.count(manifest_marker)
-    ordering_checks['checked'] = True
-    ordering_checks['collect_manifest_call_count'] = manifest_call_count
-    ordering_checks['collect_bundle_null_present'] = 'collect_bundle = $null' in text
-
-    bundle_name_pos = text.find(bundle_name_marker)
-    bundle_path_pos = text.find(bundle_path_marker)
-    state_path_pos = text.find(state_path_marker)
     manifest_pos = text.find(manifest_marker)
     bundle_call_pos = text.find(bundle_call_marker)
-
-    ordering_checks['bundle_name_precomputed_before_manifest'] = bundle_name_pos != -1 and bundle_name_pos < manifest_pos
-    ordering_checks['bundle_path_precomputed_before_manifest'] = bundle_path_pos != -1 and bundle_path_pos < manifest_pos
-    ordering_checks['state_collect_bundle_path_set_before_manifest'] = state_path_pos != -1 and state_path_pos < manifest_pos
-    ordering_checks['manifest_written_before_bundle'] = manifest_pos != -1 and bundle_call_pos != -1 and manifest_pos < bundle_call_pos
-    ordering_checks['bundle_call_uses_precomputed_name'] = bundle_call_pos != -1
-    ordering_checks['manifest_in_bundle_inputs'] = (
-        bundle_call_pos != -1 and '$collectManifest' in text[bundle_call_pos:bundle_call_pos + 1200]
-    )
-
-    if manifest_call_count != 1:
+    out.update({
+        'checked': True,
+        'collect_manifest_call_count': text.count(manifest_marker),
+        'collect_bundle_null_present': 'collect_bundle = $null' in text,
+        'bundle_name_precomputed_before_manifest': text.find(bundle_name_marker) != -1 and text.find(bundle_name_marker) < manifest_pos,
+        'bundle_path_precomputed_before_manifest': text.find(bundle_path_marker) != -1 and text.find(bundle_path_marker) < manifest_pos,
+        'state_collect_bundle_path_set_before_manifest': text.find(state_path_marker) != -1 and text.find(state_path_marker) < manifest_pos,
+        'manifest_written_before_bundle': manifest_pos != -1 and bundle_call_pos != -1 and manifest_pos < bundle_call_pos,
+        'bundle_call_uses_precomputed_name': bundle_call_pos != -1,
+        'manifest_in_bundle_inputs': bundle_call_pos != -1 and '$collectManifest' in text[bundle_call_pos:bundle_call_pos + 1200],
+    })
+    if out['collect_manifest_call_count'] != 1:
         errors.append('collect mode must write manifest_collect.json exactly once before bundle creation')
-    if ordering_checks['collect_bundle_null_present']:
+    if out['collect_bundle_null_present']:
         errors.append('collect mode must not write manifest_collect.json with collect_bundle = $null')
-    for key in (
-        'bundle_name_precomputed_before_manifest',
-        'bundle_path_precomputed_before_manifest',
-        'state_collect_bundle_path_set_before_manifest',
-        'manifest_written_before_bundle',
-        'bundle_call_uses_precomputed_name',
-        'manifest_in_bundle_inputs',
-    ):
-        if not ordering_checks[key]:
-            errors.append('collect manifest/bundle ordering check failed: ' + key)
+    add_missing_errors('collect manifest/bundle ordering check failed: ', out, [
+        'bundle_name_precomputed_before_manifest', 'bundle_path_precomputed_before_manifest', 'state_collect_bundle_path_set_before_manifest',
+        'manifest_written_before_bundle', 'bundle_call_uses_precomputed_name', 'manifest_in_bundle_inputs',
+    ], errors)
+
 
 def validate_bundle_metadata_sync_terminates(source_dir: Path, checks: Dict[str, object], errors: List[str]) -> None:
-    helper_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1'
-    helper_path = source_dir / helper_rel
-    sync_checks: Dict[str, object] = {'path': helper_rel}
-    checks['bundle_metadata_sync_error_handling'] = sync_checks
-    if not helper_path.exists():
-        sync_checks['checked'] = False
-        errors.append('bundle metadata sync helper source is missing: ' + helper_rel)
+    rel = 'project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1'
+    text = read_text(source_dir / rel)
+    out: Dict[str, object] = {'path': rel}
+    checks['bundle_metadata_sync_error_handling'] = out
+    if not text:
+        out['checked'] = False
+        errors.append('bundle metadata sync helper source is missing: ' + rel)
         return
-
-    text = helper_path.read_text(encoding='utf-8', errors='ignore')
     sync_body = extract_function_body(text, 'Sync-CollectionMetadataCompanionArtifact')
     bundle_body = extract_function_body(text, 'New-BundleZip')
     catch_match = re.search(r'catch\s*{(?P<body>.*?)^\s*}', sync_body, re.DOTALL | re.MULTILINE)
     catch_body = catch_match.group('body') if catch_match else ''
-
-    sync_checks['checked'] = True
-    sync_checks['sync_function_present'] = bool(sync_body)
-    sync_checks['bundle_function_present'] = bool(bundle_body)
-    sync_checks['bundle_invokes_sync'] = 'Sync-CollectionMetadataCompanionArtifact' in bundle_body
-    sync_checks['sync_catch_records_collector_error'] = 'Add-CollectorError' in catch_body
-    sync_checks['sync_catch_throws_after_error'] = re.search(r'\bthrow\b', catch_body) is not None
-
-    if not sync_checks['sync_function_present']:
+    out.update({
+        'checked': True,
+        'sync_function_present': bool(sync_body),
+        'bundle_function_present': bool(bundle_body),
+        'bundle_invokes_sync': 'Sync-CollectionMetadataCompanionArtifact' in bundle_body,
+        'sync_catch_records_collector_error': 'Add-CollectorError' in catch_body,
+        'sync_catch_throws_after_error': re.search(r'\bthrow\b', catch_body) is not None,
+    })
+    if not out['sync_function_present']:
         errors.append('Sync-CollectionMetadataCompanionArtifact function is missing')
-    if not sync_checks['bundle_function_present']:
+    if not out['bundle_function_present']:
         errors.append('New-BundleZip function is missing')
-    if not sync_checks['bundle_invokes_sync']:
+    if not out['bundle_invokes_sync']:
         errors.append('New-BundleZip must synchronize collection metadata companions before compression')
-    if not sync_checks['sync_catch_records_collector_error']:
+    if not out['sync_catch_records_collector_error']:
         errors.append('metadata companion sync failures must be recorded with Add-CollectorError')
-    if not sync_checks['sync_catch_throws_after_error']:
+    if not out['sync_catch_throws_after_error']:
         errors.append('metadata companion sync failures must terminate bundle creation after recording the error')
 
+
 def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
-    policy_checks: Dict[str, object] = {}
-    checks['json_serialization_policy'] = policy_checks
-
-    source_text_by_rel = load_manifest_source_texts(source_dir, manifest)
-    collector_text = get_combined_source_text(source_text_by_rel)
-    reports_rel = 'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'
+    out: Dict[str, object] = {}
+    checks['json_serialization_policy'] = out
+    texts = load_manifest_source_texts(source_dir, manifest)
+    collector = get_combined_source_text(texts)
+    reports = texts.get('project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1', '')
     parallel_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1'
-    manifest_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1'
-
-    reports_text = source_text_by_rel.get(reports_rel, '')
-    parallel_text = source_text_by_rel.get(parallel_rel, '')
-    manifest_text = source_text_by_rel.get(manifest_rel, '')
-
-    for function_name in (
-        'Add-CollectorJsonEllipsisPaths',
-        'Get-CollectorJsonEllipsisPathSet',
-        'Add-CollectorJsonDepthRiskPaths',
-        'Get-CollectorJsonDepthRiskPathSet',
-        'Convert-ToCollectorJsonText',
-    ):
-        policy_checks[f'{function_name}_present'] = bool(extract_function_body(collector_text, function_name))
-        if not policy_checks[f'{function_name}_present']:
+    parallel = texts.get(parallel_rel, '')
+    manifest_text = texts.get('project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1', '')
+    for function_name in ('Add-CollectorJsonEllipsisPaths', 'Get-CollectorJsonEllipsisPathSet', 'Add-CollectorJsonDepthRiskPaths', 'Get-CollectorJsonDepthRiskPathSet', 'Convert-ToCollectorJsonText'):
+        out[f'{function_name}_present'] = bool(extract_function_body(collector, function_name))
+        if not out[f'{function_name}_present']:
             errors.append(f'collector JSON serialization helper is missing: {function_name}')
-
-    shared_helper_body = extract_function_body(collector_text, 'Convert-ToCollectorJsonText')
-    json_helper_rel = next(
-        (rel for rel, text in source_text_by_rel.items() if extract_function_body(text, 'Convert-ToCollectorJsonText')),
-        '',
-    )
-    policy_checks['shared_helper_default_depth_20'] = '[int]$Depth = 20' in shared_helper_body
-    policy_checks['shared_helper_checks_source_depth_risks'] = 'Get-CollectorJsonDepthRiskPathSet -InputObject $InputObject -MaxDepth $Depth' in shared_helper_body
-    policy_checks['shared_helper_parses_emitted_json'] = 'ConvertFrom-Json -ErrorAction Stop' in shared_helper_body
-    policy_checks['shared_helper_compares_source_ellipsis_paths'] = '$sourceEllipsis.ContainsKey($_)' in shared_helper_body
-    policy_checks['shared_helper_records_collector_error'] = 'Add-CollectorError $message' in shared_helper_body
-    policy_checks['shared_helper_can_throw'] = 'if ($ThrowOnTruncation) { throw $message }' in shared_helper_body
-    policy_checks['save_state_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $State -Label 'state.json' -ThrowOnTruncation" in collector_text
-    policy_checks['step_log_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $obj -Compress -Label 'execution step JSONL'" in collector_text
-    policy_checks['safe_json_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $InputObject -Label 'safe JSON artifact' -AppendNewline -ThrowOnTruncation" in reports_text
-    policy_checks['manifest_uses_shared_helper'] = "Convert-ToCollectorJsonText -InputObject $manifest -Label 'manifest JSON' -ThrowOnTruncation" in manifest_text
-    policy_checks['worker_uses_depth_20'] = '$workerJson = $workerResult | ConvertTo-Json -Depth 20 -ErrorAction Stop' in parallel_text
-    policy_checks['worker_parses_and_checks_sentinel'] = (
-        'ConvertFrom-Json -ErrorAction Stop' in parallel_text
-        and 'Test-WorkerJsonContainsEllipsisSentinel' in parallel_text
-        and 'Parallel worker result JSON' in parallel_text
-    )
-    policy_checks['shared_helper_behavior_tests'] = run_json_policy_behavior_tests(source_dir, manifest)
-
-    for key in (
-        'shared_helper_default_depth_20',
-        'shared_helper_checks_source_depth_risks',
-        'shared_helper_parses_emitted_json',
-        'shared_helper_compares_source_ellipsis_paths',
-        'shared_helper_records_collector_error',
-        'shared_helper_can_throw',
-        'save_state_uses_shared_helper',
-        'step_log_uses_shared_helper',
-        'safe_json_uses_shared_helper',
-        'manifest_uses_shared_helper',
-        'worker_uses_depth_20',
-        'worker_parses_and_checks_sentinel',
-    ):
-        if not policy_checks[key]:
-            errors.append('collector JSON serialization policy check failed: ' + key)
-    if policy_checks['shared_helper_behavior_tests']['status'] == 'failed':
+    body = extract_function_body(collector, 'Convert-ToCollectorJsonText')
+    json_helper_rel = next((rel for rel, text in texts.items() if extract_function_body(text, 'Convert-ToCollectorJsonText')), '')
+    out.update({
+        'shared_helper_default_depth_20': '[int]$Depth = 20' in body,
+        'shared_helper_checks_source_depth_risks': 'Get-CollectorJsonDepthRiskPathSet -InputObject $InputObject -MaxDepth $Depth' in body,
+        'shared_helper_parses_emitted_json': 'ConvertFrom-Json -ErrorAction Stop' in body,
+        'shared_helper_compares_source_ellipsis_paths': '$sourceEllipsis.ContainsKey($_)' in body,
+        'shared_helper_records_collector_error': 'Add-CollectorError $message' in body,
+        'shared_helper_can_throw': 'if ($ThrowOnTruncation) { throw $message }' in body,
+        'save_state_uses_shared_helper': "Convert-ToCollectorJsonText -InputObject $State -Label 'state.json' -ThrowOnTruncation" in collector,
+        'step_log_uses_shared_helper': "Convert-ToCollectorJsonText -InputObject $obj -Compress -Label 'execution step JSONL'" in collector,
+        'safe_json_uses_shared_helper': "Convert-ToCollectorJsonText -InputObject $InputObject -Label 'safe JSON artifact' -AppendNewline -ThrowOnTruncation" in reports,
+        'manifest_uses_shared_helper': "Convert-ToCollectorJsonText -InputObject $manifest -Label 'manifest JSON' -ThrowOnTruncation" in manifest_text,
+        'worker_uses_depth_20': '$workerJson = $workerResult | ConvertTo-Json -Depth 20 -ErrorAction Stop' in parallel,
+        'worker_parses_and_checks_sentinel': 'ConvertFrom-Json -ErrorAction Stop' in parallel and 'Test-WorkerJsonContainsEllipsisSentinel' in parallel and 'Parallel worker result JSON' in parallel,
+    })
+    out['shared_helper_behavior_tests'] = run_json_policy_behavior_tests(source_dir, manifest)
+    add_missing_errors('collector JSON serialization policy check failed: ', out, [
+        'shared_helper_default_depth_20', 'shared_helper_checks_source_depth_risks', 'shared_helper_parses_emitted_json',
+        'shared_helper_compares_source_ellipsis_paths', 'shared_helper_records_collector_error', 'shared_helper_can_throw',
+        'save_state_uses_shared_helper', 'step_log_uses_shared_helper', 'safe_json_uses_shared_helper',
+        'manifest_uses_shared_helper', 'worker_uses_depth_20', 'worker_parses_and_checks_sentinel',
+    ], errors)
+    if out['shared_helper_behavior_tests']['status'] == 'failed':
         errors.append('collector JSON serialization policy behavior tests failed')
-
     approved_raw_calls = {
         (json_helper_rel, '$json = $InputObject | ConvertTo-Json @jsonArgs'),
         (parallel_rel, '$workerJson = $workerResult | ConvertTo-Json -Depth 20 -ErrorAction Stop'),
     }
     raw_calls: List[Dict[str, object]] = []
-    unapproved_raw_calls: List[Dict[str, object]] = []
-    for rel, text in source_text_by_rel.items():
+    unapproved: List[Dict[str, object]] = []
+    for rel, text in texts.items():
         for row in find_convert_to_json_calls(rel, text):
             raw_calls.append(row)
             if (rel, row['text']) not in approved_raw_calls:
-                unapproved_raw_calls.append(row)
+                unapproved.append(row)
+    out['raw_convert_to_json_calls'] = raw_calls
+    out['raw_convert_to_json_detector'] = 'broad_unqualified_or_module_qualified_command_scan_with_comment_stripping'
+    out['unapproved_raw_convert_to_json_calls'] = unapproved
+    out['unapproved_raw_convert_to_json_absent'] = not unapproved
+    if unapproved:
+        errors.append('collector source must route JSON serialization through the approved policy helpers; unapproved raw ConvertTo-Json calls: ' + ', '.join(f"{row['path']}:{row['line']}" for row in unapproved))
 
-    policy_checks['raw_convert_to_json_calls'] = raw_calls
-    policy_checks['raw_convert_to_json_detector'] = 'broad_unqualified_or_module_qualified_command_scan_with_comment_stripping'
-    policy_checks['unapproved_raw_convert_to_json_calls'] = unapproved_raw_calls
-    policy_checks['unapproved_raw_convert_to_json_absent'] = len(unapproved_raw_calls) == 0
-    if unapproved_raw_calls:
-        errors.append(
-            'collector source must route JSON serialization through the approved policy helpers; unapproved raw ConvertTo-Json calls: '
-            + ', '.join(f"{row['path']}:{row['line']}" for row in unapproved_raw_calls)
-        )
+
+def validate_state_recursion_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
+    out: Dict[str, object] = {}
+    checks['state_recursion_policy'] = out
+    texts = load_manifest_source_texts(source_dir, manifest)
+    collector = get_combined_source_text(texts)
+    parallel = texts.get('project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1', '')
+    main_entry = texts.get('project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1', '')
+    converter = extract_function_body(collector, 'Convert-StateObjectToHashtable')
+    sentinel = extract_function_body(parallel, 'Test-WorkerJsonContainsEllipsisSentinel')
+    out.update({
+        'convert_state_object_to_hashtable_present': bool(converter),
+        'converter_default_depth_20': '[int]$Depth = 20' in converter,
+        'converter_tracks_current_depth': '[int]$CurrentDepth = 0' in converter,
+        'converter_tracks_path': "[string]$Path = '$'" in converter,
+        'converter_throws_at_depth_limit': 'Convert-StateObjectToHashtable exceeded configured depth {0} at path {1}.' in converter,
+        'converter_dictionary_recursion_passes_depth_path': 'Convert-StateObjectToHashtable -InputObject $InputObject[$key] -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in converter,
+        'converter_enumerable_recursion_passes_depth_path': 'Convert-StateObjectToHashtable -InputObject $item -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in converter,
+        'converter_property_recursion_passes_depth_path': 'Convert-StateObjectToHashtable -InputObject $prop.Value -Depth $Depth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in converter,
+        'load_state_uses_default_converter_policy': 'Convert-StateObjectToHashtable -InputObject $loaded' in main_entry,
+        'worker_sentinel_present': bool(sentinel),
+        'worker_sentinel_default_max_depth_25': '[int]$MaxDepth = 25' in sentinel,
+        'worker_sentinel_tracks_current_depth': '[int]$CurrentDepth = 0' in sentinel,
+        'worker_sentinel_tracks_path': "[string]$Path = '$'" in sentinel,
+        'worker_sentinel_throws_at_depth_limit': 'Parallel worker result JSON sentinel scan exceeded configured depth {0} at path {1}.' in sentinel,
+        'worker_sentinel_enumerable_recursion_passes_depth_path': 'Test-WorkerJsonContainsEllipsisSentinel -InputObject $item -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in sentinel,
+        'worker_sentinel_property_recursion_passes_depth_path': 'Test-WorkerJsonContainsEllipsisSentinel -InputObject $prop.Value -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Path $childPath' in sentinel,
+    })
+    out['state_recursion_behavior_tests'] = run_state_recursion_behavior_tests(source_dir, manifest, sentinel)
+    add_missing_errors('collector state recursion policy check failed: ', out, [
+        'convert_state_object_to_hashtable_present', 'converter_default_depth_20', 'converter_tracks_current_depth', 'converter_tracks_path',
+        'converter_throws_at_depth_limit', 'converter_dictionary_recursion_passes_depth_path', 'converter_enumerable_recursion_passes_depth_path',
+        'converter_property_recursion_passes_depth_path', 'load_state_uses_default_converter_policy', 'worker_sentinel_present',
+        'worker_sentinel_default_max_depth_25', 'worker_sentinel_tracks_current_depth', 'worker_sentinel_tracks_path',
+        'worker_sentinel_throws_at_depth_limit', 'worker_sentinel_enumerable_recursion_passes_depth_path',
+        'worker_sentinel_property_recursion_passes_depth_path',
+    ], errors)
+    if out['state_recursion_behavior_tests']['status'] == 'failed':
+        errors.append('collector state recursion policy behavior tests failed')
+
 
 def validate_suspicious_process_parent_context_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
-    policy_checks: Dict[str, object] = {}
-    checks['suspicious_process_parent_context_policy'] = policy_checks
-
-    source_text_by_rel = load_manifest_source_texts(source_dir, manifest)
-    collector_text = get_combined_source_text(source_text_by_rel)
-    reports_rel = 'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'
-    reports_text = source_text_by_rel.get(reports_rel, '')
-
-    convert_body = extract_function_body(collector_text, 'Convert-ProcessObjectToText')
-    inventory_body = extract_function_body(collector_text, 'Get-ProcessInventory')
-    suspicious_body = extract_function_body(collector_text, 'Get-SuspiciousProcessFindings')
-
-    policy_checks['convert_process_object_present'] = bool(convert_body)
-    policy_checks['process_inventory_present'] = bool(inventory_body)
-    policy_checks['suspicious_process_findings_present'] = bool(suspicious_body)
-    policy_checks['convert_accepts_process_name_lookup'] = '[hashtable]$ProcessNameById' in convert_body
-    policy_checks['convert_accepts_process_start_lookup'] = '[hashtable]$ProcessStartTimeById' in convert_body
-    policy_checks['parent_process_id_normalized'] = '$parentProcessId = [int]$Proc.ParentProcessId' in convert_body
-    policy_checks['parent_process_name_resolved'] = '$parentName = [string]$ProcessNameById[$parentProcessId]' in convert_body
-    policy_checks['parent_start_time_checked_before_name_resolution'] = (
-        '$parentStartTime = $ProcessStartTimeById[$parentProcessId]' in convert_body
-        and '$parentPrecedesChild = ([datetime]$parentStartTime -le [datetime]$created)' in convert_body
-    )
-    policy_checks['inventory_builds_parent_name_map'] = '$processNameById[[int]$p.ProcessId] = [string]$p.Name' in inventory_body
-    policy_checks['inventory_passes_parent_name_map'] = '-ProcessNameById $processNameById' in inventory_body
-    policy_checks['inventory_passes_parent_start_map'] = '-ProcessStartTimeById $startTimeMap' in inventory_body
-    policy_checks['finding_reads_parent_name'] = '$parentNameValue = [string]$proc.ParentProcessName' in suspicious_body
-    policy_checks['name_only_lolbin_pattern_present'] = '$nameOnlyLolbinPattern' in suspicious_body
-    policy_checks['benign_name_only_lolbin_limited_to_common_shells'] = (
-        "$benignNameOnlyLolbinPattern = '^(powershell|pwsh|cmd|wmic)(\\.exe)?$'" in suspicious_body
-    )
-    policy_checks['wmic_command_line_indicators_present'] = (
-        'wmic' in suspicious_body
-        and 'process\\s+call\\s+create' in suspicious_body
-        and '/node:' in suspicious_body
-    )
-    policy_checks['known_benign_parent_pattern_present'] = (
-        '$knownBenignLolbinParentPattern' in suspicious_body
-        and 'svchost' in suspicious_body
-        and 'services' in suspicious_body
-        and 'trustedinstaller' in suspicious_body
-        and 'tiworker' in suspicious_body
-        and 'wuauclt' in suspicious_body
-        and 'msiexec' in suspicious_body
-    )
-    policy_checks['suppresses_only_known_benign_name_only_hits'] = (
-        'if (-not $isKnownBenignNameOnlyLolbin -or @($reasons).Count -gt 0)' in suspicious_body
-    )
-    policy_checks['finding_includes_parent_process_id'] = 'ParentProcessId = $proc.ParentProcessId' in suspicious_body
-    policy_checks['finding_includes_parent_process_name'] = 'ParentProcessName = $proc.ParentProcessName' in suspicious_body
-    policy_checks['process_inventory_reports_parent_name'] = (
-        'Select-Object ProcessId, ParentProcessId, ParentProcessName, Name' in reports_text
-    )
-    policy_checks['recommendations_include_parent_context'] = 'parent={0} ({1})' in reports_text
-    policy_checks['parent_context_behavior_tests'] = run_suspicious_process_parent_context_behavior_tests(source_dir, manifest)
-
-    for key, value in policy_checks.items():
-        if not value:
-            errors.append('collector suspicious-process parent-context policy check failed: ' + key)
-    if policy_checks['parent_context_behavior_tests']['status'] == 'failed':
+    out: Dict[str, object] = {}
+    checks['suspicious_process_parent_context_policy'] = out
+    texts = load_manifest_source_texts(source_dir, manifest)
+    collector = get_combined_source_text(texts)
+    reports = texts.get('project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1', '')
+    convert = extract_function_body(collector, 'Convert-ProcessObjectToText')
+    inventory = extract_function_body(collector, 'Get-ProcessInventory')
+    suspicious = extract_function_body(collector, 'Get-SuspiciousProcessFindings')
+    out.update({
+        'convert_process_object_present': bool(convert),
+        'process_inventory_present': bool(inventory),
+        'suspicious_process_findings_present': bool(suspicious),
+        'convert_accepts_process_name_lookup': '[hashtable]$ProcessNameById' in convert,
+        'convert_accepts_process_start_lookup': '[hashtable]$ProcessStartTimeById' in convert,
+        'parent_process_id_normalized': '$parentProcessId = [int]$Proc.ParentProcessId' in convert,
+        'parent_process_name_resolved': '$parentName = [string]$ProcessNameById[$parentProcessId]' in convert,
+        'parent_start_time_checked_before_name_resolution': '$parentStartTime = $ProcessStartTimeById[$parentProcessId]' in convert and '$parentPrecedesChild = ([datetime]$parentStartTime -le [datetime]$created)' in convert,
+        'inventory_builds_parent_name_map': '$processNameById[[int]$p.ProcessId] = [string]$p.Name' in inventory,
+        'inventory_passes_parent_name_map': '-ProcessNameById $processNameById' in inventory,
+        'inventory_passes_parent_start_map': '-ProcessStartTimeById $startTimeMap' in inventory,
+        'finding_reads_parent_name': '$parentNameValue = [string]$proc.ParentProcessName' in suspicious,
+        'name_only_lolbin_pattern_present': '$nameOnlyLolbinPattern' in suspicious,
+        'benign_name_only_lolbin_limited_to_common_shells': "$benignNameOnlyLolbinPattern = '^(powershell|pwsh|cmd|wmic)(\\.exe)?$'" in suspicious,
+        'wmic_command_line_indicators_present': 'wmic' in suspicious and 'process\\s+call\\s+create' in suspicious and '/node:' in suspicious,
+        'known_benign_parent_pattern_present': all(marker in suspicious for marker in ('$knownBenignLolbinParentPattern', 'svchost', 'services', 'trustedinstaller', 'tiworker', 'wuauclt', 'msiexec')),
+        'suppresses_only_known_benign_name_only_hits': 'if (-not $isKnownBenignNameOnlyLolbin -or @($reasons).Count -gt 0)' in suspicious,
+        'finding_includes_parent_process_id': 'ParentProcessId = $proc.ParentProcessId' in suspicious,
+        'finding_includes_parent_process_name': 'ParentProcessName = $proc.ParentProcessName' in suspicious,
+        'process_inventory_reports_parent_name': 'Select-Object ProcessId, ParentProcessId, ParentProcessName, Name' in reports,
+        'recommendations_include_parent_context': 'parent={0} ({1})' in reports,
+    })
+    out['parent_context_behavior_tests'] = run_suspicious_process_parent_context_behavior_tests(source_dir, manifest)
+    add_missing_errors('collector suspicious-process parent-context policy check failed: ', out, [key for key in out if key != 'parent_context_behavior_tests'], errors)
+    if out['parent_context_behavior_tests']['status'] == 'failed':
         errors.append('collector suspicious-process parent-context behavior tests failed')
 
+
 def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument('--source-dir', required=True)
-    ap.add_argument('--output-dir', required=True)
-    args = ap.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--source-dir', required=True)
+    parser.add_argument('--output-dir', required=True)
+    args = parser.parse_args()
 
     source_dir = Path(args.source_dir).resolve()
     output_dir = Path(args.output_dir).resolve()
@@ -949,19 +748,19 @@ def main() -> int:
 
     required_files = manifest.get('required_files', [])
     missing_required = [rel for rel in required_files if not (source_dir / rel).exists()]
-    checks['required_files_present'] = len(missing_required) == 0
+    checks['required_files_present'] = not missing_required
     checks['missing_required_files'] = missing_required
     if missing_required:
         errors.append('missing required files: ' + ', '.join(missing_required))
 
-    collector_part_files = manifest.get('collector_part_files', [])
-    checks['collector_part_count'] = len(collector_part_files)
-    missing_parts = [rel for rel in collector_part_files if not (source_dir / rel).exists()]
+    collector_parts = manifest.get('collector_part_files', [])
+    checks['collector_part_count'] = len(collector_parts)
+    missing_parts = [rel for rel in collector_parts if not (source_dir / rel).exists()]
+    empty_parts = [rel for rel in collector_parts if (source_dir / rel).exists() and not read_text(source_dir / rel).strip()]
     checks['missing_collector_part_files'] = missing_parts
+    checks['empty_collector_part_files'] = empty_parts
     if missing_parts:
         errors.append('collector_part_files references missing files: ' + ', '.join(missing_parts))
-    empty_parts = [rel for rel in collector_part_files if (source_dir / rel).exists() and not (source_dir / rel).read_text(encoding='utf-8').strip()]
-    checks['empty_collector_part_files'] = empty_parts
     if empty_parts:
         errors.append('collector_part_files references empty files: ' + ', '.join(empty_parts))
 
@@ -973,34 +772,29 @@ def main() -> int:
     validate_state_recursion_policy(source_dir, manifest, checks, errors)
     validate_suspicious_process_parent_context_policy(source_dir, manifest, checks, errors)
 
-    delivery_entries = manifest.get('delivery_zip_entries', [])
-    checks['delivery_entry_count'] = len(delivery_entries)
-    if not delivery_entries:
+    entries = manifest.get('delivery_zip_entries', [])
+    expected = {'DCOIR_Collector.ps1.txt'}
+    prohibited = {'run_DCOIR_Tests.ps1.txt'}
+    actual = {Path(row.get('zip_path', '')).name for row in entries if row.get('zip_path')}
+    checks['delivery_entry_count'] = len(entries)
+    checks['expected_delivery_names_present'] = expected.issubset(actual)
+    checks['actual_delivery_names'] = sorted(actual)
+    checks['prohibited_delivery_names_absent'] = actual.isdisjoint(prohibited)
+    checks['transport_safe_suffix_required_for_scripts'] = bool(manifest.get('delivery_rules', {}).get('transport_safe_suffix_required_for_scripts'))
+    if not entries:
         errors.append('delivery_zip_entries is empty')
-
-    expected_delivery_names = {'DCOIR_Collector.ps1.txt'}
-    prohibited_delivery_names = {'run_DCOIR_Tests.ps1.txt'}
-    actual_delivery_names = {Path(row.get('zip_path', '')).name for row in delivery_entries if row.get('zip_path')}
-    checks['expected_delivery_names_present'] = expected_delivery_names.issubset(actual_delivery_names)
-    checks['actual_delivery_names'] = sorted(actual_delivery_names)
-    checks['prohibited_delivery_names_absent'] = actual_delivery_names.isdisjoint(prohibited_delivery_names)
-    if not expected_delivery_names.issubset(actual_delivery_names):
+    if not checks['expected_delivery_names_present']:
         errors.append('delivery package must include DCOIR_Collector.ps1.txt')
-    if not actual_delivery_names.isdisjoint(prohibited_delivery_names):
-        errors.append('delivery package must not include harness files: ' + ', '.join(sorted(actual_delivery_names.intersection(prohibited_delivery_names))))
+    if not checks['prohibited_delivery_names_absent']:
+        errors.append('delivery package must not include harness files: ' + ', '.join(sorted(actual.intersection(prohibited))))
+    if checks['transport_safe_suffix_required_for_scripts']:
+        non_txt = [row.get('zip_path', '') for row in entries if row.get('zip_path') and not row.get('zip_path', '').endswith('.txt')]
+        checks['non_txt_delivery_entries'] = non_txt
+        if non_txt:
+            errors.append('delivery entries must use transport-safe .txt suffixes: ' + ', '.join(non_txt))
 
-    delivery_rules = manifest.get('delivery_rules', {})
-    require_txt = bool(delivery_rules.get('transport_safe_suffix_required_for_scripts'))
-    checks['transport_safe_suffix_required_for_scripts'] = require_txt
-    if require_txt:
-        non_txt_entries = [row.get('zip_path', '') for row in delivery_entries if row.get('zip_path') and not row.get('zip_path', '').endswith('.txt')]
-        checks['non_txt_delivery_entries'] = non_txt_entries
-        if non_txt_entries:
-            errors.append('delivery entries must use transport-safe .txt suffixes: ' + ', '.join(non_txt_entries))
-
-    success = len(errors) == 0
     report = {
-        'success': success,
+        'success': not errors,
         'source_dir': str(source_dir),
         'bundle_name': manifest.get('bundle_name'),
         'bundle_version': manifest.get('bundle_version'),
@@ -1008,10 +802,10 @@ def main() -> int:
         'warnings': warnings,
         'errors': errors,
     }
-    report_path = output_dir / 'validate_dcoir_collector_runtime_package_report.json'
-    report_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
+    (output_dir / 'validate_dcoir_collector_runtime_package_report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps(report, indent=2))
-    return 0 if success else 1
+    return 0 if not errors else 1
+
 
 if __name__ == '__main__':
     raise SystemExit(main())
