@@ -3,7 +3,7 @@ function Invoke-DcoirActionsWorkflowOrchestratorEngine {
     param(
         [ValidateSet('manifest','watch','dispatch','capture')][string]$Mode = 'manifest',
         [string]$ManifestJson,
-        [string]$Repo = 'malwaredevil/dcoir-collector',
+        [string]$Repo = 'DCOIR-Collector/dcoir-collector',
         [string]$Ref = 'main',
         [string[]]$Workflow,
         [Int64[]]$RunId,
