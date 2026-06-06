@@ -183,11 +183,21 @@ function Invoke-EnrichmentAction {
 
   $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString()
   $summaryAppended = $false
-  if ($PSCmdlet.ShouldProcess($sessionSummaryPath, 'Append enrich action summary')) {
+  if ($artifactPath -and $PSCmdlet.ShouldProcess($sessionSummaryPath, 'Append enrich action summary')) {
     Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
     $summaryAppended = $true
   }
   $reportPath = if ($summaryAppended) { $sessionSummaryPath } else { $null }
+
+  if (-not $artifactPath -or -not $summaryAppended) {
+    return @{
+      ReportPath = $reportPath
+      ActionArtifactPath = $artifactPath
+      StagedPath = $stagedPath
+      ActionSkipped = $true
+      ActionStatus = 'SKIPPED'
+    }
+  }
 
   $Session.ActionCount = [int]$Session.ActionCount + 1
 
@@ -195,5 +205,7 @@ function Invoke-EnrichmentAction {
     ReportPath = $reportPath
     ActionArtifactPath = $artifactPath
     StagedPath = $stagedPath
+    ActionSkipped = $false
+    ActionStatus = 'RECORDED'
   }
 }
