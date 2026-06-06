@@ -789,7 +789,7 @@ function New-BaselineReport {
     $selfProc = Get-CimInstance -ClassName Win32_Process -Filter ("ProcessId={0}" -f $PID) -ErrorAction Stop
     if ($selfProc.ParentProcessId) { $excludedPids += [int]$selfProc.ParentProcessId }
   } catch { }
-  $procInventoryText = Convert-ToTextBlock -InputObject ($procInventory | Select-Object ProcessId, ParentProcessId, Name, Owner, ExecutablePath, CreationTime, CommandLine)
+  $procInventoryText = Convert-ToTextBlock -InputObject ($procInventory | Select-Object ProcessId, ParentProcessId, ParentProcessName, Name, Owner, ExecutablePath, CreationTime, CommandLine)
   $p = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section "PROCESS_EXECUTION_CONTEXT" -Name "process_inventory.txt" -Text $procInventoryText
   [void]$artifactPaths.Add($p); $artifactMap['process_inventory'] = $p
   $procParts = @($procInventoryText)
@@ -903,7 +903,13 @@ function New-BaselineReport {
   if (@($findings).Count -gt 0) {
     Add-Recommendation 'The following process review candidates were selected by baseline heuristics. Treat them as triage prompts for analyst validation, not proof of malicious activity.'
     foreach ($finding in ($findings | Select-Object -First 10)) {
-      Add-Recommendation ("Process review candidate PID {0} ({1}) :: heuristic flags: {2}" -f $finding.ProcessId, $finding.Name, $finding.Reasons)
+      $parentLabel = ""
+      if ($null -ne $finding.ParentProcessId -or -not [string]::IsNullOrWhiteSpace([string]$finding.ParentProcessName)) {
+        $parentName = if (-not [string]::IsNullOrWhiteSpace([string]$finding.ParentProcessName)) { [string]$finding.ParentProcessName } else { "unknown" }
+        $parentPid = if ($null -ne $finding.ParentProcessId) { [string]$finding.ParentProcessId } else { "unknown" }
+        $parentLabel = " parent={0} ({1})" -f $parentName, $parentPid
+      }
+      Add-Recommendation ("Process review candidate PID {0} ({1}){2} :: heuristic flags: {3}" -f $finding.ProcessId, $finding.Name, $parentLabel, $finding.Reasons)
       if ($finding.ExecutablePath) {
         $safePath = $finding.ExecutablePath
         Add-Recommendation ('Suggested next action if analyst review warrants deeper validation: {0} -Mode Enrich -RunId {1} -Action SigcheckPath -Path "{2}" -OutRoot "{3}"' -f $collectorCommandBase, $State.RunId, $safePath, $OutRoot)

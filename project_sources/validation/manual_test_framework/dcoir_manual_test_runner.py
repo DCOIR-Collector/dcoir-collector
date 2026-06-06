@@ -698,6 +698,9 @@ def run_review_surfaces(run_root: Path) -> None:
     if "-Quick collect-t1" in follow_up_text or "DCOIR_Collector.ps1" in follow_up_text and "collect-t1" in follow_up_text:
         noisy_follow_up_hits.append("collector self-run command")
 
+    process_review_lines = [line for line in follow_up_text.splitlines() if "Process review candidate PID" in line]
+    process_review_missing_parent = [line for line in process_review_lines if " parent=" not in line]
+
     noisy_task_hits = []
     for task_name in [r"\UptimeCheck", r"\UptimePopup", r"\Deploy_Sysmon_Production", r"\Cleanup Old PS Transcripts"]:
         if task_name in high_signal_text:
@@ -708,6 +711,8 @@ def run_review_surfaces(run_root: Path) -> None:
     problems = []
     if noisy_follow_up_hits:
         problems.append("follow-up queue still surfaced known benign items: " + ", ".join(noisy_follow_up_hits))
+    if process_review_missing_parent:
+        problems.append("process review candidates are missing parent context")
     if noisy_task_hits:
         problems.append("high-signal summary still surfaced suppressed scheduled tasks: " + ", ".join(noisy_task_hits))
     if missing_overview_fields:
@@ -717,7 +722,7 @@ def run_review_surfaces(run_root: Path) -> None:
         update_step("review_surfaces", "FAIL", "; ".join(problems))
         raise RuntimeError("Review-surface tuning check failed.")
 
-    update_step("review_surfaces", "PASS", "Review surfaces reflect tuned suppression and overview fields.")
+    update_step("review_surfaces", "PASS", "Review surfaces reflect tuned suppression, process parent context, and overview fields.")
 
 
 def record_t2_pathway_note() -> None:

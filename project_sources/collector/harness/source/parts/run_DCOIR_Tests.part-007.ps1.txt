@@ -203,7 +203,7 @@ Checks harness-generated coverage artifact evidence.
 
 .DESCRIPTION
 Validates non-step-based coverage rows such as progress files, retained evidence files,
-and generated coverage matrix artifacts.
+generated coverage matrix artifacts, and package-validation-backed source evidence.
 
 .FUNCTION NAME
 Test-CoverageArtifactEvidence
@@ -229,6 +229,65 @@ function Test-CoverageArtifactEvidence {
         $coverageJson = Get-Content -LiteralPath $CoverageJsonPath -Raw | ConvertFrom-Json
         $coverageMd = Get-Content -LiteralPath $CoverageMdPath -Raw
         return ($coverageJson.schema_version -eq 'dcoir_collector_capability_coverage_v1') -and (-not [string]::IsNullOrWhiteSpace($coverageMd)) -and ($coverageMd -match '# DCOIR Collector Capability Coverage')
+      } catch {
+        return $false
+      }
+    }
+    'collector.process.parent_context_lolbin_tuning' {
+      try {
+        $repoRoot = $null
+        $searchRoot = $PSScriptRoot
+        while (-not [string]::IsNullOrWhiteSpace($searchRoot)) {
+          $candidateValidatorPath = Join-Path $searchRoot 'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py'
+          if (Test-Path -LiteralPath $candidateValidatorPath) {
+            $repoRoot = $searchRoot
+            break
+          }
+          $parent = Split-Path -Parent $searchRoot
+          if ([string]::IsNullOrWhiteSpace($parent) -or $parent -eq $searchRoot) { break }
+          $searchRoot = $parent
+        }
+        if ([string]::IsNullOrWhiteSpace($repoRoot)) { return $false }
+        $validatorPath = Join-Path $repoRoot 'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py'
+        $processPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.01D_Process_Event_And_Baseline_Utilities.ps1'
+        $reportsPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'
+        if (-not ((Test-Path -LiteralPath $validatorPath) -and (Test-Path -LiteralPath $processPartPath) -and (Test-Path -LiteralPath $reportsPartPath))) { return $false }
+        $pythonCommand = Get-Command python -ErrorAction SilentlyContinue
+        if ($null -eq $pythonCommand) { $pythonCommand = Get-Command python3 -ErrorAction SilentlyContinue }
+        if ($null -eq $pythonCommand) { return $false }
+        $pythonPath = [string]$pythonCommand.Source
+        if ([string]::IsNullOrWhiteSpace($pythonPath)) { return $false }
+        $validatorReportDir = Join-Path $repoRoot 'project_sources/validation/out_harness_capability_coverage'
+        New-Item -ItemType Directory -Force -Path $validatorReportDir | Out-Null
+        $validatorOutput = & $pythonPath $validatorPath --source-dir $repoRoot --output-dir $validatorReportDir 2>&1
+        if ($LASTEXITCODE -ne 0) { return $false }
+        $validatorReportPath = Join-Path $validatorReportDir 'validate_dcoir_collector_runtime_package_report.json'
+        if (-not (Test-Path -LiteralPath $validatorReportPath)) { return $false }
+        $validatorReport = Get-Content -LiteralPath $validatorReportPath -Raw | ConvertFrom-Json
+        if ($validatorReport.success -ne $true) { return $false }
+        if ([string]$validatorReport.source_dir -ne [string](Resolve-Path -LiteralPath $repoRoot).Path) { return $false }
+        $parentContextPolicy = $validatorReport.checks.suspicious_process_parent_context_policy
+        if ($null -eq $parentContextPolicy) { return $false }
+        $parentContextBehavior = $parentContextPolicy.parent_context_behavior_tests
+        if ($null -eq $parentContextBehavior -or $parentContextBehavior.status -ne 'passed') { return $false }
+        $validatorText = Get-Content -LiteralPath $validatorPath -Raw
+        $processText = Get-Content -LiteralPath $processPartPath -Raw
+        $reportsText = Get-Content -LiteralPath $reportsPartPath -Raw
+        return $validatorText.Contains('run_suspicious_process_parent_context_behavior_tests') `
+          -and $validatorText.Contains('parent_context_behavior_tests') `
+          -and $validatorText.Contains('wmic_command_line_indicators_present') `
+          -and $validatorText.Contains('parent_start_time_checked_before_name_resolution') `
+          -and $processText.Contains('ProcessStartTimeById') `
+          -and $processText.Contains('wmic(?:\.exe)?') `
+          -and $reportsText.Contains('parent={0} ({1})') `
+          -and ($parentContextPolicy.convert_accepts_process_start_lookup -eq $true) `
+          -and ($parentContextPolicy.parent_start_time_checked_before_name_resolution -eq $true) `
+          -and ($parentContextPolicy.wmic_command_line_indicators_present -eq $true) `
+          -and ($parentContextPolicy.suppresses_only_known_benign_name_only_hits -eq $true) `
+          -and ($parentContextPolicy.finding_includes_parent_process_id -eq $true) `
+          -and ($parentContextPolicy.finding_includes_parent_process_name -eq $true) `
+          -and ($parentContextPolicy.process_inventory_reports_parent_name -eq $true) `
+          -and ($parentContextPolicy.recommendations_include_parent_context -eq $true)
       } catch {
         return $false
       }

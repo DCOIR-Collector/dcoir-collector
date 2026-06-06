@@ -22,7 +22,7 @@ function Write-CapabilityCoverageFiles {
     generated_at = (Get-Date).ToString('o')
     collector_path = $CollectorFullPath
     test_run_output = $RunOutputRoot
-    coverage_classes = @('covered_end_to_end_by_fullregression','covered_by_harness_not_manual','covered_synthetically_only','partial','not_covered','out_of_scope_with_reason')
+    coverage_classes = @('covered_end_to_end_by_fullregression','covered_by_harness_not_manual','covered_by_package_validation_not_manual','covered_synthetically_only','partial','not_covered','out_of_scope_with_reason')
     rows = @($script:CoverageRows)
   }
   $obj | ConvertTo-Json -Depth 8 | Set-Content -Path $CoverageJsonPath -Encoding UTF8
