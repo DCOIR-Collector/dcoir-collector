@@ -418,17 +418,17 @@ Sync-CollectionMetadataCompanionArtifact
 ArtifactsDir string.
 
 .OUTPUTS
-No direct output. Writes or refreshes the section companion artifact when the root
-collection metadata artifact exists.
+Boolean true when no sync is required or the companion was refreshed; false when sync was
+skipped by ShouldProcess.
 #>
 function Sync-CollectionMetadataCompanionArtifact {
   [CmdletBinding(SupportsShouldProcess=$true)]
   param([string]$ArtifactsDir)
 
-  if ([string]::IsNullOrWhiteSpace($ArtifactsDir) -or -not (Test-Path -LiteralPath $ArtifactsDir)) { return }
+  if ([string]::IsNullOrWhiteSpace($ArtifactsDir) -or -not (Test-Path -LiteralPath $ArtifactsDir)) { return $true }
 
   $rootPath = Join-Path $ArtifactsDir '01_COLLECTION_METADATA_collection_metadata.txt'
-  if (-not (Test-Path -LiteralPath $rootPath)) { return }
+  if (-not (Test-Path -LiteralPath $rootPath)) { return $true }
 
   try {
     $artifactText = Get-Content -LiteralPath $rootPath -Raw -ErrorAction Stop
@@ -438,8 +438,10 @@ function Sync-CollectionMetadataCompanionArtifact {
     $sectionPath = Join-Path $sectionDir 'collection_metadata.txt'
     if ($PSCmdlet.ShouldProcess($sectionPath, 'Synchronize collection metadata companion artifact')) {
       Ensure-Directory -Path $sectionDir
-      Write-DCOIRUtf8NoBomText -Path $sectionPath -Text $artifactText
+      $syncPath = Write-DCOIRUtf8NoBomText -Path $sectionPath -Text $artifactText
+      return (-not [string]::IsNullOrWhiteSpace($syncPath))
     }
+    return $false
   } catch {
     $message = "Failed to synchronize collection metadata companion artifact: $($_.Exception.Message)"
     Add-CollectorError $message
@@ -488,7 +490,8 @@ function New-BundleZip {
     if ([string]::IsNullOrWhiteSpace($candidatePath) -or -not (Test-Path -LiteralPath $candidatePath)) { continue }
     $item = Get-Item -LiteralPath $candidatePath -ErrorAction SilentlyContinue
     if ($item -and $item.PSIsContainer -and ($item.Name -eq 'final_artifacts')) {
-      Sync-CollectionMetadataCompanionArtifact -ArtifactsDir $item.FullName
+      $metadataCompanionSynced = Sync-CollectionMetadataCompanionArtifact -ArtifactsDir $item.FullName
+      if (-not $metadataCompanionSynced) { return $null }
     }
   }
 
