@@ -149,7 +149,8 @@ try {
       $state.UploadSafeChunkManifestPath = $uploadArtifacts.UploadSafeChunkManifestPath
       $state.AnalystOverviewPath = New-AnalystOverviewArtifactWithLateMetadataReport -State $state -Baseline $baseline
 
-      $uploadSafeChunkManifestExpected = [bool]($uploadArtifacts.ContainsKey('UploadSafeChunkCompanionCount') -and ([int]$uploadArtifacts.UploadSafeChunkCompanionCount -gt 0))
+      $uploadSafeChunkCompanionSkipped = [bool]($state.ContainsKey('UploadSafeChunkCompanionSkipped') -and [bool]$state.UploadSafeChunkCompanionSkipped)
+      $uploadSafeChunkManifestExpected = [bool](($uploadArtifacts.ContainsKey('UploadSafeChunkCompanionCount') -and ([int]$uploadArtifacts.UploadSafeChunkCompanionCount -gt 0)) -or $uploadSafeChunkCompanionSkipped)
       $uploadSummarySkipped = -not $state.UploadSummaryPath
       $attachmentBudgetManifestSkipped = -not $state.UploadBudgetManifestPath
       $uploadSafeChunkManifestSkipped = [bool]($uploadSafeChunkManifestExpected -and -not $state.UploadSafeChunkManifestPath)
