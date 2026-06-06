@@ -211,6 +211,7 @@ State hashtable and Baseline hashtable.
 String analyst overview artifact path.
 #>
 function New-AnalystOverviewArtifact {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline)
 
   $artifactMap = $Baseline.ArtifactMap
@@ -272,7 +273,9 @@ function New-AnalystOverviewArtifact {
   [void]$lines.Add("NO_MERGED_BASELINE_REPORT")
   [void]$lines.Add("No merged baseline report is emitted in this build. Use metadata plus representative artifacts for broader local review.")
 
-  Set-Content -Path $overviewPath -Value $lines -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($overviewPath, 'Write analyst overview artifact')) {
+    Set-Content -Path $overviewPath -Value $lines -Encoding UTF8 -ErrorAction Stop
+  }
   return $overviewPath
 }
 
@@ -328,6 +331,7 @@ ArtifactsDir, Section, Name, and Text strings.
 String artifact path.
 #>
 function Write-ArtifactTextExact {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [string]$ArtifactsDir,
     [string]$Section,
@@ -335,13 +339,15 @@ function Write-ArtifactTextExact {
     [string]$Text
   )
 
-  Ensure-Directory -Path $ArtifactsDir
   $prefix = Get-BaselineArtifactPrefix -Name $Name
   $safeSection = ($Section -replace '[\\/:*?"<>| ]','_')
   $safeName = ($Name -replace '[\\/:*?"<>| ]','_')
   $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
-  $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-  [System.IO.File]::WriteAllText($path, $Text, $utf8NoBom)
+  if ($PSCmdlet.ShouldProcess($path, 'Write exact UTF-8 artifact')) {
+    Ensure-Directory -Path $ArtifactsDir
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($path, $Text, $utf8NoBom)
+  }
   return $path
 }
 
@@ -363,6 +369,7 @@ SourcePath, ArtifactsDir, RequestedKB, and TargetChunkKB.
 Hashtable describing chunk paths, sizes, and reconstruction metadata.
 #>
 function Split-ValidationTextArtifactIntoChunks {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [string]$SourcePath,
     [string]$ArtifactsDir,
@@ -428,6 +435,7 @@ State hashtable, Baseline hashtable, and RequestedKB integer.
 No direct output. Updates state and baseline structures.
 #>
 function New-SyntheticOversizeChunkValidationArtifacts {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline,[int]$RequestedKB)
 
   $sourceText = New-SyntheticOversizeArtifactText -RequestedKB $RequestedKB
@@ -490,6 +498,7 @@ State hashtable and Baseline hashtable.
 No direct output. Updates state, baseline, and collector notes/recommendations.
 #>
 function Apply-FeatureWaveCollectEnhancements {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline)
 
   $scope = Get-TargetedCollectionScopeObject -State $State

@@ -43,6 +43,7 @@ Hashtable containing ReportPath, ActionArtifactPath, and StagedPath values for t
 executed retrieval action.
 #>
 function Invoke-EnrichmentAction-Retrieval {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [hashtable]$State,
     [hashtable]$Session,
@@ -97,7 +98,9 @@ function Invoke-EnrichmentAction-Retrieval {
       $targetDetails = "TaskName=$Path"
       $taskXml = Get-TaskXml -TaskName $Path
       $stagedPath = Join-Path $sessionStagedDir (New-StageName -Prefix "STAGED_TASK_XML" -Extension ".xml")
-      Set-Content -Path $stagedPath -Value $taskXml -Encoding UTF8 -ErrorAction Stop
+      if ($PSCmdlet.ShouldProcess($stagedPath, 'Write staged task XML')) {
+        Set-Content -Path $stagedPath -Value $taskXml -Encoding UTF8 -ErrorAction Stop
+      }
       $outputText = "Task XML exported and staged for retrieval.`r`nSTAGED_PATH=$stagedPath"
       $interpretation = "Review author, principal, triggers, actions, working directory, and command arguments."
       $nextStep = "If the action points to a file path, stage that file next."
@@ -158,7 +161,9 @@ function Invoke-EnrichmentAction-Retrieval {
   }
 
   $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString()
-  Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($sessionSummaryPath, 'Append enrich retrieval summary')) {
+    Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
+  }
 
   $Session.ActionCount = [int]$Session.ActionCount + 1
 

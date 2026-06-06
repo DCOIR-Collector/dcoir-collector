@@ -123,14 +123,17 @@ SourcePath string and StagedDir string.
 String staged copy path.
 #>
 function Stage-PathCopy {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([string]$SourcePath,[string]$StagedDir)
   if (-not (Test-Path -LiteralPath $SourcePath)) {
     throw "Path not found: $SourcePath"
   }
-  Ensure-Directory -Path $StagedDir
   $leaf = Split-Path -Leaf $SourcePath
   $dest = Join-Path $StagedDir (New-StageName -Prefix ("STAGED_" + $leaf) -Extension "")
-  Copy-Item -LiteralPath $SourcePath -Destination $dest -Force -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($dest, ("Copy staged evidence from {0}" -f $SourcePath))) {
+    Ensure-Directory -Path $StagedDir
+    Copy-Item -LiteralPath $SourcePath -Destination $dest -Force -ErrorAction Stop
+  }
   return $dest
 }
 

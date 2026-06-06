@@ -149,6 +149,7 @@ No direct return value. Updates global cache state, proof artifacts, and collect
 notes/errors.
 #>
 function Initialize-ParallelBaselineCache {
+  [CmdletBinding()]
   param([hashtable]$State)
 
   Reset-ParallelBaselineCache

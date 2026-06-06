@@ -38,6 +38,7 @@ Hashtable containing upload-summary path, manifest path, default-set status, tot
 and recommended file count.
 #>
 function New-CollectUploadArtifactsWithLateMetadataReport {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline)
 
   $budget = Get-CollectorUploadBudget
@@ -113,7 +114,9 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
       chunked_artifact_count = @($chunkCompanions).Count
       chunked_artifacts = @($chunkCompanions)
     }
-    Set-Content -Path $chunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8 -ErrorAction Stop
+    if ($PSCmdlet.ShouldProcess($chunkManifestPath, 'Write upload-safe chunk manifest')) {
+      Set-Content -Path $chunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8 -ErrorAction Stop
+    }
     $State.UploadSafeChunkManifestPath = $chunkManifestPath
     $Baseline.ArtifactMap['upload_safe_chunk_manifest'] = $chunkManifestPath
     [void]$Baseline.ArtifactPaths.Add($chunkManifestPath)
@@ -163,7 +166,9 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
     $summaryLines += "- Upload the high-signal summary first for triage; use full-fidelity chunk companions when the oversized source artifact is needed."
   }
 
-  Set-Content -Path $uploadSummaryPath -Value $summaryLines -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($uploadSummaryPath, 'Write collect upload summary')) {
+    Set-Content -Path $uploadSummaryPath -Value $summaryLines -Encoding UTF8 -ErrorAction Stop
+  }
 
   $manifestObj = [ordered]@{
     run_id = $State.RunId
@@ -180,7 +185,9 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
     metadata_report_path = $State.MetadataReportPath
     note = 'The merged baseline report may be useful for local analyst review but is no longer the default Gemini-facing upload surface.'
   }
-  Set-Content -Path $uploadManifestPath -Value (Convert-ToSafeJsonText -InputObject $manifestObj) -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($uploadManifestPath, 'Write attachment budget manifest')) {
+    Set-Content -Path $uploadManifestPath -Value (Convert-ToSafeJsonText -InputObject $manifestObj) -Encoding UTF8 -ErrorAction Stop
+  }
 
   return @{
     UploadSummaryPath = $uploadSummaryPath
@@ -212,6 +219,7 @@ State hashtable and Baseline hashtable.
 String analyst overview artifact path.
 #>
 function New-AnalystOverviewArtifactWithLateMetadataReport {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline)
 
   $artifactMap = $Baseline.ArtifactMap
@@ -277,6 +285,8 @@ function New-AnalystOverviewArtifactWithLateMetadataReport {
   [void]$lines.Add("NO_MERGED_BASELINE_REPORT")
   [void]$lines.Add("No merged baseline report is emitted in this build. Use metadata plus representative artifacts for broader local review.")
 
-  Set-Content -Path $overviewPath -Value $lines -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($overviewPath, 'Write analyst overview artifact')) {
+    Set-Content -Path $overviewPath -Value $lines -Encoding UTF8 -ErrorAction Stop
+  }
   return $overviewPath
 }

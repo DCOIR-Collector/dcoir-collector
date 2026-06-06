@@ -220,6 +220,7 @@ Root string and CurrentPackageName string.
 String package path in the out-root.
 #>
 function Move-PackageToOutRoot {
+  [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='Medium')]
   param([string]$Root,[string]$CurrentPackageName)
 
   $scriptDir = Get-ScriptDirectory
@@ -229,7 +230,9 @@ function Move-PackageToOutRoot {
 
   if (Test-Path -LiteralPath $sourcePath) {
     if ($sourcePath -ne $destPath) {
-      Move-Item -LiteralPath $sourcePath -Destination $destPath -Force
+      if ($PSCmdlet.ShouldProcess($destPath, ("Move collector package from {0}" -f $sourcePath))) {
+        Move-Item -LiteralPath $sourcePath -Destination $destPath -Force
+      }
     }
     return $destPath
   }
@@ -259,12 +262,15 @@ PackagePath string and ToolsDir string.
 No direct output. Recreates and populates the tools directory.
 #>
 function Expand-PackageToTools {
+  [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='Medium')]
   param([string]$PackagePath,[string]$ToolsDir)
 
   try {
-    Remove-IfExists -LiteralPath $ToolsDir
-    Ensure-Directory -Path $ToolsDir
-    Expand-Archive -LiteralPath $PackagePath -DestinationPath $ToolsDir -Force -ErrorAction Stop
+    if ($PSCmdlet.ShouldProcess($ToolsDir, ("Recreate tools directory from package {0}" -f $PackagePath))) {
+      Remove-IfExists -LiteralPath $ToolsDir
+      Ensure-Directory -Path $ToolsDir
+      Expand-Archive -LiteralPath $PackagePath -DestinationPath $ToolsDir -Force -ErrorAction Stop
+    }
   } catch {
     throw "Failed to expand package [$PackagePath] to [$ToolsDir]: $($_.Exception.Message)"
   }
@@ -371,19 +377,28 @@ SessionArtifactsDir string, ActionName string, TargetLabel string, and Text stri
 String session artifact path.
 #>
 function Write-SessionArtifactText {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [string]$SessionArtifactsDir,
     [string]$ActionName,
     [string]$TargetLabel,
     [string]$Text
   )
-  Ensure-Directory -Path $SessionArtifactsDir
-  $seq = Get-SessionActionSequence -SessionArtifactsDir $SessionArtifactsDir
+  if ($PSCmdlet.ShouldProcess($SessionArtifactsDir, 'Ensure enrich session artifacts directory')) {
+    Ensure-Directory -Path $SessionArtifactsDir
+  }
+  $seq = if (Test-Path -LiteralPath $SessionArtifactsDir) {
+    Get-SessionActionSequence -SessionArtifactsDir $SessionArtifactsDir
+  } else {
+    1
+  }
   $safeAction = ($ActionName -replace '[\\/:*?"<>| ]','_')
   $safeTarget = ($TargetLabel -replace '[\\/:*?"<>| ]','_')
   if ([string]::IsNullOrWhiteSpace($safeTarget)) { $safeTarget = "artifact" }
   if ($safeTarget.Length -gt 80) { $safeTarget = $safeTarget.Substring(0,80) }
   $path = Join-Path $SessionArtifactsDir ("{0:D2}_ENRICH_{1}_{2}.txt" -f $seq, $safeAction, $safeTarget)
-  Set-Content -Path $path -Value $Text -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($path, 'Write enrich session artifact')) {
+    Set-Content -Path $path -Value $Text -Encoding UTF8 -ErrorAction Stop
+  }
   return $path
 }

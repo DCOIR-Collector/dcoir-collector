@@ -68,6 +68,7 @@ requires an existing open session for finalize-only calls.
 Hashtable describing the resolved enrichment session, whether reused or newly created.
 #>
 function Initialize-EnrichSession {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [hashtable]$State,
     [string]$RequestedSessionId,
@@ -123,10 +124,6 @@ function Initialize-EnrichSession {
   $sessionArtifactsDir = Join-Path $sessionRoot "artifacts"
   $sessionStagedDir = Join-Path $sessionRoot "staged"
   $sessionLogsDir = Join-Path $sessionRoot "logs"
-  Ensure-Directory -Path $sessionRoot
-  Ensure-Directory -Path $sessionArtifactsDir
-  Ensure-Directory -Path $sessionStagedDir
-  Ensure-Directory -Path $sessionLogsDir
 
   $session = @{
     SessionId = $sessionId
@@ -157,7 +154,13 @@ function Initialize-EnrichSession {
     "SessionCreatedLocal=$(Get-Date -Format o)"
     "SessionRoot=$sessionRoot"
   ) -join [Environment]::NewLine
-  Set-Content -Path $session.SummaryPath -Value $header -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($sessionRoot, 'Create enrichment session directories and summary')) {
+    Ensure-Directory -Path $sessionRoot
+    Ensure-Directory -Path $sessionArtifactsDir
+    Ensure-Directory -Path $sessionStagedDir
+    Ensure-Directory -Path $sessionLogsDir
+    Set-Content -Path $session.SummaryPath -Value $header -Encoding UTF8 -ErrorAction Stop
+  }
 
   return $session
 }
@@ -182,6 +185,7 @@ ToolMap used to write the manifest.
 String path to the finalized enrichment bundle ZIP file.
 #>
 function Finalize-EnrichSession {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [hashtable]$State,
     [hashtable]$Session,

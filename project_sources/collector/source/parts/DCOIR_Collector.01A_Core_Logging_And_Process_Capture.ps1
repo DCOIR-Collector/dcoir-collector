@@ -36,6 +36,7 @@ Message string.
 No direct output. Updates global error state and optional log file.
 #>
 function Add-CollectorError {
+  [CmdletBinding()]
   param([string]$Message)
   if ([string]::IsNullOrWhiteSpace($Message)) { return }
   [void]$Global:CollectorErrors.Add($Message)
@@ -133,9 +134,12 @@ LiteralPath string.
 No direct output. Removes the target as a side effect when present.
 #>
 function Remove-IfExists {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([string]$LiteralPath)
   if (-not [string]::IsNullOrWhiteSpace($LiteralPath) -and (Test-Path -LiteralPath $LiteralPath)) {
-    Remove-Item -LiteralPath $LiteralPath -Recurse -Force -ErrorAction SilentlyContinue
+    if ($PSCmdlet.ShouldProcess($LiteralPath, 'Remove item recursively')) {
+      Remove-Item -LiteralPath $LiteralPath -Recurse -Force -ErrorAction SilentlyContinue
+    }
   }
 }
 
@@ -293,6 +297,7 @@ StepName, Status, StartTime, EndTime, ExitCode, Command, ArtifactPath, and Messa
 No direct output. Appends to execution text and JSONL logs as a side effect.
 #>
 function Write-StepLog {
+  [CmdletBinding()]
   param(
     [string]$StepName,
     [string]$Status,

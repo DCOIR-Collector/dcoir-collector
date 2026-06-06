@@ -47,6 +47,7 @@ Hashtable containing ReportPath, ActionArtifactPath, and StagedPath values for t
 executed enrich action.
 #>
 function Invoke-EnrichmentAction {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [hashtable]$State,
     [hashtable]$Session,
@@ -181,7 +182,9 @@ function Invoke-EnrichmentAction {
   }
 
   $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString()
-  Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($sessionSummaryPath, 'Append enrich action summary')) {
+    Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
+  }
 
   $Session.ActionCount = [int]$Session.ActionCount + 1
 

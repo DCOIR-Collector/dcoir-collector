@@ -364,9 +364,12 @@ Mandatory State hashtable.
 No direct output. Writes state.json as a side effect.
 #>
 function Save-State {
+  [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='Medium')]
   param([Parameter(Mandatory=$true)][hashtable]$State)
   $json = Convert-ToCollectorJsonText -InputObject $State -Label 'state.json' -ThrowOnTruncation
-  Set-Content -Path $State.StatePath -Value $json -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($State.StatePath, 'Write collector state')) {
+    Set-Content -Path $State.StatePath -Value $json -Encoding UTF8 -ErrorAction Stop
+  }
 }
 
 <#
@@ -388,6 +391,7 @@ Root string, optional CurrentRunId, and current package name.
 Hashtable describing cleanup status and targets.
 #>
 function Invoke-NoStateCleanup {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([string]$Root,[string]$CurrentRunId,[string]$CurrentPackageName)
 
   $targets = New-Object System.Collections.ArrayList
@@ -401,10 +405,15 @@ function Invoke-NoStateCleanup {
 
   $removed = New-Object System.Collections.ArrayList
   $failed = New-Object System.Collections.ArrayList
+  $skipped = New-Object System.Collections.ArrayList
   foreach ($target in @($targets)) {
     try {
-      Remove-Item -LiteralPath $target -Recurse -Force -ErrorAction Stop
-      [void]$removed.Add($target)
+      if ($PSCmdlet.ShouldProcess($target, 'Remove no-state collector cleanup target')) {
+        Remove-Item -LiteralPath $target -Recurse -Force -ErrorAction Stop
+        [void]$removed.Add($target)
+      } else {
+        [void]$skipped.Add($target)
+      }
     } catch {
       [void]$failed.Add(("{0} :: {1}" -f $target, $_.Exception.Message))
     }
@@ -412,6 +421,8 @@ function Invoke-NoStateCleanup {
 
   $status = if (@($targets).Count -eq 0) {
     'NO_TARGET_FOUND'
+  } elseif (@($skipped).Count -gt 0 -and @($removed).Count -eq 0 -and @($failed).Count -eq 0) {
+    'NO_STATE_CLEANUP_SKIPPED'
   } elseif (@($failed).Count -gt 0) {
     'PARTIAL_FAILED'
   } else {
@@ -423,6 +434,7 @@ function Invoke-NoStateCleanup {
     RunRoot = if ($runDir) { $runDir.FullName } else { $null }
     RemovedTargets = @($removed)
     FailedTargets = @($failed)
+    SkippedTargets = @($skipped)
     TargetCount = @($targets).Count
   }
 }

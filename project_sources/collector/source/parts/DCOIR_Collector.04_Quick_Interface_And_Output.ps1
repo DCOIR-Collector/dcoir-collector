@@ -531,9 +531,12 @@ Collector state object.
 No direct output. Removes cleanup targets as a side effect.
 #>
 function Invoke-Cleanup {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param($StateObject)
   $targets = @([string]$StateObject.PackagePath,[string]$StateObject.RunRoot) | Where-Object { $_ -and (Test-Path -LiteralPath $_) }
   foreach ($target in $targets) {
-    Remove-Item -LiteralPath $target -Recurse -Force -ErrorAction SilentlyContinue
+    if ($PSCmdlet.ShouldProcess($target, 'Remove collector cleanup target')) {
+      Remove-Item -LiteralPath $target -Recurse -Force -ErrorAction SilentlyContinue
+    }
   }
 }
