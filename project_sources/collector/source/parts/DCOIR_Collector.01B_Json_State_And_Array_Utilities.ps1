@@ -304,6 +304,144 @@ function Get-NewRunId {
 
 <#
 .SYNOPSIS
+Checks whether one run ID is safe to use as a path leaf.
+
+.DESCRIPTION
+Requires a nonblank filename-leaf identifier and rejects path separators, rooted
+path syntax, parent traversal, oversized values, and surrounding whitespace.
+
+.FUNCTION NAME
+Test-DCOIRRunIdLeaf
+
+.INPUTS
+CurrentRunId string.
+
+.OUTPUTS
+Boolean indicating whether the run ID is safe.
+#>
+function Test-DCOIRRunIdLeaf {
+  param([string]$CurrentRunId)
+
+  if ([string]::IsNullOrWhiteSpace($CurrentRunId)) { return $false }
+  if ($CurrentRunId.Length -gt 128) { return $false }
+  if ($CurrentRunId.Trim() -ne $CurrentRunId) { return $false }
+  if ($CurrentRunId -in @(".", "..")) { return $false }
+  if ($CurrentRunId.Contains("..")) { return $false }
+  if ([regex]::IsMatch($CurrentRunId, '[\\/]')) { return $false }
+  if ([System.IO.Path]::IsPathRooted($CurrentRunId)) { return $false }
+
+  return [regex]::IsMatch($CurrentRunId, '^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$')
+}
+
+<#
+.SYNOPSIS
+Returns a validated collector run ID.
+
+.DESCRIPTION
+Generates the standard timestamp run ID when requested for omitted collect-mode
+input. Explicit blank values can be rejected by callers that know the parameter
+was supplied.
+
+.FUNCTION NAME
+Resolve-DCOIRRunId
+
+.INPUTS
+CurrentRunId string and optional switches controlling blank handling.
+
+.OUTPUTS
+Validated run ID string, generated run ID string, or null when blank is allowed.
+#>
+function Resolve-DCOIRRunId {
+  param(
+    [string]$CurrentRunId,
+    [switch]$GenerateIfBlank,
+    [switch]$RejectBlank
+  )
+
+  if ([string]::IsNullOrWhiteSpace($CurrentRunId)) {
+    if ($RejectBlank) {
+      throw "Invalid RunId: value must not be blank."
+    }
+    if ($GenerateIfBlank) {
+      return (Get-NewRunId)
+    }
+    return $null
+  }
+
+  if (-not (Test-DCOIRRunIdLeaf -CurrentRunId $CurrentRunId)) {
+    throw "Invalid RunId: value must be a filename-leaf identifier of 1-128 characters using letters, numbers, underscore, or dash, with no rooted path, separator, or parent traversal syntax."
+  }
+
+  return $CurrentRunId
+}
+
+<#
+.SYNOPSIS
+Checks whether one package name is safe to use as a ZIP filename leaf.
+
+.DESCRIPTION
+Allows custom collector package ZIP filenames while rejecting empty values,
+path-shaped values, rooted paths, parent traversal, invalid filename characters,
+reserved Windows device names, and non-ZIP extensions.
+
+.FUNCTION NAME
+Test-DCOIRPackageNameLeaf
+
+.INPUTS
+CurrentPackageName string.
+
+.OUTPUTS
+Boolean indicating whether the package name is safe.
+#>
+function Test-DCOIRPackageNameLeaf {
+  param([string]$CurrentPackageName)
+
+  if ([string]::IsNullOrWhiteSpace($CurrentPackageName)) { return $false }
+  if ($CurrentPackageName.Length -gt 128) { return $false }
+  if ($CurrentPackageName.Trim() -ne $CurrentPackageName) { return $false }
+  if ($CurrentPackageName -in @(".", "..")) { return $false }
+  if ($CurrentPackageName.Contains("..")) { return $false }
+  if ([regex]::IsMatch($CurrentPackageName, '[<>:"/\\|?*\x00-\x1F]')) { return $false }
+  if ([System.IO.Path]::IsPathRooted($CurrentPackageName)) { return $false }
+  if ([System.IO.Path]::GetFileName($CurrentPackageName) -ne $CurrentPackageName) { return $false }
+  if ([System.IO.Path]::GetExtension($CurrentPackageName) -ine ".zip") { return $false }
+
+  $baseName = [System.IO.Path]::GetFileNameWithoutExtension($CurrentPackageName)
+  if ([string]::IsNullOrWhiteSpace($baseName)) { return $false }
+  if ($baseName -match '^(?i:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$') { return $false }
+
+  return $true
+}
+
+<#
+.SYNOPSIS
+Returns a validated collector package filename.
+
+.DESCRIPTION
+Normalizes PackageName through the shared package-name leaf validator before the
+collector can use it to check, move, purge, or delete package artifacts.
+
+.FUNCTION NAME
+Resolve-DCOIRPackageName
+
+.INPUTS
+CurrentPackageName string.
+
+.OUTPUTS
+Validated package filename string.
+#>
+function Resolve-DCOIRPackageName {
+  param([string]$CurrentPackageName)
+
+  if (-not (Test-DCOIRPackageNameLeaf -CurrentPackageName $CurrentPackageName)) {
+    throw "Invalid PackageName: value must be a nonblank .zip filename leaf with no rooted path, separator, parent traversal, invalid filename characters, or reserved Windows device name."
+  }
+
+  return $CurrentPackageName
+}
+
+<#
+.SYNOPSIS
 Builds the run-root path for one run identifier.
 
 .DESCRIPTION
