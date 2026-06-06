@@ -1,6 +1,6 @@
 {
   "framework_name": "DCOIR Manual Test Framework",
-  "repo_url": "https://github.com/malwaredevil/dcoir-collector.git",
+  "repo_url": "https://github.com/DCOIR-Collector/dcoir-collector.git",
   "base_folder_note": "The framework runs from whatever folder contains the launcher and runner, for example C:\\DCOIR_TESTER.",
   "report_name": "DCOIR_Collector_Full_Signoff_Report.txt",
   "state_name": "_runner_state.json",
