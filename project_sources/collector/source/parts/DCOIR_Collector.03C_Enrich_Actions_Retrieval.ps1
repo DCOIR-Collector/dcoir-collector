@@ -62,6 +62,47 @@ function Invoke-EnrichmentAction-Retrieval {
   $interpretation = $null
   $nextStep = $null
 
+  $actionTarget = $Action
+  switch ($Action) {
+    "LogRaw" {
+      if (-not $LogName) { throw "LogRaw requires -LogName" }
+      $actionTarget = $LogName
+    }
+    "PullSuspiciousFile" {
+      if (-not $Path) { throw "PullSuspiciousFile requires -Path" }
+      $actionTarget = $Path
+    }
+    "PullScriptOrConfig" {
+      if (-not $Path) { throw "PullScriptOrConfig requires -Path" }
+      $actionTarget = $Path
+    }
+    "PullTaskXml" {
+      if (-not $Path) { throw "PullTaskXml requires -Path with the task name, for example \Microsoft\Windows\TaskName" }
+      $actionTarget = $Path
+    }
+    "PullServiceBinary" {
+      if (-not $ServiceName) { throw "PullServiceBinary requires -ServiceName" }
+      $actionTarget = $ServiceName
+    }
+    "PullWmiReferencedFile" {
+      if (-not $Path) { throw "PullWmiReferencedFile requires -Path" }
+      $actionTarget = $Path
+    }
+    default {
+      throw "Unsupported enrichment action: $Action"
+    }
+  }
+
+  if (-not $PSCmdlet.ShouldProcess($actionTarget, ("Run enrich retrieval action {0}" -f $Action))) {
+    return @{
+      ReportPath = $null
+      ActionArtifactPath = $null
+      StagedPath = $null
+      ActionSkipped = $true
+      ActionStatus = 'SKIPPED'
+    }
+  }
+
   switch ($Action) {
     "LogRaw" {
       if (-not $LogName) { throw "LogRaw requires -LogName" }
@@ -103,8 +144,8 @@ function Invoke-EnrichmentAction-Retrieval {
       $targetDetails = "TaskName=$Path"
       $taskXml = Get-TaskXml -TaskName $Path
       $plannedStagedPath = Join-Path $sessionStagedDir (New-StageName -Prefix "STAGED_TASK_XML" -Extension ".xml")
-      if ($PSCmdlet.ShouldProcess($plannedStagedPath, 'Write staged task XML')) {
-        Set-Content -Path $plannedStagedPath -Value $taskXml -Encoding UTF8 -ErrorAction Stop
+      Set-Content -Path $plannedStagedPath -Value $taskXml -Encoding UTF8 -ErrorAction Stop
+      if (Test-Path -LiteralPath $plannedStagedPath) {
         $stagedPath = $plannedStagedPath
       }
       $outputText = if ($stagedPath) { "Task XML exported and staged for retrieval.`r`nSTAGED_PATH=$stagedPath" } else { "Task XML staging was skipped; no staged artifact was created." }
