@@ -133,8 +133,9 @@ function Stage-PathCopy {
   if ($PSCmdlet.ShouldProcess($dest, ("Copy staged evidence from {0}" -f $SourcePath))) {
     Ensure-Directory -Path $StagedDir
     Copy-Item -LiteralPath $SourcePath -Destination $dest -Force -ErrorAction Stop
+    return $dest
   }
-  return $dest
+  return $null
 }
 
 <#

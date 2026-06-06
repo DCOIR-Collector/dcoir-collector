@@ -55,8 +55,9 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
     'defender_status',
     'analyst_follow_up_queue'
   )) {
-    if ($artifactMap.ContainsKey($key) -and (Test-Path -LiteralPath $artifactMap[$key])) {
-      $recommendedPaths += $artifactMap[$key]
+    $candidatePath = if ($artifactMap.ContainsKey($key)) { [string]$artifactMap[$key] } else { $null }
+    if (-not [string]::IsNullOrWhiteSpace($candidatePath) -and (Test-Path -LiteralPath $candidatePath)) {
+      $recommendedPaths += $candidatePath
     }
   }
 
@@ -106,7 +107,7 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
   $uploadManifestPath = Join-Path $State.ReportsDir ("DCOIR_ATTACHMENT_BUDGET_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
   $chunkManifestPath = $null
   if (@($chunkCompanions).Count -gt 0) {
-    $chunkManifestPath = Join-Path $State.ReportsDir ("DCOIR_UPLOAD_SAFE_CHUNK_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
+    $plannedChunkManifestPath = Join-Path $State.ReportsDir ("DCOIR_UPLOAD_SAFE_CHUNK_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
     $chunkManifestObj = [ordered]@{
       run_id = $State.RunId
       origin = 'collector_production_upload_safe'
@@ -114,15 +115,16 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
       chunked_artifact_count = @($chunkCompanions).Count
       chunked_artifacts = @($chunkCompanions)
     }
-    if ($PSCmdlet.ShouldProcess($chunkManifestPath, 'Write upload-safe chunk manifest')) {
-      Set-Content -Path $chunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8 -ErrorAction Stop
-    }
-    $State.UploadSafeChunkManifestPath = $chunkManifestPath
-    $Baseline.ArtifactMap['upload_safe_chunk_manifest'] = $chunkManifestPath
-    [void]$Baseline.ArtifactPaths.Add($chunkManifestPath)
-    foreach ($chunkRow in @($chunkCompanions)) {
-      foreach ($chunkPath in @($chunkRow.chunk_paths)) {
-        [void]$Baseline.ArtifactPaths.Add($chunkPath)
+    if ($PSCmdlet.ShouldProcess($plannedChunkManifestPath, 'Write upload-safe chunk manifest')) {
+      Set-Content -Path $plannedChunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8 -ErrorAction Stop
+      $chunkManifestPath = $plannedChunkManifestPath
+      $State.UploadSafeChunkManifestPath = $chunkManifestPath
+      $Baseline.ArtifactMap['upload_safe_chunk_manifest'] = $chunkManifestPath
+      [void]$Baseline.ArtifactPaths.Add($chunkManifestPath)
+      foreach ($chunkRow in @($chunkCompanions)) {
+        foreach ($chunkPath in @($chunkRow.chunk_paths)) {
+          [void]$Baseline.ArtifactPaths.Add($chunkPath)
+        }
       }
     }
   }
@@ -156,7 +158,9 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
   if (@($chunkCompanions).Count -gt 0) {
     $summaryLines += ""
     $summaryLines += "Upload-safe chunk companions:"
-    $summaryLines += ("- UPLOAD_SAFE_CHUNK_MANIFEST_PATH={0}" -f $chunkManifestPath)
+    if ($chunkManifestPath) {
+      $summaryLines += ("- UPLOAD_SAFE_CHUNK_MANIFEST_PATH={0}" -f $chunkManifestPath)
+    }
     foreach ($chunkRow in @($chunkCompanions)) {
       $summaryLines += ("- SourceKey={0} SourceSizeKB={1} ChunkCount={2} TargetChunkKB={3}" -f $chunkRow.source_artifact_key, $chunkRow.source_size_kb, $chunkRow.chunk_count, $chunkRow.target_chunk_kb)
       foreach ($chunkPath in @($chunkRow.chunk_paths)) {
@@ -166,8 +170,10 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
     $summaryLines += "- Upload the high-signal summary first for triage; use full-fidelity chunk companions when the oversized source artifact is needed."
   }
 
+  $uploadSummaryResultPath = $null
   if ($PSCmdlet.ShouldProcess($uploadSummaryPath, 'Write collect upload summary')) {
     Set-Content -Path $uploadSummaryPath -Value $summaryLines -Encoding UTF8 -ErrorAction Stop
+    $uploadSummaryResultPath = $uploadSummaryPath
   }
 
   $manifestObj = [ordered]@{
@@ -185,13 +191,15 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
     metadata_report_path = $State.MetadataReportPath
     note = 'The merged baseline report may be useful for local analyst review but is no longer the default Gemini-facing upload surface.'
   }
+  $uploadManifestResultPath = $null
   if ($PSCmdlet.ShouldProcess($uploadManifestPath, 'Write attachment budget manifest')) {
     Set-Content -Path $uploadManifestPath -Value (Convert-ToSafeJsonText -InputObject $manifestObj) -Encoding UTF8 -ErrorAction Stop
+    $uploadManifestResultPath = $uploadManifestPath
   }
 
   return @{
-    UploadSummaryPath = $uploadSummaryPath
-    UploadManifestPath = $uploadManifestPath
+    UploadSummaryPath = $uploadSummaryResultPath
+    UploadManifestPath = $uploadManifestResultPath
     DefaultSetStatus = $setStatus
     RecommendedUploadTotalKB = $safeTotal
     RecommendedUploadCount = @($recommended).Count
@@ -287,6 +295,7 @@ function New-AnalystOverviewArtifactWithLateMetadataReport {
 
   if ($PSCmdlet.ShouldProcess($overviewPath, 'Write analyst overview artifact')) {
     Set-Content -Path $overviewPath -Value $lines -Encoding UTF8 -ErrorAction Stop
+    return $overviewPath
   }
-  return $overviewPath
+  return $null
 }

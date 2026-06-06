@@ -213,6 +213,7 @@ function Finalize-EnrichSession {
   )
 
   $bundlePath = New-BundleZip -BundlesDir $State.BundlesDir -BundleName ("DCOIR_ENRICH_BUNDLE_{0}_{1}_{2}.zip" -f $Session.SessionId, $env:COMPUTERNAME, $State.RunId) -Paths $bundleInputs
+  if (-not $bundlePath) { return $null }
   $Session.BundlePath = $bundlePath
   $Session.Finalized = $true
   if ($State.OpenEnrichSessionId -eq $Session.SessionId) {

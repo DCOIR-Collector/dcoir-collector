@@ -203,7 +203,9 @@ function Write-DCOIRUtf8NoBomText {
   $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
   if ($PSCmdlet.ShouldProcess($Path, 'Write UTF-8 text without BOM')) {
     [System.IO.File]::WriteAllText($Path, [string]$Text, $utf8NoBom)
+    return $Path
   }
+  return $null
 }
 
 <#
@@ -243,12 +245,14 @@ function Write-ArtifactText {
     $artifactText = Convert-CollectionMetadataValidationText -Text $artifactText
   }
   $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
+  $wroteRootArtifact = $false
   if ($PSCmdlet.ShouldProcess($path, 'Write collector artifact')) {
     Ensure-Directory -Path $ArtifactsDir
     if ($Name -eq 'collection_metadata.txt') {
-      Write-DCOIRUtf8NoBomText -Path $path -Text $artifactText
+      $wroteRootArtifact = -not [string]::IsNullOrWhiteSpace((Write-DCOIRUtf8NoBomText -Path $path -Text $artifactText))
     } else {
       Set-Content -Path $path -Value $artifactText -Encoding UTF8 -ErrorAction Stop
+      $wroteRootArtifact = $true
     }
   }
 
@@ -269,7 +273,8 @@ function Write-ArtifactText {
     Add-CollectorError ("Failed to write section companion artifact [{0}/{1}]: {2}" -f $safeSection, $safeName, $_.Exception.Message)
   }
 
-  return $path
+  if ($wroteRootArtifact) { return $path }
+  return $null
 }
 
 <#
@@ -373,8 +378,9 @@ function New-Manifest {
   }
   if ($PSCmdlet.ShouldProcess($ManifestPath, 'Write collector manifest')) {
     Set-Content -Path $ManifestPath -Value (Convert-ToCollectorJsonText -InputObject $manifest -Label 'manifest JSON' -ThrowOnTruncation) -Encoding UTF8 -ErrorAction Stop
+    return $ManifestPath
   }
-  return $ManifestPath
+  return $null
 }
 
 <#
@@ -472,6 +478,7 @@ function New-BundleZip {
       Remove-Item -LiteralPath $bundlePath -Force -ErrorAction SilentlyContinue
     }
     Compress-Archive -LiteralPath $existing -DestinationPath $bundlePath -CompressionLevel Optimal -Force -ErrorAction Stop
+    return $bundlePath
   }
-  return $bundlePath
+  return $null
 }

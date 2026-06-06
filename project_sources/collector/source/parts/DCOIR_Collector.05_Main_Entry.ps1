@@ -103,12 +103,13 @@ try {
 
       # Write metadata once after late-bound collect fields are populated and before manifest/bundle packaging.
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
-      Write-ReportFile -Path $metadataReportPath -Text $metadataText
+      $metadataReportPath = Write-ReportFile -Path $metadataReportPath -Text $metadataText
+      $state.MetadataReportPath = $metadataReportPath
 
       $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
         @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.UploadSafeChunkManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
       ) -ToolMap $toolMap -Extra @{
-        collect_bundle = $bundlePath
+        collect_bundle = $state.CollectBundlePath
         analyst_overview = $state.AnalystOverviewPath
         parallel_execution_proof = $state.ParallelExecutionProofPath
         execution_context = $state.ExecutionContextPath
@@ -150,6 +151,7 @@ try {
         $Global:ErrorsLogPath,
         $collectManifest
       )
+      $state.CollectBundlePath = $bundlePath
 
       Save-State -State $state
 
@@ -163,28 +165,30 @@ try {
       Write-Output ("RUN_ID={0}" -f $RunId)
       Write-Output ("COLLECTOR_VERSION={0}" -f $state.CollectorVersion)
       Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $state.CollectorVersion))
-      Write-Output ("METADATA_REPORT_PATH={0}" -f $metadataReportPath)
-      Write-Output ("EXECUTION_CONTEXT_PATH={0}" -f $state.ExecutionContextPath)
-      Write-Output ("SECURITY_AUDIT_POLICY_PATH={0}" -f $state.SecurityAuditPolicyPath)
+      if ($metadataReportPath) { Write-Output ("METADATA_REPORT_PATH={0}" -f $metadataReportPath) }
+      if ($state.ExecutionContextPath) { Write-Output ("EXECUTION_CONTEXT_PATH={0}" -f $state.ExecutionContextPath) }
+      if ($state.SecurityAuditPolicyPath) { Write-Output ("SECURITY_AUDIT_POLICY_PATH={0}" -f $state.SecurityAuditPolicyPath) }
       Write-Output ("AUDIT_POLICY_ACCESS_STATUS={0}" -f $state.AuditPolicyAccessStatus)
-      Write-Output ("SECURITY_FILTERED_PATH={0}" -f $state.SecurityFilteredPath)
-      Write-Output ("SECURITY_HIGH_SIGNAL_SUMMARY_PATH={0}" -f $state.SecurityHighSignalSummaryPath)
+      if ($state.SecurityFilteredPath) { Write-Output ("SECURITY_FILTERED_PATH={0}" -f $state.SecurityFilteredPath) }
+      if ($state.SecurityHighSignalSummaryPath) { Write-Output ("SECURITY_HIGH_SIGNAL_SUMMARY_PATH={0}" -f $state.SecurityHighSignalSummaryPath) }
       Write-Output ("IS_ELEVATED={0}" -f $state.IsElevated)
       Write-Output ("NETSTAT_OWNER_AWARE_STATUS={0}" -f $state.NetstatOwnerAwareStatus)
       if ($state.NetstatPidOnlyPath) { Write-Output ("NETSTAT_PID_ONLY_PATH={0}" -f $state.NetstatPidOnlyPath) }
-      Write-Output ("ANALYST_OVERVIEW_PATH={0}" -f $state.AnalystOverviewPath)
+      if ($state.AnalystOverviewPath) { Write-Output ("ANALYST_OVERVIEW_PATH={0}" -f $state.AnalystOverviewPath) }
       if ($state.ParallelExecutionProofPath) { Write-Output ("PARALLEL_EXECUTION_PROOF_PATH={0}" -f $state.ParallelExecutionProofPath) }
-      Write-Output ("UPLOAD_SUMMARY_PATH={0}" -f $state.UploadSummaryPath)
-      Write-Output ("ATTACHMENT_BUDGET_MANIFEST_PATH={0}" -f $state.UploadBudgetManifestPath)
+      if ($state.UploadSummaryPath) { Write-Output ("UPLOAD_SUMMARY_PATH={0}" -f $state.UploadSummaryPath) }
+      if ($state.UploadBudgetManifestPath) { Write-Output ("ATTACHMENT_BUDGET_MANIFEST_PATH={0}" -f $state.UploadBudgetManifestPath) }
       if ($state.UploadSafeChunkManifestPath) { Write-Output ("UPLOAD_SAFE_CHUNK_MANIFEST_PATH={0}" -f $state.UploadSafeChunkManifestPath) }
-      Write-Output ("COLLECTION_SCOPE_PATH={0}" -f $state.CollectionScopePath)
-      Write-Output ("PARALLELISM_ASSESSMENT_PATH={0}" -f $state.ParallelismAssessmentPath)
+      if ($state.CollectionScopePath) { Write-Output ("COLLECTION_SCOPE_PATH={0}" -f $state.CollectionScopePath) }
+      if ($state.ParallelismAssessmentPath) { Write-Output ("PARALLELISM_ASSESSMENT_PATH={0}" -f $state.ParallelismAssessmentPath) }
       if ($state.TargetedCollectionPlanPath) { Write-Output ("TARGETED_COLLECTION_PLAN_PATH={0}" -f $state.TargetedCollectionPlanPath) }
       if ($state.SyntheticOversizeSourcePath) { Write-Output ("SYNTHETIC_OVERSIZE_SOURCE_PATH={0}" -f $state.SyntheticOversizeSourcePath) }
       if ($state.ChunkManifestPath) { Write-Output ("CHUNK_MANIFEST_PATH={0}" -f $state.ChunkManifestPath) }
       Write-Output ("DEFAULT_GEMINI_UPLOAD_SET_STATUS={0}" -f $state.DefaultGeminiUploadSetStatus)
-      Write-Output ("COLLECT_BUNDLE_PATH={0}" -f $bundlePath)
-      Write-Output ('NEXT_GET_FILE=get-file --path "{0}" --comment "Retrieve DCOIR collect bundle"' -f $bundlePath)
+      if ($bundlePath) {
+        Write-Output ("COLLECT_BUNDLE_PATH={0}" -f $bundlePath)
+        Write-Output ('NEXT_GET_FILE=get-file --path "{0}" --comment "Retrieve DCOIR collect bundle"' -f $bundlePath)
+      }
       Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
       Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
       Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer ANALYST_OVERVIEW_PATH, UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices. If UPLOAD_SAFE_CHUNK_MANIFEST_PATH exists, use it for full-fidelity oversized text artifacts after triage summaries. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
@@ -228,7 +232,7 @@ try {
       $sessionStatus = "OPEN"
       if ($FinalizeEnrichSession) {
         $bundlePath = Finalize-EnrichSession -State $state -Session $session -ToolMap $toolMap
-        $sessionStatus = "FINALIZED"
+        $sessionStatus = if ($bundlePath) { "FINALIZED" } else { "FINALIZE_SKIPPED" }
       }
 
       Save-State -State $state
@@ -245,11 +249,11 @@ try {
       Write-Output ("ENRICH_SESSION_ID={0}" -f $session.SessionId)
       Write-Output ("SESSION_RESOLUTION_MODE={0}" -f $session.SessionResolutionMode)
       if ($result) {
-        Write-Output ("ENRICH_REPORT_PATH={0}" -f $result.ReportPath)
-        Write-Output ("ACTION_ARTIFACT_PATH={0}" -f $result.ActionArtifactPath)
+        if ($result.ReportPath) { Write-Output ("ENRICH_REPORT_PATH={0}" -f $result.ReportPath) }
+        if ($result.ActionArtifactPath) { Write-Output ("ACTION_ARTIFACT_PATH={0}" -f $result.ActionArtifactPath) }
         if ($result.StagedPath) { Write-Output ("STAGED_PATH={0}" -f $result.StagedPath) }
       } else {
-        Write-Output ("ENRICH_REPORT_PATH={0}" -f $session.SummaryPath)
+        if ($session.SummaryPath) { Write-Output ("ENRICH_REPORT_PATH={0}" -f $session.SummaryPath) }
       }
       Write-Output ("SESSION_STATUS={0}" -f $sessionStatus)
       if ($bundlePath) {

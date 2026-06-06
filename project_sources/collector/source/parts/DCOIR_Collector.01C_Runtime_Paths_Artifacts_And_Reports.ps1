@@ -399,6 +399,7 @@ function Write-SessionArtifactText {
   $path = Join-Path $SessionArtifactsDir ("{0:D2}_ENRICH_{1}_{2}.txt" -f $seq, $safeAction, $safeTarget)
   if ($PSCmdlet.ShouldProcess($path, 'Write enrich session artifact')) {
     Set-Content -Path $path -Value $Text -Encoding UTF8 -ErrorAction Stop
+    return $path
   }
-  return $path
+  return $null
 }
