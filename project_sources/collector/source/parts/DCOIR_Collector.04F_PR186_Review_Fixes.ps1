@@ -427,10 +427,15 @@ function Get-TestTextPaddingFromEnvironment {
   if (-not [int]::TryParse($raw, [ref]$requestedKB) -or $requestedKB -le 0) { return '' }
 
   $line = 'DCOIR_PRODUCTION_CHUNK_TEST_PAYLOAD|ABCDEFGHIJKLMNOPQRSTUVWXYZ|0123456789|line='
+  $encoding = [System.Text.Encoding]::UTF8
+  $targetBytes = $requestedKB * 1024
   $sb = New-Object System.Text.StringBuilder
   $index = 0
-  while ([System.Text.Encoding]::UTF8.GetByteCount($sb.ToString()) -lt ($requestedKB * 1024)) {
-    [void]$sb.AppendLine(('{0}{1:000000}' -f $line, $index))
+  $bytes = 0
+  while ($bytes -lt $targetBytes) {
+    $entry = ('{0}{1:000000}' -f $line, $index) + [Environment]::NewLine
+    [void]$sb.Append($entry)
+    $bytes += $encoding.GetByteCount($entry)
     $index += 1
   }
   return $sb.ToString()
