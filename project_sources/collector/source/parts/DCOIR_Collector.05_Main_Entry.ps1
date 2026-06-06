@@ -36,7 +36,36 @@ try {
       Set-Content -Path $Global:ErrorsLogPath -Value "" -Encoding UTF8 -ErrorAction Stop
 
       $packagePath = Move-PackageToOutRoot -Root $resolvedOutRoot -CurrentPackageName $PackageName
-      Expand-PackageToTools -PackagePath $packagePath -ToolsDir $dirs.ToolsDir
+      if (-not $packagePath) {
+        $collectorCommandBase = Get-CollectorResponseActionCommandBase
+        $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
+        Write-Output "STATUS=SKIPPED"
+        Write-Output "COLLECT_PREP_STATUS=SKIPPED"
+        Write-Output "COLLECT_PACKAGE_STATUS=SKIPPED"
+        Write-Output ("RUN_ID={0}" -f $RunId)
+        Write-Output ("COLLECTOR_VERSION={0}" -f $ScriptVersion)
+        Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $ScriptVersion))
+        Write-Output "NEXT_OPTIONS=Re-run without -WhatIf and confirm package preparation to continue collect mode."
+        Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
+        Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
+        return
+      }
+
+      $toolsExpanded = Expand-PackageToTools -PackagePath $packagePath -ToolsDir $dirs.ToolsDir
+      if (-not $toolsExpanded) {
+        $collectorCommandBase = Get-CollectorResponseActionCommandBase
+        $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
+        Write-Output "STATUS=SKIPPED"
+        Write-Output "COLLECT_PREP_STATUS=SKIPPED"
+        Write-Output "TOOL_EXPANSION_STATUS=SKIPPED"
+        Write-Output ("RUN_ID={0}" -f $RunId)
+        Write-Output ("COLLECTOR_VERSION={0}" -f $ScriptVersion)
+        Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $ScriptVersion))
+        Write-Output "NEXT_OPTIONS=Re-run without -WhatIf and confirm tool expansion to continue collect mode."
+        Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
+        Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
+        return
+      }
 
       $toolMap = Get-ToolMap -ToolsDir $dirs.ToolsDir
       $metadataReportPath = Join-Path $dirs.ReportsDir ("DCOIR_METADATA_{0}_{1}.txt" -f $env:COMPUTERNAME, $RunId)
@@ -107,6 +136,7 @@ try {
       # Write metadata once after late-bound collect fields are populated and before manifest/bundle packaging.
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       $metadataReportPath = Write-ReportFile -Path $metadataReportPath -Text $metadataText
+      $metadataReportSkipped = -not $metadataReportPath
       $state.MetadataReportPath = $metadataReportPath
 
       $collectManifestPath = Join-Path $state.RunRoot "manifest_collect.json"
@@ -174,7 +204,7 @@ try {
 
       $status = "SUCCESS"
       if ($collectPackageSkipped) { $status = "SKIPPED" }
-      elseif ($collectManifestFinalizationSkipped -or $stateSaveSkipped) { $status = "PARTIAL_SUCCESS" }
+      elseif ($collectManifestFinalizationSkipped -or $metadataReportSkipped -or $stateSaveSkipped) { $status = "PARTIAL_SUCCESS" }
       if ($status -eq "SUCCESS" -and @($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
 
       $collectorCommandBase = Get-CollectorResponseActionCommandBase
@@ -184,6 +214,7 @@ try {
       if ($collectPackageSkipped) { Write-Output "COLLECT_PACKAGE_STATUS=SKIPPED" }
       elseif ($bundlePath) { Write-Output "COLLECT_PACKAGE_STATUS=CREATED" }
       if ($collectManifestFinalizationSkipped) { Write-Output "COLLECT_MANIFEST_STATUS=PARTIAL" }
+      if ($metadataReportSkipped) { Write-Output "METADATA_REPORT_STATUS=SKIPPED" }
       if ($stateSaveSkipped) { Write-Output "STATE_SAVE_STATUS=SKIPPED" }
       Write-Output ("RUN_ID={0}" -f $RunId)
       Write-Output ("COLLECTOR_VERSION={0}" -f $state.CollectorVersion)
@@ -265,6 +296,7 @@ try {
       }
       $resultIsDictionary = ($result -is [System.Collections.IDictionary])
       $actionSkipped = [bool]($resultIsDictionary -and $result.ContainsKey('ActionSkipped') -and [bool]$result.ActionSkipped)
+      $actionCompleted = [bool]($Action -and -not $actionSkipped -and $result)
 
       $bundlePath = $null
       $sessionStatus = "OPEN"
@@ -273,11 +305,16 @@ try {
         $sessionStatus = if ($bundlePath) { "FINALIZED" } else { "FINALIZE_SKIPPED" }
       }
       $finalizeSkipped = [bool]($FinalizeEnrichSession -and -not $bundlePath)
+      $finalizeCompleted = [bool]($FinalizeEnrichSession -and $bundlePath)
 
       $stateSavePath = Save-State -State $state
       $stateSaveSkipped = -not $stateSavePath
 
-      $status = if ($actionSkipped -or $finalizeSkipped) { "SKIPPED" } else { "SUCCESS" }
+      $status = "SUCCESS"
+      if ($actionSkipped -or $finalizeSkipped) {
+        if ($actionCompleted -or $finalizeCompleted) { $status = "PARTIAL_SUCCESS" }
+        else { $status = "SKIPPED" }
+      }
       if ($status -eq "SUCCESS" -and $stateSaveSkipped) { $status = "PARTIAL_SUCCESS" }
       if ($status -eq "SUCCESS" -and @($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
 
