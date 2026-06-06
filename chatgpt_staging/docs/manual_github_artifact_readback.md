@@ -54,7 +54,7 @@ The staged output under `chatgpt_staging/out/<request_id>/` is the primary ChatG
 
 ## Use pattern
 
-1. Check Gmail `label:GitHub` with the GitHub subject prefix `[malwaredevil/dcoir-collector]` as an early liveness signal only. In connector metadata and returned labels, the same mailbox label may appear as `Label_125`.
+1. Check Gmail `label:GitHub` with the GitHub subject prefix `[DCOIR-Collector/dcoir-collector]` as an early liveness signal only. In connector metadata and returned labels, the same mailbox label may appear as `Label_125`.
 2. Poll `chatgpt_staging/status_reports/chatgpt-github-artifact-readback/<request_id>/workflow_report.md` until `result` becomes `success` or `failure`.
 3. Do not use `repo-workflows/.../workflow_report.md` completed-run summaries for live polling.
 4. Read the source workflow report first.
