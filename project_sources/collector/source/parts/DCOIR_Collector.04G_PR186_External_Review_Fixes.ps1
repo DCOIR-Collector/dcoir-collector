@@ -53,9 +53,8 @@ Keeps blank/latest automatic purge bounded to timestamp-style collector run root
 custom RunId is supplied for a new collect, also deletes only the exact expected custom
 run root when collector ownership is proven by state.json or the no-state cleanup child
 structure. If an unsafe exact custom root exists, collection stops before new artifacts are
-written. This prevents stale reports, artifacts, logs, or bundles from a previous custom
-RunId collect from being mixed into a new evidence bundle without deleting arbitrary
-shared-root directories.
+written. If a required exact custom root or prior package purge is declined, collection
+returns the same skipped-preparation contract used by the main collect handler.
 
 .FUNCTION NAME
 Purge-PreviousRuns
@@ -64,13 +63,15 @@ Purge-PreviousRuns
 Root string and CurrentPackageName string.
 
 .OUTPUTS
-Boolean true when prior run/package purge did not block collect startup, false when
-package purge was skipped or left a stale package in place. Throws when the exact custom
-run root is unsafe or remains after deletion.
+Boolean true when prior run/package purge did not block collect startup, false when a
+required confirmation-decline path skipped collect preparation. Throws when the exact
+custom run root is unsafe or remains after deletion.
 #>
 function Purge-PreviousRuns {
   [CmdletBinding(SupportsShouldProcess=$true)]
   param([string]$Root,[string]$CurrentPackageName)
+
+  $script:CollectPrepSkipReason = $null
 
   try {
     $currentRunId = [string]$script:RunId
@@ -89,8 +90,9 @@ function Purge-PreviousRuns {
           if (Test-Path -LiteralPath $expectedRunRoot) {
             throw "Existing custom RunId directory could not be removed before collect: $expectedRunRoot"
           }
-        } elseif (-not $WhatIfPreference) {
-          throw "Existing custom RunId directory removal was skipped before collect: $expectedRunRoot"
+        } else {
+          $script:CollectPrepSkipReason = 'CUSTOM_RUN_PURGE_SKIPPED'
+          return $false
         }
       }
     }
@@ -116,13 +118,18 @@ function Purge-PreviousRuns {
     if (Test-Path -LiteralPath $pkg) {
       if ($PSCmdlet.ShouldProcess($pkg, 'Remove previous collector package')) {
         Remove-Item -LiteralPath $pkg -Force -ErrorAction SilentlyContinue
-        if (Test-Path -LiteralPath $pkg) { return $false }
+        if (Test-Path -LiteralPath $pkg) {
+          $script:CollectPrepSkipReason = 'PACKAGE_PURGE_SKIPPED'
+          return $false
+        }
       } else {
+        $script:CollectPrepSkipReason = 'PACKAGE_PURGE_SKIPPED'
         return $false
       }
     }
   } catch {
     Add-CollectorError "Failed to remove previous collector package: $($_.Exception.Message)"
+    $script:CollectPrepSkipReason = 'PACKAGE_PURGE_SKIPPED'
     return $false
   }
 
