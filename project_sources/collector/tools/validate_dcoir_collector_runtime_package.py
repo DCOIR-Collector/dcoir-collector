@@ -389,7 +389,7 @@ function New-TestProcess {{
   param([int]$ProcessId,[int]$ParentProcessId,[string]$ParentProcessName,[string]$Name,[string]$ExecutablePath,[string]$CommandLine)
   [pscustomobject]@{{ ProcessId = $ProcessId; ParentProcessId = $ParentProcessId; ParentProcessName = $ParentProcessName; Name = $Name; ExecutablePath = $ExecutablePath; CommandLine = $CommandLine }}
 }}
-$childWithCurrentParent = [pscustomobject]@{{ ProcessId = 201; ParentProcessId = 200; Name = 'powershell.exe'; ExecutablePath = 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'; CommandLine = 'powershell.exe -NoLogo' }}
+$childWithCurrentParent = [pscustomobject]@{{ ProcessId = 201; ParentProcessId = 200; Name = 'powershell.exe'; ExecutablePath = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'; CommandLine = 'powershell.exe -NoLogo' }}
 $processNameById = @{{ 200 = 'services.exe' }}
 $validParentTimes = @{{ 200 = [datetime]'2026-01-01T00:00:00Z'; 201 = [datetime]'2026-01-01T00:00:10Z' }}
 $validParentRow = Convert-ProcessObjectToText -Proc $childWithCurrentParent -StartTimeMap $validParentTimes -ProcessNameById $processNameById -ProcessStartTimeById $validParentTimes
@@ -397,18 +397,22 @@ Assert-Condition ($validParentRow.ParentProcessName -eq 'services.exe') 'current
 $reusedParentTimes = @{{ 200 = [datetime]'2026-01-01T00:01:00Z'; 201 = [datetime]'2026-01-01T00:00:10Z' }}
 $reusedParentRow = Convert-ProcessObjectToText -Proc $childWithCurrentParent -StartTimeMap $reusedParentTimes -ProcessNameById $processNameById -ProcessStartTimeById $reusedParentTimes
 Assert-Condition ([string]::IsNullOrWhiteSpace([string]$reusedParentRow.ParentProcessName)) 'reused parent PID name was trusted'
-$benignParentShell = New-TestProcess -ProcessId 101 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -CommandLine 'powershell.exe -NoLogo'
+$benignParentShell = New-TestProcess -ProcessId 101 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' -CommandLine 'powershell.exe -NoLogo'
 Assert-Condition (@(Get-SuspiciousProcessFindings -Processes @($benignParentShell) -ExcludedPids @()).Count -eq 0) 'benign-parent name-only PowerShell was not suppressed'
-$encodedShell = New-TestProcess -ProcessId 102 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -CommandLine 'powershell.exe -EncodedCommand AAAA'
+$encodedShell = New-TestProcess -ProcessId 102 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' -CommandLine 'powershell.exe -EncodedCommand AAAA'
 $encodedFindings = @(Get-SuspiciousProcessFindings -Processes @($encodedShell) -ExcludedPids @())
 Assert-Condition ($encodedFindings.Count -eq 1) 'PowerShell command-line indicator was suppressed'
 Assert-Condition ($encodedFindings[0].Reasons -like '*suspicious PowerShell style command line*') 'PowerShell command-line reason missing'
 Assert-Condition ($encodedFindings[0].ParentProcessName -eq 'services.exe') 'PowerShell parent context missing'
-$wmicCreate = New-TestProcess -ProcessId 103 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'wmic.exe' -ExecutablePath 'C:\Windows\System32\wbem\wmic.exe' -CommandLine 'wmic process call create "cmd.exe /c whoami"'
+$wmicCreate = New-TestProcess -ProcessId 103 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'wmic.exe' -ExecutablePath 'C:\\Windows\\System32\\wbem\\wmic.exe' -CommandLine 'wmic process call create \"cmd.exe /c whoami\"'
 $wmicFindings = @(Get-SuspiciousProcessFindings -Processes @($wmicCreate) -ExcludedPids @())
 Assert-Condition ($wmicFindings.Count -eq 1) 'WMIC process creation indicator was suppressed'
 Assert-Condition ($wmicFindings[0].Reasons -like '*suspicious LOLBin usage*') 'WMIC LOLBin reason missing'
-$cmdHighRiskPath = New-TestProcess -ProcessId 104 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'cmd.exe' -ExecutablePath 'C:\Temp\cmd.exe' -CommandLine 'cmd.exe /c whoami'
+$wmicRemoteNode = New-TestProcess -ProcessId 105 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'wmic.exe' -ExecutablePath 'C:\\Windows\\System32\\wbem\\wmic.exe' -CommandLine 'wmic /node:DC01 process call create \"cmd.exe /c whoami\"'
+$wmicRemoteFindings = @(Get-SuspiciousProcessFindings -Processes @($wmicRemoteNode) -ExcludedPids @())
+Assert-Condition ($wmicRemoteFindings.Count -eq 1) 'WMIC remote node indicator was suppressed'
+Assert-Condition ($wmicRemoteFindings[0].Reasons -like '*suspicious LOLBin usage*') 'WMIC remote node LOLBin reason missing'
+$cmdHighRiskPath = New-TestProcess -ProcessId 104 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'cmd.exe' -ExecutablePath 'C:\\Temp\\cmd.exe' -CommandLine 'cmd.exe /c whoami'
 $pathFindings = @(Get-SuspiciousProcessFindings -Processes @($cmdHighRiskPath) -ExcludedPids @())
 Assert-Condition ($pathFindings.Count -eq 1) 'High-risk path indicator was suppressed'
 Assert-Condition ($pathFindings[0].Reasons -like '*process running from high-risk path*') 'High-risk path reason missing'
