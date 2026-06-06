@@ -252,6 +252,25 @@ function Test-CoverageArtifactEvidence {
         $processPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.01D_Process_Event_And_Baseline_Utilities.ps1'
         $reportsPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'
         if (-not ((Test-Path -LiteralPath $validatorPath) -and (Test-Path -LiteralPath $processPartPath) -and (Test-Path -LiteralPath $reportsPartPath))) { return $false }
+        $validatorReportCandidates = @(
+          (Join-Path $repoRoot 'project_sources/validation/out_validate_on_pr_collector/validate_dcoir_collector_runtime_package_report.json'),
+          (Join-Path $repoRoot 'project_sources/validation/out/validate_dcoir_collector_runtime_package_report.json'),
+          (Join-Path $repoRoot 'project_sources/validation/out_collector_documentation_quality/validate_dcoir_collector_runtime_package_report.json')
+        )
+        $validatorReportPath = $null
+        foreach ($candidateReportPath in $validatorReportCandidates) {
+          if (Test-Path -LiteralPath $candidateReportPath) {
+            $validatorReportPath = $candidateReportPath
+            break
+          }
+        }
+        if ([string]::IsNullOrWhiteSpace($validatorReportPath)) { return $false }
+        $validatorReport = Get-Content -LiteralPath $validatorReportPath -Raw | ConvertFrom-Json
+        if ($validatorReport.success -ne $true) { return $false }
+        $parentContextPolicy = $validatorReport.checks.suspicious_process_parent_context_policy
+        if ($null -eq $parentContextPolicy) { return $false }
+        $parentContextBehavior = $parentContextPolicy.parent_context_behavior_tests
+        if ($null -eq $parentContextBehavior -or $parentContextBehavior.status -eq 'failed') { return $false }
         $validatorText = Get-Content -LiteralPath $validatorPath -Raw
         $processText = Get-Content -LiteralPath $processPartPath -Raw
         $reportsText = Get-Content -LiteralPath $reportsPartPath -Raw
@@ -261,7 +280,15 @@ function Test-CoverageArtifactEvidence {
           -and $validatorText.Contains('parent_start_time_checked_before_name_resolution') `
           -and $processText.Contains('ProcessStartTimeById') `
           -and $processText.Contains('wmic(?:\.exe)?') `
-          -and $reportsText.Contains('parent={0} ({1})')
+          -and $reportsText.Contains('parent={0} ({1})') `
+          -and ($parentContextPolicy.convert_accepts_process_start_lookup -eq $true) `
+          -and ($parentContextPolicy.parent_start_time_checked_before_name_resolution -eq $true) `
+          -and ($parentContextPolicy.wmic_command_line_indicators_present -eq $true) `
+          -and ($parentContextPolicy.suppresses_only_known_benign_name_only_hits -eq $true) `
+          -and ($parentContextPolicy.finding_includes_parent_process_id -eq $true) `
+          -and ($parentContextPolicy.finding_includes_parent_process_name -eq $true) `
+          -and ($parentContextPolicy.process_inventory_reports_parent_name -eq $true) `
+          -and ($parentContextPolicy.recommendations_include_parent_context -eq $true)
       } catch {
         return $false
       }
