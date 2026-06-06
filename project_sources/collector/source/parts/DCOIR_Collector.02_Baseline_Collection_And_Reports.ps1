@@ -180,10 +180,10 @@ function Split-TextArtifactIntoUploadSafeChunks {
     $chunkPath = Join-Path $ArtifactsDir ("90_UPLOAD_SAFE_CHUNKS_{0}_chunk_{1:000}.txt" -f $safeKey, $chunkIndex)
     if ($PSCmdlet.ShouldProcess($chunkPath, 'Write upload-safe empty chunk companion')) {
       [System.IO.File]::WriteAllBytes($chunkPath, [byte[]]@())
+      [void]$chunkPaths.Add($chunkPath)
+      [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
+      [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
     }
-    [void]$chunkPaths.Add($chunkPath)
-    [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
-    [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
   }
 
   while ($offset -lt $sourceBytes.Length) {
@@ -194,10 +194,10 @@ function Split-TextArtifactIntoUploadSafeChunks {
     $chunkPath = Join-Path $ArtifactsDir ("90_UPLOAD_SAFE_CHUNKS_{0}_chunk_{1:000}.txt" -f $safeKey, $chunkIndex)
     if ($PSCmdlet.ShouldProcess($chunkPath, 'Write upload-safe chunk companion')) {
       [System.IO.File]::WriteAllBytes($chunkPath, $chunkBytes)
+      [void]$chunkPaths.Add($chunkPath)
+      [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
+      [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
     }
-    [void]$chunkPaths.Add($chunkPath)
-    [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
-    [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
     $offset += $length
     $chunkIndex += 1
   }
@@ -248,6 +248,7 @@ function New-ProductionUploadSafeChunkCompanions {
     if ($sourceSizeKB -le [int]$Budget.SafePerFileKB) { continue }
 
     $chunkResult = Split-TextArtifactIntoUploadSafeChunks -SourcePath $sourcePath -ArtifactsDir $State.ArtifactsDir -SourceKey $key -TargetChunkKB ([Math]::Min(700, [int]$Budget.SafePerFileKB))
+    if ([int]$chunkResult.chunk_count -le 0) { continue }
     [void]$rows.Add($chunkResult)
     foreach ($chunkPath in @($chunkResult.chunk_paths)) {
       [void]$ArtifactMap.Add(("{0}_upload_safe_chunk_{1:000}" -f $key, (@($ArtifactMap.Keys | Where-Object { $_ -like ("{0}_upload_safe_chunk_*" -f $key) }).Count + 1)), $chunkPath)

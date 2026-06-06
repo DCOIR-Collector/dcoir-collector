@@ -389,7 +389,9 @@ function Split-ValidationTextArtifactIntoChunks {
     $lineBytes = [System.Text.Encoding]::UTF8.GetByteCount($lineText)
     if (($currentBytes + $lineBytes) -gt $targetBytes -and $currentBytes -gt 0) {
       $chunkPath = Write-ArtifactTextExact -ArtifactsDir $ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_{1:000}.txt' -f $RequestedKB, $chunkIndex) -Text $sb.ToString()
-      [void]$chunkPaths.Add($chunkPath)
+      if (Test-Path -LiteralPath $chunkPath) {
+        [void]$chunkPaths.Add($chunkPath)
+      }
       $chunkIndex += 1
       $sb = New-Object System.Text.StringBuilder
       $currentBytes = 0
@@ -400,12 +402,16 @@ function Split-ValidationTextArtifactIntoChunks {
 
   if ($currentBytes -gt 0) {
     $chunkPath = Write-ArtifactTextExact -ArtifactsDir $ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_{1:000}.txt' -f $RequestedKB, $chunkIndex) -Text $sb.ToString()
-    [void]$chunkPaths.Add($chunkPath)
+    if (Test-Path -LiteralPath $chunkPath) {
+      [void]$chunkPaths.Add($chunkPath)
+    }
   }
 
   $chunkSizes = @()
   foreach ($chunkPath in @($chunkPaths)) {
-    $chunkSizes += (Get-FileSizeKB -Path $chunkPath)
+    if (Test-Path -LiteralPath $chunkPath) {
+      $chunkSizes += (Get-FileSizeKB -Path $chunkPath)
+    }
   }
 
   return @{
@@ -440,6 +446,7 @@ function New-SyntheticOversizeChunkValidationArtifacts {
 
   $sourceText = New-SyntheticOversizeArtifactText -RequestedKB $RequestedKB
   $sourcePath = Write-ArtifactTextExact -ArtifactsDir $State.ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_source.txt' -f $RequestedKB) -Text $sourceText
+  if (-not (Test-Path -LiteralPath $sourcePath)) { return }
   $chunkResult = Split-ValidationTextArtifactIntoChunks -SourcePath $sourcePath -ArtifactsDir $State.ArtifactsDir -RequestedKB $RequestedKB -TargetChunkKB 700
   $pathListPath = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_paths.json.txt' -f $RequestedKB) -Text (Convert-ToSafeJsonText -InputObject $chunkResult.ChunkPaths)
 
