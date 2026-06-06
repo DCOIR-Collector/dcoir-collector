@@ -25,7 +25,23 @@ try {
         [System.IO.Path]::GetFullPath((Join-Path (Get-Location).Path $OutRoot))
       }
 
-      Purge-PreviousRuns -Root $resolvedOutRoot -CurrentPackageName $PackageName
+      $purgeCompleted = Purge-PreviousRuns -Root $resolvedOutRoot -CurrentPackageName $PackageName
+      if (-not $purgeCompleted) {
+        $Global:CurrentRunId = $RunId
+        $collectorCommandBase = Get-CollectorResponseActionCommandBase
+        $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
+        Write-Output "STATUS=SKIPPED"
+        Write-Output "COLLECT_PREP_STATUS=SKIPPED"
+        Write-Output "PACKAGE_PURGE_STATUS=SKIPPED"
+        Write-Output ("RUN_ID={0}" -f $RunId)
+        Write-Output ("COLLECTOR_VERSION={0}" -f $ScriptVersion)
+        Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $ScriptVersion))
+        Write-Output "NEXT_OPTIONS=Re-run without -WhatIf and confirm previous package cleanup to continue collect mode."
+        Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
+        Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
+        return
+      }
+
       $dirs = Initialize-RunStructure -Root $resolvedOutRoot -CurrentRunId $RunId
       $Global:CurrentRunId = $RunId
       $Global:ExecutionTxtPath = Join-Path $dirs.LogsDir "collect_execution_log.txt"
@@ -118,6 +134,7 @@ try {
 
       $baseline = New-BaselineReport -State $state -ToolMap $toolMap
       Apply-FeatureWaveCollectEnhancements -State $state -Baseline $baseline
+      $targetedPlanExpected = [bool]($Targeted -or (-not [string]::IsNullOrWhiteSpace($FocusProcess)) -or (-not [string]::IsNullOrWhiteSpace($FocusPath)) -or (-not [string]::IsNullOrWhiteSpace($FocusIndicator)) -or (-not [string]::IsNullOrWhiteSpace($UserReport)) -or (-not [string]::IsNullOrWhiteSpace($WindowStart)) -or (-not [string]::IsNullOrWhiteSpace($WindowEnd)))
 
       $uploadArtifacts = New-CollectUploadArtifactsWithLateMetadataReport -State $state -Baseline $baseline
       $state.UploadSummaryPath = $uploadArtifacts.UploadSummaryPath
@@ -126,12 +143,19 @@ try {
       $state.UploadSafeChunkManifestPath = $uploadArtifacts.UploadSafeChunkManifestPath
       $state.AnalystOverviewPath = New-AnalystOverviewArtifactWithLateMetadataReport -State $state -Baseline $baseline
 
+      $uploadSafeChunkManifestExpected = [bool]($uploadArtifacts.ContainsKey('UploadSafeChunkCompanionCount') -and ([int]$uploadArtifacts.UploadSafeChunkCompanionCount -gt 0))
+      $uploadSummarySkipped = -not $state.UploadSummaryPath
+      $attachmentBudgetManifestSkipped = -not $state.UploadBudgetManifestPath
+      $uploadSafeChunkManifestSkipped = [bool]($uploadSafeChunkManifestExpected -and -not $state.UploadSafeChunkManifestPath)
+      $analystOverviewSkipped = -not $state.AnalystOverviewPath
+      $collectionScopeSkipped = -not $state.CollectionScopePath
+      $parallelismAssessmentSkipped = -not $state.ParallelismAssessmentPath
+      $targetedCollectionPlanSkipped = [bool]($targetedPlanExpected -and -not $state.TargetedCollectionPlanPath)
+      $collectGuidanceSkipped = [bool]($uploadSummarySkipped -or $attachmentBudgetManifestSkipped -or $uploadSafeChunkManifestSkipped -or $analystOverviewSkipped -or $collectionScopeSkipped -or $parallelismAssessmentSkipped -or $targetedCollectionPlanSkipped)
+
       $bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)
       $bundlePath = Join-Path $state.BundlesDir $bundleName
       $state.CollectBundlePath = $bundlePath
-      # Precompute the deterministic bundle location, but keep published collect metadata null until the archive exists.
-      $bundlePath = $null
-      $state.CollectBundlePath = $null
 
       # Write metadata once after late-bound collect fields are populated and before manifest/bundle packaging.
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
@@ -190,32 +214,43 @@ try {
       } else {
         $state.CollectBundlePath = $null
       }
-      $collectManifestFinalized = $false
-      if ($bundlePath -and $collectManifest) {
-        $collectManifestExtra.collect_bundle = $state.CollectBundlePath
+      $collectManifestFinalized = [bool]$collectManifest
+      if (-not $bundlePath -and $collectManifest) {
+        $collectManifestExtra.collect_bundle = $null
         $collectManifest = New-Manifest -ManifestPath $collectManifestPath -State $state -ModeName "Collect" -TierName $Tier -Files $collectManifestFiles -ToolMap $toolMap -Extra $collectManifestExtra
         $collectManifestFinalized = [bool]$collectManifest
       }
 
       $stateSavePath = Save-State -State $state
       $collectPackageSkipped = -not $bundlePath
-      $collectManifestFinalizationSkipped = [bool]($bundlePath -and -not $collectManifestFinalized)
+      $collectManifestFinalizationSkipped = -not $collectManifestFinalized
       $stateSaveSkipped = -not $stateSavePath
 
       $status = "SUCCESS"
-      if ($collectPackageSkipped) { $status = "SKIPPED" }
-      elseif ($collectManifestFinalizationSkipped -or $metadataReportSkipped -or $stateSaveSkipped) { $status = "PARTIAL_SUCCESS" }
+      if ($collectPackageSkipped -or $collectManifestFinalizationSkipped -or $metadataReportSkipped -or $stateSaveSkipped -or $collectGuidanceSkipped) { $status = "PARTIAL_SUCCESS" }
       if ($status -eq "SUCCESS" -and @($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
 
       $collectorCommandBase = Get-CollectorResponseActionCommandBase
       $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
 
       Write-Output ("STATUS={0}" -f $status)
-      if ($collectPackageSkipped) { Write-Output "COLLECT_PACKAGE_STATUS=SKIPPED" }
-      elseif ($bundlePath) { Write-Output "COLLECT_PACKAGE_STATUS=CREATED" }
+      if ($collectPackageSkipped) {
+        Write-Output "COLLECT_PACKAGE_STATUS=SKIPPED"
+        Write-Output "COLLECT_BUNDLE_STATUS=SKIPPED"
+      } elseif ($bundlePath) {
+        Write-Output "COLLECT_PACKAGE_STATUS=CREATED"
+        Write-Output "COLLECT_BUNDLE_STATUS=CREATED"
+      }
       if ($collectManifestFinalizationSkipped) { Write-Output "COLLECT_MANIFEST_STATUS=PARTIAL" }
       if ($metadataReportSkipped) { Write-Output "METADATA_REPORT_STATUS=SKIPPED" }
       if ($stateSaveSkipped) { Write-Output "STATE_SAVE_STATUS=SKIPPED" }
+      if ($uploadSummarySkipped) { Write-Output "UPLOAD_SUMMARY_STATUS=SKIPPED" }
+      if ($attachmentBudgetManifestSkipped) { Write-Output "ATTACHMENT_BUDGET_MANIFEST_STATUS=SKIPPED" }
+      if ($uploadSafeChunkManifestSkipped) { Write-Output "UPLOAD_SAFE_CHUNK_MANIFEST_STATUS=SKIPPED" }
+      if ($analystOverviewSkipped) { Write-Output "ANALYST_OVERVIEW_STATUS=SKIPPED" }
+      if ($collectionScopeSkipped) { Write-Output "COLLECTION_SCOPE_STATUS=SKIPPED" }
+      if ($parallelismAssessmentSkipped) { Write-Output "PARALLELISM_ASSESSMENT_STATUS=SKIPPED" }
+      if ($targetedCollectionPlanSkipped) { Write-Output "TARGETED_COLLECTION_PLAN_STATUS=SKIPPED" }
       Write-Output ("RUN_ID={0}" -f $RunId)
       Write-Output ("COLLECTOR_VERSION={0}" -f $state.CollectorVersion)
       Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $state.CollectorVersion))
