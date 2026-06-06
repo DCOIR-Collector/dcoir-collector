@@ -66,6 +66,63 @@ function Invoke-EnrichmentAction {
   $interpretation = $null
   $nextStep = $null
 
+  $actionTarget = $Action
+  if ($Path) { $actionTarget = $Path }
+  elseif ($ServiceName) { $actionTarget = $ServiceName }
+  elseif ($RegistryPath) { $actionTarget = $RegistryPath }
+  elseif ($LogName) { $actionTarget = $LogName }
+  elseif ($TargetPid) { $actionTarget = "PID_$TargetPid" }
+
+  switch ($Action) {
+    "SigcheckPath" {
+      if (-not $Path) { throw "SigcheckPath requires -Path" }
+      if (-not $ToolMap.sigcheck) { throw "sigcheck tool not found in staged tools directory." }
+    }
+    "ListDllsPid" {
+      if (-not $TargetPid) { throw "ListDllsPid requires -TargetPid" }
+      if (-not $ToolMap.listdlls) { throw "listdlls tool not found in staged tools directory." }
+    }
+    "AccessChkFile" {
+      if (-not $Path) { throw "AccessChkFile requires -Path" }
+      if (-not $ToolMap.accesschk) { throw "accesschk tool not found in staged tools directory." }
+    }
+    "AccessChkService" {
+      if (-not $ServiceName) { throw "AccessChkService requires -ServiceName" }
+      if (-not $ToolMap.accesschk) { throw "accesschk tool not found in staged tools directory." }
+    }
+    "AccessChkReg" {
+      if (-not $RegistryPath) { throw "AccessChkReg requires -RegistryPath" }
+      if (-not $ToolMap.accesschk) { throw "accesschk tool not found in staged tools directory." }
+    }
+    "StringsPath" {
+      if (-not $Path) { throw "StringsPath requires -Path" }
+      if (-not $ToolMap.strings) { throw "strings tool not found in staged tools directory." }
+    }
+    "StreamsPath" {
+      if (-not $Path) { throw "StreamsPath requires -Path" }
+      if (-not $ToolMap.streams) { throw "streams tool not found in staged tools directory." }
+    }
+    "TcpvconRefresh" {
+      if (-not $ToolMap.tcpvcon) { throw "tcpvcon tool not found in staged tools directory." }
+    }
+    "LogText" {
+      if (-not $LogName) { throw "LogText requires -LogName" }
+    }
+    default {
+      return Invoke-EnrichmentAction-Retrieval -State $State -Session $Session -ToolMap $ToolMap
+    }
+  }
+
+  if (-not $PSCmdlet.ShouldProcess($actionTarget, ("Run enrich review action {0}" -f $Action))) {
+    return @{
+      ReportPath = $null
+      ActionArtifactPath = $null
+      StagedPath = $null
+      ActionSkipped = $true
+      ActionStatus = 'SKIPPED'
+    }
+  }
+
   switch ($Action) {
     "SigcheckPath" {
       if (-not $Path) { throw "SigcheckPath requires -Path" }
