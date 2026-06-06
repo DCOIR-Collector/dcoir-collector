@@ -238,9 +238,9 @@ function Invoke-EnrichmentAction {
     Add-Section -Builder $actionBuilder -Name "ERRORS" -Text ($Global:CollectorErrors -join [Environment]::NewLine)
   }
 
-  $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString()
+  $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString() -Confirm:$false
   $summaryAppended = $false
-  if ($artifactPath -and $PSCmdlet.ShouldProcess($sessionSummaryPath, 'Append enrich action summary')) {
+  if ($artifactPath) {
     Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
     $summaryAppended = $true
   }
