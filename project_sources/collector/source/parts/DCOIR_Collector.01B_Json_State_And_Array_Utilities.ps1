@@ -361,7 +361,7 @@ Save-State
 Mandatory State hashtable.
 
 .OUTPUTS
-No direct output. Writes state.json as a side effect.
+State path string when state.json is written, or null when WhatIf/confirmation skips the write.
 #>
 function Save-State {
   [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='Medium')]
@@ -369,7 +369,9 @@ function Save-State {
   $json = Convert-ToCollectorJsonText -InputObject $State -Label 'state.json' -ThrowOnTruncation
   if ($PSCmdlet.ShouldProcess($State.StatePath, 'Write collector state')) {
     Set-Content -Path $State.StatePath -Value $json -Encoding UTF8 -ErrorAction Stop
+    return $State.StatePath
   }
+  return $null
 }
 
 <#
