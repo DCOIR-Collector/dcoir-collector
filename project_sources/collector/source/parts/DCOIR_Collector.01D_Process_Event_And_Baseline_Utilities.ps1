@@ -217,7 +217,8 @@ returns the normalized PSCustomObject used by the process inventory.
 Convert-ProcessObjectToText
 
 .INPUTS
-Proc object, StartTimeMap hashtable, and ProcessNameById hashtable.
+Proc object, StartTimeMap hashtable, ProcessNameById hashtable, and
+ProcessStartTimeById hashtable.
 
 .OUTPUTS
 PSCustomObject containing normalized process-inventory fields.
@@ -226,7 +227,8 @@ function Convert-ProcessObjectToText {
   param(
     [object]$Proc,
     [hashtable]$StartTimeMap,
-    [hashtable]$ProcessNameById
+    [hashtable]$ProcessNameById,
+    [hashtable]$ProcessStartTimeById
   )
 
   $owner = ""
@@ -255,8 +257,22 @@ function Convert-ProcessObjectToText {
   } catch { }
 
   $parentName = ""
+  $parentStartTime = $null
   try {
-    if ($null -ne $parentProcessId -and $ProcessNameById -and $ProcessNameById.ContainsKey($parentProcessId)) {
+    if ($null -ne $parentProcessId -and $ProcessStartTimeById -and $ProcessStartTimeById.ContainsKey($parentProcessId)) {
+      $parentStartTime = $ProcessStartTimeById[$parentProcessId]
+    }
+  } catch { }
+
+  $parentPrecedesChild = $false
+  try {
+    if ($null -ne $created -and $null -ne $parentStartTime) {
+      $parentPrecedesChild = ([datetime]$parentStartTime -le [datetime]$created)
+    }
+  } catch { }
+
+  try {
+    if ($null -ne $parentProcessId -and $parentPrecedesChild -and $ProcessNameById -and $ProcessNameById.ContainsKey($parentProcessId)) {
       $parentName = [string]$ProcessNameById[$parentProcessId]
     }
   } catch { }
@@ -312,7 +328,7 @@ function Get-ProcessInventory {
       } catch { }
     }
     $items = foreach ($p in $raw) {
-      Convert-ProcessObjectToText -Proc $p -StartTimeMap $startTimeMap -ProcessNameById $processNameById
+      Convert-ProcessObjectToText -Proc $p -StartTimeMap $startTimeMap -ProcessNameById $processNameById -ProcessStartTimeById $startTimeMap
     }
     return $items | Sort-Object ProcessId
   } catch {
