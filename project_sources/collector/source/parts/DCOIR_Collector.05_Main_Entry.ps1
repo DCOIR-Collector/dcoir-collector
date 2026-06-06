@@ -160,20 +160,31 @@ try {
       } else {
         $state.CollectBundlePath = $null
       }
+      $collectManifestFinalized = $false
       if ($bundlePath -and $collectManifest) {
         $collectManifestExtra.collect_bundle = $state.CollectBundlePath
         $collectManifest = New-Manifest -ManifestPath $collectManifestPath -State $state -ModeName "Collect" -TierName $Tier -Files $collectManifestFiles -ToolMap $toolMap -Extra $collectManifestExtra
+        $collectManifestFinalized = [bool]$collectManifest
       }
 
-      Save-State -State $state
+      $stateSavePath = Save-State -State $state
+      $collectPackageSkipped = -not $bundlePath
+      $collectManifestFinalizationSkipped = [bool]($bundlePath -and -not $collectManifestFinalized)
+      $stateSaveSkipped = -not $stateSavePath
 
       $status = "SUCCESS"
-      if (@($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
+      if ($collectPackageSkipped) { $status = "SKIPPED" }
+      elseif ($collectManifestFinalizationSkipped -or $stateSaveSkipped) { $status = "PARTIAL_SUCCESS" }
+      if ($status -eq "SUCCESS" -and @($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
 
       $collectorCommandBase = Get-CollectorResponseActionCommandBase
       $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
 
       Write-Output ("STATUS={0}" -f $status)
+      if ($collectPackageSkipped) { Write-Output "COLLECT_PACKAGE_STATUS=SKIPPED" }
+      elseif ($bundlePath) { Write-Output "COLLECT_PACKAGE_STATUS=CREATED" }
+      if ($collectManifestFinalizationSkipped) { Write-Output "COLLECT_MANIFEST_STATUS=PARTIAL" }
+      if ($stateSaveSkipped) { Write-Output "STATE_SAVE_STATUS=SKIPPED" }
       Write-Output ("RUN_ID={0}" -f $RunId)
       Write-Output ("COLLECTOR_VERSION={0}" -f $state.CollectorVersion)
       Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $state.CollectorVersion))
@@ -261,11 +272,14 @@ try {
         $bundlePath = Finalize-EnrichSession -State $state -Session $session -ToolMap $toolMap
         $sessionStatus = if ($bundlePath) { "FINALIZED" } else { "FINALIZE_SKIPPED" }
       }
+      $finalizeSkipped = [bool]($FinalizeEnrichSession -and -not $bundlePath)
 
-      Save-State -State $state
+      $stateSavePath = Save-State -State $state
+      $stateSaveSkipped = -not $stateSavePath
 
-      $status = if ($actionSkipped) { "SKIPPED" } else { "SUCCESS" }
-      if (-not $actionSkipped -and @($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
+      $status = if ($actionSkipped -or $finalizeSkipped) { "SKIPPED" } else { "SUCCESS" }
+      if ($status -eq "SUCCESS" -and $stateSaveSkipped) { $status = "PARTIAL_SUCCESS" }
+      if ($status -eq "SUCCESS" -and @($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
 
       $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
 
@@ -284,11 +298,13 @@ try {
         if ($session.SummaryPath -and (Test-Path -LiteralPath $session.SummaryPath)) { Write-Output ("ENRICH_REPORT_PATH={0}" -f $session.SummaryPath) }
       }
       Write-Output ("SESSION_STATUS={0}" -f $sessionStatus)
+      if ($finalizeSkipped) { Write-Output "FINALIZE_STATUS=SKIPPED" }
+      if ($stateSaveSkipped) { Write-Output "STATE_SAVE_STATUS=SKIPPED" }
       if ($bundlePath) {
         Write-Output ("ENRICH_BUNDLE_PATH={0}" -f $bundlePath)
         Write-Output ('NEXT_GET_FILE=get-file --path "{0}" --comment "Retrieve DCOIR enrich bundle"' -f $bundlePath)
-      } elseif ($actionSkipped) {
-        Write-Output "NEXT_OPTIONS=Re-run without -WhatIf and confirm the enrich action writes to persist the action."
+      } elseif ($actionSkipped -or $finalizeSkipped) {
+        Write-Output "NEXT_OPTIONS=Re-run without -WhatIf and confirm the skipped enrich action or finalization writes to persist the requested work."
       } else {
         Write-Output ("NEXT_OPTIONS=Continue current session with -EnrichSessionId {0} or finalize it with -FinalizeEnrichSession" -f $session.SessionId)
       }
