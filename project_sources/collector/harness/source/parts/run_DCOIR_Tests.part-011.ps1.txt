@@ -105,6 +105,7 @@ function Run-FailureGatesSuite {
   [void](Invoke-ExpectedFailureStep -StepName "98A8_UnsafeRunIdRejectsRootedPath" -CollectorArgs @("-Quick","collect-t1","-OutRoot",$unsafeInputOutRoot,"-RunId","C:\Temp\escape") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("Invalid RunId","filename-leaf"))
   [void](Invoke-ExpectedFailureStep -StepName "98A9_UnsafeCleanupRunIdRejectsTraversal" -CollectorArgs @("-Quick","cleanup","-OutRoot",$unsafeInputOutRoot,"-RunId","..\escape") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("Invalid RunId","filename-leaf"))
   [void](Invoke-ExpectedFailureStep -StepName "98A10_UnsafeCleanupPackageNameRejectsTraversal" -CollectorArgs @("-Quick","cleanup","-OutRoot",$unsafeInputOutRoot,"-PackageName","..\DCOIR_Collector.zip") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("Invalid PackageName","filename leaf"))
+  [void](Invoke-ExpectedFailureStep -StepName "98A11_UnsafeRunIdRejectsTrailingDot" -CollectorArgs @("-Quick","cleanup","-OutRoot",$unsafeInputOutRoot,"-RunId","custom.") -ExpectedOutcome 'RUNTIME_ERROR' -ExpectedPatterns @("Invalid RunId","filename-leaf"))
   if (Test-Path -LiteralPath $unsafeInputOutRoot) {
     throw 'Unsafe RunId/PackageName validation created the unsafe-input OutRoot before rejecting the request.'
   }
