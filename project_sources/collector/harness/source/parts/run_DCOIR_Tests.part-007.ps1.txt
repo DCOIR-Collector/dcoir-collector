@@ -235,9 +235,19 @@ function Test-CoverageArtifactEvidence {
     }
     'collector.process.parent_context_lolbin_tuning' {
       try {
-        $collectorRoot = Split-Path -Parent $PSScriptRoot
-        $projectSourcesRoot = Split-Path -Parent $collectorRoot
-        $repoRoot = Split-Path -Parent $projectSourcesRoot
+        $repoRoot = $null
+        $searchRoot = $PSScriptRoot
+        while (-not [string]::IsNullOrWhiteSpace($searchRoot)) {
+          $candidateValidatorPath = Join-Path $searchRoot 'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py'
+          if (Test-Path -LiteralPath $candidateValidatorPath) {
+            $repoRoot = $searchRoot
+            break
+          }
+          $parent = Split-Path -Parent $searchRoot
+          if ([string]::IsNullOrWhiteSpace($parent) -or $parent -eq $searchRoot) { break }
+          $searchRoot = $parent
+        }
+        if ([string]::IsNullOrWhiteSpace($repoRoot)) { return $false }
         $validatorPath = Join-Path $repoRoot 'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py'
         $processPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.01D_Process_Event_And_Baseline_Utilities.ps1'
         $reportsPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'
