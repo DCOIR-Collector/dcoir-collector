@@ -98,17 +98,16 @@ try {
       $state.AnalystOverviewPath = New-AnalystOverviewArtifactWithLateMetadataReport -State $state -Baseline $baseline
 
       $bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)
-      $bundlePath = Join-Path $state.BundlesDir $bundleName
-      $state.CollectBundlePath = $bundlePath
+      $bundlePath = $null
 
       # Write metadata once after late-bound collect fields are populated and before manifest/bundle packaging.
       $metadataText = New-MetadataReport -State $state -ToolMap $toolMap
       $metadataReportPath = Write-ReportFile -Path $metadataReportPath -Text $metadataText
       $state.MetadataReportPath = $metadataReportPath
 
-      $collectManifest = New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json") -State $state -ModeName "Collect" -TierName $Tier -Files (
-        @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.UploadSafeChunkManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
-      ) -ToolMap $toolMap -Extra @{
+      $collectManifestPath = Join-Path $state.RunRoot "manifest_collect.json"
+      $collectManifestFiles = @($metadataReportPath, $state.AnalystOverviewPath, $state.ParallelExecutionProofPath, $state.ExecutionContextPath, $state.SecurityAuditPolicyPath, $state.SecurityFilteredPath, $state.SecurityHighSignalSummaryPath, $state.NetstatPidOnlyPath, $state.UploadSummaryPath, $state.UploadBudgetManifestPath, $state.UploadSafeChunkManifestPath, $state.CollectionScopePath, $state.ParallelismAssessmentPath, $state.TargetedCollectionPlanPath, $Global:ExecutionTxtPath, $Global:ExecutionJsonlPath, $Global:ErrorsLogPath) + $baseline.ArtifactPaths
+      $collectManifestExtra = @{
         collect_bundle = $state.CollectBundlePath
         analyst_overview = $state.AnalystOverviewPath
         parallel_execution_proof = $state.ParallelExecutionProofPath
@@ -132,6 +131,7 @@ try {
         chunk_manifest = $state.ChunkManifestPath
         upload_safe_chunk_manifest = $state.UploadSafeChunkManifestPath
       }
+      $collectManifest = New-Manifest -ManifestPath $collectManifestPath -State $state -ModeName "Collect" -TierName $Tier -Files $collectManifestFiles -ToolMap $toolMap -Extra $collectManifestExtra
 
       $bundlePath = New-BundleZip -BundlesDir $state.BundlesDir -BundleName $bundleName -Paths @(
         $metadataReportPath,
@@ -152,6 +152,10 @@ try {
         $collectManifest
       )
       $state.CollectBundlePath = $bundlePath
+      if ($bundlePath -and $collectManifest) {
+        $collectManifestExtra.collect_bundle = $state.CollectBundlePath
+        $collectManifest = New-Manifest -ManifestPath $collectManifestPath -State $state -ModeName "Collect" -TierName $Tier -Files $collectManifestFiles -ToolMap $toolMap -Extra $collectManifestExtra
+      }
 
       Save-State -State $state
 
@@ -240,6 +244,7 @@ try {
       if ($Action) {
         $result = Invoke-EnrichmentAction -State $state -Session $session -ToolMap $toolMap
       }
+      $actionSkipped = [bool]($result -and $result.ContainsKey('ActionSkipped') -and [bool]$result.ActionSkipped)
 
       $bundlePath = $null
       $sessionStatus = "OPEN"
@@ -250,8 +255,8 @@ try {
 
       Save-State -State $state
 
-      $status = "SUCCESS"
-      if (@($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
+      $status = if ($actionSkipped) { "SKIPPED" } else { "SUCCESS" }
+      if (-not $actionSkipped -and @($Global:CollectorErrors).Count -gt 0) { $status = "PARTIAL_SUCCESS" }
 
       $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
 
@@ -262,6 +267,7 @@ try {
       Write-Output ("ENRICH_SESSION_ID={0}" -f $session.SessionId)
       Write-Output ("SESSION_RESOLUTION_MODE={0}" -f $session.SessionResolutionMode)
       if ($result) {
+        if ($result.ContainsKey('ActionStatus') -and $result.ActionStatus) { Write-Output ("ACTION_STATUS={0}" -f $result.ActionStatus) }
         if ($result.ReportPath) { Write-Output ("ENRICH_REPORT_PATH={0}" -f $result.ReportPath) }
         if ($result.ActionArtifactPath) { Write-Output ("ACTION_ARTIFACT_PATH={0}" -f $result.ActionArtifactPath) }
         if ($result.StagedPath) { Write-Output ("STAGED_PATH={0}" -f $result.StagedPath) }
@@ -272,6 +278,8 @@ try {
       if ($bundlePath) {
         Write-Output ("ENRICH_BUNDLE_PATH={0}" -f $bundlePath)
         Write-Output ('NEXT_GET_FILE=get-file --path "{0}" --comment "Retrieve DCOIR enrich bundle"' -f $bundlePath)
+      } elseif ($actionSkipped) {
+        Write-Output "NEXT_OPTIONS=Re-run without -WhatIf and confirm the enrich action writes to persist the action."
       } else {
         Write-Output ("NEXT_OPTIONS=Continue current session with -EnrichSessionId {0} or finalize it with -FinalizeEnrichSession" -f $session.SessionId)
       }
@@ -318,7 +326,11 @@ try {
         if ($RunId) { Write-Output ("RUN_ID={0}" -f $RunId) }
         if ($cleanupResult.RunRoot) { Write-Output ("CLEANUP_ORPHAN_RUN_ROOT={0}" -f $cleanupResult.RunRoot) }
         Write-Output ("CLEANUP_TARGET_COUNT={0}" -f $cleanupResult.TargetCount)
+        Write-Output ("CLEANUP_REMOVED_COUNT={0}" -f $cleanupResult.RemovedCount)
+        Write-Output ("CLEANUP_SKIPPED_COUNT={0}" -f $cleanupResult.SkippedCount)
+        Write-Output ("CLEANUP_FAILED_COUNT={0}" -f $cleanupResult.FailedCount)
         foreach ($target in @($cleanupResult.RemovedTargets)) { Write-Output ("CLEANUP_REMOVED_TARGET={0}" -f $target) }
+        foreach ($target in @($cleanupResult.SkippedTargets)) { Write-Output ("CLEANUP_SKIPPED_TARGET={0}" -f $target) }
         foreach ($target in @($cleanupResult.FailedTargets)) { Write-Output ("CLEANUP_FAILED_TARGET={0}" -f $target) }
         Write-Output ("CLEANUP_REASON={0}" -f $loadError)
         Write-Output ("COLLECTOR_VERSION={0}" -f $ScriptVersion)
