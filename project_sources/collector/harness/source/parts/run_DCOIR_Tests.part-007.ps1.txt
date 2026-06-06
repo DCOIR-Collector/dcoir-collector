@@ -203,7 +203,7 @@ Checks harness-generated coverage artifact evidence.
 
 .DESCRIPTION
 Validates non-step-based coverage rows such as progress files, retained evidence files,
-and generated coverage matrix artifacts.
+generated coverage matrix artifacts, and package-validation-backed source evidence.
 
 .FUNCTION NAME
 Test-CoverageArtifactEvidence
@@ -229,6 +229,29 @@ function Test-CoverageArtifactEvidence {
         $coverageJson = Get-Content -LiteralPath $CoverageJsonPath -Raw | ConvertFrom-Json
         $coverageMd = Get-Content -LiteralPath $CoverageMdPath -Raw
         return ($coverageJson.schema_version -eq 'dcoir_collector_capability_coverage_v1') -and (-not [string]::IsNullOrWhiteSpace($coverageMd)) -and ($coverageMd -match '# DCOIR Collector Capability Coverage')
+      } catch {
+        return $false
+      }
+    }
+    'collector.process.parent_context_lolbin_tuning' {
+      try {
+        $collectorRoot = Split-Path -Parent $PSScriptRoot
+        $projectSourcesRoot = Split-Path -Parent $collectorRoot
+        $repoRoot = Split-Path -Parent $projectSourcesRoot
+        $validatorPath = Join-Path $repoRoot 'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py'
+        $processPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.01D_Process_Event_And_Baseline_Utilities.ps1'
+        $reportsPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'
+        if (-not ((Test-Path -LiteralPath $validatorPath) -and (Test-Path -LiteralPath $processPartPath) -and (Test-Path -LiteralPath $reportsPartPath))) { return $false }
+        $validatorText = Get-Content -LiteralPath $validatorPath -Raw
+        $processText = Get-Content -LiteralPath $processPartPath -Raw
+        $reportsText = Get-Content -LiteralPath $reportsPartPath -Raw
+        return $validatorText.Contains('run_suspicious_process_parent_context_behavior_tests') `
+          -and $validatorText.Contains('parent_context_behavior_tests') `
+          -and $validatorText.Contains('wmic_command_line_indicators_present') `
+          -and $validatorText.Contains('parent_start_time_checked_before_name_resolution') `
+          -and $processText.Contains('ProcessStartTimeById') `
+          -and $processText.Contains('wmic(?:\.exe)?') `
+          -and $reportsText.Contains('parent={0} ({1})')
       } catch {
         return $false
       }
