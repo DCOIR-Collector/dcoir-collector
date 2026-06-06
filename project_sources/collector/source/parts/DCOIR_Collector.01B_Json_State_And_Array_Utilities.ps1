@@ -309,6 +309,8 @@ Checks whether one run ID is safe to use as a path leaf.
 .DESCRIPTION
 Requires a nonblank filename-leaf identifier and rejects path separators, rooted
 path syntax, parent traversal, oversized values, and surrounding whitespace.
+Single dots are allowed inside custom IDs to preserve the existing custom run-root
+predicate shape.
 
 .FUNCTION NAME
 Test-DCOIRRunIdLeaf
@@ -330,7 +332,7 @@ function Test-DCOIRRunIdLeaf {
   if ([regex]::IsMatch($CurrentRunId, '[\\/]')) { return $false }
   if ([System.IO.Path]::IsPathRooted($CurrentRunId)) { return $false }
 
-  return [regex]::IsMatch($CurrentRunId, '^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$')
+  return [regex]::IsMatch($CurrentRunId, '^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$')
 }
 
 <#
@@ -369,7 +371,7 @@ function Resolve-DCOIRRunId {
   }
 
   if (-not (Test-DCOIRRunIdLeaf -CurrentRunId $CurrentRunId)) {
-    throw "Invalid RunId: value must be a filename-leaf identifier of 1-128 characters using letters, numbers, underscore, or dash, with no rooted path, separator, or parent traversal syntax."
+    throw "Invalid RunId: value must be a filename-leaf identifier of 1-128 characters using letters, numbers, dot, underscore, or dash, with no rooted path, separator, or parent traversal syntax."
   }
 
   return $CurrentRunId
