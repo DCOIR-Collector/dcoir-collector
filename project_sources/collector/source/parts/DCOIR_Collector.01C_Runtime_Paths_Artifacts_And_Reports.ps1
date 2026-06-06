@@ -217,7 +217,7 @@ Move-PackageToOutRoot
 Root string and CurrentPackageName string.
 
 .OUTPUTS
-String package path in the out-root.
+String package path in the out-root, or null when a dry run skips package movement.
 #>
 function Move-PackageToOutRoot {
   [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='Medium')]
@@ -234,7 +234,10 @@ function Move-PackageToOutRoot {
         Move-Item -LiteralPath $sourcePath -Destination $destPath -Force
         return $destPath
       }
-      return $sourcePath
+      if (-not $WhatIfPreference) {
+        throw ("Collector package move was skipped before collect: {0} -> {1}" -f $sourcePath, $destPath)
+      }
+      return $null
     }
     return $sourcePath
   }
