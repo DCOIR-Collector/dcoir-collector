@@ -69,8 +69,8 @@ function Add-Result {
 Quotes one argument value for process invocation display.
 
 .DESCRIPTION
-Returns an empty quoted string for null input and quotes values containing whitespace or
-quotes.
+Returns an empty quoted string for null or empty input and quotes values containing
+whitespace or quotes.
 
 .FUNCTION NAME
 Quote-Arg
@@ -84,6 +84,7 @@ String safe-for-display argument token.
 function Quote-Arg {
   param([string]$Value)
   if ($null -eq $Value) { return '""' }
+  if ($Value.Length -eq 0) { return '""' }
   if ($Value -match '[\s"]') {
     return '"' + ($Value -replace '"','\"') + '"'
   }

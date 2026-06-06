@@ -11,16 +11,15 @@ if ($ShowHelp) {
 }
 
 try {
+  $PackageName = Resolve-DCOIRPackageName -CurrentPackageName $PackageName
+  $RunId = Resolve-DCOIRRunId -CurrentRunId $RunId -GenerateIfBlank:($Mode -eq "Collect") -RejectBlank:$script:DCOIRRunIdParameterWasBound
+
   if (-not $WhatIfPreference) {
     Ensure-Directory -Path $OutRoot
   }
 
   switch ($Mode) {
     "Collect" {
-      if ([string]::IsNullOrWhiteSpace($RunId)) {
-        $RunId = Get-NewRunId
-      }
-
       $resolvedOutRoot = if ([System.IO.Path]::IsPathRooted($OutRoot)) {
         [System.IO.Path]::GetFullPath($OutRoot)
       } else {
