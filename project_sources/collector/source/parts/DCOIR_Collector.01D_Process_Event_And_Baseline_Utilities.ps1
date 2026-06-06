@@ -294,9 +294,9 @@ function Convert-ProcessObjectToText {
 Builds the normalized Win32_Process inventory.
 
 .DESCRIPTION
-Collects current process start times, queries Win32_Process, builds a parent-name lookup,
-converts each row into the normalized process-inventory form, and returns the sorted
-process list.
+Collects current process start times, supplements them with Win32_Process creation-time
+fallbacks, builds a parent-name lookup, converts each row into the normalized
+process-inventory form, and returns the sorted process list.
 
 .FUNCTION NAME
 Get-ProcessInventory
@@ -319,6 +319,16 @@ function Get-ProcessInventory {
     } catch { }
 
     $raw = @(Get-CimInstance -ClassName Win32_Process -ErrorAction Stop)
+    foreach ($p in $raw) {
+      try {
+        if ($null -eq $p.ProcessId) { continue }
+        $processId = [int]$p.ProcessId
+        if (-not $startTimeMap.ContainsKey($processId) -and $p.CreationDate) {
+          $startTimeMap[$processId] = [System.Management.ManagementDateTimeConverter]::ToDateTime($p.CreationDate)
+        }
+      } catch { }
+    }
+
     $processNameById = @{}
     foreach ($p in $raw) {
       try {
