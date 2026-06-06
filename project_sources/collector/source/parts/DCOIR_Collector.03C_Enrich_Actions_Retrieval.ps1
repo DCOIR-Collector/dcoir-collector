@@ -167,10 +167,12 @@ function Invoke-EnrichmentAction-Retrieval {
   }
 
   $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString()
+  $summaryAppended = $false
   if ($PSCmdlet.ShouldProcess($sessionSummaryPath, 'Append enrich retrieval summary')) {
     Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
+    $summaryAppended = $true
   }
-  $reportPath = if (Test-Path -LiteralPath $sessionSummaryPath) { $sessionSummaryPath } else { $null }
+  $reportPath = if ($summaryAppended) { $sessionSummaryPath } else { $null }
 
   $Session.ActionCount = [int]$Session.ActionCount + 1
 
