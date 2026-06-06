@@ -170,11 +170,12 @@ function Invoke-EnrichmentAction-Retrieval {
   if ($PSCmdlet.ShouldProcess($sessionSummaryPath, 'Append enrich retrieval summary')) {
     Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
   }
+  $reportPath = if (Test-Path -LiteralPath $sessionSummaryPath) { $sessionSummaryPath } else { $null }
 
   $Session.ActionCount = [int]$Session.ActionCount + 1
 
   return @{
-    ReportPath = $sessionSummaryPath
+    ReportPath = $reportPath
     ActionArtifactPath = $artifactPath
     StagedPath = $stagedPath
   }
