@@ -31,7 +31,7 @@ run-name: Publish Knowledge to Wiki | ${{ github.ref_name }} | #${{ github.run_n
 
 # DCOIR adaptation of the Nimble docs-to-wiki pattern.
 # Source folder: knowledge/
-# Destination repo: malwaredevil/dcoir-collector.wiki.git
+# Destination repo: DCOIR-Collector/dcoir-collector.wiki.git
 
 on:
   push:
