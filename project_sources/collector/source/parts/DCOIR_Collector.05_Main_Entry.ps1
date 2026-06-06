@@ -253,7 +253,7 @@ try {
         if ($result.ActionArtifactPath) { Write-Output ("ACTION_ARTIFACT_PATH={0}" -f $result.ActionArtifactPath) }
         if ($result.StagedPath) { Write-Output ("STAGED_PATH={0}" -f $result.StagedPath) }
       } else {
-        if ($session.SummaryPath) { Write-Output ("ENRICH_REPORT_PATH={0}" -f $session.SummaryPath) }
+        if ($session.SummaryPath -and (Test-Path -LiteralPath $session.SummaryPath)) { Write-Output ("ENRICH_REPORT_PATH={0}" -f $session.SummaryPath) }
       }
       Write-Output ("SESSION_STATUS={0}" -f $sessionStatus)
       if ($bundlePath) {
