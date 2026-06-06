@@ -19,6 +19,76 @@ metadata deterministically.
 
 <#
 .SYNOPSIS
+Removes partial upload-safe chunk companions after a declined chunk write.
+
+.DESCRIPTION
+When a per-chunk confirmation prompt is declined after earlier chunks in the same set
+were written, removes the current-run companion files for the known oversized artifact
+keys so collect can report the chunk companion set as skipped instead of leaving a partial
+upload surface.
+
+.FUNCTION NAME
+Remove-SkippedUploadSafeChunkCompanionFiles
+
+.INPUTS
+Collector state hashtable.
+
+.OUTPUTS
+No direct output. Deletes matching current-run companion files when present.
+#>
+function Remove-SkippedUploadSafeChunkCompanionFiles {
+  param([hashtable]$State)
+
+  if (-not $State -or [string]::IsNullOrWhiteSpace([string]$State.ArtifactsDir) -or -not (Test-Path -LiteralPath $State.ArtifactsDir)) { return }
+  foreach ($key in @('security_filtered','powershell_operational_filtered','taskscheduler_operational_filtered')) {
+    $safeKey = ($key -replace '[\/:*?"<>| ]','_')
+    $pattern = "90_UPLOAD_SAFE_CHUNKS_{0}_chunk_*.txt" -f $safeKey
+    foreach ($chunkPath in @(Get-ChildItem -LiteralPath $State.ArtifactsDir -Filter $pattern -File -ErrorAction SilentlyContinue)) {
+      Remove-Item -LiteralPath $chunkPath.FullName -Force -ErrorAction SilentlyContinue
+    }
+  }
+}
+
+<#
+.SYNOPSIS
+Creates production upload-safe chunk companions with skipped-write downgrade handling.
+
+.DESCRIPTION
+Calls the shared chunk companion builder and catches the specific confirmation-decline
+error raised by a per-chunk companion write. The skipped set is omitted from manifest
+rows, partial companion files are cleaned up, and the collect state records that an
+upload-safe chunk companion surface was skipped.
+
+.FUNCTION NAME
+New-ProductionUploadSafeChunkCompanionsWithSkipStatus
+
+.INPUTS
+Collector state, artifact map, and upload budget hashtables.
+
+.OUTPUTS
+Array of ordered manifest rows, or an empty array when the chunk companion set was
+skipped by confirmation decline.
+#>
+function New-ProductionUploadSafeChunkCompanionsWithSkipStatus {
+  [CmdletBinding()]
+  param([hashtable]$State,[hashtable]$ArtifactMap,[hashtable]$Budget)
+
+  if ($State) { $State.UploadSafeChunkCompanionSkipped = $false }
+  try {
+    return @(New-ProductionUploadSafeChunkCompanions -State $State -ArtifactMap $ArtifactMap -Budget $Budget)
+  } catch {
+    $message = [string]$_.Exception.Message
+    if ($message -match '^Upload-safe chunk write was skipped before completing chunk set:') {
+      if ($State) { $State.UploadSafeChunkCompanionSkipped = $true }
+      Remove-SkippedUploadSafeChunkCompanionFiles -State $State
+      return @()
+    }
+    throw
+  }
+}
+
+<#
+.SYNOPSIS
 Creates collect upload guidance while treating metadata as a late-bound final report.
 
 .DESCRIPTION
@@ -43,7 +113,7 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
 
   $budget = Get-CollectorUploadBudget
   $artifactMap = $Baseline.ArtifactMap
-  $chunkCompanions = New-ProductionUploadSafeChunkCompanions -State $State -ArtifactMap $artifactMap -Budget $budget
+  $chunkCompanions = New-ProductionUploadSafeChunkCompanionsWithSkipStatus -State $State -ArtifactMap $artifactMap -Budget $budget
   $recommendedPaths = @()
 
   foreach ($key in @(
@@ -256,7 +326,7 @@ function New-AnalystOverviewArtifactWithLateMetadataReport {
   [void]$lines.Add("2. Use the analyst follow-up queue and security high-signal summary as the first decisive triage surface.")
   [void]$lines.Add("3. Use representative process, network, and defender artifacts before expanding into broader local review.")
   if ($collectorErrorCount -gt 0) {
-    [void]$lines.Add("4. This run recorded degraded or partial conditions. Review errors.log and the affected truth surfaces before treating the overview as complete.")
+    [void]$lines.Add("4. This run recorded collector errors during collection. Review errors.log and the affected truth surfaces before treating the overview as complete.")
   }
   if ($State.TargetedCollectionPlanPath) {
     [void]$lines.Add("4. A targeted collection plan was emitted for this run; review it first when the incident is narrow.")
