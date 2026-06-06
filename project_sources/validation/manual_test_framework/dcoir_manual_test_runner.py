@@ -25,7 +25,7 @@ SESSION_INFO_PATH = OUTPUT_DIR / "_session_info.json"
 BOOTSTRAP_DEFAULT = OUTPUT_DIR / "bootstrap_status.json"
 MASTER_ZIP_PATH = OUTPUT_DIR / "DCOIR_Collector_master.zip"
 
-REPO_URL = "https://github.com/malwaredevil/dcoir-collector.git"
+REPO_URL = "https://github.com/DCOIR-Collector/dcoir-collector.git"
 
 STEP_ORDER = [
     ("git_check", "Git prerequisite"),
