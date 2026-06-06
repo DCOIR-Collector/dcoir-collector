@@ -1,3 +1,4 @@
+[CmdletBinding(SupportsShouldProcess=$true)]
 param(
   [ValidateSet("Collect","Enrich","Cleanup")]
   [string]$Mode = "Collect",
