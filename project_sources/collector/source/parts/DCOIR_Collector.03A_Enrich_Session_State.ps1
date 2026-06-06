@@ -115,8 +115,8 @@ function Initialize-EnrichSession {
     throw "No open enrichment session is available to finalize. Start an enrich session or provide -EnrichSessionId for a non-finalized session."
   }
 
-  $State.EnrichSessionCounter = [int]$State.EnrichSessionCounter + 1
-  $sessionNumber = "{0:D3}" -f [int]$State.EnrichSessionCounter
+  $nextSessionCounter = [int]$State.EnrichSessionCounter + 1
+  $sessionNumber = "{0:D3}" -f $nextSessionCounter
   $sessionStamp = Get-Date -Format "yyyyMMdd_HHmmss"
   $sessionId = "ENRICH_{0}_{1}" -f $sessionNumber, $sessionStamp
 
@@ -138,11 +138,8 @@ function Initialize-EnrichSession {
     Finalized = $false
     ActionCount = 0
     SessionResolutionMode = 'CREATED_NEW_SESSION'
+    CreationSkipped = $false
   }
-
-  $State.EnrichSessions = @($State.EnrichSessions) + @($session)
-  $State.OpenEnrichSessionId = $sessionId
-  $State.LastSessionResolutionMode = 'CREATED_NEW_SESSION'
 
   $header = @(
     "CollectorVersion=$ScriptVersion"
@@ -160,8 +157,15 @@ function Initialize-EnrichSession {
     Ensure-Directory -Path $sessionStagedDir
     Ensure-Directory -Path $sessionLogsDir
     Set-Content -Path $session.SummaryPath -Value $header -Encoding UTF8 -ErrorAction Stop
+    $State.EnrichSessionCounter = $nextSessionCounter
+    $State.EnrichSessions = @($State.EnrichSessions) + @($session)
+    $State.OpenEnrichSessionId = $sessionId
+    $State.LastSessionResolutionMode = 'CREATED_NEW_SESSION'
+    return $session
   }
 
+  $session.CreationSkipped = $true
+  $session.SessionResolutionMode = 'CREATE_SKIPPED'
   return $session
 }
 
