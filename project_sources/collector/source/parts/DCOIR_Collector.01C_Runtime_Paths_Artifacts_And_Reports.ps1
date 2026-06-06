@@ -272,7 +272,9 @@ function Expand-PackageToTools {
   try {
     if ($PSCmdlet.ShouldProcess($ToolsDir, ("Recreate tools directory from package {0}" -f $PackagePath))) {
       Remove-IfExists -LiteralPath $ToolsDir
+      if (Test-Path -LiteralPath $ToolsDir) { return $false }
       Ensure-Directory -Path $ToolsDir
+      if (-not (Test-Path -LiteralPath $ToolsDir)) { return $false }
       Expand-Archive -LiteralPath $PackagePath -DestinationPath $ToolsDir -Force -ErrorAction Stop
       return $true
     }
