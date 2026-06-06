@@ -397,9 +397,29 @@ try {
       $Global:ExecutionTxtPath = Join-Path $session.LogsDir ("enrich_{0}_{1}_execution_log.txt" -f $actionLabel, $logStamp)
       $Global:ExecutionJsonlPath = Join-Path $session.LogsDir ("enrich_{0}_{1}_execution_log.jsonl" -f $actionLabel, $logStamp)
       $Global:ErrorsLogPath = Join-Path $session.LogsDir ("enrich_{0}_{1}_errors.log" -f $actionLabel, $logStamp)
-      Set-Content -Path $Global:ExecutionTxtPath -Value ("DCOIR Enrich Execution Log`r`nRunId={0}`r`nEnrichSessionId={1}`r`nAction={2}`r`nSessionResolutionMode={3}" -f $state.RunId, $session.SessionId, $actionLabel, $session.SessionResolutionMode) -Encoding UTF8 -ErrorAction Stop
-      Set-Content -Path $Global:ExecutionJsonlPath -Value "" -Encoding UTF8 -ErrorAction Stop
-      Set-Content -Path $Global:ErrorsLogPath -Value "" -Encoding UTF8 -ErrorAction Stop
+      $enrichLogsInitialized = $false
+      if ($PSCmdlet.ShouldProcess($session.LogsDir, ("Initialize enrich execution logs for {0}" -f $actionLabel))) {
+        Set-Content -Path $Global:ExecutionTxtPath -Value ("DCOIR Enrich Execution Log`r`nRunId={0}`r`nEnrichSessionId={1}`r`nAction={2}`r`nSessionResolutionMode={3}" -f $state.RunId, $session.SessionId, $actionLabel, $session.SessionResolutionMode) -Encoding UTF8 -ErrorAction Stop
+        Set-Content -Path $Global:ExecutionJsonlPath -Value "" -Encoding UTF8 -ErrorAction Stop
+        Set-Content -Path $Global:ErrorsLogPath -Value "" -Encoding UTF8 -ErrorAction Stop
+        $enrichLogsInitialized = $true
+      }
+      if (-not $enrichLogsInitialized) {
+        $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
+        Write-Output "STATUS=SKIPPED"
+        Write-Output ("RUN_ID={0}" -f $state.RunId)
+        Write-Output ("COLLECTOR_VERSION={0}" -f [string]$state.CollectorVersion)
+        Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version ([string]$state.CollectorVersion)))
+        Write-Output ("ENRICH_SESSION_ID={0}" -f $session.SessionId)
+        Write-Output ("SESSION_RESOLUTION_MODE={0}" -f $session.SessionResolutionMode)
+        if ($Action) { Write-Output "ACTION_STATUS=SKIPPED" }
+        if ($FinalizeEnrichSession) { Write-Output "FINALIZE_STATUS=SKIPPED" }
+        Write-Output "ENRICH_LOG_STATUS=SKIPPED"
+        Write-Output "SESSION_STATUS=OPEN"
+        Write-Output "NEXT_OPTIONS=Re-run without -WhatIf and confirm enrich log initialization to run the requested enrich work."
+        Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
+        return
+      }
 
       $toolMap = Get-ToolMap -ToolsDir $state.ToolsDir
 
