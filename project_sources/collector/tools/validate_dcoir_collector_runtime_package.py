@@ -201,6 +201,87 @@ def find_convert_to_json_calls(rel: str, text: str) -> List[Dict[str, object]]:
         calls.append({'path': rel, 'line': line_number, 'text': line.strip()})
     return calls
 
+def probe_powershell_behavior_shell(shell_path: str, requested_label: str) -> Dict[str, object]:
+    result: Dict[str, object] = {
+        'path': shell_path,
+        'command': Path(shell_path).name,
+        'requested_label': requested_label,
+        'target': requested_label if requested_label == 'pwsh' else 'powershell_unclassified',
+        'edition': '',
+        'version': '',
+    }
+    probe_script = "$PSVersionTable.PSEdition + '|' + $PSVersionTable.PSVersion.ToString()"
+    try:
+            stable_path = str(Path(shell_path).resolve(strict=False))
+        except Exception:
+            stable_path = str(shell_path)
+        if stable_path in seen_paths:
+            continue
+        seen_paths.add(stable_path)
+        shells.append(probe_powershell_behavior_shell(shell_path, requested_label))
+    return shells
+
+def run_powershell_behavior_script(script: str, available_shells: List[Dict[str, object]]) -> List[Dict[str, object]]:
+    shell_results: List[Dict[str, object]] = []
+    for shell in available_shells:
+        label = str(shell.get('target', 'powershell_unclassified'))
+        shell_path = str(shell.get('path', ''))
+        with tempfile.NamedTemporaryFile('w', suffix='.ps1', encoding='utf-8', delete=False) as handle:
+            handle.write(script)
+            script_path = Path(handle.name)
+        try:
+            cmd = [shell_path, '-NoProfile']
+            if label != 'windows_powershell_5_1':
+                cmd.append('-NonInteractive')
+            if label == 'windows_powershell_5_1':
+                cmd.extend(['-ExecutionPolicy', 'Bypass'])
+            cmd.extend(['-File', str(script_path)])
+            completed = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        except Exception as exc:
+            shell_results.append({
+                'target': label,
+                'requested_label': shell.get('requested_label', ''),
+                'command': shell.get('command', Path(shell_path).name),
+                'edition': shell.get('edition', ''),
+                'version': shell.get('version', ''),
+                'status': 'failed',
+                'returncode': None,
+                'stdout': '',
+                'stderr': str(exc)[-4000:],
+            })
+            continue
+        finally:
+            script_path.unlink(missing_ok=True)
+        shell_results.append({
+            'target': label,
+            'requested_label': shell.get('requested_label', ''),
+            'command': shell.get('command', Path(shell_path).name),
+            'edition': shell.get('edition', ''),
+            'version': shell.get('version', ''),
+            'status': 'passed' if completed.returncode == 0 else 'failed',
+            'returncode': completed.returncode,
+            'stdout': completed.stdout[-4000:],
+            'stderr': completed.stderr[-4000:],
+        })
+    return shell_results
+
+def finalize_powershell_behavior_result(result: Dict[str, object], shell_results: List[Dict[str, object]]) -> Dict[str, object]:
+    result['shell_results'] = shell_results
+    failed_results = [row for row in shell_results if row['status'] == 'failed']
+    windows_result = next(
+        (row for row in shell_results if row['target'] == 'windows_powershell_5_1' and row['status'] == 'passed'),
+        None,
+    )
+    if failed_results:
+        result['status'] = 'failed'
+    elif windows_result:
+        result['status'] = 'passed'
+    elif shell_results:
+        result['status'] = 'passed_without_windows_powershell_5_1'
+    else:
+        result['status'] = 'skipped_powershell_unavailable'
+    return result
+
 def run_json_policy_behavior_tests(source_dir: Path, manifest: Dict) -> Dict[str, object]:
     result: Dict[str, object] = {
         'available': False,
@@ -208,11 +289,7 @@ def run_json_policy_behavior_tests(source_dir: Path, manifest: Dict) -> Dict[str
         'preferred_target': 'windows_powershell_5_1',
         'shell_results': [],
     }
-    shell_candidates = [
-        ('windows_powershell_5_1', shutil.which('powershell') or shutil.which('powershell.exe')),
-        ('pwsh', shutil.which('pwsh')),
-    ]
-    available_shells = [(label, path) for label, path in shell_candidates if path]
+    available_shells = get_powershell_behavior_shells()
     if not available_shells:
         return result
 
@@ -254,40 +331,8 @@ Assert-Condition ($Global:CollectorErrors.Count -eq 0) 'legitimate ellipsis stri
 $jsonl = Convert-ToCollectorJsonText -InputObject ([ordered]@{{ x = 1 }}) -Compress -AppendNewline -Label 'newline behavior'
 Assert-Condition ($jsonl.EndsWith([Environment]::NewLine)) 'AppendNewline did not append the platform newline'
 """
-    shell_results: List[Dict[str, object]] = []
-    for label, shell_path in available_shells:
-        with tempfile.NamedTemporaryFile('w', suffix='.ps1', encoding='utf-8', delete=False) as handle:
-            handle.write(script)
-            script_path = Path(handle.name)
-        try:
-            cmd = [shell_path, '-NoProfile']
-            if label == 'pwsh':
-                cmd.append('-NonInteractive')
-            if label == 'windows_powershell_5_1':
-                cmd.extend(['-ExecutionPolicy', 'Bypass'])
-            cmd.extend(['-File', str(script_path)])
-            completed = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
-        finally:
-            script_path.unlink(missing_ok=True)
-        shell_results.append({
-            'target': label,
-            'command': Path(shell_path).name,
-            'status': 'passed' if completed.returncode == 0 else 'failed',
-            'returncode': completed.returncode,
-            'stdout': completed.stdout[-4000:],
-            'stderr': completed.stderr[-4000:],
-        })
-
-    result['shell_results'] = shell_results
-    failed_results = [row for row in shell_results if row['status'] == 'failed']
-    windows_result = next((row for row in shell_results if row['target'] == 'windows_powershell_5_1'), None)
-    if failed_results:
-        result['status'] = 'failed'
-    elif windows_result:
-        result['status'] = 'passed'
-    else:
-        result['status'] = 'passed_without_windows_powershell_5_1'
-    return result
+    shell_results = run_powershell_behavior_script(script, available_shells)
+    return finalize_powershell_behavior_result(result, shell_results)
 
 def run_state_recursion_behavior_tests(source_dir: Path, manifest: Dict, worker_sentinel_body: str) -> Dict[str, object]:
     result: Dict[str, object] = {
@@ -296,11 +341,7 @@ def run_state_recursion_behavior_tests(source_dir: Path, manifest: Dict, worker_
         'preferred_target': 'windows_powershell_5_1',
         'shell_results': [],
     }
-    shell_candidates = [
-        ('windows_powershell_5_1', shutil.which('powershell') or shutil.which('powershell.exe')),
-        ('pwsh', shutil.which('pwsh')),
-    ]
-    available_shells = [(label, path) for label, path in shell_candidates if path]
+    available_shells = get_powershell_behavior_shells()
     if not available_shells:
         return result
 
@@ -382,40 +423,8 @@ Assert-Condition ($workerMessage -like '*Parallel worker result JSON sentinel sc
 Assert-Condition ($workerMessage -like '*depth 2*') 'worker sentinel depth error did not include the configured depth'
 Assert-Condition ($workerMessage -like '*$.a.b*') 'worker sentinel depth error did not include the recursive path'
 """
-    shell_results: List[Dict[str, object]] = []
-    for label, shell_path in available_shells:
-        with tempfile.NamedTemporaryFile('w', suffix='.ps1', encoding='utf-8', delete=False) as handle:
-            handle.write(script)
-            script_path = Path(handle.name)
-        try:
-            cmd = [shell_path, '-NoProfile']
-            if label == 'pwsh':
-                cmd.append('-NonInteractive')
-            if label == 'windows_powershell_5_1':
-                cmd.extend(['-ExecutionPolicy', 'Bypass'])
-            cmd.extend(['-File', str(script_path)])
-            completed = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
-        finally:
-            script_path.unlink(missing_ok=True)
-        shell_results.append({
-            'target': label,
-            'command': Path(shell_path).name,
-            'status': 'passed' if completed.returncode == 0 else 'failed',
-            'returncode': completed.returncode,
-            'stdout': completed.stdout[-4000:],
-            'stderr': completed.stderr[-4000:],
-        })
-
-    result['shell_results'] = shell_results
-    failed_results = [row for row in shell_results if row['status'] == 'failed']
-    windows_result = next((row for row in shell_results if row['target'] == 'windows_powershell_5_1'), None)
-    if failed_results:
-        result['status'] = 'failed'
-    elif windows_result:
-        result['status'] = 'passed'
-    else:
-        result['status'] = 'passed_without_windows_powershell_5_1'
-    return result
+    shell_results = run_powershell_behavior_script(script, available_shells)
+    return finalize_powershell_behavior_result(result, shell_results)
 
 def run_suspicious_process_parent_context_behavior_tests(source_dir: Path, manifest: Dict) -> Dict[str, object]:
     result: Dict[str, object] = {
@@ -424,11 +433,7 @@ def run_suspicious_process_parent_context_behavior_tests(source_dir: Path, manif
         'preferred_target': 'windows_powershell_5_1',
         'shell_results': [],
     }
-    shell_candidates = [
-        ('windows_powershell_5_1', shutil.which('powershell') or shutil.which('powershell.exe')),
-        ('pwsh', shutil.which('pwsh')),
-    ]
-    available_shells = [(label, path) for label, path in shell_candidates if path]
+    available_shells = get_powershell_behavior_shells()
     if not available_shells:
         return result
 
@@ -436,7 +441,7 @@ def run_suspicious_process_parent_context_behavior_tests(source_dir: Path, manif
     dot_source_lines = build_dot_source_lines_for_functions(
         source_dir,
         manifest,
-        ['Get-SuspiciousProcessFindings'],
+        ['Convert-ProcessObjectToText', 'Get-SuspiciousProcessFindings'],
     )
     result['dotted_source_line_count'] = len([line for line in dot_source_lines.splitlines() if line.strip()])
     script = f"""
@@ -468,6 +473,22 @@ function New-TestProcess {{
   }}
 }}
 
+$childWithCurrentParent = [pscustomobject]@{{
+  ProcessId = 201
+  ParentProcessId = 200
+  Name = 'powershell.exe'
+  ExecutablePath = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
+  CommandLine = 'powershell.exe -NoLogo'
+}}
+$processNameById = @{{ 200 = 'services.exe' }}
+$validParentTimes = @{{ 200 = [datetime]'2026-01-01T00:00:00Z'; 201 = [datetime]'2026-01-01T00:00:10Z' }}
+$validParentRow = Convert-ProcessObjectToText -Proc $childWithCurrentParent -StartTimeMap $validParentTimes -ProcessNameById $processNameById -ProcessStartTimeById $validParentTimes
+Assert-Condition ($validParentRow.ParentProcessName -eq 'services.exe') 'current parent process name was not resolved'
+
+$reusedParentTimes = @{{ 200 = [datetime]'2026-01-01T00:01:00Z'; 201 = [datetime]'2026-01-01T00:00:10Z' }}
+$reusedParentRow = Convert-ProcessObjectToText -Proc $childWithCurrentParent -StartTimeMap $reusedParentTimes -ProcessNameById $processNameById -ProcessStartTimeById $reusedParentTimes
+Assert-Condition ([string]::IsNullOrWhiteSpace([string]$reusedParentRow.ParentProcessName)) 'reused parent PID name was trusted'
+
 $benignParentShell = New-TestProcess -ProcessId 101 -ParentProcessId 4 -ParentProcessName 'services.exe' -Name 'powershell.exe' -ExecutablePath 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' -CommandLine 'powershell.exe -NoLogo'
 $benignFindings = @(Get-SuspiciousProcessFindings -Processes @($benignParentShell) -ExcludedPids @())
 Assert-Condition ($benignFindings.Count -eq 0) 'benign-parent name-only PowerShell was not suppressed'
@@ -488,40 +509,8 @@ $pathFindings = @(Get-SuspiciousProcessFindings -Processes @($cmdHighRiskPath) -
 Assert-Condition ($pathFindings.Count -eq 1) 'High-risk path indicator was suppressed'
 Assert-Condition ($pathFindings[0].Reasons -like '*process running from high-risk path*') 'High-risk path reason missing'
 """
-    shell_results: List[Dict[str, object]] = []
-    for label, shell_path in available_shells:
-        with tempfile.NamedTemporaryFile('w', suffix='.ps1', encoding='utf-8', delete=False) as handle:
-            handle.write(script)
-            script_path = Path(handle.name)
-        try:
-            cmd = [shell_path, '-NoProfile']
-            if label == 'pwsh':
-                cmd.append('-NonInteractive')
-            if label == 'windows_powershell_5_1':
-                cmd.extend(['-ExecutionPolicy', 'Bypass'])
-            cmd.extend(['-File', str(script_path)])
-            completed = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
-        finally:
-            script_path.unlink(missing_ok=True)
-        shell_results.append({
-            'target': label,
-            'command': Path(shell_path).name,
-            'status': 'passed' if completed.returncode == 0 else 'failed',
-            'returncode': completed.returncode,
-            'stdout': completed.stdout[-4000:],
-            'stderr': completed.stderr[-4000:],
-        })
-
-    result['shell_results'] = shell_results
-    failed_results = [row for row in shell_results if row['status'] == 'failed']
-    windows_result = next((row for row in shell_results if row['target'] == 'windows_powershell_5_1'), None)
-    if failed_results:
-        result['status'] = 'failed'
-    elif windows_result:
-        result['status'] = 'passed'
-    else:
-        result['status'] = 'passed_without_windows_powershell_5_1'
-    return result
+    shell_results = run_powershell_behavior_script(script, available_shells)
+    return finalize_powershell_behavior_result(result, shell_results)
 
 def validate_state_recursion_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
     recursion_checks: Dict[str, object] = {}
@@ -656,7 +645,7 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
     metadata_checks['metadata_before_manifest'] = bool(metadata_positions) and manifest_pos != -1 and metadata_positions[0] < manifest_pos
     metadata_checks['metadata_write_before_manifest'] = bool(write_positions) and manifest_pos != -1 and write_positions[0] < manifest_pos
     metadata_checks['metadata_before_bundle'] = bool(metadata_positions) and bundle_call_pos != -1 and metadata_positions[0] < bundle_call_pos
-    metadata_checks['metadata_write_before_bundle'] = bool(write_positions) and bundle_call_pos != -1 and write_positions[0] < bundle_call_pos
+    metadata_checks['metadata_write_before_bundle'] = bool(write_positions) and bundle_call_pos != -1 and metadata_positions[0] < bundle_call_pos
     metadata_checks['metadata_write_follows_metadata_call'] = bool(metadata_positions) and bool(write_positions) and metadata_positions[0] < write_positions[0]
     metadata_checks['late_bound_metadata_manifest_flag'] = 'metadata_report_late_bound_after_upload_artifacts = $true' in helper_text
     metadata_checks['late_bound_recommended_row_flag'] = 'late_bound_after_upload_artifacts = [bool]$isLateBoundMetadata' in helper_text
@@ -893,10 +882,16 @@ def validate_suspicious_process_parent_context_policy(source_dir: Path, manifest
     policy_checks['process_inventory_present'] = bool(inventory_body)
     policy_checks['suspicious_process_findings_present'] = bool(suspicious_body)
     policy_checks['convert_accepts_process_name_lookup'] = '[hashtable]$ProcessNameById' in convert_body
+    policy_checks['convert_accepts_process_start_lookup'] = '[hashtable]$ProcessStartTimeById' in convert_body
     policy_checks['parent_process_id_normalized'] = '$parentProcessId = [int]$Proc.ParentProcessId' in convert_body
     policy_checks['parent_process_name_resolved'] = '$parentName = [string]$ProcessNameById[$parentProcessId]' in convert_body
+    policy_checks['parent_start_time_checked_before_name_resolution'] = (
+        '$parentStartTime = $ProcessStartTimeById[$parentProcessId]' in convert_body
+        and '$parentPrecedesChild = ([datetime]$parentStartTime -le [datetime]$created)' in convert_body
+    )
     policy_checks['inventory_builds_parent_name_map'] = '$processNameById[[int]$p.ProcessId] = [string]$p.Name' in inventory_body
     policy_checks['inventory_passes_parent_name_map'] = '-ProcessNameById $processNameById' in inventory_body
+    policy_checks['inventory_passes_parent_start_map'] = '-ProcessStartTimeById $startTimeMap' in inventory_body
     policy_checks['finding_reads_parent_name'] = '$parentNameValue = [string]$proc.ParentProcessName' in suspicious_body
     policy_checks['name_only_lolbin_pattern_present'] = '$nameOnlyLolbinPattern' in suspicious_body
     policy_checks['benign_name_only_lolbin_limited_to_common_shells'] = (
