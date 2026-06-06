@@ -208,6 +208,8 @@ function Finalize-EnrichSession {
     append_model = 'enrich-start creates a new session; enrich-add reuses the current open session unless explicitly overridden; enrich-finalize finalizes the current open session.'
   }
 
+  if (-not $manifest) { return $null }
+
   $bundleInputs = @(
     $Session.SummaryPath,
     $Session.ArtifactsDir,
