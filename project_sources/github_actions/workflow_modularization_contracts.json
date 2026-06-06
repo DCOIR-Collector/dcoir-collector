@@ -1,13 +1,13 @@
 {
   "composite_action_count": 13,
-  "existing_workflow_count": 29,
+  "existing_workflow_count": 31,
   "governing_issue": 194,
   "implementation_phase": "Phase 2+ bundled implementation: entry workflows call reusable workflow modules; reusable modules call local composite actions for shared mechanics.",
   "inventory_outputs": {
     "json": "project_sources/github_actions/workflow_inventory.json",
     "markdown": "project_sources/github_actions/workflow_inventory.md"
   },
-  "primary_workflow_count": 29,
+  "primary_workflow_count": 31,
   "required_contract_families": [
     "static-validation",
     "required-surfaces",
@@ -29,9 +29,11 @@
     "dependency-review",
     "dependabot-auto-merge",
     "wiki-publish",
-    "maintenance-audit"
+    "maintenance-audit",
+    "windows-powershell-51",
+    "codeql-security"
   ],
-  "reusable_workflow_count": 28,
+  "reusable_workflow_count": 30,
   "schema_version": "dcoir_workflow_modularization_contracts_v1",
   "workflow_contracts": [
     {
@@ -323,6 +325,26 @@
       "risk": "medium",
       "rollback": "Restore prior placeholder ops workflow body.",
       "target_architecture": "Ops guard reusable workflow with restructure-specific approval boundary. Implementation update: entry workflow now calls a repo-local reusable workflow module; shared setup, artifact upload, validation, packaging, and report mechanics are routed through local composite actions where applicable."
+    },
+    {
+      "acceptance_evidence": "Workflow dispatch and PR/push path-filter readback showing Windows PowerShell 5.1 version, parser validation success, and ChatGPT workflow report section artifact.",
+      "contract_family": "windows-powershell-51",
+      "family": "validation",
+      "file": ".github/workflows/windows-powershell-51.yml",
+      "migration_status": "active",
+      "risk": "medium",
+      "rollback": "Remove the Windows PowerShell 5.1 entry/reusable workflow pair and use the existing validate-powershell-syntax action through validate-on-pr until a corrected compatibility lane is restored.",
+      "target_architecture": "Entry workflow plus reusable Windows PowerShell 5.1 validation workflow that runs on windows-latest, confirms Windows PowerShell Desktop 5.1, validates parser compatibility, writes a ChatGPT workflow report section, and uploads the report artifact."
+    },
+    {
+      "acceptance_evidence": "Workflow dispatch and PR/push readback showing CodeQL init/analyze completion for supported languages, uploaded code scanning results, and ChatGPT workflow report section artifacts.",
+      "contract_family": "codeql-security",
+      "family": "security validation",
+      "file": ".github/workflows/codeql-security.yml",
+      "migration_status": "active",
+      "risk": "medium",
+      "rollback": "Disable or remove the CodeQL entry/reusable workflow pair and rely on dependency-review plus local Codex static checks until CodeQL configuration is corrected.",
+      "target_architecture": "Entry workflow plus reusable CodeQL security workflow using GitHub CodeQL Action v4 for Python and GitHub Actions workflow surfaces with security-extended and security-and-quality query suites."
     }
   ]
 }

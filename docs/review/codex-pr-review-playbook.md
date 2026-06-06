@@ -61,3 +61,26 @@ Push:
 - <commit hash if available>
 - <codex-pr-finish result or exact failure>
 ```
+
+## Optional repository validation wrappers
+
+When local or Codex-environment helper commands are unavailable, use the repo-local wrappers when relevant:
+
+```bash
+scripts/validate-codex-local.sh
+```
+
+For exact Windows PowerShell 5.1 evidence, rely on the `windows-powershell-51.yml` workflow. For local parser checks outside Windows PowerShell 5.1, use:
+
+```powershell
+pwsh -NoProfile -File scripts/validate-windows-powershell-51.ps1 -AllowPowerShell7 -AllowEmpty
+```
+
+For CodeQL workflow-shape checks after security workflow changes, use:
+
+```bash
+python scripts/validate-codeql-security-workflow.py
+```
+
+CodeQL findings must be read back through the GitHub code scanning surface or workflow logs; local workflow-shape validation is not a substitute for CodeQL analysis.
+

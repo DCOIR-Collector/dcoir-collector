@@ -59,6 +59,8 @@
 - [ ] Workflow files were not changed
 - [ ] Workflow files were changed only with explicit operator approval
 - [ ] validate-on-pr is expected to run after this PR is marked ready
+- [ ] Windows PowerShell 5.1 workflow is expected to run when PowerShell compatibility is in scope
+- [ ] CodeQL/security workflow is expected to run when Python, workflow, action, or security-sensitive validation surfaces are in scope
 - [ ] Workflow run IDs, job outcomes, and artifacts are read back when workflow success is claimed
 
 ## Remaining Gaps

@@ -1,0 +1,80 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: codeql-security.yml
+# Purpose: reusable implementation module for CodeQL security analysis; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - CodeQL Security
+run-name: Module CodeQL Security | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/pull_request/workflow_dispatch branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyze:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language:
+          - python
+          - actions
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}
+
+      - name: Write ChatGPT workflow report section
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p chatgpt_workflow_report_section
+          cat > chatgpt_workflow_report_section/chatgpt_workflow_report_section.md <<EOF
+          ## CodeQL security analysis summary
+
+          - workflow: codeql-security
+          - validation_scope: CodeQL semantic security analysis
+          - workflow_run_id: ${GITHUB_RUN_ID}
+          - workflow_run_attempt: ${GITHUB_RUN_ATTEMPT}
+          - head_sha: ${GITHUB_SHA}
+          - ref: ${GITHUB_REF}
+          - caller_event_name: ${{ inputs.caller_event_name }}
+          - language: ${{ matrix.language }}
+          - query_suites: security-extended, security-and-quality
+
+          The workflow conclusion and GitHub code scanning alerts are the authoritative readback surfaces for CodeQL findings.
+          EOF
+
+      - name: Upload ChatGPT workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section-${{ matrix.language }}
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14

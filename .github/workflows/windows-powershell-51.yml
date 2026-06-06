@@ -1,0 +1,73 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-validation-windows-powershell-51-0016
+# Purpose:
+# - Validate PowerShell parser compatibility through Windows PowerShell 5.1 on a Windows runner.
+# Use when:
+# - Use after PowerShell, collector harness, workflow, Codex helper, or validation-script changes where Windows PowerShell 5.1 behavior matters.
+# Do not use when:
+# - Do not treat this as a replacement for collector runtime harness validation or Linux PowerShell 7 cross-platform checks.
+# Trigger model:
+# - pull_request and push paths for PowerShell files, validation wrappers, and this workflow pair; workflow_dispatch for operator-requested checks.
+# Required inputs:
+# - none
+# Required secrets/config:
+# - none
+# Runtime dependencies:
+# - Uses Windows PowerShell Desktop through shell: powershell and the repo-local validate-windows-powershell-51 wrapper.
+# Expected outputs/readback:
+# - ChatGPT workflow report section artifact with PowerShell version and validation scope.
+# Safety notes:
+# - A pass confirms parser compatibility with Windows PowerShell 5.1, not full collector runtime behavior.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
+name: 26 Validation - Windows PowerShell 5.1
+run-name: Windows PowerShell 5.1 | #${{ github.run_number }}
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths:
+      - '**/*.ps1'
+      - '**/*.psm1'
+      - '**/*.psd1'
+      - 'scripts/validate-windows-powershell-51.ps1'
+      - '.github/actions/validate-powershell-syntax/**'
+      - '.github/workflows/windows-powershell-51.yml'
+      - '.github/workflows/reusable-windows-powershell-51.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.ps1'
+      - '**/*.psm1'
+      - '**/*.psd1'
+      - 'scripts/validate-windows-powershell-51.ps1'
+      - '.github/actions/validate-powershell-syntax/**'
+      - '.github/workflows/windows-powershell-51.yml'
+      - '.github/workflows/reusable-windows-powershell-51.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-powershell-51-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    uses: ./.github/workflows/reusable-windows-powershell-51.yml
+    permissions:
+      contents: read
+    with:
+      caller_event_name: ${{ github.event_name }}

@@ -20,3 +20,12 @@ When reviewing `.github/workflows/` changes, prioritize:
 - validation claims without workflow run, job, step, or artifact readback
 
 When a PR task touches GitHub metadata, templates, CODEOWNERS, workflows, or repository governance files, use `codex-pr-context` first when available and report any validation gaps explicitly.
+
+## Security and compatibility workflows
+
+The repo-local CodeQL workflow is `codeql-security.yml` and its reusable implementation is `reusable-codeql-security.yml`. It is intended to analyze supported CodeQL languages in this repository, especially Python and GitHub Actions workflow surfaces. Do not treat CodeQL as a replacement for collector runtime validation, dependency review, or manual security review.
+
+The repo-local Windows PowerShell 5.1 workflow is `windows-powershell-51.yml` and its reusable implementation is `reusable-windows-powershell-51.yml`. It is the workflow-level evidence surface for exact Windows PowerShell 5.1 parser compatibility. Linux `pwsh` output is not equivalent.
+
+When reviewing these workflows, also check the workflow modularization registry, workflow inventory, and reporter allowlist surfaces so workflow-governance checks remain aligned.
+
