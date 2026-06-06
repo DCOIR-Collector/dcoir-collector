@@ -199,6 +199,7 @@ function Get-CollectorContextualHelpText {
       $lines += 'Cleanup removes the run root and consumed package state.'
       $lines += 'If a collect run failed before state.json was saved, cleanup removes only the latest matching DCOIR_* orphan under the selected OutRoot and reports MISSING_STATE_ORPHAN_CLEANED.'
       $lines += 'Cleanup reports NO_TARGET_FOUND when no state-backed run or bounded orphan cleanup target exists.'
+      $lines += 'Cleanup reports SKIPPED when WhatIf or confirmation handling leaves all state-backed targets in place.'
       $lines += 'Cleanup does not remove the uploaded collector script unless you run DELETE_SCRIPT_COMMAND explicitly.'
       $lines += ''
       $lines += 'Response-action-safe example:'
@@ -519,7 +520,9 @@ function Write-QuickNextSteps {
 Removes run/package artifacts during cleanup.
 
 .DESCRIPTION
-Deletes the package path and run root recorded in the supplied collector state object.
+Deletes the package path and run root recorded in the supplied collector state object and
+returns cleanup outcome counts so skipped WhatIf or confirmation-declined removals are
+reported accurately.
 
 .FUNCTION NAME
 Invoke-Cleanup
@@ -528,15 +531,53 @@ Invoke-Cleanup
 Collector state object.
 
 .OUTPUTS
-No direct output. Removes cleanup targets as a side effect.
+Cleanup result object with status, target, removed, skipped, and failed counts.
 #>
 function Invoke-Cleanup {
   [CmdletBinding(SupportsShouldProcess=$true)]
   param($StateObject)
-  $targets = @([string]$StateObject.PackagePath,[string]$StateObject.RunRoot) | Where-Object { $_ -and (Test-Path -LiteralPath $_) }
-  foreach ($target in $targets) {
+
+  $targets = New-Object System.Collections.ArrayList
+  foreach ($candidate in @([string]$StateObject.PackagePath,[string]$StateObject.RunRoot)) {
+    if ([string]::IsNullOrWhiteSpace($candidate)) { continue }
+    if (-not (Test-Path -LiteralPath $candidate)) { continue }
+    if (-not @($targets).Contains($candidate)) { [void]$targets.Add($candidate) }
+  }
+
+  $removedTargets = New-Object System.Collections.ArrayList
+  $skippedTargets = New-Object System.Collections.ArrayList
+  $failedTargets = New-Object System.Collections.ArrayList
+
+  foreach ($target in @($targets)) {
     if ($PSCmdlet.ShouldProcess($target, 'Remove collector cleanup target')) {
       Remove-Item -LiteralPath $target -Recurse -Force -ErrorAction SilentlyContinue
+      if (Test-Path -LiteralPath $target) {
+        [void]$failedTargets.Add($target)
+      } else {
+        [void]$removedTargets.Add($target)
+      }
+    } else {
+      [void]$skippedTargets.Add($target)
     }
+  }
+
+  $status = 'COMPLETE'
+  if (@($targets).Count -eq 0) {
+    $status = 'NO_TARGET_FOUND'
+  } elseif (@($removedTargets).Count -eq 0 -and @($skippedTargets).Count -gt 0 -and @($failedTargets).Count -eq 0) {
+    $status = 'SKIPPED'
+  } elseif (@($skippedTargets).Count -gt 0 -or @($failedTargets).Count -gt 0) {
+    $status = 'PARTIAL'
+  }
+
+  return [pscustomobject][ordered]@{
+    Status = $status
+    TargetCount = @($targets).Count
+    RemovedCount = @($removedTargets).Count
+    SkippedCount = @($skippedTargets).Count
+    FailedCount = @($failedTargets).Count
+    RemovedTargets = @($removedTargets)
+    SkippedTargets = @($skippedTargets)
+    FailedTargets = @($failedTargets)
   }
 }
