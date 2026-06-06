@@ -183,6 +183,10 @@ function Split-TextArtifactIntoUploadSafeChunks {
       [void]$chunkPaths.Add($chunkPath)
       [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
       [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
+    } elseif ($WhatIfPreference) {
+      return $null
+    } else {
+      throw ("Upload-safe chunk write was skipped before completing chunk set: {0}" -f $chunkPath)
     }
   }
 
@@ -197,6 +201,10 @@ function Split-TextArtifactIntoUploadSafeChunks {
       [void]$chunkPaths.Add($chunkPath)
       [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
       [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
+    } elseif ($WhatIfPreference) {
+      return $null
+    } else {
+      throw ("Upload-safe chunk write was skipped before completing chunk set: {0}" -f $chunkPath)
     }
     $offset += $length
     $chunkIndex += 1
