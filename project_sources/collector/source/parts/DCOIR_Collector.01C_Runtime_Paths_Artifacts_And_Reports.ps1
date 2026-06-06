@@ -217,7 +217,7 @@ Move-PackageToOutRoot
 Root string and CurrentPackageName string.
 
 .OUTPUTS
-String package path in the out-root, or null when a dry run skips package movement.
+String package path in the out-root, or null when package movement is skipped.
 #>
 function Move-PackageToOutRoot {
   [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='Medium')]
@@ -233,9 +233,6 @@ function Move-PackageToOutRoot {
       if ($PSCmdlet.ShouldProcess($destPath, ("Move collector package from {0}" -f $sourcePath))) {
         Move-Item -LiteralPath $sourcePath -Destination $destPath -Force
         return $destPath
-      }
-      if (-not $WhatIfPreference) {
-        throw ("Collector package move was skipped before collect: {0} -> {1}" -f $sourcePath, $destPath)
       }
       return $null
     }
@@ -264,18 +261,22 @@ Expand-PackageToTools
 PackagePath string and ToolsDir string.
 
 .OUTPUTS
-No direct output. Recreates and populates the tools directory.
+Boolean true when tools were expanded, false when expansion was skipped.
 #>
 function Expand-PackageToTools {
   [CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='Medium')]
   param([string]$PackagePath,[string]$ToolsDir)
+
+  if ([string]::IsNullOrWhiteSpace($PackagePath)) { return $false }
 
   try {
     if ($PSCmdlet.ShouldProcess($ToolsDir, ("Recreate tools directory from package {0}" -f $PackagePath))) {
       Remove-IfExists -LiteralPath $ToolsDir
       Ensure-Directory -Path $ToolsDir
       Expand-Archive -LiteralPath $PackagePath -DestinationPath $ToolsDir -Force -ErrorAction Stop
+      return $true
     }
+    return $false
   } catch {
     throw "Failed to expand package [$PackagePath] to [$ToolsDir]: $($_.Exception.Message)"
   }
