@@ -1,7 +1,7 @@
 {
   "run_set_id": "dcoir-watch-latest-actions-sample",
   "mode": "watch",
-  "repo": "malwaredevil/dcoir-collector",
+  "repo": "DCOIR-Collector/dcoir-collector",
   "default_ref": "main",
   "poll_interval_seconds": 30,
   "timeout_minutes": 60,
