@@ -81,7 +81,7 @@ if ($Mode -eq 'Smoke' -or $Mode -eq 'LiveOnly') {
     $manifest = [ordered]@{
         run_set_id = 'dcoir-live-dispatch-test'
         mode = 'dispatch'
-        repo = 'malwaredevil/dcoir-collector'
+        repo = 'DCOIR-Collector/dcoir-collector'
         default_ref = $Ref
         dry_run = $false
         require_dispatch_confirmation = $true
