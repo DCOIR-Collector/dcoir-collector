@@ -11,8 +11,8 @@ This repository is the governed GitHub source for the DCOIR collector, Gemini-re
 
 ## Connector anchors
 
-- GitHub `repository_full_name`: `malwaredevil/dcoir-collector`
-- Canonical repository URL: `https://github.com/malwaredevil/dcoir-collector/`
+- GitHub `repository_full_name`: `DCOIR-Collector/dcoir-collector`
+- Canonical repository URL: `https://github.com/DCOIR-Collector/dcoir-collector/`
 - Supabase `project_id` for `ircore` operational readback: `kdhkhyksdzjbajavsoxa`
 - For governed startup, materialize `/workspace/.ircore-startup-pack.json` from that canonical project ID before running startup queries.
 - Use `ircore.get_agent_startup_pack(...)` first and `ircore.get_agent_bootstrap(...)` only as fallback.
