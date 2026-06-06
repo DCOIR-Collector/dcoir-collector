@@ -27,12 +27,18 @@ try {
 
       $purgeCompleted = Purge-PreviousRuns -Root $resolvedOutRoot -CurrentPackageName $PackageName
       if (-not $purgeCompleted) {
+        $prepSkipReason = if ($script:CollectPrepSkipReason) { [string]$script:CollectPrepSkipReason } else { 'PACKAGE_PURGE_SKIPPED' }
         $Global:CurrentRunId = $RunId
         $collectorCommandBase = Get-CollectorResponseActionCommandBase
         $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
         Write-Output "STATUS=SKIPPED"
         Write-Output "COLLECT_PREP_STATUS=SKIPPED"
-        Write-Output "PACKAGE_PURGE_STATUS=SKIPPED"
+        if ($prepSkipReason -eq 'CUSTOM_RUN_PURGE_SKIPPED') {
+          Write-Output "CUSTOM_RUN_PURGE_STATUS=SKIPPED"
+        } else {
+          Write-Output "PACKAGE_PURGE_STATUS=SKIPPED"
+        }
+        Write-Output ("COLLECT_PREP_SKIP_REASON={0}" -f $prepSkipReason)
         Write-Output ("RUN_ID={0}" -f $RunId)
         Write-Output ("COLLECTOR_VERSION={0}" -f $ScriptVersion)
         Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version $ScriptVersion))
@@ -227,12 +233,45 @@ try {
           $state.CollectBundlePath = $bundlePath
         } else {
           $state.CollectBundlePath = $null
+          $metadataReportPath = $null
+          $state.MetadataReportPath = $null
+          $metadataReportSkipped = $true
+          $state.UploadSummaryPath = $null
+          $state.UploadBudgetManifestPath = $null
+          $state.UploadSafeChunkManifestPath = $null
+          $state.AnalystOverviewPath = $null
+          $state.CollectionScopePath = $null
+          $state.ParallelismAssessmentPath = $null
+          $state.TargetedCollectionPlanPath = $null
+          $uploadSummarySkipped = $true
+          $attachmentBudgetManifestSkipped = $true
+          $uploadSafeChunkManifestSkipped = [bool]$uploadSafeChunkManifestExpected
+          $analystOverviewSkipped = $true
+          $collectionScopeSkipped = $true
+          $parallelismAssessmentSkipped = $true
+          $targetedCollectionPlanSkipped = [bool]$targetedPlanExpected
+          $collectGuidanceSkipped = $true
         }
       } else {
         $metadataReportPath = $null
         $state.MetadataReportPath = $null
         $state.CollectBundlePath = $null
+        $state.UploadSummaryPath = $null
+        $state.UploadBudgetManifestPath = $null
+        $state.UploadSafeChunkManifestPath = $null
+        $state.AnalystOverviewPath = $null
+        $state.CollectionScopePath = $null
+        $state.ParallelismAssessmentPath = $null
+        $state.TargetedCollectionPlanPath = $null
         $bundlePath = $null
+        $uploadSummarySkipped = $true
+        $attachmentBudgetManifestSkipped = $true
+        $uploadSafeChunkManifestSkipped = [bool]$uploadSafeChunkManifestExpected
+        $analystOverviewSkipped = $true
+        $collectionScopeSkipped = $true
+        $parallelismAssessmentSkipped = $true
+        $targetedCollectionPlanSkipped = [bool]$targetedPlanExpected
+        $collectGuidanceSkipped = $true
       }
 
       $stateSavePath = Save-State -State $state
@@ -295,7 +334,11 @@ try {
       }
       Write-Output ('CLEANUP_COMMAND=execute --command "{0} -Quick cleanup" --comment "Running Cleanup on DCOIR_Collector"' -f $collectorCommandBase)
       Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
-      Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer ANALYST_OVERVIEW_PATH, UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices. If UPLOAD_SAFE_CHUNK_MANIFEST_PATH exists, use it for full-fidelity oversized text artifacts after triage summaries. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
+      if (-not $collectGuidanceSkipped -and -not $metadataReportSkipped) {
+        Write-Output ('GEMINI_UPLOAD_GUIDANCE=Prefer ANALYST_OVERVIEW_PATH, UPLOAD_SUMMARY_PATH, ATTACHMENT_BUDGET_MANIFEST_PATH, COLLECTION_SCOPE_PATH, PARALLELISM_ASSESSMENT_PATH, and representative final_artifacts slices. If UPLOAD_SAFE_CHUNK_MANIFEST_PATH exists, use it for full-fidelity oversized text artifacts after triage summaries. If TARGETED_COLLECTION_PLAN_PATH exists, include it for narrow incidents.')
+      } else {
+        Write-Output "GEMINI_UPLOAD_GUIDANCE_STATUS=SKIPPED"
+      }
       foreach ($collectorError in @($Global:CollectorErrors)) {
         if (-not [string]::IsNullOrWhiteSpace([string]$collectorError)) {
           Write-Output ("COLLECTOR_ERROR={0}" -f $collectorError)
