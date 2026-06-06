@@ -47,6 +47,7 @@ Hashtable containing ReportPath, ActionArtifactPath, and StagedPath values for t
 executed enrich action.
 #>
 function Invoke-EnrichmentAction {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [hashtable]$State,
     [hashtable]$Session,
@@ -64,6 +65,63 @@ function Invoke-EnrichmentAction {
   $outputText = $null
   $interpretation = $null
   $nextStep = $null
+
+  $actionTarget = $Action
+  if ($Path) { $actionTarget = $Path }
+  elseif ($ServiceName) { $actionTarget = $ServiceName }
+  elseif ($RegistryPath) { $actionTarget = $RegistryPath }
+  elseif ($LogName) { $actionTarget = $LogName }
+  elseif ($TargetPid) { $actionTarget = "PID_$TargetPid" }
+
+  switch ($Action) {
+    "SigcheckPath" {
+      if (-not $Path) { throw "SigcheckPath requires -Path" }
+      if (-not $ToolMap.sigcheck) { throw "sigcheck tool not found in staged tools directory." }
+    }
+    "ListDllsPid" {
+      if (-not $TargetPid) { throw "ListDllsPid requires -TargetPid" }
+      if (-not $ToolMap.listdlls) { throw "listdlls tool not found in staged tools directory." }
+    }
+    "AccessChkFile" {
+      if (-not $Path) { throw "AccessChkFile requires -Path" }
+      if (-not $ToolMap.accesschk) { throw "accesschk tool not found in staged tools directory." }
+    }
+    "AccessChkService" {
+      if (-not $ServiceName) { throw "AccessChkService requires -ServiceName" }
+      if (-not $ToolMap.accesschk) { throw "accesschk tool not found in staged tools directory." }
+    }
+    "AccessChkReg" {
+      if (-not $RegistryPath) { throw "AccessChkReg requires -RegistryPath" }
+      if (-not $ToolMap.accesschk) { throw "accesschk tool not found in staged tools directory." }
+    }
+    "StringsPath" {
+      if (-not $Path) { throw "StringsPath requires -Path" }
+      if (-not $ToolMap.strings) { throw "strings tool not found in staged tools directory." }
+    }
+    "StreamsPath" {
+      if (-not $Path) { throw "StreamsPath requires -Path" }
+      if (-not $ToolMap.streams) { throw "streams tool not found in staged tools directory." }
+    }
+    "TcpvconRefresh" {
+      if (-not $ToolMap.tcpvcon) { throw "tcpvcon tool not found in staged tools directory." }
+    }
+    "LogText" {
+      if (-not $LogName) { throw "LogText requires -LogName" }
+    }
+    default {
+      return Invoke-EnrichmentAction-Retrieval -State $State -Session $Session -ToolMap $ToolMap
+    }
+  }
+
+  if (-not $PSCmdlet.ShouldProcess($actionTarget, ("Run enrich review action {0}" -f $Action))) {
+    return @{
+      ReportPath = $null
+      ActionArtifactPath = $null
+      StagedPath = $null
+      ActionSkipped = $true
+      ActionStatus = 'SKIPPED'
+    }
+  }
 
   switch ($Action) {
     "SigcheckPath" {
@@ -180,14 +238,31 @@ function Invoke-EnrichmentAction {
     Add-Section -Builder $actionBuilder -Name "ERRORS" -Text ($Global:CollectorErrors -join [Environment]::NewLine)
   }
 
-  $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString()
-  Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
+  $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString() -Confirm:$false
+  $summaryAppended = $false
+  if ($artifactPath) {
+    Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
+    $summaryAppended = $true
+  }
+  $reportPath = if ($summaryAppended) { $sessionSummaryPath } else { $null }
+
+  if (-not $artifactPath -or -not $summaryAppended) {
+    return @{
+      ReportPath = $reportPath
+      ActionArtifactPath = $artifactPath
+      StagedPath = $stagedPath
+      ActionSkipped = $true
+      ActionStatus = 'SKIPPED'
+    }
+  }
 
   $Session.ActionCount = [int]$Session.ActionCount + 1
 
   return @{
-    ReportPath = $sessionSummaryPath
+    ReportPath = $reportPath
     ActionArtifactPath = $artifactPath
     StagedPath = $stagedPath
+    ActionSkipped = $false
+    ActionStatus = 'RECORDED'
   }
 }

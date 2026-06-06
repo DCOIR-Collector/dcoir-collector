@@ -158,6 +158,7 @@ Source artifact path, artifact directory, source key, target chunk size, and ori
 Ordered hashtable describing chunk paths, sizes, hashes, source provenance, and reconstruction.
 #>
 function Split-TextArtifactIntoUploadSafeChunks {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [string]$SourcePath,
     [string]$ArtifactsDir,
@@ -177,10 +178,16 @@ function Split-TextArtifactIntoUploadSafeChunks {
 
   if ($sourceBytes.Length -eq 0) {
     $chunkPath = Join-Path $ArtifactsDir ("90_UPLOAD_SAFE_CHUNKS_{0}_chunk_{1:000}.txt" -f $safeKey, $chunkIndex)
-    [System.IO.File]::WriteAllBytes($chunkPath, [byte[]]@())
-    [void]$chunkPaths.Add($chunkPath)
-    [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
-    [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
+    if ($PSCmdlet.ShouldProcess($chunkPath, 'Write upload-safe empty chunk companion')) {
+      [System.IO.File]::WriteAllBytes($chunkPath, [byte[]]@())
+      [void]$chunkPaths.Add($chunkPath)
+      [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
+      [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
+    } elseif ($WhatIfPreference) {
+      return $null
+    } else {
+      throw ("Upload-safe chunk write was skipped before completing chunk set: {0}" -f $chunkPath)
+    }
   }
 
   while ($offset -lt $sourceBytes.Length) {
@@ -189,10 +196,16 @@ function Split-TextArtifactIntoUploadSafeChunks {
     $chunkBytes = New-Object byte[] $length
     [Array]::Copy($sourceBytes, $offset, $chunkBytes, 0, $length)
     $chunkPath = Join-Path $ArtifactsDir ("90_UPLOAD_SAFE_CHUNKS_{0}_chunk_{1:000}.txt" -f $safeKey, $chunkIndex)
-    [System.IO.File]::WriteAllBytes($chunkPath, $chunkBytes)
-    [void]$chunkPaths.Add($chunkPath)
-    [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
-    [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
+    if ($PSCmdlet.ShouldProcess($chunkPath, 'Write upload-safe chunk companion')) {
+      [System.IO.File]::WriteAllBytes($chunkPath, $chunkBytes)
+      [void]$chunkPaths.Add($chunkPath)
+      [void]$chunkSizes.Add((Get-FileSizeKB -Path $chunkPath))
+      [void]$chunkSha256.Add((Get-FileSha256 -Path $chunkPath))
+    } elseif ($WhatIfPreference) {
+      return $null
+    } else {
+      throw ("Upload-safe chunk write was skipped before completing chunk set: {0}" -f $chunkPath)
+    }
     $offset += $length
     $chunkIndex += 1
   }
@@ -231,6 +244,7 @@ Collector state, artifact map, and upload budget.
 Array of ordered manifest rows.
 #>
 function New-ProductionUploadSafeChunkCompanions {
+  [CmdletBinding()]
   param([hashtable]$State,[hashtable]$ArtifactMap,[hashtable]$Budget)
 
   $rows = New-Object System.Collections.ArrayList
@@ -242,6 +256,7 @@ function New-ProductionUploadSafeChunkCompanions {
     if ($sourceSizeKB -le [int]$Budget.SafePerFileKB) { continue }
 
     $chunkResult = Split-TextArtifactIntoUploadSafeChunks -SourcePath $sourcePath -ArtifactsDir $State.ArtifactsDir -SourceKey $key -TargetChunkKB ([Math]::Min(700, [int]$Budget.SafePerFileKB))
+    if ([int]$chunkResult.chunk_count -le 0) { continue }
     [void]$rows.Add($chunkResult)
     foreach ($chunkPath in @($chunkResult.chunk_paths)) {
       [void]$ArtifactMap.Add(("{0}_upload_safe_chunk_{1:000}" -f $key, (@($ArtifactMap.Keys | Where-Object { $_ -like ("{0}_upload_safe_chunk_*" -f $key) }).Count + 1)), $chunkPath)
@@ -407,6 +422,7 @@ Hashtable containing upload-summary path, manifest path, default-set status, tot
 and recommended file count.
 #>
 function New-CollectUploadArtifacts {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline)
 
   $budget = Get-CollectorUploadBudget
@@ -423,8 +439,9 @@ function New-CollectUploadArtifacts {
     'defender_status',
     'analyst_follow_up_queue'
   )) {
-    if ($artifactMap.ContainsKey($key) -and (Test-Path -LiteralPath $artifactMap[$key])) {
-      $recommendedPaths += $artifactMap[$key]
+    $candidatePath = if ($artifactMap.ContainsKey($key)) { [string]$artifactMap[$key] } else { $null }
+    if (-not [string]::IsNullOrWhiteSpace($candidatePath) -and (Test-Path -LiteralPath $candidatePath)) {
+      $recommendedPaths += $candidatePath
     }
   }
 
@@ -458,7 +475,7 @@ function New-CollectUploadArtifacts {
   $uploadManifestPath = Join-Path $State.ReportsDir ("DCOIR_ATTACHMENT_BUDGET_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
   $chunkManifestPath = $null
   if (@($chunkCompanions).Count -gt 0) {
-    $chunkManifestPath = Join-Path $State.ReportsDir ("DCOIR_UPLOAD_SAFE_CHUNK_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
+    $plannedChunkManifestPath = Join-Path $State.ReportsDir ("DCOIR_UPLOAD_SAFE_CHUNK_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
     $chunkManifestObj = [ordered]@{
       run_id = $State.RunId
       origin = 'collector_production_upload_safe'
@@ -466,13 +483,16 @@ function New-CollectUploadArtifacts {
       chunked_artifact_count = @($chunkCompanions).Count
       chunked_artifacts = @($chunkCompanions)
     }
-    Set-Content -Path $chunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8 -ErrorAction Stop
-    $State.UploadSafeChunkManifestPath = $chunkManifestPath
-    $Baseline.ArtifactMap['upload_safe_chunk_manifest'] = $chunkManifestPath
-    [void]$Baseline.ArtifactPaths.Add($chunkManifestPath)
-    foreach ($chunkRow in @($chunkCompanions)) {
-      foreach ($chunkPath in @($chunkRow.chunk_paths)) {
-        [void]$Baseline.ArtifactPaths.Add($chunkPath)
+    if ($PSCmdlet.ShouldProcess($plannedChunkManifestPath, 'Write upload-safe chunk manifest')) {
+      Set-Content -Path $plannedChunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8 -ErrorAction Stop
+      $chunkManifestPath = $plannedChunkManifestPath
+      $State.UploadSafeChunkManifestPath = $chunkManifestPath
+      $Baseline.ArtifactMap['upload_safe_chunk_manifest'] = $chunkManifestPath
+      [void]$Baseline.ArtifactPaths.Add($chunkManifestPath)
+      foreach ($chunkRow in @($chunkCompanions)) {
+        foreach ($chunkPath in @($chunkRow.chunk_paths)) {
+          [void]$Baseline.ArtifactPaths.Add($chunkPath)
+        }
       }
     }
   }
@@ -503,7 +523,9 @@ function New-CollectUploadArtifacts {
   if (@($chunkCompanions).Count -gt 0) {
     $summaryLines += ""
     $summaryLines += "Upload-safe chunk companions:"
-    $summaryLines += ("- UPLOAD_SAFE_CHUNK_MANIFEST_PATH={0}" -f $chunkManifestPath)
+    if ($chunkManifestPath) {
+      $summaryLines += ("- UPLOAD_SAFE_CHUNK_MANIFEST_PATH={0}" -f $chunkManifestPath)
+    }
     foreach ($chunkRow in @($chunkCompanions)) {
       $summaryLines += ("- SourceKey={0} SourceSizeKB={1} ChunkCount={2} TargetChunkKB={3}" -f $chunkRow.source_artifact_key, $chunkRow.source_size_kb, $chunkRow.chunk_count, $chunkRow.target_chunk_kb)
       foreach ($chunkPath in @($chunkRow.chunk_paths)) {
@@ -513,7 +535,11 @@ function New-CollectUploadArtifacts {
     $summaryLines += "- Upload the high-signal summary first for triage; use full-fidelity chunk companions when the oversized source artifact is needed."
   }
 
-  Set-Content -Path $uploadSummaryPath -Value $summaryLines -Encoding UTF8 -ErrorAction Stop
+  $uploadSummaryResultPath = $null
+  if ($PSCmdlet.ShouldProcess($uploadSummaryPath, 'Write collect upload summary')) {
+    Set-Content -Path $uploadSummaryPath -Value $summaryLines -Encoding UTF8 -ErrorAction Stop
+    $uploadSummaryResultPath = $uploadSummaryPath
+  }
 
   $manifestObj = [ordered]@{
     run_id = $State.RunId
@@ -529,11 +555,15 @@ function New-CollectUploadArtifacts {
     metadata_report_path = $State.MetadataReportPath
     note = 'The merged baseline report may be useful for local analyst review but is no longer the default Gemini-facing upload surface.'
   }
-  Set-Content -Path $uploadManifestPath -Value (Convert-ToSafeJsonText -InputObject $manifestObj) -Encoding UTF8 -ErrorAction Stop
+  $uploadManifestResultPath = $null
+  if ($PSCmdlet.ShouldProcess($uploadManifestPath, 'Write attachment budget manifest')) {
+    Set-Content -Path $uploadManifestPath -Value (Convert-ToSafeJsonText -InputObject $manifestObj) -Encoding UTF8 -ErrorAction Stop
+    $uploadManifestResultPath = $uploadManifestPath
+  }
 
   return @{
-    UploadSummaryPath = $uploadSummaryPath
-    UploadManifestPath = $uploadManifestPath
+    UploadSummaryPath = $uploadSummaryResultPath
+    UploadManifestPath = $uploadManifestResultPath
     DefaultSetStatus = $setStatus
     RecommendedUploadTotalKB = $safeTotal
     RecommendedUploadCount = @($recommended).Count
@@ -698,6 +728,7 @@ Collector state hashtable and ToolMap hashtable.
 Hashtable containing ReportBuilder, ReportText, ArtifactPaths, and ArtifactMap.
 #>
 function New-BaselineReport {
+  [CmdletBinding()]
   param([hashtable]$State,[hashtable]$ToolMap)
 
   $artifactPaths = New-Object System.Collections.ArrayList
@@ -1034,6 +1065,11 @@ Path string for the output file and Text string to write.
 No direct output. Writes the report file as a side effect.
 #>
 function Write-ReportFile {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([string]$Path,[string]$Text)
-  Set-Content -Path $Path -Value $Text -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($Path, 'Write collector report file')) {
+    Set-Content -Path $Path -Value $Text -Encoding UTF8 -ErrorAction Stop
+    return $Path
+  }
+  return $null
 }

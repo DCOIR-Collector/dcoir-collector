@@ -43,6 +43,7 @@ Hashtable containing ReportPath, ActionArtifactPath, and StagedPath values for t
 executed retrieval action.
 #>
 function Invoke-EnrichmentAction-Retrieval {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [hashtable]$State,
     [hashtable]$Session,
@@ -61,15 +62,61 @@ function Invoke-EnrichmentAction-Retrieval {
   $interpretation = $null
   $nextStep = $null
 
+  $actionTarget = $Action
+  switch ($Action) {
+    "LogRaw" {
+      if (-not $LogName) { throw "LogRaw requires -LogName" }
+      $actionTarget = $LogName
+    }
+    "PullSuspiciousFile" {
+      if (-not $Path) { throw "PullSuspiciousFile requires -Path" }
+      $actionTarget = $Path
+    }
+    "PullScriptOrConfig" {
+      if (-not $Path) { throw "PullScriptOrConfig requires -Path" }
+      $actionTarget = $Path
+    }
+    "PullTaskXml" {
+      if (-not $Path) { throw "PullTaskXml requires -Path with the task name, for example \Microsoft\Windows\TaskName" }
+      $actionTarget = $Path
+    }
+    "PullServiceBinary" {
+      if (-not $ServiceName) { throw "PullServiceBinary requires -ServiceName" }
+      $actionTarget = $ServiceName
+    }
+    "PullWmiReferencedFile" {
+      if (-not $Path) { throw "PullWmiReferencedFile requires -Path" }
+      $actionTarget = $Path
+    }
+    default {
+      throw "Unsupported enrichment action: $Action"
+    }
+  }
+
+  if (-not $PSCmdlet.ShouldProcess($actionTarget, ("Run enrich retrieval action {0}" -f $Action))) {
+    return @{
+      ReportPath = $null
+      ActionArtifactPath = $null
+      StagedPath = $null
+      ActionSkipped = $true
+      ActionStatus = 'SKIPPED'
+    }
+  }
+
   switch ($Action) {
     "LogRaw" {
       if (-not $LogName) { throw "LogRaw requires -LogName" }
       $reason = "Raw EVTX export for analyst workstation review."
       $targetDetails = Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take $MaxEvents
       $safeLogName = ($LogName -replace '[\\/:*?"<>|]','_')
-      $stagedPath = Join-Path $sessionStagedDir (New-StageName -Prefix ("STAGED_LogRaw_" + $safeLogName) -Extension ".evtx")
-      Export-FilteredEvtx -LogChannel $LogName -WindowHours $Hours -Ids $EventId -OutPath $stagedPath -ScratchDir $sessionLogsDir
-      $outputText = "Raw EVTX exported and staged for retrieval.`r`nSTAGED_PATH=$stagedPath"
+      $plannedStagedPath = Join-Path $sessionStagedDir (New-StageName -Prefix ("STAGED_LogRaw_" + $safeLogName) -Extension ".evtx")
+      Export-FilteredEvtx -LogChannel $LogName -WindowHours $Hours -Ids $EventId -OutPath $plannedStagedPath -ScratchDir $sessionLogsDir
+      if (Test-Path -LiteralPath $plannedStagedPath) {
+        $stagedPath = $plannedStagedPath
+        $outputText = "Raw EVTX exported and staged for retrieval.`r`nSTAGED_PATH=$stagedPath"
+      } else {
+        $outputText = "Raw EVTX export was skipped or did not create a staged artifact."
+      }
       $interpretation = "Open the EVTX in Event Viewer on the analyst workstation with Action > Open Saved Log."
       $nextStep = "Retrieve the EVTX with get-file and review it in Event Viewer."
     }
@@ -78,7 +125,7 @@ function Invoke-EnrichmentAction-Retrieval {
       $reason = "Stage a suspicious file for analyst retrieval."
       $targetDetails = "Path=$Path"
       $stagedPath = Stage-PathCopy -SourcePath $Path -StagedDir $sessionStagedDir
-      $outputText = "Suspicious file staged for retrieval.`r`nSTAGED_PATH=$stagedPath"
+      $outputText = if ($stagedPath) { "Suspicious file staged for retrieval.`r`nSTAGED_PATH=$stagedPath" } else { "Suspicious file staging was skipped; no staged artifact was created." }
       $interpretation = "Retrieve the file with get-file, then review locally with sigcheck and strings or upload to a sandbox if policy allows."
       $nextStep = "After retrieval, run sigcheck and strings on the analyst workstation."
     }
@@ -87,7 +134,7 @@ function Invoke-EnrichmentAction-Retrieval {
       $reason = "Stage a script or configuration file for analyst review."
       $targetDetails = "Path=$Path"
       $stagedPath = Stage-PathCopy -SourcePath $Path -StagedDir $sessionStagedDir
-      $outputText = "Script or config staged for retrieval.`r`nSTAGED_PATH=$stagedPath"
+      $outputText = if ($stagedPath) { "Script or config staged for retrieval.`r`nSTAGED_PATH=$stagedPath" } else { "Script or config staging was skipped; no staged artifact was created." }
       $interpretation = "Retrieve the file, open it in a text editor, and upload plain text to the AFRICOM SOC IR AI."
       $nextStep = "If the file references other paths or URLs, follow the next most suspicious reference."
     }
@@ -96,9 +143,12 @@ function Invoke-EnrichmentAction-Retrieval {
       $reason = "Export scheduled task XML for analyst review."
       $targetDetails = "TaskName=$Path"
       $taskXml = Get-TaskXml -TaskName $Path
-      $stagedPath = Join-Path $sessionStagedDir (New-StageName -Prefix "STAGED_TASK_XML" -Extension ".xml")
-      Set-Content -Path $stagedPath -Value $taskXml -Encoding UTF8 -ErrorAction Stop
-      $outputText = "Task XML exported and staged for retrieval.`r`nSTAGED_PATH=$stagedPath"
+      $plannedStagedPath = Join-Path $sessionStagedDir (New-StageName -Prefix "STAGED_TASK_XML" -Extension ".xml")
+      Set-Content -Path $plannedStagedPath -Value $taskXml -Encoding UTF8 -ErrorAction Stop
+      if (Test-Path -LiteralPath $plannedStagedPath) {
+        $stagedPath = $plannedStagedPath
+      }
+      $outputText = if ($stagedPath) { "Task XML exported and staged for retrieval.`r`nSTAGED_PATH=$stagedPath" } else { "Task XML staging was skipped; no staged artifact was created." }
       $interpretation = "Review author, principal, triggers, actions, working directory, and command arguments."
       $nextStep = "If the action points to a file path, stage that file next."
     }
@@ -109,7 +159,7 @@ function Invoke-EnrichmentAction-Retrieval {
       $svcPath = Get-ServiceBinaryPath -Name $ServiceName
       if (-not $svcPath) { throw "Unable to resolve service binary path for service [$ServiceName]." }
       $stagedPath = Stage-PathCopy -SourcePath $svcPath -StagedDir $sessionStagedDir
-      $outputText = "Service binary staged for retrieval.`r`nSERVICE_BINARY_PATH=$svcPath`r`nSTAGED_PATH=$stagedPath"
+      $outputText = if ($stagedPath) { "Service binary staged for retrieval.`r`nSERVICE_BINARY_PATH=$svcPath`r`nSTAGED_PATH=$stagedPath" } else { "Service binary staging was skipped; no staged artifact was created.`r`nSERVICE_BINARY_PATH=$svcPath" }
       $interpretation = "Retrieve the binary, then review locally with sigcheck and strings or upload to a sandbox if policy allows."
       $nextStep = "If the binary is unsigned or suspicious, correlate with service creation or modification events."
     }
@@ -118,7 +168,7 @@ function Invoke-EnrichmentAction-Retrieval {
       $reason = "Stage a file referenced by suspicious WMI persistence."
       $targetDetails = "Path=$Path"
       $stagedPath = Stage-PathCopy -SourcePath $Path -StagedDir $sessionStagedDir
-      $outputText = "WMI-referenced file staged for retrieval.`r`nSTAGED_PATH=$stagedPath"
+      $outputText = if ($stagedPath) { "WMI-referenced file staged for retrieval.`r`nSTAGED_PATH=$stagedPath" } else { "WMI-referenced file staging was skipped; no staged artifact was created." }
       $interpretation = "Review the referenced script or binary as a persistence payload."
       $nextStep = "Correlate the file with WMI filter and consumer details in Tier 2 output."
     }
@@ -157,14 +207,31 @@ function Invoke-EnrichmentAction-Retrieval {
     Add-Section -Builder $actionBuilder -Name "ERRORS" -Text ($Global:CollectorErrors -join [Environment]::NewLine)
   }
 
-  $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString()
-  Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
+  $artifactPath = Write-SessionArtifactText -SessionArtifactsDir $sessionArtifactsDir -ActionName $Action -TargetLabel $targetLabel -Text $actionBuilder.ToString() -Confirm:$false
+  $summaryAppended = $false
+  if ($artifactPath) {
+    Add-Content -Path $sessionSummaryPath -Value $actionBuilder.ToString() -Encoding UTF8 -ErrorAction Stop
+    $summaryAppended = $true
+  }
+  $reportPath = if ($summaryAppended) { $sessionSummaryPath } else { $null }
+
+  if (-not $stagedPath -or -not $artifactPath -or -not $summaryAppended) {
+    return @{
+      ReportPath = $reportPath
+      ActionArtifactPath = $artifactPath
+      StagedPath = $stagedPath
+      ActionSkipped = $true
+      ActionStatus = 'SKIPPED'
+    }
+  }
 
   $Session.ActionCount = [int]$Session.ActionCount + 1
 
   return @{
-    ReportPath = $sessionSummaryPath
+    ReportPath = $reportPath
     ActionArtifactPath = $artifactPath
     StagedPath = $stagedPath
+    ActionSkipped = $false
+    ActionStatus = 'RECORDED'
   }
 }

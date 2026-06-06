@@ -116,6 +116,7 @@ directory path.
 No direct output. Writes the EVTX file to OutPath or throws on failure.
 #>
 function Export-FilteredEvtx {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [string]$LogChannel,
     [int]$WindowHours,
@@ -124,11 +125,7 @@ function Export-FilteredEvtx {
     [string]$ScratchDir
   )
 
-  Ensure-Directory -Path $ScratchDir
   $parentDir = Split-Path -Parent $OutPath
-  if (-not [string]::IsNullOrWhiteSpace($parentDir)) {
-    Ensure-Directory -Path $parentDir
-  }
 
   $window = Get-CollectorEffectiveEventWindow -WindowHours $WindowHours
   if ($window.HasExplicitWindow -and $window.EndTime) {
@@ -154,11 +151,18 @@ function Export-FilteredEvtx {
     "/ow:true"
   )
 
-  $result = Invoke-ProcessCapture -FilePath "wevtutil.exe" -Arguments $args -StepName ("ENRICH_LOGRAW_{0}" -f ($LogChannel -replace '[\\/:*?"<>|]','_'))
-  if ($result.ExitCode -ne 0) {
-    throw "wevtutil.exe returned exit code $($result.ExitCode)"
-  }
-  if (-not (Test-Path -LiteralPath $OutPath)) {
-    throw "EVTX export did not create output file."
+  if ($PSCmdlet.ShouldProcess($OutPath, ("Export filtered EVTX from {0}" -f $LogChannel))) {
+    Ensure-Directory -Path $ScratchDir
+    if (-not [string]::IsNullOrWhiteSpace($parentDir)) {
+      Ensure-Directory -Path $parentDir
+    }
+
+    $result = Invoke-ProcessCapture -FilePath "wevtutil.exe" -Arguments $args -StepName ("ENRICH_LOGRAW_{0}" -f ($LogChannel -replace '[\\/:*?"<>|]','_'))
+    if ($result.ExitCode -ne 0) {
+      throw "wevtutil.exe returned exit code $($result.ExitCode)"
+    }
+    if (-not (Test-Path -LiteralPath $OutPath)) {
+      throw "EVTX export did not create output file."
+    }
   }
 }

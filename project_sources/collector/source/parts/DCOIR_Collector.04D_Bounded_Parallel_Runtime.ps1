@@ -149,15 +149,26 @@ No direct return value. Updates global cache state, proof artifacts, and collect
 notes/errors.
 #>
 function Initialize-ParallelBaselineCache {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State)
 
   Reset-ParallelBaselineCache
 
   if ($Mode -ne 'Collect') { return }
 
+  if ($WhatIfPreference) {
+    Add-CollectorNote 'Parallel baseline runtime workers were skipped because WhatIf is active.'
+    return
+  }
+
   $workerDefinitions = @(Get-ParallelBaselineWorkerDefinitions)
   if (@($workerDefinitions).Count -lt 2) {
     Add-CollectorNote 'Parallel baseline runtime definitions were insufficient; collector will remain serial for this run.'
+    return
+  }
+
+  if (-not $PSCmdlet.ShouldProcess('bounded parallel baseline runtime', 'Start collector baseline worker jobs')) {
+    Add-CollectorNote 'Parallel baseline runtime workers were skipped because worker startup was not confirmed.'
     return
   }
 

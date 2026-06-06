@@ -19,6 +19,119 @@ metadata deterministically.
 
 <#
 .SYNOPSIS
+Removes partial upload-safe chunk companions after a declined chunk write.
+
+.DESCRIPTION
+When a per-chunk confirmation prompt is declined after earlier chunks in the same set
+were written, removes the current-run companion files for the known oversized artifact
+keys so collect can report the chunk companion set as skipped instead of leaving a partial
+upload surface.
+
+.FUNCTION NAME
+Remove-SkippedUploadSafeChunkCompanionFiles
+
+.INPUTS
+Collector state hashtable.
+
+.OUTPUTS
+No direct output. Deletes matching current-run companion files when present.
+#>
+function Remove-SkippedUploadSafeChunkCompanionFiles {
+  param([hashtable]$State)
+
+  if (-not $State -or [string]::IsNullOrWhiteSpace([string]$State.ArtifactsDir) -or -not (Test-Path -LiteralPath $State.ArtifactsDir)) { return }
+  foreach ($key in @('security_filtered','powershell_operational_filtered','taskscheduler_operational_filtered')) {
+    $safeKey = ($key -replace '[\/:*?"<>| ]','_')
+    $pattern = "90_UPLOAD_SAFE_CHUNKS_{0}_chunk_*.txt" -f $safeKey
+    foreach ($chunkPath in @(Get-ChildItem -LiteralPath $State.ArtifactsDir -Filter $pattern -File -ErrorAction SilentlyContinue)) {
+      Remove-Item -LiteralPath $chunkPath.FullName -Force -ErrorAction SilentlyContinue
+    }
+  }
+}
+
+<#
+.SYNOPSIS
+Detects upload-safe chunk companion writes that a WhatIf collect would skip.
+
+.DESCRIPTION
+Finds oversized upload-safe companion source artifacts before the shared chunk helper is
+called. Under a top-level WhatIf run those chunk writes will be declined and return null,
+so the active collect wrapper can mark the companion surface skipped without dereferencing
+a null chunk result in the shared helper.
+
+.FUNCTION NAME
+Test-UploadSafeChunkCompanionWouldBeSkippedByWhatIf
+
+.INPUTS
+Collector state, artifact map, and upload budget hashtables.
+
+.OUTPUTS
+Boolean.
+#>
+function Test-UploadSafeChunkCompanionWouldBeSkippedByWhatIf {
+  param([hashtable]$State,[hashtable]$ArtifactMap,[hashtable]$Budget)
+
+  if (-not $WhatIfPreference) { return $false }
+  if (-not $State -or -not $ArtifactMap -or -not $Budget) { return $false }
+
+  foreach ($key in @('security_filtered','powershell_operational_filtered','taskscheduler_operational_filtered')) {
+    if (-not $ArtifactMap.ContainsKey($key)) { continue }
+    $sourcePath = [string]$ArtifactMap[$key]
+    if ([string]::IsNullOrWhiteSpace($sourcePath) -or -not (Test-Path -LiteralPath $sourcePath)) { continue }
+    $sourceSizeKB = Get-FileSizeKB -Path $sourcePath
+    if ($sourceSizeKB -gt [int]$Budget.SafePerFileKB) { return $true }
+  }
+
+  return $false
+}
+
+<#
+.SYNOPSIS
+Creates production upload-safe chunk companions with skipped-write downgrade handling.
+
+.DESCRIPTION
+Calls the shared chunk companion builder and catches the specific confirmation-decline
+error raised by a per-chunk companion write. It also pre-detects the pure WhatIf oversized
+companion path, where the shared chunk helper returns null instead of throwing. The skipped
+set is omitted from manifest rows, partial companion files are cleaned up, and the collect
+state records that an upload-safe chunk companion surface was skipped.
+
+.FUNCTION NAME
+New-ProductionUploadSafeChunkCompanionsWithSkipStatus
+
+.INPUTS
+Collector state, artifact map, and upload budget hashtables.
+
+.OUTPUTS
+Array of ordered manifest rows, or an empty array when the chunk companion set was
+skipped by confirmation decline or WhatIf.
+#>
+function New-ProductionUploadSafeChunkCompanionsWithSkipStatus {
+  [CmdletBinding()]
+  param([hashtable]$State,[hashtable]$ArtifactMap,[hashtable]$Budget)
+
+  if ($State) { $State.UploadSafeChunkCompanionSkipped = $false }
+  if (Test-UploadSafeChunkCompanionWouldBeSkippedByWhatIf -State $State -ArtifactMap $ArtifactMap -Budget $Budget) {
+    if ($State) { $State.UploadSafeChunkCompanionSkipped = $true }
+    Remove-SkippedUploadSafeChunkCompanionFiles -State $State
+    return @()
+  }
+
+  try {
+    return @(New-ProductionUploadSafeChunkCompanions -State $State -ArtifactMap $ArtifactMap -Budget $Budget)
+  } catch {
+    $message = [string]$_.Exception.Message
+    if ($message -match '^Upload-safe chunk write was skipped before completing chunk set:') {
+      if ($State) { $State.UploadSafeChunkCompanionSkipped = $true }
+      Remove-SkippedUploadSafeChunkCompanionFiles -State $State
+      return @()
+    }
+    throw
+  }
+}
+
+<#
+.SYNOPSIS
 Creates collect upload guidance while treating metadata as a late-bound final report.
 
 .DESCRIPTION
@@ -38,11 +151,12 @@ Hashtable containing upload-summary path, manifest path, default-set status, tot
 and recommended file count.
 #>
 function New-CollectUploadArtifactsWithLateMetadataReport {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline)
 
   $budget = Get-CollectorUploadBudget
   $artifactMap = $Baseline.ArtifactMap
-  $chunkCompanions = New-ProductionUploadSafeChunkCompanions -State $State -ArtifactMap $artifactMap -Budget $budget
+  $chunkCompanions = New-ProductionUploadSafeChunkCompanionsWithSkipStatus -State $State -ArtifactMap $artifactMap -Budget $budget
   $recommendedPaths = @()
 
   foreach ($key in @(
@@ -54,8 +168,9 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
     'defender_status',
     'analyst_follow_up_queue'
   )) {
-    if ($artifactMap.ContainsKey($key) -and (Test-Path -LiteralPath $artifactMap[$key])) {
-      $recommendedPaths += $artifactMap[$key]
+    $candidatePath = if ($artifactMap.ContainsKey($key)) { [string]$artifactMap[$key] } else { $null }
+    if (-not [string]::IsNullOrWhiteSpace($candidatePath) -and (Test-Path -LiteralPath $candidatePath)) {
+      $recommendedPaths += $candidatePath
     }
   }
 
@@ -105,7 +220,7 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
   $uploadManifestPath = Join-Path $State.ReportsDir ("DCOIR_ATTACHMENT_BUDGET_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
   $chunkManifestPath = $null
   if (@($chunkCompanions).Count -gt 0) {
-    $chunkManifestPath = Join-Path $State.ReportsDir ("DCOIR_UPLOAD_SAFE_CHUNK_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
+    $plannedChunkManifestPath = Join-Path $State.ReportsDir ("DCOIR_UPLOAD_SAFE_CHUNK_MANIFEST_{0}_{1}.json.txt" -f $env:COMPUTERNAME, $State.RunId)
     $chunkManifestObj = [ordered]@{
       run_id = $State.RunId
       origin = 'collector_production_upload_safe'
@@ -113,13 +228,16 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
       chunked_artifact_count = @($chunkCompanions).Count
       chunked_artifacts = @($chunkCompanions)
     }
-    Set-Content -Path $chunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8 -ErrorAction Stop
-    $State.UploadSafeChunkManifestPath = $chunkManifestPath
-    $Baseline.ArtifactMap['upload_safe_chunk_manifest'] = $chunkManifestPath
-    [void]$Baseline.ArtifactPaths.Add($chunkManifestPath)
-    foreach ($chunkRow in @($chunkCompanions)) {
-      foreach ($chunkPath in @($chunkRow.chunk_paths)) {
-        [void]$Baseline.ArtifactPaths.Add($chunkPath)
+    if ($PSCmdlet.ShouldProcess($plannedChunkManifestPath, 'Write upload-safe chunk manifest')) {
+      Set-Content -Path $plannedChunkManifestPath -Value (Convert-ToSafeJsonText -InputObject $chunkManifestObj) -Encoding UTF8 -ErrorAction Stop
+      $chunkManifestPath = $plannedChunkManifestPath
+      $State.UploadSafeChunkManifestPath = $chunkManifestPath
+      $Baseline.ArtifactMap['upload_safe_chunk_manifest'] = $chunkManifestPath
+      [void]$Baseline.ArtifactPaths.Add($chunkManifestPath)
+      foreach ($chunkRow in @($chunkCompanions)) {
+        foreach ($chunkPath in @($chunkRow.chunk_paths)) {
+          [void]$Baseline.ArtifactPaths.Add($chunkPath)
+        }
       }
     }
   }
@@ -153,7 +271,9 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
   if (@($chunkCompanions).Count -gt 0) {
     $summaryLines += ""
     $summaryLines += "Upload-safe chunk companions:"
-    $summaryLines += ("- UPLOAD_SAFE_CHUNK_MANIFEST_PATH={0}" -f $chunkManifestPath)
+    if ($chunkManifestPath) {
+      $summaryLines += ("- UPLOAD_SAFE_CHUNK_MANIFEST_PATH={0}" -f $chunkManifestPath)
+    }
     foreach ($chunkRow in @($chunkCompanions)) {
       $summaryLines += ("- SourceKey={0} SourceSizeKB={1} ChunkCount={2} TargetChunkKB={3}" -f $chunkRow.source_artifact_key, $chunkRow.source_size_kb, $chunkRow.chunk_count, $chunkRow.target_chunk_kb)
       foreach ($chunkPath in @($chunkRow.chunk_paths)) {
@@ -163,7 +283,11 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
     $summaryLines += "- Upload the high-signal summary first for triage; use full-fidelity chunk companions when the oversized source artifact is needed."
   }
 
-  Set-Content -Path $uploadSummaryPath -Value $summaryLines -Encoding UTF8 -ErrorAction Stop
+  $uploadSummaryResultPath = $null
+  if ($PSCmdlet.ShouldProcess($uploadSummaryPath, 'Write collect upload summary')) {
+    Set-Content -Path $uploadSummaryPath -Value $summaryLines -Encoding UTF8 -ErrorAction Stop
+    $uploadSummaryResultPath = $uploadSummaryPath
+  }
 
   $manifestObj = [ordered]@{
     run_id = $State.RunId
@@ -180,11 +304,15 @@ function New-CollectUploadArtifactsWithLateMetadataReport {
     metadata_report_path = $State.MetadataReportPath
     note = 'The merged baseline report may be useful for local analyst review but is no longer the default Gemini-facing upload surface.'
   }
-  Set-Content -Path $uploadManifestPath -Value (Convert-ToSafeJsonText -InputObject $manifestObj) -Encoding UTF8 -ErrorAction Stop
+  $uploadManifestResultPath = $null
+  if ($PSCmdlet.ShouldProcess($uploadManifestPath, 'Write attachment budget manifest')) {
+    Set-Content -Path $uploadManifestPath -Value (Convert-ToSafeJsonText -InputObject $manifestObj) -Encoding UTF8 -ErrorAction Stop
+    $uploadManifestResultPath = $uploadManifestPath
+  }
 
   return @{
-    UploadSummaryPath = $uploadSummaryPath
-    UploadManifestPath = $uploadManifestPath
+    UploadSummaryPath = $uploadSummaryResultPath
+    UploadManifestPath = $uploadManifestResultPath
     DefaultSetStatus = $setStatus
     RecommendedUploadTotalKB = $safeTotal
     RecommendedUploadCount = @($recommended).Count
@@ -212,6 +340,7 @@ State hashtable and Baseline hashtable.
 String analyst overview artifact path.
 #>
 function New-AnalystOverviewArtifactWithLateMetadataReport {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline)
 
   $artifactMap = $Baseline.ArtifactMap
@@ -240,7 +369,7 @@ function New-AnalystOverviewArtifactWithLateMetadataReport {
   [void]$lines.Add("2. Use the analyst follow-up queue and security high-signal summary as the first decisive triage surface.")
   [void]$lines.Add("3. Use representative process, network, and defender artifacts before expanding into broader local review.")
   if ($collectorErrorCount -gt 0) {
-    [void]$lines.Add("4. This run recorded degraded or partial conditions. Review errors.log and the affected truth surfaces before treating the overview as complete.")
+    [void]$lines.Add("4. This run recorded collector errors during collection. Review errors.log and the affected truth surfaces before treating the overview as complete.")
   }
   if ($State.TargetedCollectionPlanPath) {
     [void]$lines.Add("4. A targeted collection plan was emitted for this run; review it first when the incident is narrow.")
@@ -277,6 +406,9 @@ function New-AnalystOverviewArtifactWithLateMetadataReport {
   [void]$lines.Add("NO_MERGED_BASELINE_REPORT")
   [void]$lines.Add("No merged baseline report is emitted in this build. Use metadata plus representative artifacts for broader local review.")
 
-  Set-Content -Path $overviewPath -Value $lines -Encoding UTF8 -ErrorAction Stop
-  return $overviewPath
+  if ($PSCmdlet.ShouldProcess($overviewPath, 'Write analyst overview artifact')) {
+    Set-Content -Path $overviewPath -Value $lines -Encoding UTF8 -ErrorAction Stop
+    return $overviewPath
+  }
+  return $null
 }

@@ -53,9 +53,8 @@ Keeps blank/latest automatic purge bounded to timestamp-style collector run root
 custom RunId is supplied for a new collect, also deletes only the exact expected custom
 run root when collector ownership is proven by state.json or the no-state cleanup child
 structure. If an unsafe exact custom root exists, collection stops before new artifacts are
-written. This prevents stale reports, artifacts, logs, or bundles from a previous custom
-RunId collect from being mixed into a new evidence bundle without deleting arbitrary
-shared-root directories.
+written. If a required exact custom root or prior package purge is declined, collection
+returns the same skipped-preparation contract used by the main collect handler.
 
 .FUNCTION NAME
 Purge-PreviousRuns
@@ -64,12 +63,15 @@ Purge-PreviousRuns
 Root string and CurrentPackageName string.
 
 .OUTPUTS
-No direct output. Deletes prior strict-pattern collector run directories, a proven
-collector-owned exact custom run root when applicable, and the previous package file as
-side effects. Throws when the exact custom run root is unsafe or remains after deletion.
+Boolean true when prior run/package purge did not block collect startup, false when a
+required confirmation-decline path skipped collect preparation. Throws when the exact
+custom run root is unsafe or remains after deletion.
 #>
 function Purge-PreviousRuns {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([string]$Root,[string]$CurrentPackageName)
+
+  $script:CollectPrepSkipReason = $null
 
   try {
     $currentRunId = [string]$script:RunId
@@ -83,9 +85,14 @@ function Purge-PreviousRuns {
         if (-not (Test-DCOIRExactCustomRunRootPurgeCandidate -Directory $expectedRunDir)) {
           throw "Existing custom RunId directory is not collector-owned and will not be removed before collect: $expectedRunRoot"
         }
-        Remove-Item -LiteralPath $expectedRunRoot -Recurse -Force -ErrorAction SilentlyContinue
-        if (Test-Path -LiteralPath $expectedRunRoot) {
-          throw "Existing custom RunId directory could not be removed before collect: $expectedRunRoot"
+        if ($PSCmdlet.ShouldProcess($expectedRunRoot, 'Remove existing custom collector run root')) {
+          Remove-Item -LiteralPath $expectedRunRoot -Recurse -Force -ErrorAction SilentlyContinue
+          if (Test-Path -LiteralPath $expectedRunRoot) {
+            throw "Existing custom RunId directory could not be removed before collect: $expectedRunRoot"
+          }
+        } else {
+          $script:CollectPrepSkipReason = 'CUSTOM_RUN_PURGE_SKIPPED'
+          return $false
         }
       }
     }
@@ -98,7 +105,9 @@ function Purge-PreviousRuns {
     $dirs = Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
       Where-Object { Test-DCOIRBulkPurgeRunDirectoryName -Name $_.Name }
     foreach ($dir in $dirs) {
-      Remove-Item -LiteralPath $dir.FullName -Recurse -Force -ErrorAction SilentlyContinue
+      if ($PSCmdlet.ShouldProcess($dir.FullName, 'Remove previous collector run directory')) {
+        Remove-Item -LiteralPath $dir.FullName -Recurse -Force -ErrorAction SilentlyContinue
+      }
     }
   } catch {
     Add-CollectorError "Failed to purge previous DCOIR directories: $($_.Exception.Message)"
@@ -107,11 +116,24 @@ function Purge-PreviousRuns {
   try {
     $pkg = Join-Path $Root $CurrentPackageName
     if (Test-Path -LiteralPath $pkg) {
-      Remove-Item -LiteralPath $pkg -Force -ErrorAction SilentlyContinue
+      if ($PSCmdlet.ShouldProcess($pkg, 'Remove previous collector package')) {
+        Remove-Item -LiteralPath $pkg -Force -ErrorAction SilentlyContinue
+        if (Test-Path -LiteralPath $pkg) {
+          $script:CollectPrepSkipReason = 'PACKAGE_PURGE_SKIPPED'
+          return $false
+        }
+      } else {
+        $script:CollectPrepSkipReason = 'PACKAGE_PURGE_SKIPPED'
+        return $false
+      }
     }
   } catch {
     Add-CollectorError "Failed to remove previous collector package: $($_.Exception.Message)"
+    $script:CollectPrepSkipReason = 'PACKAGE_PURGE_SKIPPED'
+    return $false
   }
+
+  return $true
 }
 
 <#
@@ -191,9 +213,14 @@ Path and text.
 No direct output. Writes text to disk.
 #>
 function Write-DCOIRUtf8NoBomText {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([string]$Path,[string]$Text)
   $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-  [System.IO.File]::WriteAllText($Path, [string]$Text, $utf8NoBom)
+  if ($PSCmdlet.ShouldProcess($Path, 'Write UTF-8 text without BOM')) {
+    [System.IO.File]::WriteAllText($Path, [string]$Text, $utf8NoBom)
+    return $Path
+  }
+  return $null
 }
 
 <#
@@ -217,6 +244,7 @@ Artifact directory, section name, artifact name, and text content.
 The existing prefixed root artifact path.
 #>
 function Write-ArtifactText {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [string]$ArtifactsDir,
     [string]$Section,
@@ -224,7 +252,6 @@ function Write-ArtifactText {
     [string]$Text
   )
 
-  Ensure-Directory -Path $ArtifactsDir
   $prefix = Get-BaselineArtifactPrefix -Name $Name
   $safeSection = ($Section -replace '[\/:*?"<>| ]','_')
   $safeName = ($Name -replace '[\/:*?"<>| ]','_')
@@ -233,28 +260,36 @@ function Write-ArtifactText {
     $artifactText = Convert-CollectionMetadataValidationText -Text $artifactText
   }
   $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
-  if ($Name -eq 'collection_metadata.txt') {
-    Write-DCOIRUtf8NoBomText -Path $path -Text $artifactText
-  } else {
-    Set-Content -Path $path -Value $artifactText -Encoding UTF8 -ErrorAction Stop
+  $wroteRootArtifact = $false
+  if ($PSCmdlet.ShouldProcess($path, 'Write collector artifact')) {
+    Ensure-Directory -Path $ArtifactsDir
+    if ($Name -eq 'collection_metadata.txt') {
+      $wroteRootArtifact = -not [string]::IsNullOrWhiteSpace((Write-DCOIRUtf8NoBomText -Path $path -Text $artifactText))
+    } else {
+      Set-Content -Path $path -Value $artifactText -Encoding UTF8 -ErrorAction Stop
+      $wroteRootArtifact = $true
+    }
   }
 
   try {
     if (-not [string]::IsNullOrWhiteSpace($safeSection) -and -not [string]::IsNullOrWhiteSpace($safeName)) {
       $sectionDir = Join-Path $ArtifactsDir $safeSection
-      Ensure-Directory -Path $sectionDir
       $sectionPath = Join-Path $sectionDir $safeName
-      if ($Name -eq 'collection_metadata.txt') {
-        Write-DCOIRUtf8NoBomText -Path $sectionPath -Text $artifactText
-      } else {
-        Set-Content -Path $sectionPath -Value $artifactText -Encoding UTF8 -ErrorAction Stop
+      if ($PSCmdlet.ShouldProcess($sectionPath, 'Write collector section companion artifact')) {
+        Ensure-Directory -Path $sectionDir
+        if ($Name -eq 'collection_metadata.txt') {
+          Write-DCOIRUtf8NoBomText -Path $sectionPath -Text $artifactText
+        } else {
+          Set-Content -Path $sectionPath -Value $artifactText -Encoding UTF8 -ErrorAction Stop
+        }
       }
     }
   } catch {
     Add-CollectorError ("Failed to write section companion artifact [{0}/{1}]: {2}" -f $safeSection, $safeName, $_.Exception.Message)
   }
 
-  return $path
+  if ($wroteRootArtifact) { return $path }
+  return $null
 }
 
 <#
@@ -318,6 +353,7 @@ hashtable.
 String manifest path.
 #>
 function New-Manifest {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [string]$ManifestPath,
     [hashtable]$State,
@@ -355,8 +391,11 @@ function New-Manifest {
     tool_map = $ToolMap
     extra = $Extra
   }
-  Set-Content -Path $ManifestPath -Value (Convert-ToCollectorJsonText -InputObject $manifest -Label 'manifest JSON' -ThrowOnTruncation) -Encoding UTF8 -ErrorAction Stop
-  return $ManifestPath
+  if ($PSCmdlet.ShouldProcess($ManifestPath, 'Write collector manifest')) {
+    Set-Content -Path $ManifestPath -Value (Convert-ToCollectorJsonText -InputObject $manifest -Label 'manifest JSON' -ThrowOnTruncation) -Encoding UTF8 -ErrorAction Stop
+    return $ManifestPath
+  }
+  return $null
 }
 
 <#
@@ -379,25 +418,30 @@ Sync-CollectionMetadataCompanionArtifact
 ArtifactsDir string.
 
 .OUTPUTS
-No direct output. Writes or refreshes the section companion artifact when the root
-collection metadata artifact exists.
+Boolean true when no sync is required or the companion was refreshed; false when sync was
+skipped by ShouldProcess.
 #>
 function Sync-CollectionMetadataCompanionArtifact {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([string]$ArtifactsDir)
 
-  if ([string]::IsNullOrWhiteSpace($ArtifactsDir) -or -not (Test-Path -LiteralPath $ArtifactsDir)) { return }
+  if ([string]::IsNullOrWhiteSpace($ArtifactsDir) -or -not (Test-Path -LiteralPath $ArtifactsDir)) { return $true }
 
   $rootPath = Join-Path $ArtifactsDir '01_COLLECTION_METADATA_collection_metadata.txt'
-  if (-not (Test-Path -LiteralPath $rootPath)) { return }
+  if (-not (Test-Path -LiteralPath $rootPath)) { return $true }
 
   try {
     $artifactText = Get-Content -LiteralPath $rootPath -Raw -ErrorAction Stop
     $artifactText = Add-BoundedCollectFieldsToCollectionMetadataText -Name 'collection_metadata.txt' -Text $artifactText
     $artifactText = Convert-CollectionMetadataValidationText -Text $artifactText
     $sectionDir = Join-Path $ArtifactsDir 'COLLECTION_METADATA'
-    Ensure-Directory -Path $sectionDir
     $sectionPath = Join-Path $sectionDir 'collection_metadata.txt'
-    Write-DCOIRUtf8NoBomText -Path $sectionPath -Text $artifactText
+    if ($PSCmdlet.ShouldProcess($sectionPath, 'Synchronize collection metadata companion artifact')) {
+      Ensure-Directory -Path $sectionDir
+      $syncPath = Write-DCOIRUtf8NoBomText -Path $sectionPath -Text $artifactText
+      return (-not [string]::IsNullOrWhiteSpace($syncPath))
+    }
+    return $false
   } catch {
     $message = "Failed to synchronize collection metadata companion artifact: $($_.Exception.Message)"
     Add-CollectorError $message
@@ -422,31 +466,38 @@ New-BundleZip
 BundlesDir string, BundleName string, and Paths string array.
 
 .OUTPUTS
-String bundle ZIP path.
+String bundle ZIP path, or null when archive creation is skipped.
 #>
 function New-BundleZip {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [string]$BundlesDir,
     [string]$BundleName,
     [string[]]$Paths
   )
 
+  $bundlePath = Join-Path $BundlesDir $BundleName
+  if (-not $PSCmdlet.ShouldProcess($bundlePath, 'Create collector ZIP bundle')) {
+    return $null
+  }
+
+  $existing = @($Paths | Where-Object { $_ -and (Test-Path -LiteralPath $_) })
+  if (@($existing).Count -eq 0) {
+    throw 'No bundle inputs were found.'
+  }
+
   foreach ($candidatePath in @($Paths)) {
     if ([string]::IsNullOrWhiteSpace($candidatePath) -or -not (Test-Path -LiteralPath $candidatePath)) { continue }
     $item = Get-Item -LiteralPath $candidatePath -ErrorAction SilentlyContinue
     if ($item -and $item.PSIsContainer -and ($item.Name -eq 'final_artifacts')) {
-      Sync-CollectionMetadataCompanionArtifact -ArtifactsDir $item.FullName
+      $metadataCompanionSynced = Sync-CollectionMetadataCompanionArtifact -ArtifactsDir $item.FullName
+      if (-not $metadataCompanionSynced) { return $null }
     }
   }
 
   Ensure-Directory -Path $BundlesDir
-  $bundlePath = Join-Path $BundlesDir $BundleName
   if (Test-Path -LiteralPath $bundlePath) {
     Remove-Item -LiteralPath $bundlePath -Force -ErrorAction SilentlyContinue
-  }
-  $existing = @($Paths | Where-Object { $_ -and (Test-Path -LiteralPath $_) })
-  if (@($existing).Count -eq 0) {
-    throw 'No bundle inputs were found.'
   }
   Compress-Archive -LiteralPath $existing -DestinationPath $bundlePath -CompressionLevel Optimal -Force -ErrorAction Stop
   return $bundlePath

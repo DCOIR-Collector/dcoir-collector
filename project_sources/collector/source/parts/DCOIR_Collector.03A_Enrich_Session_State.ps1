@@ -68,6 +68,7 @@ requires an existing open session for finalize-only calls.
 Hashtable describing the resolved enrichment session, whether reused or newly created.
 #>
 function Initialize-EnrichSession {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [hashtable]$State,
     [string]$RequestedSessionId,
@@ -114,8 +115,8 @@ function Initialize-EnrichSession {
     throw "No open enrichment session is available to finalize. Start an enrich session or provide -EnrichSessionId for a non-finalized session."
   }
 
-  $State.EnrichSessionCounter = [int]$State.EnrichSessionCounter + 1
-  $sessionNumber = "{0:D3}" -f [int]$State.EnrichSessionCounter
+  $nextSessionCounter = [int]$State.EnrichSessionCounter + 1
+  $sessionNumber = "{0:D3}" -f $nextSessionCounter
   $sessionStamp = Get-Date -Format "yyyyMMdd_HHmmss"
   $sessionId = "ENRICH_{0}_{1}" -f $sessionNumber, $sessionStamp
 
@@ -123,10 +124,6 @@ function Initialize-EnrichSession {
   $sessionArtifactsDir = Join-Path $sessionRoot "artifacts"
   $sessionStagedDir = Join-Path $sessionRoot "staged"
   $sessionLogsDir = Join-Path $sessionRoot "logs"
-  Ensure-Directory -Path $sessionRoot
-  Ensure-Directory -Path $sessionArtifactsDir
-  Ensure-Directory -Path $sessionStagedDir
-  Ensure-Directory -Path $sessionLogsDir
 
   $session = @{
     SessionId = $sessionId
@@ -141,11 +138,8 @@ function Initialize-EnrichSession {
     Finalized = $false
     ActionCount = 0
     SessionResolutionMode = 'CREATED_NEW_SESSION'
+    CreationSkipped = $false
   }
-
-  $State.EnrichSessions = @($State.EnrichSessions) + @($session)
-  $State.OpenEnrichSessionId = $sessionId
-  $State.LastSessionResolutionMode = 'CREATED_NEW_SESSION'
 
   $header = @(
     "CollectorVersion=$ScriptVersion"
@@ -157,8 +151,21 @@ function Initialize-EnrichSession {
     "SessionCreatedLocal=$(Get-Date -Format o)"
     "SessionRoot=$sessionRoot"
   ) -join [Environment]::NewLine
-  Set-Content -Path $session.SummaryPath -Value $header -Encoding UTF8 -ErrorAction Stop
+  if ($PSCmdlet.ShouldProcess($sessionRoot, 'Create enrichment session directories and summary')) {
+    Ensure-Directory -Path $sessionRoot
+    Ensure-Directory -Path $sessionArtifactsDir
+    Ensure-Directory -Path $sessionStagedDir
+    Ensure-Directory -Path $sessionLogsDir
+    Set-Content -Path $session.SummaryPath -Value $header -Encoding UTF8 -ErrorAction Stop
+    $State.EnrichSessionCounter = $nextSessionCounter
+    $State.EnrichSessions = @($State.EnrichSessions) + @($session)
+    $State.OpenEnrichSessionId = $sessionId
+    $State.LastSessionResolutionMode = 'CREATED_NEW_SESSION'
+    return $session
+  }
 
+  $session.CreationSkipped = $true
+  $session.SessionResolutionMode = 'CREATE_SKIPPED'
   return $session
 }
 
@@ -182,6 +189,7 @@ ToolMap used to write the manifest.
 String path to the finalized enrichment bundle ZIP file.
 #>
 function Finalize-EnrichSession {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [hashtable]$State,
     [hashtable]$Session,
@@ -200,6 +208,8 @@ function Finalize-EnrichSession {
     append_model = 'enrich-start creates a new session; enrich-add reuses the current open session unless explicitly overridden; enrich-finalize finalizes the current open session.'
   }
 
+  if (-not $manifest) { return $null }
+
   $bundleInputs = @(
     $Session.SummaryPath,
     $Session.ArtifactsDir,
@@ -209,6 +219,7 @@ function Finalize-EnrichSession {
   )
 
   $bundlePath = New-BundleZip -BundlesDir $State.BundlesDir -BundleName ("DCOIR_ENRICH_BUNDLE_{0}_{1}_{2}.zip" -f $Session.SessionId, $env:COMPUTERNAME, $State.RunId) -Paths $bundleInputs
+  if (-not $bundlePath) { return $null }
   $Session.BundlePath = $bundlePath
   $Session.Finalized = $true
   if ($State.OpenEnrichSessionId -eq $Session.SessionId) {

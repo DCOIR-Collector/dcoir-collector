@@ -211,6 +211,7 @@ State hashtable and Baseline hashtable.
 String analyst overview artifact path.
 #>
 function New-AnalystOverviewArtifact {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline)
 
   $artifactMap = $Baseline.ArtifactMap
@@ -272,8 +273,11 @@ function New-AnalystOverviewArtifact {
   [void]$lines.Add("NO_MERGED_BASELINE_REPORT")
   [void]$lines.Add("No merged baseline report is emitted in this build. Use metadata plus representative artifacts for broader local review.")
 
-  Set-Content -Path $overviewPath -Value $lines -Encoding UTF8 -ErrorAction Stop
-  return $overviewPath
+  if ($PSCmdlet.ShouldProcess($overviewPath, 'Write analyst overview artifact')) {
+    Set-Content -Path $overviewPath -Value $lines -Encoding UTF8 -ErrorAction Stop
+    return $overviewPath
+  }
+  return $null
 }
 
 <#
@@ -328,6 +332,7 @@ ArtifactsDir, Section, Name, and Text strings.
 String artifact path.
 #>
 function Write-ArtifactTextExact {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [string]$ArtifactsDir,
     [string]$Section,
@@ -335,14 +340,17 @@ function Write-ArtifactTextExact {
     [string]$Text
   )
 
-  Ensure-Directory -Path $ArtifactsDir
   $prefix = Get-BaselineArtifactPrefix -Name $Name
   $safeSection = ($Section -replace '[\\/:*?"<>| ]','_')
   $safeName = ($Name -replace '[\\/:*?"<>| ]','_')
   $path = Join-Path $ArtifactsDir ("{0}_{1}_{2}" -f $prefix, $safeSection, $safeName)
-  $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-  [System.IO.File]::WriteAllText($path, $Text, $utf8NoBom)
-  return $path
+  if ($PSCmdlet.ShouldProcess($path, 'Write exact UTF-8 artifact')) {
+    Ensure-Directory -Path $ArtifactsDir
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($path, $Text, $utf8NoBom)
+    return $path
+  }
+  return $null
 }
 
 <#
@@ -363,6 +371,7 @@ SourcePath, ArtifactsDir, RequestedKB, and TargetChunkKB.
 Hashtable describing chunk paths, sizes, and reconstruction metadata.
 #>
 function Split-ValidationTextArtifactIntoChunks {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [string]$SourcePath,
     [string]$ArtifactsDir,
@@ -382,7 +391,9 @@ function Split-ValidationTextArtifactIntoChunks {
     $lineBytes = [System.Text.Encoding]::UTF8.GetByteCount($lineText)
     if (($currentBytes + $lineBytes) -gt $targetBytes -and $currentBytes -gt 0) {
       $chunkPath = Write-ArtifactTextExact -ArtifactsDir $ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_{1:000}.txt' -f $RequestedKB, $chunkIndex) -Text $sb.ToString()
-      [void]$chunkPaths.Add($chunkPath)
+      if (-not [string]::IsNullOrWhiteSpace($chunkPath)) {
+        [void]$chunkPaths.Add($chunkPath)
+      }
       $chunkIndex += 1
       $sb = New-Object System.Text.StringBuilder
       $currentBytes = 0
@@ -393,12 +404,16 @@ function Split-ValidationTextArtifactIntoChunks {
 
   if ($currentBytes -gt 0) {
     $chunkPath = Write-ArtifactTextExact -ArtifactsDir $ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_{1:000}.txt' -f $RequestedKB, $chunkIndex) -Text $sb.ToString()
-    [void]$chunkPaths.Add($chunkPath)
+    if (-not [string]::IsNullOrWhiteSpace($chunkPath)) {
+      [void]$chunkPaths.Add($chunkPath)
+    }
   }
 
   $chunkSizes = @()
   foreach ($chunkPath in @($chunkPaths)) {
-    $chunkSizes += (Get-FileSizeKB -Path $chunkPath)
+    if (Test-Path -LiteralPath $chunkPath) {
+      $chunkSizes += (Get-FileSizeKB -Path $chunkPath)
+    }
   }
 
   return @{
@@ -428,10 +443,12 @@ State hashtable, Baseline hashtable, and RequestedKB integer.
 No direct output. Updates state and baseline structures.
 #>
 function New-SyntheticOversizeChunkValidationArtifacts {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline,[int]$RequestedKB)
 
   $sourceText = New-SyntheticOversizeArtifactText -RequestedKB $RequestedKB
   $sourcePath = Write-ArtifactTextExact -ArtifactsDir $State.ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_source.txt' -f $RequestedKB) -Text $sourceText
+  if ([string]::IsNullOrWhiteSpace($sourcePath)) { return }
   $chunkResult = Split-ValidationTextArtifactIntoChunks -SourcePath $sourcePath -ArtifactsDir $State.ArtifactsDir -RequestedKB $RequestedKB -TargetChunkKB 700
   $pathListPath = Write-ArtifactText -ArtifactsDir $State.ArtifactsDir -Section 'VALIDATION_CHUNKING' -Name ('synthetic_oversize_{0}KB_chunk_paths.json.txt' -f $RequestedKB) -Text (Convert-ToSafeJsonText -InputObject $chunkResult.ChunkPaths)
 
@@ -490,6 +507,7 @@ State hashtable and Baseline hashtable.
 No direct output. Updates state, baseline, and collector notes/recommendations.
 #>
 function Apply-FeatureWaveCollectEnhancements {
+  [CmdletBinding(SupportsShouldProcess=$true)]
   param([hashtable]$State,[hashtable]$Baseline)
 
   $scope = Get-TargetedCollectionScopeObject -State $State
