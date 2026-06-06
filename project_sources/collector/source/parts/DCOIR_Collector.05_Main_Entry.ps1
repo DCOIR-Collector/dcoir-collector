@@ -244,7 +244,8 @@ try {
       if ($Action) {
         $result = Invoke-EnrichmentAction -State $state -Session $session -ToolMap $toolMap
       }
-      $actionSkipped = [bool]($result -and $result.ContainsKey('ActionSkipped') -and [bool]$result.ActionSkipped)
+      $resultIsDictionary = ($result -is [System.Collections.IDictionary])
+      $actionSkipped = [bool]($resultIsDictionary -and $result.ContainsKey('ActionSkipped') -and [bool]$result.ActionSkipped)
 
       $bundlePath = $null
       $sessionStatus = "OPEN"
@@ -267,7 +268,7 @@ try {
       Write-Output ("ENRICH_SESSION_ID={0}" -f $session.SessionId)
       Write-Output ("SESSION_RESOLUTION_MODE={0}" -f $session.SessionResolutionMode)
       if ($result) {
-        if ($result.ContainsKey('ActionStatus') -and $result.ActionStatus) { Write-Output ("ACTION_STATUS={0}" -f $result.ActionStatus) }
+        if ($resultIsDictionary -and $result.ContainsKey('ActionStatus') -and $result.ActionStatus) { Write-Output ("ACTION_STATUS={0}" -f $result.ActionStatus) }
         if ($result.ReportPath) { Write-Output ("ENRICH_REPORT_PATH={0}" -f $result.ReportPath) }
         if ($result.ActionArtifactPath) { Write-Output ("ACTION_ARTIFACT_PATH={0}" -f $result.ActionArtifactPath) }
         if ($result.StagedPath) { Write-Output ("STAGED_PATH={0}" -f $result.StagedPath) }
