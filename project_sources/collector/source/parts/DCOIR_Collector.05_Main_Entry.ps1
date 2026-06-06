@@ -211,6 +211,19 @@ try {
 
       $requireOpenSessionForFinalize = [bool]($FinalizeEnrichSession -and -not $Action -and [string]::IsNullOrWhiteSpace($EnrichSessionId))
       $session = Initialize-EnrichSession -State $state -RequestedSessionId $EnrichSessionId -ForceNew:$NewEnrichSession -RequireExistingOpenSession:$requireOpenSessionForFinalize
+      if ($session -and $session.ContainsKey('CreationSkipped') -and [bool]$session.CreationSkipped) {
+        $deleteScriptCommand = Get-CollectorDeleteScriptCommandText
+        Write-Output "STATUS=SKIPPED"
+        Write-Output ("RUN_ID={0}" -f $state.RunId)
+        Write-Output ("COLLECTOR_VERSION={0}" -f [string]$state.CollectorVersion)
+        Write-Output ("COLLECTOR_BUILD_IDENTITY={0}" -f (Get-CollectorBuildIdentity -Version ([string]$state.CollectorVersion)))
+        Write-Output ("PLANNED_ENRICH_SESSION_ID={0}" -f $session.SessionId)
+        Write-Output ("SESSION_RESOLUTION_MODE={0}" -f $session.SessionResolutionMode)
+        Write-Output "SESSION_STATUS=CREATE_SKIPPED"
+        Write-Output "NEXT_OPTIONS=Re-run without -WhatIf to create the enrich session, or provide an existing -EnrichSessionId."
+        Write-Output ("DELETE_SCRIPT_COMMAND={0}" -f $deleteScriptCommand)
+        return
+      }
 
       $logStamp = Get-Date -Format "yyyyMMdd_HHmmss"
       $actionLabel = if ($Action) { $Action } else { "FinalizeSession" }
