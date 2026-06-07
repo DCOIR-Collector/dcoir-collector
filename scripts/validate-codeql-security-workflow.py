@@ -22,7 +22,7 @@ REQUIRED_SNIPPETS = {
         '- python',
         '- actions',
         'actions/upload-artifact@v7',
-        'if: ${{ always() && matrix.language == '"'"'python'"'"' }}',
+        "if: ${{ always() && matrix.language == 'python' }}",
         'name: chatgpt-workflow-report-section',
     ],
 }
