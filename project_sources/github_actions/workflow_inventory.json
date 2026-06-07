@@ -165,7 +165,7 @@
     },
     {
       "artifacts": [
-        "chatgpt-workflow-report-section-${{ matrix.language }}"
+        "chatgpt-workflow-report-section"
       ],
       "concurrency_declared": true,
       "contract_family": "codeql-security",

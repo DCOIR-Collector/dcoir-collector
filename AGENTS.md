@@ -236,7 +236,7 @@ Use `codex-review-checks` before finishing PR fix tasks when the changed file ty
 
 Use `codex-wait-pr-checks` only when the PR has checks running and the task requires waiting for GitHub Actions readback.
 
-Use `scripts/validate-codex-local.sh` for GitHub Desktop or local pre-push review when the Codex cloud helper commands are unavailable. Use `scripts/validate-windows-powershell-51.ps1` for local PowerShell parser checks and rely on `windows-powershell-51.yml` for exact Windows PowerShell 5.1 workflow readback. Use `scripts/validate-codeql-security-workflow.py` after CodeQL workflow changes to check the expected repo-local security workflow shape.
+Use `bash scripts/validate-codex-local.sh` for GitHub Desktop or local pre-push review when the Codex cloud helper commands are unavailable. Use `scripts/validate-windows-powershell-51.ps1` for local PowerShell parser checks and rely on `windows-powershell-51.yml` for exact Windows PowerShell 5.1 workflow readback. Use `python3 scripts/validate-codeql-security-workflow.py` after CodeQL workflow changes to check the expected repo-local security workflow shape.
 
 Use `codex-push-smoke` only when the operator explicitly asks to validate push capability. Do not run push smoke tests during routine PR work because the smoke test creates and deletes a temporary branch.
 

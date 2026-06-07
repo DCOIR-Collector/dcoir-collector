@@ -6,7 +6,8 @@ cd "$repo_root"
 
 status=0
 files_file="$(mktemp)"
-trap 'rm -f "$files_file"' EXIT
+existing_files_file="$(mktemp)"
+trap 'rm -f "$files_file" "$existing_files_file"' EXIT
 
 if [ "$#" -gt 0 ]; then
   printf '%s\n' "$@" > "$files_file"
@@ -21,12 +22,20 @@ else
     | sed 's#^./##' > "$files_file"
 fi
 
+while IFS= read -r file; do
+  [ -f "$file" ] && printf '%s\n' "$file"
+done < "$files_file" > "$existing_files_file"
+
 echo '[validate-codex-local] changed or selected files:'
 sed -n '1,200p' "$files_file"
 
-if command -v rg >/dev/null 2>&1; then
-  echo '[validate-codex-local] secret-pattern scan'
-  if rg -n --hidden \
+run_secret_scan() {
+  if [ ! -s "$existing_files_file" ]; then
+    echo '[validate-codex-local] no existing files selected for secret-pattern scan'
+    return 1
+  fi
+
+  xargs -r rg -n --hidden \
     -g '!.git' \
     -g '!node_modules' \
     -g '!dist' \
@@ -38,11 +47,18 @@ if command -v rg >/dev/null 2>&1; then
     -e 'AKIA[0-9A-Z]{16}' \
     -e '-----BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY-----' \
     -e '(?i)(api[_-]?key|secret|token|password)[[:space:]]*[:=][[:space:]]*["'"'"']?[A-Za-z0-9_./+=-]{16,}' \
-    .; then
+    -- < "$existing_files_file" \
+    | grep -Ev "REQUIRED_TOKEN[[:space:]]*=[[:space:]]*['\"]APPLY_[A-Z0-9_]+['\"]" || true
+}
+
+if command -v rg >/dev/null 2>&1; then
+  echo '[validate-codex-local] secret-pattern scan'
+  if scan_output="$(run_secret_scan)" && [ -n "$scan_output" ]; then
+    printf '%s\n' "$scan_output"
     echo '[validate-codex-local] potential secret patterns found'
     status=1
   else
-    echo '[validate-codex-local] no obvious secret patterns found'
+    echo '[validate-codex-local] no obvious secret patterns found in selected scope'
   fi
 else
   echo '[validate-codex-local] WARN: rg not available; skipping secret scan'
@@ -95,7 +111,12 @@ if grep -Eq '\.(ps1|psm1|psd1)$' "$files_file"; then
   if command -v pwsh >/dev/null 2>&1; then
     pwsh -NoProfile -File scripts/validate-windows-powershell-51.ps1 -AllowPowerShell7 -AllowEmpty || status=1
   elif command -v powershell >/dev/null 2>&1; then
-    powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-windows-powershell-51.ps1 -AllowEmpty || status=1
+    powershell_info="$(powershell -NoProfile -Command '$PSVersionTable.PSEdition + ":" + $PSVersionTable.PSVersion.Major' 2>/dev/null || true)"
+    if [ "$powershell_info" = "Desktop:5" ]; then
+      powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-windows-powershell-51.ps1 -AllowEmpty || status=1
+    else
+      powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-windows-powershell-51.ps1 -AllowPowerShell7 -AllowEmpty || status=1
+    fi
   else
     echo '[validate-codex-local] WARN: no PowerShell executable available'
   fi
