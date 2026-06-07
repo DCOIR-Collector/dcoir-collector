@@ -18,6 +18,7 @@ Its job is to:
 - choose the safest execution lane
 - identify GitHub work-item receipt requirements
 - identify whether Prog/Adva and Codi gates apply
+- identify whether an external `@codex` PR comment would require operator approval of exact proposed text before posting
 - note whether a continuity check is needed
 
 This skill should be concise. It orients execution; it does not replace Core Agent Instructions, repository `AGENTS.md`, or Supabase `ircore`.
@@ -141,6 +142,8 @@ For PR-related code, workflow, or governed-source changes:
 - Valid Codi findings must be fixed and re-reviewed until Codi approves, the operator explicitly waives Codi for the current task, or a future durable instruction change removes or changes the Codi requirement.
 - Codi review comments related to code review in PRs or issues must have a raw comment body whose first non-blank line starts with `CODI FINDS`, then follow the closest practical `@codex` review/finding format used in this repository.
 - Codi approval does not replace Prog, Adva, external `@codex`, GitHub Actions, live GitHub readback, or Supabase receipts.
+- Before posting or confirming any PR comment that invokes the literal `@codex` handle and asks Codex to review, act, fix, patch, implement, update, or otherwise perform PR-related work, draft the exact comment text, show it to the operator, and receive explicit operator approval in the current session. No approval means no post.
+- When citing prior Codex evidence in issue, PR, closure, or parent-tracker text, use non-triggering wording such as `External Codex review` unless the operator explicitly approves a live invocation.
 
 ## Failure Pattern Defaults
 
@@ -165,7 +168,7 @@ Check these first:
 4. mutation risk:
    - change attempted before validation/readback rule was identified
    - GitHub issue/PR receipt gateways skipped for governed work
-   - Prog/Adva, Codi, or external `@codex` gate skipped when required
+   - Prog/Adva, Codi, external `@codex`, or exact-text operator approval gate skipped when required
 
 Do not jump to exotic explanations first.
 
@@ -181,7 +184,7 @@ When used, return a compact preflight with:
 6. likely failure pattern
 7. required validation/readback
 8. GitHub work-item receipt requirement, if any
-9. Prog/Adva internal review requirement and Codi requirement, if applicable
+9. Prog/Adva internal review requirement, Codi requirement, and external `@codex` exact-text approval requirement, if applicable
 10. whether continuity capture is needed
 11. one best next move
 
@@ -194,6 +197,7 @@ When used, return a compact preflight with:
 - do not skip GitHub work-item receipt gateways for governed issue/PR work
 - do not treat Prog or Adva as operator-triggered only for non-trivial governed work
 - do not skip Codi review before the external `@codex` PR request unless the operator explicitly waived Codi for the current task
+- do not post or confirm any external `@codex` PR review or action comment unless the operator approved the exact proposed comment text in the current session
 - do not use direct agent-instruction updates unless explicitly approved for the current task
 - do not treat skill wording as higher authority than Core Agent Instructions, repository `AGENTS.md`, or Supabase `ircore`
 - do not recreate retired helper-skill gates

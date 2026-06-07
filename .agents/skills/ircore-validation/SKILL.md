@@ -17,6 +17,7 @@ Its job is to:
 - enforce GitHub work-item receipt discipline for governed issue/PR work
 - enforce Prog/Adva internal review evidence for non-trivial governed work before readiness, closeability, completion, or external-review claims
 - enforce Codi review evidence before external `@codex` requests when PR-related code review is in scope
+- enforce operator approval of the exact proposed external `@codex` PR comment text before any such comment is posted or confirmed
 - keep completion language bounded to the evidence actually available
 
 This skill is not a universal startup helper. Invoke it when validation, readiness, mutation, or completion claims matter.
@@ -83,6 +84,7 @@ Examples:
 - direct agent-instruction update claim -> read back the changed instruction file from GitHub or configured instruction surface and state whether a session restart or reload is still required
 - Prog/Adva gate claim -> summarize the implementation/fix scope, adversarial review result, valid findings disposition, and any waiver or unavailable-worker gap
 - Codi gate claim -> summarize Codi's latest review result and keep it separate from external `@codex` evidence
+- External `@codex` gate claim -> summarize the exact-text operator approval status, posted comment id if approved and posted, formal response readback, valid finding disposition, and any remaining approval or readback gap
 
 Do not treat intention, draft text, or an unverified action as proof of completion.
 
@@ -106,7 +108,9 @@ For governed PR readiness:
 - Valid Codi findings must be fixed and re-reviewed until Codi approves, the operator explicitly waives Codi for the current task, or a future durable instruction change removes or changes the Codi requirement.
 - Codi review comments related to code review in PRs or issues must have a raw comment body whose first non-blank line starts with `CODI FINDS`, then follow the closest practical `@codex` review/finding format used in this repository.
 - Codi approval is internal evidence only and does not replace external `@codex`.
+- Before posting or confirming any PR comment that invokes the literal `@codex` handle and asks Codex to review, act, fix, patch, implement, update, or otherwise perform PR-related work, draft the exact comment text, show it to the operator, and receive explicit operator approval in the current session. No approval means no post.
 - External `@codex` requires a literal `@codex` top-level PR comment, comment-id capture, reaction polling, formal response readback, and finding disposition.
+- When citing prior Codex evidence in issue, PR, closure, or parent-tracker text, use non-triggering wording such as `External Codex review` unless the operator explicitly approves a live invocation.
 - Applicable GitHub Actions validation must be read back by run ID, head SHA, job/step status, and artifacts/reports when available.
 - Final readiness evidence should be recorded through `ircore.record_github_work_item_readback` when a governed issue work item exists.
 
@@ -134,7 +138,8 @@ Check these first:
 6. GitHub work-item gateway functions skipped for governed issue/PR work
 7. Prog/Adva skipped when applicable without waiver, unavailable-worker explanation, or not-applicable reason
 8. Codi skipped before external `@codex` for PR-related code review when not explicitly waived
-9. direct agent-instruction update performed without exact operator approval and post-update GitHub readback
+9. external `@codex` PR comment posted or confirmed without operator approval of the exact proposed comment text in the current session
+10. direct agent-instruction update performed without exact operator approval and post-update GitHub readback
 
 ## Output Contract
 
@@ -147,7 +152,7 @@ When used, return:
 5. what was not checked
 6. GitHub work-item receipt status, if applicable
 7. Prog/Adva applicability and evidence, or reason not applicable
-8. Codi/internal review status, if applicable
+8. Codi/internal review status and external `@codex` exact-text approval status, if applicable
 9. pass, partial, gap, failed, stale, or not verified as supported by the governing surface
 10. one best next move
 
@@ -158,6 +163,7 @@ When used, return:
 - do not skip GitHub work-item receipt gateways for governed issue/PR work
 - do not claim Prog/Adva discipline is complete unless the implementation/fix scope, adversarial review result, and valid finding disposition are stated, or the pass is explicitly waived, unavailable, or not applicable
 - do not claim the Codi gate is clear unless Codi was actually asked and approved or the operator explicitly waived Codi for the task
+- do not post or confirm any external `@codex` PR review or action comment unless the operator approved the exact proposed comment text in the current session
 - do not claim the external `@codex` gate is clear until the formal response is read live and valid findings are fixed or dispositioned
 - do not treat skill wording as higher authority than Core Agent Instructions, repository `AGENTS.md`, or Supabase `ircore`
 - do not confuse draft creation with applied change

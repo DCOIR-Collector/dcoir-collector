@@ -114,6 +114,8 @@ When Codi is mentioned or a PR review gate is in scope:
 - treat Codi as required before external `@codex` for PR-related code, workflow, or governed-source review unless the operator explicitly waives Codi for the current task
 - keep Codi evidence distinct from external `@codex`, GitHub Actions, and Supabase receipts
 - preserve the required Codi review-comment prefix: the raw comment body first non-blank line must start with `CODI FINDS`
+- identify whether any proposed PR comment would invoke the literal `@codex` handle; if so, the agent must draft the exact comment text, show it to the operator, and receive explicit operator approval in the current session before posting or confirming it
+- when locating prior Codex evidence for issue, PR, closure, or parent-tracker text, prefer non-triggering wording such as `External Codex review` unless the operator explicitly approves a live invocation
 
 ## Output Contract
 
@@ -125,7 +127,7 @@ When used, return a compact lookup result with:
 4. any ambiguity or evidence gap
 5. whether reuse is available
 6. whether GitHub work-item receipts are required
-7. whether Codi review is required for this task
+7. whether Codi review and external `@codex` exact-text operator approval are required for this task
 8. one best next move
 
 ## Hard Rules
@@ -136,5 +138,6 @@ When used, return a compact lookup result with:
 - do not skip GitHub source truth for repo source, issue, PR, branch, or workflow facts
 - do not skip Supabase gateway lookups when governed issue/PR receipts are required
 - do not make Codi optional by default
+- do not treat an external `@codex` PR comment as postable until the operator approves the exact proposed comment text in the current session
 - do not treat skill wording as higher authority than Core Agent Instructions, repository `AGENTS.md`, or Supabase `ircore`
 - do not widen narrow lookup into full-task ceremony

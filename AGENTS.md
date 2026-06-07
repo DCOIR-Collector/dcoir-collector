@@ -14,7 +14,7 @@ This file is the repository/workspace adapter. It keeps local bootstrapping and 
 * `AGENTS.md` wins for workspace-local bootstrapping mechanics only when it does not contradict core instructions.
 * Active continuity supports resumption only and never overrides core instructions, this file, GitHub, or Supabase.
 * Codex cloud helper commands installed by the Codex environment are operational mechanics only. They do not expand task scope, bypass branch protection, bypass repository governance, or replace validation/readback rules.
-* You must always ask for operator approval before posting an `@codex` comment on a PR asking Codex to perform any action. You should show exactly what you plan on posting in your comment.
+* Before posting or confirming any PR comment that invokes the literal `@codex` handle and asks Codex to review, act, fix, patch, implement, update, or otherwise perform PR-related work, draft the exact comment text, show it to the operator, and receive explicit operator approval in the current session. No approval means no post. When citing prior Codex evidence in issue, PR, closure, or parent-tracker text, use non-triggering wording such as `External Codex review` unless the operator explicitly approves a live invocation.
 
 ## Canonical connector targets
 
@@ -155,6 +155,8 @@ Do not claim the ChatGPT webUI agent can automatically update this repository on
 
 The Codex cloud environment for this repository may install helper commands that support authenticated GitHub operations through the operator-approved Codex environment secret.
 
+This section describes how Codex should respond after an approved PR comment invokes `@codex`. It does not authorize this agent to post, confirm, or repeat an external `@codex` PR comment. Posting or confirming any such comment still requires operator approval of the exact proposed text in the current session.
+
 Expected helper commands:
 
 * `codex-pr-finish`
@@ -166,7 +168,7 @@ Expected helper commands:
 * `codex-env-check`
 * `codex-push-smoke`
 
-When a top-level GitHub PR comment invokes `@codex` and asks for code changes, review-comment fixes, requested changes, patches, or PR updates, complete the requested work and push back to the PR branch using the helper command.
+When an operator-approved top-level GitHub PR comment invokes `@codex` and asks for code changes, review-comment fixes, requested changes, patches, or PR updates, complete the requested work and push back to the PR branch using the helper command.
 
 Before changing files for a PR task, run `codex-pr-context` when available to capture PR metadata, comments, reviews, changed-file names, and patch context.
 
@@ -275,6 +277,7 @@ codex-pr-finish -b <pr-branch-name> -m "Address PR review comments"
 * For governed GitHub issue and PR creation, updates, or relabeling outside an operator-approved label taxonomy implementation task, use only labels that already exist in the live GitHub repository label inventory. Apply exactly one approved existing `area:` label and exactly one approved existing `type:` label unless the operator explicitly approves an exception for the current task. Do not invent, guess, create, or silently skip labels. If no existing approved label fits, stop and ask the operator. Treat GitHub as source truth for label existence; treat Supabase `ircore` as routing guidance only, not proof that a label exists.
 * Keep changes small, reviewable, and scoped to the task.
 * Prefer one scoped branch and one draft PR per coherent issue-sized update.
+* Before posting or confirming any external `@codex` PR review or action comment, show the exact proposed comment text to the operator and receive explicit approval in the current session. No approval means no post.
 * For `@codex` PR change tasks, use `codex-pr-finish` as the final push path after changes and validation.
 * Do not use raw `git push` for `@codex` PR change tasks unless `codex-pr-finish` is unavailable or fails and the operator explicitly directs a raw push attempt.
 * Use a direct GitHub connector update to agent instruction or repository adapter text only when the operator explicitly approves that direct lane for the current task, explains that a branch/PR path would create a session or governance risk, and limits the direct update to the approved instruction surface.
@@ -302,14 +305,14 @@ codex-pr-finish -b <pr-branch-name> -m "Address PR review comments"
 * Treat `Prog` and `Adva` as expert professionals in Python, PowerShell, JSON, YAML, GitHub Actions, software engineering, shell quoting, GitHub Actions expression surfaces, defense in depth, end-to-end code review, workflow runners, Gemini Enterprise and agent design, prompt engineering, cybersecurity, digital forensics, incident response, SOC operations, network forensics, Elastic SIEM, Elastic Defend response actions, and OSQuery writing.
 * When parallel workers are available, use them deliberately with clear ownership. When parallel workers are not available, still perform and label the Prog implementation/fix pass and Adva adversarial review pass internally.
 * If Prog or Adva is waived, unavailable, or not applicable, state why and preserve the evidence gap when governed readiness or completion depends on it.
-* Use Codi as an internal `@codex`-style reviewer before posting the external `@codex` PR request for PR-related code, workflow, or governed-source changes, unless the operator explicitly waives Codi for the current task.
+* Use Codi as an internal `@codex`-style reviewer before requesting operator approval to post the external `@codex` PR request for PR-related code, workflow, or governed-source changes, unless the operator explicitly waives Codi for the current task.
 * Fix valid Codi findings and repeat the Codi review loop until Codi approves, the operator explicitly waives Codi for the current task, or a future durable instruction change removes or changes the Codi requirement.
 * Require Codi review comments related to code review in PRs or issues to have a raw comment body whose first non-blank line starts with `CODI FINDS`, then follow the closest practical `@codex` review/finding format used in this repository.
 * Treat Codi approval as internal review evidence only. It does not replace Prog, Adva, GitHub Actions, Supabase work-item receipts, live GitHub readback, or the external `@codex` review response.
 * When a governed workflow liveness check uses Gmail, use the human-facing search label `label:GitHub`; connector metadata and returned message labels may show the same mailbox label as `Label_125`. Treat Gmail as an early signal only, and use request-scoped heartbeat files, workflow reports, status summaries, and artifacts as execution evidence.
 * Every repeated `@codex` review request in the same PR thread must use varied wording instead of reusing one exact sentence, regardless of whether the PR is still draft or ready to move from draft to ready.
-* Before moving a governed draft PR to ready, complete Prog/Adva and Codi gates unless explicitly waived for the task, then add or confirm a top-level PR comment that explicitly invokes `@codex`, read the formal `@codex` response live, and disposition valid findings.
-* For external `@codex` fix requests, include a direct instruction to finish with `codex-pr-finish -m "Address PR review comments"` when a push back to the PR branch is expected.
+* Before moving a governed draft PR to ready, complete Prog/Adva and Codi gates unless explicitly waived for the task, then draft the exact top-level PR comment that explicitly invokes `@codex`, show it to the operator, receive approval in the current session, post only after approval, read the formal `@codex` response live, and disposition valid findings.
+* If the operator approves an external `@codex` fix request, include exact scope, files, ordered instructions, and a direct instruction to finish with `codex-pr-finish -m "Address PR review comments"` when a push back to the PR branch is expected.
 
 ## Validation and readback
 
@@ -349,4 +352,3 @@ Push:
 * The memory folder is supplemental continuity only and must not become a competing policy or registry surface.
 * Historical artifacts may remain when they are clearly evidence or release history.
 * Active guidance, workflow validation, and support files must not depend on retired parity or skill-mirror surfaces.
-

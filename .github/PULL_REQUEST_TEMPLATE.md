@@ -46,12 +46,13 @@
 - [ ] Prog implementation/fix pass is complete or not applicable
 - [ ] Adva adversarial review pass is complete or not applicable
 - [ ] Codi review is complete or explicitly waived before external Codex review
-- [ ] External Codex review is requested before ready-for-review or merge when governed source changed
+- [ ] External Codex review request exact text was shown to the operator and explicitly approved before posting, or the external Codex gate is not applicable
 
 ## Codex Review And Fix Context
 
-- [ ] External `@codex` request is a top-level PR comment when a Codex action is required
-- [ ] Codex fix requests include exact scope, files, commands, and finish command when a push is expected
+- [ ] No PR comment invoking the literal `@codex` handle was posted or confirmed without operator approval of the exact proposed comment text in the current session
+- [ ] Approved external `@codex` requests are top-level PR comments when a Codex action or review is required
+- [ ] Approved Codex fix requests include exact scope, files, commands, and finish command when a push is expected
 - [ ] Codex PR fix tasks are expected to use `codex-pr-context`, relevant validation, and `codex-pr-finish` when available
 
 ## Workflow Boundary
@@ -76,7 +77,7 @@ Do not mark ready for review until this checklist is complete.
 - [ ] The final scope review explicitly confirms whether every issue acceptance criterion is implemented, intentionally deferred, or no longer applicable
 - [ ] Any additional impactful scope suggestions were presented to the operator and either implemented, deferred, or rejected before undrafting
 - [ ] Codi is clear on the latest PR head
-- [ ] External Codex is clear on the latest PR head
+- [ ] External Codex is clear on the latest PR head after an operator-approved exact-text request, or the gate is explicitly not applicable
 - [ ] The PR remains draft until the operator approves the final undraft step
 
 ## Notes
