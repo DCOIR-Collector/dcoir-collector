@@ -415,9 +415,15 @@ function Stop-CollectorProcessTree {
       }
     }
 
-    $killProcess = Start-Process -FilePath $taskkillPath -ArgumentList @('/PID', [string]$Process.Id, '/T', '/F') -Wait -NoNewWindow -PassThru -ErrorAction Stop
-    if ($killProcess.ExitCode -eq 0) {
-      $stopped = $true
+    $taskkillStdoutPath = [System.IO.Path]::GetTempFileName()
+    $taskkillStderrPath = [System.IO.Path]::GetTempFileName()
+    try {
+      $killProcess = Start-Process -FilePath $taskkillPath -ArgumentList @('/PID', [string]$Process.Id, '/T', '/F') -Wait -NoNewWindow -PassThru -RedirectStandardOutput $taskkillStdoutPath -RedirectStandardError $taskkillStderrPath -ErrorAction Stop
+      if ($killProcess.ExitCode -eq 0) {
+        $stopped = $true
+      }
+    } finally {
+      Remove-Item -LiteralPath $taskkillStdoutPath, $taskkillStderrPath -Force -ErrorAction SilentlyContinue
     }
   } catch { }
 
