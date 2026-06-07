@@ -18,18 +18,19 @@ REQUIRED_SNIPPETS = {
         'workflow_call:',
         'github/codeql-action/init@v4',
         'github/codeql-action/analyze@v4',
-        'actions/upload-artifact@v6',
-        'name: chatgpt-workflow-report-section',
-        "if: ${{ always() && matrix.language == 'python' }}",
         'security-extended,security-and-quality',
         '- python',
         '- actions',
+        'actions/upload-artifact@v7',
+        'name: chatgpt-workflow-report-section',
     ],
 }
+
 FORBIDDEN_SNIPPETS = {
     REUSABLE: [
-        'uses: ./.github/actions/upload-chatgpt-artifact',
+        './.github/actions/upload-chatgpt-artifact',
         'chatgpt-workflow-report-section-${{ matrix.language }}',
+        'actions/upload-artifact@v6',
     ],
 }
 
@@ -46,7 +47,7 @@ def main() -> int:
                 findings.append(f'{path}: missing expected snippet: {snippet}')
         for snippet in FORBIDDEN_SNIPPETS.get(path, []):
             if snippet in text:
-                findings.append(f'{path}: forbidden snippet still present: {snippet}')
+                findings.append(f'{path}: contains forbidden snippet: {snippet}')
     if findings:
         print('CodeQL workflow config validation failed:')
         for finding in findings:
