@@ -256,8 +256,8 @@ function Convert-ToCollectorJsonText {
 Formats one process-capture object into durable text.
 
 .DESCRIPTION
-Builds the combined command, exit-code, stdout, and stderr text block used in many
-collector artifacts.
+Builds the combined command, exit-code, optional status/timeout details, stdout, and
+stderr text block used in many collector artifacts.
 
 .FUNCTION NAME
 Get-CombinedProcessOutput
@@ -273,6 +273,18 @@ function Get-CombinedProcessOutput {
   $lines = New-Object System.Collections.ArrayList
   [void]$lines.Add(("COMMAND={0}" -f $Result.Command))
   [void]$lines.Add(("EXIT_CODE={0}" -f $Result.ExitCode))
+  $statusProperty = $Result.PSObject.Properties['Status']
+  if ($statusProperty) {
+    [void]$lines.Add(("STATUS={0}" -f $statusProperty.Value))
+  }
+  $timedOutProperty = $Result.PSObject.Properties['TimedOut']
+  if ($timedOutProperty) {
+    [void]$lines.Add(("TIMED_OUT={0}" -f $timedOutProperty.Value))
+  }
+  $timeoutSecondsProperty = $Result.PSObject.Properties['TimeoutSeconds']
+  if ($timeoutSecondsProperty) {
+    [void]$lines.Add(("TIMEOUT_SECONDS={0}" -f $timeoutSecondsProperty.Value))
+  }
   [void]$lines.Add("")
   [void]$lines.Add("STDOUT:")
   [void]$lines.Add(($Result.StdOut))
