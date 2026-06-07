@@ -41,6 +41,6 @@ Workflow modularization contract audit passed for 31 workflow files and 31 contr
 Exit code: `0`
 
 ```text
-Reusable/composite contract audit passed: 31 primary workflows, 30 reusable workflow definitions, 31 local reusable workflow calls, 15 local action definitions, 109 local action calls (108 from workflows, 1 from composite actions).
+Reusable/composite contract audit passed: 31 primary workflows, 30 reusable workflow definitions, 31 local reusable workflow calls, 15 local action definitions, 108 local action calls (107 from workflows, 1 from composite actions).
 
 ```
