@@ -13,6 +13,7 @@ if ($ShowHelp) {
 try {
   $PackageName = Resolve-DCOIRPackageName -CurrentPackageName $PackageName
   $RunId = Resolve-DCOIRRunId -CurrentRunId $RunId -GenerateIfBlank:($Mode -eq "Collect") -RejectBlank:$script:DCOIRRunIdParameterWasBound
+  $Global:CurrentPackageName = $PackageName
 
   if (-not $WhatIfPreference) {
     Ensure-Directory -Path $OutRoot
@@ -498,9 +499,13 @@ try {
         } else {
           $ScriptVersion
         }
-        $cleanupResult = Invoke-Cleanup -StateObject $loaded -Root $resolvedOutRoot -CurrentPackageName $PackageName
+        $cleanupResult = Invoke-Cleanup -StateObject $loaded -Root $resolvedOutRoot -CurrentPackageName $PackageName -SelectedRunId $RunId
+        $cleanupRunId = if ([string]::IsNullOrWhiteSpace([string]$RunId)) { [string]$loaded.RunId } else { [string]$RunId }
         Write-Output ("CLEANUP_STATUS={0}" -f $cleanupResult.Status)
-        Write-Output ("RUN_ID={0}" -f $loaded.RunId)
+        Write-Output ("RUN_ID={0}" -f $cleanupRunId)
+        if (-not [string]::Equals([string]$loaded.RunId, [string]$cleanupRunId, [System.StringComparison]::OrdinalIgnoreCase)) {
+          Write-Output ("STATE_RUN_ID={0}" -f $loaded.RunId)
+        }
         Write-Output ("CLEANUP_TARGET_COUNT={0}" -f $cleanupResult.TargetCount)
         Write-Output ("CLEANUP_REMOVED_COUNT={0}" -f $cleanupResult.RemovedCount)
         Write-Output ("CLEANUP_SKIPPED_COUNT={0}" -f $cleanupResult.SkippedCount)
