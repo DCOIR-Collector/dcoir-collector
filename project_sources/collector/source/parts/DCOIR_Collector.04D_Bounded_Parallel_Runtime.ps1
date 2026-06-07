@@ -498,13 +498,13 @@ function Initialize-ParallelBaselineCache {
     recursive scan is bounded so unexpected object graphs fail visibly instead of relying
     on engine recursion behavior.
 
-.FUNCTION NAME
+    .FUNCTION NAME
     Test-WorkerJsonContainsEllipsisSentinel
 
-.INPUTS
+    .INPUTS
     InputObject, optional max traversal depth, current recursion depth, and current path.
 
-.OUTPUTS
+    .OUTPUTS
     Boolean.
     #>
     function Test-WorkerJsonContainsEllipsisSentinel {
