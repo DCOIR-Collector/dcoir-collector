@@ -1,0 +1,79 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-security-codeql-0017
+# Purpose:
+# - Run CodeQL security analysis for supported repository languages and GitHub Actions workflow surfaces.
+# Use when:
+# - Use after Python, GitHub Actions workflow/action, validation wrapper, or security-relevant source changes that need semantic code scanning readback.
+# Do not use when:
+# - Do not treat CodeQL as a complete substitute for DCOIR collector harness validation, PowerShell 5.1 validation, dependency review, or manual security review.
+# Trigger model:
+# - pull_request and push paths for Python, GitHub Actions, validation wrappers, and CodeQL workflow files; workflow_dispatch for operator-requested security scans.
+# Required inputs:
+# - none
+# Required secrets/config:
+# - GitHub Code Security/code scanning must be enabled for private organization repositories before results can be uploaded.
+# Runtime dependencies:
+# - Uses github/codeql-action init/analyze with the security-extended and security-and-quality query suites.
+# Expected outputs/readback:
+# - GitHub code scanning alerts and ChatGPT workflow report section artifact.
+# Safety notes:
+# - This workflow uses read-only repository contents and security-events write permission for code scanning result upload.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
+name: 27 Security - CodeQL
+run-name: CodeQL Security | #${{ github.run_number }}
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths:
+      - '**/*.py'
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - '.github/dependabot.yml'
+      - 'scripts/validate-*.sh'
+      - 'scripts/validate-*.py'
+      - '.github/workflows/codeql-security.yml'
+      - '.github/workflows/reusable-codeql-security.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.py'
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - '.github/dependabot.yml'
+      - 'scripts/validate-*.sh'
+      - 'scripts/validate-*.py'
+      - '.github/workflows/codeql-security.yml'
+      - '.github/workflows/reusable-codeql-security.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+concurrency:
+  group: codeql-security-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    uses: ./.github/workflows/reusable-codeql-security.yml
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    with:
+      caller_event_name: ${{ github.event_name }}

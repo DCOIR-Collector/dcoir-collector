@@ -1,13 +1,13 @@
 {
   "composite_action_count": 15,
   "contract_registry": "project_sources/github_actions/workflow_modularization_contracts.json",
-  "existing_workflow_count_expected": 29,
+  "existing_workflow_count_expected": 31,
   "governing_issue": 194,
-  "local_composite_action_calls": 106,
-  "local_reusable_workflow_calls": 29,
-  "reusable_workflow_count": 28,
+  "local_composite_action_calls": 108,
+  "local_reusable_workflow_calls": 31,
+  "reusable_workflow_count": 30,
   "schema_version": "dcoir_workflow_inventory_v1",
-  "workflow_count": 29,
+  "workflow_count": 31,
   "workflows": [
     {
       "artifacts": [
@@ -162,6 +162,32 @@
         "workflow_run"
       ],
       "workflow_name": "80 Reporting - Workflow Run Reporter"
+    },
+    {
+      "artifacts": [
+        "chatgpt-workflow-report-section",
+        "chatgpt-workflow-report-section-${{ matrix.language }}"
+      ],
+      "concurrency_declared": true,
+      "contract_family": "codeql-security",
+      "file": ".github/workflows/codeql-security.yml",
+      "migration_status": "active",
+      "operator_purpose": "Run CodeQL security analysis for supported repository languages and GitHub Actions workflow surfaces.",
+      "permissions": {
+        "actions": "read",
+        "contents": "read",
+        "security-events": "write"
+      },
+      "report_family": "chatgpt workflow report section",
+      "risk": "medium",
+      "schedules": [],
+      "secret_or_var_count": 0,
+      "trigger_events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "workflow_name": "27 Security - CodeQL"
     },
     {
       "artifacts": [
@@ -618,6 +644,29 @@
         "workflow_dispatch"
       ],
       "workflow_name": "21 Validation - Main Push"
+    },
+    {
+      "artifacts": [
+        "chatgpt-workflow-report-section"
+      ],
+      "concurrency_declared": true,
+      "contract_family": "windows-powershell-51",
+      "file": ".github/workflows/windows-powershell-51.yml",
+      "migration_status": "active",
+      "operator_purpose": "Validate PowerShell parser compatibility through Windows PowerShell 5.1 on a Windows runner.",
+      "permissions": {
+        "contents": "read"
+      },
+      "report_family": "chatgpt workflow report section",
+      "risk": "medium",
+      "schedules": [],
+      "secret_or_var_count": 0,
+      "trigger_events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "workflow_name": "26 Validation - Windows PowerShell 5.1"
     },
     {
       "artifacts": [
