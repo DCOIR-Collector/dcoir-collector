@@ -233,6 +233,14 @@ String containing the response-action-safe command base.
 #>
 function Get-CollectorResponseActionCommandBase {
   $base = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File """".\DCOIR_Collector.ps1"""""
+  $packageName = [string]$Global:CurrentPackageName
+  if (
+    -not [string]::IsNullOrWhiteSpace($packageName) -and
+    $packageName -ne 'DCOIR_Collector.zip' -and
+    (Test-DCOIRPackageNameLeaf -CurrentPackageName $packageName)
+  ) {
+    $base = ('{0} -PackageName ""{1}""' -f $base, $packageName)
+  }
   $current = [string]$Global:CurrentRunId
   if (-not [string]::IsNullOrWhiteSpace($current) -and [regex]::IsMatch($current, '^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$')) {
     return ('{0} -RunId ""{1}""' -f $base, $current)
