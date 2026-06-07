@@ -186,6 +186,98 @@ function Run-FailureGatesSuite {
     throw 'Explicit dotted custom RunId no-state cleanup did not remove the collector-structured custom run root.'
   }
 
+  function Initialize-StateCleanupAuthorityFixture {
+    param(
+      [string]$FixtureOutRoot,
+      [string]$FixtureRunId,
+      [string]$StateRunRoot,
+      [string]$StatePackagePath
+    )
+
+    New-Item -Path $FixtureOutRoot -ItemType Directory -Force | Out-Null
+    $expectedRunRoot = Join-Path $FixtureOutRoot ("DCOIR_{0}_{1}" -f $env:COMPUTERNAME, $FixtureRunId)
+    New-Item -Path $expectedRunRoot -ItemType Directory -Force | Out-Null
+    foreach ($child in @('tools','reports','final_artifacts','logs','bundles')) {
+      New-Item -Path (Join-Path $expectedRunRoot $child) -ItemType Directory -Force | Out-Null
+    }
+    $statePath = Join-Path $expectedRunRoot 'state.json'
+    $state = [ordered]@{
+      RunId = $FixtureRunId
+      OutRoot = $FixtureOutRoot
+      RunRoot = $StateRunRoot
+      StatePath = $statePath
+      PackagePath = $StatePackagePath
+      CollectorVersion = '4.0.7'
+    }
+    Set-Content -Path $statePath -Value ($state | ConvertTo-Json -Depth 5) -Encoding UTF8
+    return @{
+      ExpectedRunRoot = $expectedRunRoot
+      StatePath = $statePath
+      StatePackagePath = $StatePackagePath
+    }
+  }
+
+  function Assert-StateCleanupRefused {
+    param(
+      [string]$StepName,
+      $CollectorStep
+    )
+    Assert-CollectorStepSucceeded -StepName $StepName -CollectorStep $CollectorStep
+    if (($CollectorStep.CleanupStatus -ne 'REFUSED') -and (-not [regex]::IsMatch($CollectorStep.StdOut, 'CLEANUP_STATUS=REFUSED'))) {
+      throw ("{0} returned unexpected cleanup status: {1}" -f $StepName, $CollectorStep.CleanupStatus)
+    }
+    if (-not [regex]::IsMatch($CollectorStep.StdOut, 'CLEANUP_REFUSED_COUNT=[1-9]')) {
+      throw ("{0} did not report refused cleanup targets." -f $StepName)
+    }
+    if (-not [regex]::IsMatch($CollectorStep.StdOut, 'CLEANUP_REFUSAL_REASON=')) {
+      throw ("{0} did not report cleanup refusal reason detail." -f $StepName)
+    }
+  }
+
+  $stateCleanupRoot = Join-Path $RunOutputRoot 'state_cleanup_path_authority'
+  $stateCleanupOutRoot = Join-Path $stateCleanupRoot 'outroot'
+  Remove-Item -LiteralPath $stateCleanupRoot -Recurse -Force -ErrorAction SilentlyContinue
+  New-Item -Path $stateCleanupOutRoot -ItemType Directory -Force | Out-Null
+
+  $outsideRunRoot = Join-Path $stateCleanupRoot 'outside_runroot_must_not_delete'
+  New-Item -Path $outsideRunRoot -ItemType Directory -Force | Out-Null
+  Set-Content -Path (Join-Path $outsideRunRoot 'must-not-delete.txt') -Value 'outside-runroot' -Encoding UTF8
+  $outsideRunRootPackage = Join-Path $stateCleanupOutRoot 'DCOIR_Collector.zip'
+  Set-Content -Path $outsideRunRootPackage -Value 'package-placeholder' -Encoding UTF8
+  [void](Initialize-StateCleanupAuthorityFixture -FixtureOutRoot $stateCleanupOutRoot -FixtureRunId 'state-outside-runroot' -StateRunRoot $outsideRunRoot -StatePackagePath $outsideRunRootPackage)
+  $outsideRunRootCleanup = Invoke-CollectorStep -StepName "98H_StateCleanupRejectsOutsideRunRoot" -CollectorArgs @("-Quick","cleanup","-OutRoot",$stateCleanupOutRoot,"-RunId","state-outside-runroot")
+  Assert-StateCleanupRefused -StepName "98H_StateCleanupRejectsOutsideRunRoot" -CollectorStep $outsideRunRootCleanup
+  if (-not (Test-Path -LiteralPath (Join-Path $outsideRunRoot 'must-not-delete.txt'))) {
+    throw 'State-backed cleanup deleted an outside RunRoot from state.json.'
+  }
+
+  $outsidePackagePath = Join-Path $stateCleanupRoot 'outside_package_must_not_delete.zip'
+  Set-Content -Path $outsidePackagePath -Value 'outside-package' -Encoding UTF8
+  $outsidePackageRunRoot = Join-Path $stateCleanupOutRoot ("DCOIR_{0}_{1}" -f $env:COMPUTERNAME, 'state-outside-package')
+  [void](Initialize-StateCleanupAuthorityFixture -FixtureOutRoot $stateCleanupOutRoot -FixtureRunId 'state-outside-package' -StateRunRoot $outsidePackageRunRoot -StatePackagePath $outsidePackagePath)
+  $outsidePackageCleanup = Invoke-CollectorStep -StepName "98I_StateCleanupRejectsOutsidePackagePath" -CollectorArgs @("-Quick","cleanup","-OutRoot",$stateCleanupOutRoot,"-RunId","state-outside-package")
+  Assert-StateCleanupRefused -StepName "98I_StateCleanupRejectsOutsidePackagePath" -CollectorStep $outsidePackageCleanup
+  if (-not (Test-Path -LiteralPath $outsidePackagePath)) {
+    throw 'State-backed cleanup deleted an outside PackagePath from state.json.'
+  }
+  if (-not (Test-Path -LiteralPath $outsidePackageRunRoot)) {
+    throw 'State-backed cleanup deleted the run root while refusing an outside PackagePath.'
+  }
+
+  $mismatchRunId = 'state-mismatch-runroot'
+  $mismatchWrongRunRoot = Join-Path $stateCleanupOutRoot ("DCOIR_{0}_{1}_sibling" -f $env:COMPUTERNAME, $mismatchRunId)
+  New-Item -Path $mismatchWrongRunRoot -ItemType Directory -Force | Out-Null
+  Set-Content -Path (Join-Path $mismatchWrongRunRoot 'must-not-delete.txt') -Value 'mismatch-runroot' -Encoding UTF8
+  $mismatchPackagePath = Join-Path $stateCleanupOutRoot 'DCOIR_Collector.zip'
+  Set-Content -Path $mismatchPackagePath -Value 'package-placeholder' -Encoding UTF8
+  [void](Initialize-StateCleanupAuthorityFixture -FixtureOutRoot $stateCleanupOutRoot -FixtureRunId $mismatchRunId -StateRunRoot $mismatchWrongRunRoot -StatePackagePath $mismatchPackagePath)
+  $mismatchCleanup = Invoke-CollectorStep -StepName "98J_StateCleanupRejectsMismatchedRunRoot" -CollectorArgs @("-Quick","cleanup","-OutRoot",$stateCleanupOutRoot,"-RunId",$mismatchRunId)
+  Assert-StateCleanupRefused -StepName "98J_StateCleanupRejectsMismatchedRunRoot" -CollectorStep $mismatchCleanup
+  if (-not (Test-Path -LiteralPath (Join-Path $mismatchWrongRunRoot 'must-not-delete.txt'))) {
+    throw 'State-backed cleanup deleted a mismatched RunRoot from state.json.'
+  }
+  Remove-Item -LiteralPath $stateCleanupRoot -Recurse -Force -ErrorAction SilentlyContinue
+
   Restore-WorkingZip -Reason "FailureGates_AfterMissingPackageCleanup"
   $invalidStart = Invoke-CollectorStep -StepName "99_TargetedInvalidWindowStart" -CollectorArgs @("-Quick","collect-targeted-popup","-Target","User reported popup around 2026-04-08T09:00Z","-WindowStart","not-a-date","-WindowEnd","2026-04-08T09:15:00Z")
   Assert-CollectorStepDegradedPartial -StepName "99_TargetedInvalidWindowStart" -CollectorStep $invalidStart -ExpectedPatterns @("Invalid WindowStart value [not-a-date]; falling back to hour-window behavior.")
