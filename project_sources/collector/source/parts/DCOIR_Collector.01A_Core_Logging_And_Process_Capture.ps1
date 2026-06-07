@@ -337,6 +337,135 @@ function Write-StepLog {
   }
 }
 
+<# 
+.SYNOPSIS
+Returns the timeout used for external process capture.
+
+.DESCRIPTION
+Uses an explicit per-call timeout when provided, then an optional in-memory collector
+override, and finally the conservative default. This is intentionally not an
+environment variable so collector runtime behavior does not depend on undeclared host
+configuration.
+
+.FUNCTION NAME
+Get-CollectorProcessCaptureTimeoutSeconds
+
+.INPUTS
+Optional timeout value in seconds.
+
+.OUTPUTS
+Positive integer timeout in seconds.
+#>
+function Get-CollectorProcessCaptureTimeoutSeconds {
+  param([int]$TimeoutSeconds = 0)
+
+  $defaultTimeoutSeconds = 600
+  try {
+    if ($TimeoutSeconds -gt 0) {
+      return [int][Math]::Min($TimeoutSeconds, 86400)
+    }
+
+    $override = Get-Variable -Name CollectorProcessCaptureTimeoutSeconds -Scope Global -ErrorAction SilentlyContinue
+    if ($override -and $null -ne $override.Value) {
+      $overrideValue = [int]$override.Value
+      if ($overrideValue -gt 0) {
+        return [int][Math]::Min($overrideValue, 86400)
+      }
+    }
+  } catch { }
+
+  return $defaultTimeoutSeconds
+}
+
+<# 
+.SYNOPSIS
+Stops one timed-out process and its child process tree when possible.
+
+.DESCRIPTION
+Attempts a Windows taskkill process-tree stop first, then falls back to the .NET process
+kill method. Failure to stop is recorded as a collector error rather than hidden.
+
+.FUNCTION NAME
+Stop-CollectorProcessTree
+
+.INPUTS
+Process object and display command text.
+
+.OUTPUTS
+No direct output. Stops the process as a side effect when possible.
+#>
+function Stop-CollectorProcessTree {
+  param(
+    [System.Diagnostics.Process]$Process,
+    [string]$CommandText
+  )
+
+  if ($null -eq $Process) { return }
+  try {
+    if ($Process.HasExited) { return }
+  } catch { }
+
+  $stopped = $false
+  try {
+    $taskkillPath = 'taskkill.exe'
+    if (-not [string]::IsNullOrWhiteSpace($env:SystemRoot)) {
+      $candidate = Join-Path $env:SystemRoot 'System32\taskkill.exe'
+      if (Test-Path -LiteralPath $candidate) {
+        $taskkillPath = $candidate
+      }
+    }
+
+    $killProcess = Start-Process -FilePath $taskkillPath -ArgumentList @('/PID', [string]$Process.Id, '/T', '/F') -Wait -NoNewWindow -PassThru -ErrorAction Stop
+    if ($killProcess.ExitCode -eq 0) {
+      $stopped = $true
+    }
+  } catch { }
+
+  try {
+    if (-not $Process.HasExited -and -not $stopped) {
+      $Process.Kill()
+      $stopped = $true
+    }
+  } catch {
+    Add-CollectorError ("Failed to stop timed-out process [{0}] for command [{1}]: {2}" -f $Process.Id, $CommandText, $_.Exception.Message)
+  }
+}
+
+<# 
+.SYNOPSIS
+Reads one asynchronous process-output task with a bounded wait.
+
+.DESCRIPTION
+Returns captured stream text when the async read task completes, or a visible warning
+string when the stream cannot be harvested after the process has exited or been stopped.
+
+.FUNCTION NAME
+Get-CollectorProcessOutputTaskText
+
+.INPUTS
+Async task, stream name, and bounded wait in milliseconds.
+
+.OUTPUTS
+Captured stream text or a warning string.
+#>
+function Get-CollectorProcessOutputTaskText {
+  param(
+    [System.Threading.Tasks.Task]$Task,
+    [string]$StreamName,
+    [int]$WaitMilliseconds = 10000
+  )
+
+  if ($null -eq $Task) { return "" }
+  try {
+    if (-not $Task.Wait($WaitMilliseconds)) {
+      return ("[DCOIR_CAPTURE_WARNING] {0} capture did not complete within {1}ms after process exit." -f $StreamName, $WaitMilliseconds)
+    }
+    return [string]$Task.Result
+  } catch {
+    return ("[DCOIR_CAPTURE_WARNING] {0} capture failed: {1}" -f $StreamName, $_.Exception.Message)
+  }
+}
+
 <#
 .SYNOPSIS
 Runs one external process and captures its output.
@@ -350,18 +479,20 @@ object describing the result.
 Invoke-ProcessCapture
 
 .INPUTS
-Mandatory FilePath and StepName, optional argument array, and optional allowed exit-code
-list.
+Mandatory FilePath and StepName, optional argument array, optional allowed exit-code
+list, and optional timeout seconds.
 
 .OUTPUTS
-PSCustomObject containing StdOut, StdErr, ExitCode, Command, and Status.
+PSCustomObject containing StdOut, StdErr, ExitCode, Command, Status, TimedOut, and
+TimeoutSeconds.
 #>
 function Invoke-ProcessCapture {
   param(
     [Parameter(Mandatory=$true)][string]$FilePath,
     [string[]]$Arguments,
     [Parameter(Mandatory=$true)][string]$StepName,
-    [int[]]$AllowedExitCodes = @(0)
+    [int[]]$AllowedExitCodes = @(0),
+    [int]$TimeoutSeconds = 0
   )
 
   $startTime = Get-Date
@@ -369,6 +500,10 @@ function Invoke-ProcessCapture {
   if ($Arguments) {
     $commandText = "$FilePath $(Join-ArgString -Arguments $Arguments)"
   }
+
+  $effectiveTimeoutSeconds = Get-CollectorProcessCaptureTimeoutSeconds -TimeoutSeconds $TimeoutSeconds
+  $timeoutMilliseconds = [int][Math]::Min(([double]$effectiveTimeoutSeconds * 1000), [double][int]::MaxValue)
+  $proc = $null
 
   try {
     $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -382,27 +517,48 @@ function Invoke-ProcessCapture {
     $proc = New-Object System.Diagnostics.Process
     $proc.StartInfo = $psi
     [void]$proc.Start()
-    $stdout = $proc.StandardOutput.ReadToEnd()
-    $stderr = $proc.StandardError.ReadToEnd()
-    $proc.WaitForExit()
+    $stdoutTask = $proc.StandardOutput.ReadToEndAsync()
+    $stderrTask = $proc.StandardError.ReadToEndAsync()
+
+    $timedOut = -not $proc.WaitForExit($timeoutMilliseconds)
+    if ($timedOut) {
+      Stop-CollectorProcessTree -Process $proc -CommandText $commandText
+      try { [void]$proc.WaitForExit(5000) } catch { }
+    } else {
+      [void]$proc.WaitForExit()
+    }
+
+    $stdout = Get-CollectorProcessOutputTaskText -Task $stdoutTask -StreamName 'stdout'
+    $stderr = Get-CollectorProcessOutputTaskText -Task $stderrTask -StreamName 'stderr'
 
     $endTime = Get-Date
     $status = "OK"
     $message = ""
-    if (@($AllowedExitCodes) -notcontains [int]$proc.ExitCode) {
+    $exitCode = -1
+    if (-not $timedOut) {
+      $exitCode = [int]$proc.ExitCode
+    }
+
+    if ($timedOut) {
+      $status = "TIMEOUT"
+      $message = ("TimedOut=True TimeoutSeconds={0}" -f $effectiveTimeoutSeconds)
+      Add-CollectorError ("Step [{0}] timed out after {1} seconds. Command: {2}" -f $StepName, $effectiveTimeoutSeconds, $commandText)
+    } elseif (@($AllowedExitCodes) -notcontains $exitCode) {
       $status = "ERROR"
-      $message = ("ExitCode={0}" -f $proc.ExitCode)
+      $message = ("ExitCode={0}" -f $exitCode)
       Add-CollectorError ("Step [{0}] failed. {1}. Command: {2}" -f $StepName, $message, $commandText)
     }
 
-    Write-StepLog -StepName $StepName -Status $status -StartTime $startTime -EndTime $endTime -ExitCode $proc.ExitCode -Command $commandText -ArtifactPath "" -Message $message
+    Write-StepLog -StepName $StepName -Status $status -StartTime $startTime -EndTime $endTime -ExitCode $exitCode -Command $commandText -ArtifactPath "" -Message $message
 
     return [pscustomobject]@{
       StdOut = $stdout
       StdErr = $stderr
-      ExitCode = [int]$proc.ExitCode
+      ExitCode = $exitCode
       Command = $commandText
       Status = $status
+      TimedOut = [bool]$timedOut
+      TimeoutSeconds = [int]$effectiveTimeoutSeconds
     }
   } catch {
     $endTime = Get-Date
@@ -415,6 +571,12 @@ function Invoke-ProcessCapture {
       ExitCode = -1
       Command = $commandText
       Status = "EXCEPTION"
+      TimedOut = $false
+      TimeoutSeconds = [int]$effectiveTimeoutSeconds
+    }
+  } finally {
+    if ($null -ne $proc) {
+      try { $proc.Dispose() } catch { }
     }
   }
 }
@@ -430,7 +592,8 @@ Wraps Invoke-ProcessCapture for cmd.exe /c execution of the supplied command str
 Invoke-CmdCapture
 
 .INPUTS
-Mandatory Command and StepName, optional allowed exit-code list.
+Mandatory Command and StepName, optional allowed exit-code list, and optional timeout
+seconds.
 
 .OUTPUTS
 PSCustomObject containing the captured cmd.exe result.
@@ -439,7 +602,8 @@ function Invoke-CmdCapture {
   param(
     [Parameter(Mandatory=$true)][string]$Command,
     [Parameter(Mandatory=$true)][string]$StepName,
-    [int[]]$AllowedExitCodes = @(0)
+    [int[]]$AllowedExitCodes = @(0),
+    [int]$TimeoutSeconds = 0
   )
-  return (Invoke-ProcessCapture -FilePath "cmd.exe" -Arguments @("/c", $Command) -StepName $StepName -AllowedExitCodes $AllowedExitCodes)
+  return (Invoke-ProcessCapture -FilePath "cmd.exe" -Arguments @("/c", $Command) -StepName $StepName -AllowedExitCodes $AllowedExitCodes -TimeoutSeconds $TimeoutSeconds)
 }
