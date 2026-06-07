@@ -3,7 +3,7 @@
   "contract_registry": "project_sources/github_actions/workflow_modularization_contracts.json",
   "existing_workflow_count_expected": 31,
   "governing_issue": 194,
-  "local_composite_action_calls": 109,
+  "local_composite_action_calls": 108,
   "local_reusable_workflow_calls": 31,
   "reusable_workflow_count": 30,
   "schema_version": "dcoir_workflow_inventory_v1",
