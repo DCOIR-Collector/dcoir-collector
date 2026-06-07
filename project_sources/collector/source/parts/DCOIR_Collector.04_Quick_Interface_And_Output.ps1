@@ -534,7 +534,11 @@ Full path string or null for blank input.
 function Resolve-DCOIRCleanupFullPath {
   param([string]$Path)
   if ([string]::IsNullOrWhiteSpace($Path)) { return $null }
-  return [System.IO.Path]::GetFullPath($Path)
+  try {
+    return [System.IO.Path]::GetFullPath($Path)
+  } catch {
+    return $null
+  }
 }
 
 <#
@@ -691,15 +695,15 @@ Removes run/package artifacts during cleanup.
 
 .DESCRIPTION
 Treats state.json as evidence, not deletion authority. It recomputes the allowed run root,
-state path, and package path from the selected OutRoot, loaded RunId, and current package
-name, then refuses state-backed cleanup if state-provided paths do not match that bounded
-authority surface.
+state path, and package path from the selected OutRoot, selected cleanup RunId, and
+current package name, then refuses state-backed cleanup if state-provided paths do not
+match that bounded authority surface.
 
 .FUNCTION NAME
 Invoke-Cleanup
 
 .INPUTS
-Collector state object, selected OutRoot, and current package name.
+Collector state object, selected OutRoot, current package name, and selected cleanup RunId.
 
 .OUTPUTS
 Cleanup result object with status, target, removed, skipped, failed, and refused counts.
@@ -709,7 +713,8 @@ function Invoke-Cleanup {
   param(
     $StateObject,
     [Parameter(Mandatory=$true)][string]$Root,
-    [Parameter(Mandatory=$true)][string]$CurrentPackageName
+    [Parameter(Mandatory=$true)][string]$CurrentPackageName,
+    [string]$SelectedRunId
   )
 
   $targets = New-Object System.Collections.ArrayList
@@ -725,11 +730,27 @@ function Invoke-Cleanup {
   }
 
   $stateRunId = if ($StateObject) { [string]$StateObject.RunId } else { $null }
+  $selectedRunIdText = [string]$SelectedRunId
+  $authorityRunId = if ([string]::IsNullOrWhiteSpace($selectedRunIdText)) { $stateRunId } else { $selectedRunIdText }
   $safeRunId = $null
+  $safeStateRunId = $null
   try {
-    $safeRunId = Resolve-DCOIRRunId -CurrentRunId $stateRunId -RejectBlank
+    $safeRunId = Resolve-DCOIRRunId -CurrentRunId $authorityRunId -RejectBlank
+  } catch {
+    Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $authorityRunId -Reason ("Selected cleanup RunId failed validation: {0}" -f $_.Exception.Message)
+  }
+  try {
+    $safeStateRunId = Resolve-DCOIRRunId -CurrentRunId $stateRunId -RejectBlank
   } catch {
     Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $stateRunId -Reason ("State RunId failed validation: {0}" -f $_.Exception.Message)
+  }
+  if (
+    -not [string]::IsNullOrWhiteSpace($selectedRunIdText) -and
+    -not [string]::IsNullOrWhiteSpace($safeRunId) -and
+    -not [string]::IsNullOrWhiteSpace($safeStateRunId) -and
+    -not [string]::Equals($safeStateRunId, $safeRunId, [System.StringComparison]::OrdinalIgnoreCase)
+  ) {
+    Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $stateRunId -Reason ("State RunId does not match selected RunId {0}." -f $safeRunId)
   }
 
   $expectedRunRoot = $null
@@ -748,7 +769,7 @@ function Invoke-Cleanup {
   $statePackagePath = if ($StateObject) { [string]$StateObject.PackagePath } else { $null }
 
   if (-not (Test-DCOIRCleanupPathWithinRoot -Root $resolvedRoot -Path $stateRunRoot)) {
-    Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $stateRunRoot -Reason 'State RunRoot is outside the selected OutRoot or is blank.'
+    Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $stateRunRoot -Reason 'State RunRoot is outside the selected OutRoot, blank, or invalid.'
   }
   if (-not (Test-DCOIRCleanupPathEquals -Actual $stateRunRoot -Expected $expectedRunRoot)) {
     Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $stateRunRoot -Reason ("State RunRoot does not match expected run root {0}." -f $expectedRunRoot)
@@ -758,14 +779,14 @@ function Invoke-Cleanup {
   }
 
   if (-not (Test-DCOIRCleanupPathWithinRoot -Root $resolvedRoot -Path $statePath)) {
-    Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $statePath -Reason 'StatePath is outside the selected OutRoot or is blank.'
+    Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $statePath -Reason 'StatePath is outside the selected OutRoot, blank, or invalid.'
   }
   if (-not (Test-DCOIRCleanupPathEquals -Actual $statePath -Expected $expectedStatePath)) {
     Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $statePath -Reason ("StatePath does not match expected state path {0}." -f $expectedStatePath)
   }
 
   if (-not (Test-DCOIRCleanupPathWithinRoot -Root $resolvedRoot -Path $statePackagePath)) {
-    Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $statePackagePath -Reason 'PackagePath is outside the selected OutRoot or is blank.'
+    Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $statePackagePath -Reason 'PackagePath is outside the selected OutRoot, blank, or invalid.'
   }
   if (-not (Test-DCOIRCleanupPathEquals -Actual $statePackagePath -Expected $expectedPackagePath)) {
     Add-DCOIRCleanupRefusal -Targets $refusedTargets -Reasons $refusalReasons -Target $statePackagePath -Reason ("PackagePath does not match expected package path {0}." -f $expectedPackagePath)
