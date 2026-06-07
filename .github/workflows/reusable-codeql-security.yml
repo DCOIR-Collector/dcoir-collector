@@ -70,8 +70,74 @@ jobs:
           The workflow conclusion and GitHub code scanning alerts are the authoritative readback surfaces for CodeQL findings.
           EOF
 
-      - name: Upload ChatGPT workflow report section
-        if: ${{ always() && matrix.language == 'python' }}
+      - name: Upload per-language ChatGPT workflow report section
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: chatgpt-workflow-report-section-${{ matrix.language }}
+          path: chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+          if-no-files-found: error
+          retention-days: 14
+
+  combine-report-sections:
+    name: Combine CodeQL report sections
+    runs-on: ubuntu-latest
+    needs:
+      - analyze
+    if: always()
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Download per-language report sections
+        if: always()
+        uses: actions/download-artifact@v7
+        continue-on-error: true
+        with:
+          pattern: chatgpt-workflow-report-section-*
+          path: codeql_report_sections
+          merge-multiple: false
+
+      - name: Write aggregate ChatGPT workflow report section
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p chatgpt_workflow_report_section
+
+          {
+            echo "## CodeQL security analysis aggregate summary"
+            echo
+            echo "- workflow: codeql-security"
+            echo "- validation_scope: CodeQL semantic security analysis"
+            echo "- workflow_run_id: ${GITHUB_RUN_ID}"
+            echo "- workflow_run_attempt: ${GITHUB_RUN_ATTEMPT}"
+            echo "- head_sha: ${GITHUB_SHA}"
+            echo "- ref: ${GITHUB_REF}"
+            echo "- caller_event_name: ${{ inputs.caller_event_name }}"
+            echo
+            echo "The workflow conclusion, matrix job conclusions, and GitHub code scanning alerts are the authoritative readback surfaces for CodeQL findings."
+            echo
+
+            if [ -d codeql_report_sections ]; then
+              mapfile -t report_files < <(find codeql_report_sections -type f -name 'chatgpt_workflow_report_section.md' | sort)
+            else
+              report_files=()
+            fi
+
+            if [ "${#report_files[@]}" -eq 0 ]; then
+              echo "No per-language CodeQL report sections were available for aggregation."
+            else
+              for report_file in "${report_files[@]}"; do
+                echo
+                echo "---"
+                echo
+                cat "$report_file"
+              done
+            fi
+          } > chatgpt_workflow_report_section/chatgpt_workflow_report_section.md
+
+      - name: Upload aggregate ChatGPT workflow report section
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: chatgpt-workflow-report-section

@@ -112,7 +112,7 @@ if [ -s "$python_files_file" ]; then
   mapfile -t python_files < "$python_files_file"
   if command -v ruff >/dev/null 2>&1; then
     if [ "$explicit_scope" = "1" ]; then
-      ruff check "${python_files[@]}" || status=1
+      ruff check -- "${python_files[@]}" || status=1
     else
       ruff check . || status=1
     fi
@@ -122,7 +122,7 @@ if [ -s "$python_files_file" ]; then
 
   if command -v bandit >/dev/null 2>&1; then
     if [ "$explicit_scope" = "1" ]; then
-      bandit -q "${python_files[@]}" || status=1
+      bandit -q -- "${python_files[@]}" || status=1
     else
       bandit -q -r . -x ./.git,./.venv,./venv,./node_modules || status=1
     fi

@@ -22,7 +22,9 @@ REQUIRED_SNIPPETS = {
         '- python',
         '- actions',
         'actions/upload-artifact@v7',
-        'if: ${{ always() && matrix.language == '"'"'python'"'"' }}',
+        'actions/download-artifact@v7',
+        'name: chatgpt-workflow-report-section-${{ matrix.language }}',
+        'pattern: chatgpt-workflow-report-section-*',
         'name: chatgpt-workflow-report-section',
     ],
 }
@@ -30,8 +32,8 @@ REQUIRED_SNIPPETS = {
 FORBIDDEN_SNIPPETS = {
     REUSABLE: [
         './.github/actions/upload-chatgpt-artifact',
-        'chatgpt-workflow-report-section-${{ matrix.language }}',
         'actions/upload-artifact@v6',
+        'if: ${{ always() && matrix.language == \'python\' }}',
     ],
 }
 

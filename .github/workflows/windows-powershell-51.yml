@@ -43,6 +43,7 @@ on:
       - 'scripts/validate-windows-powershell-51.ps1'
       - 'scripts/validate-codex-local.sh'
       - '.github/actions/validate-powershell-syntax/**'
+      - '.github/actions/upload-chatgpt-artifact/**'
       - '.github/workflows/windows-powershell-51.yml'
       - '.github/workflows/reusable-windows-powershell-51.yml'
   push:
@@ -55,6 +56,7 @@ on:
       - 'scripts/validate-windows-powershell-51.ps1'
       - 'scripts/validate-codex-local.sh'
       - '.github/actions/validate-powershell-syntax/**'
+      - '.github/actions/upload-chatgpt-artifact/**'
       - '.github/workflows/windows-powershell-51.yml'
       - '.github/workflows/reusable-windows-powershell-51.yml'
   workflow_dispatch:
