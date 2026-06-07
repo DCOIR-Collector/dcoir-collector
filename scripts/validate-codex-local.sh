@@ -60,7 +60,7 @@ fi
 
 filter_secret_scan_output() {
   grep -Ev "REQUIRED_TOKEN[[:space:]]*=[[:space:]]*['\"]APPLY_[A-Z0-9_]+['\"]" \
-    | grep -Eiv "(api[_-]?key|secret|token|password)[^:=]*[:=][^'\"]*['\"]?[A-Z0-9_]*_(TOKEN|SECRET|PASSWORD|KEY)[A-Z0-9_]*['\"]?([[:space:]]+(in|==)|[[:space:],;)]|$)"
+    | grep -Ev "['\"]?[A-Z][A-Z0-9_]*(TOKEN|SECRET|PASSWORD|KEY)[A-Z0-9_]*['\"]?"
 }
 
 run_secret_scan() {
