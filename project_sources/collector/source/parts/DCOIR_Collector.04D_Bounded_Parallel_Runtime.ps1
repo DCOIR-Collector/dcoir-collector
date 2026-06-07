@@ -290,7 +290,7 @@ function Initialize-ParallelBaselineCache {
       } catch { }
 
       $stopped = $false
-      $taskkillTempPaths = @()
+      $taskkillStopMilliseconds = 10000
       try {
         $taskkillPath = 'taskkill.exe'
         if (-not [string]::IsNullOrWhiteSpace($env:SystemRoot)) {
@@ -299,20 +299,46 @@ function Initialize-ParallelBaselineCache {
             $taskkillPath = $candidate
           }
         }
-        $taskkillStdoutPath = [System.IO.Path]::GetTempFileName()
-        $taskkillTempPaths += $taskkillStdoutPath
-        $taskkillStderrPath = [System.IO.Path]::GetTempFileName()
-        $taskkillTempPaths += $taskkillStderrPath
+        $taskkillProcess = $null
         try {
-          $killProcess = Start-Process -FilePath $taskkillPath -ArgumentList @('/PID', [string]$Process.Id, '/T', '/F') -Wait -NoNewWindow -PassThru -RedirectStandardOutput $taskkillStdoutPath -RedirectStandardError $taskkillStderrPath -ErrorAction Stop
-          if ($killProcess.ExitCode -eq 0) {
+          $taskkillStartInfo = New-Object System.Diagnostics.ProcessStartInfo
+          $taskkillStartInfo.FileName = $taskkillPath
+          $taskkillStartInfo.Arguments = ('/PID {0} /T /F' -f [int]$Process.Id)
+          $taskkillStartInfo.UseShellExecute = $false
+          $taskkillStartInfo.RedirectStandardOutput = $true
+          $taskkillStartInfo.RedirectStandardError = $true
+          $taskkillStartInfo.CreateNoWindow = $true
+
+          $taskkillProcess = New-Object System.Diagnostics.Process
+          $taskkillProcess.StartInfo = $taskkillStartInfo
+          [void]$taskkillProcess.Start()
+
+          $taskkillStdoutTask = $taskkillProcess.StandardOutput.ReadToEndAsync()
+          $taskkillStderrTask = $taskkillProcess.StandardError.ReadToEndAsync()
+          $taskkillCompleted = $taskkillProcess.WaitForExit($taskkillStopMilliseconds)
+          if (-not $taskkillCompleted) {
+            try {
+              $taskkillProcess.Kill()
+              [void]$taskkillProcess.WaitForExit(1000)
+            } catch { }
+          } else {
+            try { [void]$taskkillProcess.WaitForExit() } catch { }
+          }
+
+          [void](Get-WorkerProcessOutputTaskText -Task $taskkillStdoutTask -StreamName 'taskkill stdout' -WaitMilliseconds 1000)
+          [void](Get-WorkerProcessOutputTaskText -Task $taskkillStderrTask -StreamName 'taskkill stderr' -WaitMilliseconds 1000)
+
+          if ($taskkillCompleted -and $taskkillProcess.ExitCode -eq 0) {
             $stopped = $true
           }
+          if (-not $stopped) {
+            try {
+              if ($Process.HasExited) { $stopped = $true }
+            } catch { }
+          }
         } finally {
-          foreach ($taskkillTempPath in @($taskkillTempPaths)) {
-            if (-not [string]::IsNullOrWhiteSpace($taskkillTempPath)) {
-              Remove-Item -LiteralPath $taskkillTempPath -Force -ErrorAction SilentlyContinue
-            }
+          if ($null -ne $taskkillProcess) {
+            try { $taskkillProcess.Dispose() } catch { }
           }
         }
       } catch { }
@@ -586,7 +612,13 @@ function Initialize-ParallelBaselineCache {
     $workerTimeoutCount = @($timedOutJobs).Count
     foreach ($job in @($timedOutJobs)) {
       Add-CollectorError ('Parallel baseline worker job [{0}] timed out after {1} seconds; worker output will be skipped and affected steps will fall back to serial execution when needed.' -f $job.Name, $parallelWorkerTimeoutSeconds)
-      try { Stop-Job -Job $job -Force -ErrorAction SilentlyContinue } catch { }
+      try { Stop-Job -Job $job -ErrorAction SilentlyContinue } catch { }
+      try { Wait-Job -Job $job -Timeout 5 | Out-Null } catch { }
+      try {
+        if ($job.State -eq 'Running' -or $job.State -eq 'NotStarted') {
+          Add-CollectorError ('Parallel baseline worker job [{0}] remained [{1}] after stop attempt; cleanup will remove the job handle.' -f $job.Name, $job.State)
+        }
+      } catch { }
     }
 
     $workerObjects = New-Object System.Collections.ArrayList
