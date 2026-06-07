@@ -337,7 +337,7 @@ function Write-StepLog {
   }
 }
 
-<# 
+<#
 .SYNOPSIS
 Returns the timeout used for external process capture.
 
@@ -377,7 +377,7 @@ function Get-CollectorProcessCaptureTimeoutSeconds {
   return $defaultTimeoutSeconds
 }
 
-<# 
+<#
 .SYNOPSIS
 Stops one timed-out process and its child process tree when possible.
 
@@ -406,6 +406,7 @@ function Stop-CollectorProcessTree {
   } catch { }
 
   $stopped = $false
+  $taskkillTempPaths = @()
   try {
     $taskkillPath = 'taskkill.exe'
     if (-not [string]::IsNullOrWhiteSpace($env:SystemRoot)) {
@@ -416,14 +417,20 @@ function Stop-CollectorProcessTree {
     }
 
     $taskkillStdoutPath = [System.IO.Path]::GetTempFileName()
+    $taskkillTempPaths += $taskkillStdoutPath
     $taskkillStderrPath = [System.IO.Path]::GetTempFileName()
+    $taskkillTempPaths += $taskkillStderrPath
     try {
       $killProcess = Start-Process -FilePath $taskkillPath -ArgumentList @('/PID', [string]$Process.Id, '/T', '/F') -Wait -NoNewWindow -PassThru -RedirectStandardOutput $taskkillStdoutPath -RedirectStandardError $taskkillStderrPath -ErrorAction Stop
       if ($killProcess.ExitCode -eq 0) {
         $stopped = $true
       }
     } finally {
-      Remove-Item -LiteralPath $taskkillStdoutPath, $taskkillStderrPath -Force -ErrorAction SilentlyContinue
+      foreach ($taskkillTempPath in @($taskkillTempPaths)) {
+        if (-not [string]::IsNullOrWhiteSpace($taskkillTempPath)) {
+          Remove-Item -LiteralPath $taskkillTempPath -Force -ErrorAction SilentlyContinue
+        }
+      }
     }
   } catch { }
 
@@ -437,7 +444,7 @@ function Stop-CollectorProcessTree {
   }
 }
 
-<# 
+<#
 .SYNOPSIS
 Reads one asynchronous process-output task with a bounded wait.
 
@@ -510,6 +517,7 @@ function Invoke-ProcessCapture {
   $effectiveTimeoutSeconds = Get-CollectorProcessCaptureTimeoutSeconds -TimeoutSeconds $TimeoutSeconds
   $timeoutMilliseconds = [int][Math]::Min(([double]$effectiveTimeoutSeconds * 1000), [double][int]::MaxValue)
   $proc = $null
+  $timedOut = $false
 
   try {
     $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -570,14 +578,15 @@ function Invoke-ProcessCapture {
     $endTime = Get-Date
     $message = $_.Exception.Message
     Add-CollectorError ("Step [{0}] raised an exception. {1}. Command: {2}" -f $StepName, $message, $commandText)
-    Write-StepLog -StepName $StepName -Status "EXCEPTION" -StartTime $startTime -EndTime $endTime -ExitCode -1 -Command $commandText -ArtifactPath "" -Message $message
+    $status = if ($timedOut) { "TIMEOUT" } else { "EXCEPTION" }
+    Write-StepLog -StepName $StepName -Status $status -StartTime $startTime -EndTime $endTime -ExitCode -1 -Command $commandText -ArtifactPath "" -Message $message
     return [pscustomobject]@{
       StdOut = ""
       StdErr = $message
       ExitCode = -1
       Command = $commandText
-      Status = "EXCEPTION"
-      TimedOut = $false
+      Status = $status
+      TimedOut = [bool]$timedOut
       TimeoutSeconds = [int]$effectiveTimeoutSeconds
     }
   } finally {
