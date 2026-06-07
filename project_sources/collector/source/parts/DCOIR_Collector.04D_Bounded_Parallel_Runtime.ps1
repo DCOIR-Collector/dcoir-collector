@@ -232,6 +232,23 @@ function Initialize-ParallelBaselineCache {
   $workerScript = {
     param([hashtable]$WorkerDefinition,[string]$ParallelWorkerDir,[int]$DefaultStepTimeoutSeconds)
 
+    <#
+    .SYNOPSIS
+    Returns the timeout for one bounded-parallel worker step.
+
+    .DESCRIPTION
+    Uses the step-specific timeout when present, then the default timeout passed into
+    the worker job, and finally the conservative collector timeout default.
+
+    .FUNCTION NAME
+    Get-WorkerStepTimeoutSeconds
+
+    .INPUTS
+    Worker step definition hashtable.
+
+    .OUTPUTS
+    Positive integer timeout in seconds.
+    #>
     function Get-WorkerStepTimeoutSeconds {
       param([hashtable]$StepDefinition)
 
@@ -247,6 +264,23 @@ function Initialize-ParallelBaselineCache {
       return $defaultTimeout
     }
 
+    <#
+    .SYNOPSIS
+    Stops one timed-out bounded-parallel worker process tree when possible.
+
+    .DESCRIPTION
+    Attempts a Windows taskkill process-tree stop first, then falls back to the .NET
+    process kill method so child processes do not keep the worker job alive.
+
+    .FUNCTION NAME
+    Stop-WorkerProcessTree
+
+    .INPUTS
+    Process object to stop.
+
+    .OUTPUTS
+    No direct output. Stops the process as a side effect when possible.
+    #>
     function Stop-WorkerProcessTree {
       param([System.Diagnostics.Process]$Process)
 
@@ -277,6 +311,23 @@ function Initialize-ParallelBaselineCache {
       } catch { }
     }
 
+    <#
+    .SYNOPSIS
+    Reads one asynchronous worker-output task with a bounded wait.
+
+    .DESCRIPTION
+    Returns captured stdout or stderr text when the async read completes, or a visible
+    warning string when the stream cannot be harvested after the worker process exits.
+
+    .FUNCTION NAME
+    Get-WorkerProcessOutputTaskText
+
+    .INPUTS
+    Async task, stream name, and bounded wait in milliseconds.
+
+    .OUTPUTS
+    Captured stream text or a warning string.
+    #>
     function Get-WorkerProcessOutputTaskText {
       param(
         [System.Threading.Tasks.Task]$Task,
