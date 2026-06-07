@@ -5,11 +5,14 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$repo_root"
 
 status=0
+explicit_scope=0
 files_file="$(mktemp)"
 existing_files_file="$(mktemp)"
-trap 'rm -f "$files_file" "$existing_files_file"' EXIT
+python_files_file="$(mktemp)"
+trap 'rm -f "$files_file" "$existing_files_file" "$python_files_file"' EXIT
 
 if [ "$#" -gt 0 ]; then
+  explicit_scope=1
   printf '%s\n' "$@" > "$files_file"
 elif git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git ls-files > "$files_file"
@@ -26,6 +29,14 @@ while IFS= read -r file; do
   [ -f "$file" ] && printf '%s\n' "$file"
 done < "$files_file" > "$existing_files_file"
 
+while IFS= read -r file; do
+  case "$file" in
+    *.py)
+      [ -f "$file" ] && printf '%s\n' "$file"
+      ;;
+  esac
+done < "$files_file" > "$python_files_file"
+
 echo '[validate-codex-local] changed or selected files:'
 sed -n '1,200p' "$files_file"
 
@@ -35,19 +46,24 @@ run_secret_scan() {
     return 1
   fi
 
-  xargs -r rg -n --hidden \
+  mapfile -t existing_files < "$existing_files_file"
+  if [ "${#existing_files[@]}" -eq 0 ]; then
+    echo '[validate-codex-local] no existing files selected for secret-pattern scan'
+    return 1
+  fi
+
+  rg -n --hidden \
     -g '!.git' \
     -g '!node_modules' \
     -g '!dist' \
     -g '!build' \
     -g '!vendor' \
     -e 'github_pat_[A-Za-z0-9_]{20,}' \
-    -e 'ghp_[A-Za-z0-9_]{20,}' \
-    -e 'gho_[A-Za-z0-9_]{20,}' \
+    -e 'gh[pousr]_[A-Za-z0-9_]{20,}' \
     -e 'AKIA[0-9A-Z]{16}' \
     -e '-----BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY-----' \
     -e '(?i)(api[_-]?key|secret|token|password)[[:space:]]*[:=][[:space:]]*["'"'"']?[A-Za-z0-9_./+=-]{16,}' \
-    -- < "$existing_files_file" \
+    -- "${existing_files[@]}" \
     | grep -Ev "REQUIRED_TOKEN[[:space:]]*=[[:space:]]*['\"]APPLY_[A-Z0-9_]+['\"]" || true
 }
 
@@ -91,10 +107,28 @@ if grep -Eq '\.(yml|yaml)$' "$files_file"; then
   fi
 fi
 
-if grep -Eq '\.py$' "$files_file"; then
+if [ -s "$python_files_file" ]; then
   echo '[validate-codex-local] python checks'
-  if command -v ruff >/dev/null 2>&1; then ruff check . || status=1; else echo '[validate-codex-local] WARN: ruff not available'; fi
-  if command -v bandit >/dev/null 2>&1; then bandit -q -r . -x ./.git,./.venv,./venv,./node_modules || status=1; else echo '[validate-codex-local] WARN: bandit not available'; fi
+  mapfile -t python_files < "$python_files_file"
+  if command -v ruff >/dev/null 2>&1; then
+    if [ "$explicit_scope" = "1" ]; then
+      ruff check "${python_files[@]}" || status=1
+    else
+      ruff check . || status=1
+    fi
+  else
+    echo '[validate-codex-local] WARN: ruff not available'
+  fi
+
+  if command -v bandit >/dev/null 2>&1; then
+    if [ "$explicit_scope" = "1" ]; then
+      bandit -q "${python_files[@]}" || status=1
+    else
+      bandit -q -r . -x ./.git,./.venv,./venv,./node_modules || status=1
+    fi
+  else
+    echo '[validate-codex-local] WARN: bandit not available'
+  fi
 fi
 
 if [ "${CODEX_RUN_SEMGREP:-0}" = "1" ] && command -v semgrep >/dev/null 2>&1; then

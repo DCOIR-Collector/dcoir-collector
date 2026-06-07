@@ -71,7 +71,7 @@ jobs:
           EOF
 
       - name: Upload ChatGPT workflow report section
-        if: matrix.language == 'python'
+        if: ${{ always() && matrix.language == 'python' }}
         uses: actions/upload-artifact@v7
         with:
           name: chatgpt-workflow-report-section
