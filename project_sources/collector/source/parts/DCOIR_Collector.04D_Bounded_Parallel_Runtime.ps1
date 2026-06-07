@@ -58,7 +58,8 @@ stderr, command, and exit-code text surface.
 Get-SerialCmdText
 
 .INPUTS
-Command string, StepName string, and optional allowed exit-code list.
+Command string, StepName string, optional allowed exit-code list, and optional timeout
+seconds.
 
 .OUTPUTS
 String containing the combined captured process output.
@@ -67,9 +68,10 @@ function Get-SerialCmdText {
   param(
     [string]$Command,
     [string]$StepName,
-    [int[]]$AllowedExitCodes = @(0)
+    [int[]]$AllowedExitCodes = @(0),
+    [int]$TimeoutSeconds = 0
   )
-  $result = Invoke-CmdCapture -Command $Command -StepName $StepName -AllowedExitCodes $AllowedExitCodes
+  $result = Invoke-CmdCapture -Command $Command -StepName $StepName -AllowedExitCodes $AllowedExitCodes -TimeoutSeconds $TimeoutSeconds
   return (Get-CombinedProcessOutput -Result $result)
 }
 
@@ -130,12 +132,61 @@ function Get-ParallelBaselineWorkerDefinitions {
 
 <#
 .SYNOPSIS
+Calculates a bounded wait for the parallel worker job group.
+
+.DESCRIPTION
+Uses each worker step's optional timeout, or the default process-capture timeout, to
+calculate the longest expected worker duration and adds a small grace period. This keeps
+the parent collector bounded even when a worker job itself fails to return.
+
+.FUNCTION NAME
+Get-ParallelBaselineWorkerTimeoutSeconds
+
+.INPUTS
+Worker definitions and default per-step timeout seconds.
+
+.OUTPUTS
+Positive integer timeout in seconds for the parent Wait-Job call.
+#>
+function Get-ParallelBaselineWorkerTimeoutSeconds {
+  param(
+    [object[]]$WorkerDefinitions,
+    [int]$DefaultStepTimeoutSeconds
+  )
+
+  $defaultTimeout = Get-CollectorProcessCaptureTimeoutSeconds -TimeoutSeconds $DefaultStepTimeoutSeconds
+  $longestWorkerSeconds = 0
+  foreach ($workerDefinition in @($WorkerDefinitions)) {
+    $workerSeconds = 0
+    foreach ($stepDefinition in @($workerDefinition.Steps)) {
+      $stepTimeout = $defaultTimeout
+      try {
+        if ($stepDefinition.Contains('TimeoutSeconds') -and [int]$stepDefinition.TimeoutSeconds -gt 0) {
+          $stepTimeout = [int]$stepDefinition.TimeoutSeconds
+        }
+      } catch { }
+      $workerSeconds += $stepTimeout
+    }
+    if ($workerSeconds -gt $longestWorkerSeconds) {
+      $longestWorkerSeconds = $workerSeconds
+    }
+  }
+
+  if ($longestWorkerSeconds -lt $defaultTimeout) {
+    $longestWorkerSeconds = $defaultTimeout
+  }
+  return [int][Math]::Min(($longestWorkerSeconds + 30), 86400)
+}
+
+<#
+.SYNOPSIS
 Initializes the bounded parallel baseline runtime for a collect run.
 
 .DESCRIPTION
-Resets the global cache, starts the bounded worker jobs during collect mode, harvests
-successful worker output into the cache, writes the overlap-proof artifact, records
-fallback notes for unsuccessful worker steps, and cleans up the background jobs.
+Resets the global cache, starts the bounded worker jobs during collect mode, enforces a
+bounded parent wait, harvests successful worker output into the cache, writes the
+overlap-proof artifact, records fallback notes for unsuccessful worker steps, and cleans
+up the background jobs.
 
 .FUNCTION NAME
 Initialize-ParallelBaselineCache
@@ -175,17 +226,174 @@ function Initialize-ParallelBaselineCache {
   $workerDir = Join-Path $State.ArtifactsDir 'parallel_workers'
   Ensure-Directory -Path $workerDir
 
+  $defaultWorkerStepTimeoutSeconds = Get-CollectorProcessCaptureTimeoutSeconds
+  $parallelWorkerTimeoutSeconds = Get-ParallelBaselineWorkerTimeoutSeconds -WorkerDefinitions $workerDefinitions -DefaultStepTimeoutSeconds $defaultWorkerStepTimeoutSeconds
+
   $workerScript = {
-    param([hashtable]$WorkerDefinition,[string]$ParallelWorkerDir)
+    param([hashtable]$WorkerDefinition,[string]$ParallelWorkerDir,[int]$DefaultStepTimeoutSeconds)
+
+    <#
+    .SYNOPSIS
+    Returns the timeout for one bounded-parallel worker step.
+
+    .DESCRIPTION
+    Uses the step-specific timeout when present, then the default timeout passed into
+    the worker job, and finally the conservative collector timeout default.
+
+    .FUNCTION NAME
+    Get-WorkerStepTimeoutSeconds
+
+    .INPUTS
+    Worker step definition hashtable.
+
+    .OUTPUTS
+    Positive integer timeout in seconds.
+    #>
+    function Get-WorkerStepTimeoutSeconds {
+      param([hashtable]$StepDefinition)
+
+      $defaultTimeout = 600
+      if ($DefaultStepTimeoutSeconds -gt 0) {
+        $defaultTimeout = [int][Math]::Min($DefaultStepTimeoutSeconds, 86400)
+      }
+      try {
+        if ($StepDefinition.Contains('TimeoutSeconds') -and [int]$StepDefinition.TimeoutSeconds -gt 0) {
+          return [int][Math]::Min([int]$StepDefinition.TimeoutSeconds, 86400)
+        }
+      } catch { }
+      return $defaultTimeout
+    }
+
+    <#
+    .SYNOPSIS
+    Stops one timed-out bounded-parallel worker process tree when possible.
+
+    .DESCRIPTION
+    Attempts a Windows taskkill process-tree stop first, then falls back to the .NET
+    process kill method so child processes do not keep the worker job alive.
+
+    .FUNCTION NAME
+    Stop-WorkerProcessTree
+
+    .INPUTS
+    Process object to stop.
+
+    .OUTPUTS
+    No direct output. Stops the process as a side effect when possible.
+    #>
+    function Stop-WorkerProcessTree {
+      param([System.Diagnostics.Process]$Process)
+
+      if ($null -eq $Process) { return }
+      try {
+        if ($Process.HasExited) { return }
+      } catch { }
+
+      $stopped = $false
+      $taskkillStopMilliseconds = 10000
+      try {
+        $taskkillPath = 'taskkill.exe'
+        if (-not [string]::IsNullOrWhiteSpace($env:SystemRoot)) {
+          $candidate = Join-Path $env:SystemRoot 'System32\taskkill.exe'
+          if (Test-Path -LiteralPath $candidate) {
+            $taskkillPath = $candidate
+          }
+        }
+        $taskkillProcess = $null
+        try {
+          $taskkillStartInfo = New-Object System.Diagnostics.ProcessStartInfo
+          $taskkillStartInfo.FileName = $taskkillPath
+          $taskkillStartInfo.Arguments = ('/PID {0} /T /F' -f [int]$Process.Id)
+          $taskkillStartInfo.UseShellExecute = $false
+          $taskkillStartInfo.RedirectStandardOutput = $true
+          $taskkillStartInfo.RedirectStandardError = $true
+          $taskkillStartInfo.CreateNoWindow = $true
+
+          $taskkillProcess = New-Object System.Diagnostics.Process
+          $taskkillProcess.StartInfo = $taskkillStartInfo
+          [void]$taskkillProcess.Start()
+
+          $taskkillStdoutTask = $taskkillProcess.StandardOutput.ReadToEndAsync()
+          $taskkillStderrTask = $taskkillProcess.StandardError.ReadToEndAsync()
+          $taskkillCompleted = $taskkillProcess.WaitForExit($taskkillStopMilliseconds)
+          if (-not $taskkillCompleted) {
+            try {
+              $taskkillProcess.Kill()
+              [void]$taskkillProcess.WaitForExit(1000)
+            } catch { }
+          } else {
+            try { [void]$taskkillProcess.WaitForExit() } catch { }
+          }
+
+          [void](Get-WorkerProcessOutputTaskText -Task $taskkillStdoutTask -StreamName 'taskkill stdout' -WaitMilliseconds 1000)
+          [void](Get-WorkerProcessOutputTaskText -Task $taskkillStderrTask -StreamName 'taskkill stderr' -WaitMilliseconds 1000)
+
+          if ($taskkillCompleted -and $taskkillProcess.ExitCode -eq 0) {
+            $stopped = $true
+          }
+          if (-not $stopped) {
+            try {
+              if ($Process.HasExited) { $stopped = $true }
+            } catch { }
+          }
+        } finally {
+          if ($null -ne $taskkillProcess) {
+            try { $taskkillProcess.Dispose() } catch { }
+          }
+        }
+      } catch { }
+
+      try {
+        if (-not $Process.HasExited -and -not $stopped) {
+          $Process.Kill()
+        }
+      } catch { }
+    }
+
+    <#
+    .SYNOPSIS
+    Reads one asynchronous worker-output task with a bounded wait.
+
+    .DESCRIPTION
+    Returns captured stdout or stderr text when the async read completes, or a visible
+    warning string when the stream cannot be harvested after the worker process exits.
+
+    .FUNCTION NAME
+    Get-WorkerProcessOutputTaskText
+
+    .INPUTS
+    Async task, stream name, and bounded wait in milliseconds.
+
+    .OUTPUTS
+    Captured stream text or a warning string.
+    #>
+    function Get-WorkerProcessOutputTaskText {
+      param(
+        [System.Threading.Tasks.Task]$Task,
+        [string]$StreamName,
+        [int]$WaitMilliseconds = 10000
+      )
+
+      if ($null -eq $Task) { return '' }
+      try {
+        if (-not $Task.Wait($WaitMilliseconds)) {
+          return ('[DCOIR_CAPTURE_WARNING] {0} capture did not complete within {1}ms after process exit.' -f $StreamName, $WaitMilliseconds)
+        }
+        return [string]$Task.Result
+      } catch {
+        return ('[DCOIR_CAPTURE_WARNING] {0} capture failed: {1}' -f $StreamName, $_.Exception.Message)
+      }
+    }
 
     <#
     .SYNOPSIS
     Captures one bounded-parallel worker step inside the background job.
 
     .DESCRIPTION
-    Starts cmd.exe for the provided worker step definition, captures stdout and stderr,
-    evaluates the exit code against the step's allowed list, and returns the normalized
-    step-result object that is later written into the worker proof artifact.
+    Starts cmd.exe for the provided worker step definition, captures stdout and stderr
+    concurrently, enforces a per-step timeout, evaluates the exit code against the
+    allowed list, and returns the normalized step-result object that is later written
+    into the worker proof artifact.
 
     .FUNCTION NAME
     Invoke-WorkerCommandCapture
@@ -194,48 +402,114 @@ function Initialize-ParallelBaselineCache {
     StepDefinition hashtable containing StepName, Command, and AllowedExitCodes.
 
     .OUTPUTS
-    Ordered hashtable describing the captured step output, exit code, allowed-exit-code
-    evaluation, and combined text surface.
+    Ordered hashtable describing the captured step output, exit code, timeout state,
+    allowed-exit-code evaluation, and combined text surface.
     #>
     function Invoke-WorkerCommandCapture {
       param([hashtable]$StepDefinition)
 
-      $psi = New-Object System.Diagnostics.ProcessStartInfo
-      $psi.FileName = 'cmd.exe'
-      $psi.Arguments = ('/c ' + [string]$StepDefinition.Command)
-      $psi.UseShellExecute = $false
-      $psi.RedirectStandardOutput = $true
-      $psi.RedirectStandardError = $true
-      $psi.CreateNoWindow = $true
-
-      $proc = New-Object System.Diagnostics.Process
-      $proc.StartInfo = $psi
-      [void]$proc.Start()
-      $stdout = $proc.StandardOutput.ReadToEnd()
-      $stderr = $proc.StandardError.ReadToEnd()
-      $proc.WaitForExit()
-
+      $stepName = [string]$StepDefinition.StepName
+      $command = [string]$StepDefinition.Command
       $allowed = @($StepDefinition.AllowedExitCodes)
       if (@($allowed).Count -eq 0) { $allowed = @(0) }
-      $withinAllowed = (@($allowed) -contains [int]$proc.ExitCode)
+      $timeoutSeconds = Get-WorkerStepTimeoutSeconds -StepDefinition $StepDefinition
+      $timeoutMilliseconds = [int][Math]::Min(([double]$timeoutSeconds * 1000), [double][int]::MaxValue)
+      $started = Get-Date
+      $proc = $null
+      $timedOut = $false
 
-      $lines = New-Object System.Collections.ArrayList
-      [void]$lines.Add(('COMMAND={0}' -f [string]$StepDefinition.Command))
-      [void]$lines.Add(('EXIT_CODE={0}' -f [int]$proc.ExitCode))
-      [void]$lines.Add('')
-      [void]$lines.Add('STDOUT:')
-      [void]$lines.Add($stdout)
-      [void]$lines.Add('')
-      [void]$lines.Add('STDERR:')
-      [void]$lines.Add($stderr)
+      try {
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = 'cmd.exe'
+        $psi.Arguments = ('/c ' + $command)
+        $psi.UseShellExecute = $false
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.CreateNoWindow = $true
 
-      return [ordered]@{
-        step_name = [string]$StepDefinition.StepName
-        command = [string]$StepDefinition.Command
-        exit_code = [int]$proc.ExitCode
-        allowed_exit_codes = @($allowed)
-        within_allowed_exit_codes = [bool]$withinAllowed
-        text = ($lines -join [Environment]::NewLine)
+        $proc = New-Object System.Diagnostics.Process
+        $proc.StartInfo = $psi
+        [void]$proc.Start()
+        $stdoutTask = $proc.StandardOutput.ReadToEndAsync()
+        $stderrTask = $proc.StandardError.ReadToEndAsync()
+
+        $timedOut = -not $proc.WaitForExit($timeoutMilliseconds)
+        if ($timedOut) {
+          Stop-WorkerProcessTree -Process $proc
+          try { [void]$proc.WaitForExit(5000) } catch { }
+        } else {
+          [void]$proc.WaitForExit()
+        }
+
+        $stdout = Get-WorkerProcessOutputTaskText -Task $stdoutTask -StreamName 'stdout'
+        $stderr = Get-WorkerProcessOutputTaskText -Task $stderrTask -StreamName 'stderr'
+        $ended = Get-Date
+        $exitCode = -1
+        if (-not $timedOut) {
+          $exitCode = [int]$proc.ExitCode
+        }
+        $withinAllowed = ((-not $timedOut) -and (@($allowed) -contains $exitCode))
+        $status = if ($timedOut) { 'TIMEOUT' } elseif ($withinAllowed) { 'OK' } else { 'ERROR' }
+
+        $lines = New-Object System.Collections.ArrayList
+        [void]$lines.Add(('COMMAND={0}' -f $command))
+        [void]$lines.Add(('EXIT_CODE={0}' -f $exitCode))
+        [void]$lines.Add(('STATUS={0}' -f $status))
+        [void]$lines.Add(('TIMED_OUT={0}' -f [bool]$timedOut))
+        [void]$lines.Add(('TIMEOUT_SECONDS={0}' -f [int]$timeoutSeconds))
+        [void]$lines.Add('')
+        [void]$lines.Add('STDOUT:')
+        [void]$lines.Add($stdout)
+        [void]$lines.Add('')
+        [void]$lines.Add('STDERR:')
+        [void]$lines.Add($stderr)
+
+        return [ordered]@{
+          step_name = $stepName
+          command = $command
+          exit_code = $exitCode
+          status = $status
+          timed_out = [bool]$timedOut
+          timeout_seconds = [int]$timeoutSeconds
+          duration_ms = [int][Math]::Round(($ended - $started).TotalMilliseconds)
+          allowed_exit_codes = @($allowed)
+          within_allowed_exit_codes = [bool]$withinAllowed
+          text = ($lines -join [Environment]::NewLine)
+        }
+      } catch {
+        $ended = Get-Date
+        $message = $_.Exception.Message
+        $status = if ($timedOut) { 'TIMEOUT' } else { 'EXCEPTION' }
+
+        $lines = New-Object System.Collections.ArrayList
+        [void]$lines.Add(('COMMAND={0}' -f $command))
+        [void]$lines.Add('EXIT_CODE=-1')
+        [void]$lines.Add(('STATUS={0}' -f $status))
+        [void]$lines.Add(('TIMED_OUT={0}' -f [bool]$timedOut))
+        [void]$lines.Add(('TIMEOUT_SECONDS={0}' -f [int]$timeoutSeconds))
+        [void]$lines.Add('')
+        [void]$lines.Add('STDOUT:')
+        [void]$lines.Add('')
+        [void]$lines.Add('')
+        [void]$lines.Add('STDERR:')
+        [void]$lines.Add($message)
+
+        return [ordered]@{
+          step_name = $stepName
+          command = $command
+          exit_code = -1
+          status = $status
+          timed_out = [bool]$timedOut
+          timeout_seconds = [int]$timeoutSeconds
+          duration_ms = [int][Math]::Round(($ended - $started).TotalMilliseconds)
+          allowed_exit_codes = @($allowed)
+          within_allowed_exit_codes = $false
+          text = ($lines -join [Environment]::NewLine)
+        }
+      } finally {
+        if ($null -ne $proc) {
+          try { $proc.Dispose() } catch { }
+        }
       }
     }
 
@@ -322,9 +596,10 @@ function Initialize-ParallelBaselineCache {
   }
 
   $jobs = @()
+  $workerTimeoutCount = 0
   try {
     foreach ($definition in $workerDefinitions) {
-      $jobs += Start-Job -Name ('DCOIR_{0}' -f $definition.Name) -ScriptBlock $workerScript -ArgumentList $definition, $workerDir
+      $jobs += Start-Job -Name ('DCOIR_{0}' -f $definition.Name) -ScriptBlock $workerScript -ArgumentList $definition, $workerDir, $defaultWorkerStepTimeoutSeconds
     }
 
     if (@($jobs).Count -eq 0) {
@@ -332,7 +607,19 @@ function Initialize-ParallelBaselineCache {
       return
     }
 
-    Wait-Job -Job $jobs | Out-Null
+    Wait-Job -Job $jobs -Timeout $parallelWorkerTimeoutSeconds | Out-Null
+    $timedOutJobs = @($jobs | Where-Object { $_.State -eq 'Running' -or $_.State -eq 'NotStarted' })
+    $workerTimeoutCount = @($timedOutJobs).Count
+    foreach ($job in @($timedOutJobs)) {
+      Add-CollectorError ('Parallel baseline worker job [{0}] timed out after {1} seconds; worker output will be skipped and affected steps will fall back to serial execution when needed.' -f $job.Name, $parallelWorkerTimeoutSeconds)
+      try { Stop-Job -Job $job -ErrorAction SilentlyContinue } catch { }
+      try { Wait-Job -Job $job -Timeout 5 | Out-Null } catch { }
+      try {
+        if ($job.State -eq 'Running' -or $job.State -eq 'NotStarted') {
+          Add-CollectorError ('Parallel baseline worker job [{0}] remained [{1}] after stop attempt; cleanup will remove the job handle.' -f $job.Name, $job.State)
+        }
+      } catch { }
+    }
 
     $workerObjects = New-Object System.Collections.ArrayList
     foreach ($job in @($jobs)) {
@@ -344,8 +631,10 @@ function Initialize-ParallelBaselineCache {
             $workerObject = Get-Content -LiteralPath $resultPath -Raw -ErrorAction Stop | ConvertFrom-Json
             [void]$workerObjects.Add($workerObject)
             foreach ($stepResult in @($workerObject.step_results)) {
-              if ($stepResult.within_allowed_exit_codes) {
+              if ($stepResult.within_allowed_exit_codes -and -not ([bool]$stepResult.timed_out)) {
                 $Global:ParallelBaselineCommandCache[[string]$stepResult.step_name] = [string]$stepResult.text
+              } elseif ([bool]$stepResult.timed_out) {
+                Add-CollectorError ('Parallel worker [{0}] timed out step [{1}] after {2} seconds; that step will fall back to serial execution when needed.' -f $workerObject.worker_name, $stepResult.step_name, $stepResult.timeout_seconds)
               } else {
                 Add-CollectorNote ('Parallel worker [{0}] captured step [{1}] with exit code [{2}]; that step will fall back to serial execution when needed.' -f $workerObject.worker_name, $stepResult.step_name, $stepResult.exit_code)
               }
@@ -380,11 +669,21 @@ function Initialize-ParallelBaselineCache {
       }
     }
 
-    $proofStatus = if (@($workerResults).Count -ge 2 -and @($overlaps).Count -gt 0) { 'OVERLAP_CONFIRMED' } else { 'NO_OVERLAP_OBSERVED' }
+    $workerStepTimeoutCount = @($workerResults.step_results | Where-Object { [bool]$_.timed_out }).Count
+    $proofStatus = if ($workerTimeoutCount -gt 0 -or $workerStepTimeoutCount -gt 0) {
+      'DEGRADED_TIMEOUT'
+    } elseif (@($workerResults).Count -ge 2 -and @($overlaps).Count -gt 0) {
+      'OVERLAP_CONFIRMED'
+    } else {
+      'NO_OVERLAP_OBSERVED'
+    }
     $proofObject = [ordered]@{
       proof_status = $proofStatus
       implementation_mode = 'bounded_parallel_jobs'
-      deterministic_post_processing = 'Parent waits for all parallel worker jobs before baseline report assembly continues.'
+      deterministic_post_processing = 'Parent waits for parallel worker completion or the bounded worker timeout before baseline report assembly continues.'
+      parent_wait_timeout_seconds = [int]$parallelWorkerTimeoutSeconds
+      worker_timeout_count = [int]$workerTimeoutCount
+      worker_step_timeout_count = [int]$workerStepTimeoutCount
       worker_count = @($workerResults).Count
       cached_step_count = @($Global:ParallelBaselineCommandCache.Keys).Count
       worker_artifact_paths = @($Global:ParallelBaselineWorkerArtifacts)
@@ -398,6 +697,8 @@ function Initialize-ParallelBaselineCache {
 
     if ($proofStatus -eq 'OVERLAP_CONFIRMED') {
       Add-CollectorNote ('Bounded parallel baseline workers executed with observed overlap across {0} worker pair(s).' -f @($overlaps).Count)
+    } elseif ($proofStatus -eq 'DEGRADED_TIMEOUT') {
+      Add-CollectorError ('Bounded parallel baseline workers completed with timeout degradation. WorkerJobTimeouts={0}; WorkerStepTimeouts={1}; affected steps will use serial fallback when requested.' -f $workerTimeoutCount, $workerStepTimeoutCount)
     } else {
       Add-CollectorNote 'Bounded parallel baseline workers ran, but explicit timing overlap was not observed in this run.'
     }
@@ -423,7 +724,8 @@ standard serial command capture path.
 Get-CmdText
 
 .INPUTS
-Command string, StepName string, and optional allowed exit-code list.
+Command string, StepName string, optional allowed exit-code list, and optional timeout
+seconds.
 
 .OUTPUTS
 String containing cached worker text or combined serial command output.
@@ -432,12 +734,13 @@ function Get-CmdText {
   param(
     [string]$Command,
     [string]$StepName,
-    [int[]]$AllowedExitCodes = @(0)
+    [int[]]$AllowedExitCodes = @(0),
+    [int]$TimeoutSeconds = 0
   )
 
   if ($Global:ParallelBaselineCommandCache -and $StepName -and $Global:ParallelBaselineCommandCache.ContainsKey($StepName)) {
     return [string]$Global:ParallelBaselineCommandCache[$StepName]
   }
 
-  return (Get-SerialCmdText -Command $Command -StepName $StepName -AllowedExitCodes $AllowedExitCodes)
+  return (Get-SerialCmdText -Command $Command -StepName $StepName -AllowedExitCodes $AllowedExitCodes -TimeoutSeconds $TimeoutSeconds)
 }
