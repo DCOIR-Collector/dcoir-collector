@@ -406,7 +406,7 @@ function Stop-CollectorProcessTree {
   } catch { }
 
   $stopped = $false
-  $taskkillTempPaths = @()
+  $taskkillStopMilliseconds = 10000
   try {
     $taskkillPath = 'taskkill.exe'
     if (-not [string]::IsNullOrWhiteSpace($env:SystemRoot)) {
@@ -416,20 +416,47 @@ function Stop-CollectorProcessTree {
       }
     }
 
-    $taskkillStdoutPath = [System.IO.Path]::GetTempFileName()
-    $taskkillTempPaths += $taskkillStdoutPath
-    $taskkillStderrPath = [System.IO.Path]::GetTempFileName()
-    $taskkillTempPaths += $taskkillStderrPath
+    $taskkillProcess = $null
     try {
-      $killProcess = Start-Process -FilePath $taskkillPath -ArgumentList @('/PID', [string]$Process.Id, '/T', '/F') -Wait -NoNewWindow -PassThru -RedirectStandardOutput $taskkillStdoutPath -RedirectStandardError $taskkillStderrPath -ErrorAction Stop
-      if ($killProcess.ExitCode -eq 0) {
+      $taskkillStartInfo = New-Object System.Diagnostics.ProcessStartInfo
+      $taskkillStartInfo.FileName = $taskkillPath
+      $taskkillStartInfo.Arguments = ('/PID {0} /T /F' -f [int]$Process.Id)
+      $taskkillStartInfo.UseShellExecute = $false
+      $taskkillStartInfo.RedirectStandardOutput = $true
+      $taskkillStartInfo.RedirectStandardError = $true
+      $taskkillStartInfo.CreateNoWindow = $true
+
+      $taskkillProcess = New-Object System.Diagnostics.Process
+      $taskkillProcess.StartInfo = $taskkillStartInfo
+      [void]$taskkillProcess.Start()
+
+      $taskkillStdoutTask = $taskkillProcess.StandardOutput.ReadToEndAsync()
+      $taskkillStderrTask = $taskkillProcess.StandardError.ReadToEndAsync()
+      $taskkillCompleted = $taskkillProcess.WaitForExit($taskkillStopMilliseconds)
+      if (-not $taskkillCompleted) {
+        try {
+          $taskkillProcess.Kill()
+          [void]$taskkillProcess.WaitForExit(1000)
+        } catch { }
+        Add-CollectorError ("taskkill timed out while stopping process [{0}] for command [{1}]; falling back to direct process kill." -f $Process.Id, $CommandText)
+      } else {
+        try { [void]$taskkillProcess.WaitForExit() } catch { }
+      }
+
+      [void](Get-CollectorProcessOutputTaskText -Task $taskkillStdoutTask -StreamName 'taskkill stdout' -WaitMilliseconds 1000)
+      [void](Get-CollectorProcessOutputTaskText -Task $taskkillStderrTask -StreamName 'taskkill stderr' -WaitMilliseconds 1000)
+
+      if ($taskkillCompleted -and $taskkillProcess.ExitCode -eq 0) {
         $stopped = $true
       }
+      if (-not $stopped) {
+        try {
+          if ($Process.HasExited) { $stopped = $true }
+        } catch { }
+      }
     } finally {
-      foreach ($taskkillTempPath in @($taskkillTempPaths)) {
-        if (-not [string]::IsNullOrWhiteSpace($taskkillTempPath)) {
-          Remove-Item -LiteralPath $taskkillTempPath -Force -ErrorAction SilentlyContinue
-        }
+      if ($null -ne $taskkillProcess) {
+        try { $taskkillProcess.Dispose() } catch { }
       }
     }
   } catch { }
