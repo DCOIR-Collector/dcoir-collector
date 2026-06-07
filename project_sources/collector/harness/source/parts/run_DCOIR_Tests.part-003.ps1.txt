@@ -1,4 +1,6 @@
-    [Parameter(Mandatory=$true)][string[]]$CollectorArgs,
+    [Parameter(Mandatory=$true)]
+    [AllowEmptyString()]
+    [string[]]$CollectorArgs,
     [Parameter(Mandatory=$true)][hashtable]$EnvOverrides
   )
 
@@ -45,7 +47,9 @@ PSCustomObject containing the observed failure behavior and harness log path.
 function Invoke-ExpectedFailureStep {
   param(
     [Parameter(Mandatory=$true)][string]$StepName,
-    [Parameter(Mandatory=$true)][string[]]$CollectorArgs,
+    [Parameter(Mandatory=$true)]
+    [AllowEmptyString()]
+    [string[]]$CollectorArgs,
     [Parameter(Mandatory=$true)][ValidateSet('BIND_REJECT','RUNTIME_ERROR')][string]$ExpectedOutcome,
     [string[]]$ExpectedPatterns
   )

@@ -162,6 +162,7 @@ $Global:ExecutionJsonlPath = $null
 $Global:ErrorsLogPath = $null
 $Global:CurrentRunId = $null
 $script:ContextualHelpTopic = $null
+$script:DCOIRRunIdParameterWasBound = $PSBoundParameters.ContainsKey("RunId")
 
 $collectorPartsRoot = Join-Path (Split-Path -Parent $ScriptFilePath) "parts"
 $collectorPartFiles = @(

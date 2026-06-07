@@ -54,7 +54,9 @@ and the step log path.
 function Invoke-CollectorStep {
   param(
     [Parameter(Mandatory=$true)][string]$StepName,
-    [Parameter(Mandatory=$true)][string[]]$CollectorArgs
+    [Parameter(Mandatory=$true)]
+    [AllowEmptyString()]
+    [string[]]$CollectorArgs
   )
   Ensure-Directory -Path $LogsDir
   $invocation = New-CollectorInvocation -CollectorArgs $CollectorArgs
