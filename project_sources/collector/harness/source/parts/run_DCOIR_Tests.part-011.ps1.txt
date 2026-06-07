@@ -191,7 +191,9 @@ function Run-FailureGatesSuite {
       [string]$FixtureOutRoot,
       [string]$FixtureRunId,
       [string]$StateRunRoot,
-      [string]$StatePackagePath
+      [string]$StatePackagePath,
+      [string]$StatePathOverride,
+      [string]$StateRunIdOverride
     )
 
     New-Item -Path $FixtureOutRoot -ItemType Directory -Force | Out-Null
@@ -201,18 +203,21 @@ function Run-FailureGatesSuite {
       New-Item -Path (Join-Path $expectedRunRoot $child) -ItemType Directory -Force | Out-Null
     }
     $statePath = Join-Path $expectedRunRoot 'state.json'
+    $stateRunId = if ([string]::IsNullOrWhiteSpace($StateRunIdOverride)) { $FixtureRunId } else { $StateRunIdOverride }
     $state = [ordered]@{
-      RunId = $FixtureRunId
+      RunId = $stateRunId
       OutRoot = $FixtureOutRoot
       RunRoot = $StateRunRoot
-      StatePath = $statePath
+      StatePath = if ([string]::IsNullOrWhiteSpace($StatePathOverride)) { $statePath } else { $StatePathOverride }
       PackagePath = $StatePackagePath
       CollectorVersion = '4.0.7'
     }
     Set-Content -Path $statePath -Value ($state | ConvertTo-Json -Depth 5) -Encoding UTF8
     return @{
       ExpectedRunRoot = $expectedRunRoot
+      RecordedRunId = $stateRunId
       StatePath = $statePath
+      RecordedStatePath = $state.StatePath
       StatePackagePath = $StatePackagePath
     }
   }
@@ -275,6 +280,38 @@ function Run-FailureGatesSuite {
   Assert-StateCleanupRefused -StepName "98J_StateCleanupRejectsMismatchedRunRoot" -CollectorStep $mismatchCleanup
   if (-not (Test-Path -LiteralPath (Join-Path $mismatchWrongRunRoot 'must-not-delete.txt'))) {
     throw 'State-backed cleanup deleted a mismatched RunRoot from state.json.'
+  }
+
+  $outsideStatePath = Join-Path $stateCleanupRoot 'outside_statepath_must_not_delete.json'
+  Set-Content -Path $outsideStatePath -Value '{"statepath":"outside"}' -Encoding UTF8
+  $outsideStatePathRunId = 'state-outside-statepath'
+  $outsideStatePathRunRoot = Join-Path $stateCleanupOutRoot ("DCOIR_{0}_{1}" -f $env:COMPUTERNAME, $outsideStatePathRunId)
+  $outsideStatePathPackage = Join-Path $stateCleanupOutRoot 'DCOIR_Collector.zip'
+  Set-Content -Path $outsideStatePathPackage -Value 'package-placeholder' -Encoding UTF8
+  [void](Initialize-StateCleanupAuthorityFixture -FixtureOutRoot $stateCleanupOutRoot -FixtureRunId $outsideStatePathRunId -StateRunRoot $outsideStatePathRunRoot -StatePackagePath $outsideStatePathPackage -StatePathOverride $outsideStatePath)
+  $outsideStatePathCleanup = Invoke-CollectorStep -StepName "98K_StateCleanupRejectsOutsideStatePath" -CollectorArgs @("-Quick","cleanup","-OutRoot",$stateCleanupOutRoot,"-RunId",$outsideStatePathRunId)
+  Assert-StateCleanupRefused -StepName "98K_StateCleanupRejectsOutsideStatePath" -CollectorStep $outsideStatePathCleanup
+  if (-not (Test-Path -LiteralPath $outsideStatePath)) {
+    throw 'State-backed cleanup deleted an outside StatePath from state.json.'
+  }
+  if (-not (Test-Path -LiteralPath $outsideStatePathRunRoot)) {
+    throw 'State-backed cleanup deleted the run root while refusing an outside StatePath.'
+  }
+
+  $selectedRunId = 'state-selected-runid-a'
+  $stateRunId = 'state-selected-runid-b'
+  $mismatchedRunIdRunRoot = Join-Path $stateCleanupOutRoot ("DCOIR_{0}_{1}" -f $env:COMPUTERNAME, $stateRunId)
+  New-Item -Path $mismatchedRunIdRunRoot -ItemType Directory -Force | Out-Null
+  Set-Content -Path (Join-Path $mismatchedRunIdRunRoot 'must-not-delete.txt') -Value 'mismatched-state-runid' -Encoding UTF8
+  $mismatchedRunIdStatePath = Join-Path $mismatchedRunIdRunRoot 'state.json'
+  Set-Content -Path $mismatchedRunIdStatePath -Value '{"state":"mismatched"}' -Encoding UTF8
+  $mismatchedRunIdPackage = Join-Path $stateCleanupOutRoot 'DCOIR_Collector.zip'
+  Set-Content -Path $mismatchedRunIdPackage -Value 'package-placeholder' -Encoding UTF8
+  [void](Initialize-StateCleanupAuthorityFixture -FixtureOutRoot $stateCleanupOutRoot -FixtureRunId $selectedRunId -StateRunRoot $mismatchedRunIdRunRoot -StatePackagePath $mismatchedRunIdPackage -StatePathOverride $mismatchedRunIdStatePath -StateRunIdOverride $stateRunId)
+  $mismatchedRunIdCleanup = Invoke-CollectorStep -StepName "98L_StateCleanupRejectsMismatchedRunId" -CollectorArgs @("-Quick","cleanup","-OutRoot",$stateCleanupOutRoot,"-RunId",$selectedRunId)
+  Assert-StateCleanupRefused -StepName "98L_StateCleanupRejectsMismatchedRunId" -CollectorStep $mismatchedRunIdCleanup
+  if (-not (Test-Path -LiteralPath (Join-Path $mismatchedRunIdRunRoot 'must-not-delete.txt'))) {
+    throw 'State-backed cleanup deleted the state RunId run root while refusing a selected RunId mismatch.'
   }
   Remove-Item -LiteralPath $stateCleanupRoot -Recurse -Force -ErrorAction SilentlyContinue
 
