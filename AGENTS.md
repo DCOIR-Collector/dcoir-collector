@@ -14,6 +14,7 @@ This file is the repository/workspace adapter. It keeps local bootstrapping and 
 * `AGENTS.md` wins for workspace-local bootstrapping mechanics only when it does not contradict core instructions.
 * Active continuity supports resumption only and never overrides core instructions, this file, GitHub, or Supabase.
 * Codex cloud helper commands installed by the Codex environment are operational mechanics only. They do not expand task scope, bypass branch protection, bypass repository governance, or replace validation/readback rules.
+* You must always ask for operator approval before posting an `@codex` comment on a PR asking Codex to perform any action.
 
 ## Canonical connector targets
 
