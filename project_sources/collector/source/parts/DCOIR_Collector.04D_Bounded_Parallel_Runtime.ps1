@@ -290,6 +290,7 @@ function Initialize-ParallelBaselineCache {
       } catch { }
 
       $stopped = $false
+      $taskkillTempPaths = @()
       try {
         $taskkillPath = 'taskkill.exe'
         if (-not [string]::IsNullOrWhiteSpace($env:SystemRoot)) {
@@ -299,14 +300,20 @@ function Initialize-ParallelBaselineCache {
           }
         }
         $taskkillStdoutPath = [System.IO.Path]::GetTempFileName()
+        $taskkillTempPaths += $taskkillStdoutPath
         $taskkillStderrPath = [System.IO.Path]::GetTempFileName()
+        $taskkillTempPaths += $taskkillStderrPath
         try {
           $killProcess = Start-Process -FilePath $taskkillPath -ArgumentList @('/PID', [string]$Process.Id, '/T', '/F') -Wait -NoNewWindow -PassThru -RedirectStandardOutput $taskkillStdoutPath -RedirectStandardError $taskkillStderrPath -ErrorAction Stop
           if ($killProcess.ExitCode -eq 0) {
             $stopped = $true
           }
         } finally {
-          Remove-Item -LiteralPath $taskkillStdoutPath, $taskkillStderrPath -Force -ErrorAction SilentlyContinue
+          foreach ($taskkillTempPath in @($taskkillTempPaths)) {
+            if (-not [string]::IsNullOrWhiteSpace($taskkillTempPath)) {
+              Remove-Item -LiteralPath $taskkillTempPath -Force -ErrorAction SilentlyContinue
+            }
+          }
         }
       } catch { }
 
@@ -383,6 +390,7 @@ function Initialize-ParallelBaselineCache {
       $timeoutMilliseconds = [int][Math]::Min(([double]$timeoutSeconds * 1000), [double][int]::MaxValue)
       $started = Get-Date
       $proc = $null
+      $timedOut = $false
 
       try {
         $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -445,12 +453,13 @@ function Initialize-ParallelBaselineCache {
       } catch {
         $ended = Get-Date
         $message = $_.Exception.Message
+        $status = if ($timedOut) { 'TIMEOUT' } else { 'EXCEPTION' }
 
         $lines = New-Object System.Collections.ArrayList
         [void]$lines.Add(('COMMAND={0}' -f $command))
         [void]$lines.Add('EXIT_CODE=-1')
-        [void]$lines.Add('STATUS=EXCEPTION')
-        [void]$lines.Add('TIMED_OUT=False')
+        [void]$lines.Add(('STATUS={0}' -f $status))
+        [void]$lines.Add(('TIMED_OUT={0}' -f [bool]$timedOut))
         [void]$lines.Add(('TIMEOUT_SECONDS={0}' -f [int]$timeoutSeconds))
         [void]$lines.Add('')
         [void]$lines.Add('STDOUT:')
@@ -463,8 +472,8 @@ function Initialize-ParallelBaselineCache {
           step_name = $stepName
           command = $command
           exit_code = -1
-          status = 'EXCEPTION'
-          timed_out = $false
+          status = $status
+          timed_out = [bool]$timedOut
           timeout_seconds = [int]$timeoutSeconds
           duration_ms = [int][Math]::Round(($ended - $started).TotalMilliseconds)
           allowed_exit_codes = @($allowed)
@@ -489,13 +498,13 @@ function Initialize-ParallelBaselineCache {
     recursive scan is bounded so unexpected object graphs fail visibly instead of relying
     on engine recursion behavior.
 
-    .FUNCTION NAME
+.FUNCTION NAME
     Test-WorkerJsonContainsEllipsisSentinel
 
-    .INPUTS
+.INPUTS
     InputObject, optional max traversal depth, current recursion depth, and current path.
 
-    .OUTPUTS
+.OUTPUTS
     Boolean.
     #>
     function Test-WorkerJsonContainsEllipsisSentinel {
