@@ -186,6 +186,25 @@ function Run-FailureGatesSuite {
     throw 'Explicit dotted custom RunId no-state cleanup did not remove the collector-structured custom run root.'
   }
 
+  <#
+  .SYNOPSIS
+  Creates a synthetic state-backed cleanup authority fixture.
+
+  .DESCRIPTION
+  Builds a collector-shaped run root, writes a state.json record with caller-supplied
+  cleanup authority fields, and returns the expected and recorded fixture paths for
+  FailureGates state-cleanup refusal checks.
+
+  .FUNCTION NAME
+  Initialize-StateCleanupAuthorityFixture
+
+  .INPUTS
+  No pipeline input. Parameters describe the fixture out-root, run id, and state fields.
+
+  .OUTPUTS
+  Hashtable containing the expected run root, recorded run id, state path, recorded
+  state path, and state package path.
+  #>
   function Initialize-StateCleanupAuthorityFixture {
     param(
       [string]$FixtureOutRoot,
@@ -222,6 +241,23 @@ function Run-FailureGatesSuite {
     }
   }
 
+  <#
+  .SYNOPSIS
+  Asserts that a state-backed cleanup attempt was refused.
+
+  .DESCRIPTION
+  Verifies the collector step succeeded at the harness process level while reporting
+  cleanup refusal status, a nonzero refused-target count, and refusal reason detail.
+
+  .FUNCTION NAME
+  Assert-StateCleanupRefused
+
+  .INPUTS
+  No pipeline input. Parameters identify the step name and collector step result.
+
+  .OUTPUTS
+  No direct output. Throws when refusal reporting is missing or unexpected.
+  #>
   function Assert-StateCleanupRefused {
     param(
       [string]$StepName,
