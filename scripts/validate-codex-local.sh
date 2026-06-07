@@ -15,14 +15,26 @@ if [ "$#" -gt 0 ]; then
   explicit_scope=1
   printf '%s\n' "$@" > "$files_file"
 elif git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  git ls-files > "$files_file"
+  base_ref="${CODEX_BASE_REF:-origin/main}"
+
+  if ! git rev-parse --verify "$base_ref" >/dev/null 2>&1; then
+    base_ref="${CODEX_BASE_FALLBACK_REF:-main}"
+  fi
+
+  if git rev-parse --verify "$base_ref" >/dev/null 2>&1; then
+    git diff --name-only --diff-filter=ACMRTUXB "$base_ref"...HEAD > "$files_file" || true
+  elif git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+    git diff --name-only --diff-filter=ACMRTUXB HEAD~1...HEAD > "$files_file" || true
+  else
+    : > "$files_file"
+  fi
+
+  git diff --cached --name-only --diff-filter=ACMRTUXB >> "$files_file" || true
+  git diff --name-only --diff-filter=ACMRTUXB >> "$files_file" || true
+
+  sort -u "$files_file" -o "$files_file"
 else
-  find . -type f \
-    -not -path './.git/*' \
-    -not -path './node_modules/*' \
-    -not -path './dist/*' \
-    -not -path './build/*' \
-    | sed 's#^./##' > "$files_file"
+  : > "$files_file"
 fi
 
 while IFS= read -r file; do
@@ -39,6 +51,12 @@ done < "$files_file" > "$python_files_file"
 
 echo '[validate-codex-local] changed or selected files:'
 sed -n '1,200p' "$files_file"
+
+if [ ! -s "$files_file" ]; then
+  echo '[validate-codex-local] no changed or selected files; nothing to validate'
+  git status --short || true
+  exit 0
+fi
 
 run_secret_scan() {
   if [ ! -s "$existing_files_file" ]; then

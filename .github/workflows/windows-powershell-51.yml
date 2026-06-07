@@ -8,7 +8,7 @@
 # Do not use when:
 # - Do not treat this as a replacement for collector runtime harness validation or Linux PowerShell 7 cross-platform checks.
 # Trigger model:
-# - pull_request and push paths for PowerShell files, validation wrappers, and this workflow pair; workflow_dispatch for operator-requested checks.
+# - pull_request and push paths for PowerShell files, validation wrappers, GitHub workflow YAML files, and this workflow pair; workflow_dispatch for operator-requested checks.
 # Required inputs:
 # - none
 # Required secrets/config:
@@ -44,6 +44,8 @@ on:
       - 'scripts/validate-codex-local.sh'
       - '.github/actions/validate-powershell-syntax/**'
       - '.github/actions/upload-chatgpt-artifact/**'
+      - '.github/workflows/*.yml'
+      - '.github/workflows/*.yaml'
       - '.github/workflows/windows-powershell-51.yml'
       - '.github/workflows/reusable-windows-powershell-51.yml'
   push:
@@ -57,6 +59,8 @@ on:
       - 'scripts/validate-codex-local.sh'
       - '.github/actions/validate-powershell-syntax/**'
       - '.github/actions/upload-chatgpt-artifact/**'
+      - '.github/workflows/*.yml'
+      - '.github/workflows/*.yaml'
       - '.github/workflows/windows-powershell-51.yml'
       - '.github/workflows/reusable-windows-powershell-51.yml'
   workflow_dispatch:

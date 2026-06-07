@@ -82,5 +82,7 @@ For CodeQL workflow-shape checks after security workflow changes, use:
 python3 scripts/validate-codeql-security-workflow.py
 ```
 
+With no arguments, `bash scripts/validate-codex-local.sh` validates changed files relative to `CODEX_BASE_REF` or `origin/main`, plus staged and unstaged local changes. Pass explicit paths for a narrower scoped validation.
+
 CodeQL findings must be read back through the GitHub code scanning surface or workflow logs; local workflow-shape validation is not a substitute for CodeQL analysis.
 
