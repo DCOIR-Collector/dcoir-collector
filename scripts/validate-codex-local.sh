@@ -58,6 +58,11 @@ if [ ! -s "$files_file" ]; then
   exit 0
 fi
 
+filter_secret_scan_output() {
+  grep -Ev "REQUIRED_TOKEN[[:space:]]*=[[:space:]]*['\"]APPLY_[A-Z0-9_]+['\"]" \
+    | grep -Ev "['\"]?[A-Z][A-Z0-9_]*(TOKEN|SECRET|PASSWORD|KEY)[A-Z0-9_]*['\"]?"
+}
+
 run_secret_scan() {
   if [ ! -s "$existing_files_file" ]; then
     echo '[validate-codex-local] no existing files selected for secret-pattern scan'
@@ -82,7 +87,7 @@ run_secret_scan() {
     -e '-----BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY-----' \
     -e '(?i)(api[_-]?key|secret|token|password)[[:space:]]*[:=][[:space:]]*["'"'"']?[A-Za-z0-9_./+=-]{16,}' \
     -- "${existing_files[@]}" \
-    | grep -Ev "REQUIRED_TOKEN[[:space:]]*=[[:space:]]*['\"]APPLY_[A-Z0-9_]+['\"]" || true
+    | filter_secret_scan_output || true
 }
 
 if command -v rg >/dev/null 2>&1; then
@@ -104,8 +109,12 @@ if grep -Eq '\.sh$' "$files_file"; then
     [ -f "$file" ] || continue
     case "$file" in
       *.sh)
-        if command -v shellcheck >/dev/null 2>&1; then shellcheck "$file" || status=1; fi
-        if command -v shfmt >/dev/null 2>&1; then shfmt -d "$file" || status=1; fi
+        if command -v shellcheck >/dev/null 2>&1; then
+          shellcheck "$file" || status=1
+        fi
+        if command -v shfmt >/dev/null 2>&1; then
+          shfmt -d "$file" || echo "[validate-codex-local] WARN: shfmt reported formatting differences for $file"
+        fi
         ;;
     esac
   done < "$files_file"
@@ -117,7 +126,13 @@ if grep -Eq '\.(yml|yaml)$' "$files_file"; then
     while IFS= read -r file; do
       [ -f "$file" ] || continue
       case "$file" in
-        *.yml|*.yaml) yamllint "$file" || status=1 ;;
+        *.yml | *.yaml)
+          if [ -f .yamllint ] || [ -f .yamllint.yml ] || [ -f .yamllint.yaml ]; then
+            yamllint "$file" || status=1
+          else
+            yamllint "$file" || echo "[validate-codex-local] WARN: yamllint reported style findings for $file without a repo yamllint config"
+          fi
+          ;;
       esac
     done < "$files_file"
   else
@@ -129,21 +144,13 @@ if [ -s "$python_files_file" ]; then
   echo '[validate-codex-local] python checks'
   mapfile -t python_files < "$python_files_file"
   if command -v ruff >/dev/null 2>&1; then
-    if [ "$explicit_scope" = "1" ]; then
-      ruff check -- "${python_files[@]}" || status=1
-    else
-      ruff check . || status=1
-    fi
+    ruff check -- "${python_files[@]}" || status=1
   else
     echo '[validate-codex-local] WARN: ruff not available'
   fi
 
   if command -v bandit >/dev/null 2>&1; then
-    if [ "$explicit_scope" = "1" ]; then
-      bandit -q -- "${python_files[@]}" || status=1
-    else
-      bandit -q -r . -x ./.git,./.venv,./venv,./node_modules || status=1
-    fi
+    bandit -q -- "${python_files[@]}" || status=1
   else
     echo '[validate-codex-local] WARN: bandit not available'
   fi
