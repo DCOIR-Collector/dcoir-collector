@@ -108,15 +108,18 @@ function Invoke-EnrichmentAction-Retrieval {
       if (-not $LogName) { throw "LogRaw requires -LogName" }
       $reason = "Raw EVTX export for analyst workstation review."
       $rawEvtxFilterText = "Raw EVTX filter scope: LogName, effective event window, and optional EventId values. MaxEvents does not limit raw EVTX export size."
+      $rawEvtxFilters = @('LogName','EffectiveEventWindow')
+      if ($EventId -and @($EventId).Count -gt 0) { $rawEvtxFilters += 'EventIds' }
+      $rawEvtxFiltersText = ($rawEvtxFilters -join ',')
       $targetDetails = Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId
       $safeLogName = ($LogName -replace '[\\/:*?"<>|]','_')
       $plannedStagedPath = Join-Path $sessionStagedDir (New-StageName -Prefix ("STAGED_LogRaw_" + $safeLogName) -Extension ".evtx")
       Export-FilteredEvtx -LogChannel $LogName -WindowHours $Hours -Ids $EventId -OutPath $plannedStagedPath -ScratchDir $sessionLogsDir
       if (Test-Path -LiteralPath $plannedStagedPath) {
         $stagedPath = $plannedStagedPath
-        $outputText = "Raw EVTX exported and staged for retrieval.`r`nRAW_EVTX_FILTERS=LogName,EffectiveEventWindow,EventIds`r`nRAW_EVTX_EVENT_COUNT_CAP=NotApplied`r`nSTAGED_PATH=$stagedPath"
+        $outputText = "Raw EVTX exported and staged for retrieval.`r`nRAW_EVTX_FILTERS=$rawEvtxFiltersText`r`nRAW_EVTX_EVENT_COUNT_CAP=NotApplied`r`nSTAGED_PATH=$stagedPath"
       } else {
-        $outputText = "Raw EVTX export was skipped or did not create a staged artifact.`r`nRAW_EVTX_FILTERS=LogName,EffectiveEventWindow,EventIds`r`nRAW_EVTX_EVENT_COUNT_CAP=NotApplied"
+        $outputText = "Raw EVTX export was skipped or did not create a staged artifact.`r`nRAW_EVTX_FILTERS=$rawEvtxFiltersText`r`nRAW_EVTX_EVENT_COUNT_CAP=NotApplied"
       }
       $interpretation = "Open the EVTX in Event Viewer on the analyst workstation with Action > Open Saved Log. $rawEvtxFilterText"
       $nextStep = "Retrieve the EVTX with get-file and review it in Event Viewer. If the file is too large, narrow LogName, Hours or explicit WindowStart/WindowEnd, or EventId before exporting again."
