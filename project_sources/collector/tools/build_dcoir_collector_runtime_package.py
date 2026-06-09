@@ -50,6 +50,7 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     validate_script = Path(__file__).resolve().parent / 'validate_dcoir_collector_runtime_package.py'
+    event_query_bound_script = Path(__file__).resolve().parent / 'validate_event_text_query_bound_policy.py'
     compile_script = Path(__file__).resolve().parent / 'compile_dcoir_collector_runtime.py'
 
     steps = []
@@ -59,6 +60,13 @@ def main() -> int:
     steps.append({'name': 'validate', 'cmd': validate_cmd, 'returncode': validate_proc.returncode, 'stdout': validate_proc.stdout, 'stderr': validate_proc.stderr})
     if validate_proc.returncode != 0:
         write_report(output_dir, {'success': False, 'stage': 'validate', 'steps': steps})
+        return 1
+
+    event_query_bound_cmd = [sys.executable, str(event_query_bound_script), '--source-dir', str(source_dir), '--output-dir', str(output_dir)]
+    event_query_bound_proc = run_step(event_query_bound_cmd)
+    steps.append({'name': 'validate_event_text_query_bound_policy', 'cmd': event_query_bound_cmd, 'returncode': event_query_bound_proc.returncode, 'stdout': event_query_bound_proc.stdout, 'stderr': event_query_bound_proc.stderr})
+    if event_query_bound_proc.returncode != 0:
+        write_report(output_dir, {'success': False, 'stage': 'validate_event_text_query_bound_policy', 'steps': steps})
         return 1
 
     compile_cmd = [sys.executable, str(compile_script), '--source-dir', str(source_dir), '--output-dir', str(output_dir)]
