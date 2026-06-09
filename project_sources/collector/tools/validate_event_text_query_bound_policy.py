@@ -222,6 +222,11 @@ function Export-FilteredEvtx {
 ''',
         'Export-FilteredEvtx',
     ))
+    target_detail_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take 500',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -MaxEvents $Limit',
+    ]
 
     lograw_target_detail_calls = re.findall(
         r'Get-CollectorEventWindowTargetDetails[^\r\n]*',
@@ -234,8 +239,12 @@ function Export-FilteredEvtx {
         flags=re.IGNORECASE,
     )
     target_detail_overclaim = any(
-        re.search(r'-(?:Take|MaxEvents)\s+\$MaxEvents\b', call, flags=re.IGNORECASE)
+        re.search(r'-(?:Take|MaxEvents)\b', call, flags=re.IGNORECASE)
         for call in lograw_target_detail_calls
+    )
+    target_detail_negative_fixtures_detect_count_cap = all(
+        re.search(r'-(?:Take|MaxEvents)\b', fixture, flags=re.IGNORECASE) is not None
+        for fixture in target_detail_negative_fixtures
     )
     export_claims_maxevents = any(
         re.search(r'-(?:Take|MaxEvents)\b|\$MaxEvents\b', call, flags=re.IGNORECASE)
@@ -254,6 +263,7 @@ function Export-FilteredEvtx {
         'evtx_export_function_present': bool(evtx_export),
         'evtx_export_param_block_present': bool(evtx_export_param_block),
         'param_block_negative_fixture_detects_maxevents': negative_fixture_detects_event_cap,
+        'target_detail_negative_fixtures_detect_count_cap': target_detail_negative_fixtures_detect_count_cap,
         'target_helper_metadata_only_no_event_reader': bool(target_helper) and not target_helper_reads_or_exports_events,
         'lograw_target_details_call_count': len(lograw_target_detail_calls),
         'lograw_target_details_omits_maxevents_overclaim': bool(lograw_target_detail_calls) and not target_detail_overclaim,
@@ -283,6 +293,7 @@ function Export-FilteredEvtx {
         'evtx_export_function_present',
         'evtx_export_param_block_present',
         'param_block_negative_fixture_detects_maxevents',
+        'target_detail_negative_fixtures_detect_count_cap',
         'target_helper_metadata_only_no_event_reader',
         'lograw_target_details_omits_maxevents_overclaim',
         'lograw_target_details_keeps_log_window_ids',
