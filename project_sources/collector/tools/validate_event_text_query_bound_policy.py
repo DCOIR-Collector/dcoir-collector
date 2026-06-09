@@ -277,6 +277,10 @@ function Export-FilteredEvtx {
         'Get-CollectorEventWindowTargetDetails @TargetDetailArgs',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName `\n  @TargetDetailArgs',
     ]
+    export_splat_negative_fixtures = [
+        'Export-FilteredEvtx @ExportArgs',
+        'Export-FilteredEvtx -LogChannel $LogName `\n  @ExportArgs',
+    ]
 
     lograw_target_detail_calls = extract_powershell_command_spans(
         lograw_block,
@@ -312,6 +316,14 @@ function Export-FilteredEvtx {
         powershell_command_uses_splatting(fixture)
         for fixture in target_detail_splat_negative_fixtures
     )
+    export_uses_splatting = any(
+        powershell_command_uses_splatting(call)
+        for call in lograw_export_calls
+    )
+    export_splat_negative_fixtures_reject_splatting = all(
+        powershell_command_uses_splatting(fixture)
+        for fixture in export_splat_negative_fixtures
+    )
     export_claims_maxevents = any(
         powershell_command_uses_count_cap_parameter(call)
         or re.search(r'\$MaxEvents\b', normalize_powershell_command_span(call), flags=re.IGNORECASE)
@@ -334,6 +346,7 @@ function Export-FilteredEvtx {
         'target_detail_multiline_negative_fixtures_detect_count_cap': target_detail_multiline_negative_fixtures_detect_count_cap,
         'target_detail_parameter_prefix_negative_fixtures_detect_count_cap': target_detail_parameter_prefix_negative_fixtures_detect_count_cap,
         'target_detail_splat_negative_fixtures_reject_splatting': target_detail_splat_negative_fixtures_reject_splatting,
+        'export_splat_negative_fixtures_reject_splatting': export_splat_negative_fixtures_reject_splatting,
         'target_helper_metadata_only_no_event_reader': bool(target_helper) and not target_helper_reads_or_exports_events,
         'lograw_target_details_call_count': len(lograw_target_detail_calls),
         'lograw_target_details_omits_maxevents_overclaim': bool(lograw_target_detail_calls) and not target_detail_overclaim and not target_detail_uses_splatting,
@@ -345,7 +358,8 @@ function Export-FilteredEvtx {
         'lograw_output_states_no_event_count_cap': 'RAW_EVTX_EVENT_COUNT_CAP=NotApplied' in lograw_block,
         'lograw_interpretation_states_no_maxevents_cap': 'MaxEvents does not limit raw EVTX export size.' in lograw_block,
         'lograw_export_call_preserved': 'Export-FilteredEvtx -LogChannel $LogName -WindowHours $Hours -Ids $EventId -OutPath $plannedStagedPath -ScratchDir $sessionLogsDir' in normalize_powershell_command_span(lograw_block),
-        'lograw_export_call_omits_maxevents': bool(lograw_export_calls) and not export_claims_maxevents,
+        'lograw_export_call_omits_maxevents': bool(lograw_export_calls) and not export_claims_maxevents and not export_uses_splatting,
+        'lograw_export_call_omits_splatting': bool(lograw_export_calls) and not export_uses_splatting,
         'logtext_still_uses_maxevents_metadata': 'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take $MaxEvents' in logtext_block,
         'logtext_still_uses_bounded_text_query': 'Get-EventText -Channel $LogName -WindowHours $Hours -Ids $EventId -Take $MaxEvents' in logtext_block,
         'target_helper_still_emits_maxevents_for_text_paths': 'if ($Take -gt 0) { [void]$parts.Add(("MaxEvents={0}" -f $Take)) }' in target_helper,
@@ -368,6 +382,7 @@ function Export-FilteredEvtx {
         'target_detail_multiline_negative_fixtures_detect_count_cap',
         'target_detail_parameter_prefix_negative_fixtures_detect_count_cap',
         'target_detail_splat_negative_fixtures_reject_splatting',
+        'export_splat_negative_fixtures_reject_splatting',
         'target_helper_metadata_only_no_event_reader',
         'lograw_target_details_omits_maxevents_overclaim',
         'lograw_target_details_omits_splatting',
@@ -379,6 +394,7 @@ function Export-FilteredEvtx {
         'lograw_interpretation_states_no_maxevents_cap',
         'lograw_export_call_preserved',
         'lograw_export_call_omits_maxevents',
+        'lograw_export_call_omits_splatting',
         'logtext_still_uses_maxevents_metadata',
         'logtext_still_uses_bounded_text_query',
         'target_helper_still_emits_maxevents_for_text_paths',
