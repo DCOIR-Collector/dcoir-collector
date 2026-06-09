@@ -13,6 +13,7 @@ EVENT_WINDOW_OVERRIDES_REL = 'project_sources/collector/source/parts/DCOIR_Colle
 DIAGNOSTIC_CONTEXT_REL = 'project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1'
 PR186_FIXES_REL = 'project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1'
 REPORT_NAME = 'validate_event_text_query_bound_policy_report.json'
+COUNT_CAP_PARAMETER_NAMES = ('Take', 'MaxEvents')
 
 
 def read_text(path: Path) -> str:
@@ -92,6 +93,29 @@ def extract_powershell_command_spans(text: str, command_name: str) -> List[str]:
 
 def normalize_powershell_command_span(command_span: str) -> str:
     return re.sub(r'`[ \t]*(?:\r\n|\n|\r)[ \t]*', ' ', command_span)
+
+
+def powershell_parameter_is_count_cap(parameter_name: str) -> bool:
+    parameter = parameter_name.strip().lstrip('-').lower()
+    return bool(parameter) and any(
+        canonical.lower().startswith(parameter)
+        for canonical in COUNT_CAP_PARAMETER_NAMES
+    )
+
+
+def powershell_command_count_cap_parameters(command_span: str) -> List[str]:
+    normalized = normalize_powershell_command_span(command_span)
+    parameters = re.findall(r'(?<![\w-])-(?!-)([A-Za-z][\w-]*)', normalized)
+    return [parameter for parameter in parameters if powershell_parameter_is_count_cap(parameter)]
+
+
+def powershell_command_uses_count_cap_parameter(command_span: str) -> bool:
+    return bool(powershell_command_count_cap_parameters(command_span))
+
+
+def powershell_command_uses_splatting(command_span: str) -> bool:
+    normalized = normalize_powershell_command_span(command_span)
+    return re.search(r'(?<![\w$])@[A-Za-z_][\w]*', normalized) is not None
 
 
 def add_missing_errors(prefix: str, checks: Dict[str, object], required_keys: List[str], errors: List[str]) -> None:
@@ -243,6 +267,16 @@ function Export-FilteredEvtx {
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\n  -Take $Limit',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\r\n  -MaxEvents $Limit',
     ]
+    target_detail_parameter_prefix_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Ta 500',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Max $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\n  -Ta $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\r\n  -Max $Limit',
+    ]
+    target_detail_splat_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails @TargetDetailArgs',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName `\n  @TargetDetailArgs',
+    ]
 
     lograw_target_detail_calls = extract_powershell_command_spans(
         lograw_block,
@@ -253,19 +287,34 @@ function Export-FilteredEvtx {
         'Export-FilteredEvtx',
     )
     target_detail_overclaim = any(
-        re.search(r'-(?:Take|MaxEvents)\b', normalize_powershell_command_span(call), flags=re.IGNORECASE)
+        powershell_command_uses_count_cap_parameter(call)
+        for call in lograw_target_detail_calls
+    )
+    target_detail_uses_splatting = any(
+        powershell_command_uses_splatting(call)
         for call in lograw_target_detail_calls
     )
     target_detail_negative_fixtures_detect_count_cap = all(
-        re.search(r'-(?:Take|MaxEvents)\b', normalize_powershell_command_span(fixture), flags=re.IGNORECASE) is not None
-        for fixture in target_detail_negative_fixtures + target_detail_multiline_negative_fixtures
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in target_detail_negative_fixtures
+        + target_detail_multiline_negative_fixtures
+        + target_detail_parameter_prefix_negative_fixtures
     )
     target_detail_multiline_negative_fixtures_detect_count_cap = all(
-        re.search(r'-(?:Take|MaxEvents)\b', normalize_powershell_command_span(fixture), flags=re.IGNORECASE) is not None
+        powershell_command_uses_count_cap_parameter(fixture)
         for fixture in target_detail_multiline_negative_fixtures
     )
+    target_detail_parameter_prefix_negative_fixtures_detect_count_cap = all(
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in target_detail_parameter_prefix_negative_fixtures
+    )
+    target_detail_splat_negative_fixtures_reject_splatting = all(
+        powershell_command_uses_splatting(fixture)
+        for fixture in target_detail_splat_negative_fixtures
+    )
     export_claims_maxevents = any(
-        re.search(r'-(?:Take|MaxEvents)\b|\$MaxEvents\b', normalize_powershell_command_span(call), flags=re.IGNORECASE)
+        powershell_command_uses_count_cap_parameter(call)
+        or re.search(r'\$MaxEvents\b', normalize_powershell_command_span(call), flags=re.IGNORECASE)
         for call in lograw_export_calls
     )
     evtx_param_claims_event_cap = re.search(r'\$(?:MaxEvents|Take)\b', evtx_export_param_block, flags=re.IGNORECASE) is not None
@@ -283,9 +332,12 @@ function Export-FilteredEvtx {
         'param_block_negative_fixture_detects_maxevents': negative_fixture_detects_event_cap,
         'target_detail_negative_fixtures_detect_count_cap': target_detail_negative_fixtures_detect_count_cap,
         'target_detail_multiline_negative_fixtures_detect_count_cap': target_detail_multiline_negative_fixtures_detect_count_cap,
+        'target_detail_parameter_prefix_negative_fixtures_detect_count_cap': target_detail_parameter_prefix_negative_fixtures_detect_count_cap,
+        'target_detail_splat_negative_fixtures_reject_splatting': target_detail_splat_negative_fixtures_reject_splatting,
         'target_helper_metadata_only_no_event_reader': bool(target_helper) and not target_helper_reads_or_exports_events,
         'lograw_target_details_call_count': len(lograw_target_detail_calls),
-        'lograw_target_details_omits_maxevents_overclaim': bool(lograw_target_detail_calls) and not target_detail_overclaim,
+        'lograw_target_details_omits_maxevents_overclaim': bool(lograw_target_detail_calls) and not target_detail_overclaim and not target_detail_uses_splatting,
+        'lograw_target_details_omits_splatting': bool(lograw_target_detail_calls) and not target_detail_uses_splatting,
         'lograw_target_details_keeps_log_window_ids': 'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId' in normalize_powershell_command_span(lograw_block),
         'lograw_output_initializes_applied_filter_scope': "$rawEvtxFilters = @('LogName','EffectiveEventWindow')" in lograw_block,
         'lograw_output_conditionally_adds_eventids_filter': "if ($EventId -and @($EventId).Count -gt 0) { $rawEvtxFilters += 'EventIds' }" in lograw_block,
@@ -314,8 +366,11 @@ function Export-FilteredEvtx {
         'param_block_negative_fixture_detects_maxevents',
         'target_detail_negative_fixtures_detect_count_cap',
         'target_detail_multiline_negative_fixtures_detect_count_cap',
+        'target_detail_parameter_prefix_negative_fixtures_detect_count_cap',
+        'target_detail_splat_negative_fixtures_reject_splatting',
         'target_helper_metadata_only_no_event_reader',
         'lograw_target_details_omits_maxevents_overclaim',
+        'lograw_target_details_omits_splatting',
         'lograw_target_details_keeps_log_window_ids',
         'lograw_output_initializes_applied_filter_scope',
         'lograw_output_conditionally_adds_eventids_filter',
