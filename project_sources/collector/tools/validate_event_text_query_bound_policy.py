@@ -19,6 +19,21 @@ def read_text(path: Path) -> str:
     return path.read_text(encoding='utf-8', errors='ignore') if path.exists() else ''
 
 
+def extract_parenthesized_text(text: str, open_paren_index: int) -> str:
+    if open_paren_index < 0 or open_paren_index >= len(text) or text[open_paren_index] != '(':
+        return ''
+    depth = 0
+    for index in range(open_paren_index, len(text)):
+        char = text[index]
+        if char == '(':
+            depth += 1
+        elif char == ')':
+            depth -= 1
+            if depth == 0:
+                return text[open_paren_index:index + 1]
+    return ''
+
+
 def extract_function_body(text: str, function_name: str) -> str:
     match = re.search(r'^\s*function\s+' + re.escape(function_name) + r'\b', text, re.MULTILINE)
     if not match:
@@ -36,6 +51,15 @@ def extract_function_body(text: str, function_name: str) -> str:
             if depth == 0:
                 return text[brace_start:index + 1]
     return text[brace_start:]
+
+
+def extract_function_param_block(function_body: str) -> str:
+    match = re.search(r'^\s*param\s*\(', function_body, re.MULTILINE | re.IGNORECASE)
+    if not match:
+        return ''
+    open_paren = function_body.find('(', match.start())
+    params = extract_parenthesized_text(function_body, open_paren)
+    return function_body[match.start():open_paren] + params if params else ''
 
 
 def extract_quoted_switch_case_bodies(text: str, case_name: str) -> List[str]:
@@ -183,6 +207,19 @@ def validate_lograw_metadata_truth_policy(source_dir: Path) -> Dict[str, object]
     lograw_block = next((block for block in lograw_blocks if 'Export-FilteredEvtx' in block), '')
     target_helper = extract_function_body(helper_text, 'Get-CollectorEventWindowTargetDetails')
     evtx_export = extract_function_body(evtx_text, 'Export-FilteredEvtx')
+    evtx_export_param_block = extract_function_param_block(evtx_export)
+    negative_param_fixture = extract_function_param_block(extract_function_body(
+        '''
+function Export-FilteredEvtx {
+  [CmdletBinding()]
+  param(
+    [string]$LogChannel,
+    [int]$MaxEvents
+  )
+}
+''',
+        'Export-FilteredEvtx',
+    ))
 
     lograw_target_detail_calls = re.findall(
         r'Get-CollectorEventWindowTargetDetails[^\r\n]*',
@@ -202,7 +239,8 @@ def validate_lograw_metadata_truth_policy(source_dir: Path) -> Dict[str, object]
         re.search(r'-(?:Take|MaxEvents)\b|\$MaxEvents\b', call, flags=re.IGNORECASE)
         for call in lograw_export_calls
     )
-    evtx_export_signature = evtx_export.split(')', 1)[0]
+    evtx_param_claims_event_cap = re.search(r'\$(?:MaxEvents|Take)\b', evtx_export_param_block, flags=re.IGNORECASE) is not None
+    negative_fixture_detects_event_cap = re.search(r'\$(?:MaxEvents|Take)\b', negative_param_fixture, flags=re.IGNORECASE) is not None
 
     checks.update({
         'review_function_present': bool(review_body),
@@ -211,6 +249,8 @@ def validate_lograw_metadata_truth_policy(source_dir: Path) -> Dict[str, object]
         'lograw_action_block_present': bool(lograw_block),
         'target_details_helper_present': bool(target_helper),
         'evtx_export_function_present': bool(evtx_export),
+        'evtx_export_param_block_present': bool(evtx_export_param_block),
+        'param_block_negative_fixture_detects_maxevents': negative_fixture_detects_event_cap,
         'lograw_target_details_call_count': len(lograw_target_detail_calls),
         'lograw_target_details_omits_maxevents_overclaim': bool(lograw_target_detail_calls) and not target_detail_overclaim,
         'lograw_target_details_keeps_log_window_ids': 'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId' in lograw_block,
@@ -222,7 +262,7 @@ def validate_lograw_metadata_truth_policy(source_dir: Path) -> Dict[str, object]
         'logtext_still_uses_maxevents_metadata': 'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take $MaxEvents' in logtext_block,
         'logtext_still_uses_bounded_text_query': 'Get-EventText -Channel $LogName -WindowHours $Hours -Ids $EventId -Take $MaxEvents' in logtext_block,
         'target_helper_still_emits_maxevents_for_text_paths': 'if ($Take -gt 0) { [void]$parts.Add(("MaxEvents={0}" -f $Take)) }' in target_helper,
-        'evtx_export_has_no_maxevents_parameter': 'MaxEvents' not in evtx_export_signature and 'Take' not in evtx_export_signature,
+        'evtx_export_has_no_maxevents_parameter': bool(evtx_export_param_block) and not evtx_param_claims_event_cap,
         'evtx_export_preserves_timediff_filter': 'TimeCreated[timediff(@SystemTime)' in evtx_export,
         'evtx_export_preserves_explicit_window_filter': "TimeCreated[@SystemTime>='$startUtc' and @SystemTime<='$endUtc']" in evtx_export,
         'evtx_export_preserves_event_id_filter': 'EventID=$_' in evtx_export,
@@ -235,6 +275,8 @@ def validate_lograw_metadata_truth_policy(source_dir: Path) -> Dict[str, object]
         'lograw_action_block_present',
         'target_details_helper_present',
         'evtx_export_function_present',
+        'evtx_export_param_block_present',
+        'param_block_negative_fixture_detects_maxevents',
         'lograw_target_details_omits_maxevents_overclaim',
         'lograw_target_details_keeps_log_window_ids',
         'lograw_output_states_filter_scope',
