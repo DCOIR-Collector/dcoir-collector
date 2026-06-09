@@ -82,6 +82,18 @@ def extract_quoted_switch_case_bodies(text: str, case_name: str) -> List[str]:
     return bodies
 
 
+def extract_powershell_command_spans(text: str, command_name: str) -> List[str]:
+    pattern = re.compile(
+        r'\b' + re.escape(command_name) + r'\b(?:`[ \t]*(?:\r\n|\n|\r)[ \t]*|[^\r\n])*',
+        re.IGNORECASE,
+    )
+    return pattern.findall(text)
+
+
+def normalize_powershell_command_span(command_span: str) -> str:
+    return re.sub(r'`[ \t]*(?:\r\n|\n|\r)[ \t]*', ' ', command_span)
+
+
 def add_missing_errors(prefix: str, checks: Dict[str, object], required_keys: List[str], errors: List[str]) -> None:
     for key in required_keys:
         if not checks.get(key):
@@ -227,27 +239,33 @@ function Export-FilteredEvtx {
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take $Limit',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -MaxEvents $Limit',
     ]
+    target_detail_multiline_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\n  -Take $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\r\n  -MaxEvents $Limit',
+    ]
 
-    lograw_target_detail_calls = re.findall(
-        r'Get-CollectorEventWindowTargetDetails[^\r\n]*',
+    lograw_target_detail_calls = extract_powershell_command_spans(
         lograw_block,
-        flags=re.IGNORECASE,
+        'Get-CollectorEventWindowTargetDetails',
     )
-    lograw_export_calls = re.findall(
-        r'Export-FilteredEvtx[^\r\n]*',
+    lograw_export_calls = extract_powershell_command_spans(
         lograw_block,
-        flags=re.IGNORECASE,
+        'Export-FilteredEvtx',
     )
     target_detail_overclaim = any(
-        re.search(r'-(?:Take|MaxEvents)\b', call, flags=re.IGNORECASE)
+        re.search(r'-(?:Take|MaxEvents)\b', normalize_powershell_command_span(call), flags=re.IGNORECASE)
         for call in lograw_target_detail_calls
     )
     target_detail_negative_fixtures_detect_count_cap = all(
-        re.search(r'-(?:Take|MaxEvents)\b', fixture, flags=re.IGNORECASE) is not None
-        for fixture in target_detail_negative_fixtures
+        re.search(r'-(?:Take|MaxEvents)\b', normalize_powershell_command_span(fixture), flags=re.IGNORECASE) is not None
+        for fixture in target_detail_negative_fixtures + target_detail_multiline_negative_fixtures
+    )
+    target_detail_multiline_negative_fixtures_detect_count_cap = all(
+        re.search(r'-(?:Take|MaxEvents)\b', normalize_powershell_command_span(fixture), flags=re.IGNORECASE) is not None
+        for fixture in target_detail_multiline_negative_fixtures
     )
     export_claims_maxevents = any(
-        re.search(r'-(?:Take|MaxEvents)\b|\$MaxEvents\b', call, flags=re.IGNORECASE)
+        re.search(r'-(?:Take|MaxEvents)\b|\$MaxEvents\b', normalize_powershell_command_span(call), flags=re.IGNORECASE)
         for call in lograw_export_calls
     )
     evtx_param_claims_event_cap = re.search(r'\$(?:MaxEvents|Take)\b', evtx_export_param_block, flags=re.IGNORECASE) is not None
@@ -264,16 +282,17 @@ function Export-FilteredEvtx {
         'evtx_export_param_block_present': bool(evtx_export_param_block),
         'param_block_negative_fixture_detects_maxevents': negative_fixture_detects_event_cap,
         'target_detail_negative_fixtures_detect_count_cap': target_detail_negative_fixtures_detect_count_cap,
+        'target_detail_multiline_negative_fixtures_detect_count_cap': target_detail_multiline_negative_fixtures_detect_count_cap,
         'target_helper_metadata_only_no_event_reader': bool(target_helper) and not target_helper_reads_or_exports_events,
         'lograw_target_details_call_count': len(lograw_target_detail_calls),
         'lograw_target_details_omits_maxevents_overclaim': bool(lograw_target_detail_calls) and not target_detail_overclaim,
-        'lograw_target_details_keeps_log_window_ids': 'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId' in lograw_block,
+        'lograw_target_details_keeps_log_window_ids': 'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId' in normalize_powershell_command_span(lograw_block),
         'lograw_output_initializes_applied_filter_scope': "$rawEvtxFilters = @('LogName','EffectiveEventWindow')" in lograw_block,
         'lograw_output_conditionally_adds_eventids_filter': "if ($EventId -and @($EventId).Count -gt 0) { $rawEvtxFilters += 'EventIds' }" in lograw_block,
         'lograw_output_writes_applied_filter_scope': 'RAW_EVTX_FILTERS=$rawEvtxFiltersText' in lograw_block,
         'lograw_output_states_no_event_count_cap': 'RAW_EVTX_EVENT_COUNT_CAP=NotApplied' in lograw_block,
         'lograw_interpretation_states_no_maxevents_cap': 'MaxEvents does not limit raw EVTX export size.' in lograw_block,
-        'lograw_export_call_preserved': 'Export-FilteredEvtx -LogChannel $LogName -WindowHours $Hours -Ids $EventId -OutPath $plannedStagedPath -ScratchDir $sessionLogsDir' in lograw_block,
+        'lograw_export_call_preserved': 'Export-FilteredEvtx -LogChannel $LogName -WindowHours $Hours -Ids $EventId -OutPath $plannedStagedPath -ScratchDir $sessionLogsDir' in normalize_powershell_command_span(lograw_block),
         'lograw_export_call_omits_maxevents': bool(lograw_export_calls) and not export_claims_maxevents,
         'logtext_still_uses_maxevents_metadata': 'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take $MaxEvents' in logtext_block,
         'logtext_still_uses_bounded_text_query': 'Get-EventText -Channel $LogName -WindowHours $Hours -Ids $EventId -Take $MaxEvents' in logtext_block,
@@ -294,6 +313,7 @@ function Export-FilteredEvtx {
         'evtx_export_param_block_present',
         'param_block_negative_fixture_detects_maxevents',
         'target_detail_negative_fixtures_detect_count_cap',
+        'target_detail_multiline_negative_fixtures_detect_count_cap',
         'target_helper_metadata_only_no_event_reader',
         'lograw_target_details_omits_maxevents_overclaim',
         'lograw_target_details_keeps_log_window_ids',
