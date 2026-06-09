@@ -224,6 +224,20 @@ def powershell_command_uses_splatting(command_span: str) -> bool:
     return re.search(r'(?<![\w$])@[A-Za-z_][\w]*', scan_text) is not None
 
 
+def powershell_command_span_avoids_count_cap_and_splatting(fixture: str, command_name: str) -> bool:
+    spans = extract_powershell_command_spans(fixture, command_name)
+    return (
+        len(spans) == 1
+        and not powershell_command_uses_count_cap_parameter(spans[0])
+        and not powershell_command_uses_splatting(spans[0])
+    )
+
+
+def powershell_command_span_detects_count_cap(fixture: str, command_name: str) -> bool:
+    spans = extract_powershell_command_spans(fixture, command_name)
+    return len(spans) == 1 and powershell_command_uses_count_cap_parameter(spans[0])
+
+
 def add_missing_errors(prefix: str, checks: Dict[str, object], required_keys: List[str], errors: List[str]) -> None:
     for key in required_keys:
         if not checks.get(key):
@@ -374,16 +388,23 @@ function Export-FilteredEvtx {
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\r\n  -MaxEvents $Limit',
     ]
     target_detail_parameter_prefix_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -T 500',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Ta 500',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Max $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -MaxE $Limit',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\n  -Ta $Limit',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\r\n  -Max $Limit',
     ]
     target_detail_colon_parameter_negative_fixtures = [
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Take:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -T:$Limit',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Ta:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -tAkE:$Limit',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -MaxEvents:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -M:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Ma:$Limit',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Max:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -MaxE:$Limit',
     ]
     target_detail_implicit_continuation_negative_fixtures = [
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Ids @(\n  $EventId\n) -Take $Limit',
@@ -413,9 +434,14 @@ function Export-FilteredEvtx {
     ]
     export_colon_parameter_negative_fixtures = [
         'Export-FilteredEvtx -LogChannel $LogName -Take:$Limit',
+        'Export-FilteredEvtx -LogChannel $LogName -T:$Limit',
         'Export-FilteredEvtx -LogChannel $LogName -Ta:$Limit',
+        'Export-FilteredEvtx -LogChannel $LogName -tAkE:$Limit',
         'Export-FilteredEvtx -LogChannel $LogName -MaxEvents:$MaxEvents',
+        'Export-FilteredEvtx -LogChannel $LogName -M:$MaxEvents',
+        'Export-FilteredEvtx -LogChannel $LogName -Ma:$MaxEvents',
         'Export-FilteredEvtx -LogChannel $LogName -Max:$MaxEvents',
+        'Export-FilteredEvtx -LogChannel $LogName -mAxE:$MaxEvents',
     ]
     export_implicit_continuation_benign_fixtures = [
         'Export-FilteredEvtx -Ids @(\n  $EventId\n) -Note "-MaxEvents @ExportArgs"',
@@ -439,6 +465,10 @@ function Export-FilteredEvtx {
         ('Get-CollectorEventWindowTargetDetails -LogName $LogName | Select-Object -First 1 -MaxEvents 5 @Args\n', 'Get-CollectorEventWindowTargetDetails'),
         ('Export-FilteredEvtx -LogChannel $LogName; Write-Output -MaxEvents $MaxEvents @ExportArgs\n', 'Export-FilteredEvtx'),
         ('Export-FilteredEvtx -LogChannel $LogName | Select-Object -First 1 -MaxEvents $MaxEvents @ExportArgs\n', 'Export-FilteredEvtx'),
+    ]
+    command_case_negative_fixtures = [
+        ('export-filteredevtx -maxevents:$MaxEvents', 'Export-FilteredEvtx'),
+        ('GET-COLLECTOREVENTWINDOWTARGETDETAILS -tAkE:$Limit', 'Get-CollectorEventWindowTargetDetails'),
     ]
 
     lograw_target_detail_calls = extract_powershell_command_spans(
@@ -524,10 +554,12 @@ function Export-FilteredEvtx {
         for fixture, command in command_anchor_benign_fixtures
     )
     command_separator_benign_fixtures_avoid_false_positives = all(
-        len(spans := extract_powershell_command_spans(fixture, command)) == 1
-        and not powershell_command_uses_count_cap_parameter(spans[0])
-        and not powershell_command_uses_splatting(spans[0])
+        powershell_command_span_avoids_count_cap_and_splatting(fixture, command)
         for fixture, command in command_separator_benign_fixtures
+    )
+    command_case_negative_fixtures_detect_count_cap = all(
+        powershell_command_span_detects_count_cap(fixture, command)
+        for fixture, command in command_case_negative_fixtures
     )
     export_claims_maxevents = any(
         powershell_command_uses_count_cap_parameter(call)
@@ -562,6 +594,7 @@ function Export-FilteredEvtx {
         'export_implicit_continuation_splat_negative_fixtures_reject_splatting': export_implicit_continuation_splat_negative_fixtures_reject_splatting,
         'command_anchor_benign_fixtures_avoid_false_positives': command_anchor_benign_fixtures_avoid_false_positives,
         'command_separator_benign_fixtures_avoid_false_positives': command_separator_benign_fixtures_avoid_false_positives,
+        'command_case_negative_fixtures_detect_count_cap': command_case_negative_fixtures_detect_count_cap,
         'target_helper_metadata_only_no_event_reader': bool(target_helper) and not target_helper_reads_or_exports_events,
         'lograw_target_details_call_count': len(lograw_target_detail_calls),
         'lograw_target_details_omits_maxevents_overclaim': bool(lograw_target_detail_calls) and not target_detail_overclaim and not target_detail_uses_splatting,
@@ -608,6 +641,7 @@ function Export-FilteredEvtx {
         'export_implicit_continuation_splat_negative_fixtures_reject_splatting',
         'command_anchor_benign_fixtures_avoid_false_positives',
         'command_separator_benign_fixtures_avoid_false_positives',
+        'command_case_negative_fixtures_detect_count_cap',
         'target_helper_metadata_only_no_event_reader',
         'lograw_target_details_omits_maxevents_overclaim',
         'lograw_target_details_omits_splatting',
