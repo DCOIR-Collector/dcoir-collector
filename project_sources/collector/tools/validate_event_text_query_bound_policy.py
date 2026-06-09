@@ -172,6 +172,8 @@ def validate_event_text_query_bound_policy(source_dir: Path) -> Dict[str, object
 
 
 def validate_lograw_metadata_truth_policy(source_dir: Path) -> Dict[str, object]:
+    # #238 metadata-honesty guard only. If raw EVTX export intentionally gains
+    # a count-bounded implementation later, revise these assertions with that design.
     errors: List[str] = []
     review_text = read_text(source_dir / EVENT_TEXT_REVIEW_REL)
     retrieval_text = read_text(source_dir / RETRIEVAL_ACTIONS_REL)
@@ -241,6 +243,7 @@ function Export-FilteredEvtx {
     )
     evtx_param_claims_event_cap = re.search(r'\$(?:MaxEvents|Take)\b', evtx_export_param_block, flags=re.IGNORECASE) is not None
     negative_fixture_detects_event_cap = re.search(r'\$(?:MaxEvents|Take)\b', negative_param_fixture, flags=re.IGNORECASE) is not None
+    target_helper_reads_or_exports_events = re.search(r'\b(?:Get-WinEvent|wevtutil|Export-FilteredEvtx)\b', target_helper, flags=re.IGNORECASE) is not None
 
     checks.update({
         'review_function_present': bool(review_body),
@@ -251,10 +254,13 @@ function Export-FilteredEvtx {
         'evtx_export_function_present': bool(evtx_export),
         'evtx_export_param_block_present': bool(evtx_export_param_block),
         'param_block_negative_fixture_detects_maxevents': negative_fixture_detects_event_cap,
+        'target_helper_metadata_only_no_event_reader': bool(target_helper) and not target_helper_reads_or_exports_events,
         'lograw_target_details_call_count': len(lograw_target_detail_calls),
         'lograw_target_details_omits_maxevents_overclaim': bool(lograw_target_detail_calls) and not target_detail_overclaim,
         'lograw_target_details_keeps_log_window_ids': 'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId' in lograw_block,
-        'lograw_output_states_filter_scope': 'RAW_EVTX_FILTERS=LogName,EffectiveEventWindow,EventIds' in lograw_block,
+        'lograw_output_initializes_applied_filter_scope': "$rawEvtxFilters = @('LogName','EffectiveEventWindow')" in lograw_block,
+        'lograw_output_conditionally_adds_eventids_filter': "if ($EventId -and @($EventId).Count -gt 0) { $rawEvtxFilters += 'EventIds' }" in lograw_block,
+        'lograw_output_writes_applied_filter_scope': 'RAW_EVTX_FILTERS=$rawEvtxFiltersText' in lograw_block,
         'lograw_output_states_no_event_count_cap': 'RAW_EVTX_EVENT_COUNT_CAP=NotApplied' in lograw_block,
         'lograw_interpretation_states_no_maxevents_cap': 'MaxEvents does not limit raw EVTX export size.' in lograw_block,
         'lograw_export_call_preserved': 'Export-FilteredEvtx -LogChannel $LogName -WindowHours $Hours -Ids $EventId -OutPath $plannedStagedPath -ScratchDir $sessionLogsDir' in lograw_block,
@@ -277,9 +283,12 @@ function Export-FilteredEvtx {
         'evtx_export_function_present',
         'evtx_export_param_block_present',
         'param_block_negative_fixture_detects_maxevents',
+        'target_helper_metadata_only_no_event_reader',
         'lograw_target_details_omits_maxevents_overclaim',
         'lograw_target_details_keeps_log_window_ids',
-        'lograw_output_states_filter_scope',
+        'lograw_output_initializes_applied_filter_scope',
+        'lograw_output_conditionally_adds_eventids_filter',
+        'lograw_output_writes_applied_filter_scope',
         'lograw_output_states_no_event_count_cap',
         'lograw_interpretation_states_no_maxevents_cap',
         'lograw_export_call_preserved',
