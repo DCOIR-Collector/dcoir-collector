@@ -1,5 +1,5 @@
 name: Run collector runtime package validation
-description: Validate collector runtime package rules before build, documentation, or release workflows continue.
+description: Validate collector runtime package rules and event-text query bounds before build, documentation, or release workflows continue.
 inputs:
   output-dir:
     description: Output directory for collector runtime package validation artifacts.
@@ -18,6 +18,10 @@ runs:
         if ($LASTEXITCODE -ne 0) {
           throw 'Collector runtime package validation failed.'
         }
+        python project_sources/collector/tools/validate_event_text_query_bound_policy.py --source-dir . --output-dir $env:COLLECTOR_VALIDATION_OUTPUT_DIR
+        if ($LASTEXITCODE -ne 0) {
+          throw 'Collector event-text query bound policy validation failed.'
+        }
 
 # Compensating evidence: callers provide the output directory and upload the
-# generated validation report through their existing artifact bundles.
+# generated validation reports through their existing artifact bundles.
