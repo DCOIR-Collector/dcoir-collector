@@ -7,12 +7,32 @@ import re
 from pathlib import Path
 from typing import Dict, List
 
+EVENT_TEXT_REVIEW_REL = 'project_sources/collector/source/parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1'
+RETRIEVAL_ACTIONS_REL = 'project_sources/collector/source/parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1'
+EVENT_WINDOW_OVERRIDES_REL = 'project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1'
 DIAGNOSTIC_CONTEXT_REL = 'project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1'
+PR186_FIXES_REL = 'project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1'
 REPORT_NAME = 'validate_event_text_query_bound_policy_report.json'
+COUNT_CAP_PARAMETER_NAMES = ('Take', 'MaxEvents')
 
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding='utf-8', errors='ignore') if path.exists() else ''
+
+
+def extract_parenthesized_text(text: str, open_paren_index: int) -> str:
+    if open_paren_index < 0 or open_paren_index >= len(text) or text[open_paren_index] != '(':
+        return ''
+    depth = 0
+    for index in range(open_paren_index, len(text)):
+        char = text[index]
+        if char == '(':
+            depth += 1
+        elif char == ')':
+            depth -= 1
+            if depth == 0:
+                return text[open_paren_index:index + 1]
+    return ''
 
 
 def extract_function_body(text: str, function_name: str) -> str:
@@ -34,13 +54,197 @@ def extract_function_body(text: str, function_name: str) -> str:
     return text[brace_start:]
 
 
+def extract_function_param_block(function_body: str) -> str:
+    match = re.search(r'^\s*param\s*\(', function_body, re.MULTILINE | re.IGNORECASE)
+    if not match:
+        return ''
+    open_paren = function_body.find('(', match.start())
+    params = extract_parenthesized_text(function_body, open_paren)
+    return function_body[match.start():open_paren] + params if params else ''
+
+
+def extract_quoted_switch_case_bodies(text: str, case_name: str) -> List[str]:
+    pattern = re.compile(r'^\s*"' + re.escape(case_name) + r'"\s*{', re.MULTILINE)
+    bodies: List[str] = []
+    for match in pattern.finditer(text):
+        brace_start = text.find('{', match.start())
+        if brace_start == -1:
+            continue
+        depth = 0
+        for index in range(brace_start, len(text)):
+            char = text[index]
+            if char == '{':
+                depth += 1
+            elif char == '}':
+                depth -= 1
+                if depth == 0:
+                    bodies.append(text[brace_start:index + 1])
+                    break
+    return bodies
+
+
+def mask_powershell_strings_and_comments(text: str, mask_backtick_escapes: bool = False) -> str:
+    chars: List[str] = []
+    index = 0
+    quote = ''
+    while index < len(text):
+        char = text[index]
+        if quote:
+            if char == '`':
+                chars.append(' ')
+                if index + 1 < len(text):
+                    chars.append(text[index + 1] if text[index + 1] in '\r\n' else ' ')
+                    index += 2
+                else:
+                    index += 1
+                continue
+            if char == quote:
+                if index + 1 < len(text) and text[index + 1] == quote:
+                    chars.extend('  ')
+                    index += 2
+                    continue
+                quote = ''
+            chars.append(char if char in '\r\n' else ' ')
+            index += 1
+            continue
+        if text.startswith('<#', index):
+            chars.extend('  ')
+            index += 2
+            while index < len(text):
+                if text.startswith('#>', index):
+                    chars.extend('  ')
+                    index += 2
+                    break
+                chars.append(text[index] if text[index] in '\r\n' else ' ')
+                index += 1
+            continue
+        if text.startswith('@"', index) or text.startswith("@'", index):
+            closer = '"@' if text[index + 1] == '"' else "'@"
+            chars.extend('  ')
+            index += 2
+            while index < len(text):
+                line_start = index == 0 or text[index - 1] in '\r\n'
+                if line_start:
+                    close_match = re.match(r'[ \t]*' + re.escape(closer), text[index:])
+                    if close_match:
+                        chars.extend(' ' * close_match.end())
+                        index += close_match.end()
+                        break
+                chars.append(text[index] if text[index] in '\r\n' else ' ')
+                index += 1
+            continue
+        if char in ("'", '"'):
+            quote = char
+            chars.append(' ')
+            index += 1
+            continue
+        if char == '#':
+            while index < len(text) and text[index] not in '\r\n':
+                chars.append(' ')
+                index += 1
+            continue
+        if mask_backtick_escapes and char == '`':
+            chars.append(' ')
+            if index + 1 < len(text):
+                chars.append(text[index + 1] if text[index + 1] in '\r\n' else ' ')
+                index += 2
+            else:
+                index += 1
+            continue
+        chars.append(char)
+        index += 1
+    return ''.join(chars)
+
+
+def extract_powershell_command_spans(text: str, command_name: str) -> List[str]:
+    masked = mask_powershell_strings_and_comments(text)
+    pattern = re.compile(r'\b' + re.escape(command_name) + r'\b', re.IGNORECASE)
+    closing_for_open = {'(': ')', '[': ']', '{': '}'}
+    spans: List[str] = []
+    for match in pattern.finditer(masked):
+        cursor = match.end()
+        expected_closers: List[str] = []
+        while cursor < len(masked):
+            char = masked[cursor]
+            continuation = re.match(r'`[ \t]*(?:\r\n|\n|\r)[ \t]*', masked[cursor:])
+            if continuation:
+                cursor += continuation.end()
+                continue
+            if char == '`':
+                cursor += 2 if cursor + 1 < len(masked) else 1
+                continue
+            if char in closing_for_open:
+                expected_closers.append(closing_for_open[char])
+                cursor += 1
+                continue
+            if expected_closers and char == expected_closers[-1]:
+                expected_closers.pop()
+                cursor += 1
+                continue
+            if not expected_closers and (char in ';|' or (char == '&' and cursor + 1 < len(masked) and masked[cursor + 1] == '&')):
+                break
+            if char in '\r\n' and not expected_closers:
+                break
+            cursor += 1
+        spans.append(text[match.start():cursor])
+    return spans
+
+
+def normalize_powershell_command_span(command_span: str) -> str:
+    return re.sub(r'`[ \t]*(?:\r\n|\n|\r)[ \t]*', ' ', command_span)
+
+
+def powershell_command_scan_text(command_span: str) -> str:
+    return mask_powershell_strings_and_comments(
+        normalize_powershell_command_span(command_span),
+        mask_backtick_escapes=True,
+    )
+
+
+def powershell_parameter_is_count_cap(parameter_name: str) -> bool:
+    parameter = parameter_name.strip().lstrip('-').lower()
+    return bool(parameter) and any(
+        canonical.lower().startswith(parameter)
+        for canonical in COUNT_CAP_PARAMETER_NAMES
+    )
+
+
+def powershell_command_count_cap_parameters(command_span: str) -> List[str]:
+    scan_text = powershell_command_scan_text(command_span)
+    parameters = re.findall(r'(?<![\w-])-(?!-)([A-Za-z][\w-]*)', scan_text)
+    return [parameter for parameter in parameters if powershell_parameter_is_count_cap(parameter)]
+
+
+def powershell_command_uses_count_cap_parameter(command_span: str) -> bool:
+    return bool(powershell_command_count_cap_parameters(command_span))
+
+
+def powershell_command_uses_splatting(command_span: str) -> bool:
+    scan_text = powershell_command_scan_text(command_span)
+    return re.search(r'(?<![\w$])@[A-Za-z_][\w]*', scan_text) is not None
+
+
+def powershell_command_span_avoids_count_cap_and_splatting(fixture: str, command_name: str) -> bool:
+    spans = extract_powershell_command_spans(fixture, command_name)
+    return (
+        len(spans) == 1
+        and not powershell_command_uses_count_cap_parameter(spans[0])
+        and not powershell_command_uses_splatting(spans[0])
+    )
+
+
+def powershell_command_span_detects_count_cap(fixture: str, command_name: str) -> bool:
+    spans = extract_powershell_command_spans(fixture, command_name)
+    return len(spans) == 1 and powershell_command_uses_count_cap_parameter(spans[0])
+
+
 def add_missing_errors(prefix: str, checks: Dict[str, object], required_keys: List[str], errors: List[str]) -> None:
     for key in required_keys:
         if not checks.get(key):
             errors.append(prefix + key)
 
 
-def validate_policy(source_dir: Path) -> Dict[str, object]:
+def validate_event_text_query_bound_policy(source_dir: Path) -> Dict[str, object]:
     errors: List[str] = []
     source_path = source_dir / DIAGNOSTIC_CONTEXT_REL
     text = read_text(source_path)
@@ -116,6 +320,365 @@ def validate_policy(source_dir: Path) -> Dict[str, object]:
         'non_elevated_security_message_preserved',
     ], errors)
 
+    return {
+        'success': not errors,
+        'checks': checks,
+        'errors': errors,
+    }
+
+
+def validate_lograw_metadata_truth_policy(source_dir: Path) -> Dict[str, object]:
+    # #238 metadata-honesty guard only. If raw EVTX export intentionally gains
+    # a count-bounded implementation later, revise these assertions with that design.
+    errors: List[str] = []
+    review_text = read_text(source_dir / EVENT_TEXT_REVIEW_REL)
+    retrieval_text = read_text(source_dir / RETRIEVAL_ACTIONS_REL)
+    evtx_text = read_text(source_dir / EVENT_WINDOW_OVERRIDES_REL)
+    helper_text = read_text(source_dir / PR186_FIXES_REL)
+    checks: Dict[str, object] = {
+        'review_path': EVENT_TEXT_REVIEW_REL,
+        'retrieval_path': RETRIEVAL_ACTIONS_REL,
+        'evtx_path': EVENT_WINDOW_OVERRIDES_REL,
+        'helper_path': PR186_FIXES_REL,
+        'review_source_present': bool(review_text),
+        'retrieval_source_present': bool(retrieval_text),
+        'evtx_source_present': bool(evtx_text),
+        'helper_source_present': bool(helper_text),
+    }
+
+    if not all((review_text, retrieval_text, evtx_text, helper_text)):
+        if not review_text:
+            errors.append('review action source is missing: ' + EVENT_TEXT_REVIEW_REL)
+        if not retrieval_text:
+            errors.append('retrieval action source is missing: ' + RETRIEVAL_ACTIONS_REL)
+        if not evtx_text:
+            errors.append('raw EVTX export source is missing: ' + EVENT_WINDOW_OVERRIDES_REL)
+        if not helper_text:
+            errors.append('target-details helper source is missing: ' + PR186_FIXES_REL)
+        return {'success': False, 'checks': checks, 'errors': errors}
+
+    review_body = extract_function_body(review_text, 'Invoke-EnrichmentAction')
+    retrieval_body = extract_function_body(retrieval_text, 'Invoke-EnrichmentAction-Retrieval')
+    logtext_blocks = extract_quoted_switch_case_bodies(review_body, 'LogText')
+    lograw_blocks = extract_quoted_switch_case_bodies(retrieval_body, 'LogRaw')
+    logtext_block = next((block for block in logtext_blocks if 'Get-EventText' in block), '')
+    lograw_block = next((block for block in lograw_blocks if 'Export-FilteredEvtx' in block), '')
+    target_helper = extract_function_body(helper_text, 'Get-CollectorEventWindowTargetDetails')
+    evtx_export = extract_function_body(evtx_text, 'Export-FilteredEvtx')
+    evtx_export_param_block = extract_function_param_block(evtx_export)
+    negative_param_fixture = extract_function_param_block(extract_function_body(
+        '''
+function Export-FilteredEvtx {
+  [CmdletBinding()]
+  param(
+    [string]$LogChannel,
+    [int]$MaxEvents
+  )
+}
+''',
+        'Export-FilteredEvtx',
+    ))
+    target_detail_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take 500',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -MaxEvents $Limit',
+    ]
+    target_detail_multiline_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\n  -Take $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\r\n  -MaxEvents $Limit',
+    ]
+    target_detail_parameter_prefix_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -T 500',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Ta 500',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Max $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -MaxE $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\n  -Ta $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\r\n  -Max $Limit',
+    ]
+    target_detail_colon_parameter_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Take:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -T:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Ta:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -tAkE:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -MaxEvents:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -M:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Ma:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Max:$Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -MaxE:$Limit',
+    ]
+    target_detail_implicit_continuation_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Ids @(\n  $EventId\n) -Take $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName (\n  $LogName\n) -MaxEvents $Limit',
+        'Get-CollectorEventWindowTargetDetails -Metadata @{\n  LogName = $LogName\n} -Ta $Limit',
+    ]
+    target_detail_implicit_continuation_benign_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -Ids @(\n  $EventId\n) -Note "-Take @TargetDetailArgs"',
+        'Get-CollectorEventWindowTargetDetails -Metadata @{\n  LogName = $LogName # -MaxEvents @script:TargetDetailArgs\n} -Hours $Hours',
+    ]
+    target_detail_splat_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails @TargetDetailArgs',
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName `\n  @TargetDetailArgs',
+    ]
+    target_detail_implicit_continuation_splat_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -Ids @(\n  $EventId\n) @TargetDetailArgs',
+        'Get-CollectorEventWindowTargetDetails -Metadata @{\n  LogName = $LogName\n} @script:TargetDetailArgs',
+    ]
+    export_splat_negative_fixtures = [
+        'Export-FilteredEvtx @ExportArgs',
+        'Export-FilteredEvtx -LogChannel $LogName `\n  @ExportArgs',
+    ]
+    export_implicit_continuation_negative_fixtures = [
+        'Export-FilteredEvtx -LogChannel $LogName -Ids @(\n  $EventId\n) -MaxEvents $MaxEvents',
+        'Export-FilteredEvtx -LogChannel (\n  $LogName\n) -Max $MaxEvents',
+        'Export-FilteredEvtx -Options @{\n  LogName = $LogName\n} -Ta $Limit',
+    ]
+    export_colon_parameter_negative_fixtures = [
+        'Export-FilteredEvtx -LogChannel $LogName -Take:$Limit',
+        'Export-FilteredEvtx -LogChannel $LogName -T:$Limit',
+        'Export-FilteredEvtx -LogChannel $LogName -Ta:$Limit',
+        'Export-FilteredEvtx -LogChannel $LogName -tAkE:$Limit',
+        'Export-FilteredEvtx -LogChannel $LogName -MaxEvents:$MaxEvents',
+        'Export-FilteredEvtx -LogChannel $LogName -M:$MaxEvents',
+        'Export-FilteredEvtx -LogChannel $LogName -Ma:$MaxEvents',
+        'Export-FilteredEvtx -LogChannel $LogName -Max:$MaxEvents',
+        'Export-FilteredEvtx -LogChannel $LogName -mAxE:$MaxEvents',
+    ]
+    export_implicit_continuation_benign_fixtures = [
+        'Export-FilteredEvtx -Ids @(\n  $EventId\n) -Note "-MaxEvents @ExportArgs"',
+        'Export-FilteredEvtx -Options @{\n  LogName = $LogName # -Take @script:ExportArgs\n} -OutPath $Path',
+    ]
+    export_implicit_continuation_splat_negative_fixtures = [
+        'Export-FilteredEvtx -Ids @(\n  $EventId\n) @ExportArgs',
+        'Export-FilteredEvtx -Options @{\n  LogName = $LogName\n} @script:ExportArgs',
+    ]
+    command_anchor_benign_fixtures = [
+        ('# Export-FilteredEvtx -MaxEvents $MaxEvents @ExportArgs\n', 'Export-FilteredEvtx'),
+        ('$note = "Export-FilteredEvtx -MaxEvents $MaxEvents @ExportArgs"\n', 'Export-FilteredEvtx'),
+        ("Write-Output 'Get-CollectorEventWindowTargetDetails -Take 500 @TargetDetailArgs'\n", 'Get-CollectorEventWindowTargetDetails'),
+        ('<#\nExport-FilteredEvtx -MaxEvents $MaxEvents @ExportArgs\n#>\n', 'Export-FilteredEvtx'),
+        ('<#\nGet-CollectorEventWindowTargetDetails -Take 500 @TargetDetailArgs\n#>\n', 'Get-CollectorEventWindowTargetDetails'),
+        ('$note = @"\nExport-FilteredEvtx -MaxEvents $MaxEvents @ExportArgs\n"@\n', 'Export-FilteredEvtx'),
+        ("$note = @'\nGet-CollectorEventWindowTargetDetails -Take 500 @TargetDetailArgs\n'@\n", 'Get-CollectorEventWindowTargetDetails'),
+    ]
+    command_separator_benign_fixtures = [
+        ('Get-CollectorEventWindowTargetDetails -LogName $LogName; Write-Output -MaxEvents 5 @Args\n', 'Get-CollectorEventWindowTargetDetails'),
+        ('Get-CollectorEventWindowTargetDetails -LogName $LogName | Select-Object -First 1 -MaxEvents 5 @Args\n', 'Get-CollectorEventWindowTargetDetails'),
+        ('Export-FilteredEvtx -LogChannel $LogName; Write-Output -MaxEvents $MaxEvents @ExportArgs\n', 'Export-FilteredEvtx'),
+        ('Export-FilteredEvtx -LogChannel $LogName | Select-Object -First 1 -MaxEvents $MaxEvents @ExportArgs\n', 'Export-FilteredEvtx'),
+    ]
+    command_case_negative_fixtures = [
+        ('export-filteredevtx -maxevents:$MaxEvents', 'Export-FilteredEvtx'),
+        ('GET-COLLECTOREVENTWINDOWTARGETDETAILS -tAkE:$Limit', 'Get-CollectorEventWindowTargetDetails'),
+    ]
+
+    lograw_target_detail_calls = extract_powershell_command_spans(
+        lograw_block,
+        'Get-CollectorEventWindowTargetDetails',
+    )
+    lograw_export_calls = extract_powershell_command_spans(
+        lograw_block,
+        'Export-FilteredEvtx',
+    )
+    target_detail_overclaim = any(
+        powershell_command_uses_count_cap_parameter(call)
+        for call in lograw_target_detail_calls
+    )
+    target_detail_uses_splatting = any(
+        powershell_command_uses_splatting(call)
+        for call in lograw_target_detail_calls
+    )
+    target_detail_negative_fixtures_detect_count_cap = all(
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in target_detail_negative_fixtures
+        + target_detail_multiline_negative_fixtures
+        + target_detail_parameter_prefix_negative_fixtures
+        + target_detail_colon_parameter_negative_fixtures
+        + target_detail_implicit_continuation_negative_fixtures
+    )
+    target_detail_multiline_negative_fixtures_detect_count_cap = all(
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in target_detail_multiline_negative_fixtures
+    )
+    target_detail_parameter_prefix_negative_fixtures_detect_count_cap = all(
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in target_detail_parameter_prefix_negative_fixtures
+    )
+    target_detail_colon_parameter_negative_fixtures_detect_count_cap = all(
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in target_detail_colon_parameter_negative_fixtures
+    )
+    target_detail_implicit_continuation_negative_fixtures_detect_count_cap = all(
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in target_detail_implicit_continuation_negative_fixtures
+    )
+    target_detail_implicit_continuation_benign_fixtures_avoid_false_positives = all(
+        not powershell_command_uses_count_cap_parameter(fixture)
+        and not powershell_command_uses_splatting(fixture)
+        for fixture in target_detail_implicit_continuation_benign_fixtures
+    )
+    target_detail_splat_negative_fixtures_reject_splatting = all(
+        powershell_command_uses_splatting(fixture)
+        for fixture in target_detail_splat_negative_fixtures
+    )
+    target_detail_implicit_continuation_splat_negative_fixtures_reject_splatting = all(
+        powershell_command_uses_splatting(fixture)
+        for fixture in target_detail_implicit_continuation_splat_negative_fixtures
+    )
+    export_uses_splatting = any(
+        powershell_command_uses_splatting(call)
+        for call in lograw_export_calls
+    )
+    export_splat_negative_fixtures_reject_splatting = all(
+        powershell_command_uses_splatting(fixture)
+        for fixture in export_splat_negative_fixtures
+    )
+    export_implicit_continuation_negative_fixtures_detect_count_cap = all(
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in export_implicit_continuation_negative_fixtures
+    )
+    export_colon_parameter_negative_fixtures_detect_count_cap = all(
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in export_colon_parameter_negative_fixtures
+    )
+    export_implicit_continuation_benign_fixtures_avoid_false_positives = all(
+        not powershell_command_uses_count_cap_parameter(fixture)
+        and not powershell_command_uses_splatting(fixture)
+        for fixture in export_implicit_continuation_benign_fixtures
+    )
+    export_implicit_continuation_splat_negative_fixtures_reject_splatting = all(
+        powershell_command_uses_splatting(fixture)
+        for fixture in export_implicit_continuation_splat_negative_fixtures
+    )
+    command_anchor_benign_fixtures_avoid_false_positives = all(
+        not extract_powershell_command_spans(fixture, command)
+        for fixture, command in command_anchor_benign_fixtures
+    )
+    command_separator_benign_fixtures_avoid_false_positives = all(
+        powershell_command_span_avoids_count_cap_and_splatting(fixture, command)
+        for fixture, command in command_separator_benign_fixtures
+    )
+    command_case_negative_fixtures_detect_count_cap = all(
+        powershell_command_span_detects_count_cap(fixture, command)
+        for fixture, command in command_case_negative_fixtures
+    )
+    export_claims_maxevents = any(
+        powershell_command_uses_count_cap_parameter(call)
+        or re.search(r'\$MaxEvents\b', powershell_command_scan_text(call), flags=re.IGNORECASE)
+        for call in lograw_export_calls
+    )
+    evtx_param_claims_event_cap = re.search(r'\$(?:MaxEvents|Take)\b', evtx_export_param_block, flags=re.IGNORECASE) is not None
+    negative_fixture_detects_event_cap = re.search(r'\$(?:MaxEvents|Take)\b', negative_param_fixture, flags=re.IGNORECASE) is not None
+    target_helper_reads_or_exports_events = re.search(r'\b(?:Get-WinEvent|wevtutil|Export-FilteredEvtx)\b', target_helper, flags=re.IGNORECASE) is not None
+
+    checks.update({
+        'review_function_present': bool(review_body),
+        'retrieval_function_present': bool(retrieval_body),
+        'logtext_action_block_present': bool(logtext_block),
+        'lograw_action_block_present': bool(lograw_block),
+        'target_details_helper_present': bool(target_helper),
+        'evtx_export_function_present': bool(evtx_export),
+        'evtx_export_param_block_present': bool(evtx_export_param_block),
+        'param_block_negative_fixture_detects_maxevents': negative_fixture_detects_event_cap,
+        'target_detail_negative_fixtures_detect_count_cap': target_detail_negative_fixtures_detect_count_cap,
+        'target_detail_multiline_negative_fixtures_detect_count_cap': target_detail_multiline_negative_fixtures_detect_count_cap,
+        'target_detail_parameter_prefix_negative_fixtures_detect_count_cap': target_detail_parameter_prefix_negative_fixtures_detect_count_cap,
+        'target_detail_colon_parameter_negative_fixtures_detect_count_cap': target_detail_colon_parameter_negative_fixtures_detect_count_cap,
+        'target_detail_implicit_continuation_negative_fixtures_detect_count_cap': target_detail_implicit_continuation_negative_fixtures_detect_count_cap,
+        'target_detail_implicit_continuation_benign_fixtures_avoid_false_positives': target_detail_implicit_continuation_benign_fixtures_avoid_false_positives,
+        'target_detail_splat_negative_fixtures_reject_splatting': target_detail_splat_negative_fixtures_reject_splatting,
+        'target_detail_implicit_continuation_splat_negative_fixtures_reject_splatting': target_detail_implicit_continuation_splat_negative_fixtures_reject_splatting,
+        'export_splat_negative_fixtures_reject_splatting': export_splat_negative_fixtures_reject_splatting,
+        'export_implicit_continuation_negative_fixtures_detect_count_cap': export_implicit_continuation_negative_fixtures_detect_count_cap,
+        'export_colon_parameter_negative_fixtures_detect_count_cap': export_colon_parameter_negative_fixtures_detect_count_cap,
+        'export_implicit_continuation_benign_fixtures_avoid_false_positives': export_implicit_continuation_benign_fixtures_avoid_false_positives,
+        'export_implicit_continuation_splat_negative_fixtures_reject_splatting': export_implicit_continuation_splat_negative_fixtures_reject_splatting,
+        'command_anchor_benign_fixtures_avoid_false_positives': command_anchor_benign_fixtures_avoid_false_positives,
+        'command_separator_benign_fixtures_avoid_false_positives': command_separator_benign_fixtures_avoid_false_positives,
+        'command_case_negative_fixtures_detect_count_cap': command_case_negative_fixtures_detect_count_cap,
+        'target_helper_metadata_only_no_event_reader': bool(target_helper) and not target_helper_reads_or_exports_events,
+        'lograw_target_details_call_count': len(lograw_target_detail_calls),
+        'lograw_target_details_omits_maxevents_overclaim': bool(lograw_target_detail_calls) and not target_detail_overclaim and not target_detail_uses_splatting,
+        'lograw_target_details_omits_splatting': bool(lograw_target_detail_calls) and not target_detail_uses_splatting,
+        'lograw_target_details_keeps_log_window_ids': 'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId' in normalize_powershell_command_span(lograw_block),
+        'lograw_output_initializes_applied_filter_scope': "$rawEvtxFilters = @('LogName','EffectiveEventWindow')" in lograw_block,
+        'lograw_output_conditionally_adds_eventids_filter': "if ($EventId -and @($EventId).Count -gt 0) { $rawEvtxFilters += 'EventIds' }" in lograw_block,
+        'lograw_output_writes_applied_filter_scope': 'RAW_EVTX_FILTERS=$rawEvtxFiltersText' in lograw_block,
+        'lograw_output_states_no_event_count_cap': 'RAW_EVTX_EVENT_COUNT_CAP=NotApplied' in lograw_block,
+        'lograw_interpretation_states_no_maxevents_cap': 'MaxEvents does not limit raw EVTX export size.' in lograw_block,
+        'lograw_export_call_preserved': 'Export-FilteredEvtx -LogChannel $LogName -WindowHours $Hours -Ids $EventId -OutPath $plannedStagedPath -ScratchDir $sessionLogsDir' in normalize_powershell_command_span(lograw_block),
+        'lograw_export_call_omits_maxevents': bool(lograw_export_calls) and not export_claims_maxevents and not export_uses_splatting,
+        'lograw_export_call_omits_splatting': bool(lograw_export_calls) and not export_uses_splatting,
+        'logtext_still_uses_maxevents_metadata': 'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId -Take $MaxEvents' in logtext_block,
+        'logtext_still_uses_bounded_text_query': 'Get-EventText -Channel $LogName -WindowHours $Hours -Ids $EventId -Take $MaxEvents' in logtext_block,
+        'target_helper_still_emits_maxevents_for_text_paths': 'if ($Take -gt 0) { [void]$parts.Add(("MaxEvents={0}" -f $Take)) }' in target_helper,
+        'evtx_export_has_no_maxevents_parameter': bool(evtx_export_param_block) and not evtx_param_claims_event_cap,
+        'evtx_export_preserves_timediff_filter': 'TimeCreated[timediff(@SystemTime)' in evtx_export,
+        'evtx_export_preserves_explicit_window_filter': "TimeCreated[@SystemTime>='$startUtc' and @SystemTime<='$endUtc']" in evtx_export,
+        'evtx_export_preserves_event_id_filter': 'EventID=$_' in evtx_export,
+    })
+
+    add_missing_errors('lograw metadata truth policy failed: ', checks, [
+        'review_function_present',
+        'retrieval_function_present',
+        'logtext_action_block_present',
+        'lograw_action_block_present',
+        'target_details_helper_present',
+        'evtx_export_function_present',
+        'evtx_export_param_block_present',
+        'param_block_negative_fixture_detects_maxevents',
+        'target_detail_negative_fixtures_detect_count_cap',
+        'target_detail_multiline_negative_fixtures_detect_count_cap',
+        'target_detail_parameter_prefix_negative_fixtures_detect_count_cap',
+        'target_detail_colon_parameter_negative_fixtures_detect_count_cap',
+        'target_detail_implicit_continuation_negative_fixtures_detect_count_cap',
+        'target_detail_implicit_continuation_benign_fixtures_avoid_false_positives',
+        'target_detail_splat_negative_fixtures_reject_splatting',
+        'target_detail_implicit_continuation_splat_negative_fixtures_reject_splatting',
+        'export_splat_negative_fixtures_reject_splatting',
+        'export_implicit_continuation_negative_fixtures_detect_count_cap',
+        'export_colon_parameter_negative_fixtures_detect_count_cap',
+        'export_implicit_continuation_benign_fixtures_avoid_false_positives',
+        'export_implicit_continuation_splat_negative_fixtures_reject_splatting',
+        'command_anchor_benign_fixtures_avoid_false_positives',
+        'command_separator_benign_fixtures_avoid_false_positives',
+        'command_case_negative_fixtures_detect_count_cap',
+        'target_helper_metadata_only_no_event_reader',
+        'lograw_target_details_omits_maxevents_overclaim',
+        'lograw_target_details_omits_splatting',
+        'lograw_target_details_keeps_log_window_ids',
+        'lograw_output_initializes_applied_filter_scope',
+        'lograw_output_conditionally_adds_eventids_filter',
+        'lograw_output_writes_applied_filter_scope',
+        'lograw_output_states_no_event_count_cap',
+        'lograw_interpretation_states_no_maxevents_cap',
+        'lograw_export_call_preserved',
+        'lograw_export_call_omits_maxevents',
+        'lograw_export_call_omits_splatting',
+        'logtext_still_uses_maxevents_metadata',
+        'logtext_still_uses_bounded_text_query',
+        'target_helper_still_emits_maxevents_for_text_paths',
+        'evtx_export_has_no_maxevents_parameter',
+        'evtx_export_preserves_timediff_filter',
+        'evtx_export_preserves_explicit_window_filter',
+        'evtx_export_preserves_event_id_filter',
+    ], errors)
+
+    return {
+        'success': not errors,
+        'checks': checks,
+        'errors': errors,
+    }
+
+
+def validate_policy(source_dir: Path) -> Dict[str, object]:
+    checks: Dict[str, object] = {}
+    errors: List[str] = []
+    event_text_policy = validate_event_text_query_bound_policy(source_dir)
+    lograw_policy = validate_lograw_metadata_truth_policy(source_dir)
+    checks['event_text_query_bound_policy'] = event_text_policy['checks']
+    checks['lograw_metadata_truth_policy'] = lograw_policy['checks']
+    errors.extend(event_text_policy['errors'])
+    errors.extend(lograw_policy['errors'])
     return {
         'success': not errors,
         'checks': checks,
