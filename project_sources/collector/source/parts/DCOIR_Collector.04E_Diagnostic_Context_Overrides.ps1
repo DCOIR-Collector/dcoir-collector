@@ -117,6 +117,38 @@ function Get-SecurityAuditPolicyText {
 
 <#
 .SYNOPSIS
+Runs a bounded Get-WinEvent query for text-oriented event summaries.
+
+.DESCRIPTION
+Applies the event limit at the Get-WinEvent query with -MaxEvents, then performs any
+TimeCreated ordering only on the bounded result set. This keeps operator-facing limits
+from turning into full-window materialization before text shaping.
+
+.FUNCTION NAME
+Invoke-CollectorBoundedWinEventQuery
+
+.INPUTS
+Filter hashtable and maximum event count.
+
+.OUTPUTS
+Array of event records ordered newest first within the bounded result set.
+#>
+function Invoke-CollectorBoundedWinEventQuery {
+  param(
+    [Parameter(Mandatory=$true)][hashtable]$FilterHashtable,
+    [int]$MaxEvents
+  )
+
+  if ($MaxEvents -lt 1) {
+    return @()
+  }
+
+  $events = @(Get-WinEvent -FilterHashtable $FilterHashtable -MaxEvents $MaxEvents -ErrorAction Stop)
+  return @($events | Sort-Object TimeCreated -Descending)
+}
+
+<#
+.SYNOPSIS
 Builds a diagnostic-friendly Security high-signal summary.
 
 .DESCRIPTION
@@ -153,9 +185,8 @@ function Get-SecurityHighSignalSummaryText {
       $fh.EndTime = $window.EndTime
     }
 
-    $events = @(Get-WinEvent -FilterHashtable $fh -ErrorAction Stop |
-      Sort-Object TimeCreated -Descending |
-      Select-Object -First ($Take * 4))
+    $queryLimit = [Math]::Max(0, ($Take * 4))
+    $events = @(Invoke-CollectorBoundedWinEventQuery -FilterHashtable $fh -MaxEvents $queryLimit)
 
     if (@($events).Count -eq 0) {
       $lines = New-Object System.Collections.ArrayList
@@ -298,25 +329,25 @@ function Get-SecurityHighSignalSummaryText {
       $summary = ''
       switch ([int]$ev.Id) {
         4624 {
-          $summary = "Successful logon Target={0}\\{1} LogonType={2} SourceIp={3} Workstation={4}" -f (Get-EventMapValue -Map $m -Key 'TargetDomainName'), (Get-EventMapValue -Map $m -Key 'TargetUserName'), (Get-EventMapValue -Map $m -Key 'LogonType'), (Get-EventMapValue -Map $m -Key 'IpAddress'), (Get-EventMapValue -Map $m -Key 'WorkstationName')
+          $summary = "Successful logon Target={0}\{1} LogonType={2} SourceIp={3} Workstation={4}" -f (Get-EventMapValue -Map $m -Key 'TargetDomainName'), (Get-EventMapValue -Map $m -Key 'TargetUserName'), (Get-EventMapValue -Map $m -Key 'LogonType'), (Get-EventMapValue -Map $m -Key 'IpAddress'), (Get-EventMapValue -Map $m -Key 'WorkstationName')
         }
         4625 {
-          $summary = "Failed logon Target={0}\\{1} LogonType={2} SourceIp={3} Status={4} SubStatus={5}" -f (Get-EventMapValue -Map $m -Key 'TargetDomainName'), (Get-EventMapValue -Map $m -Key 'TargetUserName'), (Get-EventMapValue -Map $m -Key 'LogonType'), (Get-EventMapValue -Map $m -Key 'IpAddress'), (Get-EventMapValue -Map $m -Key 'Status'), (Get-EventMapValue -Map $m -Key 'SubStatus')
+          $summary = "Failed logon Target={0}\{1} LogonType={2} SourceIp={3} Status={4} SubStatus={5}" -f (Get-EventMapValue -Map $m -Key 'TargetDomainName'), (Get-EventMapValue -Map $m -Key 'TargetUserName'), (Get-EventMapValue -Map $m -Key 'LogonType'), (Get-EventMapValue -Map $m -Key 'IpAddress'), (Get-EventMapValue -Map $m -Key 'Status'), (Get-EventMapValue -Map $m -Key 'SubStatus')
         }
         4648 {
-          $summary = "Explicit credentials Subject={0}\\{1} TargetServer={2} Process={3} SourceIp={4}" -f (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName'), (Get-EventMapValue -Map $m -Key 'TargetServerName'), (Get-EventMapValue -Map $m -Key 'ProcessName'), (Get-EventMapValue -Map $m -Key 'IpAddress')
+          $summary = "Explicit credentials Subject={0}\{1} TargetServer={2} Process={3} SourceIp={4}" -f (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName'), (Get-EventMapValue -Map $m -Key 'TargetServerName'), (Get-EventMapValue -Map $m -Key 'ProcessName'), (Get-EventMapValue -Map $m -Key 'IpAddress')
         }
         4672 {
-          $summary = "Special privileges assigned Subject={0}\\{1} Privileges={2}" -f (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName'), (Get-EventMapValue -Map $m -Key 'PrivilegeList')
+          $summary = "Special privileges assigned Subject={0}\{1} Privileges={2}" -f (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName'), (Get-EventMapValue -Map $m -Key 'PrivilegeList')
         }
         4688 {
-          $summary = "Process created NewProcess={0} ParentProcess={1} Subject={2}\\{3} CommandLine={4}" -f (Get-EventMapValue -Map $m -Key 'NewProcessName'), (Get-EventMapValue -Map $m -Key 'ParentProcessName'), (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName'), (Get-EventMapValue -Map $m -Key 'CommandLine')
+          $summary = "Process created NewProcess={0} ParentProcess={1} Subject={2}\{3} CommandLine={4}" -f (Get-EventMapValue -Map $m -Key 'NewProcessName'), (Get-EventMapValue -Map $m -Key 'ParentProcessName'), (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName'), (Get-EventMapValue -Map $m -Key 'CommandLine')
         }
         4697 {
-          $summary = "Service installed Name={0} File={1} Subject={2}\\{3}" -f (Get-EventMapValue -Map $m -Key 'ServiceName'), (Get-EventMapValue -Map $m -Key 'ServiceFileName'), (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName')
+          $summary = "Service installed Name={0} File={1} Subject={2}\{3}" -f (Get-EventMapValue -Map $m -Key 'ServiceName'), (Get-EventMapValue -Map $m -Key 'ServiceFileName'), (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName')
         }
         4698 {
-          $summary = "Scheduled task created TaskName={0} Subject={1}\\{2}" -f (Get-EventMapValue -Map $m -Key 'TaskName'), (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName')
+          $summary = "Scheduled task created TaskName={0} Subject={1}\{2}" -f (Get-EventMapValue -Map $m -Key 'TaskName'), (Get-EventMapValue -Map $m -Key 'SubjectDomainName'), (Get-EventMapValue -Map $m -Key 'SubjectUserName')
         }
         default {
           $summary = ($ev.Message -replace "`r", '' -replace "`n", ' ')
@@ -391,9 +422,8 @@ function Get-EventText {
     }
     if ($Ids -and @($Ids).Count -gt 0) { $fh.Id = $Ids }
 
-    $events = Get-WinEvent -FilterHashtable $fh -ErrorAction Stop |
-      Sort-Object TimeCreated -Descending |
-      Select-Object -First $Take
+    $queryLimit = [Math]::Max(0, $Take)
+    $events = @(Invoke-CollectorBoundedWinEventQuery -FilterHashtable $fh -MaxEvents $queryLimit)
 
     if (@($events).Count -eq 0) {
       $lines = New-Object System.Collections.ArrayList
