@@ -84,11 +84,50 @@ def extract_quoted_switch_case_bodies(text: str, case_name: str) -> List[str]:
 
 
 def extract_powershell_command_spans(text: str, command_name: str) -> List[str]:
-    pattern = re.compile(
-        r'\b' + re.escape(command_name) + r'\b(?:`[ \t]*(?:\r\n|\n|\r)[ \t]*|[^\r\n])*',
-        re.IGNORECASE,
-    )
-    return pattern.findall(text)
+    pattern = re.compile(r'\b' + re.escape(command_name) + r'\b', re.IGNORECASE)
+    closing_for_open = {'(': ')', '[': ']', '{': '}'}
+    spans: List[str] = []
+    for match in pattern.finditer(text):
+        cursor = match.end()
+        expected_closers: List[str] = []
+        quote = ''
+        while cursor < len(text):
+            char = text[cursor]
+            if quote:
+                if char == '`':
+                    cursor += 2 if cursor + 1 < len(text) else 1
+                    continue
+                if char == quote:
+                    if cursor + 1 < len(text) and text[cursor + 1] == quote:
+                        cursor += 2
+                        continue
+                    quote = ''
+                cursor += 1
+                continue
+            if char in ("'", '"'):
+                quote = char
+                cursor += 1
+                continue
+            continuation = re.match(r'`[ \t]*(?:\r\n|\n|\r)[ \t]*', text[cursor:])
+            if continuation:
+                cursor += continuation.end()
+                continue
+            if char == '`':
+                cursor += 2 if cursor + 1 < len(text) else 1
+                continue
+            if char in closing_for_open:
+                expected_closers.append(closing_for_open[char])
+                cursor += 1
+                continue
+            if expected_closers and char == expected_closers[-1]:
+                expected_closers.pop()
+                cursor += 1
+                continue
+            if char in '\r\n' and not expected_closers:
+                break
+            cursor += 1
+        spans.append(text[match.start():cursor])
+    return spans
 
 
 def normalize_powershell_command_span(command_span: str) -> str:
@@ -273,13 +312,31 @@ function Export-FilteredEvtx {
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\n  -Ta $Limit',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName -Hours $Hours -Ids $EventId `\r\n  -Max $Limit',
     ]
+    target_detail_implicit_continuation_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -LogName $LogName -Ids @(\n  $EventId\n) -Take $Limit',
+        'Get-CollectorEventWindowTargetDetails -LogName (\n  $LogName\n) -MaxEvents $Limit',
+        'Get-CollectorEventWindowTargetDetails -Metadata @{\n  LogName = $LogName\n} -Ta $Limit',
+    ]
     target_detail_splat_negative_fixtures = [
         'Get-CollectorEventWindowTargetDetails @TargetDetailArgs',
         'Get-CollectorEventWindowTargetDetails -LogName $LogName `\n  @TargetDetailArgs',
     ]
+    target_detail_implicit_continuation_splat_negative_fixtures = [
+        'Get-CollectorEventWindowTargetDetails -Ids @(\n  $EventId\n) @TargetDetailArgs',
+        'Get-CollectorEventWindowTargetDetails -Metadata @{\n  LogName = $LogName\n} @script:TargetDetailArgs',
+    ]
     export_splat_negative_fixtures = [
         'Export-FilteredEvtx @ExportArgs',
         'Export-FilteredEvtx -LogChannel $LogName `\n  @ExportArgs',
+    ]
+    export_implicit_continuation_negative_fixtures = [
+        'Export-FilteredEvtx -LogChannel $LogName -Ids @(\n  $EventId\n) -MaxEvents $MaxEvents',
+        'Export-FilteredEvtx -LogChannel (\n  $LogName\n) -Max $MaxEvents',
+        'Export-FilteredEvtx -Options @{\n  LogName = $LogName\n} -Ta $Limit',
+    ]
+    export_implicit_continuation_splat_negative_fixtures = [
+        'Export-FilteredEvtx -Ids @(\n  $EventId\n) @ExportArgs',
+        'Export-FilteredEvtx -Options @{\n  LogName = $LogName\n} @script:ExportArgs',
     ]
 
     lograw_target_detail_calls = extract_powershell_command_spans(
@@ -303,6 +360,7 @@ function Export-FilteredEvtx {
         for fixture in target_detail_negative_fixtures
         + target_detail_multiline_negative_fixtures
         + target_detail_parameter_prefix_negative_fixtures
+        + target_detail_implicit_continuation_negative_fixtures
     )
     target_detail_multiline_negative_fixtures_detect_count_cap = all(
         powershell_command_uses_count_cap_parameter(fixture)
@@ -312,9 +370,17 @@ function Export-FilteredEvtx {
         powershell_command_uses_count_cap_parameter(fixture)
         for fixture in target_detail_parameter_prefix_negative_fixtures
     )
+    target_detail_implicit_continuation_negative_fixtures_detect_count_cap = all(
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in target_detail_implicit_continuation_negative_fixtures
+    )
     target_detail_splat_negative_fixtures_reject_splatting = all(
         powershell_command_uses_splatting(fixture)
         for fixture in target_detail_splat_negative_fixtures
+    )
+    target_detail_implicit_continuation_splat_negative_fixtures_reject_splatting = all(
+        powershell_command_uses_splatting(fixture)
+        for fixture in target_detail_implicit_continuation_splat_negative_fixtures
     )
     export_uses_splatting = any(
         powershell_command_uses_splatting(call)
@@ -323,6 +389,14 @@ function Export-FilteredEvtx {
     export_splat_negative_fixtures_reject_splatting = all(
         powershell_command_uses_splatting(fixture)
         for fixture in export_splat_negative_fixtures
+    )
+    export_implicit_continuation_negative_fixtures_detect_count_cap = all(
+        powershell_command_uses_count_cap_parameter(fixture)
+        for fixture in export_implicit_continuation_negative_fixtures
+    )
+    export_implicit_continuation_splat_negative_fixtures_reject_splatting = all(
+        powershell_command_uses_splatting(fixture)
+        for fixture in export_implicit_continuation_splat_negative_fixtures
     )
     export_claims_maxevents = any(
         powershell_command_uses_count_cap_parameter(call)
@@ -345,8 +419,12 @@ function Export-FilteredEvtx {
         'target_detail_negative_fixtures_detect_count_cap': target_detail_negative_fixtures_detect_count_cap,
         'target_detail_multiline_negative_fixtures_detect_count_cap': target_detail_multiline_negative_fixtures_detect_count_cap,
         'target_detail_parameter_prefix_negative_fixtures_detect_count_cap': target_detail_parameter_prefix_negative_fixtures_detect_count_cap,
+        'target_detail_implicit_continuation_negative_fixtures_detect_count_cap': target_detail_implicit_continuation_negative_fixtures_detect_count_cap,
         'target_detail_splat_negative_fixtures_reject_splatting': target_detail_splat_negative_fixtures_reject_splatting,
+        'target_detail_implicit_continuation_splat_negative_fixtures_reject_splatting': target_detail_implicit_continuation_splat_negative_fixtures_reject_splatting,
         'export_splat_negative_fixtures_reject_splatting': export_splat_negative_fixtures_reject_splatting,
+        'export_implicit_continuation_negative_fixtures_detect_count_cap': export_implicit_continuation_negative_fixtures_detect_count_cap,
+        'export_implicit_continuation_splat_negative_fixtures_reject_splatting': export_implicit_continuation_splat_negative_fixtures_reject_splatting,
         'target_helper_metadata_only_no_event_reader': bool(target_helper) and not target_helper_reads_or_exports_events,
         'lograw_target_details_call_count': len(lograw_target_detail_calls),
         'lograw_target_details_omits_maxevents_overclaim': bool(lograw_target_detail_calls) and not target_detail_overclaim and not target_detail_uses_splatting,
@@ -381,8 +459,12 @@ function Export-FilteredEvtx {
         'target_detail_negative_fixtures_detect_count_cap',
         'target_detail_multiline_negative_fixtures_detect_count_cap',
         'target_detail_parameter_prefix_negative_fixtures_detect_count_cap',
+        'target_detail_implicit_continuation_negative_fixtures_detect_count_cap',
         'target_detail_splat_negative_fixtures_reject_splatting',
+        'target_detail_implicit_continuation_splat_negative_fixtures_reject_splatting',
         'export_splat_negative_fixtures_reject_splatting',
+        'export_implicit_continuation_negative_fixtures_detect_count_cap',
+        'export_implicit_continuation_splat_negative_fixtures_reject_splatting',
         'target_helper_metadata_only_no_event_reader',
         'lograw_target_details_omits_maxevents_overclaim',
         'lograw_target_details_omits_splatting',
