@@ -1,0 +1,642 @@
+{
+  "assembly_parity_report": {
+    "generated_output_paths": [
+      "compiled_runtime/DCOIR_Collector.ps1",
+      "project_sources/collector/harness/run_DCOIR_Tests.generated.ps1"
+    ],
+    "path": "project_sources/collector/powershell_assembly_parity_report.json",
+    "present": true,
+    "schema_version": "dcoir_powershell_assembly_parity_report_v1"
+  },
+  "baseline_delta": {
+    "as_of": "2026-06-10",
+    "baseline_match_counts": {},
+    "baseline_record_count": 0,
+    "decision_counts": {
+      "advisory": 22
+    },
+    "matched_baseline_record_count": 0,
+    "matched_suppression_count": 0,
+    "suppression_count": 0,
+    "suppression_match_counts": {},
+    "unclassified_finding_count": 0
+  },
+  "classifications": [
+    {
+      "check_id": "dcoir-analyzer-skip-success",
+      "column": 1,
+      "fingerprint": "6b214288016a07e17075b735d703d835334379123d037033d5a1a25159be174d",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 1,
+      "observed_problem": "Analyzer, inventory, or target skip states must not be represented as successful validation.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+      "recommended_fix": "Fail closed when analyzer policy, inventory, target selection, or tool execution is incomplete.",
+      "rule_name": "DCOIR.NoAnalyzerSkipSuccess",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_custom_check_report.json",
+      "source_schema_version": "dcoir_powershell_custom_check_report_v1"
+    },
+    {
+      "check_id": "dcoir-baseline-fingerprint-bound",
+      "column": 1,
+      "fingerprint": "8f549785714121c09bbd9ca981ebea2a568e824aa64573616b88effe07a6ab3a",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 1,
+      "observed_problem": "Suppressions and baselines must be bound to a path, rule, fingerprint, expected match count, and justification.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1",
+      "recommended_fix": "Bind suppressions to path, rule, fingerprint, expected match count, and a durable justification.",
+      "rule_name": "DCOIR.BaselineSuppressionMustBeFingerprintBound",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_custom_check_report.json",
+      "source_schema_version": "dcoir_powershell_custom_check_report_v1"
+    },
+    {
+      "check_id": "dcoir-fail-output-must-fail",
+      "column": 1,
+      "fingerprint": "9a8808ce445b46bf3a1c686f3ab0b6851a075bd1897b971274b15dd5006ea65d",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "FAIL rows, reports, or fixture outputs must be connected to a failing process or validation state.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+      "recommended_fix": "Tie every failing row or report state to a thrown exception, nonzero exit, or explicit failed validation summary.",
+      "rule_name": "DCOIR.FailOutputMustFailValidation",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_custom_check_report.json",
+      "source_schema_version": "dcoir_powershell_custom_check_report_v1"
+    },
+    {
+      "check_id": "dcoir-source-part-drift",
+      "column": 1,
+      "fingerprint": "c7b51d4e78491d6ff34a29157168c2d69c7065831997f3d937cac662a2dc7a2a",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Generated PowerShell outputs must not be accepted when source-part hashes or assembly state are stale.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/source_part_drift.ps1",
+      "recommended_fix": "Regenerate outputs or compare source-part hashes before accepting analyzer evidence.",
+      "rule_name": "DCOIR.SourcePartAssemblyDrift",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_custom_check_report.json",
+      "source_schema_version": "dcoir_powershell_custom_check_report_v1"
+    },
+    {
+      "check_id": "dcoir-no-swallowed-catch",
+      "column": 1,
+      "fingerprint": "ef112f3c4cb42fc1ceecd6af55e1d24b831cf6e63f355814c54a90769002df98",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 4,
+      "observed_problem": "Catch blocks must propagate failure or return a failed validation state after logging.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/swallowed_catch.ps1",
+      "recommended_fix": "Rethrow, exit nonzero, or return a failed validation state after recording diagnostics.",
+      "rule_name": "DCOIR.NoSwallowedCatch",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_custom_check_report.json",
+      "source_schema_version": "dcoir_powershell_custom_check_report_v1"
+    },
+    {
+      "check_id": "dcoir-bound-event-query",
+      "column": 1,
+      "fingerprint": "447645406097c2433bed38ce7bfe08d97f55be519def704554acf247822acc9c",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Windows event collection must be bounded by filter, time window, or count cap.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unbounded_event_query.ps1",
+      "recommended_fix": "Use FilterHashtable, explicit event windows, MaxEvents, or a bounded Take/Select-Object cap.",
+      "rule_name": "DCOIR.BoundedEventQueryRequired",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_custom_check_report.json",
+      "source_schema_version": "dcoir_powershell_custom_check_report_v1"
+    },
+    {
+      "check_id": "dcoir-check-external-exit",
+      "column": 1,
+      "fingerprint": "05d7d01a4a668ba524db5cda49ce05b63519047ad77a539b4c3eab0a668fd201",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Native command and script invocations must check their immediate exit state before reporting success.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unchecked_external_exit.ps1",
+      "recommended_fix": "Capture and validate the command exit state immediately, then throw or emit a failing validation result on failure.",
+      "rule_name": "DCOIR.CheckExternalCommandExit",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_custom_check_report.json",
+      "source_schema_version": "dcoir_powershell_custom_check_report_v1"
+    },
+    {
+      "check_id": "dcoir-no-unsafe-wildcard-delete",
+      "column": 1,
+      "fingerprint": "d9f38b35539a5807721d61522bc2e55a0ae53ea829adff11547108ee5cda6466",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Recursive deletion must be constrained to a resolved controlled root before wildcards are used.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unsafe_wildcard_delete.ps1",
+      "recommended_fix": "Resolve and constrain the cleanup root before deletion, avoid broad wildcards, and use ShouldProcess where practical.",
+      "rule_name": "DCOIR.NoUnsafeWildcardDeletion",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_custom_check_report.json",
+      "source_schema_version": "dcoir_powershell_custom_check_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "7f096d3ee8f04fccb5a061553e58be285fb46aaf7738ab63b83d683554818f95",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 1,
+      "observed_problem": "Analyzer skip state is represented with a success validation state.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+      "recommended_fix": "Fail closed when analyzer policy, inventory, target, or command execution is incomplete.",
+      "rule_name": "DCOIR.NoAnalyzerSkipSuccess",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "64bf07846f4b703810fd1f6134a4cb8f5f71b52c44b1822b73da34ced7acff5a",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 1,
+      "observed_problem": "Baseline suppression is broad and lacks a finding fingerprint.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1",
+      "recommended_fix": "Bind suppressions to path, rule, fingerprint, expected match count, and reason.",
+      "rule_name": "DCOIR.BaselineSuppressionMustBeFingerprintBound",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "71228e35c2e53770ada648c1457b2ffeb913823b5bec5e6dbe94ccca3d620f75",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "A FAIL output row can be emitted without a failing process result.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+      "recommended_fix": "Tie FAIL rows and reports to a thrown exception, nonzero exit, or failed validation summary.",
+      "rule_name": "DCOIR.FailOutputMustFailValidation",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "66a70697e53de562debbc2ed8965c13d0d995759f29bc0475eb3343751b23ad5",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Dynamic expression execution hides command intent and can execute untrusted input.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/invoke_expression.ps1",
+      "recommended_fix": "Replace Invoke-Expression with explicit command invocation or structured parsing.",
+      "rule_name": "PSAvoidUsingInvokeExpression",
+      "severity": "Warning",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "f4cc22397dbc3ce51adce8d97b1174af17d0a235d6110868140c8ca05e3f6ccc",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Credential-like variable is assigned a literal string.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/plaintext_password.ps1",
+      "recommended_fix": "Use a non-secret placeholder or load secret material from a protected source.",
+      "rule_name": "PSAvoidUsingPlainTextForPassword",
+      "severity": "Warning",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "d284d92b6302d59a8307cf5e575ecb8601078e3361a90f45b97f5cf55fb9aa8b",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Plaintext data is converted to SecureString.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/plaintext_securestring.ps1",
+      "recommended_fix": "Avoid plaintext secret material and use a protected input path.",
+      "rule_name": "PSAvoidUsingConvertToSecureStringWithPlainText",
+      "severity": "Warning",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "50701c09a1ce350831596b956cbd51fe5d61801dfdad142b27215013edbec995",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Generated output marker indicates stale source-part assembly.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/source_part_drift.ps1",
+      "recommended_fix": "Regenerate or compare source-part hashes before accepting analyzer evidence.",
+      "rule_name": "DCOIR.SourcePartAssemblyDrift",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "c0af233831610eb0d1ccec2c2adcd74339c5f4b139b594c0f96c0b1ddfdf0e6f",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 1,
+      "observed_problem": "State-changing function does not declare SupportsShouldProcess.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/state_changing_function.ps1",
+      "recommended_fix": "Add CmdletBinding(SupportsShouldProcess) and guard mutation with ShouldProcess.",
+      "rule_name": "PSUseShouldProcessForStateChangingFunctions",
+      "severity": "Warning",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "c48aada92d6fb8c2fb1e4d1663925c424490e04e7bf92915aa5e6563f9ba821a",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 4,
+      "observed_problem": "Catch block writes a message but does not fail or rethrow.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/swallowed_catch.ps1",
+      "recommended_fix": "Rethrow, exit nonzero, or return a failed validation state after recording diagnostics.",
+      "rule_name": "DCOIR.NoSwallowedCatch",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "4d625b896bb5412dfe8068993ac3f12f1e4119562e21f2e6bc4c2b4944a8d998",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Event query is not bounded by filter or count cap.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unbounded_event_query.ps1",
+      "recommended_fix": "Use FilterHashtable, explicit windows, MaxEvents, or a bounded Take parameter.",
+      "rule_name": "DCOIR.BoundedEventQueryRequired",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "a0586576f9a4e11089384df7a644c44946b0d17c9abee7c3f6eeafcca6fb8d9d",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "External command result is not checked before continuing.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unchecked_external_exit.ps1",
+      "recommended_fix": "Capture and validate the command exit state immediately.",
+      "rule_name": "DCOIR.CheckExternalCommandExit",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "670a8693772400fc3e121d31510eba509a344cfbdb1b02df817dbacda126de38",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Wildcard recursive deletion is not constrained to a resolved controlled root.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unsafe_wildcard_delete.ps1",
+      "recommended_fix": "Resolve and constrain the cleanup root before deleting, and avoid broad wildcards.",
+      "rule_name": "DCOIR.NoUnsafeWildcardDeletion",
+      "severity": "Error",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "671fdc901abdc12039ea2faa33b1025fc52c1d6c72f1f409bd466761a72e2d9c",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Assigned validation state is never consumed.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unused_variable.ps1",
+      "recommended_fix": "Remove the unused state or wire it into the validation/report decision.",
+      "rule_name": "PSUseDeclaredVarsMoreThanAssignments",
+      "severity": "Warning",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "check_id": "",
+      "column": 1,
+      "fingerprint": "bfbd248b13de3945994879d0aba23de1f8c1bc654027f9c3abed03c6454ed298",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "line": 2,
+      "observed_problem": "Validation output is written only to the host stream.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/write_host.ps1",
+      "recommended_fix": "Write durable output through Write-Output, structured reports, or repo logging helpers.",
+      "rule_name": "PSAvoidUsingWriteHost",
+      "severity": "Warning",
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    }
+  ],
+  "controlled_fail_closed_proof": [
+    {
+      "evidence": "test_new_finding_without_classification_fails_closed",
+      "expected_result": "fails when a finding is not matched by a baseline record, suppression, or classification rule",
+      "id": "new-unclassified-finding"
+    },
+    {
+      "evidence": "test_malformed_baseline_fails_closed",
+      "expected_result": "fails when a baseline record is missing required review or fingerprint fields",
+      "id": "malformed-baseline"
+    },
+    {
+      "evidence": "test_severity_increase_fails_closed",
+      "expected_result": "fails when a baseline record's matched finding increases severity",
+      "id": "severity-increase"
+    },
+    {
+      "evidence": "test_unexpected_baseline_disappearance_fails_closed",
+      "expected_result": "fails when an expected baseline fingerprint disappears without an exception",
+      "id": "unexpected-disappearance"
+    },
+    {
+      "evidence": "test_blanket_suppression_fails_closed",
+      "expected_result": "fails on repo-wide, wildcard path, or wildcard rule suppressions",
+      "id": "blanket-suppression"
+    },
+    {
+      "evidence": "test_generated_output_suppression_requires_assembly_coverage",
+      "expected_result": "fails when a generated-output file suppression lacks #265 assembly coverage and an explicit reviewed reason",
+      "id": "generated-output-suppression"
+    }
+  ],
+  "depends_on": [
+    262,
+    263,
+    264,
+    265
+  ],
+  "governance": {
+    "classification_rule_count": 1,
+    "path": "project_sources/collector/powershell_finding_governance.json",
+    "policy": {
+      "allowed_decisions": [
+        "remediate-now",
+        "baseline-temporary",
+        "advisory",
+        "false positive",
+        "accepted risk"
+      ],
+      "baseline_record_required_fields": [
+        "id",
+        "decision",
+        "rule_name_or_check_id",
+        "path",
+        "line_or_stable_locator",
+        "severity",
+        "fingerprint",
+        "rationale",
+        "owner",
+        "reviewer",
+        "review_date",
+        "expiry_or_revisit"
+      ],
+      "fail_on_count_regression": true,
+      "fail_on_new_unclassified_findings": true,
+      "fail_on_severity_increase": true,
+      "fail_on_stale_baseline_growth": true,
+      "fail_on_unexpected_disappearance": true,
+      "max_baseline_records": 0,
+      "suppression_policy": {
+        "blanket_repo_suppressions_allowed": false,
+        "generated_output_file_suppression_requires_assembly_coverage": true,
+        "requires_expiry_or_revisit": true,
+        "requires_fingerprint": true,
+        "requires_owner_reviewer_rationale": true,
+        "wildcard_path_suppressions_allowed": false,
+        "wildcard_rule_suppressions_allowed": false
+      }
+    },
+    "schema_version": "dcoir_powershell_finding_governance_v1"
+  },
+  "input_reports": [
+    {
+      "finding_count": 8,
+      "path": "project_sources/collector/powershell_custom_check_report.json",
+      "required": true,
+      "schema_version": "dcoir_powershell_custom_check_report_v1"
+    },
+    {
+      "finding_count": 14,
+      "path": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "required": true,
+      "schema_version": "dcoir_powershell_rule_risk_fixture_report_v1"
+    },
+    {
+      "finding_count": 0,
+      "path": "project_sources/collector/powershell_analyzer_report.json",
+      "present": false,
+      "required": false,
+      "schema_version": null
+    }
+  ],
+  "issue": 266,
+  "parent_issue": 260,
+  "schema_version": "dcoir_powershell_finding_governance_report_v1",
+  "summary": {
+    "baseline_record_count": 0,
+    "classified_finding_count": 22,
+    "decision_counts": {
+      "advisory": 22
+    },
+    "finding_count": 22,
+    "matched_baseline_record_count": 0,
+    "matched_suppression_count": 0,
+    "severity_counts": {
+      "Error": 16,
+      "Warning": 6
+    },
+    "source_schema_counts": {
+      "dcoir_powershell_custom_check_report_v1": 8,
+      "dcoir_powershell_rule_risk_fixture_report_v1": 14
+    },
+    "suppression_count": 0,
+    "unclassified_finding_count": 0
+  },
+  "validation": {
+    "errors": [],
+    "success": true,
+    "warnings": [
+      "optional PowerShell finding report not present: project_sources/collector/powershell_analyzer_report.json"
+    ]
+  }
+}

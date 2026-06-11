@@ -1,0 +1,157 @@
+{
+  "schema_version": "dcoir_powershell_custom_checks_v1",
+  "issue": 264,
+  "parent_issue": 260,
+  "depends_on": [261, 262, 263],
+  "source_of_truth": "#264 custom DCOIR check issue body plus #263 rule-to-risk matrix",
+  "matrix": "project_sources/collector/powershell_rule_risk_matrix.json",
+  "checks": [
+    {
+      "id": "dcoir-analyzer-skip-success",
+      "rule_name": "DCOIR.NoAnalyzerSkipSuccess",
+      "matrix_check_id": "dcoir-analyzer-skip-success",
+      "expected_severity": "Error",
+      "risk_classes": ["analyzer_policy_inventory_skip_or_tool_failure_reported_success"],
+      "target_surfaces": ["collector harness", "validation tooling", "workflow support scripts"],
+      "intent": "Analyzer, inventory, or target skip states must not be represented as successful validation.",
+      "target": "PowerShell analyzer wrappers, validation harnesses, and support scripts that produce pass/fail evidence.",
+      "detection": "Flags scripts that assign an analyzed/skipped false state while also emitting success-like validation or process state.",
+      "limitations": "Static text detection cannot prove dynamic object construction; ambiguous success terms may require reviewer disposition.",
+      "false_positive_controls": [
+        "Allows skip branches that throw, exit nonzero, or emit FAIL status.",
+        "Requires an explicit skip/analyzed false marker plus success-like output before reporting."
+      ],
+      "failure_impact": "Skipped analyzer or inventory work can be recorded as green evidence and hide unscanned PowerShell surfaces.",
+      "recommended_fix": "Fail closed when analyzer policy, inventory, target selection, or tool execution is incomplete."
+    },
+    {
+      "id": "dcoir-check-external-exit",
+      "rule_name": "DCOIR.CheckExternalCommandExit",
+      "matrix_check_id": "dcoir-check-external-exit",
+      "expected_severity": "Error",
+      "risk_classes": [
+        "stale_or_unchecked_last_exit_code_or_success_status",
+        "external_command_nonzero_exit_treated_success"
+      ],
+      "target_surfaces": ["collector harness", "validation tooling", "workflow support scripts"],
+      "intent": "Native command and script invocations must check their immediate exit state before reporting success.",
+      "target": "PowerShell scripts that call external executables, script shims, or Start-Process for validation work.",
+      "detection": "Flags external invocation lines when nearby follow-up code does not inspect $LASTEXITCODE, $?, or a captured process ExitCode.",
+      "limitations": "Static proximity checks do not model all control flow; reviewed suppressions may be needed around well-tested helper wrappers.",
+      "false_positive_controls": [
+        "Allows immediate $LASTEXITCODE, $?, or captured ExitCode checks.",
+        "Does not report ordinary PowerShell cmdlets that are not native process boundaries."
+      ],
+      "failure_impact": "External commands can fail while stale success state leaves validation evidence green.",
+      "recommended_fix": "Capture and validate the command exit state immediately, then throw or emit a failing validation result on failure."
+    },
+    {
+      "id": "dcoir-fail-output-must-fail",
+      "rule_name": "DCOIR.FailOutputMustFailValidation",
+      "matrix_check_id": "dcoir-fail-output-must-fail",
+      "expected_severity": "Error",
+      "risk_classes": ["fail_rows_reports_or_fixture_outputs_not_causing_failure"],
+      "target_surfaces": ["collector harness", "validation tooling", "workflow support scripts"],
+      "intent": "FAIL rows, reports, or fixture outputs must be connected to a failing process or validation state.",
+      "target": "PowerShell code that writes structured validation rows, reports, or fixture output.",
+      "detection": "Flags FAIL status/report literals when the script has no throw, nonzero exit, or failed validation return path.",
+      "limitations": "Static detection cannot always identify custom aggregation helpers that fail later outside the file.",
+      "false_positive_controls": [
+        "Allows scripts that throw, exit nonzero, or return false after producing FAIL output.",
+        "Treats explicit FAIL output as intentional validation evidence requiring a fail-closed path."
+      ],
+      "failure_impact": "A report can contain failing evidence while the command exits successfully, misleading issue or PR readiness.",
+      "recommended_fix": "Tie every failing row or report state to a thrown exception, nonzero exit, or explicit failed validation summary."
+    },
+    {
+      "id": "dcoir-source-part-drift",
+      "rule_name": "DCOIR.SourcePartAssemblyDrift",
+      "matrix_check_id": "dcoir-source-part-drift",
+      "expected_severity": "Error",
+      "risk_classes": ["source_part_assembly_drift_or_stale_generated_output"],
+      "target_surfaces": ["collector runtime", "collector harness", "validation tooling"],
+      "intent": "Generated PowerShell outputs must not be accepted when source-part hashes or assembly state are stale.",
+      "target": "Collector source-part assembly scripts, generated-output metadata, and validation reports.",
+      "detection": "Flags stale generated-output markers and hash fields that explicitly record stale or drifted assembly state.",
+      "limitations": "This check detects recorded drift markers; independent hash recomputation remains the stronger validation.",
+      "false_positive_controls": [
+        "Requires explicit stale/drift marker text in generated-output metadata.",
+        "Does not report current-hash comparison code that throws on mismatch."
+      ],
+      "failure_impact": "Stale generated runtime or harness output can make review evidence disagree with authoritative source parts.",
+      "recommended_fix": "Regenerate outputs or compare source-part hashes before accepting analyzer evidence."
+    },
+    {
+      "id": "dcoir-no-unsafe-wildcard-delete",
+      "rule_name": "DCOIR.NoUnsafeWildcardDeletion",
+      "matrix_check_id": "dcoir-no-unsafe-wildcard-delete",
+      "expected_severity": "Error",
+      "risk_classes": ["unsafe_or_wildcard_deletion_outside_controlled_roots"],
+      "target_surfaces": ["operator tooling", "validation tooling", "workflow support scripts"],
+      "intent": "Recursive deletion must be constrained to a resolved controlled root before wildcards are used.",
+      "target": "PowerShell cleanup, staging, and output-reset scripts.",
+      "detection": "Flags Remove-Item -Recurse calls that include wildcards or variable paths without nearby root resolution/containment checks.",
+      "limitations": "Static text checks cannot prove a variable was constrained in another file or helper.",
+      "false_positive_controls": [
+        "Allows deletion guarded by Resolve-Path plus containment checks.",
+        "Focuses on recursive deletion because that carries the highest blast radius."
+      ],
+      "failure_impact": "Wildcard deletion outside a controlled root can remove unintended repository or operator files.",
+      "recommended_fix": "Resolve and constrain the cleanup root before deletion, avoid broad wildcards, and use ShouldProcess where practical."
+    },
+    {
+      "id": "dcoir-bound-event-query",
+      "rule_name": "DCOIR.BoundedEventQueryRequired",
+      "matrix_check_id": "dcoir-bound-event-query",
+      "expected_severity": "Error",
+      "risk_classes": ["unbounded_or_materializing_event_query_patterns"],
+      "target_surfaces": ["collector runtime", "collector harness"],
+      "intent": "Windows event collection must be bounded by filter, time window, or count cap.",
+      "target": "PowerShell collection code that calls Get-WinEvent.",
+      "detection": "Flags Get-WinEvent calls without FilterHashtable, FilterXPath, MaxEvents, or a bounded Select-Object -First path.",
+      "limitations": "Multi-line query construction and helper functions may require manual review when bounds are indirect.",
+      "false_positive_controls": [
+        "Allows FilterHashtable, FilterXPath, MaxEvents, or immediate Select-Object -First caps.",
+        "Reports only direct Get-WinEvent calls."
+      ],
+      "failure_impact": "Unbounded event collection can materialize large logs, slow incident response, and make validation nondeterministic.",
+      "recommended_fix": "Use FilterHashtable, explicit event windows, MaxEvents, or a bounded Take/Select-Object cap."
+    },
+    {
+      "id": "dcoir-baseline-fingerprint-bound",
+      "rule_name": "DCOIR.BaselineSuppressionMustBeFingerprintBound",
+      "matrix_check_id": "dcoir-baseline-fingerprint-bound",
+      "expected_severity": "Error",
+      "risk_classes": ["broad_suppression_or_baseline_growth_hiding_risk"],
+      "target_surfaces": ["validation tooling", "operator tooling", "workflow support scripts"],
+      "intent": "Suppressions and baselines must be bound to a path, rule, fingerprint, expected match count, and justification.",
+      "target": "PowerShell suppression metadata, local PSScriptAnalyzer suppression blocks, and baseline construction helpers.",
+      "detection": "Flags wildcard path/rule suppressions, broad local suppressions, or suppression metadata lacking fingerprint/justification fields.",
+      "limitations": "The check is conservative around suppression-like text and may need reviewer disposition for test-only strings.",
+      "false_positive_controls": [
+        "Allows exact path/rule/fingerprint/expected count/reason records.",
+        "Requires suppression/baseline language before reporting missing justification fields."
+      ],
+      "failure_impact": "Broad suppressions can hide new analyzer findings and make baseline growth look intentional.",
+      "recommended_fix": "Bind suppressions to path, rule, fingerprint, expected match count, and a durable justification."
+    },
+    {
+      "id": "dcoir-no-swallowed-catch",
+      "rule_name": "DCOIR.NoSwallowedCatch",
+      "matrix_check_id": "dcoir-no-swallowed-catch",
+      "expected_severity": "Error",
+      "risk_classes": ["swallowed_exception_or_write_only_catch"],
+      "target_surfaces": ["collector harness", "validation tooling", "workflow support scripts"],
+      "intent": "Catch blocks must propagate failure or return a failed validation state after logging.",
+      "target": "PowerShell scripts that catch exceptions in collection, validation, staging, or workflow support paths.",
+      "detection": "Flags catch blocks that only write/log output and do not throw, exit, return false, or set a failed validation state.",
+      "limitations": "Static detection cannot always prove helper calls fail closed; helper-based catch blocks may need an explicit suppression record.",
+      "false_positive_controls": [
+        "Allows catch blocks that rethrow, exit nonzero, return false, or set status to FAIL.",
+        "Reports write-only catch bodies because they are the parent issue failure mode."
+      ],
+      "failure_impact": "Write-only catch blocks can turn real validation failures into log noise while the command exits successfully.",
+      "recommended_fix": "Rethrow, exit nonzero, or return a failed validation state after recording diagnostics."
+    }
+  ]
+}

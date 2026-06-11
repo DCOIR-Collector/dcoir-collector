@@ -1,0 +1,196 @@
+{
+  "boundary_policy_path": "project_sources/collector/powershell_engine_pester_boundary.json",
+  "dependency_reports": [
+    {
+      "exists": true,
+      "finding_count": 14,
+      "path": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "schema_version": "dcoir_powershell_rule_risk_fixture_report_v1",
+      "success": true
+    },
+    {
+      "exists": true,
+      "finding_count": 8,
+      "path": "project_sources/collector/powershell_custom_check_report.json",
+      "schema_version": "dcoir_powershell_custom_check_report_v1",
+      "success": true
+    },
+    {
+      "exists": true,
+      "finding_count": 22,
+      "path": "project_sources/collector/powershell_finding_governance_report.json",
+      "schema_version": "dcoir_powershell_finding_governance_report_v1",
+      "success": true
+    },
+    {
+      "exists": true,
+      "finding_count": 0,
+      "path": "project_sources/collector/powershell_assembly_parity_report.json",
+      "schema_version": "dcoir_powershell_assembly_parity_report_v1",
+      "success": true
+    }
+  ],
+  "engine_matrix": [
+    {
+      "blocking": true,
+      "boundary": "Discovers tracked PowerShell surfaces. It does not prove Windows PowerShell 5.1 runtime compatibility or analyzer quality.",
+      "check_category": "surface_inventory",
+      "evidence_type": "inventory-json-and-markdown",
+      "id": "surface-inventory-contract",
+      "module_or_tool_dependency": "standard-library",
+      "output_artifact": "project_sources/collector/powershell_surface_inventory.json",
+      "owner": "#261",
+      "required_engine": "python-3.12",
+      "runner_os": "any"
+    },
+    {
+      "blocking": true,
+      "boundary": "Proves parser/runtime compatibility only for the checked surfaces. It does not prove PSScriptAnalyzer enforcement.",
+      "check_category": "windows_powershell_51_parser_runtime_compatibility",
+      "evidence_type": "parser-or-runtime-result",
+      "id": "windows-powershell-51-parser-compatibility",
+      "module_or_tool_dependency": "built-in parser/runtime",
+      "output_artifact": "workflow or local Windows PowerShell 5.1 validation report",
+      "owner": "existing Windows PowerShell 5.1 validation lanes",
+      "required_engine": "Windows PowerShell 5.1 Desktop",
+      "runner_os": "windows-latest"
+    },
+    {
+      "blocking": true,
+      "boundary": "Analyzer signal may run under PowerShell 7 when module availability requires it. It must be reported separately from Windows PowerShell 5.1 compatibility evidence.",
+      "check_category": "powershell_7_static_analyzer",
+      "evidence_type": "normalized-analyzer-report",
+      "id": "powershell-7-psscriptanalyzer",
+      "module_or_tool_dependency": "PSScriptAnalyzer with repository settings",
+      "output_artifact": "project_sources/collector/powershell_analyzer_report.json",
+      "owner": "#262",
+      "required_engine": "PowerShell 7 Core",
+      "runner_os": "windows-latest or ubuntu-latest with pwsh"
+    },
+    {
+      "blocking": true,
+      "boundary": "Proves selected analyzer/custom-check risk mappings catch realistic weak-check cases. It is independent of Pester.",
+      "check_category": "rule_risk_negative_fixture_proof",
+      "evidence_type": "negative-and-control-fixture-report",
+      "id": "rule-risk-fixture-proof",
+      "module_or_tool_dependency": "standard-library",
+      "output_artifact": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "owner": "#263",
+      "required_engine": "python-3.12",
+      "runner_os": "any"
+    },
+    {
+      "blocking": true,
+      "boundary": "DCOIR-specific static checks cover known review risks that generic analyzer rules do not catch. They are independent of Pester.",
+      "check_category": "dcoir_custom_static_checks",
+      "evidence_type": "custom-check-json-and-markdown-report",
+      "id": "dcoir-custom-checks",
+      "module_or_tool_dependency": "standard-library",
+      "output_artifact": "project_sources/collector/powershell_custom_check_report.json",
+      "owner": "#264",
+      "required_engine": "python-3.12",
+      "runner_os": "any"
+    },
+    {
+      "blocking": true,
+      "boundary": "Proves source parts and generated outputs remain mapped and fresh. Windows PowerShell 5.1 runtime compatibility remains separate evidence.",
+      "check_category": "assembly_aware_source_generated_parity",
+      "evidence_type": "source-part-generated-output-parity-report",
+      "id": "source-part-assembly-parity",
+      "module_or_tool_dependency": "standard-library plus optional pwsh",
+      "output_artifact": "project_sources/collector/powershell_assembly_parity_report.json",
+      "owner": "#265",
+      "required_engine": "python-3.12; optional PowerShell 7 Core parser when available",
+      "runner_os": "any for deterministic parity, windows-latest when Windows parser evidence is required"
+    },
+    {
+      "blocking": true,
+      "boundary": "Classifies analyzer/custom findings and baseline/suppression deltas. It does not replace engine-specific validation.",
+      "check_category": "baseline_remediation_suppression_governance",
+      "evidence_type": "finding-governance-report",
+      "id": "finding-governance",
+      "module_or_tool_dependency": "standard-library",
+      "output_artifact": "project_sources/collector/powershell_finding_governance_report.json",
+      "owner": "#266",
+      "required_engine": "python-3.12",
+      "runner_os": "any"
+    },
+    {
+      "blocking": false,
+      "boundary": "Pester may support wrapper, fixture, and runtime-test evidence, but it is not a substitute for analyzer/custom-check enforcement.",
+      "check_category": "pester_supporting_tests",
+      "evidence_type": "pester-discovery-version-count-pass-fail-artifact",
+      "id": "pester-supporting-wrapper-fixture-tests",
+      "module_or_tool_dependency": "Pester with pinned or reported version",
+      "output_artifact": "future Pester test result artifact when a later gate enables it",
+      "owner": "#267 boundary only until a later Pester/runtime-test gate approves execution",
+      "required_engine": "PowerShell 7 Core or Windows PowerShell 5.1 Desktop as declared by the owning test",
+      "runner_os": "windows-latest when Windows PowerShell 5.1 behavior is asserted; otherwise any runner with declared engine"
+    }
+  ],
+  "independent_analyzer_enforcement_proof": {
+    "assembly_parity_success": true,
+    "custom_check_findings": 8,
+    "governance_classified_findings": 22,
+    "governance_unclassified_findings": 0,
+    "requires_pester": false,
+    "rule_risk_fixture_findings": 14
+  },
+  "issue": 267,
+  "parent_issue": 260,
+  "pester_boundary": {
+    "blocking_for_static_security_validation": false,
+    "owned_responsibilities": [
+      {
+        "blocking": false,
+        "notes": "May prove wrapper call behavior but must not be the only analyzer enforcement proof.",
+        "owner": "future explicit wrapper/Pester gate",
+        "surface": "wrapper tests"
+      },
+      {
+        "blocking": false,
+        "notes": "May add Pester test output around existing fixture expectations.",
+        "owner": "future explicit fixture/Pester gate",
+        "surface": "fixture tests"
+      },
+      {
+        "blocking": false,
+        "notes": "Runtime compatibility remains separate from static/security validation.",
+        "owner": "existing collector runtime validation lanes or future explicit runtime/Pester issue",
+        "surface": "runtime tests"
+      }
+    ],
+    "pester_may_replace_analyzer_or_custom_checks": false,
+    "required_evidence_when_used": [
+      "discovery command",
+      "Pester version",
+      "PowerShell engine and version",
+      "runner OS",
+      "test count",
+      "pass/fail count",
+      "machine-readable test result artifact",
+      "human-readable summary",
+      "owning issue or workflow gate",
+      "failure behavior"
+    ],
+    "scope_decision": "supporting-in-scope-not-analyzer-substitute"
+  },
+  "schema_version": "dcoir_powershell_engine_pester_boundary_report_v1",
+  "summary": {
+    "dependency_report_count": 4,
+    "expected_required_category_count": 8,
+    "independent_enforcement_requires_pester": false,
+    "matrix_row_count": 8,
+    "pester_blocking_for_static_validation": false,
+    "required_category_count": 8,
+    "workflow_readiness_claimed": false
+  },
+  "validation": {
+    "errors": [],
+    "success": true,
+    "warnings": [
+      "workflow readiness remains a later explicit gate; #267 only defines evidence ownership",
+      "Windows PowerShell 5.1 runtime evidence remains separate from local static report generation"
+    ]
+  }
+}

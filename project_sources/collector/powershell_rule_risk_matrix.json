@@ -1,0 +1,346 @@
+{
+  "schema_version": "dcoir_powershell_rule_risk_matrix_v1",
+  "issue": 263,
+  "parent_issue": 260,
+  "source_branch_base": "codex/issue-262-powershell-analyzer-wrapper",
+  "scope": "Rule-to-risk matrix for PowerShell analyzer and DCOIR fixture checks. Workflow integration, SARIF upload, required-check policy, and PR readiness are out of scope for this artifact.",
+  "minimum_risk_classes": [
+    "analyzer_policy_inventory_skip_or_tool_failure_reported_success",
+    "stale_or_unchecked_last_exit_code_or_success_status",
+    "external_command_nonzero_exit_treated_success",
+    "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+    "source_part_assembly_drift_or_stale_generated_output",
+    "unsafe_or_wildcard_deletion_outside_controlled_roots",
+    "unbounded_or_materializing_event_query_patterns",
+    "broad_suppression_or_baseline_growth_hiding_risk",
+    "swallowed_exception_or_write_only_catch"
+  ],
+  "checks": [
+    {
+      "id": "pssa-avoid-invoke-expression",
+      "rule_name": "PSAvoidUsingInvokeExpression",
+      "tool": "PSScriptAnalyzer",
+      "check_source": "project_sources/collector/PSScriptAnalyzerSettings.psd1",
+      "blocking": true,
+      "expected_severity": "Warning",
+      "risk_classes": [
+        "unsafe_dynamic_execution"
+      ],
+      "target_surfaces": [
+        "collector runtime",
+        "collector harness",
+        "operator tooling",
+        "workflow support scripts"
+      ],
+      "failure_impact": "Dynamic expression execution can turn attacker-controlled or malformed collector data into code execution and makes review intent opaque.",
+      "recommended_fix": "Replace Invoke-Expression with explicit command invocation, argument arrays, or structured parsing.",
+      "fixtures": [
+        "bad-invoke-expression"
+      ],
+      "promotion_criteria": "Already blocking through the #262 warning threshold and fixture coverage."
+    },
+    {
+      "id": "pssa-avoid-plaintext-securestring",
+      "rule_name": "PSAvoidUsingConvertToSecureStringWithPlainText",
+      "tool": "PSScriptAnalyzer",
+      "check_source": "project_sources/collector/PSScriptAnalyzerSettings.psd1",
+      "blocking": true,
+      "expected_severity": "Warning",
+      "risk_classes": [
+        "secret_material_or_credential_handling"
+      ],
+      "target_surfaces": [
+        "collector runtime",
+        "collector harness",
+        "operator tooling"
+      ],
+      "failure_impact": "Plaintext conversion to SecureString can normalize unsafe secret handling and hide sensitive values in fixtures, logs, or operator tools.",
+      "recommended_fix": "Use protected input, vault-backed values, or non-secret test placeholders that cannot be confused with production credentials.",
+      "fixtures": [
+        "bad-plaintext-securestring"
+      ],
+      "promotion_criteria": "Already blocking through the #262 warning threshold and fixture coverage."
+    },
+    {
+      "id": "pssa-avoid-plaintext-password",
+      "rule_name": "PSAvoidUsingPlainTextForPassword",
+      "tool": "PSScriptAnalyzer",
+      "check_source": "project_sources/collector/PSScriptAnalyzerSettings.psd1",
+      "blocking": true,
+      "expected_severity": "Warning",
+      "risk_classes": [
+        "secret_material_or_credential_handling"
+      ],
+      "target_surfaces": [
+        "collector runtime",
+        "collector harness",
+        "operator tooling"
+      ],
+      "failure_impact": "Hard-coded credential-like values can leak into artifacts or become copied into operator instructions.",
+      "recommended_fix": "Use environment-specific secret stores, redacted placeholders, or explicit non-secret constants.",
+      "fixtures": [
+        "bad-plaintext-password"
+      ],
+      "promotion_criteria": "Already blocking through the #262 warning threshold and fixture coverage."
+    },
+    {
+      "id": "pssa-avoid-write-host",
+      "rule_name": "PSAvoidUsingWriteHost",
+      "tool": "PSScriptAnalyzer",
+      "check_source": "project_sources/collector/PSScriptAnalyzerSettings.psd1",
+      "blocking": true,
+      "expected_severity": "Warning",
+      "risk_classes": [
+        "review_assist_output_quality"
+      ],
+      "target_surfaces": [
+        "collector runtime",
+        "collector harness",
+        "operator tooling",
+        "workflow support scripts"
+      ],
+      "failure_impact": "Host-only output can disappear from redirected reports and make validation look successful without durable evidence.",
+      "recommended_fix": "Use Write-Output, Write-Verbose, structured report writes, or the repo logging helper appropriate to the surface.",
+      "fixtures": [
+        "bad-write-host"
+      ],
+      "promotion_criteria": "Already blocking through the #262 warning threshold and fixture coverage."
+    },
+    {
+      "id": "pssa-use-declared-vars-more-than-assignments",
+      "rule_name": "PSUseDeclaredVarsMoreThanAssignments",
+      "tool": "PSScriptAnalyzer",
+      "check_source": "project_sources/collector/PSScriptAnalyzerSettings.psd1",
+      "blocking": true,
+      "expected_severity": "Warning",
+      "risk_classes": [
+        "stale_or_dead_validation_state"
+      ],
+      "target_surfaces": [
+        "collector runtime",
+        "collector harness",
+        "validation tooling"
+      ],
+      "failure_impact": "Unused state in validation or assembly tooling can mean the value that should gate success is never consumed.",
+      "recommended_fix": "Remove the unused value or wire it into the validation/report path that needs it.",
+      "fixtures": [
+        "bad-unused-variable"
+      ],
+      "promotion_criteria": "Already blocking through the #262 warning threshold and fixture coverage."
+    },
+    {
+      "id": "pssa-use-shouldprocess-for-state-change",
+      "rule_name": "PSUseShouldProcessForStateChangingFunctions",
+      "tool": "PSScriptAnalyzer",
+      "check_source": "project_sources/collector/PSScriptAnalyzerSettings.psd1",
+      "blocking": true,
+      "expected_severity": "Warning",
+      "risk_classes": [
+        "unsafe_or_wildcard_deletion_outside_controlled_roots"
+      ],
+      "target_surfaces": [
+        "operator tooling",
+        "collector harness",
+        "workflow support scripts"
+      ],
+      "failure_impact": "State-changing functions without ShouldProcess make destructive or mutating operator paths harder to preview, review, and stop.",
+      "recommended_fix": "Add CmdletBinding(SupportsShouldProcess) and guard mutating calls with ShouldProcess.",
+      "fixtures": [
+        "bad-state-changing-function"
+      ],
+      "promotion_criteria": "Already blocking through the #262 warning threshold and fixture coverage."
+    },
+    {
+      "id": "dcoir-analyzer-skip-success",
+      "rule_name": "DCOIR.NoAnalyzerSkipSuccess",
+      "tool": "DCOIR fixture analyzer",
+      "check_source": "project_sources/collector/tools/run_powershell_rule_risk_fixtures.py",
+      "blocking": true,
+      "expected_severity": "Error",
+      "risk_classes": [
+        "analyzer_policy_inventory_skip_or_tool_failure_reported_success"
+      ],
+      "target_surfaces": [
+        "validation tooling",
+        "workflow support scripts"
+      ],
+      "failure_impact": "A skipped analyzer target, missing policy, missing inventory, or failed analyzer process can be misreported as success.",
+      "recommended_fix": "Fail closed when the analyzer command, policy, inventory, or intended target readback is incomplete.",
+      "fixtures": [
+        "bad-analyzer-skip-success"
+      ],
+      "promotion_criteria": "Blocking because #262 already fail-closes these plumbing risks and this matrix preserves the fixture expectation."
+    },
+    {
+      "id": "dcoir-check-external-exit",
+      "rule_name": "DCOIR.CheckExternalCommandExit",
+      "tool": "DCOIR fixture analyzer",
+      "check_source": "project_sources/collector/tools/run_powershell_rule_risk_fixtures.py",
+      "blocking": true,
+      "expected_severity": "Error",
+      "risk_classes": [
+        "stale_or_unchecked_last_exit_code_or_success_status",
+        "external_command_nonzero_exit_treated_success"
+      ],
+      "target_surfaces": [
+        "collector harness",
+        "validation tooling",
+        "workflow support scripts"
+      ],
+      "failure_impact": "External commands can fail while stale `$LASTEXITCODE` or `$?` values leave the validation report green.",
+      "recommended_fix": "Capture the process result immediately and throw or emit a failing validation result when the command fails.",
+      "fixtures": [
+        "bad-unchecked-external-exit"
+      ],
+      "promotion_criteria": "Blocking because this is a named parent #260 failure class with negative fixture proof."
+    },
+    {
+      "id": "dcoir-fail-output-must-fail",
+      "rule_name": "DCOIR.FailOutputMustFailValidation",
+      "tool": "DCOIR fixture analyzer",
+      "check_source": "project_sources/collector/tools/run_powershell_rule_risk_fixtures.py",
+      "blocking": true,
+      "expected_severity": "Error",
+      "risk_classes": [
+        "fail_rows_reports_or_fixture_outputs_not_causing_failure"
+      ],
+      "target_surfaces": [
+        "collector harness",
+        "validation tooling",
+        "workflow support scripts"
+      ],
+      "failure_impact": "`FAIL` rows or report text can be generated while the process exits successfully, creating misleading validation evidence.",
+      "recommended_fix": "Tie every failing row or report state to a nonzero exit, thrown exception, or explicit validation failure summary.",
+      "fixtures": [
+        "bad-fail-row-green-exit"
+      ],
+      "promotion_criteria": "Blocking because this is a named parent #260 failure class with negative fixture proof."
+    },
+    {
+      "id": "dcoir-source-part-drift",
+      "rule_name": "DCOIR.SourcePartAssemblyDrift",
+      "tool": "DCOIR fixture analyzer",
+      "check_source": "project_sources/collector/tools/run_powershell_rule_risk_fixtures.py",
+      "blocking": true,
+      "expected_severity": "Error",
+      "risk_classes": [
+        "source_part_assembly_drift_or_stale_generated_output"
+      ],
+      "target_surfaces": [
+        "collector source parts",
+        "collector harness source parts",
+        "generated or assembled output"
+      ],
+      "failure_impact": "Generated scripts can diverge from source parts while validation still analyzes the stale generated artifact.",
+      "recommended_fix": "Regenerate or compare assembly hashes before accepting analyzer or syntax evidence.",
+      "fixtures": [
+        "bad-source-part-drift"
+      ],
+      "promotion_criteria": "Blocking because source-part assembly drift is a named parent #260 failure class."
+    },
+    {
+      "id": "dcoir-no-unsafe-wildcard-delete",
+      "rule_name": "DCOIR.NoUnsafeWildcardDeletion",
+      "tool": "DCOIR fixture analyzer",
+      "check_source": "project_sources/collector/tools/run_powershell_rule_risk_fixtures.py",
+      "blocking": true,
+      "expected_severity": "Error",
+      "risk_classes": [
+        "unsafe_or_wildcard_deletion_outside_controlled_roots"
+      ],
+      "target_surfaces": [
+        "operator tooling",
+        "validation tooling",
+        "workflow support scripts"
+      ],
+      "failure_impact": "Wildcard deletion outside an explicitly resolved controlled root can remove unintended repository or operator files.",
+      "recommended_fix": "Resolve and constrain the root path before deletion, avoid broad wildcards, and use ShouldProcess where practical.",
+      "fixtures": [
+        "bad-unsafe-wildcard-delete"
+      ],
+      "promotion_criteria": "Blocking because unsafe deletion is a named parent #260 failure class with destructive blast radius."
+    },
+    {
+      "id": "dcoir-bound-event-query",
+      "rule_name": "DCOIR.BoundedEventQueryRequired",
+      "tool": "DCOIR fixture analyzer",
+      "check_source": "project_sources/collector/tools/run_powershell_rule_risk_fixtures.py",
+      "blocking": true,
+      "expected_severity": "Error",
+      "risk_classes": [
+        "unbounded_or_materializing_event_query_patterns"
+      ],
+      "target_surfaces": [
+        "collector runtime",
+        "collector harness"
+      ],
+      "failure_impact": "Unbounded event collection can materialize large logs, slow incident response, and make validation nondeterministic.",
+      "recommended_fix": "Use bounded Get-WinEvent filters, MaxEvents or Take caps, and explicit event windows.",
+      "fixtures": [
+        "bad-unbounded-event-query"
+      ],
+      "promotion_criteria": "Blocking because event query bounds are already a repo validation concern and this fixture protects the review signal."
+    },
+    {
+      "id": "dcoir-baseline-fingerprint-bound",
+      "rule_name": "DCOIR.BaselineSuppressionMustBeFingerprintBound",
+      "tool": "DCOIR fixture analyzer",
+      "check_source": "project_sources/collector/tools/run_powershell_rule_risk_fixtures.py",
+      "blocking": true,
+      "expected_severity": "Error",
+      "risk_classes": [
+        "broad_suppression_or_baseline_growth_hiding_risk"
+      ],
+      "target_surfaces": [
+        "validation tooling",
+        "analyzer baseline artifacts"
+      ],
+      "failure_impact": "Broad baseline entries can hide new findings and turn analyzer integration into a green-only status check.",
+      "recommended_fix": "Bind suppressions to path, rule name, fingerprint, expected match count, and a specific review reason.",
+      "fixtures": [
+        "bad-broad-baseline"
+      ],
+      "promotion_criteria": "Blocking because broad suppressions are explicitly rejected by #260 and #263."
+    },
+    {
+      "id": "dcoir-no-swallowed-catch",
+      "rule_name": "DCOIR.NoSwallowedCatch",
+      "tool": "DCOIR fixture analyzer",
+      "check_source": "project_sources/collector/tools/run_powershell_rule_risk_fixtures.py",
+      "blocking": true,
+      "expected_severity": "Error",
+      "risk_classes": [
+        "swallowed_exception_or_write_only_catch"
+      ],
+      "target_surfaces": [
+        "collector harness",
+        "validation tooling",
+        "workflow support scripts"
+      ],
+      "failure_impact": "Write-only catch blocks can turn real validation failures into log noise while the command exits successfully.",
+      "recommended_fix": "Rethrow, return a failing validation state, or exit nonzero after recording the diagnostic.",
+      "fixtures": [
+        "bad-swallowed-catch"
+      ],
+      "promotion_criteria": "Blocking because swallowed exceptions are a named minimum #263 risk class."
+    },
+    {
+      "id": "advisory-long-inline-command",
+      "rule_name": "DCOIR.ReviewLongInlinePowerShell",
+      "tool": "DCOIR advisory review",
+      "check_source": "manual review / future workflow snippet analyzer",
+      "blocking": false,
+      "expected_severity": "Information",
+      "risk_classes": [
+        "review_assist_output_quality"
+      ],
+      "target_surfaces": [
+        "GitHub workflow embedded PowerShell"
+      ],
+      "failure_impact": "Very long inline workflow commands are harder to diff, quote safely, and analyze with line-precise findings.",
+      "recommended_fix": "Move substantial inline PowerShell into a repo-owned script or composite-action helper.",
+      "fixtures": [],
+      "promotion_criteria": "Promote to blocking only after workflow snippet extraction and line mapping are approved in a later child issue."
+    }
+  ]
+}

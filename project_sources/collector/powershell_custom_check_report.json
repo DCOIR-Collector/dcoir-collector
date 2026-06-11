@@ -1,0 +1,433 @@
+{
+  "schema_version": "dcoir_powershell_custom_check_report_v1",
+  "issue": 264,
+  "parent_issue": 260,
+  "depends_on": [
+    261,
+    262,
+    263
+  ],
+  "source_of_truth": "#264 custom DCOIR check contract mapped to #263 rule-to-risk matrix",
+  "target_scope": "fixtures",
+  "checks": {
+    "path": "project_sources/collector/powershell_custom_checks.json",
+    "schema_version": "dcoir_powershell_custom_checks_v1",
+    "sha256": "f1a59318b1d67b8d19371d1d84d5c48a53a931a20758d6bfef0a709655deba05"
+  },
+  "matrix": {
+    "path": "project_sources/collector/powershell_rule_risk_matrix.json",
+    "schema_version": "dcoir_powershell_rule_risk_matrix_v1",
+    "sha256": "b32906487281aae1319968dac3fdaf30395e5aface9d7f1c6d0b5733e8316637"
+  },
+  "inventory": {
+    "path": "project_sources/collector/powershell_surface_inventory.json",
+    "schema_version": "dcoir_powershell_surface_inventory_v1",
+    "sha256": "aebfdac06b3b8951d714d1c93f76edff1b03e7ccb5c52b8f6525e644f8baaa60",
+    "inventory_total_surfaces": 152
+  },
+  "fixture_manifest": {
+    "path": "project_sources/collector/fixtures/powershell_analysis/custom_check_fixture_manifest.json",
+    "schema_version": "dcoir_powershell_custom_check_fixture_manifest_v1",
+    "sha256": "e72ec6c12fdce0797b5e84a45320a90a7f55705c78aeba2f55d9799c7652e45d"
+  },
+  "summary": {
+    "custom_check_count": 8,
+    "target_count": 16,
+    "finding_count": 8,
+    "negative_fixture_count": 8,
+    "control_fixture_count": 8,
+    "expected_fixture_finding_count": 8,
+    "observed_fixture_finding_count": 8
+  },
+  "targets": [
+    "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/bad/source_part_drift.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/bad/swallowed_catch.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/bad/unbounded_event_query.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/bad/unchecked_external_exit.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/bad/unsafe_wildcard_delete.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/good/custom_analyzer_skip_fails_closed.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/good/custom_bounded_event_query.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/good/custom_catch_rethrows.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/good/custom_external_exit_checked.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/good/custom_fail_row_fails_command.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/good/custom_fingerprint_bound_baseline.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/good/custom_safe_root_delete.ps1",
+    "project_sources/collector/fixtures/powershell_analysis/good/custom_source_part_current.ps1"
+  ],
+  "fixtures": [
+    {
+      "id": "bad-analyzer-skip-success",
+      "kind": "negative",
+      "check_id": "dcoir-analyzer-skip-success",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+      "expected_finding_count": 1,
+      "observed_finding_count": 1,
+      "observed_rules": [
+        "DCOIR.NoAnalyzerSkipSuccess"
+      ]
+    },
+    {
+      "id": "bad-broad-baseline",
+      "kind": "negative",
+      "check_id": "dcoir-baseline-fingerprint-bound",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1",
+      "expected_finding_count": 1,
+      "observed_finding_count": 1,
+      "observed_rules": [
+        "DCOIR.BaselineSuppressionMustBeFingerprintBound"
+      ]
+    },
+    {
+      "id": "bad-fail-row-green-exit",
+      "kind": "negative",
+      "check_id": "dcoir-fail-output-must-fail",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+      "expected_finding_count": 1,
+      "observed_finding_count": 1,
+      "observed_rules": [
+        "DCOIR.FailOutputMustFailValidation"
+      ]
+    },
+    {
+      "id": "bad-source-part-drift",
+      "kind": "negative",
+      "check_id": "dcoir-source-part-drift",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/source_part_drift.ps1",
+      "expected_finding_count": 1,
+      "observed_finding_count": 1,
+      "observed_rules": [
+        "DCOIR.SourcePartAssemblyDrift"
+      ]
+    },
+    {
+      "id": "bad-swallowed-catch",
+      "kind": "negative",
+      "check_id": "dcoir-no-swallowed-catch",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/swallowed_catch.ps1",
+      "expected_finding_count": 1,
+      "observed_finding_count": 1,
+      "observed_rules": [
+        "DCOIR.NoSwallowedCatch"
+      ]
+    },
+    {
+      "id": "bad-unbounded-event-query",
+      "kind": "negative",
+      "check_id": "dcoir-bound-event-query",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unbounded_event_query.ps1",
+      "expected_finding_count": 1,
+      "observed_finding_count": 1,
+      "observed_rules": [
+        "DCOIR.BoundedEventQueryRequired"
+      ]
+    },
+    {
+      "id": "bad-unchecked-external-exit",
+      "kind": "negative",
+      "check_id": "dcoir-check-external-exit",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unchecked_external_exit.ps1",
+      "expected_finding_count": 1,
+      "observed_finding_count": 1,
+      "observed_rules": [
+        "DCOIR.CheckExternalCommandExit"
+      ]
+    },
+    {
+      "id": "bad-unsafe-wildcard-delete",
+      "kind": "negative",
+      "check_id": "dcoir-no-unsafe-wildcard-delete",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unsafe_wildcard_delete.ps1",
+      "expected_finding_count": 1,
+      "observed_finding_count": 1,
+      "observed_rules": [
+        "DCOIR.NoUnsafeWildcardDeletion"
+      ]
+    },
+    {
+      "id": "good-analyzer-skip-fails-closed",
+      "kind": "control",
+      "check_id": "dcoir-analyzer-skip-success",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_analyzer_skip_fails_closed.ps1",
+      "expected_finding_count": 0,
+      "observed_finding_count": 0,
+      "observed_rules": []
+    },
+    {
+      "id": "good-bounded-event-query",
+      "kind": "control",
+      "check_id": "dcoir-bound-event-query",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_bounded_event_query.ps1",
+      "expected_finding_count": 0,
+      "observed_finding_count": 0,
+      "observed_rules": []
+    },
+    {
+      "id": "good-catch-rethrows",
+      "kind": "control",
+      "check_id": "dcoir-no-swallowed-catch",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_catch_rethrows.ps1",
+      "expected_finding_count": 0,
+      "observed_finding_count": 0,
+      "observed_rules": []
+    },
+    {
+      "id": "good-external-exit-checked",
+      "kind": "control",
+      "check_id": "dcoir-check-external-exit",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_external_exit_checked.ps1",
+      "expected_finding_count": 0,
+      "observed_finding_count": 0,
+      "observed_rules": []
+    },
+    {
+      "id": "good-fail-row-fails-command",
+      "kind": "control",
+      "check_id": "dcoir-fail-output-must-fail",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_fail_row_fails_command.ps1",
+      "expected_finding_count": 0,
+      "observed_finding_count": 0,
+      "observed_rules": []
+    },
+    {
+      "id": "good-fingerprint-bound-baseline",
+      "kind": "control",
+      "check_id": "dcoir-baseline-fingerprint-bound",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_fingerprint_bound_baseline.ps1",
+      "expected_finding_count": 0,
+      "observed_finding_count": 0,
+      "observed_rules": []
+    },
+    {
+      "id": "good-safe-root-delete",
+      "kind": "control",
+      "check_id": "dcoir-no-unsafe-wildcard-delete",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_safe_root_delete.ps1",
+      "expected_finding_count": 0,
+      "observed_finding_count": 0,
+      "observed_rules": []
+    },
+    {
+      "id": "good-source-part-current",
+      "kind": "control",
+      "check_id": "dcoir-source-part-drift",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_source_part_current.ps1",
+      "expected_finding_count": 0,
+      "observed_finding_count": 0,
+      "observed_rules": []
+    }
+  ],
+  "findings": [
+    {
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+      "line": 1,
+      "column": 1,
+      "symbol": "",
+      "check_id": "dcoir-analyzer-skip-success",
+      "rule_name": "DCOIR.NoAnalyzerSkipSuccess",
+      "matrix_check_id": "dcoir-analyzer-skip-success",
+      "severity": "Error",
+      "risk_class": "analyzer_policy_inventory_skip_or_tool_failure_reported_success",
+      "risk_classes": [
+        "analyzer_policy_inventory_skip_or_tool_failure_reported_success"
+      ],
+      "observed_problem": "Analyzer, inventory, or target skip states must not be represented as successful validation.",
+      "impact": "Skipped analyzer or inventory work can be recorded as green evidence and hide unscanned PowerShell surfaces.",
+      "failure_impact": "Skipped analyzer or inventory work can be recorded as green evidence and hide unscanned PowerShell surfaces.",
+      "fix": "Fail closed when analyzer policy, inventory, target selection, or tool execution is incomplete.",
+      "recommended_fix": "Fail closed when analyzer policy, inventory, target selection, or tool execution is incomplete.",
+      "target_surfaces": [
+        "collector harness",
+        "validation tooling",
+        "workflow support scripts"
+      ],
+      "fingerprint": "6b214288016a07e17075b735d703d835334379123d037033d5a1a25159be174d"
+    },
+    {
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1",
+      "line": 1,
+      "column": 1,
+      "symbol": "",
+      "check_id": "dcoir-baseline-fingerprint-bound",
+      "rule_name": "DCOIR.BaselineSuppressionMustBeFingerprintBound",
+      "matrix_check_id": "dcoir-baseline-fingerprint-bound",
+      "severity": "Error",
+      "risk_class": "broad_suppression_or_baseline_growth_hiding_risk",
+      "risk_classes": [
+        "broad_suppression_or_baseline_growth_hiding_risk"
+      ],
+      "observed_problem": "Suppressions and baselines must be bound to a path, rule, fingerprint, expected match count, and justification.",
+      "impact": "Broad suppressions can hide new analyzer findings and make baseline growth look intentional.",
+      "failure_impact": "Broad suppressions can hide new analyzer findings and make baseline growth look intentional.",
+      "fix": "Bind suppressions to path, rule, fingerprint, expected match count, and a durable justification.",
+      "recommended_fix": "Bind suppressions to path, rule, fingerprint, expected match count, and a durable justification.",
+      "target_surfaces": [
+        "validation tooling",
+        "operator tooling",
+        "workflow support scripts"
+      ],
+      "fingerprint": "8f549785714121c09bbd9ca981ebea2a568e824aa64573616b88effe07a6ab3a"
+    },
+    {
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+      "line": 2,
+      "column": 1,
+      "symbol": "",
+      "check_id": "dcoir-fail-output-must-fail",
+      "rule_name": "DCOIR.FailOutputMustFailValidation",
+      "matrix_check_id": "dcoir-fail-output-must-fail",
+      "severity": "Error",
+      "risk_class": "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+      "risk_classes": [
+        "fail_rows_reports_or_fixture_outputs_not_causing_failure"
+      ],
+      "observed_problem": "FAIL rows, reports, or fixture outputs must be connected to a failing process or validation state.",
+      "impact": "A report can contain failing evidence while the command exits successfully, misleading issue or PR readiness.",
+      "failure_impact": "A report can contain failing evidence while the command exits successfully, misleading issue or PR readiness.",
+      "fix": "Tie every failing row or report state to a thrown exception, nonzero exit, or explicit failed validation summary.",
+      "recommended_fix": "Tie every failing row or report state to a thrown exception, nonzero exit, or explicit failed validation summary.",
+      "target_surfaces": [
+        "collector harness",
+        "validation tooling",
+        "workflow support scripts"
+      ],
+      "fingerprint": "9a8808ce445b46bf3a1c686f3ab0b6851a075bd1897b971274b15dd5006ea65d"
+    },
+    {
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/source_part_drift.ps1",
+      "line": 2,
+      "column": 1,
+      "symbol": "",
+      "check_id": "dcoir-source-part-drift",
+      "rule_name": "DCOIR.SourcePartAssemblyDrift",
+      "matrix_check_id": "dcoir-source-part-drift",
+      "severity": "Error",
+      "risk_class": "source_part_assembly_drift_or_stale_generated_output",
+      "risk_classes": [
+        "source_part_assembly_drift_or_stale_generated_output"
+      ],
+      "observed_problem": "Generated PowerShell outputs must not be accepted when source-part hashes or assembly state are stale.",
+      "impact": "Stale generated runtime or harness output can make review evidence disagree with authoritative source parts.",
+      "failure_impact": "Stale generated runtime or harness output can make review evidence disagree with authoritative source parts.",
+      "fix": "Regenerate outputs or compare source-part hashes before accepting analyzer evidence.",
+      "recommended_fix": "Regenerate outputs or compare source-part hashes before accepting analyzer evidence.",
+      "target_surfaces": [
+        "collector runtime",
+        "collector harness",
+        "validation tooling"
+      ],
+      "fingerprint": "c7b51d4e78491d6ff34a29157168c2d69c7065831997f3d937cac662a2dc7a2a"
+    },
+    {
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/swallowed_catch.ps1",
+      "line": 4,
+      "column": 1,
+      "symbol": "",
+      "check_id": "dcoir-no-swallowed-catch",
+      "rule_name": "DCOIR.NoSwallowedCatch",
+      "matrix_check_id": "dcoir-no-swallowed-catch",
+      "severity": "Error",
+      "risk_class": "swallowed_exception_or_write_only_catch",
+      "risk_classes": [
+        "swallowed_exception_or_write_only_catch"
+      ],
+      "observed_problem": "Catch blocks must propagate failure or return a failed validation state after logging.",
+      "impact": "Write-only catch blocks can turn real validation failures into log noise while the command exits successfully.",
+      "failure_impact": "Write-only catch blocks can turn real validation failures into log noise while the command exits successfully.",
+      "fix": "Rethrow, exit nonzero, or return a failed validation state after recording diagnostics.",
+      "recommended_fix": "Rethrow, exit nonzero, or return a failed validation state after recording diagnostics.",
+      "target_surfaces": [
+        "collector harness",
+        "validation tooling",
+        "workflow support scripts"
+      ],
+      "fingerprint": "ef112f3c4cb42fc1ceecd6af55e1d24b831cf6e63f355814c54a90769002df98"
+    },
+    {
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unbounded_event_query.ps1",
+      "line": 2,
+      "column": 1,
+      "symbol": "",
+      "check_id": "dcoir-bound-event-query",
+      "rule_name": "DCOIR.BoundedEventQueryRequired",
+      "matrix_check_id": "dcoir-bound-event-query",
+      "severity": "Error",
+      "risk_class": "unbounded_or_materializing_event_query_patterns",
+      "risk_classes": [
+        "unbounded_or_materializing_event_query_patterns"
+      ],
+      "observed_problem": "Windows event collection must be bounded by filter, time window, or count cap.",
+      "impact": "Unbounded event collection can materialize large logs, slow incident response, and make validation nondeterministic.",
+      "failure_impact": "Unbounded event collection can materialize large logs, slow incident response, and make validation nondeterministic.",
+      "fix": "Use FilterHashtable, explicit event windows, MaxEvents, or a bounded Take/Select-Object cap.",
+      "recommended_fix": "Use FilterHashtable, explicit event windows, MaxEvents, or a bounded Take/Select-Object cap.",
+      "target_surfaces": [
+        "collector runtime",
+        "collector harness"
+      ],
+      "fingerprint": "447645406097c2433bed38ce7bfe08d97f55be519def704554acf247822acc9c"
+    },
+    {
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unchecked_external_exit.ps1",
+      "line": 2,
+      "column": 1,
+      "symbol": "",
+      "check_id": "dcoir-check-external-exit",
+      "rule_name": "DCOIR.CheckExternalCommandExit",
+      "matrix_check_id": "dcoir-check-external-exit",
+      "severity": "Error",
+      "risk_class": "external_command_nonzero_exit_treated_success",
+      "risk_classes": [
+        "stale_or_unchecked_last_exit_code_or_success_status",
+        "external_command_nonzero_exit_treated_success"
+      ],
+      "observed_problem": "Native command and script invocations must check their immediate exit state before reporting success.",
+      "impact": "External commands can fail while stale success state leaves validation evidence green.",
+      "failure_impact": "External commands can fail while stale success state leaves validation evidence green.",
+      "fix": "Capture and validate the command exit state immediately, then throw or emit a failing validation result on failure.",
+      "recommended_fix": "Capture and validate the command exit state immediately, then throw or emit a failing validation result on failure.",
+      "target_surfaces": [
+        "collector harness",
+        "validation tooling",
+        "workflow support scripts"
+      ],
+      "fingerprint": "05d7d01a4a668ba524db5cda49ce05b63519047ad77a539b4c3eab0a668fd201"
+    },
+    {
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unsafe_wildcard_delete.ps1",
+      "line": 2,
+      "column": 1,
+      "symbol": "",
+      "check_id": "dcoir-no-unsafe-wildcard-delete",
+      "rule_name": "DCOIR.NoUnsafeWildcardDeletion",
+      "matrix_check_id": "dcoir-no-unsafe-wildcard-delete",
+      "severity": "Error",
+      "risk_class": "unsafe_or_wildcard_deletion_outside_controlled_roots",
+      "risk_classes": [
+        "unsafe_or_wildcard_deletion_outside_controlled_roots"
+      ],
+      "observed_problem": "Recursive deletion must be constrained to a resolved controlled root before wildcards are used.",
+      "impact": "Wildcard deletion outside a controlled root can remove unintended repository or operator files.",
+      "failure_impact": "Wildcard deletion outside a controlled root can remove unintended repository or operator files.",
+      "fix": "Resolve and constrain the cleanup root before deletion, avoid broad wildcards, and use ShouldProcess where practical.",
+      "recommended_fix": "Resolve and constrain the cleanup root before deletion, avoid broad wildcards, and use ShouldProcess where practical.",
+      "target_surfaces": [
+        "operator tooling",
+        "validation tooling",
+        "workflow support scripts"
+      ],
+      "fingerprint": "d9f38b35539a5807721d61522bc2e55a0ae53ea829adff11547108ee5cda6466"
+    }
+  ],
+  "validation": {
+    "success": true,
+    "errors": [],
+    "warnings": []
+  },
+  "outputs": {
+    "json": "project_sources/collector/powershell_custom_check_report.json",
+    "markdown": "project_sources/collector/powershell_custom_check_report.md"
+  }
+}

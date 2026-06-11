@@ -1,0 +1,172 @@
+{
+  "schema_version": "dcoir_powershell_engine_pester_boundary_v1",
+  "issue": 267,
+  "parent_issue": 260,
+  "depends_on": [261, 262, 263, 264, 265, 266],
+  "scope": "PowerShell engine and Pester evidence boundary for the #260 PowerShell validation series. This artifact defines evidence ownership only; workflow YAML, PR, SARIF upload, required-check policy, and external-agent invocation are out of scope.",
+  "policy": {
+    "workflow_readiness_claimed": false,
+    "pester_may_replace_analyzer_or_custom_checks": false,
+    "engine_evidence_must_be_separate": true,
+    "independent_analyzer_enforcement_required": true
+  },
+  "engine_matrix": [
+    {
+      "id": "surface-inventory-contract",
+      "check_category": "surface_inventory",
+      "required_engine": "python-3.12",
+      "runner_os": "any",
+      "module_or_tool_dependency": "standard-library",
+      "evidence_type": "inventory-json-and-markdown",
+      "output_artifact": "project_sources/collector/powershell_surface_inventory.json",
+      "blocking": true,
+      "owner": "#261",
+      "boundary": "Discovers tracked PowerShell surfaces. It does not prove Windows PowerShell 5.1 runtime compatibility or analyzer quality."
+    },
+    {
+      "id": "windows-powershell-51-parser-compatibility",
+      "check_category": "windows_powershell_51_parser_runtime_compatibility",
+      "required_engine": "Windows PowerShell 5.1 Desktop",
+      "runner_os": "windows-latest",
+      "module_or_tool_dependency": "built-in parser/runtime",
+      "evidence_type": "parser-or-runtime-result",
+      "output_artifact": "workflow or local Windows PowerShell 5.1 validation report",
+      "blocking": true,
+      "owner": "existing Windows PowerShell 5.1 validation lanes",
+      "boundary": "Proves parser/runtime compatibility only for the checked surfaces. It does not prove PSScriptAnalyzer enforcement."
+    },
+    {
+      "id": "powershell-7-psscriptanalyzer",
+      "check_category": "powershell_7_static_analyzer",
+      "required_engine": "PowerShell 7 Core",
+      "runner_os": "windows-latest or ubuntu-latest with pwsh",
+      "module_or_tool_dependency": "PSScriptAnalyzer with repository settings",
+      "evidence_type": "normalized-analyzer-report",
+      "output_artifact": "project_sources/collector/powershell_analyzer_report.json",
+      "blocking": true,
+      "owner": "#262",
+      "boundary": "Analyzer signal may run under PowerShell 7 when module availability requires it. It must be reported separately from Windows PowerShell 5.1 compatibility evidence."
+    },
+    {
+      "id": "rule-risk-fixture-proof",
+      "check_category": "rule_risk_negative_fixture_proof",
+      "required_engine": "python-3.12",
+      "runner_os": "any",
+      "module_or_tool_dependency": "standard-library",
+      "evidence_type": "negative-and-control-fixture-report",
+      "output_artifact": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "blocking": true,
+      "owner": "#263",
+      "boundary": "Proves selected analyzer/custom-check risk mappings catch realistic weak-check cases. It is independent of Pester."
+    },
+    {
+      "id": "dcoir-custom-checks",
+      "check_category": "dcoir_custom_static_checks",
+      "required_engine": "python-3.12",
+      "runner_os": "any",
+      "module_or_tool_dependency": "standard-library",
+      "evidence_type": "custom-check-json-and-markdown-report",
+      "output_artifact": "project_sources/collector/powershell_custom_check_report.json",
+      "blocking": true,
+      "owner": "#264",
+      "boundary": "DCOIR-specific static checks cover known review risks that generic analyzer rules do not catch. They are independent of Pester."
+    },
+    {
+      "id": "source-part-assembly-parity",
+      "check_category": "assembly_aware_source_generated_parity",
+      "required_engine": "python-3.12; optional PowerShell 7 Core parser when available",
+      "runner_os": "any for deterministic parity, windows-latest when Windows parser evidence is required",
+      "module_or_tool_dependency": "standard-library plus optional pwsh",
+      "evidence_type": "source-part-generated-output-parity-report",
+      "output_artifact": "project_sources/collector/powershell_assembly_parity_report.json",
+      "blocking": true,
+      "owner": "#265",
+      "boundary": "Proves source parts and generated outputs remain mapped and fresh. Windows PowerShell 5.1 runtime compatibility remains separate evidence."
+    },
+    {
+      "id": "finding-governance",
+      "check_category": "baseline_remediation_suppression_governance",
+      "required_engine": "python-3.12",
+      "runner_os": "any",
+      "module_or_tool_dependency": "standard-library",
+      "evidence_type": "finding-governance-report",
+      "output_artifact": "project_sources/collector/powershell_finding_governance_report.json",
+      "blocking": true,
+      "owner": "#266",
+      "boundary": "Classifies analyzer/custom findings and baseline/suppression deltas. It does not replace engine-specific validation."
+    },
+    {
+      "id": "pester-supporting-wrapper-fixture-tests",
+      "check_category": "pester_supporting_tests",
+      "required_engine": "PowerShell 7 Core or Windows PowerShell 5.1 Desktop as declared by the owning test",
+      "runner_os": "windows-latest when Windows PowerShell 5.1 behavior is asserted; otherwise any runner with declared engine",
+      "module_or_tool_dependency": "Pester with pinned or reported version",
+      "evidence_type": "pester-discovery-version-count-pass-fail-artifact",
+      "output_artifact": "future Pester test result artifact when a later gate enables it",
+      "blocking": false,
+      "owner": "#267 boundary only until a later Pester/runtime-test gate approves execution",
+      "boundary": "Pester may support wrapper, fixture, and runtime-test evidence, but it is not a substitute for analyzer/custom-check enforcement."
+    }
+  ],
+  "pester_boundary": {
+    "scope_decision": "supporting-in-scope-not-analyzer-substitute",
+    "blocking_for_static_security_validation": false,
+    "may_validate": [
+      "analyzer wrapper behavior",
+      "fixture expectation wiring",
+      "runtime tests owned by an explicit future gate"
+    ],
+    "must_not_replace": [
+      "#262 analyzer wrapper enforcement",
+      "#263 negative/control fixture proof",
+      "#264 DCOIR custom checks",
+      "#266 baseline/remediation/suppression governance"
+    ],
+    "required_evidence_when_used": [
+      "discovery command",
+      "Pester version",
+      "PowerShell engine and version",
+      "runner OS",
+      "test count",
+      "pass/fail count",
+      "machine-readable test result artifact",
+      "human-readable summary",
+      "owning issue or workflow gate",
+      "failure behavior"
+    ],
+    "owned_responsibilities": [
+      {
+        "surface": "wrapper tests",
+        "owner": "future explicit wrapper/Pester gate",
+        "blocking": false,
+        "notes": "May prove wrapper call behavior but must not be the only analyzer enforcement proof."
+      },
+      {
+        "surface": "fixture tests",
+        "owner": "future explicit fixture/Pester gate",
+        "blocking": false,
+        "notes": "May add Pester test output around existing fixture expectations."
+      },
+      {
+        "surface": "runtime tests",
+        "owner": "existing collector runtime validation lanes or future explicit runtime/Pester issue",
+        "blocking": false,
+        "notes": "Runtime compatibility remains separate from static/security validation."
+      }
+    ]
+  },
+  "independent_analyzer_enforcement_proof": {
+    "requires_pester": false,
+    "source_reports": [
+      "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "project_sources/collector/powershell_custom_check_report.json",
+      "project_sources/collector/powershell_finding_governance_report.json"
+    ],
+    "required_conditions": [
+      "rule-risk fixture report succeeds with negative fixture findings",
+      "custom check report succeeds with custom findings",
+      "finding governance report classifies all analyzer/custom findings",
+      "Pester is not required for these enforcement proofs"
+    ]
+  }
+}
