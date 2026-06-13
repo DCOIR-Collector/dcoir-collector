@@ -141,8 +141,10 @@ def write_outputs(repo_root: Path, report: dict[str, Any], json_output: Path, ma
         mark_report_write_failure(report, message)
         try:
             write_json(json_path, report)
-        except OSError:
-            pass
+        except OSError as rewrite_exc:
+            rewrite_message = f"report write failure: failed to persist failed JSON status: {rewrite_exc}"
+            mark_report_write_failure(report, rewrite_message)
+            raise GovernanceError(f"{message}; {rewrite_message}") from rewrite_exc
         raise GovernanceError(message) from exc
 
 
@@ -881,8 +883,9 @@ def main(argv: list[str] | None = None) -> int:
     if not args.no_write:
         try:
             write_outputs(repo_root, report, Path(args.json_output), Path(args.markdown_output))
-        except GovernanceError:
-            pass
+        except GovernanceError as exc:
+            if report["validation"]["success"]:
+                mark_report_write_failure(report, str(exc))
     if report["validation"]["success"]:
         return 0
     for error in report["validation"]["errors"]:
