@@ -119,6 +119,33 @@ def write_json(path: Path, data: dict[str, Any]) -> None:
     path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def mark_report_write_failure(report: dict[str, Any], message: str) -> None:
+    validation = report.setdefault("validation", {})
+    validation["success"] = False
+    errors = validation.setdefault("errors", [])
+    if isinstance(errors, list):
+        errors.append(message)
+    else:
+        validation["errors"] = [message]
+
+
+def write_outputs(repo_root: Path, report: dict[str, Any], json_output: Path, markdown_output: Path) -> None:
+    json_path = repo_root / json_output
+    markdown_path = repo_root / markdown_output
+    try:
+        write_json(json_path, report)
+        markdown_path.parent.mkdir(parents=True, exist_ok=True)
+        markdown_path.write_text(render_markdown(report), encoding="utf-8")
+    except OSError as exc:
+        message = f"report write failure: {exc}"
+        mark_report_write_failure(report, message)
+        try:
+            write_json(json_path, report)
+        except OSError:
+            pass
+        raise GovernanceError(message) from exc
+
+
 def normalize_date(value: str) -> date | None:
     try:
         return date.fromisoformat(value)
@@ -760,8 +787,12 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
     if not getattr(args, "allow_missing_analyzer_report", False) and DEFAULT_ANALYZER_REPORT not in required_reports:
         required_reports.append(DEFAULT_ANALYZER_REPORT)
     optional_reports = [Path(path) for path in (args.optional_finding_report or [])]
-    if not optional_reports and getattr(args, "allow_missing_analyzer_report", False):
-        optional_reports = [DEFAULT_ANALYZER_REPORT]
+    if getattr(args, "allow_missing_analyzer_report", False):
+        analyzer_path = DEFAULT_ANALYZER_REPORT.as_posix()
+        optional_report_paths = {path.as_posix() for path in optional_reports}
+        required_report_paths = {path.as_posix() for path in required_reports}
+        if analyzer_path not in optional_report_paths and analyzer_path not in required_report_paths:
+            optional_reports.append(DEFAULT_ANALYZER_REPORT)
     required_report_paths = {path.as_posix() for path in required_reports}
     optional_reports = [path for path in optional_reports if path.as_posix() not in required_report_paths]
     findings, input_reports = collect_findings(repo_root, required_reports, optional_reports, errors, warnings)
@@ -848,10 +879,10 @@ def main(argv: list[str] | None = None) -> int:
     report, _errors, _warnings = build_report(args)
     repo_root = Path(args.repo_root).resolve()
     if not args.no_write:
-        write_json(repo_root / args.json_output, report)
-        markdown_path = repo_root / args.markdown_output
-        markdown_path.parent.mkdir(parents=True, exist_ok=True)
-        markdown_path.write_text(render_markdown(report), encoding="utf-8")
+        try:
+            write_outputs(repo_root, report, Path(args.json_output), Path(args.markdown_output))
+        except GovernanceError:
+            pass
     if report["validation"]["success"]:
         return 0
     for error in report["validation"]["errors"]:
