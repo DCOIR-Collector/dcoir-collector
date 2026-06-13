@@ -211,8 +211,9 @@ def main() -> int:
             report["validation"]["errors"] = errors
             try:
                 write_outputs(Path(args.repo_root).resolve(), report, Path(args.json_output), Path(args.markdown_output))
-            except AnalyzerContractError:
-                pass
+            except AnalyzerContractError as rewrite_exc:
+                errors.append(str(rewrite_exc))
+                report["validation"]["errors"] = errors
     if report is None:
         for error in errors:
             print(error, file=sys.stderr)
