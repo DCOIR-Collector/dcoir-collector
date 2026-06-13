@@ -757,9 +757,13 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
     required_reports = [Path(path) for path in (args.finding_report or [])]
     if not required_reports:
         required_reports = [DEFAULT_CUSTOM_REPORT, DEFAULT_RULE_RISK_REPORT]
+    if not getattr(args, "allow_missing_analyzer_report", False) and DEFAULT_ANALYZER_REPORT not in required_reports:
+        required_reports.append(DEFAULT_ANALYZER_REPORT)
     optional_reports = [Path(path) for path in (args.optional_finding_report or [])]
-    if not optional_reports:
+    if not optional_reports and getattr(args, "allow_missing_analyzer_report", False):
         optional_reports = [DEFAULT_ANALYZER_REPORT]
+    required_report_paths = {path.as_posix() for path in required_reports}
+    optional_reports = [path for path in optional_reports if path.as_posix() not in required_report_paths]
     findings, input_reports = collect_findings(repo_root, required_reports, optional_reports, errors, warnings)
     classifications, delta, classification_errors = classify_findings(governance, findings, today) if governance else ([], {}, [])
     errors.extend(classification_errors)
@@ -830,6 +834,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--json-output", default=DEFAULT_JSON_OUTPUT.as_posix(), help="Output JSON report path")
     parser.add_argument("--markdown-output", default=DEFAULT_MARKDOWN_OUTPUT.as_posix(), help="Output Markdown report path")
     parser.add_argument("--as-of-date", default="", help="ISO date for stale baseline checks")
+    parser.add_argument(
+        "--allow-missing-analyzer-report",
+        action="store_true",
+        help="Explicitly permit a missing #262 analyzer report as optional local evidence.",
+    )
     parser.add_argument("--no-write", action="store_true", help="Build the report without writing output files")
     return parser.parse_args(argv)
 
