@@ -765,8 +765,15 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
     fixture_results: list[dict[str, Any]] = []
     fixture_errors: list[str] = []
     fixture_warnings: list[str] = []
+    evaluated_fixture_map = fixture_map
     if fixture_map and scanned_fixture_paths:
-        fixture_results, fixture_errors, fixture_warnings = validate_fixture_results(fixture_map, findings)
+        scanned_fixture_map = {
+            fixture_id: fixture
+            for fixture_id, fixture in fixture_map.items()
+            if fixture["path"] in scanned_fixture_paths
+        }
+        evaluated_fixture_map = scanned_fixture_map
+        fixture_results, fixture_errors, fixture_warnings = validate_fixture_results(scanned_fixture_map, findings)
         errors.extend(fixture_errors)
         warnings.extend(fixture_warnings)
     elif fixture_map:
@@ -794,10 +801,11 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
             f"unsuppressed custom findings at or above {args.fail_on_severity}: {len(unexpected_non_fixture_findings)}"
         )
 
-    negative_count = len([fixture for fixture in fixture_map.values() if fixture.get("kind") == "negative"])
-    control_count = len([fixture for fixture in fixture_map.values() if fixture.get("kind") == "control"])
-    expected_count = sum(len(fixture.get("expected_findings", [])) for fixture in fixture_map.values())
-    observed_fixture_count = len([finding for finding in findings if finding["path"] in fixture_paths])
+    evaluated_fixture_paths = {fixture["path"] for fixture in evaluated_fixture_map.values()}
+    negative_count = len([fixture for fixture in evaluated_fixture_map.values() if fixture.get("kind") == "negative"])
+    control_count = len([fixture for fixture in evaluated_fixture_map.values() if fixture.get("kind") == "control"])
+    expected_count = sum(len(fixture.get("expected_findings", [])) for fixture in evaluated_fixture_map.values())
+    observed_fixture_count = len([finding for finding in findings if finding["path"] in evaluated_fixture_paths])
     report = {
         "schema_version": SCHEMA_VERSION,
         "issue": ISSUE_NUMBER,
