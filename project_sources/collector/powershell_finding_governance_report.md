@@ -27,7 +27,7 @@
 - New unclassified findings: `0`
 - Matched baseline records: `0` / `0`
 - Matched suppressions: `0` / `0`
-- As of: `2026-06-10`
+- As of: `2026-06-13`
 
 ## Inputs
 
