@@ -46,14 +46,6 @@ from powershell_analyzer_contract import (
     sha256_text,
     version_tuple,
 )
-from powershell_analyzer_execution import (
-    analyzer_command,
-    make_request,
-    normalize_finding,
-    normalize_response,
-    psscriptanalyzer_script,
-    run_analyzer_command,
-)
 from powershell_analyzer_inventory import (
     build_target_sets,
     is_relative_to,
@@ -74,6 +66,12 @@ from powershell_analyzer_reporting import empty_report, expected_finding_errors,
 
 # Backward compatibility for tests and callers that patch analyzer.shutil.which.
 shutil = _execution.shutil
+analyzer_command = _execution.analyzer_command
+make_request = _execution.make_request
+normalize_finding = _execution.normalize_finding
+normalize_response = _execution.normalize_response
+psscriptanalyzer_script = _execution.psscriptanalyzer_script
+run_analyzer_command = _execution.run_analyzer_command
 
 __all__ = [
     "ANALYZABLE_SOURCE_TYPES",
