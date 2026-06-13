@@ -7,8 +7,8 @@ import sys
 import tempfile
 import textwrap
 import unittest
+import unittest.mock
 from pathlib import Path
-from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_powershell_analyzer as analyzer
@@ -770,7 +770,7 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         with self.make_repo() as temp:
             root = Path(temp)
             args = self.make_args(root, analyzer_command=[])
-            with mock.patch.object(analyzer.shutil, "which", return_value=None):
+            with unittest.mock.patch.object(analyzer.shutil, "which", return_value=None):
                 report, errors, _warnings = analyzer.build_report(args)
             self.assertIsNotNone(report)
             self.assertTrue(any("analyzer tool missing" in error for error in errors))
