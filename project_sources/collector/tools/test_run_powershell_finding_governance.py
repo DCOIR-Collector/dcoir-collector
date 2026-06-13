@@ -6,6 +6,7 @@ import json
 import sys
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -199,6 +200,49 @@ class PowerShellFindingGovernanceTests(unittest.TestCase):
         )
         self.assertFalse(analyzer_input["required"])
         self.assertFalse(analyzer_input["present"])
+
+    def test_analyzer_opt_out_is_recorded_with_other_optional_reports(self) -> None:
+        with self.make_repo(write_analyzer_report=False) as temp:
+            report, errors, warnings = governance.build_report(
+                self.args(
+                    Path(temp),
+                    allow_missing_analyzer_report=True,
+                    optional_finding_report=["extra-optional-report.json"],
+                )
+            )
+
+        self.assertEqual(errors, [])
+        self.assertTrue(report["validation"]["success"])
+        self.assertTrue(any("extra-optional-report.json" in warning for warning in warnings))
+        self.assertTrue(any("powershell_analyzer_report.json" in warning for warning in warnings))
+        optional_paths = [
+            item["path"]
+            for item in report["input_reports"]
+            if item.get("required") is False and item.get("present") is False
+        ]
+        self.assertIn("extra-optional-report.json", optional_paths)
+        self.assertIn(governance.DEFAULT_ANALYZER_REPORT.as_posix(), optional_paths)
+
+    def test_cli_rewrites_json_as_failed_when_markdown_write_fails(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            (root / "markdown-output-as-directory").mkdir()
+            argv = [
+                "run_powershell_finding_governance.py",
+                "--repo-root",
+                str(root),
+                "--json-output",
+                "report.json",
+                "--markdown-output",
+                "markdown-output-as-directory",
+            ]
+            with unittest.mock.patch.object(sys, "argv", argv):
+                rc = governance.main()
+            written = json.loads((root / "report.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(rc, 1)
+        self.assertFalse(written["validation"]["success"])
+        self.assertTrue(any("report write failure" in error for error in written["validation"]["errors"]))
 
     def test_fixture_classification_passes(self) -> None:
         with self.make_repo() as temp:
