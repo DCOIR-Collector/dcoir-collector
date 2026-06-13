@@ -85,6 +85,7 @@ class PowerShellFindingGovernanceTests(unittest.TestCase):
         *,
         report_findings: list[dict[str, object]] | None = None,
         governance_overrides: dict[str, object] | None = None,
+        write_analyzer_report: bool = True,
     ) -> tempfile.TemporaryDirectory[str]:
         temp = tempfile.TemporaryDirectory()
         root = Path(temp.name)
@@ -96,6 +97,12 @@ class PowerShellFindingGovernanceTests(unittest.TestCase):
         }
         rule_risk_report = {
             "schema_version": "dcoir_powershell_rule_risk_fixture_report_v1",
+            "findings": [],
+            "validation": {"success": True, "errors": [], "warnings": []},
+            "summary": {"finding_count": 0},
+        }
+        analyzer_report = {
+            "schema_version": "dcoir_powershell_analyzer_report_v1",
             "findings": [],
             "validation": {"success": True, "errors": [], "warnings": []},
             "summary": {"finding_count": 0},
@@ -135,6 +142,8 @@ class PowerShellFindingGovernanceTests(unittest.TestCase):
             governance_doc.update(governance_overrides)
         write(root / governance.DEFAULT_CUSTOM_REPORT, json.dumps(finding_report, indent=2) + "\n")
         write(root / governance.DEFAULT_RULE_RISK_REPORT, json.dumps(rule_risk_report, indent=2) + "\n")
+        if write_analyzer_report:
+            write(root / governance.DEFAULT_ANALYZER_REPORT, json.dumps(analyzer_report, indent=2) + "\n")
         write(root / governance.DEFAULT_ASSEMBLY_PARITY_REPORT, json.dumps(assembly_report, indent=2) + "\n")
         write(root / governance.DEFAULT_GOVERNANCE, json.dumps(governance_doc, indent=2) + "\n")
         return temp
@@ -149,10 +158,47 @@ class PowerShellFindingGovernanceTests(unittest.TestCase):
             "json_output": governance.DEFAULT_JSON_OUTPUT.as_posix(),
             "markdown_output": governance.DEFAULT_MARKDOWN_OUTPUT.as_posix(),
             "as_of_date": "2026-06-10",
+            "allow_missing_analyzer_report": False,
             "no_write": True,
         }
         values.update(overrides)
         return argparse.Namespace(**values)
+
+    def test_default_missing_analyzer_report_fails_closed(self) -> None:
+        with self.make_repo(write_analyzer_report=False) as temp:
+            report, errors, _warnings = governance.build_report(self.args(Path(temp)))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("powershell_analyzer_report.json" in error for error in errors))
+
+    def test_custom_required_reports_still_require_analyzer_without_opt_out(self) -> None:
+        with self.make_repo(write_analyzer_report=False) as temp:
+            report, errors, _warnings = governance.build_report(
+                self.args(
+                    Path(temp),
+                    finding_report=[governance.DEFAULT_CUSTOM_REPORT.as_posix()],
+                )
+            )
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("powershell_analyzer_report.json" in error for error in errors))
+
+    def test_missing_analyzer_report_requires_explicit_opt_out(self) -> None:
+        with self.make_repo(write_analyzer_report=False) as temp:
+            report, errors, warnings = governance.build_report(
+                self.args(Path(temp), allow_missing_analyzer_report=True)
+            )
+
+        self.assertEqual(errors, [])
+        self.assertTrue(report["validation"]["success"])
+        self.assertTrue(any("powershell_analyzer_report.json" in warning for warning in warnings))
+        analyzer_input = next(
+            item
+            for item in report["input_reports"]
+            if item["path"] == governance.DEFAULT_ANALYZER_REPORT.as_posix()
+        )
+        self.assertFalse(analyzer_input["required"])
+        self.assertFalse(analyzer_input["present"])
 
     def test_fixture_classification_passes(self) -> None:
         with self.make_repo() as temp:
@@ -236,7 +282,9 @@ class PowerShellFindingGovernanceTests(unittest.TestCase):
 
     def test_real_repo_contract_passes(self) -> None:
         repo_root = Path(__file__).resolve().parents[3]
-        report, errors, _warnings = governance.build_report(self.args(repo_root))
+        report, errors, _warnings = governance.build_report(
+            self.args(repo_root, allow_missing_analyzer_report=True)
+        )
 
         self.assertEqual(errors, [])
         self.assertTrue(report["validation"]["success"])
