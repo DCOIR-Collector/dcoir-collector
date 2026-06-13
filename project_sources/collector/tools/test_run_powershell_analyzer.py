@@ -766,6 +766,33 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
 
         self.assertIn("report write failure", str(caught.exception))
 
+    def test_cli_rewrites_json_as_failed_when_markdown_write_fails(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            (root / "markdown-output-as-directory").mkdir()
+            argv = [
+                "run_powershell_analyzer.py",
+                "--repo-root",
+                str(root),
+                "--analyzer-command",
+                sys.executable,
+                "--analyzer-command",
+                str(root / "fake_analyzer.py"),
+                "--analyzer-command",
+                "auto",
+                "--json-output",
+                "report.json",
+                "--markdown-output",
+                "markdown-output-as-directory",
+            ]
+            with unittest.mock.patch.object(sys, "argv", argv):
+                rc = analyzer.main()
+            written = json.loads((root / "report.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(rc, 1)
+        self.assertFalse(written["validation"]["success"])
+        self.assertTrue(any("report write failure" in error for error in written["validation"]["errors"]))
+
     def test_setup_failure_report_can_be_written(self) -> None:
         with self.make_repo() as temp:
             root = Path(temp)
