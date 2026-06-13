@@ -180,6 +180,45 @@ class PowerShellAssemblyParityTests(unittest.TestCase):
         self.assertFalse(Path(command[-2]).exists())
         self.assertFalse(Path(command[-1]).exists())
 
+    def test_native_parser_reports_temp_cleanup_failure(self) -> None:
+        captured_paths: list[Path] = []
+
+        class Completed:
+            returncode = 0
+            stdout = ""
+            stderr = ""
+
+        def fake_run(command: list[str], **_kwargs: object) -> Completed:
+            captured_paths.extend([Path(command[-2]), Path(command[-1])])
+            return Completed()
+
+        original_which = parity.shutil.which
+        original_run = parity.subprocess.run
+        original_unlink = parity.Path.unlink
+
+        def fail_unlink(path: Path, *args: object, **kwargs: object) -> None:
+            if path in captured_paths:
+                raise OSError("locked")
+            original_unlink(path, *args, **kwargs)
+
+        try:
+            parity.shutil.which = lambda _name: "pwsh"
+            parity.subprocess.run = fake_run
+            parity.Path.unlink = fail_unlink
+            report = parity.parse_powershell_text('Write-Output "ok"\n')
+        finally:
+            parity.shutil.which = original_which
+            parity.subprocess.run = original_run
+            parity.Path.unlink = original_unlink
+            for path in captured_paths:
+                if path.exists():
+                    path.unlink()
+
+        self.assertFalse(report["success"])
+        self.assertTrue(
+            any("failed to remove temporary PowerShell" in error for error in report["errors"])
+        )
+
     def test_baseline_shrink_without_exception_fails(self) -> None:
         with self.make_repo() as temp:
             root = Path(temp)
