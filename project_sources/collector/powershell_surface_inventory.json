@@ -2,7 +2,7 @@
   "schema_version": "dcoir_powershell_surface_inventory_v1",
   "issue": 261,
   "mode": "full",
-  "source_of_truth": "filesystem recursive scan fallback",
+  "source_of_truth": "git ls-files -z",
   "deterministic_report": true,
   "discovery_command": "python project_sources/collector/tools/build_powershell_surface_inventory.py --repo-root . --json-output project_sources/collector/powershell_surface_inventory.json --markdown-output project_sources/collector/powershell_surface_inventory.md",
   "required_source_types": [
