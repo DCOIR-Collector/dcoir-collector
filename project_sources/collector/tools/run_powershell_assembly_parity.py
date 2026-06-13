@@ -270,6 +270,8 @@ def parse_powershell_text(text: str) -> dict[str, Any]:
     if pwsh:
         temp_path: Path | None = None
         parser_script_path: Path | None = None
+        cleanup_errors: list[str] = []
+        result: dict[str, Any] | None = None
         try:
             with tempfile.NamedTemporaryFile("w", suffix=".ps1", encoding="utf-8", delete=False) as handle:
                 handle.write(text)
@@ -290,7 +292,7 @@ def parse_powershell_text(text: str) -> dict[str, Any]:
             errors = [line.strip() for line in completed.stdout.splitlines() if line.strip()]
             if completed.returncode != 0 and completed.stderr.strip():
                 errors.extend(line.strip() for line in completed.stderr.splitlines() if line.strip())
-            return {
+            result = {
                 "method": "powershell_language_parser",
                 "native_parser_available": True,
                 "success": completed.returncode == 0,
@@ -302,15 +304,24 @@ def parse_powershell_text(text: str) -> dict[str, Any]:
             static["method"] = "static_balance_check_after_native_parser_error"
             static["native_parser_available"] = True
             static["native_parser_error"] = str(exc)
-            return static
+            result = static
         finally:
-            for path in (temp_path, parser_script_path):
+            for label, path in (("target", temp_path), ("parser", parser_script_path)):
                 if path is None:
                     continue
                 try:
                     path.unlink()
-                except OSError:
-                    pass
+                except OSError as exc:
+                    cleanup_errors.append(f"failed to remove temporary PowerShell {label} script: {exc}")
+        if result is None:
+            result = static_powershell_parse(text)
+            result["method"] = "static_balance_check_after_native_parser_error"
+            result["native_parser_available"] = True
+            result["native_parser_error"] = "native parser did not produce a result"
+        if cleanup_errors:
+            result["success"] = False
+            result["errors"] = list(result.get("errors", [])) + cleanup_errors
+        return result
     return static_powershell_parse(text)
 
 
