@@ -31,6 +31,22 @@ HARNESS_GENERATED_OUTPUT = Path("project_sources/collector/harness/run_DCOIR_Tes
 COLLECTOR_IMPORT_BLOCK = re.compile(
     r"(?ms)^\$collectorPartsRoot = .*?^foreach \(\$partFile in \$collectorPartFiles\) \{.*?^\}\s*"
 )
+POWERSHELL_PARSE_SCRIPT = """\
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path
+)
+
+$tokens = $null
+$parseErrors = $null
+[System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$parseErrors) | Out-Null
+if ($parseErrors -and $parseErrors.Count -gt 0) {
+    $parseErrors | ForEach-Object {
+        '{0}:{1}: {2}' -f $_.Extent.StartLineNumber, $_.Extent.StartColumnNumber, $_.Message
+    }
+    exit 1
+}
+"""
 
 
 class AssemblyParityError(RuntimeError):
@@ -252,26 +268,22 @@ def static_powershell_parse(text: str) -> dict[str, Any]:
 def parse_powershell_text(text: str) -> dict[str, Any]:
     pwsh = shutil.which("pwsh")
     if pwsh:
-        with tempfile.NamedTemporaryFile("w", suffix=".ps1", encoding="utf-8", delete=False) as handle:
-            handle.write(text)
-            temp_path = Path(handle.name)
+        temp_path: Path | None = None
+        parser_script_path: Path | None = None
         try:
+            with tempfile.NamedTemporaryFile("w", suffix=".ps1", encoding="utf-8", delete=False) as handle:
+                handle.write(text)
+                temp_path = Path(handle.name)
+            with tempfile.NamedTemporaryFile("w", suffix=".ps1", encoding="utf-8", delete=False) as handle:
+                handle.write(POWERSHELL_PARSE_SCRIPT)
+                parser_script_path = Path(handle.name)
             command = [
                 pwsh,
                 "-NoLogo",
                 "-NoProfile",
                 "-NonInteractive",
-                "-Command",
-                (
-                    "$path = $args[0]; "
-                    "$tokens = $null; "
-                    "$parseErrors = $null; "
-                    "[System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$tokens, [ref]$parseErrors) | Out-Null; "
-                    "if ($parseErrors.Count -gt 0) { "
-                    "$parseErrors | ForEach-Object { '{0}:{1}: {2}' -f $_.Extent.StartLineNumber, $_.Extent.StartColumnNumber, $_.Message }; "
-                    "exit 1 "
-                    "} "
-                ),
+                "-File",
+                str(parser_script_path),
                 str(temp_path),
             ]
             completed = subprocess.run(command, text=True, capture_output=True, timeout=30, check=False)
@@ -292,10 +304,13 @@ def parse_powershell_text(text: str) -> dict[str, Any]:
             static["native_parser_error"] = str(exc)
             return static
         finally:
-            try:
-                temp_path.unlink()
-            except OSError:
-                pass
+            for path in (temp_path, parser_script_path):
+                if path is None:
+                    continue
+                try:
+                    path.unlink()
+                except OSError:
+                    pass
     return static_powershell_parse(text)
 
 
