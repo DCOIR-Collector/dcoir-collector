@@ -326,16 +326,16 @@ def fixture_findings(text: str, path: str) -> list[dict[str, Any]]:
                 "Avoid plaintext secret material and use a protected input path.",
             )
         )
-    password_line = line_number_for(
+    credential_literal_line = line_number_for(
         text,
         r"\[(?:string|securestring|pscredential)\]\s*\$(?:Password|Credential|Secret)\s*=\s*['\"][^'\"]+['\"]"
         r"|\$(?:Password|Credential|Secret)\s*=\s*['\"][^'\"]+['\"]",
     )
-    if password_line:
+    if credential_literal_line:
         findings.append(
             finding(
                 path,
-                password_line,
+                credential_literal_line,
                 "PSAvoidUsingPlainTextForPassword",
                 "Warning",
                 "Credential-like variable is assigned a literal string.",
@@ -489,16 +489,17 @@ def run_fixture_analyzer() -> int:
     request = json.loads(sys.stdin.read())
     target = request["target"]
     text = Path(target["analysis_path"]).read_text(encoding="utf-8", errors="ignore")
+    target_path = str(target["path"])
     response = {
         "analyzer_name": "DCOIRFixtureAnalyzer",
         "analyzer_version": "1.0.0",
         "powershell_engine": "Core",
         "powershell_version": "7.4.1",
-        "target_path": target["path"],
+        "target_path": target_path,
         "analyzed": True,
-        "findings": fixture_findings(text, target["analysis_path"]),
+        "findings": fixture_findings(text, target_path),
     }
-    print(json.dumps(response))
+    sys.stdout.write(json.dumps(response) + "\n")
     return 0
 
 
