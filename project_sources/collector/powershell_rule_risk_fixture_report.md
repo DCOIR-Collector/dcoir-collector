@@ -46,4 +46,4 @@
 
 ## Environment Gap
 
-- This #263 harness uses a deterministic local fixture analyzer through the #262 wrapper. It does not prove PSScriptAnalyzer module execution because pwsh/PSScriptAnalyzer is not available in this environment.
+- This #263 harness uses a deterministic local fixture analyzer through the #262 wrapper. It intentionally does not execute PSScriptAnalyzer, so this fixture report does not claim whether pwsh or the PSScriptAnalyzer module is installed in the current environment.
