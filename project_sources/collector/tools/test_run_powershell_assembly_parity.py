@@ -144,6 +144,42 @@ class PowerShellAssemblyParityTests(unittest.TestCase):
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("generated output parse check failed" in error for error in errors))
 
+    def test_native_parser_uses_file_argument_for_temp_path(self) -> None:
+        captured: dict[str, list[str]] = {}
+
+        class Completed:
+            returncode = 0
+            stdout = ""
+            stderr = ""
+
+        def fake_run(command: list[str], **_kwargs: object) -> Completed:
+            captured["command"] = command
+            parser_path = Path(command[-2])
+            target_path = Path(command[-1])
+            self.assertTrue(parser_path.is_file())
+            self.assertTrue(target_path.is_file())
+            self.assertIn("Parser]::ParseFile", parser_path.read_text(encoding="utf-8"))
+            self.assertEqual(target_path.read_text(encoding="utf-8"), 'Write-Output "ok"\n')
+            return Completed()
+
+        original_which = parity.shutil.which
+        original_run = parity.subprocess.run
+        try:
+            parity.shutil.which = lambda _name: "pwsh"
+            parity.subprocess.run = fake_run
+            report = parity.parse_powershell_text('Write-Output "ok"\n')
+        finally:
+            parity.shutil.which = original_which
+            parity.subprocess.run = original_run
+
+        command = captured["command"]
+        self.assertEqual(report["method"], "powershell_language_parser")
+        self.assertTrue(report["success"])
+        self.assertIn("-File", command)
+        self.assertNotIn("-Command", command)
+        self.assertFalse(Path(command[-2]).exists())
+        self.assertFalse(Path(command[-1]).exists())
+
     def test_baseline_shrink_without_exception_fails(self) -> None:
         with self.make_repo() as temp:
             root = Path(temp)
