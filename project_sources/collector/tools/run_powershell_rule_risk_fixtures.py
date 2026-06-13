@@ -878,7 +878,8 @@ def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list
         },
         "environment_gap": (
             "This #263 harness uses a deterministic local fixture analyzer through the #262 wrapper. "
-            "It does not prove PSScriptAnalyzer module execution because pwsh/PSScriptAnalyzer is not available in this environment."
+            "It intentionally does not execute PSScriptAnalyzer, so this fixture report does not claim whether "
+            "pwsh or the PSScriptAnalyzer module is installed in the current environment."
         ),
     }
     return report, errors, warnings, matrix
