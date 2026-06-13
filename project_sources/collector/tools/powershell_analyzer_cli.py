@@ -207,6 +207,12 @@ def main() -> int:
             write_outputs(Path(args.repo_root).resolve(), report, Path(args.json_output), Path(args.markdown_output))
         except AnalyzerContractError as exc:
             errors.append(str(exc))
+            report["validation"]["success"] = False
+            report["validation"]["errors"] = errors
+            try:
+                write_outputs(Path(args.repo_root).resolve(), report, Path(args.json_output), Path(args.markdown_output))
+            except AnalyzerContractError:
+                pass
     if report is None:
         for error in errors:
             print(error, file=sys.stderr)
