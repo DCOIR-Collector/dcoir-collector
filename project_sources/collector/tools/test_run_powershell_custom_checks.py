@@ -177,6 +177,23 @@ class PowerShellCustomCheckTests(unittest.TestCase):
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("control fixture produced unexpected findings" in error for error in errors))
 
+    def test_target_path_limits_fixture_assertions_to_selected_fixture(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            bad_path = "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1"
+            report, errors, _warnings = custom.build_report(
+                self.args(root, target_path=[bad_path])
+            )
+
+        self.assertEqual(errors, [])
+        self.assertTrue(report["validation"]["success"])
+        self.assertEqual(report["targets"], [bad_path])
+        self.assertEqual([fixture["id"] for fixture in report["fixtures"]], ["bad-fail-row-green-exit"])
+        self.assertEqual(report["summary"]["negative_fixture_count"], 1)
+        self.assertEqual(report["summary"]["control_fixture_count"], 0)
+        self.assertEqual(report["summary"]["expected_fixture_finding_count"], 1)
+        self.assertEqual(report["summary"]["observed_fixture_finding_count"], 1)
+
     def test_missing_fixture_from_inventory_fails_closed(self) -> None:
         with self.make_repo(omit_good_from_inventory=True) as temp:
             report, errors, _warnings = custom.build_report(self.args(Path(temp)))
