@@ -43,7 +43,7 @@ def load_inventory(repo_root: Path, inventory_path: Path) -> dict[str, Any]:
 def selected_target_paths(values: list[str]) -> set[str] | None:
     if not values:
         return None
-    return {Path(value).as_posix() for value in values}
+    return {Path(value.replace("\\", "/")).as_posix() for value in values}
 
 
 def safe_inventory_path(value: Any) -> str:
