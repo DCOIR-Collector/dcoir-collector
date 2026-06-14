@@ -83,6 +83,10 @@ def path_parts(rel: str) -> tuple[str, ...]:
     return tuple(part.casefold() for part in Path(rel).parts)
 
 
+def is_ignored_discovery_path(rel: str) -> bool:
+    return any(part in IGNORED_DISCOVERY_SEGMENTS for part in path_parts(rel))
+
+
 def has_prefix(rel: str, prefix: str) -> bool:
     normalized = rel.casefold()
     return normalized == prefix.casefold() or normalized.startswith(prefix.casefold().rstrip("/") + "/")
@@ -105,6 +109,10 @@ def read_text(path: Path) -> str:
         return path.read_text(encoding="utf-8", errors="ignore")
     except OSError:
         return ""
+
+
+def normalized_text_fact_bytes(data: bytes) -> bytes:
+    return data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
 
 
 def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
@@ -192,10 +200,11 @@ def file_facts(repo_root: Path, rel: str, exists: bool) -> dict[str, Any]:
             "line_count": None,
             "sha256": None,
         }
+    fact_data = normalized_text_fact_bytes(data)
     return {
-        "size_bytes": len(data),
-        "line_count": data.count(b"\n") + (1 if data and not data.endswith(b"\n") else 0),
-        "sha256": hashlib.sha256(data).hexdigest(),
+        "size_bytes": len(fact_data),
+        "line_count": fact_data.count(b"\n") + (1 if fact_data and not fact_data.endswith(b"\n") else 0),
+        "sha256": hashlib.sha256(fact_data).hexdigest(),
     }
 
 
@@ -786,7 +795,8 @@ def git_tracked_files(repo_root: Path) -> list[str] | None:
         return None
     if completed.returncode != 0:
         return None
-    return sorted(path.decode("utf-8", errors="ignore") for path in completed.stdout.split(b"\0") if path)
+    paths = [path.decode("utf-8", errors="ignore") for path in completed.stdout.split(b"\0") if path]
+    return sorted(path for path in paths if not is_ignored_discovery_path(path))
 
 
 def filesystem_files(repo_root: Path) -> list[str]:
@@ -795,7 +805,7 @@ def filesystem_files(repo_root: Path) -> list[str]:
         if not path.is_file():
             continue
         rel = relpath(path, repo_root)
-        if any(part in IGNORED_DISCOVERY_SEGMENTS for part in path_parts(rel)):
+        if is_ignored_discovery_path(rel):
             continue
         files.append(rel)
     return sorted(files)
@@ -1265,6 +1275,7 @@ def build_inventory(
         "mode": mode,
         "source_of_truth": source,
         "deterministic_report": True,
+        "file_facts_policy": "text_bytes_with_line_endings_normalized_to_lf",
         "discovery_command": " ".join(command_parts),
         "required_source_types": REQUIRED_SOURCE_TYPES,
         "outputs": {
@@ -1296,6 +1307,7 @@ def render_markdown(inventory: dict[str, Any]) -> str:
         f"- Issue: #{inventory['issue']}",
         f"- Mode: `{inventory['mode']}`",
         f"- Source of truth: `{inventory['source_of_truth']}`",
+        f"- File facts policy: `{inventory['file_facts_policy']}`",
         f"- Discovery command: `{inventory['discovery_command']}`",
         f"- JSON artifact: `{inventory['outputs']['json']}`",
         f"- Validation: `{'pass' if validation['success'] else 'fail'}`",
