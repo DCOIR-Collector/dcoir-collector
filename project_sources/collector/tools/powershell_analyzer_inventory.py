@@ -110,12 +110,12 @@ def build_target_sets(
         inventory_paths.add(path)
         decision = str(surface.get("inclusion_decision", ""))
         source_type = str(surface.get("source_type", ""))
-        if only_paths is not None and path not in only_paths:
-            continue
         if decision == "reference" and source_type == "workflow_yaml":
             reference_error = validate_surface_file(repo_root, path, surface, "reference workflow surface")
             if reference_error:
                 errors.append(reference_error)
+        if only_paths is not None and path not in only_paths:
+            continue
         if decision != "include":
             skipped_surfaces.append(
                 {
