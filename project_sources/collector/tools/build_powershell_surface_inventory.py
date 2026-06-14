@@ -225,18 +225,32 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
             continue
         steps_indent = line_indent(line)
         steps_end = block_end_line(lines, index, steps_indent)
-        for candidate in range(index + 1, steps_end):
-            stripped = lines[candidate].strip()
+        cursor = index + 1
+        while cursor < steps_end:
+            stripped = lines[cursor].strip()
             if not stripped or stripped.startswith("#"):
+                cursor += 1
                 continue
-            if line_indent(lines[candidate]) == steps_indent + 2:
-                if not stripped.startswith("- "):
-                    return f"{rel}: line {candidate + 1} has a non-list entry directly under steps"
-                item = yaml_item_text_without_comment(lines[candidate])
-                if item.startswith("["):
-                    return f"{rel}: line {candidate + 1} has an unsupported inline workflow step value"
-                if item and ":" not in item and item != "":
-                    return f"{rel}: line {candidate + 1} has a non-mapping step entry"
+            if not stripped.startswith("- "):
+                return f"{rel}: line {cursor + 1} has a non-list entry directly under steps"
+            item = yaml_item_text_without_comment(lines[cursor])
+            normalized_item = strip_yaml_node_prefixes(item)
+            if normalized_item.startswith("*"):
+                return f"{rel}: line {cursor + 1} has an unsupported alias workflow step value"
+            if normalized_item.startswith("["):
+                return f"{rel}: line {cursor + 1} has an unsupported inline workflow step value"
+            if normalized_item and ":" not in normalized_item and not normalized_item.startswith("{"):
+                return f"{rel}: line {cursor + 1} has a non-mapping step entry"
+            step_indent = line_indent(lines[cursor])
+            step_end = cursor + 1
+            while step_end < steps_end:
+                step_stripped = lines[step_end].strip()
+                if step_stripped and line_indent(lines[step_end]) == step_indent:
+                    if step_stripped.startswith("- "):
+                        break
+                    return f"{rel}: line {step_end + 1} has a non-list entry directly under steps"
+                step_end += 1
+            cursor = step_end
     return None
 
 
@@ -345,6 +359,34 @@ def yaml_item_text_without_comment(line: str) -> str:
     return strip_yaml_inline_comment(yaml_item_text(line))
 
 
+def strip_yaml_node_prefixes(item: str) -> str:
+    candidate = item.strip()
+    while candidate:
+        if candidate.startswith("&"):
+            match = re.match(r"&[^\s\[\]\{\},]+(?:\s+|$)", candidate)
+            if not match:
+                return candidate
+            candidate = candidate[match.end():].lstrip()
+            continue
+        if candidate.startswith("!<"):
+            end = candidate.find(">")
+            if end == -1:
+                return candidate
+            following = candidate[end + 1:]
+            if following and not following[0].isspace():
+                return candidate
+            candidate = following.lstrip()
+            continue
+        if candidate.startswith("!"):
+            match = re.match(r"![^\s\[\]\{\},]+(?:\s+|$)", candidate)
+            if not match:
+                return candidate
+            candidate = candidate[match.end():].lstrip()
+            continue
+        return candidate
+    return candidate
+
+
 def yaml_mapping_key_indent(line: str) -> int:
     indent = line_indent(line)
     return indent + 2 if line.strip().startswith("- ") else indent
@@ -446,7 +488,7 @@ def unsupported_workflow_shell_value(value: str) -> bool:
 
 
 def flow_mapping_pieces(item: str) -> list[str] | None:
-    stripped = strip_yaml_inline_comment(item)
+    stripped = strip_yaml_node_prefixes(strip_yaml_inline_comment(item))
     if not (stripped.startswith("{") and stripped.endswith("}")):
         return None
     content = stripped[1:-1]
@@ -492,7 +534,7 @@ def flow_mapping_pieces(item: str) -> list[str] | None:
 
 
 def flow_collection_shape_error(rel: str, line_number: int, item: str, value_without_comment: str) -> str | None:
-    candidate = strip_yaml_inline_comment(item)
+    candidate = strip_yaml_node_prefixes(strip_yaml_inline_comment(item))
     if not candidate.startswith(("{", "[")):
         candidate = value_without_comment.strip()
     if not candidate or candidate[0] not in {"{", "["} or candidate[0] in {"'", '"'}:
@@ -532,7 +574,7 @@ def flow_collection_shape_error(rel: str, line_number: int, item: str, value_wit
 
 
 def flow_mapping_fragment_error(rel: str, line_number: int, item: str, value_without_comment: str) -> str | None:
-    candidate = strip_yaml_inline_comment(item)
+    candidate = strip_yaml_node_prefixes(strip_yaml_inline_comment(item))
     if not candidate.startswith("{"):
         candidate = value_without_comment.strip()
     if not candidate or candidate[0] != "{" or candidate[0] in {"'", '"'}:
@@ -554,7 +596,7 @@ def unsupported_flow_step_mapping_key(
 ) -> str | None:
     if not direct_step_mapping_key(lines, index):
         return None
-    candidate = strip_yaml_inline_comment(item)
+    candidate = strip_yaml_node_prefixes(strip_yaml_inline_comment(item))
     if not candidate.startswith("{"):
         return None
 
