@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import tempfile
 import unittest
-from unittest import mock
 from pathlib import Path
 import sys
 
@@ -214,7 +213,7 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 b"project_sources/collector/source/DCOIR_Collector.ps1\0"
             )
 
-        with mock.patch.object(inventory.subprocess, "run", return_value=Completed()):
+        with unittest.mock.patch.object(inventory.subprocess, "run", return_value=Completed()):
             files = inventory.git_tracked_files(Path("/repo"))
 
         self.assertEqual(
