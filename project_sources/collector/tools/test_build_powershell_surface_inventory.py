@@ -463,6 +463,52 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(snippets[0]["shell"], "pwsh")
         self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
 
+    def test_block_scalar_digit_markers_preserve_body(self) -> None:
+        for marker in ["|2", "|2-", "|+2", ">2", ">2-", ">+2"]:
+            with self.subTest(marker=marker):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    rel = f".github/workflows/block-{marker.replace('|', 'pipe').replace('>', 'fold')}.yml"
+                    write(
+                        root / rel,
+                        "jobs:\n"
+                        "  test:\n"
+                        "    steps:\n"
+                        "      - name: Uses block digit marker\n"
+                        "        shell: pwsh\n"
+                        f"        run: {marker}\n"
+                        "          Write-Host ok\n",
+                    )
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+                snippets = result["surfaces"][0]["embedded_snippets"]
+                self.assertEqual(len(snippets), 1)
+                self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
+    def test_block_scalar_marker_with_comment_preserves_body(self) -> None:
+        for marker in ["| # keep literal", "|- # strip trailing newline"]:
+            with self.subTest(marker=marker):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    rel = f".github/workflows/block-comment-{marker.split()[0].replace('|', 'pipe')}.yml"
+                    write(
+                        root / rel,
+                        "jobs:\n"
+                        "  test:\n"
+                        "    steps:\n"
+                        "      - name: Uses block marker comment\n"
+                        "        shell: pwsh\n"
+                        f"        run: {marker}\n"
+                        "          Write-Host ok\n",
+                    )
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+                snippets = result["surfaces"][0]["embedded_snippets"]
+                self.assertEqual(len(snippets), 1)
+                self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
     def test_defaults_run_shell_is_inherited_without_fake_snippet(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
