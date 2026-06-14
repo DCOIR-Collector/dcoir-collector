@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 import sys
 
@@ -185,6 +186,44 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
             result = inventory.build_inventory(root, changed_files=[rel])
         self.assertFalse(result["validation"]["success"])
         self.assertTrue(any("included PowerShell surface is empty" in error for error in result["validation"]["errors"]))
+
+    def test_file_facts_are_line_ending_stable(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = "operator_tools/sample/CrLf.ps1"
+            crlf_bytes = b"Write-Output 'ok'\r\n"
+            lf_bytes = b"Write-Output 'ok'\n"
+            path = root / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(crlf_bytes)
+
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        self.assertEqual(result["file_facts_policy"], "text_bytes_with_line_endings_normalized_to_lf")
+        self.assertEqual(result["surfaces"][0]["size_bytes"], len(lf_bytes))
+        self.assertEqual(result["surfaces"][0]["line_count"], 1)
+        self.assertEqual(result["surfaces"][0]["sha256"], inventory.hashlib.sha256(lf_bytes).hexdigest())
+
+    def test_git_discovery_filters_ignored_segments(self) -> None:
+        class Completed:
+            returncode = 0
+            stdout = (
+                b"operator_tools/sample/Invoke-DcoirSample.ps1\0"
+                b"operator_tools/sample/node_modules/vendor.ps1\0"
+                b"project_sources/collector/source/DCOIR_Collector.ps1\0"
+            )
+
+        with mock.patch.object(inventory.subprocess, "run", return_value=Completed()):
+            files = inventory.git_tracked_files(Path("/repo"))
+
+        self.assertEqual(
+            files,
+            [
+                "operator_tools/sample/Invoke-DcoirSample.ps1",
+                "project_sources/collector/source/DCOIR_Collector.ps1",
+            ],
+        )
 
     def test_powershell_analyzer_policy_is_validation_tooling(self) -> None:
         with self.make_minimal_repo() as temp:
