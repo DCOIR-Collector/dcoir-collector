@@ -72,6 +72,19 @@ MANIFEST_PATH = Path("project_sources/collector/manifests/Collector_Runtime_Pack
 HARNESS_PARTS_ROOT = Path("project_sources/collector/harness/source/parts")
 HARNESS_GENERATED_OUTPUT = Path("project_sources/collector/harness/run_DCOIR_Tests.generated.ps1")
 REQUIRED_SURFACE_PROFILES_PATH = Path("project_sources/github_actions/workflow_required_surface_profiles.json")
+FLOW_STEP_KEYS = {
+    "continue-on-error",
+    "env",
+    "id",
+    "if",
+    "name",
+    "run",
+    "shell",
+    "timeout-minutes",
+    "uses",
+    "with",
+    "working-directory",
+}
 
 
 def relpath(path: Path, repo_root: Path) -> str:
@@ -165,6 +178,13 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
         flow_fragment_error = flow_mapping_fragment_error(rel, line_number, item, value_without_comment)
         if flow_fragment_error:
             return flow_fragment_error
+        flow_step_key = unsupported_flow_step_mapping_key(
+            lines,
+            line_number - 1,
+            item,
+        )
+        if flow_step_key:
+            return f"{rel}: line {line_number} has unsupported flow step key {flow_step_key!r}"
         inline_steps_key = unsupported_inline_executable_steps_key(
             lines,
             line_number - 1,
@@ -213,6 +233,8 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
                 if not stripped.startswith("- "):
                     return f"{rel}: line {candidate + 1} has a non-list entry directly under steps"
                 item = yaml_item_text_without_comment(lines[candidate])
+                if item.startswith("["):
+                    return f"{rel}: line {candidate + 1} has an unsupported inline workflow step value"
                 if item and ":" not in item and item != "":
                     return f"{rel}: line {candidate + 1} has a non-mapping step entry"
     return None
@@ -522,6 +544,23 @@ def flow_mapping_fragment_error(rel: str, line_number: int, item: str, value_wit
     for piece in pieces:
         if piece and ":" not in piece:
             return f"{rel}: line {line_number} has an unsupported flow mapping fragment"
+    return None
+
+
+def unsupported_flow_step_mapping_key(
+    lines: list[str],
+    index: int,
+    item: str,
+) -> str | None:
+    if not direct_step_mapping_key(lines, index):
+        return None
+    candidate = strip_yaml_inline_comment(item)
+    if not candidate.startswith("{"):
+        return None
+
+    for key in split_flow_mapping(candidate):
+        if key not in FLOW_STEP_KEYS:
+            return key
     return None
 
 
