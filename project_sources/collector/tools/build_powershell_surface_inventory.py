@@ -330,10 +330,23 @@ def strip_yaml_inline_comment(value: str) -> str:
 
 
 def is_yaml_block_scalar_marker(value: str) -> bool:
-    marker = value.strip().strip("'\"")
+    marker = value.strip()
     if not marker or marker[0] not in {"|", ">"}:
         return False
-    return all(character in "+-0123456789" for character in marker[1:])
+    chomping = False
+    indentation = False
+    for character in marker[1:]:
+        if character in "+-":
+            if chomping:
+                return False
+            chomping = True
+        elif character in "123456789":
+            if indentation:
+                return False
+            indentation = True
+        else:
+            return False
+    return True
 
 
 def parent_block_start(lines: list[str], index: int) -> int:
