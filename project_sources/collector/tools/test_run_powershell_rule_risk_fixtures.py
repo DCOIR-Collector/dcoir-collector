@@ -7,6 +7,7 @@ import sys
 import tempfile
 import textwrap
 import unittest
+import unittest.mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -176,6 +177,130 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
 
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("duplicate check id" in error for error in errors))
+
+    def test_unsafe_absolute_fixture_path_is_not_hashed(self) -> None:
+        with self.make_repo(matrix_fixtures=["bad-write-host", "outside-fixture"]) as temp:
+            root = Path(temp)
+            outside = root / "outside.ps1"
+            write(outside, 'Write-Host "outside"\n')
+            manifest_path = root / harness.DEFAULT_MANIFEST
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["fixtures"].append(
+                {
+                    "id": "outside-fixture",
+                    "kind": "negative",
+                    "path": outside.as_posix(),
+                    "description": "Unsafe absolute fixture path.",
+                    "expected_findings": [
+                        {
+                            "check_id": "pssa-avoid-write-host",
+                            "rule_name": "PSAvoidUsingWriteHost",
+                            "severity": "Warning",
+                            "line": 1,
+                            "risk_class": "review_assist_output_quality",
+                        }
+                    ],
+                }
+            )
+            write(manifest_path, json.dumps(manifest, indent=2) + "\n")
+            original_sha256_file = harness.sha256_file
+
+            def guarded_sha256(path: Path) -> str:
+                if path.resolve() == outside.resolve():
+                    raise AssertionError("unsafe hash attempted")
+                return original_sha256_file(path)
+
+            with unittest.mock.patch.object(harness, "sha256_file", side_effect=guarded_sha256):
+                report, errors, _warnings, _matrix = harness.build_fixture_report(self.args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("fixture path must be repo-relative" in error for error in errors))
+        self.assertTrue(any("matrix references missing fixture ids: outside-fixture" in error for error in errors))
+
+    def test_parent_traversal_fixture_path_is_not_hashed(self) -> None:
+        with self.make_repo(matrix_fixtures=["bad-write-host", "outside-fixture"]) as temp:
+            root = Path(temp)
+            write(root / "project_sources/collector/fixtures/powershell_analysis/escape.ps1", 'Write-Host "safe"\n')
+            write(root / "project_sources/collector/fixtures/outside.ps1", 'Write-Host "outside"\n')
+            manifest_path = root / harness.DEFAULT_MANIFEST
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["fixtures"].append(
+                {
+                    "id": "outside-fixture",
+                    "kind": "negative",
+                    "path": "project_sources/collector/fixtures/powershell_analysis/../outside.ps1",
+                    "description": "Unsafe traversal fixture path.",
+                    "expected_findings": [
+                        {
+                            "check_id": "pssa-avoid-write-host",
+                            "rule_name": "PSAvoidUsingWriteHost",
+                            "severity": "Warning",
+                            "line": 1,
+                            "risk_class": "review_assist_output_quality",
+                        }
+                    ],
+                }
+            )
+            write(manifest_path, json.dumps(manifest, indent=2) + "\n")
+            unsafe = root / "project_sources/collector/fixtures/outside.ps1"
+            original_sha256_file = harness.sha256_file
+
+            def guarded_sha256(path: Path) -> str:
+                if path.resolve() == unsafe.resolve():
+                    raise AssertionError("unsafe hash attempted")
+                return original_sha256_file(path)
+
+            with unittest.mock.patch.object(harness, "sha256_file", side_effect=guarded_sha256):
+                report, errors, _warnings, _matrix = harness.build_fixture_report(self.args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("fixture path must be repo-relative" in error for error in errors))
+        self.assertTrue(any("matrix references missing fixture ids: outside-fixture" in error for error in errors))
+
+    def test_fixture_symlink_resolving_outside_root_is_not_hashed(self) -> None:
+        with self.make_repo(matrix_fixtures=["bad-write-host", "outside-fixture"]) as temp:
+            root = Path(temp)
+            outside = root / "outside.ps1"
+            write(outside, 'Write-Host "outside"\n')
+            link = root / "project_sources/collector/fixtures/powershell_analysis/bad/outside_link.ps1"
+            try:
+                link.unlink(missing_ok=True)
+                link.symlink_to(outside)
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            manifest_path = root / harness.DEFAULT_MANIFEST
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["fixtures"].append(
+                {
+                    "id": "outside-fixture",
+                    "kind": "negative",
+                    "path": "project_sources/collector/fixtures/powershell_analysis/bad/outside_link.ps1",
+                    "description": "Unsafe symlink fixture path.",
+                    "expected_findings": [
+                        {
+                            "check_id": "pssa-avoid-write-host",
+                            "rule_name": "PSAvoidUsingWriteHost",
+                            "severity": "Warning",
+                            "line": 1,
+                            "risk_class": "review_assist_output_quality",
+                        }
+                    ],
+                }
+            )
+            write(manifest_path, json.dumps(manifest, indent=2) + "\n")
+            original_sha256_file = harness.sha256_file
+
+            def guarded_sha256(path: Path) -> str:
+                if path.resolve() == outside.resolve():
+                    raise AssertionError("unsafe hash attempted")
+                return original_sha256_file(path)
+
+            with unittest.mock.patch.object(harness, "sha256_file", side_effect=guarded_sha256):
+                report, errors, _warnings, _matrix = harness.build_fixture_report(self.args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("fixture path resolves outside" in error for error in errors))
+        self.assertTrue(any("matrix references missing fixture ids: outside-fixture" in error for error in errors))
 
     def test_plaintext_password_fixture_uses_parameter_default_shape(self) -> None:
         fixture = Path(__file__).resolve().parents[1] / "fixtures/powershell_analysis/bad/plaintext_password.ps1"
