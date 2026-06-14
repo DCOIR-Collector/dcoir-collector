@@ -93,18 +93,33 @@ def require_string_list(mapping: dict[str, Any], key: str, label: str, errors: l
     return [item.strip() for item in value]
 
 
-def safe_fixture_path(value: str, label: str, errors: list[str]) -> str:
+def safe_fixture_path(value: str, label: str, errors: list[str]) -> str | None:
+    invalid = False
     if "\\" in value:
         errors.append(f"{label}: fixture path must use POSIX separators")
+        invalid = True
     candidate = Path(value)
     if candidate.is_absolute() or any(part == ".." for part in candidate.parts):
         errors.append(f"{label}: fixture path must be repo-relative and must not traverse parents")
+        invalid = True
     normalized = candidate.as_posix()
     if not normalized.startswith(FIXTURE_ROOT.as_posix() + "/"):
         errors.append(f"{label}: fixture path must stay under {FIXTURE_ROOT.as_posix()}")
+        invalid = True
     if not normalized.endswith(".ps1"):
         errors.append(f"{label}: fixture path must be a .ps1 file")
+        invalid = True
+    if invalid:
+        return None
     return normalized
+
+
+def is_relative_to(path: Path, parent: Path) -> bool:
+    try:
+        path.resolve().relative_to(parent.resolve())
+        return True
+    except ValueError:
+        return False
 
 
 def validate_matrix(matrix: dict[str, Any], enforce_minimum_risks: bool) -> tuple[dict[str, dict[str, Any]], list[str], list[str]]:
@@ -220,11 +235,18 @@ def validate_manifest(
             control_count += 1
             if expected_findings:
                 errors.append(f"{label}: control fixtures must not declare expected findings")
-        absolute = repo_root / path
-        if not absolute.exists():
-            errors.append(f"{label}: fixture file is missing: {path}")
-        elif absolute.stat().st_size == 0:
-            errors.append(f"{label}: fixture file is empty: {path}")
+        absolute: Path | None = None
+        usable_path = path is not None
+        if path is not None:
+            absolute = repo_root / path
+            if not is_relative_to(absolute, repo_root / FIXTURE_ROOT):
+                errors.append(f"{label}: fixture path resolves outside {FIXTURE_ROOT.as_posix()}")
+                absolute = None
+                usable_path = False
+            elif not absolute.exists():
+                errors.append(f"{label}: fixture file is missing: {path}")
+            elif absolute.stat().st_size == 0:
+                errors.append(f"{label}: fixture file is empty: {path}")
 
         for expected_index, raw_expected in enumerate(expected_findings, start=1):
             expected_label = f"{label} expected finding #{expected_index}"
@@ -250,10 +272,10 @@ def validate_manifest(
                     errors.append(f"{expected_label}: severity does not match matrix check {check_id}")
                 if risk_class and risk_class not in check.get("risk_classes", []):
                     errors.append(f"{expected_label}: risk_class is not declared on matrix check {check_id}")
-        if fixture_id:
+        if fixture_id and path is not None and usable_path:
             enriched = dict(raw_fixture)
             enriched["path"] = path
-            enriched["sha256"] = sha256_file(absolute) if absolute.exists() and absolute.is_file() else None
+            enriched["sha256"] = sha256_file(absolute) if absolute is not None and absolute.exists() and absolute.is_file() else None
             fixture_map[fixture_id] = enriched
 
     if control_count == 0:
