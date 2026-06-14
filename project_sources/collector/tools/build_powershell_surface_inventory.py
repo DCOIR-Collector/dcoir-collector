@@ -171,7 +171,7 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
             return f"{rel}: line {line_number} has an invalid YAML block scalar marker"
 
     for index, line in enumerate(lines):
-        if yaml_item_text(line) != "steps:":
+        if yaml_item_text_without_comment(line) != "steps:":
             continue
         steps_indent = line_indent(line)
         steps_end = block_end_line(lines, index, steps_indent)
@@ -182,7 +182,7 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
             if line_indent(lines[candidate]) == steps_indent + 2:
                 if not stripped.startswith("- "):
                     return f"{rel}: line {candidate + 1} has a non-list entry directly under steps"
-                item = yaml_item_text(lines[candidate])
+                item = yaml_item_text_without_comment(lines[candidate])
                 if item and ":" not in item and item != "":
                     return f"{rel}: line {candidate + 1} has a non-mapping step entry"
     return None
@@ -289,6 +289,10 @@ def yaml_item_text(line: str) -> str:
     return stripped[2:].strip() if stripped.startswith("- ") else stripped
 
 
+def yaml_item_text_without_comment(line: str) -> str:
+    return strip_yaml_inline_comment(yaml_item_text(line))
+
+
 def yaml_mapping_key_indent(line: str) -> int:
     indent = line_indent(line)
     return indent + 2 if line.strip().startswith("- ") else indent
@@ -312,23 +316,24 @@ def previous_parent_index(lines: list[str], index: int) -> int | None:
 
 
 def direct_step_mapping_key(lines: list[str], index: int) -> bool:
-    if lines[index].strip().startswith("- "):
-        return True
-    parent = previous_parent_index(lines, index)
-    return parent is not None and lines[parent].strip().startswith("- ")
+    for start, end, _inherited_shell in step_blocks(lines):
+        if start <= index < end:
+            step_indent = line_indent(lines[start])
+            return index == start or line_indent(lines[index]) == step_indent + 2
+    return False
 
 
 def defaults_run_shell_key(lines: list[str], index: int) -> bool:
     parent = previous_parent_index(lines, index)
-    if parent is None or not yaml_item_text(lines[parent]).startswith("run:"):
+    if parent is None or not yaml_item_text_without_comment(lines[parent]).startswith("run:"):
         return False
     grandparent = previous_parent_index(lines, parent)
-    return grandparent is not None and yaml_item_text(lines[grandparent]).startswith("defaults:")
+    return grandparent is not None and yaml_item_text_without_comment(lines[grandparent]).startswith("defaults:")
 
 
 def defaults_run_mapping_key(lines: list[str], index: int) -> bool:
     parent = previous_parent_index(lines, index)
-    return parent is not None and yaml_item_text(lines[parent]).startswith("defaults:")
+    return parent is not None and yaml_item_text_without_comment(lines[parent]).startswith("defaults:")
 
 
 def unquoted_flow_collection_value(value: str) -> bool:
@@ -404,24 +409,26 @@ def nonscalar_workflow_string_value_key(
     flow = split_flow_mapping(item)
     if flow and direct_step_mapping_key(lines, index):
         for key in ("run", "shell"):
-            if key in flow and unquoted_flow_collection_value(flow[key]):
-                return key
+            if key in flow:
+                if not flow[key].strip() or unquoted_flow_collection_value(flow[key]):
+                    return key
 
     key = yaml_key_name(item)
     if key == "run" and direct_step_mapping_key(lines, index):
         if unquoted_flow_collection_value(value_without_comment):
             return "run"
-        if not value_without_comment and has_block_collection_child(lines, index):
-            return "run"
+        if not value_without_comment:
+            if has_block_collection_child(lines, index) or nested_content_index(lines, index) is None:
+                return "run"
     if key == "shell" and direct_step_mapping_key(lines, index):
         if unquoted_flow_collection_value(value_without_comment):
             return "shell"
-        if not value_without_comment and has_block_collection_child(lines, index):
+        if not value_without_comment:
             return "shell"
     if key == "shell" and defaults_run_shell_key(lines, index):
         if unquoted_flow_collection_value(value_without_comment):
             return "defaults.run.shell"
-        if not value_without_comment and has_block_collection_child(lines, index):
+        if not value_without_comment:
             return "defaults.run.shell"
     if key == "defaults":
         inline_shell = inline_shell_value(value_without_comment)
@@ -456,7 +463,7 @@ def collect_run_block(lines: list[str], run_index: int, max_end: int | None = No
     after_colon = line.split(":", 1)[1].strip() if ":" in line else ""
     block_marker = strip_yaml_inline_comment(after_colon)
     if after_colon and not is_yaml_block_scalar_marker(block_marker):
-        return run_index + 1, clean_shell_value(after_colon)
+        return run_index + 1, clean_shell_value(block_marker)
     end_line = block_end_line(lines, run_index, indent, max_end)
     content_indent = yaml_block_scalar_content_indent(lines, run_index + 1, end_line, indent, block_marker)
     command_lines: list[str] = []
@@ -605,6 +612,9 @@ def shell_executable(value: str) -> str:
     cleaned = clean_shell_value(value)
     if not cleaned:
         return ""
+    first_token = cleaned.split()[0]
+    if first_token[0] not in {"'", '"'} and "\\" in first_token:
+        return re.split(r"[\\/]+", first_token)[-1].casefold()
     try:
         parts = shlex.split(cleaned)
     except ValueError:
@@ -649,7 +659,7 @@ def run_inline_shell(item: str) -> str | None:
 
 
 def direct_defaults_shell(lines: list[str], defaults_index: int, parent_end: int) -> str | None:
-    defaults_item = yaml_item_text(lines[defaults_index])
+    defaults_item = yaml_item_text_without_comment(lines[defaults_index])
     inline = defaults_inline_shell(defaults_item)
     if inline:
         return inline
@@ -661,7 +671,7 @@ def direct_defaults_shell(lines: list[str], defaults_index: int, parent_end: int
     for candidate in range(defaults_index + 1, defaults_end):
         if line_indent(lines[candidate]) != defaults_indent + 2:
             continue
-        candidate_item = yaml_item_text(lines[candidate])
+        candidate_item = yaml_item_text_without_comment(lines[candidate])
         if candidate_item.startswith("run:"):
             inline_run_shell = run_inline_shell(candidate_item)
             if inline_run_shell:
@@ -677,15 +687,15 @@ def direct_defaults_shell(lines: list[str], defaults_index: int, parent_end: int
     for candidate in range(run_index + 1, run_end):
         if line_indent(lines[candidate]) != run_indent + 2:
             continue
-        candidate_item = yaml_item_text(lines[candidate])
+        candidate_item = yaml_item_text_without_comment(lines[candidate])
         if candidate_item.startswith("shell:"):
-            return clean_shell_value(candidate_item.split(":", 1)[1])
+            return clean_shell_value(strip_yaml_inline_comment(candidate_item.split(":", 1)[1]))
     return None
 
 
 def workflow_default_shell(lines: list[str]) -> str | None:
     for index in range(0, len(lines)):
-        item = yaml_item_text(lines[index])
+        item = yaml_item_text_without_comment(lines[index])
         if line_indent(lines[index]) != 0 or not item.startswith("defaults:"):
             continue
         shell = direct_defaults_shell(lines, index, block_end_line(lines, index, 0))
@@ -697,7 +707,7 @@ def workflow_default_shell(lines: list[str]) -> str | None:
 def job_default_shell(lines: list[str], job_start: int, job_end: int) -> str | None:
     job_indent = line_indent(lines[job_start])
     for index in range(job_start + 1, job_end):
-        item = yaml_item_text(lines[index])
+        item = yaml_item_text_without_comment(lines[index])
         if line_indent(lines[index]) != job_indent + 2 or not item.startswith("defaults:"):
             continue
         shell = direct_defaults_shell(lines, index, job_end)
@@ -715,7 +725,7 @@ def default_shell_for_steps(lines: list[str], steps_index: int) -> str | None:
 def step_blocks(lines: list[str]) -> list[tuple[int, int, str | None]]:
     blocks: list[tuple[int, int, str | None]] = []
     for index, line in enumerate(lines):
-        if yaml_item_text(line) != "steps:":
+        if yaml_item_text_without_comment(line) != "steps:":
             continue
         steps_indent = line_indent(line)
         steps_end = block_end_line(lines, index, steps_indent)
@@ -771,9 +781,9 @@ def parse_step_snippet(
                 run_end = index + 1
                 command = flow["run"]
         elif item.startswith("name:"):
-            step_name = item.split(":", 1)[1].strip().strip("'\"")
+            step_name = clean_shell_value(strip_yaml_inline_comment(item.split(":", 1)[1]))
         elif item.startswith("shell:"):
-            shell = clean_shell_value(item.split(":", 1)[1])
+            shell = clean_shell_value(strip_yaml_inline_comment(item.split(":", 1)[1]))
             explicit_shell = (index + 1, shell)
         elif item.startswith("run:"):
             run_line = index
