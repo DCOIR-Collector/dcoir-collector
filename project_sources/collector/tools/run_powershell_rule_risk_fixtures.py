@@ -122,6 +122,36 @@ def is_relative_to(path: Path, parent: Path) -> bool:
         return False
 
 
+def path_contains_symlink(path: Path, root: Path) -> bool:
+    try:
+        relative_parts = path.relative_to(root).parts
+    except ValueError:
+        return path.is_symlink()
+    current = root
+    for part in relative_parts:
+        current = current / part
+        if current.is_symlink():
+            return True
+    return False
+
+
+def validate_fixture_root(repo_root: Path, errors: list[str]) -> bool:
+    fixture_root = repo_root / FIXTURE_ROOT
+    if not fixture_root.exists():
+        errors.append(f"fixture root is missing: {FIXTURE_ROOT.as_posix()}")
+        return False
+    if not fixture_root.is_dir():
+        errors.append(f"fixture root must be a directory: {FIXTURE_ROOT.as_posix()}")
+        return False
+    if path_contains_symlink(fixture_root, repo_root):
+        errors.append(f"fixture root must not be a symlink: {FIXTURE_ROOT.as_posix()}")
+        return False
+    if not is_relative_to(fixture_root, repo_root):
+        errors.append(f"fixture root resolves outside repository: {FIXTURE_ROOT.as_posix()}")
+        return False
+    return True
+
+
 def validate_matrix(matrix: dict[str, Any], enforce_minimum_risks: bool) -> tuple[dict[str, dict[str, Any]], list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -205,6 +235,7 @@ def validate_manifest(
         errors.append("fixture manifest must contain fixtures[]")
         return {}, errors, warnings
 
+    fixture_root_valid = validate_fixture_root(repo_root, errors)
     fixture_map: dict[str, dict[str, Any]] = {}
     seen_ids: set[str] = set()
     control_count = 0
@@ -236,17 +267,25 @@ def validate_manifest(
             if expected_findings:
                 errors.append(f"{label}: control fixtures must not declare expected findings")
         absolute: Path | None = None
-        usable_path = path is not None
+        usable_path = path is not None and fixture_root_valid
         if path is not None:
             absolute = repo_root / path
-            if not is_relative_to(absolute, repo_root / FIXTURE_ROOT):
+            if not fixture_root_valid:
+                absolute = None
+            elif not is_relative_to(absolute, repo_root / FIXTURE_ROOT):
                 errors.append(f"{label}: fixture path resolves outside {FIXTURE_ROOT.as_posix()}")
                 absolute = None
                 usable_path = False
             elif not absolute.exists():
                 errors.append(f"{label}: fixture file is missing: {path}")
+                usable_path = False
+            elif not absolute.is_file():
+                errors.append(f"{label}: fixture path must be a file: {path}")
+                absolute = None
+                usable_path = False
             elif absolute.stat().st_size == 0:
                 errors.append(f"{label}: fixture file is empty: {path}")
+                usable_path = False
 
         for expected_index, raw_expected in enumerate(expected_findings, start=1):
             expected_label = f"{label} expected finding #{expected_index}"
