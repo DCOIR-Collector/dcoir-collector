@@ -162,6 +162,23 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
         self.assertTrue(any("unsupported flow mapping fragment" in error for error in result["validation"]["errors"]))
 
+    def test_flow_mapping_colon_fragment_after_run_fails_closed(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/malformed-flow-colon-fragment.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - { name: Flow, shell: pwsh, run: Write-Host (one, two: three) }\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertFalse(result["validation"]["success"])
+        self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+        self.assertTrue(any("unsupported flow step key 'two'" in error for error in result["validation"]["errors"]))
+
     def test_malformed_workflow_indentation_fails(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
@@ -584,6 +601,15 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "name: Inline composite\n"
                 "runs: { using: composite, steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] }\n",
                 "unsupported inline workflow runs.steps value",
+            ),
+            (
+                "workflow-step-sequence-item",
+                ".github/workflows/inline-flow-step-sequence-item.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - [shell: pwsh, run: Write-Host ok]\n",
+                "unsupported inline workflow step value",
             ),
         ]
         for name, rel, text, expected_error in cases:
