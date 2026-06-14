@@ -128,6 +128,60 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertFalse(result["validation"]["success"])
         self.assertTrue(any("unclosed '{'" in error for error in result["validation"]["errors"]))
 
+    def test_malformed_node_prefixed_flow_values_fail_closed(self) -> None:
+        cases = [
+            (
+                "anchored-run-flow-list",
+                ".github/workflows/anchored-run-flow-list.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - shell: pwsh\n"
+                "        run: &cmd [Write-Host ok\n",
+                "unclosed '['",
+            ),
+            (
+                "tagged-run-flow-map",
+                ".github/workflows/tagged-run-flow-map.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - shell: pwsh\n"
+                "        run: !dcoir { command: Write-Host ok\n",
+                "unclosed '{'",
+            ),
+            (
+                "anchored-top-level-jobs-flow",
+                ".github/workflows/anchored-top-level-jobs-flow.yml",
+                "jobs: &j { test: { steps: [ { shell: pwsh, run: Write-Host ok }\n",
+                "unclosed '['",
+            ),
+            (
+                "tagged-job-level-flow",
+                ".github/workflows/tagged-job-level-flow.yml",
+                "jobs:\n"
+                "  test: !dcoir { steps: [ { shell: pwsh, run: Write-Host ok }\n",
+                "unclosed '['",
+            ),
+            (
+                "tagged-composite-runs-flow",
+                ".github/actions/tagged-composite/action.yml",
+                "name: Tagged composite\n"
+                "runs: !dcoir { using: composite, steps: [ { shell: pwsh, run: Write-Host ok }\n",
+                "unclosed '['",
+            ),
+        ]
+        for name, rel, text, expected_error in cases:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    write(root / rel, text)
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertFalse(result["validation"]["success"])
+                self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+                self.assertTrue(any(expected_error in error for error in result["validation"]["errors"]))
+
     def test_malformed_flow_mapping_fragment_fails(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
