@@ -105,10 +105,17 @@ def normalize_repo_path(value: str) -> str:
     return Path(value.replace("\\", "/")).as_posix().lstrip("./")
 
 
+def is_absolute_repo_input(value: str) -> bool:
+    raw = value.strip()
+    slash_path = raw.replace("\\", "/")
+    return slash_path.startswith("/") or re.match(r"^[A-Za-z]:/", slash_path) is not None or Path(raw).is_absolute()
+
+
 def safe_fixture_path(value: str, label: str, errors: list[str]) -> str:
-    rel = normalize_repo_path(value)
+    raw = value.strip()
+    rel = normalize_repo_path(raw)
     parts = Path(rel).parts
-    if not rel or rel.startswith("../") or ".." in parts or Path(rel).is_absolute():
+    if not raw or is_absolute_repo_input(raw) or rel.startswith("../") or ".." in parts or Path(rel).is_absolute():
         errors.append(f"{label}: path must be a repo-relative path without traversal")
         return rel
     if not rel.startswith("project_sources/collector/fixtures/powershell_analysis/"):
@@ -397,8 +404,9 @@ def check_analyzer_skip_success(text: str, path: str, check: dict[str, Any]) -> 
 def check_external_exit(text: str, path: str, check: dict[str, Any]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     lines = text.splitlines()
+    call_operator_target_re = r"(?:\$?[A-Za-z_][\w.]*|\"[^\"]+\"|'[^']+'|\([^)]+\)|[^\s|;&]+)"
     command_re = re.compile(
-        r"^\s*(?:&\s*\$?[A-Za-z_][\w.]*|(?:robocopy|cmd|powershell|pwsh|python|git|dotnet)(?:\.exe)?\b|Start-Process\b)",
+        rf"^\s*(?:&\s*{call_operator_target_re}|(?:robocopy|cmd|powershell|pwsh|python|git|dotnet)(?:\.exe)?\b|Start-Process\b)",
         re.IGNORECASE,
     )
     for index, line in enumerate(lines):
