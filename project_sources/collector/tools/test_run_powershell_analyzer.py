@@ -43,6 +43,14 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         write(root / "project_sources/collector/source/DCOIR_Collector.ps1", "Write-Output 'collector ok'\n")
         write(root / "project_sources/collector/harness/run_DCOIR_Tests.ps1", "Write-Output 'harness ok'\n")
         write(
+            root / ".github/workflows/validate-on-pr.yml",
+            "jobs:\n"
+            "  validate:\n"
+            "    steps:\n"
+            "      - shell: pwsh\n"
+            "        run: Write-Host ok\n",
+        )
+        write(
             root / "project_sources/collector/PSScriptAnalyzerSettings.psd1",
             textwrap.dedent(
                 """\
@@ -548,6 +556,17 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
             inventory["surfaces"][0]["sha256"] = "0" * 64
             write(root / analyzer.DEFAULT_INVENTORY, json.dumps(inventory, indent=2) + "\n")
             report, errors, _warnings = analyzer.build_report(self.make_args(root, target_path=[rel]))
+
+        self.assertIsNotNone(report)
+        self.assertTrue(any("inventory sha256 does not match current file content" in error for error in errors))
+
+    def test_stale_reference_workflow_inventory_hash_fails_closed(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            inventory = json.loads((root / analyzer.DEFAULT_INVENTORY).read_text(encoding="utf-8"))
+            inventory["surfaces"][2]["sha256"] = "0" * 64
+            write(root / analyzer.DEFAULT_INVENTORY, json.dumps(inventory, indent=2) + "\n")
+            report, errors, _warnings = analyzer.build_report(self.make_args(root))
 
         self.assertIsNotNone(report)
         self.assertTrue(any("inventory sha256 does not match current file content" in error for error in errors))
