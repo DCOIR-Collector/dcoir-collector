@@ -420,6 +420,28 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(snippets[0]["shell"], "pwsh")
         self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
 
+    def test_inline_run_command_preserves_trailing_quote(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/inline-quoted-command.yml"
+            expected = "Write-Host '#ok'"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Inline quoted command\n"
+                "        shell: pwsh\n"
+                f"        run: {expected}\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["command_preview"], expected)
+        self.assertEqual(snippets[0]["command_sha256"], inventory.hashlib.sha256(expected.encode("utf-8")).hexdigest())
+
     def test_block_scalar_chomping_marker_preserves_explicit_shell_body(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
