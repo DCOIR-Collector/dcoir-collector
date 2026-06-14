@@ -552,7 +552,7 @@ def flow_mapping_pieces(item: str) -> list[str] | None:
 def flow_collection_shape_error(rel: str, line_number: int, item: str, value_without_comment: str) -> str | None:
     candidate = strip_yaml_node_prefixes(strip_yaml_inline_comment(item))
     if not candidate.startswith(("{", "[")):
-        candidate = value_without_comment.strip()
+        candidate = strip_yaml_node_prefixes(value_without_comment).strip()
     if not candidate or candidate[0] not in {"{", "["} or candidate[0] in {"'", '"'}:
         return None
 
@@ -592,7 +592,7 @@ def flow_collection_shape_error(rel: str, line_number: int, item: str, value_wit
 def flow_mapping_fragment_error(rel: str, line_number: int, item: str, value_without_comment: str) -> str | None:
     candidate = strip_yaml_node_prefixes(strip_yaml_inline_comment(item))
     if not candidate.startswith("{"):
-        candidate = value_without_comment.strip()
+        candidate = strip_yaml_node_prefixes(value_without_comment).strip()
     if not candidate or candidate[0] != "{" or candidate[0] in {"'", '"'}:
         return None
 
