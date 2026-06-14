@@ -138,6 +138,17 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
         self.assertEqual(report["summary"]["expected_finding_count"], 1)
         self.assertEqual(report["summary"]["observed_finding_count"], 1)
 
+    def test_fixture_report_accepts_crlf_fixture_inventory_hashes(self) -> None:
+        with self.make_repo(
+            bad_text='Write-Host "bad output"\r\n',
+            control_text='Write-Output "good output"\r\n',
+        ) as temp:
+            report, errors, _warnings, _matrix = harness.build_fixture_report(self.args(Path(temp)))
+
+        self.assertEqual(errors, [])
+        self.assertTrue(report["validation"]["success"])
+        self.assertEqual(report["summary"]["observed_finding_count"], 1)
+
     def test_missing_negative_expected_finding_fails(self) -> None:
         with self.make_repo(expected_line=2) as temp:
             report, errors, _warnings, _matrix = harness.build_fixture_report(self.args(Path(temp)))
