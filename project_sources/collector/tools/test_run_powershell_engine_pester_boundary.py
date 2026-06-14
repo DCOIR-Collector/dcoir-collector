@@ -232,6 +232,32 @@ class PowerShellEnginePesterBoundaryTests(unittest.TestCase):
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("dependency report missing" in error for error in errors))
 
+    def test_missing_blocking_repo_artifact_fails_without_explicit_status(self) -> None:
+        doc = good_boundary_doc()
+        rows = doc["engine_matrix"]  # type: ignore[assignment]
+        rows[0]["output_artifact"] = "project_sources/collector/missing-report.json"  # type: ignore[index]
+        with self.make_repo(doc) as temp:
+            report, errors, _warnings = boundary.build_report(self.args(Path(temp)))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("blocking engine matrix artifact missing" in error for error in errors))
+
+    def test_explicit_not_committed_artifact_is_not_claimed_boundary_evidence(self) -> None:
+        doc = good_boundary_doc()
+        rows = doc["engine_matrix"]  # type: ignore[assignment]
+        rows[0]["output_artifact"] = "project_sources/collector/missing-report.json"  # type: ignore[index]
+        rows[0]["artifact_status"] = "not_committed_in_267_boundary"  # type: ignore[index]
+        with self.make_repo(doc) as temp:
+            report, errors, warnings = boundary.build_report(self.args(Path(temp)))
+
+        self.assertEqual(errors, [])
+        self.assertTrue(report["validation"]["success"])
+        self.assertTrue(any("not committed or claimed" in warning for warning in warnings))
+        artifact = report["declared_output_artifacts"][0]
+        self.assertFalse(artifact["exists"])
+        self.assertFalse(artifact["evidence_claimed_by_boundary"])
+        self.assertEqual(artifact["artifact_status"], "not_committed_in_267_boundary")
+
     def test_custom_finding_proof_is_required(self) -> None:
         with self.make_repo(custom_findings=0) as temp:
             report, errors, _warnings = boundary.build_report(self.args(Path(temp)))
