@@ -306,12 +306,14 @@ def collect_run_block(lines: list[str], run_index: int, max_end: int | None = No
     line = lines[run_index]
     indent = line_indent(line)
     after_colon = line.split(":", 1)[1].strip() if ":" in line else ""
-    if after_colon and not is_yaml_block_scalar_marker(strip_yaml_inline_comment(after_colon)):
+    block_marker = strip_yaml_inline_comment(after_colon)
+    if after_colon and not is_yaml_block_scalar_marker(block_marker):
         return run_index + 1, clean_shell_value(after_colon)
     end_line = block_end_line(lines, run_index, indent, max_end)
+    content_indent = indent + (yaml_block_scalar_indent_indicator(block_marker) or 2)
     command_lines: list[str] = []
     for follow in lines[run_index + 1:end_line]:
-        command_lines.append(follow[indent + 2:] if len(follow) > indent + 2 else follow.strip())
+        command_lines.append(follow[content_indent:] if len(follow) > content_indent else follow.strip())
     return end_line, "\n".join(command_lines).rstrip()
 
 
@@ -347,6 +349,16 @@ def is_yaml_block_scalar_marker(value: str) -> bool:
         else:
             return False
     return True
+
+
+def yaml_block_scalar_indent_indicator(value: str) -> int | None:
+    marker = value.strip()
+    if not is_yaml_block_scalar_marker(marker):
+        return None
+    for character in marker[1:]:
+        if character in "123456789":
+            return int(character)
+    return None
 
 
 def parent_block_start(lines: list[str], index: int) -> int:
