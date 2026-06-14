@@ -519,7 +519,7 @@ def inventory_surface(repo_root: Path, fixture: dict[str, Any]) -> dict[str, Any
         "embedded_snippets": [],
         "size_bytes": len(absolute.read_bytes()),
         "line_count": text.count("\n") + (1 if text and not text.endswith("\n") else 0),
-        "sha256": sha256_file(absolute),
+        "sha256": analyzer.sha256_text(text),
     }
 
 
