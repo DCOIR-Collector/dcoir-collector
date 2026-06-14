@@ -43,9 +43,10 @@
       "module_or_tool_dependency": "PSScriptAnalyzer with repository settings",
       "evidence_type": "normalized-analyzer-report",
       "output_artifact": "project_sources/collector/powershell_analyzer_report.json",
+      "artifact_status": "not_committed_in_267_boundary",
       "blocking": true,
       "owner": "#262",
-      "boundary": "Analyzer signal may run under PowerShell 7 when module availability requires it. It must be reported separately from Windows PowerShell 5.1 compatibility evidence."
+      "boundary": "Analyzer signal may run under PowerShell 7 when module availability requires it. It must be reported separately from Windows PowerShell 5.1 compatibility evidence. The #267 boundary artifact does not claim this analyzer report is committed or passed; analyzer readiness requires separate #262 analyzer-lane or workflow artifact readback."
     },
     {
       "id": "rule-risk-fixture-proof",
