@@ -1268,6 +1268,97 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 self.assertEqual(snippets[0]["shell"], expected_shell)
                 self.assertEqual(snippets[0]["command_preview"], expected_command)
 
+    def test_yaml_node_prefix_first_step_key_is_normalized(self) -> None:
+        cases = [
+            (
+                "anchored-first-shell",
+                ".github/workflows/anchored-first-shell.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - &step shell: pwsh\n"
+                "        run: Write-Host ok\n",
+                "(unnamed step)",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "tagged-first-shell",
+                ".github/workflows/tagged-first-shell.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - !dcoir shell: pwsh\n"
+                "        run: Write-Host ok\n",
+                "(unnamed step)",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "anchored-first-run",
+                ".github/workflows/anchored-first-run.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - &step run: Write-Host ok\n"
+                "        shell: pwsh\n",
+                "(unnamed step)",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "tagged-first-run",
+                ".github/workflows/tagged-first-run.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - !dcoir run: Write-Host ok\n"
+                "        shell: pwsh\n",
+                "(unnamed step)",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "anchored-first-name",
+                ".github/workflows/anchored-first-name.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - &step name: Anchored first name\n"
+                "        shell: pwsh\n"
+                "        run: Write-Host ok\n",
+                "Anchored first name",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "tagged-first-name",
+                ".github/workflows/tagged-first-name.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - !dcoir name: Tagged first name\n"
+                "        shell: pwsh\n"
+                "        run: Write-Host ok\n",
+                "Tagged first name",
+                "pwsh",
+                "Write-Host ok",
+            ),
+        ]
+        for name, rel, text, expected_name, expected_shell, expected_command in cases:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    write(root / rel, text)
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+                snippets = result["surfaces"][0]["embedded_snippets"]
+                self.assertEqual(len(snippets), 1)
+                self.assertEqual(snippets[0]["step_or_action"], expected_name)
+                self.assertEqual(snippets[0]["shell"], expected_shell)
+                self.assertEqual(snippets[0]["command_preview"], expected_command)
+
     def test_flow_style_step_with_trailing_comment_is_detected(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
