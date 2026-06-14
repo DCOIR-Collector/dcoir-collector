@@ -508,6 +508,28 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 self.assertEqual(len(snippets), 1)
                 self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
 
+    def test_invalid_block_scalar_markers_fail_closed(self) -> None:
+        for marker in ["|++", "|--", "|22", "|0", "|2+3", ">+2-", "'|'", '"|"']:
+            with self.subTest(marker=marker):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    marker_slug = marker.replace("|", "pipe").replace(">", "fold").replace("'", "quote").replace('"', "dquote")
+                    rel = f".github/workflows/invalid-block-{marker_slug}.yml"
+                    write(
+                        root / rel,
+                        "jobs:\n"
+                        "  test:\n"
+                        "    steps:\n"
+                        "      - name: Invalid block marker\n"
+                        "        shell: pwsh\n"
+                        f"        run: {marker}\n"
+                        "          Write-Host ok\n",
+                    )
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertFalse(result["validation"]["success"])
+                self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+
     def test_block_scalar_marker_with_comment_preserves_body(self) -> None:
         for marker in ["| # keep literal", "|- # strip trailing newline"]:
             with self.subTest(marker=marker):
