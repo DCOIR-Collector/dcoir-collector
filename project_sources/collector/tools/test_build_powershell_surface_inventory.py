@@ -429,6 +429,27 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
         self.assertTrue(any("unsupported inline workflow steps value" in error for error in result["validation"]["errors"]))
 
+    def test_flow_style_step_plain_scalar_apostrophe_is_not_a_quote(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/flow-apostrophe.yml"
+            expected_name = "Collector's Flow"
+            expected_command = "echo Collector's log"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                f"      - {{ name: {expected_name}, shell: pwsh, run: {expected_command} }}\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["step_or_action"], expected_name)
+        self.assertEqual(snippets[0]["command_preview"], expected_command)
+
     def test_plain_scalar_apostrophe_does_not_fail_workflow_shape(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
@@ -827,6 +848,29 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
         self.assertEqual(result["surfaces"], [])
 
+    def test_block_scalar_comments_are_not_command_markers(self) -> None:
+        for body in [
+            "          echo ok\n          # powershell note\n",
+            "          echo ok # powershell note\n",
+        ]:
+            with self.subTest(body=body):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    rel = ".github/workflows/block-comment-marker.yml"
+                    write(
+                        root / rel,
+                        "jobs:\n"
+                        "  test:\n"
+                        "    steps:\n"
+                        "      - name: Bash block step\n"
+                        "        run: |\n"
+                        f"{body}",
+                    )
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+                self.assertEqual(result["surfaces"], [])
+
     def test_plain_scalar_apostrophe_before_comment_is_not_a_quote(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
@@ -843,6 +887,57 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
         self.assertEqual(result["surfaces"], [])
+
+    def test_single_quoted_run_with_escaped_apostrophe_and_hash_is_preserved(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/single-quoted-run.yml"
+            expected = "Write-Host Bob's # literal hash"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Single quoted command\n"
+                "        shell: pwsh\n"
+                "        run: 'Write-Host Bob''s # literal hash' # trailing YAML comment\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["command_preview"], expected)
+        self.assertEqual(snippets[0]["command_sha256"], inventory.hashlib.sha256(expected.encode("utf-8")).hexdigest())
+
+    def test_unterminated_quoted_workflow_scalars_fail_closed(self) -> None:
+        cases = [
+            (
+                "unterminated-run",
+                "      - name: Unterminated run\n"
+                "        shell: pwsh\n"
+                "        run: \"Write-Host ok\n",
+            ),
+            (
+                "unterminated-shell",
+                "      - name: Unterminated shell\n"
+                "        shell: \"pwsh\n"
+                "        run: Write-Host ok\n",
+            ),
+        ]
+        for name, body in cases:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    rel = f".github/workflows/{name}.yml"
+                    write(root / rel, "jobs:\n  test:\n    steps:\n" + body)
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertFalse(result["validation"]["success"])
+                self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+                self.assertTrue(
+                    any("unterminated quoted scalar" in error for error in result["validation"]["errors"])
+                )
 
     def test_composite_action_runs_steps_are_detected(self) -> None:
         with self.make_minimal_repo() as temp:
