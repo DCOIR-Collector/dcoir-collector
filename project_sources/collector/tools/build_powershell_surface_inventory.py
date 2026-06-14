@@ -305,13 +305,20 @@ def collect_run_block(lines: list[str], run_index: int, max_end: int | None = No
     line = lines[run_index]
     indent = line_indent(line)
     after_colon = line.split(":", 1)[1].strip() if ":" in line else ""
-    if after_colon and after_colon not in {"|", ">"}:
+    if after_colon and not is_yaml_block_scalar_marker(after_colon):
         return run_index + 1, after_colon.strip("'\"")
     end_line = block_end_line(lines, run_index, indent, max_end)
     command_lines: list[str] = []
     for follow in lines[run_index + 1:end_line]:
         command_lines.append(follow[indent + 2:] if len(follow) > indent + 2 else follow.strip())
     return end_line, "\n".join(command_lines).rstrip()
+
+
+def is_yaml_block_scalar_marker(value: str) -> bool:
+    marker = value.strip().strip("'\"")
+    if not marker or marker[0] not in {"|", ">"}:
+        return False
+    return all(character in "+-0123456789" for character in marker[1:])
 
 
 def parent_block_start(lines: list[str], index: int) -> int:
@@ -821,7 +828,7 @@ def discover_repo_files(repo_root: Path) -> tuple[list[str], str]:
 def normalize_changed_files(values: list[str], repo_root: Path) -> list[str]:
     normalized: list[str] = []
     for value in values:
-        path = Path(value)
+        path = Path(value.replace("\\", "/"))
         if path.is_absolute():
             try:
                 normalized.append(path.resolve().relative_to(repo_root.resolve()).as_posix())
@@ -1133,6 +1140,11 @@ def validate_inventory(
             and entry.get("size_bytes") == 0
         ):
             errors.append(f"{entry['path']}: included PowerShell surface is empty")
+        marker_lines = entry.get("marker_lines")
+        if not isinstance(marker_lines, list) or not all(isinstance(line, int) for line in marker_lines):
+            errors.append(f"{entry['path']}: marker_lines must be a list of line numbers")
+        if not isinstance(entry.get("embedded_snippets"), list):
+            errors.append(f"{entry['path']}: embedded_snippets must be a list")
         if entry["category"] == "workflow_embedded_powershell" and not entry.get("embedded_snippets"):
             errors.append(f"{entry['path']}: workflow PowerShell surface has no extracted snippet records")
 
