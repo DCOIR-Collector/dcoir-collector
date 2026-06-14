@@ -253,6 +253,30 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         self.assertEqual(report["summary"]["target_count"], 1)
         self.assertEqual(report["targets"][0]["path"], rel)
 
+    def test_targeted_operator_tooling_surface_does_not_require_primary_surface(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            rel = ".github/scripts/Invoke-ChatGptReportPush.ps1"
+            tooling_text = "Write-Output 'tooling ok'\n"
+            write(root / rel, tooling_text)
+            inventory = json.loads((root / analyzer.DEFAULT_INVENTORY).read_text(encoding="utf-8"))
+            inventory["surfaces"].append(
+                surface(
+                    rel,
+                    "operator_tooling",
+                    ".ps1",
+                    sha256=analyzer.sha256_text(tooling_text),
+                )
+            )
+            write(root / analyzer.DEFAULT_INVENTORY, json.dumps(inventory, indent=2) + "\n")
+            report, errors, _warnings = analyzer.build_report(self.make_args(root, target_path=[rel]))
+
+        self.assertEqual(errors, [])
+        assert report is not None
+        self.assertTrue(report["validation"]["success"])
+        self.assertEqual(report["summary"]["target_count"], 1)
+        self.assertEqual(report["targets"][0]["path"], rel)
+
     def test_ps1_txt_target_is_staged_and_finding_path_maps_back(self) -> None:
         with self.make_repo() as temp:
             root = Path(temp)
