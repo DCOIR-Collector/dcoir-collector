@@ -238,6 +238,21 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         self.assertEqual(report["analyzer"]["name"], "FakePSScriptAnalyzer")
         self.assertEqual(report["powershell"]["version"], "7.4.1")
 
+    def test_windows_separator_target_path_selects_inventory_target(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            rel = "project_sources/collector/source/DCOIR_Collector.ps1"
+            requested = rel.replace("/", "\\")
+            report, errors, _warnings = analyzer.build_report(
+                self.make_args(root, target_path=[requested])
+            )
+
+        self.assertEqual(errors, [])
+        assert report is not None
+        self.assertTrue(report["validation"]["success"])
+        self.assertEqual(report["summary"]["target_count"], 1)
+        self.assertEqual(report["targets"][0]["path"], rel)
+
     def test_ps1_txt_target_is_staged_and_finding_path_maps_back(self) -> None:
         with self.make_repo() as temp:
             root = Path(temp)
