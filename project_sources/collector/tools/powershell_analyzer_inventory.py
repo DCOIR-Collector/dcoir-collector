@@ -183,7 +183,7 @@ def build_target_sets(
 
     if not targets:
         errors.append("Analyzer intended target set is empty")
-    if not any(target["category"] in PRIMARY_TARGET_CATEGORIES for target in targets):
+    if only_paths is None and not any(target["category"] in PRIMARY_TARGET_CATEGORIES for target in targets):
         errors.append("Analyzer intended target set has no collector or harness source surfaces")
     return targets, skipped_surfaces, errors
 
