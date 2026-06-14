@@ -211,6 +211,41 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertFalse(result["validation"]["success"])
         self.assertTrue(any("non-list entry directly under steps" in error for error in result["validation"]["errors"]))
 
+    def test_overindented_workflow_step_keys_fail_closed(self) -> None:
+        cases = [
+            (
+                "overindented-run",
+                ".github/workflows/overindented-run.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - shell: pwsh\n"
+                "          run: Write-Host ok\n",
+                "misindented workflow run value",
+            ),
+            (
+                "overindented-shell",
+                ".github/workflows/overindented-shell.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Bad shell indent\n"
+                "          shell: pwsh\n"
+                "        run: Write-Host ok\n",
+                "misindented workflow shell value",
+            ),
+        ]
+        for name, rel, text, expected_error in cases:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    write(root / rel, text)
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertFalse(result["validation"]["success"])
+                self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+                self.assertTrue(any(expected_error in error for error in result["validation"]["errors"]))
+
     def test_malformed_step_list_item_fails(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
@@ -247,18 +282,32 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         cases = [
             ("direct-run-list", "      - shell: pwsh\n        run: [Write-Host ok]\n", "run"),
             ("direct-run-map", "      - shell: pwsh\n        run: { command: Write-Host ok }\n", "run"),
+            ("direct-run-alias", "      - shell: pwsh\n        run: *cmd\n", "run"),
             ("direct-run-block-list", "      - shell: pwsh\n        run:\n          - Write-Host ok\n", "run"),
             ("direct-run-block-map", "      - shell: pwsh\n        run:\n          command: Write-Host ok\n", "run"),
             ("direct-shell-list", "      - shell: [pwsh]\n        run: Write-Host ok\n", "shell"),
             ("direct-shell-expression", "      - shell: ${{ matrix.shell }}\n        run: Write-Host ok\n", "shell"),
+            ("direct-shell-alias", "      - shell: *ps\n        run: Write-Host ok\n", "shell"),
             ("direct-shell-block-list", "      - shell:\n          - pwsh\n        run: Write-Host ok\n", "shell"),
             ("direct-shell-block-map", "      - shell:\n          executable: pwsh\n        run: Write-Host ok\n", "shell"),
             ("flow-step-run-list", "      - { name: Flow, shell: pwsh, run: [Write-Host ok] }\n", "run"),
             ("flow-step-run-map", "      - { name: Flow, shell: pwsh, run: { command: Write-Host ok } }\n", "run"),
+            ("flow-step-run-alias", "      - { name: Flow, shell: pwsh, run: *cmd }\n", "run"),
             ("flow-step-shell-list", "      - { name: Flow, shell: [pwsh], run: Write-Host ok }\n", "shell"),
             ("flow-step-shell-expression", "      - { name: Flow, shell: ${{ matrix.shell }}, run: Write-Host ok }\n", "shell"),
+            ("flow-step-shell-alias", "      - { name: Flow, shell: *ps, run: Write-Host ok }\n", "shell"),
             ("commented-flow-step-run-list", "      - { name: Flow, shell: pwsh, run: [Write-Host ok] } # comment\n", "run"),
             ("commented-flow-step-shell-list", "      - { name: Flow, shell: [pwsh], run: Write-Host ok } # comment\n", "shell"),
+            (
+                "block-default-shell-alias",
+                "    defaults:\n"
+                "      run:\n"
+                "        shell: *ps\n"
+                "    steps:\n"
+                "      - name: Uses invalid default shell alias\n"
+                "        run: Write-Host ok\n",
+                "defaults.run.shell",
+            ),
             (
                 "block-default-shell-list",
                 "    defaults:\n"
@@ -299,6 +348,14 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "    steps:\n"
                 "      - name: Uses invalid default shell\n"
                 "        run: Write-Host ok\n",
+                "defaults.run.shell",
+            ),
+            (
+                "inline-default-shell-alias",
+                "    steps:\n"
+                "      - name: Uses invalid inline default shell alias\n"
+                "        run: Write-Host ok\n"
+                "defaults: { run: { shell: *ps } }\n",
                 "defaults.run.shell",
             ),
             (
@@ -590,9 +647,35 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "unsupported inline workflow jobs.steps value",
             ),
             (
+                "workflow-anchored-job-value",
+                ".github/workflows/inline-flow-anchored-job.yml",
+                "jobs:\n"
+                "  test: &j { steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] }\n",
+                "unsupported inline workflow jobs.steps value",
+            ),
+            (
+                "workflow-tagged-job-value",
+                ".github/workflows/inline-flow-tagged-job.yml",
+                "jobs:\n"
+                "  test: !dcoir { steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] }\n",
+                "unsupported inline workflow jobs.steps value",
+            ),
+            (
                 "workflow-jobs-value",
                 ".github/workflows/inline-flow-jobs.yml",
                 "jobs: { test: { steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] } }\n",
+                "unsupported inline workflow jobs.steps value",
+            ),
+            (
+                "workflow-anchored-jobs-value",
+                ".github/workflows/inline-flow-anchored-jobs.yml",
+                "jobs: &j { test: { steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] } }\n",
+                "unsupported inline workflow jobs.steps value",
+            ),
+            (
+                "workflow-tagged-jobs-value",
+                ".github/workflows/inline-flow-tagged-jobs.yml",
+                "jobs: !dcoir { test: { steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] } }\n",
                 "unsupported inline workflow jobs.steps value",
             ),
             (
@@ -600,6 +683,20 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 ".github/actions/inline-flow/action.yml",
                 "name: Inline composite\n"
                 "runs: { using: composite, steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] }\n",
+                "unsupported inline workflow runs.steps value",
+            ),
+            (
+                "composite-anchored-runs-value",
+                ".github/actions/inline-flow-anchored/action.yml",
+                "name: Inline composite\n"
+                "runs: &r { using: composite, steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] }\n",
+                "unsupported inline workflow runs.steps value",
+            ),
+            (
+                "composite-tagged-runs-value",
+                ".github/actions/inline-flow-tagged/action.yml",
+                "name: Inline composite\n"
+                "runs: !dcoir { using: composite, steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] }\n",
                 "unsupported inline workflow runs.steps value",
             ),
             (
@@ -1068,6 +1165,108 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(snippets[0]["step_or_action"], "Tagged Flow")
         self.assertEqual(snippets[0]["shell"], "pwsh")
         self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
+    def test_yaml_node_prefix_scalar_shell_and_run_values_are_normalized(self) -> None:
+        cases = [
+            (
+                "anchored-shell",
+                ".github/workflows/anchored-shell.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Anchored shell\n"
+                "        shell: &ps pwsh\n"
+                "        run: Write-Host ok\n",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "tagged-shell",
+                ".github/workflows/tagged-shell.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Tagged shell\n"
+                "        shell: !dcoir pwsh\n"
+                "        run: Write-Host ok\n",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "anchored-run",
+                ".github/workflows/anchored-run.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Anchored run\n"
+                "        shell: pwsh\n"
+                "        run: &cmd Write-Host ok\n",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "tagged-run",
+                ".github/workflows/tagged-run.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Tagged run\n"
+                "        shell: pwsh\n"
+                "        run: !dcoir Write-Host ok\n",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "anchored-default-shell",
+                ".github/workflows/anchored-default-shell.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    defaults:\n"
+                "      run:\n"
+                "        shell: &ps pwsh\n"
+                "    steps:\n"
+                "      - name: Anchored default shell\n"
+                "        run: Write-Host ok\n",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "tagged-default-shell",
+                ".github/workflows/tagged-default-shell.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    defaults:\n"
+                "      run:\n"
+                "        shell: !dcoir pwsh\n"
+                "    steps:\n"
+                "      - name: Tagged default shell\n"
+                "        run: Write-Host ok\n",
+                "pwsh",
+                "Write-Host ok",
+            ),
+            (
+                "flow-anchored-shell-tagged-run",
+                ".github/workflows/flow-anchored-shell-tagged-run.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - { name: Flow prefixes, shell: &ps pwsh, run: !dcoir Write-Host ok }\n",
+                "pwsh",
+                "Write-Host ok",
+            ),
+        ]
+        for name, rel, text, expected_shell, expected_command in cases:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    write(root / rel, text)
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+                snippets = result["surfaces"][0]["embedded_snippets"]
+                self.assertEqual(len(snippets), 1)
+                self.assertEqual(snippets[0]["shell"], expected_shell)
+                self.assertEqual(snippets[0]["command_preview"], expected_command)
 
     def test_flow_style_step_with_trailing_comment_is_detected(self) -> None:
         with self.make_minimal_repo() as temp:
