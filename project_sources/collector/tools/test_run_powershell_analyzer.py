@@ -552,6 +552,19 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         self.assertIsNotNone(report)
         self.assertTrue(any("inventory sha256 does not match current file content" in error for error in errors))
 
+    def test_inventory_hash_accepts_line_ending_normalized_match(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            rel = "project_sources/collector/source/DCOIR_Collector.ps1"
+            (root / rel).write_bytes(b"Write-Output 'collector ok'\r\n")
+            inventory = json.loads((root / analyzer.DEFAULT_INVENTORY).read_text(encoding="utf-8"))
+            inventory["surfaces"][0]["sha256"] = analyzer.sha256_text("Write-Output 'collector ok'\n")
+            write(root / analyzer.DEFAULT_INVENTORY, json.dumps(inventory, indent=2) + "\n")
+            report, errors, _warnings = analyzer.build_report(self.make_args(root, target_path=[rel]))
+
+        self.assertIsNotNone(report)
+        self.assertEqual(errors, [])
+
     def test_empty_intended_target_set_fails_closed(self) -> None:
         with self.make_repo() as temp:
             root = Path(temp)
