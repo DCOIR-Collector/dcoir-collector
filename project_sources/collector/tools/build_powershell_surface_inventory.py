@@ -68,7 +68,6 @@ POWERSHELL_FILE_SUFFIXES = (".ps1", ".psm1", ".psd1", ".ps1xml", ".ps1.txt")
 WORKFLOW_MARKER_RE = re.compile(
     r"(?im)(shell:\s*(?:pwsh|powershell)\b|(?<![-.\w])pwsh(?![-.\w])|(?<![-.\w])powershell(?:\.exe)?(?![-.\w]))"
 )
-INLINE_SHELL_RE = re.compile(r"(?:^|[,{]\s*)shell\s*:\s*(?:(['\"])(.*?)\1|([^,}]+))", re.IGNORECASE)
 MANIFEST_PATH = Path("project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json")
 HARNESS_PARTS_ROOT = Path("project_sources/collector/harness/source/parts")
 HARNESS_GENERATED_OUTPUT = Path("project_sources/collector/harness/run_DCOIR_Tests.generated.ps1")
@@ -121,12 +120,9 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
         return f"{rel}: workflow/action YAML is empty"
 
     lines = text.splitlines()
-    stack: list[tuple[str, int]] = []
     block_scalar_indent: int | None = None
     block_scalar_required_indent: int | None = None
     block_scalar_auto_indent: int | None = None
-    pairs = {"[": "]", "{": "}"}
-    closing = {"]", "}"}
 
     for line_number, line in enumerate(lines, start=1):
         indent = line_indent(line)
@@ -158,23 +154,11 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
         if not stripped.startswith("- ") and ":" not in item:
             return f"{rel}: line {line_number} has no YAML key/value separator"
 
-        quote: str | None = None
-        for character in line:
-            if quote:
-                if character == quote:
-                    quote = None
-                continue
-            if character in {"'", '"'}:
-                quote = character
-            elif character in pairs:
-                stack.append((character, line_number))
-            elif character in closing:
-                if not stack or pairs[stack[-1][0]] != character:
-                    return f"{rel}: line {line_number} has an unmatched {character!r}"
-                stack.pop()
-
         value = item.split(":", 1)[1].strip() if ":" in item else ""
         value_without_comment = strip_yaml_inline_comment(value)
+        flow_error = flow_collection_shape_error(rel, line_number, item, value_without_comment)
+        if flow_error:
+            return flow_error
         nonscalar_key = nonscalar_workflow_string_value_key(lines, line_number - 1, item, value_without_comment)
         if nonscalar_key:
             return f"{rel}: line {line_number} has a non-scalar workflow {nonscalar_key} value"
@@ -186,9 +170,6 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
         elif is_invalid_block_scalar_like_value(value_without_comment):
             return f"{rel}: line {line_number} has an invalid YAML block scalar marker"
 
-    if stack:
-        opener, line_number = stack[-1]
-        return f"{rel}: line {line_number} has an unclosed {opener!r}"
     for index, line in enumerate(lines):
         if yaml_item_text(line) != "steps:":
             continue
@@ -357,6 +338,63 @@ def unquoted_flow_collection_value(value: str) -> bool:
     return (stripped[0] == "[" and stripped[-1] == "]") or (stripped[0] == "{" and stripped[-1] == "}")
 
 
+def flow_collection_shape_error(rel: str, line_number: int, item: str, value_without_comment: str) -> str | None:
+    candidate = strip_yaml_inline_comment(item)
+    if not candidate.startswith(("{", "[")):
+        candidate = value_without_comment.strip()
+    if not candidate or candidate[0] not in {"{", "["} or candidate[0] in {"'", '"'}:
+        return None
+
+    pairs = {"[": "]", "{": "}"}
+    closing = {"]", "}"}
+    stack: list[tuple[str, int]] = []
+    quote: str | None = None
+    for character in candidate:
+        if quote:
+            if character == quote:
+                quote = None
+            continue
+        if character in {"'", '"'}:
+            quote = character
+        elif character in pairs:
+            stack.append((character, line_number))
+        elif character in closing:
+            if not stack or pairs[stack[-1][0]] != character:
+                return f"{rel}: line {line_number} has an unmatched {character!r}"
+            stack.pop()
+    if stack:
+        opener, opener_line = stack[-1]
+        return f"{rel}: line {opener_line} has an unclosed {opener!r}"
+    return None
+
+
+def nested_content_index(lines: list[str], index: int) -> int | None:
+    parent_indent = yaml_mapping_key_indent(lines[index])
+    for candidate in range(index + 1, len(lines)):
+        stripped = lines[candidate].strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if line_indent(lines[candidate]) <= parent_indent:
+            return None
+        return candidate
+    return None
+
+
+def has_block_collection_child(lines: list[str], index: int) -> bool:
+    child = nested_content_index(lines, index)
+    if child is None:
+        return False
+    child_item = yaml_item_text(lines[child])
+    child_value = child_item.split(":", 1)[1].strip() if ":" in child_item else ""
+    if lines[child].strip().startswith("- "):
+        return True
+    if child_item.startswith(("{", "[")):
+        return True
+    if ":" in child_item and not is_yaml_block_scalar_marker(strip_yaml_inline_comment(child_value)):
+        return True
+    return False
+
+
 def nonscalar_workflow_string_value_key(
     lines: list[str],
     index: int,
@@ -373,9 +411,18 @@ def nonscalar_workflow_string_value_key(
     if key == "run" and direct_step_mapping_key(lines, index):
         if unquoted_flow_collection_value(value_without_comment):
             return "run"
-    if key == "shell" and (direct_step_mapping_key(lines, index) or defaults_run_shell_key(lines, index)):
+        if not value_without_comment and has_block_collection_child(lines, index):
+            return "run"
+    if key == "shell" and direct_step_mapping_key(lines, index):
         if unquoted_flow_collection_value(value_without_comment):
             return "shell"
+        if not value_without_comment and has_block_collection_child(lines, index):
+            return "shell"
+    if key == "shell" and defaults_run_shell_key(lines, index):
+        if unquoted_flow_collection_value(value_without_comment):
+            return "defaults.run.shell"
+        if not value_without_comment and has_block_collection_child(lines, index):
+            return "defaults.run.shell"
     if key == "defaults":
         inline_shell = inline_shell_value(value_without_comment)
         if inline_shell and unquoted_flow_collection_value(inline_shell):
@@ -512,7 +559,7 @@ def clean_shell_value(value: str) -> str:
 
 
 def split_flow_mapping(item: str) -> dict[str, str]:
-    stripped = item.strip()
+    stripped = strip_yaml_inline_comment(item)
     if not (stripped.startswith("{") and stripped.endswith("}")):
         return {}
     content = stripped[1:-1]
@@ -572,10 +619,15 @@ def is_powershell_shell(value: str) -> bool:
 
 
 def inline_shell_value(text: str) -> str | None:
-    match = INLINE_SHELL_RE.search(text)
-    if not match:
+    mapping = split_flow_mapping(text)
+    if not mapping:
         return None
-    return clean_shell_value(match.group(2) or match.group(3) or "")
+    if "shell" in mapping:
+        return mapping["shell"]
+    run_value = mapping.get("run")
+    if not run_value:
+        return None
+    return split_flow_mapping(run_value).get("shell")
 
 
 def defaults_inline_shell(item: str) -> str | None:
