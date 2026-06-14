@@ -1640,6 +1640,63 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(snippets[0]["command_preview"], expected)
         self.assertEqual(snippets[0]["command_sha256"], inventory.hashlib.sha256(expected.encode("utf-8")).hexdigest())
 
+    def test_yaml_node_prefix_block_scalar_run_preserves_body(self) -> None:
+        cases = [
+            (
+                "anchored-literal-block",
+                "run: &cmd |\n"
+                "          $env:Path\n"
+                "          Write-Host ok\n",
+                "$env:Path\nWrite-Host ok",
+            ),
+            (
+                "tagged-literal-block",
+                "run: !dcoir |\n"
+                "          $env:Path\n"
+                "          Write-Host ok\n",
+                "$env:Path\nWrite-Host ok",
+            ),
+            (
+                "anchored-folded-block",
+                "run: &cmd >-\n"
+                "          Write-Host one\n"
+                "          Write-Host two\n",
+                "Write-Host one Write-Host two",
+            ),
+            (
+                "tagged-folded-block",
+                "run: !dcoir >+\n"
+                "          Write-Host one\n"
+                "          Write-Host two\n",
+                "Write-Host one Write-Host two",
+            ),
+        ]
+        for name, run_block, expected in cases:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    rel = f".github/workflows/{name}.yml"
+                    write(
+                        root / rel,
+                        "jobs:\n"
+                        "  test:\n"
+                        "    steps:\n"
+                        "      - name: Uses prefixed block scalar\n"
+                        "        shell: pwsh\n"
+                        f"        {run_block}",
+                    )
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+                snippets = result["surfaces"][0]["embedded_snippets"]
+                self.assertEqual(len(snippets), 1)
+                self.assertEqual(snippets[0]["command_preview"], expected)
+                self.assertEqual(
+                    snippets[0]["command_sha256"],
+                    inventory.hashlib.sha256(expected.encode("utf-8")).hexdigest(),
+                )
+                self.assertGreater(snippets[0]["line_end"], snippets[0]["line_start"])
+
     def test_block_scalar_digit_markers_preserve_body(self) -> None:
         for marker in ["|2", "|2-", "|+2", ">2", ">2-", ">+2"]:
             with self.subTest(marker=marker):
