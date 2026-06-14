@@ -611,6 +611,51 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "      - [shell: pwsh, run: Write-Host ok]\n",
                 "unsupported inline workflow step value",
             ),
+            (
+                "workflow-step-overindented-sequence-item",
+                ".github/workflows/inline-flow-overindented-step-sequence-item.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "        - [shell: pwsh, run: Write-Host ok]\n",
+                "unsupported inline workflow step value",
+            ),
+            (
+                "workflow-step-anchored-sequence-item",
+                ".github/workflows/inline-flow-anchored-step-sequence-item.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - &ps [shell: pwsh, run: Write-Host ok]\n",
+                "unsupported inline workflow step value",
+            ),
+            (
+                "workflow-step-tagged-sequence-item",
+                ".github/workflows/inline-flow-tagged-step-sequence-item.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - !dcoir [shell: pwsh, run: Write-Host ok]\n",
+                "unsupported inline workflow step value",
+            ),
+            (
+                "workflow-step-alias-item",
+                ".github/workflows/inline-flow-alias-step-item.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - *ps\n",
+                "unsupported alias workflow step value",
+            ),
+            (
+                "workflow-step-overindented-non-list-item",
+                ".github/workflows/overindented-non-list-step-item.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "        run: Write-Host ok\n",
+                "non-list entry directly under steps",
+            ),
         ]
         for name, rel, text, expected_error in cases:
             with self.subTest(name=name):
@@ -981,6 +1026,46 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         snippets = result["surfaces"][0]["embedded_snippets"]
         self.assertEqual(len(snippets), 1)
         self.assertEqual(snippets[0]["step_or_action"], "Flow style")
+        self.assertEqual(snippets[0]["shell"], "pwsh")
+        self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
+    def test_anchored_flow_style_step_with_powershell_shell_is_detected(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/anchored-flow-step.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - &ps { name: Anchored Flow, shell: pwsh, run: Write-Host ok }\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["step_or_action"], "Anchored Flow")
+        self.assertEqual(snippets[0]["shell"], "pwsh")
+        self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
+    def test_tagged_flow_style_step_with_powershell_shell_is_detected(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/tagged-flow-step.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - !dcoir { name: Tagged Flow, shell: pwsh, run: Write-Host ok }\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["step_or_action"], "Tagged Flow")
         self.assertEqual(snippets[0]["shell"], "pwsh")
         self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
 
