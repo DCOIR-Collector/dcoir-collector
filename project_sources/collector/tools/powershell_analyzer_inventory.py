@@ -15,6 +15,9 @@ from powershell_analyzer_contract import (
     sha256_line_ending_stable_file,
 )
 
+SHA256_HEX_CHARS = set("0123456789abcdefABCDEF")
+
+
 def load_inventory(repo_root: Path, inventory_path: Path) -> dict[str, Any]:
     inventory = read_json(inventory_path, "PowerShell surface inventory")
     if not isinstance(inventory, dict):
@@ -80,7 +83,9 @@ def validate_surface_file(repo_root: Path, path: str, surface: dict[str, Any], p
         return f"{path}: {purpose} is empty"
     actual_sha256 = sha256_line_ending_stable_file(absolute_path)
     inventory_sha256 = scalar(surface.get("sha256")).strip()
-    if inventory_sha256 and inventory_sha256 != actual_sha256:
+    if len(inventory_sha256) != 64 or any(character not in SHA256_HEX_CHARS for character in inventory_sha256):
+        return f"{path}: inventory sha256 is missing or invalid"
+    if inventory_sha256 != actual_sha256:
         return f"{path}: inventory sha256 does not match current file content"
     return None
 
