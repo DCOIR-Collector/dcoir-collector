@@ -19,7 +19,25 @@ def write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
-def surface(path: str, category: str, source_type: str, decision: str = "include") -> dict[str, object]:
+def update_inventory_sha256(root: Path, rel: str, text: str) -> None:
+    inventory_path = root / analyzer.DEFAULT_INVENTORY
+    inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+    for surface_record in inventory["surfaces"]:
+        if surface_record["path"] == rel:
+            surface_record["sha256"] = analyzer.sha256_text(text)
+            break
+    else:
+        raise AssertionError(f"inventory test surface not found: {rel}")
+    write(inventory_path, json.dumps(inventory, indent=2) + "\n")
+
+
+def surface(
+    path: str,
+    category: str,
+    source_type: str,
+    decision: str = "include",
+    sha256: str = "",
+) -> dict[str, object]:
     return {
         "path": path,
         "category": category,
@@ -32,7 +50,7 @@ def surface(path: str, category: str, source_type: str, decision: str = "include
         "embedded_snippets": [],
         "size_bytes": 20,
         "line_count": 1,
-        "sha256": "",
+        "sha256": sha256,
     }
 
 
@@ -40,16 +58,18 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
     def make_repo(self) -> tempfile.TemporaryDirectory[str]:
         temp = tempfile.TemporaryDirectory()
         root = Path(temp.name)
-        write(root / "project_sources/collector/source/DCOIR_Collector.ps1", "Write-Output 'collector ok'\n")
-        write(root / "project_sources/collector/harness/run_DCOIR_Tests.ps1", "Write-Output 'harness ok'\n")
-        write(
-            root / ".github/workflows/validate-on-pr.yml",
+        source_text = "Write-Output 'collector ok'\n"
+        harness_text = "Write-Output 'harness ok'\n"
+        workflow_text = (
             "jobs:\n"
             "  validate:\n"
             "    steps:\n"
             "      - shell: pwsh\n"
-            "        run: Write-Host ok\n",
+            "        run: Write-Host ok\n"
         )
+        write(root / "project_sources/collector/source/DCOIR_Collector.ps1", source_text)
+        write(root / "project_sources/collector/harness/run_DCOIR_Tests.ps1", harness_text)
+        write(root / ".github/workflows/validate-on-pr.yml", workflow_text)
         write(
             root / "project_sources/collector/PSScriptAnalyzerSettings.psd1",
             textwrap.dedent(
@@ -84,9 +104,25 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
             "summary": {"total_surfaces": 3},
             "validation": {"success": True, "errors": [], "warnings": []},
             "surfaces": [
-                surface("project_sources/collector/source/DCOIR_Collector.ps1", "collector_runtime_wrapper", ".ps1"),
-                surface("project_sources/collector/harness/run_DCOIR_Tests.ps1", "collector_harness_script", ".ps1"),
-                surface(".github/workflows/validate-on-pr.yml", "workflow_embedded_powershell", "workflow_yaml", "reference"),
+                surface(
+                    "project_sources/collector/source/DCOIR_Collector.ps1",
+                    "collector_runtime_wrapper",
+                    ".ps1",
+                    sha256=analyzer.sha256_text(source_text),
+                ),
+                surface(
+                    "project_sources/collector/harness/run_DCOIR_Tests.ps1",
+                    "collector_harness_script",
+                    ".ps1",
+                    sha256=analyzer.sha256_text(harness_text),
+                ),
+                surface(
+                    ".github/workflows/validate-on-pr.yml",
+                    "workflow_embedded_powershell",
+                    "workflow_yaml",
+                    "reference",
+                    sha256=analyzer.sha256_text(workflow_text),
+                ),
             ],
         }
         write(root / "project_sources/collector/powershell_surface_inventory.json", json.dumps(inventory, indent=2) + "\n")
@@ -206,9 +242,17 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         with self.make_repo() as temp:
             root = Path(temp)
             rel = "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-000.ps1.txt"
-            write(root / rel, "Write-Host 'bad source part'\n")
+            source_part_text = "Write-Host 'bad source part'\n"
+            write(root / rel, source_part_text)
             inventory = json.loads((root / analyzer.DEFAULT_INVENTORY).read_text(encoding="utf-8"))
-            inventory["surfaces"].append(surface(rel, "collector_harness_source_part", ".ps1.txt"))
+            inventory["surfaces"].append(
+                surface(
+                    rel,
+                    "collector_harness_source_part",
+                    ".ps1.txt",
+                    sha256=analyzer.sha256_text(source_part_text),
+                )
+            )
             write(root / analyzer.DEFAULT_INVENTORY, json.dumps(inventory, indent=2) + "\n")
             args = self.make_args(root, target_path=[rel], allow_findings=True)
             report, errors, _warnings = analyzer.build_report(args)
@@ -560,6 +604,18 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         self.assertIsNotNone(report)
         self.assertTrue(any("inventory sha256 does not match current file content" in error for error in errors))
 
+    def test_missing_inventory_hash_fails_closed(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            rel = "project_sources/collector/source/DCOIR_Collector.ps1"
+            inventory = json.loads((root / analyzer.DEFAULT_INVENTORY).read_text(encoding="utf-8"))
+            inventory["surfaces"][0]["sha256"] = ""
+            write(root / analyzer.DEFAULT_INVENTORY, json.dumps(inventory, indent=2) + "\n")
+            report, errors, _warnings = analyzer.build_report(self.make_args(root, target_path=[rel]))
+
+        self.assertIsNotNone(report)
+        self.assertTrue(any("inventory sha256 is missing or invalid" in error for error in errors))
+
     def test_stale_reference_workflow_inventory_hash_fails_closed(self) -> None:
         with self.make_repo() as temp:
             root = Path(temp)
@@ -570,6 +626,17 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
 
         self.assertIsNotNone(report)
         self.assertTrue(any("inventory sha256 does not match current file content" in error for error in errors))
+
+    def test_missing_reference_workflow_inventory_hash_fails_closed(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            inventory = json.loads((root / analyzer.DEFAULT_INVENTORY).read_text(encoding="utf-8"))
+            inventory["surfaces"][2]["sha256"] = ""
+            write(root / analyzer.DEFAULT_INVENTORY, json.dumps(inventory, indent=2) + "\n")
+            report, errors, _warnings = analyzer.build_report(self.make_args(root))
+
+        self.assertIsNotNone(report)
+        self.assertTrue(any("inventory sha256 is missing or invalid" in error for error in errors))
 
     def test_stale_reference_workflow_hash_fails_with_target_filter(self) -> None:
         with self.make_repo() as temp:
@@ -599,8 +666,17 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
     def test_empty_intended_target_set_fails_closed(self) -> None:
         with self.make_repo() as temp:
             root = Path(temp)
+            workflow_text = (root / ".github/workflows/validate-on-pr.yml").read_text(encoding="utf-8")
             inventory = json.loads((root / analyzer.DEFAULT_INVENTORY).read_text(encoding="utf-8"))
-            inventory["surfaces"] = [surface(".github/workflows/validate-on-pr.yml", "workflow_embedded_powershell", "workflow_yaml", "reference")]
+            inventory["surfaces"] = [
+                surface(
+                    ".github/workflows/validate-on-pr.yml",
+                    "workflow_embedded_powershell",
+                    "workflow_yaml",
+                    "reference",
+                    sha256=analyzer.sha256_text(workflow_text),
+                )
+            ]
             write(root / analyzer.DEFAULT_INVENTORY, json.dumps(inventory, indent=2) + "\n")
             report, errors, _warnings = analyzer.build_report(self.make_args(root))
 
@@ -611,7 +687,9 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         with self.make_repo() as temp:
             root = Path(temp)
             bad = root / "project_sources/collector/source/DCOIR_Collector.ps1"
-            bad.write_text("Write-Host 'should be caught'\n", encoding="utf-8")
+            bad_text = "Write-Host 'should be caught'\n"
+            bad.write_text(bad_text, encoding="utf-8")
+            update_inventory_sha256(root, "project_sources/collector/source/DCOIR_Collector.ps1", bad_text)
             args = self.make_args(
                 root,
                 "no_findings",
@@ -629,7 +707,9 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         with self.make_repo() as temp:
             root = Path(temp)
             rel = "project_sources/collector/source/DCOIR_Collector.ps1"
-            write(root / rel, "Write-Host 'bad'\n")
+            bad_text = "Write-Host 'bad'\n"
+            write(root / rel, bad_text)
+            update_inventory_sha256(root, rel, bad_text)
             args = self.make_args(root, target_path=[rel])
             report, errors, _warnings = analyzer.build_report(args)
 
@@ -751,7 +831,9 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         with self.make_repo() as temp:
             root = Path(temp)
             rel = "project_sources/collector/source/DCOIR_Collector.ps1"
-            write(root / rel, "Write-Host 'baseline accepted for now'\n")
+            bad_text = "Write-Host 'baseline accepted for now'\n"
+            write(root / rel, bad_text)
+            update_inventory_sha256(root, rel, bad_text)
             initial_report, initial_errors, _warnings = analyzer.build_report(
                 self.make_args(root, target_path=[rel], allow_findings=True)
             )
