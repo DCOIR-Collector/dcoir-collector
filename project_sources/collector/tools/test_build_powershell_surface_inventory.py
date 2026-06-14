@@ -145,6 +145,23 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
         self.assertTrue(any("unsupported flow mapping fragment" in error for error in result["validation"]["errors"]))
 
+    def test_flow_mapping_parentheses_do_not_hide_comma_fragments(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/malformed-flow-parentheses.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - { name: Flow, shell: pwsh, run: Write-Host (one, two) }\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertFalse(result["validation"]["success"])
+        self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+        self.assertTrue(any("unsupported flow mapping fragment" in error for error in result["validation"]["errors"]))
+
     def test_malformed_workflow_indentation_fails(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
