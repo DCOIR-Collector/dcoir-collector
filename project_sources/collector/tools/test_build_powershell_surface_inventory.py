@@ -112,6 +112,22 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertFalse(result["validation"]["success"])
         self.assertTrue(any("unclosed '['" in error for error in result["validation"]["errors"]))
 
+    def test_malformed_flow_mapping_value_fails(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/malformed-flow-map.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - shell: pwsh\n"
+                "        run: { command: Write-Host ok\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+        self.assertFalse(result["validation"]["success"])
+        self.assertTrue(any("unclosed '{'" in error for error in result["validation"]["errors"]))
+
     def test_malformed_workflow_indentation_fails(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
@@ -180,10 +196,16 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         cases = [
             ("direct-run-list", "      - shell: pwsh\n        run: [Write-Host ok]\n", "run"),
             ("direct-run-map", "      - shell: pwsh\n        run: { command: Write-Host ok }\n", "run"),
+            ("direct-run-block-list", "      - shell: pwsh\n        run:\n          - Write-Host ok\n", "run"),
+            ("direct-run-block-map", "      - shell: pwsh\n        run:\n          command: Write-Host ok\n", "run"),
             ("direct-shell-list", "      - shell: [pwsh]\n        run: Write-Host ok\n", "shell"),
+            ("direct-shell-block-list", "      - shell:\n          - pwsh\n        run: Write-Host ok\n", "shell"),
+            ("direct-shell-block-map", "      - shell:\n          executable: pwsh\n        run: Write-Host ok\n", "shell"),
             ("flow-step-run-list", "      - { name: Flow, shell: pwsh, run: [Write-Host ok] }\n", "run"),
             ("flow-step-run-map", "      - { name: Flow, shell: pwsh, run: { command: Write-Host ok } }\n", "run"),
             ("flow-step-shell-list", "      - { name: Flow, shell: [pwsh], run: Write-Host ok }\n", "shell"),
+            ("commented-flow-step-run-list", "      - { name: Flow, shell: pwsh, run: [Write-Host ok] } # comment\n", "run"),
+            ("commented-flow-step-shell-list", "      - { name: Flow, shell: [pwsh], run: Write-Host ok } # comment\n", "shell"),
             (
                 "block-default-shell-list",
                 "    defaults:\n"
@@ -192,7 +214,29 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "    steps:\n"
                 "      - name: Uses invalid default shell\n"
                 "        run: Write-Host ok\n",
-                "shell",
+                "defaults.run.shell",
+            ),
+            (
+                "block-default-shell-block-list",
+                "    defaults:\n"
+                "      run:\n"
+                "        shell:\n"
+                "          - pwsh\n"
+                "    steps:\n"
+                "      - name: Uses invalid default shell\n"
+                "        run: Write-Host ok\n",
+                "defaults.run.shell",
+            ),
+            (
+                "block-default-shell-block-map",
+                "    defaults:\n"
+                "      run:\n"
+                "        shell:\n"
+                "          executable: pwsh\n"
+                "    steps:\n"
+                "      - name: Uses invalid default shell\n"
+                "        run: Write-Host ok\n",
+                "defaults.run.shell",
             ),
             (
                 "inline-default-shell-list",
@@ -200,6 +244,14 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "      - name: Uses invalid inline default shell\n"
                 "        run: Write-Host ok\n"
                 "defaults: { run: { shell: [pwsh] } }\n",
+                "defaults.run.shell",
+            ),
+            (
+                "inline-default-shell-multi-list",
+                "    steps:\n"
+                "      - name: Uses invalid multi-item inline default shell\n"
+                "        run: Write-Host ok\n"
+                "defaults: { run: { shell: [pwsh, -NoProfile] } }\n",
                 "defaults.run.shell",
             ),
             (
@@ -253,6 +305,38 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "    steps:\n"
                 "      - name: Validate (preview\n"
                 "        run: echo ok\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        self.assertEqual(result["surfaces"], [])
+
+    def test_plain_scalar_brackets_and_braces_do_not_fail_workflow_shape(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/plain-brackets.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Validate [preview\n"
+                "        run: echo {ok\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        self.assertEqual(result["surfaces"], [])
+
+    def test_comment_delimiters_do_not_fail_workflow_shape(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/comment-delimiters.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Validate # [not yaml structure\n"
+                "        run: echo ok # } also not yaml structure\n",
             )
             result = inventory.build_inventory(root, changed_files=[rel])
         self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
@@ -505,6 +589,25 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "      - { name: Flow style, shell: pwsh, run: Write-Host ok }\n",
             )
             result = inventory.build_inventory(root, changed_files=[".github/workflows/flow-step.yml"])
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["step_or_action"], "Flow style")
+        self.assertEqual(snippets[0]["shell"], "pwsh")
+        self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
+    def test_flow_style_step_with_trailing_comment_is_detected(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/flow-step-comment.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - { name: Flow style, shell: pwsh, run: Write-Host ok } # normal comment\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
         self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
         snippets = result["surfaces"][0]["embedded_snippets"]
         self.assertEqual(len(snippets), 1)
