@@ -4,6 +4,7 @@
   "mode": "full",
   "source_of_truth": "git ls-files -z",
   "deterministic_report": true,
+  "file_facts_policy": "text_bytes_with_line_endings_normalized_to_lf",
   "discovery_command": "python project_sources/collector/tools/build_powershell_surface_inventory.py --repo-root . --json-output project_sources/collector/powershell_surface_inventory.json --markdown-output project_sources/collector/powershell_surface_inventory.md",
   "required_source_types": [
     ".ps1",
@@ -713,9 +714,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 1420,
+      "size_bytes": 1389,
       "line_count": 31,
-      "sha256": "473d9c4291d20483167a1b340a3b72648ae3e77186acc0ca54e63e1f42dd47dc"
+      "sha256": "4342ab4684b55ef8056483f0833a744c1b8198150fc94b3828028a04061a2d6a"
     },
     {
       "path": ".github/workflows/reusable-chatgpt-apply-in.yml",
@@ -1773,9 +1774,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 563,
+      "size_bytes": 549,
       "line_count": 14,
-      "sha256": "720e50fc7b8891b66d3d2965547a1fad38405c04b0b09558d33d5648eafcffd0"
+      "sha256": "776e6209ac554b60fa9c9a3148ca6b0e14747dd5e70b02dd7bd10734265e7b8e"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Actions/Dcoir.Actions.psm1",
@@ -1787,9 +1788,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 902,
+      "size_bytes": 881,
       "line_count": 21,
-      "sha256": "a8268be86cf92f77fbc7617f8fde23ce5e4a3c40c5ba68a05386a1174a5f179d"
+      "sha256": "1f83b3ac1ff72af56b41d03f7e47f58d58b9a7ccef21c67b948fe55b0beee910"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Actions/Private/Capture.ps1",
@@ -1801,9 +1802,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 3450,
+      "size_bytes": 3403,
       "line_count": 47,
-      "sha256": "e1fd0e02f4894bede0fcaf4fb710048750aa230e0808f0683fc0839a71f94df0"
+      "sha256": "882ba63159498aad95b49300b226d9fabe1cd2669621ecf6616cf79806a44f9d"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Actions/Private/Dispatch.ps1",
@@ -1815,9 +1816,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 4034,
+      "size_bytes": 3995,
       "line_count": 39,
-      "sha256": "cddbb205092368724cc5db1a4c6795644698974688ed1c22bfa34425840cc490"
+      "sha256": "c28872ac59f04975efb3d1f3dc13c7c41f2674f791b9f22a07f16d4d67fc3003"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Actions/Private/Monitor.ps1",
@@ -1829,9 +1830,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 3261,
+      "size_bytes": 3218,
       "line_count": 43,
-      "sha256": "04436f8b2b1b004622cc3af4a5e7f343bab082d446062e52c19a447cbc6e1234"
+      "sha256": "caa1ddbef2c1e584e2ef9dd365a8c733045a42696420d8021cf20de93a86b059"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Actions/Private/RunRecords.ps1",
@@ -1843,9 +1844,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 1155,
+      "size_bytes": 1132,
       "line_count": 23,
-      "sha256": "0ee9560d457fd5fdb64303a4e3be3c7679f83300ee3db96d743d3606bc6f1863"
+      "sha256": "b9765e38033ef6b92b3f3c7004d75d0bc502581d5f3ad056f1854e8b597a9faa"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Actions/Private/Summary.ps1",
@@ -1857,9 +1858,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 3667,
+      "size_bytes": 3610,
       "line_count": 57,
-      "sha256": "805f436a6baf0e74aa7919dffc4c4bfc9970f65f395b47debc4af300ee67801d"
+      "sha256": "fbf651e228eb0034b28c94933fbd5ddde36a4444d271e88bb3119cac18dec5a0"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Actions/Public/Invoke-DcoirActionsWorkflowOrchestratorEngine.ps1",
@@ -1899,9 +1900,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 883,
+      "size_bytes": 869,
       "line_count": 14,
-      "sha256": "d21724bb0008bbd3e9429b6aa8f16c6158d84b8e5eb1ce0ca7acb12839a3e633"
+      "sha256": "dc7b4e227f1febf7882b17088dcc2b298edec1c8cd58204d633e3418ddd4928e"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Common/Dcoir.Common.psm1",
@@ -1913,9 +1914,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 6812,
+      "size_bytes": 6644,
       "line_count": 168,
-      "sha256": "ad4bf49f8e0accc1fd216ea9e7a1fad4eee65de31ab8291dafb86b6b071fd2a1"
+      "sha256": "e82f85ed0d72f47057aa929e05c351d459ade01aeef85abf4aefa67e86698b4e"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Git/Dcoir.Git.psd1",
@@ -1927,9 +1928,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 817,
+      "size_bytes": 803,
       "line_count": 14,
-      "sha256": "292ca810dd00a32f086c976b0217b94d2ae5912d4728ef66692e0fea70f490bd"
+      "sha256": "5b7fe291accd24cafa8e4307561bcde5482e27e156ba5e57aedd80ba956d4458"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Git/Dcoir.Git.psm1",
@@ -1941,9 +1942,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 8403,
+      "size_bytes": 8217,
       "line_count": 186,
-      "sha256": "5c37ba69c2fa48b39bd6409df636ec8cee9755063001c5dee25875217696b9b9"
+      "sha256": "6c20b63b3a3f88b4c69f619bc7b640ddd1ece19897a281e6c0c22e83297d3848"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.GitHub/Dcoir.GitHub.psd1",
@@ -1955,9 +1956,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 584,
+      "size_bytes": 570,
       "line_count": 14,
-      "sha256": "abd9cec763183898bd8bd45a8c2a9dfee598a32b5dc678542bb2c9dc5d3437e0"
+      "sha256": "769823bb994fb12517df5cd5f99d68defc8a1f11712ee6efaeba34ec9b0cc924"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.GitHub/Dcoir.GitHub.psm1",
@@ -1969,9 +1970,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 4396,
+      "size_bytes": 4299,
       "line_count": 97,
-      "sha256": "93087ab05550bfa713afd5f06407ccaee0550076cfab53b4082ad4291d06291a"
+      "sha256": "b7404175874e5e87063ce97c989832306ae5c71134e3625d097315aa718449e6"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Logging/Dcoir.Logging.psm1",
@@ -1983,9 +1984,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 5116,
+      "size_bytes": 4995,
       "line_count": 121,
-      "sha256": "b8f2d50a2c1c813327bc9af0b9d71bff9840c53cba1889d27d50ba03395e4560"
+      "sha256": "e669261018ee6cc2547e98e4a46ad4511f7758490648294023ee64d3480f69f3"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Packaging/Dcoir.Packaging.psd1",
@@ -1997,9 +1998,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 498,
+      "size_bytes": 484,
       "line_count": 14,
-      "sha256": "71964b39f83b61470095f512f355e61bc654f6a98e5d28030e9aa6d16995a069"
+      "sha256": "116a9bedd017ae7b46625338f32259bc5a96fb4785bd6043f4c51398b81f2ba0"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Packaging/Dcoir.Packaging.psm1",
@@ -2011,9 +2012,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 1402,
+      "size_bytes": 1372,
       "line_count": 30,
-      "sha256": "2e3cde7b48ff0dcd085f266869292a2c1b6e2994c7be07505aba44ff46d3e9c4"
+      "sha256": "a81b5f4af09017a3586cb6ed17e6b1e13842f5a86689b5dc85af6b691f7c3730"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.RepoPatch/Dcoir.RepoPatch.psd1",
@@ -2025,9 +2026,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 776,
+      "size_bytes": 762,
       "line_count": 14,
-      "sha256": "15956210c5f10f5acda4e0e7b1dff35a6351c16fe92f76f85cf35c9f14f09574"
+      "sha256": "1555711cb3634b9eee32e30904442ba1cfe2ecb9cdfa3f87cef17ae76daac3eb"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.RepoPatch/Dcoir.RepoPatch.psm1",
@@ -2039,9 +2040,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 5028,
+      "size_bytes": 4932,
       "line_count": 96,
-      "sha256": "1f254008fa4bd99b2d1bd04f8987b416d54b005ead47b7f2de2a9bb20f207945"
+      "sha256": "684ecab4cf1ada28e06d89692a4013b8739d58a73dc832151698c71f8208bbfc"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Snapshot/Dcoir.Snapshot.psd1",
@@ -2053,9 +2054,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 728,
+      "size_bytes": 714,
       "line_count": 14,
-      "sha256": "3a03712198982feb1755f19c5a1dc6037a19fdb7d3422b7b083b966893617b3a"
+      "sha256": "9ed9c0afe1109557d863632c1db9ceb2551b48b355ac263c8b7a84b9cbcf741e"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/Dcoir.Snapshot/Dcoir.Snapshot.psm1",
@@ -2067,9 +2068,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 7087,
+      "size_bytes": 6958,
       "line_count": 129,
-      "sha256": "4af4775f1d335736eac676c1c6298f82f8a4eafd49ceb9a985dd7458f39e387b"
+      "sha256": "2a0786a7d8b3d5eb45a40659e7597f6ecd87ff4555510c7e3fed84627cc1a4d3"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/DcoirActionsOrchestrator/DcoirActionsOrchestrator.psd1",
@@ -2081,9 +2082,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 510,
+      "size_bytes": 496,
       "line_count": 14,
-      "sha256": "2aa5d33ac4285438fec2f14e131f369d3e2c0212137c91c702cb7c208337d601"
+      "sha256": "3b1423bcaf6b66c4b708c34e6dddb0bdef26912f6de391a2fa340748e3e4d828"
     },
     {
       "path": "operator_tools/github_desktop_lane/modules/DcoirActionsOrchestrator/DcoirActionsOrchestrator.psm1",
@@ -2109,9 +2110,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 4671,
+      "size_bytes": 4569,
       "line_count": 102,
-      "sha256": "270219cffadbd735818534a73b38acad791582e8fbfc31afda0b43a67bbed1d9"
+      "sha256": "9150c466726c4fbd16367c7de13b7e924fad8987d303045634e276e0480f7960"
     },
     {
       "path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsExecHarness.ps1",
@@ -2305,9 +2306,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 14376,
+      "size_bytes": 14101,
       "line_count": 275,
-      "sha256": "7615c230408f206b58392326bc7c8616acfadacf76df530d96a259244126c31a"
+      "sha256": "28a9b38e3abe9e144cd4beec5676031731996cd6252ef9163fd9f7caf3777b93"
     },
     {
       "path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirSafePrePullApply.ps1",
@@ -2319,9 +2320,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 4848,
+      "size_bytes": 4735,
       "line_count": 113,
-      "sha256": "3e69b97dd35909dae46a73e60541fa105d569be43ed7e6844f2e2c0928df3949"
+      "sha256": "b422122d5c07f840e3359477460b5b9a19e38484d3272ab45c6a9363d937e452"
     },
     {
       "path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirWbs09ManifestSchemaAudit.ps1",
@@ -2347,9 +2348,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 8501,
+      "size_bytes": 8331,
       "line_count": 170,
-      "sha256": "c96b08d8035635c820c89e939714e822574d0103088159f25221ab462924245c"
+      "sha256": "1227d300afd3cb793f170a6aa76420d01d58e0bf164c979ff28e8053126892e5"
     },
     {
       "path": "operator_tools/github_desktop_lane/scripts/New-DcoirChatGPTFriendlyZip.ps1",
@@ -2361,9 +2362,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 14100,
+      "size_bytes": 13840,
       "line_count": 260,
-      "sha256": "124e7872564180f6e42c63bb662d5fc83e6516c3de1966cb8699c3a2ad74d02f"
+      "sha256": "fb265444e32b75a1dc63bb546b79ef5199549cde8efe5949c84866c5020a74a6"
     },
     {
       "path": "operator_tools/github_desktop_lane/scripts/New-DcoirTargetedSnapshot.ps1",
@@ -2375,9 +2376,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 5479,
+      "size_bytes": 5359,
       "line_count": 120,
-      "sha256": "8355b693545fafff706dd705357403c2d32d4241ec208d83545cf4c99f249f61"
+      "sha256": "ab4de72add2a54685613b8376ec0cd7665636baffa11c33a41d22ac513613164"
     },
     {
       "path": "operator_tools/github_desktop_lane/scripts/New-DcoirTextOnlyRepoSnapshot.ps1",
@@ -2389,9 +2390,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 6938,
+      "size_bytes": 6804,
       "line_count": 134,
-      "sha256": "25ae813687908b6448499366ee4c4af93e676774ea69065ca1e862e38170c562"
+      "sha256": "eae7769b3915f265affe83bdbe86f9b7e3550471fa3dce7b54a2153071d72e43"
     },
     {
       "path": "project_sources/collector/PSScriptAnalyzerSettings.psd1",
@@ -2949,9 +2950,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 12609,
+      "size_bytes": 12353,
       "line_count": 256,
-      "sha256": "f64222a4e8ee9d92fdcd6b45cc25f0b76da2b76ab8093f4b4d02612aa61a6de7"
+      "sha256": "6550ab3fb7024e0665bb485de812b0d1b8313666ce0191d3f97451c553758ed6"
     },
     {
       "path": "project_sources/collector/source/DCOIR_Collector.ps1",
@@ -3229,9 +3230,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 9234,
+      "size_bytes": 9010,
       "line_count": 224,
-      "sha256": "f0925136e9fbdc6684e22aa609c234aaf1c7304e1ebf3a5de3aaf2fcde2503d6"
+      "sha256": "6e3797bbc44efeacb995a83b1e3f1030b3ee540dc64737f27cacea01fc4ee56a"
     },
     {
       "path": "project_sources/validation/manual_test_framework/install_and_run_from_downloads.ps1",
@@ -3243,9 +3244,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 4145,
+      "size_bytes": 4036,
       "line_count": 109,
-      "sha256": "25c948f764d478e7d0e6a100f3b15a33a8f9cec01b3c3404363457ff678b2ac9"
+      "sha256": "421ea6ccb6d2880763418f27b1bb07f7cc6d4bae81d630428729dec2e3ee5e9d"
     },
     {
       "path": "project_sources/validation/manual_test_framework/run_dcoir_manual_tests.ps1",
@@ -3257,9 +3258,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 6688,
+      "size_bytes": 6495,
       "line_count": 193,
-      "sha256": "800292cdd86d38e6b209172ace3116663c50547a86943da83efa7a34e48be3cb"
+      "sha256": "4cbda62e1aed40b8675be3db393d86c693d0bc34deda10643ebcc3b3e535a105"
     },
     {
       "path": "scripts/validate-windows-powershell-51.ps1",
