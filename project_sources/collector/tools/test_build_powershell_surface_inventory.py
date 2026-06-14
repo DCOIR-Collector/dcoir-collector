@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 import sys
 
@@ -46,6 +47,10 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(categories["collector_harness_script"], 1)
         self.assertEqual(categories["collector_harness_source_part"], 1)
         self.assertEqual(categories["workflow_embedded_powershell"], 1)
+        operator_surface = next(
+            surface for surface in result["surfaces"] if surface["path"] == "operator_tools/sample/Invoke-DcoirSample.ps1"
+        )
+        self.assertEqual(operator_surface["marker_lines"], [])
 
     def test_unclassified_changed_file_fails(self) -> None:
         with self.make_minimal_repo() as temp:
@@ -54,6 +59,16 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
             result = inventory.build_inventory(root, changed_files=["misc/unknown.ps1"])
         self.assertFalse(result["validation"]["success"])
         self.assertTrue(any("no inventory category" in error for error in result["validation"]["errors"]))
+
+    def test_changed_file_paths_accept_windows_separators(self) -> None:
+        with self.make_minimal_repo() as temp:
+            result = inventory.build_inventory(
+                Path(temp),
+                changed_files=["project_sources\\collector\\source\\DCOIR_Collector.ps1"],
+            )
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        self.assertEqual(result["surfaces"][0]["path"], "project_sources/collector/source/DCOIR_Collector.ps1")
 
     def test_missing_changed_file_fails(self) -> None:
         with self.make_minimal_repo() as temp:
@@ -402,6 +417,49 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         snippets = result["surfaces"][0]["embedded_snippets"]
         self.assertEqual(len(snippets), 1)
         self.assertEqual(snippets[0]["step_or_action"], "Flow style")
+        self.assertEqual(snippets[0]["shell"], "pwsh")
+        self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
+    def test_block_scalar_chomping_marker_preserves_explicit_shell_body(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            write(
+                root / ".github/workflows/block-chomp.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Uses block chomping marker\n"
+                "        shell: pwsh\n"
+                "        run: |-\n"
+                "          Write-Host ok\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[".github/workflows/block-chomp.yml"])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
+    def test_block_scalar_chomping_marker_preserves_default_shell_body(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            write(
+                root / ".github/workflows/default-block-chomp.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    defaults:\n"
+                "      run:\n"
+                "        shell: pwsh\n"
+                "    steps:\n"
+                "      - name: Uses default shell block chomping marker\n"
+                "        run: >+\n"
+                "          Write-Host ok\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[".github/workflows/default-block-chomp.yml"])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
         self.assertEqual(snippets[0]["shell"], "pwsh")
         self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
 
