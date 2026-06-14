@@ -452,10 +452,10 @@ def flow_mapping_pieces(item: str) -> list[str] | None:
         if character in {"'", '"'} and yaml_quote_can_start(content, index):
             quote = character
             current.append(character)
-        elif character in "[{(":
+        elif character in "[{":
             depth += 1
             current.append(character)
-        elif character in "]})":
+        elif character in "]}":
             depth = max(0, depth - 1)
             current.append(character)
         elif character == "," and depth == 0:
