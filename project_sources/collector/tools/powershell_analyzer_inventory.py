@@ -68,6 +68,23 @@ def is_relative_to(path: Path, parent: Path) -> bool:
         return False
 
 
+def validate_surface_file(repo_root: Path, path: str, surface: dict[str, Any], purpose: str) -> str | None:
+    absolute_path = repo_root / path
+    if not is_relative_to(absolute_path, repo_root):
+        return f"{path}: inventory path resolves outside repo root"
+    if not absolute_path.exists():
+        return f"{path}: {purpose} is missing"
+    if absolute_path.is_dir():
+        return f"{path}: {purpose} is a directory"
+    if absolute_path.stat().st_size == 0:
+        return f"{path}: {purpose} is empty"
+    actual_sha256 = sha256_line_ending_stable_file(absolute_path)
+    inventory_sha256 = scalar(surface.get("sha256")).strip()
+    if inventory_sha256 and inventory_sha256 != actual_sha256:
+        return f"{path}: inventory sha256 does not match current file content"
+    return None
+
+
 def build_target_sets(
     repo_root: Path,
     inventory: dict[str, Any],
@@ -95,6 +112,10 @@ def build_target_sets(
         source_type = str(surface.get("source_type", ""))
         if only_paths is not None and path not in only_paths:
             continue
+        if decision == "reference" and source_type == "workflow_yaml":
+            reference_error = validate_surface_file(repo_root, path, surface, "reference workflow surface")
+            if reference_error:
+                errors.append(reference_error)
         if decision != "include":
             skipped_surfaces.append(
                 {
@@ -120,23 +141,11 @@ def build_target_sets(
             continue
 
         absolute_path = repo_root / path
-        if not is_relative_to(absolute_path, repo_root):
-            errors.append(f"{path}: inventory path resolves outside repo root")
-            continue
-        if not absolute_path.exists():
-            errors.append(f"{path}: intended analyzer target is missing")
-            continue
-        if absolute_path.is_dir():
-            errors.append(f"{path}: intended analyzer target is a directory")
-            continue
-        if absolute_path.stat().st_size == 0:
-            errors.append(f"{path}: intended analyzer target is empty")
+        target_error = validate_surface_file(repo_root, path, surface, "intended analyzer target")
+        if target_error:
+            errors.append(target_error)
             continue
         actual_sha256 = sha256_line_ending_stable_file(absolute_path)
-        inventory_sha256 = scalar(surface.get("sha256")).strip()
-        if inventory_sha256 and inventory_sha256 != actual_sha256:
-            errors.append(f"{path}: inventory sha256 does not match current file content")
-            continue
 
         analysis_path = absolute_path
         if source_type == ".ps1.txt":
