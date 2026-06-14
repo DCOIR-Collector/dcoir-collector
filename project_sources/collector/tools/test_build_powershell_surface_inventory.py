@@ -269,7 +269,8 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 with self.make_minimal_repo() as temp:
                     root = Path(temp)
                     rel = f".github/workflows/{name}.yml"
-                    write(root / rel, "jobs:\n  test:\n" + body)
+                    steps_header = "" if "    steps:" in body else "    steps:\n"
+                    write(root / rel, "jobs:\n  test:\n" + steps_header + body)
                     result = inventory.build_inventory(root, changed_files=[rel])
 
                 self.assertFalse(result["validation"]["success"])
@@ -277,6 +278,60 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 self.assertTrue(
                     any(f"non-scalar workflow {key} value" in error for error in result["validation"]["errors"])
                 )
+
+    def test_empty_workflow_run_and_shell_values_fail_closed(self) -> None:
+        cases = [
+            ("direct-run-empty", "      - shell: pwsh\n        run:\n", "run"),
+            ("direct-shell-empty", "      - shell:\n        run: Write-Host ok\n", "shell"),
+            ("flow-run-empty", "      - { name: Flow, shell: pwsh, run: }\n", "run"),
+            ("flow-shell-empty", "      - { name: Flow, shell: , run: Write-Host ok }\n", "shell"),
+            (
+                "default-shell-empty",
+                "    defaults:\n"
+                "      run:\n"
+                "        shell:\n"
+                "    steps:\n"
+                "      - name: Uses invalid empty default shell\n"
+                "        run: Write-Host ok\n",
+                "defaults.run.shell",
+            ),
+        ]
+        for name, body, key in cases:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    rel = f".github/workflows/{name}.yml"
+                    steps_header = "" if "    steps:" in body else "    steps:\n"
+                    write(root / rel, "jobs:\n  test:\n" + steps_header + body)
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertFalse(result["validation"]["success"])
+                self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+                self.assertTrue(
+                    any(f"non-scalar workflow {key} value" in error for error in result["validation"]["errors"])
+                )
+
+    def test_matrix_run_and_shell_data_are_not_validated_as_steps(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/matrix-run-shell-data.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    strategy:\n"
+                "      matrix:\n"
+                "        include:\n"
+                "          - run: [unit, integration]\n"
+                "            shell: [pwsh, bash]\n"
+                "    steps:\n"
+                "      - name: Bash step\n"
+                "        run: echo ok\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        self.assertEqual(result["surfaces"], [])
 
     def test_plain_scalar_apostrophe_does_not_fail_workflow_shape(self) -> None:
         with self.make_minimal_repo() as temp:
@@ -578,6 +633,28 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(len(snippets), 1)
         self.assertEqual(snippets[0]["shell"], "pwsh -NoProfile -File {0}")
 
+    def test_unquoted_windows_powershell_shell_path_is_detected(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/windows-powershell-path.yml"
+            shell = r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -File {0}"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Windows PowerShell path\n"
+                f"        shell: {shell}\n"
+                "        run: Write-Host ok\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["shell"], shell)
+        self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
     def test_flow_style_step_with_powershell_shell_is_detected(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
@@ -615,6 +692,45 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(snippets[0]["shell"], "pwsh")
         self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
 
+    def test_steps_key_with_trailing_comment_is_detected(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/commented-steps.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps: # test steps\n"
+                "      - name: Commented step # display-only comment\n"
+                "        shell: pwsh # explicit shell\n"
+                "        run: Write-Host ok\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["step_or_action"], "Commented step")
+        self.assertEqual(snippets[0]["shell"], "pwsh")
+        self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
+    def test_scalar_run_comments_are_not_command_markers(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/run-comment-marker.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Bash step\n"
+                "        run: echo ok # powershell note\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        self.assertEqual(result["surfaces"], [])
+
     def test_inline_run_command_preserves_trailing_quote(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
@@ -628,6 +744,28 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "      - name: Inline quoted command\n"
                 "        shell: pwsh\n"
                 f"        run: {expected}\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["command_preview"], expected)
+        self.assertEqual(snippets[0]["command_sha256"], inventory.hashlib.sha256(expected.encode("utf-8")).hexdigest())
+
+    def test_quoted_inline_run_command_strips_yaml_comment(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/inline-quoted-command-comment.yml"
+            expected = "Write-Host '#ok'"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Inline quoted command\n"
+                "        shell: pwsh\n"
+                f"        run: \"{expected}\" # trailing YAML comment\n",
             )
             result = inventory.build_inventory(root, changed_files=[rel])
 
