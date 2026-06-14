@@ -156,6 +156,9 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
 
         value = item.split(":", 1)[1].strip() if ":" in item else ""
         value_without_comment = strip_yaml_inline_comment(value)
+        unclosed_quote = yaml_unclosed_quote(value)
+        if unclosed_quote:
+            return f"{rel}: line {line_number} has an unterminated quoted scalar"
         flow_error = flow_collection_shape_error(rel, line_number, item, value_without_comment)
         if flow_error:
             return flow_error
@@ -396,12 +399,21 @@ def flow_collection_shape_error(rel: str, line_number: int, item: str, value_wit
     closing = {"]", "}"}
     stack: list[tuple[str, int]] = []
     quote: str | None = None
-    for character in candidate:
+    index = 0
+    while index < len(candidate):
+        character = candidate[index]
         if quote:
+            if quote == "'" and character == "'" and index + 1 < len(candidate) and candidate[index + 1] == "'":
+                index += 2
+                continue
+            if quote == '"' and character == "\\" and index + 1 < len(candidate):
+                index += 2
+                continue
             if character == quote:
                 quote = None
+            index += 1
             continue
-        if character in {"'", '"'}:
+        if character in {"'", '"'} and yaml_quote_can_start(candidate, index):
             quote = character
         elif character in pairs:
             stack.append((character, line_number))
@@ -409,6 +421,7 @@ def flow_collection_shape_error(rel: str, line_number: int, item: str, value_wit
             if not stack or pairs[stack[-1][0]] != character:
                 return f"{rel}: line {line_number} has an unmatched {character!r}"
             stack.pop()
+        index += 1
     if stack:
         opener, opener_line = stack[-1]
         return f"{rel}: line {opener_line} has an unclosed {opener!r}"
@@ -524,17 +537,37 @@ def collect_run_block(lines: list[str], run_index: int, max_end: int | None = No
 
 
 def strip_yaml_inline_comment(value: str) -> str:
+    stripped, _quote = strip_yaml_inline_comment_with_quote(value)
+    return stripped
+
+
+def strip_yaml_inline_comment_with_quote(value: str) -> tuple[str, str | None]:
     quote: str | None = None
-    for index, character in enumerate(value):
+    index = 0
+    while index < len(value):
+        character = value[index]
         if quote:
+            if quote == "'" and character == "'" and index + 1 < len(value) and value[index + 1] == "'":
+                index += 2
+                continue
+            if quote == '"' and character == "\\" and index + 1 < len(value):
+                index += 2
+                continue
             if character == quote:
                 quote = None
+            index += 1
             continue
         if character in {"'", '"'} and yaml_quote_can_start(value, index):
             quote = character
         elif character == "#" and (index == 0 or value[index - 1].isspace()):
-            return value[:index].rstrip()
-    return value.strip()
+            return value[:index].rstrip(), None
+        index += 1
+    return value.strip(), quote
+
+
+def yaml_unclosed_quote(value: str) -> str | None:
+    _stripped, quote = strip_yaml_inline_comment_with_quote(value)
+    return quote
 
 
 def yaml_quote_can_start(value: str, index: int) -> bool:
@@ -617,7 +650,10 @@ def parent_block_start(lines: list[str], index: int) -> int:
 def clean_shell_value(value: str) -> str:
     cleaned = value.strip()
     if len(cleaned) >= 2 and cleaned[0] == cleaned[-1] and cleaned[0] in {"'", '"'}:
-        return cleaned[1:-1]
+        inner = cleaned[1:-1]
+        if cleaned[0] == "'":
+            return inner.replace("''", "'")
+        return inner
     return cleaned
 
 
@@ -630,13 +666,24 @@ def split_flow_mapping(item: str) -> dict[str, str]:
     current: list[str] = []
     quote: str | None = None
     depth = 0
-    for character in content:
+    index = 0
+    while index < len(content):
+        character = content[index]
         if quote:
             current.append(character)
+            if quote == "'" and character == "'" and index + 1 < len(content) and content[index + 1] == "'":
+                current.append(content[index + 1])
+                index += 2
+                continue
+            if quote == '"' and character == "\\" and index + 1 < len(content):
+                current.append(content[index + 1])
+                index += 2
+                continue
             if character == quote:
                 quote = None
+            index += 1
             continue
-        if character in {"'", '"'}:
+        if character in {"'", '"'} and yaml_quote_can_start(content, index):
             quote = character
             current.append(character)
         elif character in "[{(":
@@ -650,6 +697,7 @@ def split_flow_mapping(item: str) -> dict[str, str]:
             current = []
         else:
             current.append(character)
+        index += 1
     if current:
         pieces.append("".join(current).strip())
 
@@ -682,6 +730,38 @@ def shell_executable(value: str) -> str:
 
 def is_powershell_shell(value: str) -> bool:
     return shell_executable(value) in {"pwsh", "pwsh.exe", "powershell", "powershell.exe"}
+
+
+def shell_line_without_comment(line: str) -> str:
+    quote: str | None = None
+    index = 0
+    while index < len(line):
+        character = line[index]
+        if quote:
+            if character == "\\" and index + 1 < len(line):
+                index += 2
+                continue
+            if character == quote:
+                quote = None
+            index += 1
+            continue
+        if character in {"'", '"'}:
+            quote = character
+        elif character == "#" and (index == 0 or line[index - 1].isspace()):
+            return line[:index].rstrip()
+        index += 1
+    return line
+
+
+def command_text_for_marker_scan(command: str) -> str:
+    command_lines: list[str] = []
+    for line in command.splitlines():
+        if line.strip().startswith("#"):
+            continue
+        stripped = shell_line_without_comment(line).strip()
+        if stripped:
+            command_lines.append(stripped)
+    return "\n".join(command_lines)
 
 
 def inline_shell_value(text: str) -> str | None:
@@ -848,7 +928,8 @@ def parse_step_snippet(
     if run_line is None:
         return None
     effective_shell = explicit_shell[1] if explicit_shell else (inherited_shell or "unspecified")
-    if not is_powershell_shell(effective_shell) and not WORKFLOW_MARKER_RE.search(command):
+    marker_command = command if is_powershell_shell(effective_shell) else command_text_for_marker_scan(command)
+    if not is_powershell_shell(effective_shell) and not WORKFLOW_MARKER_RE.search(marker_command):
         return None
     line_start = min(explicit_shell[0], run_line + 1) if explicit_shell else run_line + 1
     line_end = max(run_end, explicit_shell[0]) if explicit_shell else run_end
