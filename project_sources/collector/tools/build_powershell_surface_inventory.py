@@ -160,7 +160,8 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
                     return f"{rel}: line {line_number} has an unmatched {character!r}"
                 stack.pop()
 
-        if re.search(r":\s*[|>][-+]?\s*(?:#.*)?$", item):
+        value = item.split(":", 1)[1].strip() if ":" in item else ""
+        if is_yaml_block_scalar_marker(strip_yaml_inline_comment(value)):
             block_scalar_indent = line_indent(line)
 
     if stack:
@@ -305,13 +306,27 @@ def collect_run_block(lines: list[str], run_index: int, max_end: int | None = No
     line = lines[run_index]
     indent = line_indent(line)
     after_colon = line.split(":", 1)[1].strip() if ":" in line else ""
-    if after_colon and not is_yaml_block_scalar_marker(after_colon):
+    if after_colon and not is_yaml_block_scalar_marker(strip_yaml_inline_comment(after_colon)):
         return run_index + 1, after_colon.strip("'\"")
     end_line = block_end_line(lines, run_index, indent, max_end)
     command_lines: list[str] = []
     for follow in lines[run_index + 1:end_line]:
         command_lines.append(follow[indent + 2:] if len(follow) > indent + 2 else follow.strip())
     return end_line, "\n".join(command_lines).rstrip()
+
+
+def strip_yaml_inline_comment(value: str) -> str:
+    quote: str | None = None
+    for index, character in enumerate(value):
+        if quote:
+            if character == quote:
+                quote = None
+            continue
+        if character in {"'", '"'}:
+            quote = character
+        elif character == "#" and (index == 0 or value[index - 1].isspace()):
+            return value[:index].rstrip()
+    return value.strip()
 
 
 def is_yaml_block_scalar_marker(value: str) -> bool:
