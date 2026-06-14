@@ -123,6 +123,8 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
     lines = text.splitlines()
     stack: list[tuple[str, int]] = []
     block_scalar_indent: int | None = None
+    block_scalar_required_indent: int | None = None
+    block_scalar_auto_indent: int | None = None
     pairs = {"[": "]", "{": "}", "(": ")"}
     closing = {"]", "}", ")"}
 
@@ -133,9 +135,20 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
 
         stripped = line.strip()
         if block_scalar_indent is not None:
-            if not stripped or indent > block_scalar_indent:
+            if not stripped:
+                continue
+            if indent > block_scalar_indent:
+                if block_scalar_required_indent is not None and indent < block_scalar_required_indent:
+                    return f"{rel}: line {line_number} is less indented than the YAML block scalar requires"
+                if block_scalar_required_indent is None:
+                    if block_scalar_auto_indent is None:
+                        block_scalar_auto_indent = indent
+                    elif indent < block_scalar_auto_indent:
+                        return f"{rel}: line {line_number} is less indented than the YAML block scalar requires"
                 continue
             block_scalar_indent = None
+            block_scalar_required_indent = None
+            block_scalar_auto_indent = None
         if not stripped or stripped.startswith("#"):
             continue
         if indent % 2 != 0:
@@ -164,6 +177,9 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
         value_without_comment = strip_yaml_inline_comment(value)
         if is_yaml_block_scalar_marker(value_without_comment):
             block_scalar_indent = line_indent(line)
+            indicator = yaml_block_scalar_indent_indicator(value_without_comment)
+            block_scalar_required_indent = block_scalar_indent + indicator if indicator is not None else None
+            block_scalar_auto_indent = None
         elif is_invalid_block_scalar_like_value(value_without_comment):
             return f"{rel}: line {line_number} has an invalid YAML block scalar marker"
 
@@ -313,10 +329,13 @@ def collect_run_block(lines: list[str], run_index: int, max_end: int | None = No
     if after_colon and not is_yaml_block_scalar_marker(block_marker):
         return run_index + 1, clean_shell_value(after_colon)
     end_line = block_end_line(lines, run_index, indent, max_end)
-    content_indent = indent + (yaml_block_scalar_indent_indicator(block_marker) or 2)
+    content_indent = yaml_block_scalar_content_indent(lines, run_index + 1, end_line, indent, block_marker)
     command_lines: list[str] = []
     for follow in lines[run_index + 1:end_line]:
-        command_lines.append(follow[content_indent:] if len(follow) > content_indent else follow.strip())
+        if not follow.strip():
+            command_lines.append("")
+        else:
+            command_lines.append(follow[content_indent:] if len(follow) >= content_indent else follow.strip())
     return end_line, "\n".join(command_lines).rstrip()
 
 
@@ -362,6 +381,22 @@ def yaml_block_scalar_indent_indicator(value: str) -> int | None:
         if character in "123456789":
             return int(character)
     return None
+
+
+def yaml_block_scalar_content_indent(
+    lines: list[str],
+    start_index: int,
+    end_index: int,
+    header_indent: int,
+    marker: str,
+) -> int:
+    indicator = yaml_block_scalar_indent_indicator(marker)
+    if indicator is not None:
+        return header_indent + indicator
+    for line in lines[start_index:end_index]:
+        if line.strip():
+            return line_indent(line)
+    return header_indent + 2
 
 
 def is_invalid_block_scalar_like_value(value: str) -> bool:
