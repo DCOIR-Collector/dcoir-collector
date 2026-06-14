@@ -212,12 +212,13 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
             return f"{rel}: line {line_number} has a non-scalar workflow {nonscalar_key} value"
         if executable_steps_key(lines, line_number - 1) and value_without_comment:
             return f"{rel}: line {line_number} has an unsupported inline workflow steps value"
-        if is_yaml_block_scalar_marker(value_without_comment):
+        normalized_value_without_comment = strip_yaml_node_prefixes(value_without_comment)
+        if is_yaml_block_scalar_marker(normalized_value_without_comment):
             block_scalar_indent = yaml_mapping_key_indent(line)
-            indicator = yaml_block_scalar_indent_indicator(value_without_comment)
+            indicator = yaml_block_scalar_indent_indicator(normalized_value_without_comment)
             block_scalar_required_indent = block_scalar_indent + indicator if indicator is not None else None
             block_scalar_auto_indent = None
-        elif is_invalid_block_scalar_like_value(value_without_comment):
+        elif is_invalid_block_scalar_like_value(normalized_value_without_comment):
             return f"{rel}: line {line_number} has an invalid YAML block scalar marker"
 
     for index, line in enumerate(lines):
@@ -685,11 +686,12 @@ def empty_block_scalar_run_key(
     item: str,
     value_without_comment: str,
 ) -> str | None:
+    marker = strip_yaml_node_prefixes(value_without_comment)
     if (
         yaml_key_name(item) == "run"
         and direct_step_mapping_key(lines, index)
-        and is_yaml_block_scalar_marker(value_without_comment)
-        and not block_scalar_has_nonblank_content(lines, index, value_without_comment)
+        and is_yaml_block_scalar_marker(marker)
+        and not block_scalar_has_nonblank_content(lines, index, marker)
     ):
         return "run"
     return None
@@ -701,7 +703,7 @@ def unsupported_block_scalar_workflow_string_key(
     item: str,
     value_without_comment: str,
 ) -> str | None:
-    if not is_yaml_block_scalar_marker(value_without_comment):
+    if not is_yaml_block_scalar_marker(strip_yaml_node_prefixes(value_without_comment)):
         return None
     key = yaml_key_name(item)
     if key == "shell" and direct_step_mapping_key(lines, index):
@@ -802,7 +804,7 @@ def collect_run_block(lines: list[str], run_index: int, max_end: int | None = No
     line = lines[run_index]
     indent = yaml_mapping_key_indent(line)
     after_colon = line.split(":", 1)[1].strip() if ":" in line else ""
-    block_marker = strip_yaml_inline_comment(after_colon)
+    block_marker = strip_yaml_node_prefixes(strip_yaml_inline_comment(after_colon))
     if after_colon and not is_yaml_block_scalar_marker(block_marker):
         return run_index + 1, normalize_workflow_scalar(block_marker)
     end_line = block_end_line(lines, run_index, indent, max_end)
@@ -924,7 +926,7 @@ def yaml_block_scalar_content_indent(
 
 
 def is_invalid_block_scalar_like_value(value: str) -> bool:
-    marker = value.strip()
+    marker = strip_yaml_node_prefixes(value).strip()
     if not marker or is_yaml_block_scalar_marker(marker):
         return False
     if marker[0] in {"|", ">"}:
