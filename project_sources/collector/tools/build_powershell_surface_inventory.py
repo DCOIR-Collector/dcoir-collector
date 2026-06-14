@@ -125,8 +125,8 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
     block_scalar_indent: int | None = None
     block_scalar_required_indent: int | None = None
     block_scalar_auto_indent: int | None = None
-    pairs = {"[": "]", "{": "}", "(": ")"}
-    closing = {"]", "}", ")"}
+    pairs = {"[": "]", "{": "}"}
+    closing = {"]", "}"}
 
     for line_number, line in enumerate(lines, start=1):
         indent = line_indent(line)
@@ -175,8 +175,11 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
 
         value = item.split(":", 1)[1].strip() if ":" in item else ""
         value_without_comment = strip_yaml_inline_comment(value)
+        nonscalar_key = nonscalar_workflow_string_value_key(lines, line_number - 1, item, value_without_comment)
+        if nonscalar_key:
+            return f"{rel}: line {line_number} has a non-scalar workflow {nonscalar_key} value"
         if is_yaml_block_scalar_marker(value_without_comment):
-            block_scalar_indent = line_indent(line)
+            block_scalar_indent = yaml_mapping_key_indent(line)
             indicator = yaml_block_scalar_indent_indicator(value_without_comment)
             block_scalar_required_indent = block_scalar_indent + indicator if indicator is not None else None
             block_scalar_auto_indent = None
@@ -305,6 +308,85 @@ def yaml_item_text(line: str) -> str:
     return stripped[2:].strip() if stripped.startswith("- ") else stripped
 
 
+def yaml_mapping_key_indent(line: str) -> int:
+    indent = line_indent(line)
+    return indent + 2 if line.strip().startswith("- ") else indent
+
+
+def yaml_key_name(item: str) -> str:
+    if ":" not in item:
+        return ""
+    return clean_shell_value(item.split(":", 1)[0]).casefold()
+
+
+def previous_parent_index(lines: list[str], index: int) -> int | None:
+    current_indent = line_indent(lines[index])
+    for candidate in range(index - 1, -1, -1):
+        stripped = lines[candidate].strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if line_indent(lines[candidate]) < current_indent:
+            return candidate
+    return None
+
+
+def direct_step_mapping_key(lines: list[str], index: int) -> bool:
+    if lines[index].strip().startswith("- "):
+        return True
+    parent = previous_parent_index(lines, index)
+    return parent is not None and lines[parent].strip().startswith("- ")
+
+
+def defaults_run_shell_key(lines: list[str], index: int) -> bool:
+    parent = previous_parent_index(lines, index)
+    if parent is None or not yaml_item_text(lines[parent]).startswith("run:"):
+        return False
+    grandparent = previous_parent_index(lines, parent)
+    return grandparent is not None and yaml_item_text(lines[grandparent]).startswith("defaults:")
+
+
+def defaults_run_mapping_key(lines: list[str], index: int) -> bool:
+    parent = previous_parent_index(lines, index)
+    return parent is not None and yaml_item_text(lines[parent]).startswith("defaults:")
+
+
+def unquoted_flow_collection_value(value: str) -> bool:
+    stripped = value.strip()
+    if len(stripped) < 2 or stripped[0] in {"'", '"'}:
+        return False
+    return (stripped[0] == "[" and stripped[-1] == "]") or (stripped[0] == "{" and stripped[-1] == "}")
+
+
+def nonscalar_workflow_string_value_key(
+    lines: list[str],
+    index: int,
+    item: str,
+    value_without_comment: str,
+) -> str | None:
+    flow = split_flow_mapping(item)
+    if flow and direct_step_mapping_key(lines, index):
+        for key in ("run", "shell"):
+            if key in flow and unquoted_flow_collection_value(flow[key]):
+                return key
+
+    key = yaml_key_name(item)
+    if key == "run" and direct_step_mapping_key(lines, index):
+        if unquoted_flow_collection_value(value_without_comment):
+            return "run"
+    if key == "shell" and (direct_step_mapping_key(lines, index) or defaults_run_shell_key(lines, index)):
+        if unquoted_flow_collection_value(value_without_comment):
+            return "shell"
+    if key == "defaults":
+        inline_shell = inline_shell_value(value_without_comment)
+        if inline_shell and unquoted_flow_collection_value(inline_shell):
+            return "defaults.run.shell"
+    if key == "run" and defaults_run_mapping_key(lines, index):
+        inline_shell = inline_shell_value(value_without_comment)
+        if inline_shell and unquoted_flow_collection_value(inline_shell):
+            return "defaults.run.shell"
+    return None
+
+
 def block_end_line(lines: list[str], start_index: int, block_indent: int, max_end: int | None = None) -> int:
     limit = max_end if max_end is not None else len(lines)
     end_line = start_index + 1
@@ -323,7 +405,7 @@ def block_end_line(lines: list[str], start_index: int, block_indent: int, max_en
 
 def collect_run_block(lines: list[str], run_index: int, max_end: int | None = None) -> tuple[int, str]:
     line = lines[run_index]
-    indent = line_indent(line)
+    indent = yaml_mapping_key_indent(line)
     after_colon = line.split(":", 1)[1].strip() if ":" in line else ""
     block_marker = strip_yaml_inline_comment(after_colon)
     if after_colon and not is_yaml_block_scalar_marker(block_marker):
@@ -651,12 +733,13 @@ def parse_step_snippet(
     if not is_powershell_shell(effective_shell) and not WORKFLOW_MARKER_RE.search(command):
         return None
     line_start = min(explicit_shell[0], run_line + 1) if explicit_shell else run_line + 1
+    line_end = max(run_end, explicit_shell[0]) if explicit_shell else run_end
     return {
         "source_file": rel,
         "step_or_action": step_name or "(unnamed step)",
         "shell": effective_shell,
         "line_start": line_start,
-        "line_end": run_end,
+        "line_end": line_end,
         "command_sha256": hashlib.sha256(command.encode("utf-8")).hexdigest() if command else "",
         "command_preview": command[:240],
     }
