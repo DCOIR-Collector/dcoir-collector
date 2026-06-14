@@ -307,7 +307,7 @@ def collect_run_block(lines: list[str], run_index: int, max_end: int | None = No
     indent = line_indent(line)
     after_colon = line.split(":", 1)[1].strip() if ":" in line else ""
     if after_colon and not is_yaml_block_scalar_marker(strip_yaml_inline_comment(after_colon)):
-        return run_index + 1, after_colon.strip("'\"")
+        return run_index + 1, clean_shell_value(after_colon)
     end_line = block_end_line(lines, run_index, indent, max_end)
     command_lines: list[str] = []
     for follow in lines[run_index + 1:end_line]:
