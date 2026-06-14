@@ -161,8 +161,11 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
                 stack.pop()
 
         value = item.split(":", 1)[1].strip() if ":" in item else ""
-        if is_yaml_block_scalar_marker(strip_yaml_inline_comment(value)):
+        value_without_comment = strip_yaml_inline_comment(value)
+        if is_yaml_block_scalar_marker(value_without_comment):
             block_scalar_indent = line_indent(line)
+        elif is_invalid_block_scalar_like_value(value_without_comment):
+            return f"{rel}: line {line_number} has an invalid YAML block scalar marker"
 
     if stack:
         opener, line_number = stack[-1]
@@ -359,6 +362,18 @@ def yaml_block_scalar_indent_indicator(value: str) -> int | None:
         if character in "123456789":
             return int(character)
     return None
+
+
+def is_invalid_block_scalar_like_value(value: str) -> bool:
+    marker = value.strip()
+    if not marker or is_yaml_block_scalar_marker(marker):
+        return False
+    if marker[0] in {"|", ">"}:
+        return True
+    if len(marker) >= 2 and marker[0] in {"'", '"'} and marker[-1] == marker[0]:
+        inner = marker[1:-1].strip()
+        return bool(inner) and inner[0] in {"|", ">"}
+    return False
 
 
 def parent_block_start(lines: list[str], index: int) -> int:
