@@ -61,6 +61,16 @@ REPORT_SCHEMAS = {
     DEFAULT_GOVERNANCE_REPORT.as_posix(): "dcoir_powershell_finding_governance_report_v1",
     DEFAULT_ASSEMBLY_REPORT.as_posix(): "dcoir_powershell_assembly_parity_report_v1",
 }
+REPO_ARTIFACT_PREFIXES = (
+    ".github/",
+    "operator_tools/",
+    "project_sources/",
+    "scripts/",
+    "tools/",
+)
+EXPLICIT_ARTIFACT_STATUSES = {
+    "not_committed_in_267_boundary",
+}
 
 
 class EngineBoundaryError(RuntimeError):
@@ -258,6 +268,48 @@ def report_finding_count(report: dict[str, Any]) -> int:
     return 0
 
 
+def is_repo_artifact_path(value: str) -> bool:
+    return value.startswith(REPO_ARTIFACT_PREFIXES)
+
+
+def declared_output_artifacts(
+    repo_root: Path,
+    matrix_rows: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[str], list[str]]:
+    errors: list[str] = []
+    warnings: list[str] = []
+    artifacts: list[dict[str, Any]] = []
+    for row in matrix_rows:
+        artifact = scalar(row.get("output_artifact")).strip()
+        row_id = scalar(row.get("id")).strip()
+        status = scalar(row.get("artifact_status")).strip()
+        if status and status not in EXPLICIT_ARTIFACT_STATUSES:
+            errors.append(f"engine matrix row {row_id} has unsupported artifact_status {status!r}")
+        repo_path = is_repo_artifact_path(artifact)
+        exists = (repo_root / artifact).is_file() if repo_path else None
+        evidence_claimed = bool(repo_path and exists)
+        if status == "not_committed_in_267_boundary":
+            evidence_claimed = False
+            warnings.append(
+                f"engine matrix row {row_id} artifact is not committed or claimed by this #267 boundary: {artifact}"
+            )
+        elif repo_path and row.get("blocking") is True and not exists:
+            errors.append(f"blocking engine matrix artifact missing: {artifact} ({row_id})")
+        artifacts.append(
+            {
+                "id": row_id,
+                "check_category": scalar(row.get("check_category")).strip(),
+                "path": artifact,
+                "repo_path": repo_path,
+                "exists": exists,
+                "blocking": row.get("blocking"),
+                "artifact_status": status or ("present" if exists else "external_or_future"),
+                "evidence_claimed_by_boundary": evidence_claimed,
+            }
+        )
+    return artifacts, errors, warnings
+
+
 def validate_source_reports(
     repo_root: Path,
     source_reports: list[str],
@@ -339,6 +391,9 @@ def build_markdown(report: dict[str, Any]) -> str:
         f"| Matrix rows | {summary['matrix_row_count']} |",
         f"| Required categories covered | {summary['required_category_count']} / {summary['expected_required_category_count']} |",
         f"| Dependency reports | {summary['dependency_report_count']} |",
+        f"| Declared output artifacts | {summary['declared_output_artifact_count']} |",
+        f"| Missing blocking output artifacts | {summary['missing_blocking_output_artifact_count']} |",
+        f"| Unclaimed blocking output artifacts | {summary['unclaimed_blocking_output_artifact_count']} |",
         f"| Pester blocking for static validation | `{summary['pester_blocking_for_static_validation']}` |",
         f"| Independent enforcement requires Pester | `{summary['independent_enforcement_requires_pester']}` |",
         "",
@@ -356,6 +411,26 @@ def build_markdown(report: dict[str, Any]) -> str:
                 evidence=row["evidence_type"],
                 blocking=row["blocking"],
                 owner=row["owner"],
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "## Declared Output Artifacts",
+            "",
+            "| Check | Artifact | Repo path | Exists | Claimed by #267 boundary | Status |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for artifact in report["declared_output_artifacts"]:
+        lines.append(
+            "| `{id}` | `{path}` | `{repo_path}` | `{exists}` | `{claimed}` | `{status}` |".format(
+                id=artifact["id"],
+                path=artifact["path"],
+                repo_path=artifact["repo_path"],
+                exists=artifact["exists"],
+                claimed=artifact["evidence_claimed_by_boundary"],
+                status=artifact["artifact_status"],
             )
         )
     lines.extend(
@@ -432,6 +507,9 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
     warnings.extend(dependency_warnings)
 
     matrix_rows = metadata.get("matrix_rows", [])
+    output_artifacts, artifact_errors, artifact_warnings = declared_output_artifacts(repo_root, matrix_rows)
+    errors.extend(artifact_errors)
+    warnings.extend(artifact_warnings)
     pester = boundary.get("pester_boundary", {}) if isinstance(boundary.get("pester_boundary"), dict) else {}
     policy = boundary.get("policy", {}) if isinstance(boundary.get("policy"), dict) else {}
     required_categories_covered = {
@@ -439,6 +517,16 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
         for row in matrix_rows
         if scalar(row.get("check_category")).strip() in REQUIRED_CHECK_CATEGORIES
     }
+    missing_blocking_artifacts = [
+        artifact
+        for artifact in output_artifacts
+        if artifact["repo_path"] and artifact["blocking"] is True and artifact["exists"] is False
+    ]
+    unclaimed_blocking_artifacts = [
+        artifact
+        for artifact in output_artifacts
+        if artifact["blocking"] is True and artifact["evidence_claimed_by_boundary"] is False
+    ]
     proof = dict(proof_counts)
     proof["requires_pester"] = bool(
         isinstance(boundary.get("independent_analyzer_enforcement_proof"), dict)
@@ -457,8 +545,12 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
             "pester_blocking_for_static_validation": pester.get("blocking_for_static_security_validation"),
             "independent_enforcement_requires_pester": proof["requires_pester"],
             "workflow_readiness_claimed": policy.get("workflow_readiness_claimed"),
+            "declared_output_artifact_count": len(output_artifacts),
+            "missing_blocking_output_artifact_count": len(missing_blocking_artifacts),
+            "unclaimed_blocking_output_artifact_count": len(unclaimed_blocking_artifacts),
         },
         "engine_matrix": matrix_rows,
+        "declared_output_artifacts": output_artifacts,
         "pester_boundary": {
             "scope_decision": scalar(pester.get("scope_decision")).strip(),
             "blocking_for_static_security_validation": pester.get("blocking_for_static_security_validation"),
@@ -516,6 +608,12 @@ def main(argv: list[str] | None = None) -> int:
                 "matrix_row_count": report["summary"]["matrix_row_count"],
                 "required_category_count": report["summary"]["required_category_count"],
                 "dependency_report_count": report["summary"]["dependency_report_count"],
+                "missing_blocking_output_artifact_count": report["summary"][
+                    "missing_blocking_output_artifact_count"
+                ],
+                "unclaimed_blocking_output_artifact_count": report["summary"][
+                    "unclaimed_blocking_output_artifact_count"
+                ],
                 "rule_risk_fixture_findings": report["independent_analyzer_enforcement_proof"][
                     "rule_risk_fixture_findings"
                 ],
