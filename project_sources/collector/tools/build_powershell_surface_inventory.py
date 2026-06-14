@@ -1248,7 +1248,7 @@ def parse_step_snippet(
         direct_key = index == start or line_indent(lines[index]) == child_indent
         if not direct_key:
             continue
-        item = yaml_item_text(lines[index])
+        item = strip_yaml_node_prefixes(yaml_item_text(lines[index]))
         flow = split_flow_mapping(item) if index == start else {}
         if flow:
             if "name" in flow:
