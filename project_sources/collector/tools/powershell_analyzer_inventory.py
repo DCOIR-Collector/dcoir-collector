@@ -12,7 +12,7 @@ from powershell_analyzer_contract import (
     PRIMARY_TARGET_CATEGORIES,
     read_json,
     scalar,
-    sha256_file,
+    sha256_line_ending_stable_file,
 )
 
 def load_inventory(repo_root: Path, inventory_path: Path) -> dict[str, Any]:
@@ -132,7 +132,7 @@ def build_target_sets(
         if absolute_path.stat().st_size == 0:
             errors.append(f"{path}: intended analyzer target is empty")
             continue
-        actual_sha256 = sha256_file(absolute_path)
+        actual_sha256 = sha256_line_ending_stable_file(absolute_path)
         inventory_sha256 = scalar(surface.get("sha256")).strip()
         if inventory_sha256 and inventory_sha256 != actual_sha256:
             errors.append(f"{path}: inventory sha256 does not match current file content")
