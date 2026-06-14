@@ -162,6 +162,31 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
         flow_error = flow_collection_shape_error(rel, line_number, item, value_without_comment)
         if flow_error:
             return flow_error
+        flow_fragment_error = flow_mapping_fragment_error(rel, line_number, item, value_without_comment)
+        if flow_fragment_error:
+            return flow_fragment_error
+        inline_steps_key = unsupported_inline_executable_steps_key(
+            lines,
+            line_number - 1,
+            item,
+            value_without_comment,
+        )
+        if inline_steps_key:
+            return f"{rel}: line {line_number} has an unsupported inline workflow {inline_steps_key} value"
+        empty_block_run_key = empty_block_scalar_run_key(lines, line_number - 1, item, value_without_comment)
+        if empty_block_run_key:
+            return f"{rel}: line {line_number} has an empty workflow {empty_block_run_key} value"
+        unsupported_block_scalar_key = unsupported_block_scalar_workflow_string_key(
+            lines,
+            line_number - 1,
+            item,
+            value_without_comment,
+        )
+        if unsupported_block_scalar_key:
+            return (
+                f"{rel}: line {line_number} has an unsupported block-scalar workflow "
+                f"{unsupported_block_scalar_key} value"
+            )
         nonscalar_key = nonscalar_workflow_string_value_key(lines, line_number - 1, item, value_without_comment)
         if nonscalar_key:
             return f"{rel}: line {line_number} has a non-scalar workflow {nonscalar_key} value"
@@ -388,6 +413,62 @@ def unquoted_flow_collection_value(value: str) -> bool:
     return (stripped[0] == "[" and stripped[-1] == "]") or (stripped[0] == "{" and stripped[-1] == "}")
 
 
+def unsupported_workflow_shell_value(value: str) -> bool:
+    cleaned = cleaned_workflow_string(value)
+    return (
+        cleaned == ""
+        or "${{" in cleaned
+        or unquoted_flow_collection_value(value)
+        or is_yaml_block_scalar_marker(cleaned)
+    )
+
+
+def flow_mapping_pieces(item: str) -> list[str] | None:
+    stripped = strip_yaml_inline_comment(item)
+    if not (stripped.startswith("{") and stripped.endswith("}")):
+        return None
+    content = stripped[1:-1]
+    pieces: list[str] = []
+    current: list[str] = []
+    quote: str | None = None
+    depth = 0
+    index = 0
+    while index < len(content):
+        character = content[index]
+        if quote:
+            current.append(character)
+            if quote == "'" and character == "'" and index + 1 < len(content) and content[index + 1] == "'":
+                current.append(content[index + 1])
+                index += 2
+                continue
+            if quote == '"' and character == "\\" and index + 1 < len(content):
+                current.append(content[index + 1])
+                index += 2
+                continue
+            if character == quote:
+                quote = None
+            index += 1
+            continue
+        if character in {"'", '"'} and yaml_quote_can_start(content, index):
+            quote = character
+            current.append(character)
+        elif character in "[{(":
+            depth += 1
+            current.append(character)
+        elif character in "]})":
+            depth = max(0, depth - 1)
+            current.append(character)
+        elif character == "," and depth == 0:
+            pieces.append("".join(current).strip())
+            current = []
+        else:
+            current.append(character)
+        index += 1
+    if current:
+        pieces.append("".join(current).strip())
+    return pieces
+
+
 def flow_collection_shape_error(rel: str, line_number: int, item: str, value_without_comment: str) -> str | None:
     candidate = strip_yaml_inline_comment(item)
     if not candidate.startswith(("{", "[")):
@@ -428,6 +509,107 @@ def flow_collection_shape_error(rel: str, line_number: int, item: str, value_wit
     return None
 
 
+def flow_mapping_fragment_error(rel: str, line_number: int, item: str, value_without_comment: str) -> str | None:
+    candidate = strip_yaml_inline_comment(item)
+    if not candidate.startswith("{"):
+        candidate = value_without_comment.strip()
+    if not candidate or candidate[0] != "{" or candidate[0] in {"'", '"'}:
+        return None
+
+    pieces = flow_mapping_pieces(candidate)
+    if pieces is None:
+        return None
+    for piece in pieces:
+        if piece and ":" not in piece:
+            return f"{rel}: line {line_number} has an unsupported flow mapping fragment"
+    return None
+
+
+def flow_mapping_has_direct_key(text: str, key: str) -> bool:
+    return key in split_flow_mapping(text)
+
+
+def unsupported_inline_executable_steps_key(
+    lines: list[str],
+    index: int,
+    item: str,
+    value_without_comment: str,
+) -> str | None:
+    if not value_without_comment.strip().startswith("{"):
+        return None
+
+    key = yaml_key_name(item)
+    if (
+        key == "runs"
+        and line_indent(lines[index]) == 0
+        and flow_mapping_has_direct_key(value_without_comment, "steps")
+    ):
+        return "runs.steps"
+
+    if key == "jobs" and line_indent(lines[index]) == 0:
+        for job_value in split_flow_mapping(value_without_comment).values():
+            if flow_mapping_has_direct_key(job_value, "steps"):
+                return "jobs.steps"
+
+    parent = previous_parent_index(lines, index)
+    if parent is None:
+        return None
+    parent_item = yaml_item_text_without_comment(lines[parent])
+    if (
+        line_indent(lines[parent]) == 0
+        and yaml_key_name(parent_item) == "jobs"
+        and line_indent(lines[index]) == line_indent(lines[parent]) + 2
+        and flow_mapping_has_direct_key(value_without_comment, "steps")
+    ):
+        return "jobs.steps"
+    return None
+
+
+def block_scalar_has_nonblank_content(lines: list[str], index: int, marker: str) -> bool:
+    indent = yaml_mapping_key_indent(lines[index])
+    end_line = block_end_line(lines, index, indent)
+    content_indent = yaml_block_scalar_content_indent(lines, index + 1, end_line, indent, marker)
+    for follow in lines[index + 1:end_line]:
+        if not follow.strip():
+            continue
+        content = follow[content_indent:] if len(follow) >= content_indent else follow.strip()
+        if content.strip():
+            return True
+    return False
+
+
+def empty_block_scalar_run_key(
+    lines: list[str],
+    index: int,
+    item: str,
+    value_without_comment: str,
+) -> str | None:
+    if (
+        yaml_key_name(item) == "run"
+        and direct_step_mapping_key(lines, index)
+        and is_yaml_block_scalar_marker(value_without_comment)
+        and not block_scalar_has_nonblank_content(lines, index, value_without_comment)
+    ):
+        return "run"
+    return None
+
+
+def unsupported_block_scalar_workflow_string_key(
+    lines: list[str],
+    index: int,
+    item: str,
+    value_without_comment: str,
+) -> str | None:
+    if not is_yaml_block_scalar_marker(value_without_comment):
+        return None
+    key = yaml_key_name(item)
+    if key == "shell" and direct_step_mapping_key(lines, index):
+        return "shell"
+    if key == "shell" and defaults_run_shell_key(lines, index):
+        return "defaults.run.shell"
+    return None
+
+
 def nested_content_index(lines: list[str], index: int) -> int | None:
     parent_indent = yaml_mapping_key_indent(lines[index])
     for candidate in range(index + 1, len(lines)):
@@ -463,10 +645,11 @@ def nonscalar_workflow_string_value_key(
 ) -> str | None:
     flow = split_flow_mapping(item)
     if flow and direct_step_mapping_key(lines, index):
-        for key in ("run", "shell"):
-            if key in flow:
-                if empty_workflow_string(flow[key]) or unquoted_flow_collection_value(flow[key]):
-                    return key
+        if "run" in flow:
+            if empty_workflow_string(flow["run"]) or unquoted_flow_collection_value(flow["run"]):
+                return "run"
+        if "shell" in flow and unsupported_workflow_shell_value(flow["shell"]):
+            return "shell"
 
     key = yaml_key_name(item)
     if key == "run" and direct_step_mapping_key(lines, index):
@@ -480,24 +663,20 @@ def nonscalar_workflow_string_value_key(
             ):
                 return "run"
     if key == "shell" and direct_step_mapping_key(lines, index):
-        if unquoted_flow_collection_value(value_without_comment):
-            return "shell"
-        if empty_workflow_string(value_without_comment):
+        if unsupported_workflow_shell_value(value_without_comment):
             return "shell"
     if key == "shell" and defaults_run_shell_key(lines, index):
-        if unquoted_flow_collection_value(value_without_comment):
-            return "defaults.run.shell"
-        if empty_workflow_string(value_without_comment):
+        if unsupported_workflow_shell_value(value_without_comment):
             return "defaults.run.shell"
     if key == "defaults":
         inline_shell = inline_shell_value(value_without_comment)
         if inline_shell is not None:
-            if empty_workflow_string(inline_shell) or unquoted_flow_collection_value(inline_shell):
+            if unsupported_workflow_shell_value(inline_shell):
                 return "defaults.run.shell"
     if key == "run" and defaults_run_mapping_key(lines, index):
         inline_shell = inline_shell_value(value_without_comment)
         if inline_shell is not None:
-            if empty_workflow_string(inline_shell) or unquoted_flow_collection_value(inline_shell):
+            if unsupported_workflow_shell_value(inline_shell):
                 return "defaults.run.shell"
     return None
 
@@ -533,7 +712,26 @@ def collect_run_block(lines: list[str], run_index: int, max_end: int | None = No
             command_lines.append("")
         else:
             command_lines.append(follow[content_indent:] if len(follow) >= content_indent else follow.strip())
-    return end_line, "\n".join(command_lines).rstrip()
+    return end_line, normalize_block_scalar_command(command_lines, block_marker)
+
+
+def normalize_block_scalar_command(command_lines: list[str], marker: str) -> str:
+    if not marker.strip().startswith(">"):
+        return "\n".join(command_lines).rstrip()
+
+    folded_lines: list[str] = []
+    paragraph: list[str] = []
+    for line in command_lines:
+        if line == "":
+            if paragraph:
+                folded_lines.append(" ".join(paragraph))
+                paragraph = []
+            folded_lines.append("")
+        else:
+            paragraph.append(line)
+    if paragraph:
+        folded_lines.append(" ".join(paragraph))
+    return "\n".join(folded_lines).rstrip()
 
 
 def strip_yaml_inline_comment(value: str) -> str:
@@ -658,48 +856,9 @@ def clean_shell_value(value: str) -> str:
 
 
 def split_flow_mapping(item: str) -> dict[str, str]:
-    stripped = strip_yaml_inline_comment(item)
-    if not (stripped.startswith("{") and stripped.endswith("}")):
+    pieces = flow_mapping_pieces(item)
+    if pieces is None:
         return {}
-    content = stripped[1:-1]
-    pieces: list[str] = []
-    current: list[str] = []
-    quote: str | None = None
-    depth = 0
-    index = 0
-    while index < len(content):
-        character = content[index]
-        if quote:
-            current.append(character)
-            if quote == "'" and character == "'" and index + 1 < len(content) and content[index + 1] == "'":
-                current.append(content[index + 1])
-                index += 2
-                continue
-            if quote == '"' and character == "\\" and index + 1 < len(content):
-                current.append(content[index + 1])
-                index += 2
-                continue
-            if character == quote:
-                quote = None
-            index += 1
-            continue
-        if character in {"'", '"'} and yaml_quote_can_start(content, index):
-            quote = character
-            current.append(character)
-        elif character in "[{(":
-            depth += 1
-            current.append(character)
-        elif character in "]})":
-            depth = max(0, depth - 1)
-            current.append(character)
-        elif character == "," and depth == 0:
-            pieces.append("".join(current).strip())
-            current = []
-        else:
-            current.append(character)
-        index += 1
-    if current:
-        pieces.append("".join(current).strip())
 
     mapping: dict[str, str] = {}
     for piece in pieces:
