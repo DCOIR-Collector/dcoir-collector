@@ -128,6 +128,23 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertFalse(result["validation"]["success"])
         self.assertTrue(any("unclosed '{'" in error for error in result["validation"]["errors"]))
 
+    def test_malformed_flow_mapping_fragment_fails(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/malformed-flow-fragment.yml"
+            write(
+                root / rel,
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - { name: Flow, shell: pwsh, run: Write-Host one, two }\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertFalse(result["validation"]["success"])
+        self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+        self.assertTrue(any("unsupported flow mapping fragment" in error for error in result["validation"]["errors"]))
+
     def test_malformed_workflow_indentation_fails(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
@@ -199,11 +216,13 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
             ("direct-run-block-list", "      - shell: pwsh\n        run:\n          - Write-Host ok\n", "run"),
             ("direct-run-block-map", "      - shell: pwsh\n        run:\n          command: Write-Host ok\n", "run"),
             ("direct-shell-list", "      - shell: [pwsh]\n        run: Write-Host ok\n", "shell"),
+            ("direct-shell-expression", "      - shell: ${{ matrix.shell }}\n        run: Write-Host ok\n", "shell"),
             ("direct-shell-block-list", "      - shell:\n          - pwsh\n        run: Write-Host ok\n", "shell"),
             ("direct-shell-block-map", "      - shell:\n          executable: pwsh\n        run: Write-Host ok\n", "shell"),
             ("flow-step-run-list", "      - { name: Flow, shell: pwsh, run: [Write-Host ok] }\n", "run"),
             ("flow-step-run-map", "      - { name: Flow, shell: pwsh, run: { command: Write-Host ok } }\n", "run"),
             ("flow-step-shell-list", "      - { name: Flow, shell: [pwsh], run: Write-Host ok }\n", "shell"),
+            ("flow-step-shell-expression", "      - { name: Flow, shell: ${{ matrix.shell }}, run: Write-Host ok }\n", "shell"),
             ("commented-flow-step-run-list", "      - { name: Flow, shell: pwsh, run: [Write-Host ok] } # comment\n", "run"),
             ("commented-flow-step-shell-list", "      - { name: Flow, shell: [pwsh], run: Write-Host ok } # comment\n", "shell"),
             (
@@ -211,6 +230,16 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "    defaults:\n"
                 "      run:\n"
                 "        shell: [pwsh]\n"
+                "    steps:\n"
+                "      - name: Uses invalid default shell\n"
+                "        run: Write-Host ok\n",
+                "defaults.run.shell",
+            ),
+            (
+                "block-default-shell-expression",
+                "    defaults:\n"
+                "      run:\n"
+                "        shell: ${{ matrix.shell }}\n"
                 "    steps:\n"
                 "      - name: Uses invalid default shell\n"
                 "        run: Write-Host ok\n",
@@ -255,6 +284,14 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 "defaults.run.shell",
             ),
             (
+                "job-inline-default-shell-expression",
+                "    defaults: { run: { shell: ${{ matrix.shell }} } }\n"
+                "    steps:\n"
+                "      - name: Uses invalid job inline default shell\n"
+                "        run: Write-Host ok\n",
+                "defaults.run.shell",
+            ),
+            (
                 "nested-inline-default-shell-list",
                 "    defaults:\n"
                 "      run: { shell: [pwsh] }\n"
@@ -278,6 +315,29 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                 self.assertTrue(
                     any(f"non-scalar workflow {key} value" in error for error in result["validation"]["errors"])
                 )
+
+    def test_workflow_default_shell_expression_fails_closed(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            rel = ".github/workflows/top-default-shell-expression.yml"
+            write(
+                root / rel,
+                "defaults:\n"
+                "  run:\n"
+                "    shell: ${{ matrix.shell }}\n"
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Uses workflow default shell\n"
+                "        run: Write-Host ok\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[rel])
+
+        self.assertFalse(result["validation"]["success"])
+        self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+        self.assertTrue(
+            any("non-scalar workflow defaults.run.shell value" in error for error in result["validation"]["errors"])
+        )
 
     def test_empty_workflow_run_and_shell_values_fail_closed(self) -> None:
         cases = [
@@ -367,6 +427,71 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
                     any(f"non-scalar workflow {key} value" in error for error in result["validation"]["errors"])
                 )
 
+    def test_empty_block_scalar_run_fails_closed(self) -> None:
+        for marker in ["|", ">"]:
+            with self.subTest(marker=marker):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    rel = f".github/workflows/empty-block-run-{marker.replace('|', 'pipe').replace('>', 'fold')}.yml"
+                    write(
+                        root / rel,
+                        "jobs:\n"
+                        "  test:\n"
+                        "    steps:\n"
+                        "      - name: Empty block scalar run\n"
+                        "        shell: pwsh\n"
+                        f"        run: {marker}\n",
+                    )
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertFalse(result["validation"]["success"])
+                self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+                self.assertTrue(any("empty workflow run value" in error for error in result["validation"]["errors"]))
+
+    def test_block_scalar_shell_values_fail_closed(self) -> None:
+        cases = [
+            (
+                "direct-shell-block-scalar",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Direct shell block scalar\n"
+                "        shell: |\n"
+                "          pwsh\n"
+                "        run: Write-Host ok\n",
+                "shell",
+            ),
+            (
+                "default-shell-block-scalar",
+                "jobs:\n"
+                "  test:\n"
+                "    defaults:\n"
+                "      run:\n"
+                "        shell: |\n"
+                "          pwsh\n"
+                "    steps:\n"
+                "      - name: Default shell block scalar\n"
+                "        run: Write-Host ok\n",
+                "defaults.run.shell",
+            ),
+        ]
+        for name, text, key in cases:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    rel = f".github/workflows/{name}.yml"
+                    write(root / rel, text)
+                    result = inventory.build_inventory(root, changed_files=[rel])
+
+                self.assertFalse(result["validation"]["success"])
+                self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+                self.assertTrue(
+                    any(
+                        f"unsupported block-scalar workflow {key} value" in error
+                        for error in result["validation"]["errors"]
+                    )
+                )
+
     def test_matrix_run_and_shell_data_are_not_validated_as_steps(self) -> None:
         with self.make_minimal_repo() as temp:
             root = Path(temp)
@@ -414,20 +539,46 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(result["surfaces"], [])
 
     def test_flow_style_inline_steps_fail_closed(self) -> None:
-        with self.make_minimal_repo() as temp:
-            root = Path(temp)
-            rel = ".github/workflows/inline-flow-steps.yml"
-            write(
-                root / rel,
+        cases = [
+            (
+                "workflow-steps-value",
+                ".github/workflows/inline-flow-steps.yml",
                 "jobs:\n"
                 "  test:\n"
                 "    steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }]\n",
-            )
-            result = inventory.build_inventory(root, changed_files=[rel])
+                "unsupported inline workflow steps value",
+            ),
+            (
+                "workflow-job-value",
+                ".github/workflows/inline-flow-job.yml",
+                "jobs:\n"
+                "  test: { steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] }\n",
+                "unsupported inline workflow jobs.steps value",
+            ),
+            (
+                "workflow-jobs-value",
+                ".github/workflows/inline-flow-jobs.yml",
+                "jobs: { test: { steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] } }\n",
+                "unsupported inline workflow jobs.steps value",
+            ),
+            (
+                "composite-runs-value",
+                ".github/actions/inline-flow/action.yml",
+                "name: Inline composite\n"
+                "runs: { using: composite, steps: [{ name: Inline, shell: pwsh, run: Write-Host ok }] }\n",
+                "unsupported inline workflow runs.steps value",
+            ),
+        ]
+        for name, rel, text, expected_error in cases:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp)
+                    write(root / rel, text)
+                    result = inventory.build_inventory(root, changed_files=[rel])
 
-        self.assertFalse(result["validation"]["success"])
-        self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
-        self.assertTrue(any("unsupported inline workflow steps value" in error for error in result["validation"]["errors"]))
+                self.assertFalse(result["validation"]["success"])
+                self.assertEqual(result["surfaces"][0]["category"], "invalid_workflow_surface")
+                self.assertTrue(any(expected_error in error for error in result["validation"]["errors"]))
 
     def test_flow_style_step_plain_scalar_apostrophe_is_not_a_quote(self) -> None:
         with self.make_minimal_repo() as temp:
@@ -1047,6 +1198,29 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
         self.assertEqual(len(snippets), 1)
         self.assertEqual(snippets[0]["shell"], "pwsh")
         self.assertEqual(snippets[0]["command_preview"], "Write-Host ok")
+
+    def test_folded_block_scalar_run_uses_folded_command_text(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp)
+            expected = "Write-Host one Write-Host two"
+            write(
+                root / ".github/workflows/folded-block-command.yml",
+                "jobs:\n"
+                "  test:\n"
+                "    steps:\n"
+                "      - name: Uses folded block scalar\n"
+                "        shell: pwsh\n"
+                "        run: >\n"
+                "          Write-Host one\n"
+                "          Write-Host two\n",
+            )
+            result = inventory.build_inventory(root, changed_files=[".github/workflows/folded-block-command.yml"])
+
+        self.assertTrue(result["validation"]["success"], result["validation"]["errors"])
+        snippets = result["surfaces"][0]["embedded_snippets"]
+        self.assertEqual(len(snippets), 1)
+        self.assertEqual(snippets[0]["command_preview"], expected)
+        self.assertEqual(snippets[0]["command_sha256"], inventory.hashlib.sha256(expected.encode("utf-8")).hexdigest())
 
     def test_block_scalar_digit_markers_preserve_body(self) -> None:
         for marker in ["|2", "|2-", "|+2", ">2", ">2-", ">+2"]:
