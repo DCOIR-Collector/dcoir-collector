@@ -169,7 +169,12 @@ def finding() -> dict[str, object]:
     }
 
 
-def write_governance_repo(root: Path, *, assembly_success: bool = True) -> None:
+def write_governance_repo(
+    root: Path,
+    *,
+    assembly_success: bool = True,
+    assembly_generated_path: str = "compiled_runtime/DCOIR_Collector.ps1",
+) -> None:
     finding_report = {
         "schema_version": "dcoir_powershell_custom_check_report_v1",
         "findings": [finding()],
@@ -192,7 +197,7 @@ def write_governance_repo(root: Path, *, assembly_success: bool = True) -> None:
         "schema_version": "dcoir_powershell_assembly_parity_report_v1",
         "validation": {"success": assembly_success, "errors": [] if assembly_success else ["failed upstream"], "warnings": []},
         "generated_outputs": [
-            {"id": "collector_compiled_runtime", "path": "compiled_runtime/DCOIR_Collector.ps1"}
+            {"id": "collector_compiled_runtime", "path": assembly_generated_path}
         ],
     }
     governance_doc = {
@@ -270,6 +275,18 @@ class PowerShellReportIngestionSafetyTests(unittest.TestCase):
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("powershell_assembly_parity_report.json does not report successful validation" in error for error in errors))
         self.assertFalse(report["assembly_parity_report"]["validation_success"])
+        self.assertEqual(report["assembly_parity_report"]["generated_output_paths"], [])
+
+    def test_finding_governance_rejects_traversing_generated_output_path_before_coverage(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            write_governance_repo(root, assembly_generated_path="../outside-generated.ps1")
+            report, errors, _warnings = governance.build_report(governance_args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(
+            any("PowerShell assembly parity generated output path must be a repo-relative path without traversal" in error for error in errors)
+        )
         self.assertEqual(report["assembly_parity_report"]["generated_output_paths"], [])
 
     def test_finding_governance_rejects_traversing_optional_report_before_read(self) -> None:
