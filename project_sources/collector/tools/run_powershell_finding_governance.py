@@ -456,7 +456,7 @@ def validate_baseline_record(
         errors.append(f"{prefix} missing path")
     else:
         try:
-            record["path"] = validate_governance_path(path, repo_root, f"{prefix} path")
+            record["path"] = validate_governance_path(path, repo_root, prefix)
         except GovernanceError as exc:
             errors.append(str(exc))
     if not has_any_text(record, ("rule_name", "check_id")):
@@ -499,7 +499,7 @@ def validate_suppression(
         errors.append(f"{prefix} missing path")
     else:
         try:
-            path = validate_governance_path(path, repo_root, f"{prefix} path")
+            path = validate_governance_path(path, repo_root, prefix)
             suppression["path"] = path
         except GovernanceError as exc:
             errors.append(str(exc))
