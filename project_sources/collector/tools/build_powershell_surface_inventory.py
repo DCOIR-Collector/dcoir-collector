@@ -1544,15 +1544,26 @@ def discover_repo_files(repo_root: Path) -> tuple[list[str], str]:
 
 def normalize_changed_files(values: list[str], repo_root: Path) -> list[str]:
     normalized: list[str] = []
+    root = repo_root.resolve()
     for value in values:
-        path = Path(value.replace("\\", "/"))
-        if path.is_absolute():
-            try:
-                normalized.append(path.resolve().relative_to(repo_root.resolve()).as_posix())
-            except ValueError:
-                normalized.append(path.as_posix().lstrip("/"))
-        else:
-            normalized.append(path.as_posix())
+        raw = value.strip()
+        if not raw:
+            raise ValueError("Changed-file input must not be blank")
+        slash_path = raw.replace("\\", "/")
+        path = Path(slash_path)
+        if ".." in path.parts:
+            raise ValueError(f"Changed-file input must not traverse parents: {value}")
+        if re.match(r"^[A-Za-z]:", slash_path) is not None and not path.is_absolute():
+            raise ValueError(f"Changed-file input must be repo-relative or under repo root: {value}")
+        candidate = path if path.is_absolute() else root / path
+        try:
+            repo_relative = candidate.resolve().relative_to(root)
+        except ValueError as exc:
+            raise ValueError(f"Changed-file input resolves outside repo root: {value}") from exc
+        rel = repo_relative.as_posix()
+        if not rel or rel == ".":
+            raise ValueError(f"Changed-file input must name a file under repo root: {value}")
+        normalized.append(rel)
     return sorted(dict.fromkeys(normalized))
 
 
