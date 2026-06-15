@@ -244,6 +244,53 @@ class PowerShellFindingGovernanceTests(unittest.TestCase):
         self.assertFalse(written["validation"]["success"])
         self.assertTrue(any("report write failure" in error for error in written["validation"]["errors"]))
 
+    def test_failed_required_source_report_is_not_collected(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            report_path = root / governance.DEFAULT_CUSTOM_REPORT
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            report["validation"]["success"] = False
+            write(report_path, json.dumps(report, indent=2) + "\n")
+            built, errors, _warnings = governance.build_report(self.args(root))
+
+        self.assertFalse(built["validation"]["success"])
+        self.assertTrue(any("does not report successful validation: validation.success is false" in error for error in errors))
+        self.assertEqual(built["summary"]["finding_count"], 0)
+
+    def test_required_source_report_validation_object_blocks_top_level_success_fallback(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            report_path = root / governance.DEFAULT_CUSTOM_REPORT
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            report["validation"] = {"errors": ["stale report"], "warnings": []}
+            report["success"] = True
+            write(report_path, json.dumps(report, indent=2) + "\n")
+            built, errors, _warnings = governance.build_report(self.args(root))
+
+        self.assertFalse(built["validation"]["success"])
+        self.assertTrue(any("does not report successful validation: validation.success is missing" in error for error in errors))
+        self.assertEqual(built["summary"]["finding_count"], 0)
+
+    def test_failed_optional_source_report_is_not_collected(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            optional_path = root / "extra-optional-report.json"
+            optional_report = {
+                "schema_version": "extra_optional_schema_v1",
+                "findings": [finding(fingerprint="optional-finding")],
+                "validation": {"success": False, "errors": ["failed upstream"], "warnings": []},
+                "summary": {"finding_count": 1},
+            }
+            write(optional_path, json.dumps(optional_report, indent=2) + "\n")
+            built, errors, _warnings = governance.build_report(
+                self.args(root, optional_finding_report=["extra-optional-report.json"])
+            )
+
+        self.assertFalse(built["validation"]["success"])
+        self.assertTrue(any("extra-optional-report.json does not report successful validation" in error for error in errors))
+        self.assertEqual(built["summary"]["finding_count"], 1)
+        self.assertEqual(built["summary"]["decision_counts"], {"advisory": 1})
+
     def test_fixture_classification_passes(self) -> None:
         with self.make_repo() as temp:
             report, errors, _warnings = governance.build_report(self.args(Path(temp)))

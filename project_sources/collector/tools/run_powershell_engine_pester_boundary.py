@@ -243,14 +243,16 @@ def validate_boundary_doc(boundary: dict[str, Any]) -> tuple[list[str], list[str
 
 def report_success_state(report: dict[str, Any]) -> tuple[bool, str]:
     validation = report.get("validation")
-    if isinstance(validation, dict) and "success" in validation:
+    if isinstance(validation, dict):
+        if "success" not in validation:
+            return False, "validation.success is missing"
         success = validation.get("success")
         if success is True:
             return True, "validation.success is true"
         if success is False:
             return False, "validation.success is false"
         return False, "validation.success must be boolean true"
-    if validation is not None and not isinstance(validation, dict):
+    if validation is not None:
         return False, "validation must be an object with success=true"
     if "success" in report:
         success = report.get("success")
@@ -260,7 +262,6 @@ def report_success_state(report: dict[str, Any]) -> tuple[bool, str]:
             return False, "top-level success is false"
         return False, "top-level success must be boolean true"
     return False, "missing explicit validation.success or top-level success"
-
 
 def report_success(report: dict[str, Any]) -> bool:
     success, _reason = report_success_state(report)
@@ -283,9 +284,29 @@ def report_finding_count(report: dict[str, Any]) -> int:
     return 0
 
 
-def is_repo_artifact_path(value: str) -> bool:
-    return value.startswith(REPO_ARTIFACT_PREFIXES)
+def artifact_slash_path(value: str) -> str:
+    return value.strip().replace("\\", "/")
 
+
+def is_windows_drive_path(value: str) -> bool:
+    return len(value) >= 2 and value[0].isalpha() and value[1] == ":"
+
+
+def is_repo_artifact_path(value: str) -> bool:
+    return artifact_slash_path(value).startswith(REPO_ARTIFACT_PREFIXES)
+
+
+def resolve_repo_artifact_path(artifact: str, repo_root: Path) -> tuple[Path | None, str | None]:
+    slash_path = artifact_slash_path(artifact)
+    parts = tuple(part for part in slash_path.split("/") if part)
+    if slash_path.startswith("/") or is_windows_drive_path(slash_path) or ".." in parts:
+        return None, "output_artifact path must be a repo-relative path without traversal"
+    candidate = repo_root.joinpath(*parts)
+    try:
+        candidate.resolve().relative_to(repo_root.resolve())
+    except (OSError, ValueError):
+        return None, "output_artifact path must resolve inside the repository root"
+    return candidate, None
 
 def declared_output_artifacts(
     repo_root: Path,
@@ -301,14 +322,22 @@ def declared_output_artifacts(
         if status and status not in EXPLICIT_ARTIFACT_STATUSES:
             errors.append(f"engine matrix row {row_id} has unsupported artifact_status {status!r}")
         repo_path = is_repo_artifact_path(artifact)
-        exists = (repo_root / artifact).is_file() if repo_path else None
-        evidence_claimed = bool(repo_path and exists)
+        path_error: str | None = None
+        exists: bool | None = None
+        if repo_path:
+            artifact_path, path_error = resolve_repo_artifact_path(artifact, repo_root)
+            if path_error:
+                errors.append(f"engine matrix row {row_id} {path_error}: {artifact}")
+                exists = False
+            else:
+                exists = artifact_path.is_file() if artifact_path is not None else False
+        evidence_claimed = bool(repo_path and exists and path_error is None)
         if status == "not_committed_in_267_boundary":
             evidence_claimed = False
             warnings.append(
                 f"engine matrix row {row_id} artifact is not committed or claimed by this #267 boundary: {artifact}"
             )
-        elif repo_path and row.get("blocking") is True and not exists:
+        elif repo_path and row.get("blocking") is True and not exists and path_error is None:
             errors.append(f"blocking engine matrix artifact missing: {artifact} ({row_id})")
         artifacts.append(
             {
@@ -323,7 +352,6 @@ def declared_output_artifacts(
             }
         )
     return artifacts, errors, warnings
-
 
 def validate_source_reports(
     repo_root: Path,

@@ -29,6 +29,12 @@ DEFAULT_ASSEMBLY_PARITY_REPORT = Path("project_sources/collector/powershell_asse
 DEFAULT_JSON_OUTPUT = Path("project_sources/collector/powershell_finding_governance_report.json")
 DEFAULT_MARKDOWN_OUTPUT = Path("project_sources/collector/powershell_finding_governance_report.md")
 
+REPORT_SCHEMAS = {
+    DEFAULT_CUSTOM_REPORT.as_posix(): "dcoir_powershell_custom_check_report_v1",
+    DEFAULT_RULE_RISK_REPORT.as_posix(): "dcoir_powershell_rule_risk_fixture_report_v1",
+    DEFAULT_ANALYZER_REPORT.as_posix(): "dcoir_powershell_analyzer_report_v1",
+}
+
 ALLOWED_DECISIONS = {
     "remediate-now",
     "baseline-temporary",
@@ -197,6 +203,20 @@ def load_optional_doc(
     return doc, repo_path
 
 
+def report_validation_success_state(report: dict[str, Any]) -> tuple[bool, str]:
+    validation = report.get("validation")
+    if not isinstance(validation, dict):
+        return False, "validation must be an object with success=true"
+    if "success" not in validation:
+        return False, "validation.success is missing"
+    success = validation.get("success")
+    if success is True:
+        return True, "validation.success is true"
+    if success is False:
+        return False, "validation.success is false"
+    return False, "validation.success must be boolean true"
+
+
 def stable_fingerprint(source_report: str, raw: dict[str, Any]) -> str:
     basis = {
         "source_report": source_report,
@@ -252,68 +272,66 @@ def collect_findings(
 ) -> tuple[list[Finding], list[dict[str, Any]]]:
     findings: list[Finding] = []
     input_reports: list[dict[str, Any]] = []
-    for report_path in required_reports:
+
+    def process_report(report_path: Path, required: bool, missing_is_warning: bool) -> None:
+        label = "PowerShell finding report"
         try:
-            doc, repo_path = load_doc(repo_root, report_path, "PowerShell finding report")
+            if missing_is_warning:
+                doc, repo_path = load_optional_doc(repo_root, report_path, label, warnings)
+            else:
+                doc, repo_path = load_doc(repo_root, report_path, label)
         except GovernanceError as exc:
             errors.append(str(exc))
-            continue
-        report_findings = doc.get("findings")
-        if not isinstance(report_findings, list):
-            errors.append(f"PowerShell finding report has no findings list: {repo_path}")
-            continue
-        schema = scalar(doc.get("schema_version")).strip()
-        input_reports.append(
-            {
-                "path": repo_path,
-                "schema_version": schema,
-                "finding_count": len(report_findings),
-                "required": True,
-            }
-        )
-        for raw in report_findings:
-            try:
-                findings.append(normalize_finding(raw, repo_path, schema))
-            except GovernanceError as exc:
-                errors.append(str(exc))
-    for report_path in optional_reports:
-        try:
-            doc, repo_path = load_optional_doc(repo_root, report_path, "PowerShell finding report", warnings)
-        except GovernanceError as exc:
-            errors.append(str(exc))
-            continue
+            return
         if doc is None:
             input_reports.append(
                 {
                     "path": repo_path,
                     "schema_version": None,
                     "finding_count": 0,
-                    "required": False,
+                    "required": required,
                     "present": False,
+                    "validation_success": None,
                 }
             )
-            continue
+            return
         report_findings = doc.get("findings")
         if not isinstance(report_findings, list):
-            errors.append(f"optional PowerShell finding report has no findings list: {repo_path}")
-            continue
+            qualifier = "optional " if missing_is_warning else ""
+            errors.append(f"{qualifier}PowerShell finding report has no findings list: {repo_path}")
+            return
         schema = scalar(doc.get("schema_version")).strip()
+        success, success_reason = report_validation_success_state(doc)
         input_reports.append(
             {
                 "path": repo_path,
                 "schema_version": schema,
                 "finding_count": len(report_findings),
-                "required": False,
+                "required": required,
                 "present": True,
+                "validation_success": success,
             }
         )
+        expected_schema = REPORT_SCHEMAS.get(report_path.as_posix())
+        schema_valid = True
+        if expected_schema and schema != expected_schema:
+            errors.append(f"{repo_path} schema mismatch: expected {expected_schema}, got {schema!r}")
+            schema_valid = False
+        if not success:
+            errors.append(f"{repo_path} does not report successful validation: {success_reason}")
+        if not schema_valid or not success:
+            return
         for raw in report_findings:
             try:
                 findings.append(normalize_finding(raw, repo_path, schema))
             except GovernanceError as exc:
                 errors.append(str(exc))
-    return findings, input_reports
 
+    for report_path in required_reports:
+        process_report(report_path, required=True, missing_is_warning=False)
+    for report_path in optional_reports:
+        process_report(report_path, required=False, missing_is_warning=True)
+    return findings, input_reports
 
 def generated_output_paths(assembly_report: dict[str, Any] | None) -> set[str]:
     if not isinstance(assembly_report, dict):
