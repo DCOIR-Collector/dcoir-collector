@@ -263,6 +263,7 @@ def report_success_state(report: dict[str, Any]) -> tuple[bool, str]:
         return False, "top-level success must be boolean true"
     return False, "missing explicit validation.success or top-level success"
 
+
 def report_success(report: dict[str, Any]) -> bool:
     success, _reason = report_success_state(report)
     return success
@@ -292,21 +293,27 @@ def is_windows_drive_path(value: str) -> bool:
     return len(value) >= 2 and value[0].isalpha() and value[1] == ":"
 
 
+def resolve_repo_input_path(value: str, repo_root: Path, label: str) -> tuple[Path | None, str, str | None]:
+    slash_path = artifact_slash_path(value)
+    parts = tuple(part for part in slash_path.split("/") if part)
+    if not slash_path or slash_path.startswith("/") or is_windows_drive_path(slash_path) or ".." in parts:
+        return None, slash_path, f"{label} path must be a repo-relative path without traversal"
+    candidate = repo_root.joinpath(*parts)
+    try:
+        candidate.resolve().relative_to(repo_root.resolve())
+    except (OSError, ValueError):
+        return None, slash_path, f"{label} path must resolve inside the repository root"
+    return candidate, slash_path, None
+
+
 def is_repo_artifact_path(value: str) -> bool:
     return artifact_slash_path(value).startswith(REPO_ARTIFACT_PREFIXES)
 
 
 def resolve_repo_artifact_path(artifact: str, repo_root: Path) -> tuple[Path | None, str | None]:
-    slash_path = artifact_slash_path(artifact)
-    parts = tuple(part for part in slash_path.split("/") if part)
-    if slash_path.startswith("/") or is_windows_drive_path(slash_path) or ".." in parts:
-        return None, "output_artifact path must be a repo-relative path without traversal"
-    candidate = repo_root.joinpath(*parts)
-    try:
-        candidate.resolve().relative_to(repo_root.resolve())
-    except (OSError, ValueError):
-        return None, "output_artifact path must resolve inside the repository root"
-    return candidate, None
+    candidate, _repo_path, path_error = resolve_repo_input_path(artifact, repo_root, "output_artifact")
+    return candidate, path_error
+
 
 def declared_output_artifacts(
     repo_root: Path,
@@ -353,6 +360,7 @@ def declared_output_artifacts(
         )
     return artifacts, errors, warnings
 
+
 def validate_source_reports(
     repo_root: Path,
     source_reports: list[str],
@@ -362,13 +370,20 @@ def validate_source_reports(
     warnings: list[str] = []
     report_facts: list[dict[str, Any]] = []
     loaded: dict[str, dict[str, Any]] = {}
-    requested = [Path(path) for path in source_reports]
-    for report_path in requested + extra_reports:
-        repo_path = report_path.as_posix()
+    requested = [scalar(path).strip() for path in source_reports]
+    extra_requested = [path.as_posix() for path in extra_reports]
+    for report_value in requested + extra_requested:
+        report_path, repo_path, path_error = resolve_repo_input_path(report_value, repo_root, "dependency report")
+        if path_error:
+            errors.append(f"PowerShell #267 dependency report {path_error}: {report_value}")
+            continue
+        if report_path is None:
+            errors.append(f"PowerShell #267 dependency report path could not be resolved: {report_value}")
+            continue
         if repo_path in loaded:
             continue
         try:
-            report = read_json(repo_root / report_path, "PowerShell #267 dependency report")
+            report = read_json(report_path, "PowerShell #267 dependency report")
         except EngineBoundaryError as exc:
             errors.append(str(exc))
             continue
