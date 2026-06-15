@@ -48,17 +48,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.get-pr.outputs.ref }}
-          persist-credentials: 'true' # <-- FIXED: Correct way to preserve credentials for git commands
+          persist-credentials: 'true'  
 
       - name: Run Kimi Review
         uses: xiaoju111a/kimi-actions@main
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # <-- Pass token to the runner environment
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           kimi_api_key: ${{ secrets.KIMI_API_KEY }}
           kimi_base_url: ${{ secrets.KIMI_BASE_URL }}  
-          github_token: ${{ secrets.GITHUB_TOKEN }} # <-- Pass token directly into the Kimi custom action block
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           auto_review: 'false'
+          # FIXED: Forcing OpenRouter to route to a high-capacity free engine
+          model: 'meta-llama/llama-3-70b-instruct:free' 
 
       - name: Remove Eyes Reaction
         if: always()
