@@ -18,7 +18,7 @@ jobs:
       github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/')
     steps:
-      # 1. IMMEDIATE FEEDBACK: Adds "Eyes" Emoji to your comment
+      # 1. Adds "Eyes" Emoji to your comment immediately
       - name: Add Eyes Reaction
         id: add-reaction
         uses: actions/github-script@v7
@@ -36,35 +36,33 @@ jobs:
               console.log('Failed to add reaction: ' + error.message);
             }
 
-      # 2. EXECUTION: Run the PR Agent (Waits for completion automatically)
+      # 2. Run the PR Agent using Free Tier Models
       - id: pr-agent
         uses: Codium-ai/pr-agent@main
         env:
           # --- CONNECTION SETTINGS ---
-          # We force the internal OpenAI handler to point to OpenRouter
           OPENAI_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          OPENAI.API_BASE: "https://openrouter.ai/api/v1"
+          OPENAI.API_BASE: "https://openrouter.ai"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-          # --- MODEL INTELLIGENCE ---
-          # We use the 'openrouter/' prefix so LiteLLM knows how to route it
-          CONFIG.MODEL: "openrouter/anthropic/claude-3.5-sonnet"
-          CONFIG.FALLBACK_MODELS: '["openrouter/meta-llama/llama-3.1-70b-instruct:free", "openrouter/meta-llama/llama-3-70b-instruct"]'
+          # --- FREE MODEL CONFIGURATION ---
+          # Uses completely free, high-capacity coding models from OpenRouter
+          CONFIG.MODEL: "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+          CONFIG.FALLBACK_MODELS: '["openrouter/meta-llama/llama-3.1-70b-instruct:free"]'
           
-          # --- "BEST DAMN REVIEWER" SETTINGS ---
-          # These flags empower the agent to be more thorough and useful
+          # --- BEHAVIOR SETTINGS ---
           PR_REVIEWER.REQUIRE_SCORE_REVIEW: "true"         # Gives you a 0-100 quality score
-          PR_REVIEWER.REQUIRE_TESTS_REVIEW: "true"         # checks if you missed testing
+          PR_REVIEWER.REQUIRE_TESTS_REVIEW: "true"         # Checks if you missed testing
           PR_REVIEWER.REQUIRE_SECURITY_REVIEW: "true"      # Hunts for vulnerabilities
           PR_REVIEWER.INLINE_CODE_COMMENTS: "true"         # Comments fixes directly on the code lines
-          PR_REVIEWER.NUM_CODE_SUGGESTIONS: "4"            # content density
+          PR_REVIEWER.NUM_CODE_SUGGESTIONS: "4"            # Controls comment density
           PR_DESCRIPTION.PUBLISH_LABELS: "true"            # Auto-labels the PR (e.g. 'bug', 'feature')
           
-          # --- SAFETY & AUTOMATION ---
+          # --- AUTOMATION SETTINGS ---
           GITHUB_ACTION_CONFIG.AUTO_REVIEW: "false"        # Manual trigger only (via /review)
           GITHUB_ACTION_CONFIG.AUTO_DESCRIBE: "false"      # Manual trigger only (via /describe)
 
-      # 3. CLEANUP: Remove "Eyes" Emoji (Runs even if the review fails)
+      # 3. Remove "Eyes" Emoji when finished
       - name: Remove Eyes Reaction
         if: always() 
         uses: actions/github-script@v7
