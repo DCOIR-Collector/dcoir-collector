@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Get PR ref (for comments)
         id: get-pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8 # <-- FIXED: Updated to v8 for security compliance
         with:
           script: |
             const prNumber = context.issue?.number || context.payload.pull_request?.number;
@@ -35,7 +35,7 @@ jobs:
 
       - name: Add Eyes Reaction
         id: add-reaction
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8 # <-- FIXED: Updated to v8 for security compliance
         with:
           script: |
             const reaction = await github.rest.reactions.createForIssueComment({
@@ -55,7 +55,7 @@ jobs:
       - name: Run Kimi Review
         uses: xiaoju111a/kimi-actions@main
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # <-- FIXED: Passes auth token directly to the action environment
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           kimi_api_key: ${{ secrets.KIMI_API_KEY }}
           kimi_base_url: ${{ secrets.KIMI_BASE_URL }}  
@@ -64,7 +64,7 @@ jobs:
 
       - name: Remove Eyes Reaction
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8 # <-- FIXED: Updated to v8 for security compliance
         with:
           script: |
             const reactionId = '${{ steps.add-reaction.outputs.reaction_id }}';
