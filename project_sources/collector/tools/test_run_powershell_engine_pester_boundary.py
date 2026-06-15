@@ -232,6 +232,50 @@ class PowerShellEnginePesterBoundaryTests(unittest.TestCase):
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("dependency report missing" in error for error in errors))
 
+    def test_dependency_report_requires_explicit_validation_success(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            report_path = root / boundary.DEFAULT_CUSTOM_REPORT
+            dependency = json.loads(report_path.read_text(encoding="utf-8"))
+            dependency["validation"] = {"errors": [], "warnings": []}
+            write(report_path, json.dumps(dependency, indent=2) + "\n")
+            report, errors, _warnings = boundary.build_report(self.args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("missing explicit validation.success or top-level success" in error for error in errors))
+
+    def test_dependency_report_accepts_documented_top_level_success(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            report_path = root / boundary.DEFAULT_CUSTOM_REPORT
+            dependency = json.loads(report_path.read_text(encoding="utf-8"))
+            dependency.pop("validation", None)
+            dependency["success"] = True
+            write(report_path, json.dumps(dependency, indent=2) + "\n")
+            report, errors, _warnings = boundary.build_report(self.args(root))
+
+        self.assertEqual(errors, [])
+        self.assertTrue(report["validation"]["success"])
+        custom_fact = next(
+            fact
+            for fact in report["dependency_reports"]
+            if fact["path"] == boundary.DEFAULT_CUSTOM_REPORT.as_posix()
+        )
+        self.assertTrue(custom_fact["success"])
+
+    def test_dependency_report_rejects_non_boolean_validation_success(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            report_path = root / boundary.DEFAULT_CUSTOM_REPORT
+            dependency = json.loads(report_path.read_text(encoding="utf-8"))
+            dependency["validation"]["success"] = "true"
+            dependency["success"] = True
+            write(report_path, json.dumps(dependency, indent=2) + "\n")
+            report, errors, _warnings = boundary.build_report(self.args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("validation.success must be boolean true" in error for error in errors))
+
     def test_missing_blocking_repo_artifact_fails_without_explicit_status(self) -> None:
         doc = good_boundary_doc()
         rows = doc["engine_matrix"]  # type: ignore[assignment]

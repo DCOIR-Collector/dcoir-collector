@@ -241,15 +241,30 @@ def validate_boundary_doc(boundary: dict[str, Any]) -> tuple[list[str], list[str
     return errors, warnings, metadata
 
 
-def report_success(report: dict[str, Any]) -> bool:
+def report_success_state(report: dict[str, Any]) -> tuple[bool, str]:
     validation = report.get("validation")
-    if isinstance(validation, dict) and validation.get("success") is False:
-        return False
-    if isinstance(validation, dict) and validation.get("success") is True:
-        return True
-    if report.get("success") is False:
-        return False
-    return True
+    if isinstance(validation, dict) and "success" in validation:
+        success = validation.get("success")
+        if success is True:
+            return True, "validation.success is true"
+        if success is False:
+            return False, "validation.success is false"
+        return False, "validation.success must be boolean true"
+    if validation is not None and not isinstance(validation, dict):
+        return False, "validation must be an object with success=true"
+    if "success" in report:
+        success = report.get("success")
+        if success is True:
+            return True, "top-level success is true"
+        if success is False:
+            return False, "top-level success is false"
+        return False, "top-level success must be boolean true"
+    return False, "missing explicit validation.success or top-level success"
+
+
+def report_success(report: dict[str, Any]) -> bool:
+    success, _reason = report_success_state(report)
+    return success
 
 
 def summary_count(report: dict[str, Any], key: str) -> int:
@@ -336,14 +351,15 @@ def validate_source_reports(
         schema = scalar(report.get("schema_version")).strip()
         if expected_schema and schema != expected_schema:
             errors.append(f"{repo_path} schema mismatch: expected {expected_schema}, got {schema!r}")
-        if not report_success(report):
-            errors.append(f"{repo_path} does not report successful validation")
+        success, success_reason = report_success_state(report)
+        if not success:
+            errors.append(f"{repo_path} does not report successful validation: {success_reason}")
         loaded[repo_path] = report
         report_facts.append(
             {
                 "path": repo_path,
                 "schema_version": schema,
-                "success": report_success(report),
+                "success": success,
                 "finding_count": report_finding_count(report),
                 "exists": True,
             }
