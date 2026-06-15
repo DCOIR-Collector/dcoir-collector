@@ -131,6 +131,33 @@ def resolve_repo_input_path(value: str, repo_root: Path, label: str) -> tuple[Pa
     return candidate, normalized, None
 
 
+def validate_governance_path(value: str, repo_root: Path, label: str) -> str:
+    path_value = scalar(value).strip()
+    if is_blanket_selector(path_value):
+        raise GovernanceError(f"{label} path must be a bounded repo-relative path")
+    _candidate, repo_path, path_error = resolve_repo_input_path(path_value, repo_root, label)
+    if path_error:
+        raise GovernanceError(f"{label} {path_error}: {path_value}")
+    if not repo_path:
+        raise GovernanceError(f"{label} path could not be resolved: {path_value}")
+    return repo_path
+
+
+def validate_governance_path_prefix(value: str, repo_root: Path, label: str) -> str:
+    prefix_value = slash_path(scalar(value).strip())
+    if is_blanket_selector(prefix_value):
+        raise GovernanceError(f"{label} prefix must be a bounded repo-relative prefix")
+    parts = tuple(part for part in prefix_value.split("/") if part)
+    if prefix_value.startswith("/") or is_windows_drive_path(prefix_value) or ".." in parts:
+        raise GovernanceError(f"{label} prefix must be a repo-relative prefix without traversal: {prefix_value}")
+    candidate = repo_root.joinpath(*parts)
+    try:
+        candidate.resolve().relative_to(repo_root.resolve())
+    except (OSError, ValueError) as exc:
+        raise GovernanceError(f"{label} prefix must resolve inside the repository root: {prefix_value}") from exc
+    return prefix_value
+
+
 def read_json(path: Path, label: str) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -287,15 +314,16 @@ def stable_fingerprint(source_report: str, raw: dict[str, Any]) -> str:
     return sha256_text(json.dumps(basis, sort_keys=True, separators=(",", ":")))
 
 
-def normalize_finding(raw: dict[str, Any], source_report: str, source_schema: str) -> Finding:
+def normalize_finding(raw: dict[str, Any], source_report: str, source_schema: str, repo_root: Path) -> Finding:
     if not isinstance(raw, dict):
         raise GovernanceError(f"{source_report} finding must be an object")
-    path = scalar(raw.get("path") or raw.get("target_path")).strip()
+    raw_path = scalar(raw.get("path") or raw.get("target_path")).strip()
+    if not raw_path:
+        raise GovernanceError(f"{source_report} finding missing path")
+    path = validate_governance_path(raw_path, repo_root, f"{source_report} finding")
     rule_name = scalar(raw.get("rule_name") or raw.get("rule")).strip()
     check_id = scalar(raw.get("check_id") or raw.get("matrix_check_id")).strip()
     severity = scalar(raw.get("severity") or "Warning").strip()
-    if not path:
-        raise GovernanceError(f"{source_report} finding missing path")
     if not rule_name and not check_id:
         raise GovernanceError(f"{source_report} finding missing rule_name/check_id for {path}")
     if not severity:
@@ -380,7 +408,7 @@ def collect_findings(
             return
         for raw in report_findings:
             try:
-                findings.append(normalize_finding(raw, repo_path, schema))
+                findings.append(normalize_finding(raw, repo_path, schema, repo_root))
             except GovernanceError as exc:
                 errors.append(str(exc))
 
@@ -414,6 +442,7 @@ def validate_baseline_record(
     allowed_decisions: set[str],
     today: date,
     errors: list[str],
+    repo_root: Path,
 ) -> None:
     record_id = scalar(record.get("id")).strip() or "<missing-id>"
     prefix = f"baseline record {record_id}"
@@ -422,8 +451,14 @@ def validate_baseline_record(
     decision = scalar(record.get("decision")).strip()
     if decision not in allowed_decisions:
         errors.append(f"{prefix} decision {decision!r} is not allowed")
-    if not scalar(record.get("path")).strip():
+    path = scalar(record.get("path")).strip()
+    if not path:
         errors.append(f"{prefix} missing path")
+    else:
+        try:
+            record["path"] = validate_governance_path(path, repo_root, f"{prefix} path")
+        except GovernanceError as exc:
+            errors.append(str(exc))
     if not has_any_text(record, ("rule_name", "check_id")):
         errors.append(f"{prefix} missing rule_name_or_check_id")
     if not has_any_text(record, LINE_OR_LOCATOR_FIELDS):
@@ -450,6 +485,7 @@ def validate_suppression(
     generated_paths: set[str],
     today: date,
     errors: list[str],
+    repo_root: Path,
 ) -> None:
     suppression_id = scalar(suppression.get("id")).strip() or "<missing-id>"
     prefix = f"suppression {suppression_id}"
@@ -459,9 +495,15 @@ def validate_suppression(
     if decision not in allowed_decisions:
         errors.append(f"{prefix} decision {decision!r} is not allowed")
     path = scalar(suppression.get("path")).strip()
+    if not path:
+        errors.append(f"{prefix} missing path")
+    else:
+        try:
+            path = validate_governance_path(path, repo_root, f"{prefix} path")
+            suppression["path"] = path
+        except GovernanceError as exc:
+            errors.append(str(exc))
     rule_name = scalar(suppression.get("rule_name") or suppression.get("check_id")).strip()
-    if is_blanket_selector(path):
-        errors.append(f"{prefix} uses a blanket or wildcard path")
     if is_blanket_selector(rule_name):
         errors.append(f"{prefix} uses a blanket or wildcard rule")
     if not scalar(suppression.get("fingerprint")).strip():
@@ -489,7 +531,43 @@ def validate_suppression(
             )
 
 
+def validate_rule_path_selectors(rule: dict[str, Any], rule_id: str, repo_root: Path, errors: list[str]) -> None:
+    paths = rule.get("paths")
+    if paths is not None:
+        if not isinstance(paths, list):
+            errors.append(f"classification rule {rule_id} paths must be a list")
+        else:
+            normalized_paths: list[str] = []
+            for index, path in enumerate(paths, start=1):
+                try:
+                    normalized_paths.append(
+                        validate_governance_path(path, repo_root, f"classification rule {rule_id} paths[{index}]")
+                    )
+                except GovernanceError as exc:
+                    errors.append(str(exc))
+            rule["paths"] = normalized_paths
+    prefixes = rule.get("path_prefixes")
+    if prefixes is not None:
+        if not isinstance(prefixes, list):
+            errors.append(f"classification rule {rule_id} path_prefixes must be a list")
+        else:
+            normalized_prefixes: list[str] = []
+            for index, prefix in enumerate(prefixes, start=1):
+                try:
+                    normalized_prefixes.append(
+                        validate_governance_path_prefix(
+                            prefix,
+                            repo_root,
+                            f"classification rule {rule_id} path_prefixes[{index}]",
+                        )
+                    )
+                except GovernanceError as exc:
+                    errors.append(str(exc))
+            rule["path_prefixes"] = normalized_prefixes
+
+
 def validate_governance_doc(
+    repo_root: Path,
     governance: dict[str, Any],
     assembly_report: dict[str, Any] | None,
     today: date,
@@ -535,7 +613,7 @@ def validate_governance_doc(
         if not isinstance(record, dict):
             errors.append("baseline record must be an object")
             continue
-        validate_baseline_record(record, allowed_decisions, today, errors)
+        validate_baseline_record(record, allowed_decisions, today, errors, repo_root)
         key = (
             scalar(record.get("path")).strip(),
             scalar(record.get("rule_name") or record.get("check_id")).strip(),
@@ -549,7 +627,7 @@ def validate_governance_doc(
         if not isinstance(suppression, dict):
             errors.append("suppression must be an object")
             continue
-        validate_suppression(suppression, allowed_decisions, generated_paths, today, errors)
+        validate_suppression(suppression, allowed_decisions, generated_paths, today, errors, repo_root)
         key = (
             scalar(suppression.get("path")).strip(),
             scalar(suppression.get("rule_name") or suppression.get("check_id")).strip(),
@@ -568,6 +646,7 @@ def validate_governance_doc(
             errors.append(f"classification rule {rule_id} decision {decision!r} is not allowed")
         if not scalar(rule.get("id")).strip():
             errors.append("classification rule missing id")
+        validate_rule_path_selectors(rule, rule_id, repo_root, errors)
         if not any(isinstance(rule.get(key), list) and rule.get(key) for key in ("path_prefixes", "paths", "rule_names", "check_ids")):
             errors.append(f"classification rule {rule_id} has no bounded selector")
         validate_review_fields(f"classification rule {rule_id}", rule, errors)
@@ -864,7 +943,7 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
         if not assembly_errors:
             assembly_report_for_coverage = assembly_report
     if governance:
-        errors.extend(validate_governance_doc(governance, assembly_report_for_coverage, today))
+        errors.extend(validate_governance_doc(repo_root, governance, assembly_report_for_coverage, today))
     required_reports = [Path(path) for path in (args.finding_report or [])]
     if not required_reports:
         required_reports = [DEFAULT_CUSTOM_REPORT, DEFAULT_RULE_RISK_REPORT]
