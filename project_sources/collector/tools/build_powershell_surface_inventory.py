@@ -1594,21 +1594,75 @@ def manifest_error(repo_root: Path) -> str | None:
         return f"Invalid JSON in collector runtime manifest {MANIFEST_PATH.as_posix()}: {exc}"
     if not isinstance(data, dict):
         return f"Collector runtime manifest must be a JSON object: {MANIFEST_PATH.as_posix()}"
+    path_errors = collector_manifest_path_errors(repo_root)
+    if path_errors:
+        return "; ".join(path_errors)
     return None
 
 
-def collector_manifest_paths(repo_root: Path) -> list[str]:
+def normalize_manifest_surface_path(value: str, repo_root: Path, field_name: str) -> tuple[str | None, str | None]:
+    raw = value.strip()
+    if not raw:
+        return None, f"Collector runtime manifest {field_name} must not be blank"
+    slash_path = raw.replace("\\", "/")
+    if Path(slash_path).is_absolute():
+        return None, f"Collector runtime manifest {field_name} must be repo-relative, not absolute: {value}"
+    if re.match(r"^[A-Za-z]:", slash_path) is not None:
+        return None, f"Collector runtime manifest {field_name} must not be drive-qualified: {value}"
+    path = Path(slash_path)
+    if ".." in path.parts:
+        return None, f"Collector runtime manifest {field_name} must not traverse parents: {value}"
+    normalized = slash_path
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    path = Path(normalized)
+    if not normalized or normalized == ".":
+        return None, f"Collector runtime manifest {field_name} must name a file under repo root: {value}"
+    if ".." in path.parts:
+        return None, f"Collector runtime manifest {field_name} must not traverse parents: {value}"
+    root = repo_root.resolve()
+    try:
+        rel = (root / path).resolve().relative_to(root).as_posix()
+    except ValueError:
+        return None, f"Collector runtime manifest {field_name} resolves outside repo root: {value}"
+    if not rel or rel == ".":
+        return None, f"Collector runtime manifest {field_name} must name a file under repo root: {value}"
+    return rel, None
+
+
+def collector_manifest_path_entries(repo_root: Path) -> tuple[list[str], list[str]]:
     manifest = load_manifest(repo_root)
     if not manifest:
-        return []
+        return [], []
     paths: list[str] = []
+    errors: list[str] = []
+
+    def append_path(value: str, field_name: str) -> None:
+        rel, error = normalize_manifest_surface_path(value, repo_root, field_name)
+        if error is not None:
+            errors.append(error)
+        elif rel is not None:
+            paths.append(rel)
+
     wrapper = manifest.get("collector_wrapper_source")
     if isinstance(wrapper, str):
-        paths.append(wrapper)
+        append_path(wrapper, "collector_wrapper_source")
     part_files = manifest.get("collector_part_files", [])
     if isinstance(part_files, list):
-        paths.extend(path for path in part_files if isinstance(path, str))
-    return sorted(dict.fromkeys(paths))
+        for index, path in enumerate(part_files):
+            if isinstance(path, str):
+                append_path(path, f"collector_part_files[{index}]")
+    return sorted(dict.fromkeys(paths)), errors
+
+
+def collector_manifest_path_errors(repo_root: Path) -> list[str]:
+    _paths, errors = collector_manifest_path_entries(repo_root)
+    return errors
+
+
+def collector_manifest_paths(repo_root: Path) -> list[str]:
+    paths, _errors = collector_manifest_path_entries(repo_root)
+    return paths
 
 
 def harness_source_part_paths(repo_root: Path) -> list[str]:

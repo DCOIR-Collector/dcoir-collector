@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import re
 import tempfile
 import unittest
@@ -16,6 +17,20 @@ _SPEC.loader.exec_module(inventory)
 
 
 class PowerShellSurfaceInventoryPathSafetyTests(unittest.TestCase):
+    def _write_manifest(self, root: Path, wrapper: str, parts: list[str] | None = None) -> None:
+        manifest_path = root / inventory.MANIFEST_PATH
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        manifest_path.write_text(
+            json.dumps(
+                {
+                    "collector_wrapper_source": wrapper,
+                    "collector_part_files": parts or [],
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
     def test_changed_file_paths_preserve_valid_repo_relative_inputs(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -66,6 +81,65 @@ class PowerShellSurfaceInventoryPathSafetyTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertFalse(Path(path).is_absolute())
                 self.assertIsNone(re.match(r"^[A-Za-z]:", path.replace("\\", "/")))
+
+
+    def test_manifest_paths_preserve_valid_repo_relative_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            self._write_manifest(root, "./project_sources/collector/source/DCOIR_Collector.ps1", [
+                "project_sources\\collector\\source\\parts\\DCOIR_Collector.01_Core.ps1",
+            ])
+            paths = inventory.collector_manifest_paths(root)
+        self.assertEqual(paths, [
+            "project_sources/collector/source/DCOIR_Collector.ps1",
+            "project_sources/collector/source/parts/DCOIR_Collector.01_Core.ps1",
+        ])
+
+    def test_manifest_paths_filter_unsafe_entries_before_expansion(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            self._write_manifest(root, "project_sources/collector/source/DCOIR_Collector.ps1", [
+                "../outside.ps1",
+                "/project_sources/collector/source/parts/DCOIR_Collector.01_Core.ps1",
+                "C:\\outside\\collector.ps1",
+                "\\\\server\\share\\collector.ps1",
+                "",
+            ])
+            paths = inventory.collector_manifest_paths(root)
+            manifest_error = inventory.manifest_error(root)
+            expanded, expansion = inventory.expand_changed_files(root, [inventory.MANIFEST_PATH.as_posix()])
+        self.assertEqual(paths, ["project_sources/collector/source/DCOIR_Collector.ps1"])
+        self.assertIsNotNone(manifest_error)
+        self.assertIn("collector_part_files[0]", manifest_error)
+        self.assertIn("collector_part_files[1]", manifest_error)
+        self.assertIn("collector_part_files[2]", manifest_error)
+        self.assertIn("collector_part_files[3]", manifest_error)
+        self.assertIn("collector_part_files[4]", manifest_error)
+        self.assertIn("project_sources/collector/source/DCOIR_Collector.ps1", expanded)
+        self.assertNotIn("../outside.ps1", expanded)
+        self.assertNotIn("/project_sources/collector/source/parts/DCOIR_Collector.01_Core.ps1", expanded)
+        self.assertNotIn("C:/outside/collector.ps1", expanded)
+        self.assertNotIn("//server/share/collector.ps1", expanded)
+        added_paths = expansion["rules"][0]["added_paths"]
+        self.assertEqual(added_paths, ["project_sources/collector/source/DCOIR_Collector.ps1"])
+
+    def test_manifest_wrapper_rejects_unsafe_input(self) -> None:
+        cases = [
+            "../outside.ps1",
+            "/project_sources/collector/source/DCOIR_Collector.ps1",
+            "C:\\outside\\collector.ps1",
+            "C:outside\\collector.ps1",
+            "\\\\server\\share\\collector.ps1",
+            "",
+        ]
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            for value in cases:
+                with self.subTest(value=value):
+                    self._write_manifest(root, value, [])
+                    self.assertEqual(inventory.collector_manifest_paths(root), [])
+                    self.assertIsNotNone(inventory.manifest_error(root))
+
 
 
 if __name__ == "__main__":
