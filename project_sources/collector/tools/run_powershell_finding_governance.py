@@ -246,7 +246,7 @@ def report_validation_success_state(report: dict[str, Any]) -> tuple[bool, str]:
     return False, "validation.success must be boolean true"
 
 
-def validate_assembly_parity_report(repo_path: str, report: dict[str, Any]) -> list[str]:
+def validate_assembly_parity_report(repo_root: Path, repo_path: str, report: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     schema = scalar(report.get("schema_version")).strip()
     if schema != ASSEMBLY_PARITY_SCHEMA_VERSION:
@@ -257,6 +257,20 @@ def validate_assembly_parity_report(repo_path: str, report: dict[str, Any]) -> l
     generated_outputs = report.get("generated_outputs", [])
     if generated_outputs is not None and not isinstance(generated_outputs, list):
         errors.append(f"{repo_path} generated_outputs must be a list when present")
+    elif isinstance(generated_outputs, list):
+        for index, output in enumerate(generated_outputs, start=1):
+            if not isinstance(output, dict):
+                continue
+            output_path = scalar(output.get("path")).strip()
+            if not output_path:
+                continue
+            _candidate, _normalized_output_path, path_error = resolve_repo_input_path(
+                output_path,
+                repo_root,
+                "PowerShell assembly parity generated output",
+            )
+            if path_error:
+                errors.append(f"{repo_path} generated_outputs[{index}] {path_error}: {output_path}")
     return errors
 
 
@@ -381,7 +395,7 @@ def generated_output_paths(assembly_report: dict[str, Any] | None) -> set[str]:
     if not isinstance(assembly_report, dict):
         return set()
     return {
-        scalar(output.get("path")).strip()
+        slash_path(scalar(output.get("path")).strip())
         for output in assembly_report.get("generated_outputs", [])
         if isinstance(output, dict) and scalar(output.get("path")).strip()
     }
@@ -845,7 +859,7 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
         errors.append(str(exc))
         assembly_path = str(args.assembly_parity_report)
     if assembly_report is not None:
-        assembly_errors = validate_assembly_parity_report(assembly_path, assembly_report)
+        assembly_errors = validate_assembly_parity_report(repo_root, assembly_path, assembly_report)
         errors.extend(assembly_errors)
         if not assembly_errors:
             assembly_report_for_coverage = assembly_report
