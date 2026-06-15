@@ -367,7 +367,7 @@ class PowerShellReportIngestionSafetyTests(unittest.TestCase):
             report, errors, _warnings = governance.build_report(governance_args(root))
 
         self.assertFalse(report["validation"]["success"])
-        self.assertTrue(any("baseline record unsafe-baseline path path must be a repo-relative path without traversal" in error for error in errors))
+        self.assertTrue(any("baseline record unsafe-baseline path must be a repo-relative path without traversal" in error for error in errors))
 
     def test_finding_governance_rejects_traversing_suppression_path(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -376,7 +376,7 @@ class PowerShellReportIngestionSafetyTests(unittest.TestCase):
             report, errors, _warnings = governance.build_report(governance_args(root))
 
         self.assertFalse(report["validation"]["success"])
-        self.assertTrue(any("suppression unsafe-suppression path path must be a repo-relative path without traversal" in error for error in errors))
+        self.assertTrue(any("suppression unsafe-suppression path must be a repo-relative path without traversal" in error for error in errors))
 
     def test_finding_governance_rejects_traversing_optional_report_before_read(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
