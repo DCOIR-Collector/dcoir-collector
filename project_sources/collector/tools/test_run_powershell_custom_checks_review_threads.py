@@ -144,7 +144,7 @@ class PowerShellCustomCheckReviewThreadTests(unittest.TestCase):
             no_write=True,
         )
 
-    def test_absolute_custom_fixture_path_fails_before_normalization(self) -> None:
+    def assert_custom_fixture_path_rejected(self, unsafe_path: str) -> None:
         with self.make_repo(
             check_id="dcoir-fail-output-must-fail",
             rule_name="DCOIR.FailOutputMustFailValidation",
@@ -155,7 +155,7 @@ class PowerShellCustomCheckReviewThreadTests(unittest.TestCase):
             root = Path(temp)
             manifest_path = root / custom.DEFAULT_FIXTURE_MANIFEST
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            manifest["fixtures"][0]["path"] = "/" + manifest["fixtures"][0]["path"]
+            manifest["fixtures"][0]["path"] = unsafe_path
             write(manifest_path, json.dumps(manifest, indent=2) + "\n")
 
             report, errors, _warnings = custom.build_report(self.args(root))
@@ -163,6 +163,18 @@ class PowerShellCustomCheckReviewThreadTests(unittest.TestCase):
         self.assertFalse(report["validation"]["success"])
         self.assertEqual(report["summary"]["target_count"], 0)
         self.assertTrue(any("path must be a repo-relative path without traversal" in error for error in errors))
+
+    def test_absolute_custom_fixture_path_fails_before_normalization(self) -> None:
+        fixture_path = "project_sources/collector/fixtures/powershell_analysis/bad/review_thread_bad.ps1"
+        self.assert_custom_fixture_path_rejected("/" + fixture_path)
+
+    def test_parent_traversal_custom_fixture_path_fails_before_normalization(self) -> None:
+        fixture_path = "project_sources/collector/fixtures/powershell_analysis/bad/review_thread_bad.ps1"
+        self.assert_custom_fixture_path_rejected("../" + fixture_path)
+
+    def test_windows_parent_traversal_custom_fixture_path_fails_before_normalization(self) -> None:
+        fixture_path = "project_sources/collector/fixtures/powershell_analysis/bad/review_thread_bad.ps1"
+        self.assert_custom_fixture_path_rejected("..\\" + fixture_path.replace("/", "\\"))
 
     def test_quoted_call_operator_without_exit_check_is_reported(self) -> None:
         with self.make_repo(
