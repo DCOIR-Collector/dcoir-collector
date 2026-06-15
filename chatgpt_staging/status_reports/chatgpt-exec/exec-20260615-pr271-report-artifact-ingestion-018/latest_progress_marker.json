@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "27567995210",
   "github_sha": "654f0d2ee4d8c315c1e8c266d599ac242e668f8f",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "exec-20260615-pr271-report-artifact-ingestion-018",
   "request_path": "chatgpt_staging/exec_requests/exec-20260615-pr271-report-artifact-ingestion-018.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-06-15T18:37:01Z",
+  "updated_utc": "2026-06-15T18:37:04Z",
   "workflow": "chatgpt-exec"
 }
