@@ -4,8 +4,10 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
+import shutil
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 _MODULE_PATH = Path(__file__).resolve().parent / "build_powershell_surface_inventory.py"
@@ -173,6 +175,30 @@ class PowerShellSurfaceInventoryPathSafetyTests(unittest.TestCase):
             any("file facts could not be collected safely inside the repository root" in error for error in validation["errors"]),
             validation["errors"],
         )
+
+    def test_harness_source_part_directory_symlink_is_not_globbed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            outside = root.parent / "outside_harness_parts"
+            outside.mkdir(parents=True, exist_ok=True)
+            (outside / "run_DCOIR_Tests.part-000.ps1.txt").write_text('Write-Output "outside"\n', encoding="utf-8")
+            harness_root = root / inventory.HARNESS_PARTS_ROOT
+            harness_root.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                harness_root.symlink_to(outside, target_is_directory=True)
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest(f"directory symlink creation is unavailable: {exc}")
+            original_glob = inventory.Path.glob
+
+            def guarded_glob(path: Path, pattern: str):
+                if path == harness_root:
+                    raise AssertionError(f"unsafe harness source root glob attempted: {path}")
+                return original_glob(path, pattern)
+
+            with unittest.mock.patch.object(inventory.Path, "glob", guarded_glob):
+                paths = inventory.harness_source_part_paths(root)
+
+        self.assertEqual(paths, [])
 
     def test_manifest_paths_preserve_valid_repo_relative_inputs(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

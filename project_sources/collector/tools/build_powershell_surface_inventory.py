@@ -269,15 +269,26 @@ def path_resolves_inside_repo(path: Path, repo_root: Path) -> bool:
     return True
 
 
+def path_is_file_inside_repo(path: Path, repo_root: Path) -> bool:
+    return path_resolves_inside_repo(path, repo_root) and path.is_file()
+
+
+def path_is_dir_inside_repo(path: Path, repo_root: Path) -> bool:
+    return path_resolves_inside_repo(path, repo_root) and path.is_dir()
+
+
+def repo_file_exists(repo_root: Path, rel: str) -> bool:
+    return path_is_file_inside_repo(repo_root / rel, repo_root)
+
 def file_facts(repo_root: Path, rel: str, exists: bool) -> dict[str, Any]:
-    if not exists:
+    path = repo_root / rel
+    if not path_resolves_inside_repo(path, repo_root):
         return {
             "size_bytes": None,
             "line_count": None,
             "sha256": None,
         }
-    path = repo_root / rel
-    if not path_resolves_inside_repo(path, repo_root):
+    if not exists:
         return {
             "size_bytes": None,
             "line_count": None,
@@ -294,7 +305,7 @@ def file_facts(repo_root: Path, rel: str, exists: bool) -> dict[str, Any]:
     fact_data = normalized_text_fact_bytes(data)
     return {
         "size_bytes": len(fact_data),
-        "line_count": fact_data.count(b"\n") + (1 if fact_data and not fact_data.endswith(b"\n") else 0),
+        "line_count": fact_data.count(b"\\n") + (1 if fact_data and not fact_data.endswith(b"\\n") else 0),
         "sha256": hashlib.sha256(fact_data).hexdigest(),
     }
 
@@ -1539,6 +1550,8 @@ def git_tracked_files(repo_root: Path) -> list[str] | None:
 def filesystem_files(repo_root: Path) -> list[str]:
     files: list[str] = []
     for path in repo_root.rglob("*"):
+        if not path_resolves_inside_repo(path, repo_root):
+            continue
         if not path.is_file():
             continue
         try:
@@ -1589,7 +1602,7 @@ def load_changed_files_from(path: Path) -> list[str]:
 
 def load_manifest(repo_root: Path) -> dict[str, Any] | None:
     path = repo_root / MANIFEST_PATH
-    if not path.is_file():
+    if not path_is_file_inside_repo(path, repo_root):
         return None
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -1597,10 +1610,9 @@ def load_manifest(repo_root: Path) -> dict[str, Any] | None:
         return None
     return data if isinstance(data, dict) else None
 
-
 def manifest_error(repo_root: Path) -> str | None:
     path = repo_root / MANIFEST_PATH
-    if not path.is_file():
+    if not path_is_file_inside_repo(path, repo_root):
         return f"Collector runtime manifest is missing: {MANIFEST_PATH.as_posix()}"
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -1612,7 +1624,6 @@ def manifest_error(repo_root: Path) -> str | None:
     if path_errors:
         return "; ".join(path_errors)
     return None
-
 
 def normalize_manifest_surface_path(value: str, repo_root: Path, field_name: str) -> tuple[str | None, str | None]:
     raw = value.strip()
@@ -1681,10 +1692,12 @@ def collector_manifest_paths(repo_root: Path) -> list[str]:
 
 def harness_source_part_paths(repo_root: Path) -> list[str]:
     root = repo_root / HARNESS_PARTS_ROOT
-    if not root.is_dir():
+    if not path_is_dir_inside_repo(root, repo_root):
         return []
     paths: list[str] = []
     for path in root.glob("*.ps1.txt"):
+        if not path_resolves_inside_repo(path, repo_root):
+            continue
         if not path.is_file():
             continue
         try:
@@ -1695,7 +1708,7 @@ def harness_source_part_paths(repo_root: Path) -> list[str]:
 
 def read_required_profile_harness_paths(repo_root: Path) -> tuple[list[str], str | None]:
     path = repo_root / REQUIRED_SURFACE_PROFILES_PATH
-    if not path.is_file():
+    if not path_is_file_inside_repo(path, repo_root):
         return [], None
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -1713,7 +1726,6 @@ def read_required_profile_harness_paths(repo_root: Path) -> tuple[list[str], str
             if isinstance(candidate, str) and has_prefix(candidate, HARNESS_PARTS_ROOT.as_posix()) and candidate.endswith(".ps1.txt"):
                 expected.add(candidate)
     return sorted(expected), None
-
 
 def required_profile_harness_paths(repo_root: Path) -> list[str]:
     paths, _ = read_required_profile_harness_paths(repo_root)
@@ -1748,7 +1760,7 @@ def expand_changed_files(repo_root: Path, changed_files: list[str]) -> tuple[lis
 def append_missing_authoritative_surfaces(repo_root: Path, surfaces: list[dict[str, Any]]) -> None:
     existing = {entry["path"] for entry in surfaces}
     for rel in collector_manifest_paths(repo_root):
-        if rel not in existing and not (repo_root / rel).is_file():
+        if rel not in existing and not repo_file_exists(repo_root, rel):
             surfaces.append(
                 make_surface(
                     repo_root,
@@ -1761,7 +1773,6 @@ def append_missing_authoritative_surfaces(repo_root: Path, surfaces: list[dict[s
                 )
             )
 
-
 def collect_surfaces(repo_root: Path, changed_files: list[str] | None = None) -> tuple[list[dict[str, Any]], str, dict[str, Any] | None]:
     discovered, source = discover_repo_files(repo_root)
     dependency_expansion = None
@@ -1771,7 +1782,7 @@ def collect_surfaces(repo_root: Path, changed_files: list[str] | None = None) ->
         candidates = discovered
     surfaces: list[dict[str, Any]] = []
     for rel in candidates:
-        exists = (repo_root / rel).is_file()
+        exists = repo_file_exists(repo_root, rel)
         if changed_files is not None and not exists and not (is_powershell_file(rel) or is_workflow_yaml(rel)):
             continue
         surface = classify_surface(repo_root, rel, exists)
@@ -1780,7 +1791,6 @@ def collect_surfaces(repo_root: Path, changed_files: list[str] | None = None) ->
     if changed_files is None:
         append_missing_authoritative_surfaces(repo_root, surfaces)
     return sorted(surfaces, key=lambda entry: entry["path"]), source, dependency_expansion
-
 
 def load_json_file(path: Path) -> Any:
     try:
@@ -1833,7 +1843,7 @@ def build_controls(repo_root: Path, surfaces: list[dict[str, Any]]) -> dict[str,
     expected_generated = HARNESS_GENERATED_OUTPUT.as_posix()
     manifest_entries: list[dict[str, Any]] = []
     for rel in manifest_paths:
-        exists = (repo_root / rel).is_file()
+        exists = repo_file_exists(repo_root, rel)
         discovered_surface = by_path.get(rel)
         classified_surface = classify_surface(repo_root, rel, exists) if exists else None
         facts = file_facts(repo_root, rel, exists)
@@ -1850,24 +1860,24 @@ def build_controls(repo_root: Path, surfaces: list[dict[str, Any]]) -> dict[str,
     return {
         "collector_manifest": {
             "path": MANIFEST_PATH.as_posix(),
-            "exists": (repo_root / MANIFEST_PATH).is_file(),
+            "exists": repo_file_exists(repo_root, MANIFEST_PATH.as_posix()),
             "error": manifest_error(repo_root),
             "expected_path_count": len(manifest_paths),
-            "present_path_count": sum(1 for rel in manifest_paths if (repo_root / rel).is_file()),
+            "present_path_count": sum(1 for rel in manifest_paths if repo_file_exists(repo_root, rel)),
             "paths": manifest_entries,
         },
         "harness_source_parts": {
             "root": HARNESS_PARTS_ROOT.as_posix(),
             "part_count": len(harness_parts),
             "required_profile_path": REQUIRED_SURFACE_PROFILES_PATH.as_posix(),
-            "required_profile_exists": (repo_root / REQUIRED_SURFACE_PROFILES_PATH).is_file(),
+            "required_profile_exists": repo_file_exists(repo_root, REQUIRED_SURFACE_PROFILES_PATH.as_posix()),
             "required_profile_error": profile_error,
             "required_profile_part_count": len(profile_harness_paths),
-            "required_profile_present_count": sum(1 for rel in profile_harness_paths if (repo_root / rel).is_file()),
+            "required_profile_present_count": sum(1 for rel in profile_harness_paths if repo_file_exists(repo_root, rel)),
             "required_profile_parts": [
                 {
                     "path": rel,
-                    "exists": (repo_root / rel).is_file(),
+                    "exists": repo_file_exists(repo_root, rel),
                     "in_inventory": rel in by_path,
                     "category": by_path.get(rel, {}).get("category"),
                     "size_bytes": by_path.get(rel, {}).get("size_bytes"),
@@ -1877,7 +1887,7 @@ def build_controls(repo_root: Path, surfaces: list[dict[str, Any]]) -> dict[str,
             "parts": [
                 {
                     "path": rel,
-                    "exists": (repo_root / rel).is_file(),
+                    "exists": repo_file_exists(repo_root, rel),
                     "category": by_path.get(rel, {}).get("category"),
                     "size_bytes": by_path.get(rel, {}).get("size_bytes"),
                 }
@@ -1888,7 +1898,7 @@ def build_controls(repo_root: Path, surfaces: list[dict[str, Any]]) -> dict[str,
             {
                 "path": expected_generated,
                 "expected_presence": "optional_when_generated",
-                "exists": (repo_root / expected_generated).is_file(),
+                "exists": repo_file_exists(repo_root, expected_generated),
                 "category": by_path.get(expected_generated, {}).get("category"),
             }
         ],

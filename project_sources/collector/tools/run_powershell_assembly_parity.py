@@ -86,6 +86,13 @@ def path_resolves_inside_repo(path: Path, repo_root: Path) -> bool:
     return True
 
 
+def path_is_file_inside_repo(path: Path, repo_root: Path) -> bool:
+    return path_resolves_inside_repo(path, repo_root) and path.is_file()
+
+
+def path_is_dir_inside_repo(path: Path, repo_root: Path) -> bool:
+    return path_resolves_inside_repo(path, repo_root) and path.is_dir()
+
 def safe_relpath(path: Path, repo_root: Path) -> str:
     try:
         return relpath(path, repo_root)
@@ -94,7 +101,7 @@ def safe_relpath(path: Path, repo_root: Path) -> str:
 
 
 def file_facts(path: Path, repo_root: Path) -> dict[str, Any]:
-    if not path.is_file() or not path_resolves_inside_repo(path, repo_root):
+    if not path_resolves_inside_repo(path, repo_root) or not path.is_file():
         return {
             "path": safe_relpath(path, repo_root),
             "exists": False,
@@ -107,7 +114,7 @@ def file_facts(path: Path, repo_root: Path) -> dict[str, Any]:
         "path": safe_relpath(path, repo_root),
         "exists": True,
         "size_bytes": len(data),
-        "line_count": data.count(b"\n") + (1 if data and not data.endswith(b"\n") else 0),
+        "line_count": data.count(b"\\n") + (1 if data and not data.endswith(b"\\n") else 0),
         "sha256": hashlib.sha256(data).hexdigest(),
     }
 
@@ -461,13 +468,19 @@ def build_collector_output(
 
 def harness_part_paths(repo_root: Path, errors: list[str] | None = None) -> list[Path]:
     root = repo_root / HARNESS_PARTS_ROOT
+    if not path_resolves_inside_repo(root, repo_root):
+        if errors is not None:
+            errors.append(f"{HARNESS_PARTS_ROOT.as_posix()}: harness source parts root must resolve inside the repository root")
+        return []
+    if not root.is_dir():
+        return []
     paths: list[Path] = []
     for path in sorted(root.glob("run_DCOIR_Tests.part-*.ps1.txt")):
-        if not path.is_file():
-            continue
         if not path_resolves_inside_repo(path, repo_root):
             if errors is not None:
                 errors.append(f"{safe_relpath(path, repo_root)}: harness source part must resolve inside the repository root")
+            continue
+        if not path.is_file():
             continue
         paths.append(path)
     return paths
@@ -514,7 +527,7 @@ def build_harness_output(repo_root: Path, errors: list[str]) -> tuple[str, list[
         "checked_in_output_compared": False,
         "expected_presence": "optional_when_generated",
     }
-    if expected_path.exists():
+    if path_is_file_inside_repo(expected_path, repo_root):
         expected_text = normalize_text(expected_path.read_text(encoding="utf-8"))
         if not expected_text.endswith("\n"):
             expected_text += "\n"
@@ -531,7 +544,12 @@ def build_harness_output(repo_root: Path, errors: list[str]) -> tuple[str, list[
             parity["comparison"] = "checked_in_generated_output_is_stale"
             errors.append(f"{HARNESS_GENERATED_OUTPUT.as_posix()}: checked-in generated harness is stale")
     else:
-        parity["comparison"] = "deterministic_regeneration_only_checked_in_output_absent"
+        if not path_resolves_inside_repo(expected_path, repo_root):
+            parity["status"] = "fail"
+            parity["comparison"] = "checked_in_generated_output_resolves_outside_repo"
+            errors.append(f"{HARNESS_GENERATED_OUTPUT.as_posix()}: checked-in generated harness must resolve inside the repository root")
+        else:
+            parity["comparison"] = "deterministic_regeneration_only_checked_in_output_absent"
         parity["checked_in_path"] = HARNESS_GENERATED_OUTPUT.as_posix()
 
     output = {

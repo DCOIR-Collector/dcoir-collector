@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sys
 import tempfile
 import textwrap
@@ -259,6 +260,30 @@ class PowerShellAssemblyParityTests(unittest.TestCase):
 
                 self.assertFalse(report["validation"]["success"])
                 self.assertTrue(any(scenario["expected_fragment"] in error for error in errors), errors)
+
+    def test_symlinked_harness_part_root_fails_before_glob_or_read(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp).resolve()
+            outside = root.parent / "outside_harness_parts"
+            write(outside / "run_DCOIR_Tests.part-000.ps1.txt", 'function Invoke-OutsideHarnessRoot { Write-Output "outside" }\n')
+            harness_root = root / parity.HARNESS_PARTS_ROOT
+            try:
+                shutil.rmtree(harness_root)
+                harness_root.symlink_to(outside, target_is_directory=True)
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest(f"directory symlink creation is unavailable: {exc}")
+            original_glob = parity.Path.glob
+
+            def guarded_glob(path: Path, pattern: str):
+                if path == harness_root:
+                    raise AssertionError(f"unsafe harness source root glob attempted: {path}")
+                return original_glob(path, pattern)
+
+            with unittest.mock.patch.object(parity.Path, "glob", guarded_glob):
+                report, errors, _warnings = parity.build_report(self.args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("harness source parts root must resolve inside the repository root" in error for error in errors), errors)
 
     def test_symlinked_harness_part_fails_before_part_entry_or_read(self) -> None:
         with self.make_repo() as temp:
