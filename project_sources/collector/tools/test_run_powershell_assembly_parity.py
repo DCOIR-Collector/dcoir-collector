@@ -25,6 +25,7 @@ class PowerShellAssemblyParityTests(unittest.TestCase):
         collector_part_text: str = 'function Invoke-CollectorPart { Write-Output "ok" }\n',
         harness_part_text: str = 'function Invoke-HarnessPart { Write-Output "ok" }\n',
         checked_in_harness_text: str | None = None,
+        manifest_wrapper: str | None = None,
         manifest_parts: list[str] | None = None,
     ) -> tempfile.TemporaryDirectory[str]:
         temp = tempfile.TemporaryDirectory()
@@ -54,7 +55,7 @@ class PowerShellAssemblyParityTests(unittest.TestCase):
         part_list = [collector_part] if manifest_parts is None else manifest_parts
         manifest = {
             "source_strategy": "compile_single_runtime_then_package",
-            "collector_wrapper_source": wrapper,
+            "collector_wrapper_source": wrapper if manifest_wrapper is None else manifest_wrapper,
             "collector_part_files": part_list,
             "compiled_runtime_name": "DCOIR_Collector.ps1",
         }
@@ -128,6 +129,58 @@ class PowerShellAssemblyParityTests(unittest.TestCase):
 
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("collector source part is missing" in error for error in errors))
+
+    def assert_manifest_path_rejected(
+        self,
+        *,
+        expected_error_fragment: str,
+        manifest_wrapper: str | None = None,
+        manifest_parts: list[str] | None = None,
+    ) -> None:
+        with self.make_repo(manifest_wrapper=manifest_wrapper, manifest_parts=manifest_parts) as temp:
+            report, errors, _warnings = parity.build_report(self.args(Path(temp)))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any(expected_error_fragment in error for error in errors), errors)
+
+    def test_literal_dot_slash_manifest_paths_pass(self) -> None:
+        wrapper = "project_sources/collector/source/DCOIR_Collector.ps1"
+        collector_part = "project_sources/collector/source/parts/DCOIR_Collector.01_Core.ps1"
+        with self.make_repo(
+            manifest_wrapper="./" + wrapper,
+            manifest_parts=["./" + collector_part],
+            checked_in_harness_text='function Invoke-HarnessPart { Write-Output "ok" }\n',
+        ) as temp:
+            report, errors, _warnings = parity.build_report(self.args(Path(temp)))
+
+        self.assertEqual(errors, [])
+        self.assertTrue(report["validation"]["success"])
+        self.assertEqual(report["summary"]["collector_source_part_count"], 1)
+
+    def test_absolute_collector_wrapper_path_fails_before_normalization(self) -> None:
+        self.assert_manifest_path_rejected(
+            manifest_wrapper="/project_sources/collector/source/DCOIR_Collector.ps1",
+            expected_error_fragment="collector manifest: collector_wrapper_source must be a repo-relative path without traversal",
+        )
+
+    def test_parent_traversal_collector_wrapper_path_fails_before_normalization(self) -> None:
+        self.assert_manifest_path_rejected(
+            manifest_wrapper="../project_sources/collector/source/DCOIR_Collector.ps1",
+            expected_error_fragment="collector manifest: collector_wrapper_source must be a repo-relative path without traversal",
+        )
+
+    def test_absolute_collector_part_path_fails_before_normalization(self) -> None:
+        self.assert_manifest_path_rejected(
+            manifest_parts=["/project_sources/collector/source/parts/DCOIR_Collector.01_Core.ps1"],
+            expected_error_fragment="collector manifest: collector_part_files[1] must be a repo-relative path without traversal",
+        )
+
+    def test_windows_parent_traversal_collector_part_path_fails_before_normalization(self) -> None:
+        unsafe_part = "..\\project_sources\\collector\\source\\parts\\DCOIR_Collector.01_Core.ps1"
+        self.assert_manifest_path_rejected(
+            manifest_parts=[unsafe_part],
+            expected_error_fragment="collector manifest: collector_part_files[1] must be a repo-relative path without traversal",
+        )
 
     def test_missing_source_output_mapping_fails(self) -> None:
         with self.make_repo(manifest_parts=[]) as temp:
