@@ -7,6 +7,7 @@ import sys
 import tempfile
 import textwrap
 import unittest
+import unittest.mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -181,6 +182,83 @@ class PowerShellAssemblyParityTests(unittest.TestCase):
             manifest_parts=[unsafe_part],
             expected_error_fragment="collector manifest: collector_part_files[1] must be a repo-relative path without traversal",
         )
+
+    def test_unsafe_manifest_paths_do_not_reach_part_entry_or_file_facts(self) -> None:
+        scenarios = [
+            {
+                "name": "absolute wrapper",
+                "manifest_wrapper": "ABSOLUTE_WRAPPER",
+                "manifest_parts": None,
+                "symlink_part": False,
+                "expected_fragment": "repo-relative path without traversal",
+            },
+            {
+                "name": "drive-qualified wrapper",
+                "manifest_wrapper": "C:outside/wrapper.ps1",
+                "manifest_parts": None,
+                "symlink_part": False,
+                "expected_fragment": "repo-relative path without traversal",
+            },
+            {
+                "name": "parent traversal part",
+                "manifest_wrapper": None,
+                "manifest_parts": ["../outside_part.ps1"],
+                "symlink_part": False,
+                "expected_fragment": "repo-relative path without traversal",
+            },
+            {
+                "name": "symlink part escape",
+                "manifest_wrapper": None,
+                "manifest_parts": ["project_sources/collector/source/parts/outside_link.ps1"],
+                "symlink_part": True,
+                "expected_fragment": "resolve inside the repository root",
+            },
+        ]
+        for scenario in scenarios:
+            with self.subTest(scenario=scenario["name"]):
+                with self.make_repo(
+                    manifest_wrapper=None if scenario["manifest_wrapper"] == "ABSOLUTE_WRAPPER" else scenario["manifest_wrapper"],
+                    manifest_parts=scenario["manifest_parts"],
+                ) as temp:
+                    root = Path(temp).resolve()
+                    outside_wrapper = root.parent / "outside_wrapper.ps1"
+                    outside_part = root.parent / "outside_part.ps1"
+                    write(outside_wrapper, 'function Invoke-OutsideWrapper { Write-Output "outside" }\n')
+                    write(outside_part, 'function Invoke-OutsidePart { Write-Output "outside" }\n')
+                    if scenario["manifest_wrapper"] == "ABSOLUTE_WRAPPER":
+                        manifest_path = root / parity.DEFAULT_MANIFEST
+                        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                        manifest["collector_wrapper_source"] = outside_wrapper.as_posix()
+                        write(manifest_path, json.dumps(manifest, indent=2) + "\n")
+                    if scenario["symlink_part"]:
+                        link = root / "project_sources/collector/source/parts/outside_link.ps1"
+                        try:
+                            link.unlink(missing_ok=True)
+                            link.symlink_to(outside_part)
+                        except (NotImplementedError, OSError) as exc:
+                            self.skipTest(f"symlink creation is unavailable: {exc}")
+                    original_part_entry = parity.part_entry
+                    original_file_facts = parity.file_facts
+
+                    def assert_repo_contained(path: Path) -> None:
+                        try:
+                            path.resolve().relative_to(root)
+                        except ValueError as exc:
+                            raise AssertionError(f"unsafe source fact collection attempted: {path}") from exc
+
+                    def guarded_part_entry(path: Path, repo_root: Path) -> dict[str, object]:
+                        assert_repo_contained(path)
+                        return original_part_entry(path, repo_root)
+
+                    def guarded_file_facts(path: Path, repo_root: Path) -> dict[str, object]:
+                        assert_repo_contained(path)
+                        return original_file_facts(path, repo_root)
+
+                    with unittest.mock.patch.object(parity, "part_entry", side_effect=guarded_part_entry), unittest.mock.patch.object(parity, "file_facts", side_effect=guarded_file_facts):
+                        report, errors, _warnings = parity.build_report(self.args(root))
+
+                self.assertFalse(report["validation"]["success"])
+                self.assertTrue(any(scenario["expected_fragment"] in error for error in errors), errors)
 
     def test_missing_source_output_mapping_fails(self) -> None:
         with self.make_repo(manifest_parts=[]) as temp:

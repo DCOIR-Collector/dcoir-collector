@@ -1550,12 +1550,12 @@ def normalize_changed_files(values: list[str], repo_root: Path) -> list[str]:
         if not raw:
             raise ValueError("Changed-file input must not be blank")
         slash_path = raw.replace("\\", "/")
-        path = Path(slash_path)
-        if ".." in path.parts:
+        path_parts = tuple(part for part in slash_path.split("/") if part)
+        if slash_path.startswith("/") or Path(raw).is_absolute() or re.match(r"^[A-Za-z]:", slash_path) is not None:
+            raise ValueError(f"Changed-file input must be repo-relative: {value}")
+        if ".." in path_parts:
             raise ValueError(f"Changed-file input must not traverse parents: {value}")
-        if re.match(r"^[A-Za-z]:", slash_path) is not None and not path.is_absolute():
-            raise ValueError(f"Changed-file input must be repo-relative or under repo root: {value}")
-        candidate = path if path.is_absolute() else root / path
+        candidate = root / Path(slash_path)
         try:
             repo_relative = candidate.resolve().relative_to(root)
         except ValueError as exc:
@@ -1566,12 +1566,11 @@ def normalize_changed_files(values: list[str], repo_root: Path) -> list[str]:
         normalized.append(rel)
     return sorted(dict.fromkeys(normalized))
 
-
 def load_changed_files_from(path: Path) -> list[str]:
     if not path.is_file():
         raise FileNotFoundError(f"Changed-files input is missing: {path}")
-    return [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
-
+    records = path.read_text(encoding="utf-8").splitlines()
+    return records if records else [""]
 
 def load_manifest(repo_root: Path) -> dict[str, Any] | None:
     path = repo_root / MANIFEST_PATH

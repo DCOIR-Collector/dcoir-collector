@@ -607,6 +607,18 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
         self.assertIsNotNone(report)
         self.assertTrue(any("inventory path must be repo-relative" in error for error in errors))
 
+    def test_drive_qualified_inventory_path_fails_closed(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            rel = "C:outside/collector.ps1"
+            inventory = json.loads((root / analyzer.DEFAULT_INVENTORY).read_text(encoding="utf-8"))
+            inventory["surfaces"].append(surface(rel, "collector_runtime_wrapper", ".ps1"))
+            write(root / analyzer.DEFAULT_INVENTORY, json.dumps(inventory, indent=2) + "\n")
+            report, errors, _warnings = analyzer.build_report(self.make_args(root, target_path=[rel]))
+
+        self.assertIsNotNone(report)
+        self.assertTrue(any("inventory path must be repo-relative" in error for error in errors))
+
     def test_parent_traversal_inventory_path_fails_closed(self) -> None:
         with self.make_repo() as temp:
             root = Path(temp)

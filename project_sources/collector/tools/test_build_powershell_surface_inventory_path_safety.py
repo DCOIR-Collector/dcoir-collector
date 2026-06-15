@@ -45,12 +45,12 @@ class PowerShellSurfaceInventoryPathSafetyTests(unittest.TestCase):
             "project_sources/collector/source/parts/DCOIR_Collector.01_Core.ps1",
         ])
 
-    def test_changed_file_absolute_path_under_repo_becomes_relative(self) -> None:
+    def test_changed_file_absolute_path_under_repo_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp).resolve()
             absolute = root / "project_sources/collector/source/DCOIR_Collector.ps1"
-            paths = inventory.normalize_changed_files([absolute.as_posix()], root)
-        self.assertEqual(paths, ["project_sources/collector/source/DCOIR_Collector.ps1"])
+            with self.assertRaises(ValueError):
+                inventory.normalize_changed_files([absolute.as_posix()], root)
 
     def test_changed_file_inputs_must_not_escape_repo_root(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -70,18 +70,73 @@ class PowerShellSurfaceInventoryPathSafetyTests(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         inventory.normalize_changed_files([value], root)
 
+    def test_changed_files_from_preserves_embedded_blank_records(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            changed_files = root / "changed-files.txt"
+            changed_files.write_text(
+                "project_sources/collector/source/DCOIR_Collector.ps1\n\nother.ps1\n",
+                encoding="utf-8",
+            )
+            records = inventory.load_changed_files_from(changed_files)
+            self.assertEqual(records, ["project_sources/collector/source/DCOIR_Collector.ps1", "", "other.ps1"])
+            with self.assertRaises(ValueError):
+                inventory.normalize_changed_files(records, root)
+
+    def test_changed_files_from_preserves_embedded_whitespace_records(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            changed_files = root / "changed-files.txt"
+            changed_files.write_text(
+                "project_sources/collector/source/DCOIR_Collector.ps1\n   \nother.ps1\n",
+                encoding="utf-8",
+            )
+            records = inventory.load_changed_files_from(changed_files)
+            self.assertEqual(records, ["project_sources/collector/source/DCOIR_Collector.ps1", "   ", "other.ps1"])
+            with self.assertRaises(ValueError):
+                inventory.normalize_changed_files(records, root)
+
+    def test_changed_files_from_blank_only_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            changed_files = root / "changed-files.txt"
+            changed_files.write_text("\n", encoding="utf-8")
+            records = inventory.load_changed_files_from(changed_files)
+            self.assertEqual(records, [""])
+            with self.assertRaises(ValueError):
+                inventory.normalize_changed_files(records, root)
+
+    def test_changed_files_from_whitespace_only_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            changed_files = root / "changed-files.txt"
+            changed_files.write_text(" \t \n", encoding="utf-8")
+            records = inventory.load_changed_files_from(changed_files)
+            self.assertEqual(records, [" \t "])
+            with self.assertRaises(ValueError):
+                inventory.normalize_changed_files(records, root)
+
+    def test_changed_files_from_empty_file_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            changed_files = root / "changed-files.txt"
+            changed_files.write_text("", encoding="utf-8")
+            records = inventory.load_changed_files_from(changed_files)
+            self.assertEqual(records, [""])
+            with self.assertRaises(ValueError):
+                inventory.normalize_changed_files(records, root)
+
     def test_changed_file_normalized_outputs_are_not_rooted_or_drive_qualified(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp).resolve()
             paths = inventory.normalize_changed_files([
                 ".github/workflows/validate.yml",
-                (root / "project_sources/collector/source/DCOIR_Collector.ps1").as_posix(),
+                "project_sources/collector/source/DCOIR_Collector.ps1",
             ], root)
         for path in paths:
             with self.subTest(path=path):
                 self.assertFalse(Path(path).is_absolute())
                 self.assertIsNone(re.match(r"^[A-Za-z]:", path.replace("\\", "/")))
-
 
     def test_manifest_paths_preserve_valid_repo_relative_inputs(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

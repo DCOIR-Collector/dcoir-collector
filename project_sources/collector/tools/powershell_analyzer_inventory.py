@@ -2,6 +2,7 @@
 """Inventory loading and target selection for PowerShell analyzer runs."""
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -47,12 +48,15 @@ def selected_target_paths(values: list[str]) -> set[str] | None:
 
 
 def safe_inventory_path(value: Any) -> str:
-    raw = scalar(value)
+    raw = scalar(value).strip()
     if not raw:
         raise AnalyzerContractError("inventory surface path is empty")
     if "\\" in raw:
         raise AnalyzerContractError(f"{raw}: inventory path must use repo-relative POSIX separators")
-    candidate = Path(raw)
+    slash_path = raw.replace("\\", "/")
+    if slash_path.startswith("/") or re.match(r"^[A-Za-z]:", slash_path) is not None:
+        raise AnalyzerContractError(f"{raw}: inventory path must be repo-relative")
+    candidate = Path(slash_path)
     if candidate.is_absolute():
         raise AnalyzerContractError(f"{raw}: inventory path must be repo-relative")
     if any(part == ".." for part in candidate.parts):
@@ -61,7 +65,6 @@ def safe_inventory_path(value: Any) -> str:
     if normalized in {"", "."}:
         raise AnalyzerContractError("inventory surface path is empty")
     return normalized
-
 
 def is_relative_to(path: Path, parent: Path) -> bool:
     try:

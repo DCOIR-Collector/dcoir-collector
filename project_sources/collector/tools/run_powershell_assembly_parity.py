@@ -114,28 +114,33 @@ def normalize_repo_path(value: str) -> str:
 def is_absolute_repo_input(value: str) -> bool:
     raw = value.strip()
     slash_path = raw.replace("\\", "/")
-    return slash_path.startswith("/") or re.match(r"^[A-Za-z]:/", slash_path) is not None or Path(raw).is_absolute()
+    return slash_path.startswith("/") or re.match(r"^[A-Za-z]:", slash_path) is not None or Path(raw).is_absolute()
 
-
-def validate_manifest_repo_path(value: str, key: str, label: str, errors: list[str]) -> str:
+def validate_manifest_repo_path(value: str, key: str, label: str, repo_root: Path, errors: list[str]) -> str | None:
     raw = value.strip()
+    slash_path = raw.replace("\\", "/")
     rel = normalize_repo_path(raw)
-    raw_parts = Path(raw.replace("\\", "/")).parts
+    raw_parts = tuple(part for part in slash_path.split("/") if part)
     parts = Path(rel).parts
     if not raw or is_absolute_repo_input(raw) or ".." in raw_parts or rel.startswith("../") or ".." in parts or Path(rel).is_absolute():
         errors.append(f"{label}: {key} must be a repo-relative path without traversal")
+        return None
+    try:
+        (repo_root / rel).resolve().relative_to(repo_root.resolve())
+    except ValueError:
+        errors.append(f"{label}: {key} must resolve inside the repository root")
+        return None
     return rel
 
-
-def require_non_empty_string(mapping: dict[str, Any], key: str, label: str, errors: list[str]) -> str:
+def require_non_empty_string(mapping: dict[str, Any], key: str, label: str, repo_root: Path, errors: list[str]) -> str:
     value = mapping.get(key)
     if not isinstance(value, str) or not value.strip():
         errors.append(f"{label}: {key} must be a non-empty string")
         return ""
-    return validate_manifest_repo_path(value, key, label, errors)
+    rel = validate_manifest_repo_path(value, key, label, repo_root, errors)
+    return rel or ""
 
-
-def require_non_empty_string_list(mapping: dict[str, Any], key: str, label: str, errors: list[str]) -> list[str]:
+def require_non_empty_string_list(mapping: dict[str, Any], key: str, label: str, repo_root: Path, errors: list[str]) -> list[str]:
     value = mapping.get(key)
     if not isinstance(value, list) or not value:
         errors.append(f"{label}: {key} must be a non-empty list")
@@ -146,9 +151,10 @@ def require_non_empty_string_list(mapping: dict[str, Any], key: str, label: str,
         if not isinstance(raw_item, str) or not raw_item.strip():
             errors.append(f"{label}: {item_key} must be a non-empty string")
             continue
-        normalized.append(validate_manifest_repo_path(raw_item, item_key, label, errors))
+        rel = validate_manifest_repo_path(raw_item, item_key, label, repo_root, errors)
+        if rel is not None:
+            normalized.append(rel)
     return normalized
-
 
 def part_entry(path: Path, repo_root: Path) -> dict[str, Any]:
     facts = file_facts(path, repo_root)
@@ -360,8 +366,19 @@ def build_collector_output(
     manifest: dict[str, Any],
     errors: list[str],
 ) -> tuple[str, list[dict[str, Any]], dict[str, Any]]:
-    wrapper_rel = require_non_empty_string(manifest, "collector_wrapper_source", "collector manifest", errors)
-    part_rels = require_non_empty_string_list(manifest, "collector_part_files", "collector manifest", errors)
+    manifest_path_error_count = sum(
+        "must be a repo-relative path without traversal" in error
+        or "must resolve inside the repository root" in error
+        for error in errors
+    )
+    wrapper_rel = require_non_empty_string(manifest, "collector_wrapper_source", "collector manifest", repo_root, errors)
+    part_rels = require_non_empty_string_list(manifest, "collector_part_files", "collector manifest", repo_root, errors)
+    if sum(
+        "must be a repo-relative path without traversal" in error
+        or "must resolve inside the repository root" in error
+        for error in errors
+    ) > manifest_path_error_count:
+        return "", [], {}
     compiled_name = manifest.get("compiled_runtime_name", "DCOIR_Collector.ps1")
     if not isinstance(compiled_name, str) or not compiled_name.strip():
         errors.append("collector manifest: compiled_runtime_name must be a non-empty string")
