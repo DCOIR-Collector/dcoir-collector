@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
-  id-token: write      # <-- REQUIRED for the container to inherit permissions
+  id-token: write      
 
 jobs:
   kimi-review:
@@ -49,14 +49,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.get-pr.outputs.ref }}
-          persist-credentials: 'true'  # <-- FIXED: Persists git credentials for Kimi
-          with_id_token: 'true'        # <-- FIXED: Generates the OIDC token for container access
+          persist-credentials: 'true'  
+          with_id_token: 'true'        
 
       - name: Run Kimi Review
         uses: xiaoju111a/kimi-actions@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # <-- FIXED: Passes auth token directly to the action environment
         with:
           kimi_api_key: ${{ secrets.KIMI_API_KEY }}
-          kimi_base_url: ${{ secrets.KIMI_BASE_URL }}  # Optional
+          kimi_base_url: ${{ secrets.KIMI_BASE_URL }}  
           github_token: ${{ secrets.GITHUB_TOKEN }}
           auto_review: 'false'
 
