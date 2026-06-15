@@ -305,7 +305,7 @@ def file_facts(repo_root: Path, rel: str, exists: bool) -> dict[str, Any]:
     fact_data = normalized_text_fact_bytes(data)
     return {
         "size_bytes": len(fact_data),
-        "line_count": fact_data.count(b"\\n") + (1 if fact_data and not fact_data.endswith(b"\\n") else 0),
+        "line_count": fact_data.count(b"\n") + (1 if fact_data and not fact_data.endswith(b"\n") else 0),
         "sha256": hashlib.sha256(fact_data).hexdigest(),
     }
 

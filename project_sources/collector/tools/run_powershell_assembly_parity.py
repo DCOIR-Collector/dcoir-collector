@@ -114,7 +114,7 @@ def file_facts(path: Path, repo_root: Path) -> dict[str, Any]:
         "path": safe_relpath(path, repo_root),
         "exists": True,
         "size_bytes": len(data),
-        "line_count": data.count(b"\\n") + (1 if data and not data.endswith(b"\\n") else 0),
+        "line_count": data.count(b"\n") + (1 if data and not data.endswith(b"\n") else 0),
         "sha256": hashlib.sha256(data).hexdigest(),
     }
 
