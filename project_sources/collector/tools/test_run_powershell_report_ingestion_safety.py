@@ -155,9 +155,9 @@ def boundary_args(root: Path, extra_report: list[str] | None = None) -> argparse
     )
 
 
-def finding() -> dict[str, object]:
+def finding(path: str = "project_sources/collector/fixtures/powershell_analysis/bad/example.ps1") -> dict[str, object]:
     return {
-        "path": "project_sources/collector/fixtures/powershell_analysis/bad/example.ps1",
+        "path": path,
         "line": 1,
         "column": 1,
         "rule_name": "DCOIR.Example",
@@ -169,15 +169,55 @@ def finding() -> dict[str, object]:
     }
 
 
+def baseline_record(path: str) -> dict[str, object]:
+    return {
+        "id": "unsafe-baseline",
+        "decision": "baseline-temporary",
+        "path": path,
+        "line": 1,
+        "rule_name": "DCOIR.Example",
+        "severity": "Error",
+        "fingerprint": "finding-fingerprint-1",
+        "rationale": "Regression test baseline.",
+        "owner": "DCOIR Collector maintainers",
+        "reviewer": "DCOIR operator",
+        "review_date": "2026-06-10",
+        "revisit_condition": "Before workflow gating.",
+        "expected_match_count": 1,
+    }
+
+
+def suppression_record(path: str) -> dict[str, object]:
+    return {
+        "id": "unsafe-suppression",
+        "decision": "accepted risk",
+        "path": path,
+        "rule_name": "DCOIR.Example",
+        "scope": "file",
+        "fingerprint": "finding-fingerprint-1",
+        "rationale": "Regression test suppression.",
+        "owner": "DCOIR Collector maintainers",
+        "reviewer": "DCOIR operator",
+        "review_date": "2026-06-10",
+        "revisit_condition": "Before workflow gating.",
+        "expected_match_count": 1,
+    }
+
+
 def write_governance_repo(
     root: Path,
     *,
     assembly_success: bool = True,
     assembly_generated_path: str = "compiled_runtime/DCOIR_Collector.ps1",
+    finding_path: str = "project_sources/collector/fixtures/powershell_analysis/bad/example.ps1",
+    classification_path_prefixes: list[str] | None = None,
+    classification_paths: list[str] | None = None,
+    baseline_path: str | None = None,
+    suppression_path: str | None = None,
 ) -> None:
     finding_report = {
         "schema_version": "dcoir_powershell_custom_check_report_v1",
-        "findings": [finding()],
+        "findings": [finding(finding_path)],
         "validation": {"success": True, "errors": [], "warnings": []},
         "summary": {"finding_count": 1},
     }
@@ -200,6 +240,21 @@ def write_governance_repo(
             {"id": "collector_compiled_runtime", "path": assembly_generated_path}
         ],
     }
+    classification_rule: dict[str, object] = {
+        "id": "fixture-findings",
+        "decision": "advisory",
+        "rationale": "Fixtures are advisory control evidence.",
+        "owner": "DCOIR Collector maintainers",
+        "reviewer": "DCOIR operator",
+        "review_date": "2026-06-10",
+        "revisit_condition": "Before workflow gating.",
+    }
+    if classification_path_prefixes is None:
+        classification_rule["path_prefixes"] = ["project_sources/collector/fixtures/powershell_analysis/"]
+    else:
+        classification_rule["path_prefixes"] = classification_path_prefixes
+    if classification_paths is not None:
+        classification_rule["paths"] = classification_paths
     governance_doc = {
         "schema_version": governance.GOVERNANCE_SCHEMA_VERSION,
         "issue": governance.ISSUE_NUMBER,
@@ -207,20 +262,9 @@ def write_governance_repo(
             "allowed_decisions": sorted(governance.ALLOWED_DECISIONS),
             "max_baseline_records": 10,
         },
-        "classification_rules": [
-            {
-                "id": "fixture-findings",
-                "decision": "advisory",
-                "path_prefixes": ["project_sources/collector/fixtures/powershell_analysis/"],
-                "rationale": "Fixtures are advisory control evidence.",
-                "owner": "DCOIR Collector maintainers",
-                "reviewer": "DCOIR operator",
-                "review_date": "2026-06-10",
-                "revisit_condition": "Before workflow gating.",
-            }
-        ],
-        "baseline_records": [],
-        "suppressions": [],
+        "classification_rules": [classification_rule],
+        "baseline_records": [baseline_record(baseline_path)] if baseline_path is not None else [],
+        "suppressions": [suppression_record(suppression_path)] if suppression_path is not None else [],
         "approved_delta_exceptions": [],
         "control_proofs": [],
     }
@@ -288,6 +332,51 @@ class PowerShellReportIngestionSafetyTests(unittest.TestCase):
             any("PowerShell assembly parity generated output path must be a repo-relative path without traversal" in error for error in errors)
         )
         self.assertEqual(report["assembly_parity_report"]["generated_output_paths"], [])
+
+    def test_finding_governance_rejects_traversing_finding_path_before_classification(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            write_governance_repo(root, finding_path="../outside-finding.ps1")
+            report, errors, _warnings = governance.build_report(governance_args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("finding path must be a repo-relative path without traversal" in error for error in errors))
+
+    def test_finding_governance_rejects_traversing_classification_prefix(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            write_governance_repo(root, classification_path_prefixes=["../outside/"])
+            report, errors, _warnings = governance.build_report(governance_args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("path_prefixes[1] prefix must be a repo-relative prefix without traversal" in error for error in errors))
+
+    def test_finding_governance_rejects_traversing_classification_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            write_governance_repo(root, classification_paths=["../outside-finding.ps1"])
+            report, errors, _warnings = governance.build_report(governance_args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("paths[1] path must be a repo-relative path without traversal" in error for error in errors))
+
+    def test_finding_governance_rejects_traversing_baseline_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            write_governance_repo(root, baseline_path="../outside-baseline.ps1")
+            report, errors, _warnings = governance.build_report(governance_args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("baseline record unsafe-baseline path path must be a repo-relative path without traversal" in error for error in errors))
+
+    def test_finding_governance_rejects_traversing_suppression_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            write_governance_repo(root, suppression_path="../outside-suppression.ps1")
+            report, errors, _warnings = governance.build_report(governance_args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("suppression unsafe-suppression path path must be a repo-relative path without traversal" in error for error in errors))
 
     def test_finding_governance_rejects_traversing_optional_report_before_read(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
