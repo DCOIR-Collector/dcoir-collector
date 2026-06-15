@@ -32,13 +32,45 @@ jobs:
             core.setOutput('ref', pr.data.head.ref);
             core.setOutput('sha', pr.data.head.sha);
 
+      # NEW: Add 👀 reaction to your command comment
+      - name: Add Eyes Reaction
+        id: add-reaction
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reaction = await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'eyes'
+            });
+            core.setOutput('reaction_id', reaction.data.id);
+
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.get-pr.outputs.ref }}
 
-      - uses: xiaoju111a/kimi-actions@main
+      # Kimi analyzes the code natively
+      - name: Run Kimi Review
+        uses: xiaoju111a/kimi-actions@main
         with:
           kimi_api_key: ${{ secrets.KIMI_API_KEY }}
           kimi_base_url: ${{ secrets.KIMI_BASE_URL }}  # Optional
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          auto_review: 'false'  # Use /review command instead
+          auto_review: 'false'  # Managed by commands
+
+      # NEW: Remove 👀 reaction after completion
+      - name: Remove Eyes Reaction
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reactionId = '${{ steps.add-reaction.outputs.reaction_id }}';
+            if (reactionId) {
+              await github.rest.reactions.deleteForIssueComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: context.payload.comment.id,
+                reaction_id: parseInt(reactionId)
+              });
+            }
