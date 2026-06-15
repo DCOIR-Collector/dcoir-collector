@@ -28,6 +28,7 @@ DEFAULT_ANALYZER_REPORT = Path("project_sources/collector/powershell_analyzer_re
 DEFAULT_ASSEMBLY_PARITY_REPORT = Path("project_sources/collector/powershell_assembly_parity_report.json")
 DEFAULT_JSON_OUTPUT = Path("project_sources/collector/powershell_finding_governance_report.json")
 DEFAULT_MARKDOWN_OUTPUT = Path("project_sources/collector/powershell_finding_governance_report.md")
+ASSEMBLY_PARITY_SCHEMA_VERSION = "dcoir_powershell_assembly_parity_report_v1"
 
 REPORT_SCHEMAS = {
     DEFAULT_CUSTOM_REPORT.as_posix(): "dcoir_powershell_custom_check_report_v1",
@@ -109,6 +110,27 @@ def safe_repo_path(path: Path, repo_root: Path) -> str:
         return path.as_posix()
 
 
+def slash_path(value: str) -> str:
+    return value.strip().replace("\\", "/")
+
+
+def is_windows_drive_path(value: str) -> bool:
+    return len(value) >= 2 and value[0].isalpha() and value[1] == ":"
+
+
+def resolve_repo_input_path(value: str, repo_root: Path, label: str) -> tuple[Path | None, str, str | None]:
+    normalized = slash_path(value)
+    parts = tuple(part for part in normalized.split("/") if part)
+    if not normalized or normalized.startswith("/") or is_windows_drive_path(normalized) or ".." in parts:
+        return None, normalized, f"{label} path must be a repo-relative path without traversal"
+    candidate = repo_root.joinpath(*parts)
+    try:
+        candidate.resolve().relative_to(repo_root.resolve())
+    except (OSError, ValueError):
+        return None, normalized, f"{label} path must resolve inside the repository root"
+    return candidate, normalized, None
+
+
 def read_json(path: Path, label: str) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -179,11 +201,15 @@ def has_any_text(item: dict[str, Any], keys: tuple[str, ...]) -> bool:
 
 
 def load_doc(repo_root: Path, relative_path: Path, label: str) -> tuple[dict[str, Any], str]:
-    absolute_path = repo_root / relative_path
+    absolute_path, repo_path, path_error = resolve_repo_input_path(relative_path.as_posix(), repo_root, label)
+    if path_error:
+        raise GovernanceError(f"{label} {path_error}: {relative_path.as_posix()}")
+    if absolute_path is None:
+        raise GovernanceError(f"{label} path could not be resolved: {relative_path.as_posix()}")
     doc = read_json(absolute_path, label)
     if not isinstance(doc, dict):
-        raise GovernanceError(f"{label} must be a JSON object: {relative_path}")
-    return doc, safe_repo_path(absolute_path, repo_root)
+        raise GovernanceError(f"{label} must be a JSON object: {repo_path}")
+    return doc, repo_path
 
 
 def load_optional_doc(
@@ -192,14 +218,17 @@ def load_optional_doc(
     label: str,
     warnings: list[str],
 ) -> tuple[dict[str, Any] | None, str]:
-    absolute_path = repo_root / relative_path
-    repo_path = safe_repo_path(absolute_path, repo_root)
+    absolute_path, repo_path, path_error = resolve_repo_input_path(relative_path.as_posix(), repo_root, label)
+    if path_error:
+        raise GovernanceError(f"{label} {path_error}: {relative_path.as_posix()}")
+    if absolute_path is None:
+        raise GovernanceError(f"{label} path could not be resolved: {relative_path.as_posix()}")
     if not absolute_path.exists():
         warnings.append(f"optional {label} not present: {repo_path}")
         return None, repo_path
     doc = read_json(absolute_path, label)
     if not isinstance(doc, dict):
-        raise GovernanceError(f"{label} must be a JSON object: {relative_path}")
+        raise GovernanceError(f"{label} must be a JSON object: {repo_path}")
     return doc, repo_path
 
 
@@ -215,6 +244,20 @@ def report_validation_success_state(report: dict[str, Any]) -> tuple[bool, str]:
     if success is False:
         return False, "validation.success is false"
     return False, "validation.success must be boolean true"
+
+
+def validate_assembly_parity_report(repo_path: str, report: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    schema = scalar(report.get("schema_version")).strip()
+    if schema != ASSEMBLY_PARITY_SCHEMA_VERSION:
+        errors.append(f"{repo_path} schema mismatch: expected {ASSEMBLY_PARITY_SCHEMA_VERSION}, got {schema!r}")
+    success, success_reason = report_validation_success_state(report)
+    if not success:
+        errors.append(f"{repo_path} does not report successful validation: {success_reason}")
+    generated_outputs = report.get("generated_outputs", [])
+    if generated_outputs is not None and not isinstance(generated_outputs, list):
+        errors.append(f"{repo_path} generated_outputs must be a list when present")
+    return errors
 
 
 def stable_fingerprint(source_report: str, raw: dict[str, Any]) -> str:
@@ -312,7 +355,7 @@ def collect_findings(
                 "validation_success": success,
             }
         )
-        expected_schema = REPORT_SCHEMAS.get(report_path.as_posix())
+        expected_schema = REPORT_SCHEMAS.get(repo_path)
         schema_valid = True
         if expected_schema and schema != expected_schema:
             errors.append(f"{repo_path} schema mismatch: expected {expected_schema}, got {schema!r}")
@@ -332,6 +375,7 @@ def collect_findings(
     for report_path in optional_reports:
         process_report(report_path, required=False, missing_is_warning=True)
     return findings, input_reports
+
 
 def generated_output_paths(assembly_report: dict[str, Any] | None) -> set[str]:
     if not isinstance(assembly_report, dict):
@@ -784,6 +828,7 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
     warnings: list[str] = []
     governance: dict[str, Any] = {}
     assembly_report: dict[str, Any] | None = None
+    assembly_report_for_coverage: dict[str, Any] | None = None
     try:
         governance, governance_path = load_doc(repo_root, Path(args.governance), "PowerShell finding governance")
     except GovernanceError as exc:
@@ -799,8 +844,13 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
     except GovernanceError as exc:
         errors.append(str(exc))
         assembly_path = str(args.assembly_parity_report)
+    if assembly_report is not None:
+        assembly_errors = validate_assembly_parity_report(assembly_path, assembly_report)
+        errors.extend(assembly_errors)
+        if not assembly_errors:
+            assembly_report_for_coverage = assembly_report
     if governance:
-        errors.extend(validate_governance_doc(governance, assembly_report, today))
+        errors.extend(validate_governance_doc(governance, assembly_report_for_coverage, today))
     required_reports = [Path(path) for path in (args.finding_report or [])]
     if not required_reports:
         required_reports = [DEFAULT_CUSTOM_REPORT, DEFAULT_RULE_RISK_REPORT]
@@ -818,6 +868,9 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
     findings, input_reports = collect_findings(repo_root, required_reports, optional_reports, errors, warnings)
     classifications, delta, classification_errors = classify_findings(governance, findings, today) if governance else ([], {}, [])
     errors.extend(classification_errors)
+    assembly_success: bool | None = None
+    if isinstance(assembly_report, dict):
+        assembly_success = report_validation_success_state(assembly_report)[0]
     report: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "issue": ISSUE_NUMBER,
@@ -833,7 +886,8 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
             "path": assembly_path,
             "present": assembly_report is not None,
             "schema_version": assembly_report.get("schema_version") if isinstance(assembly_report, dict) else None,
-            "generated_output_paths": sorted(generated_output_paths(assembly_report)),
+            "validation_success": assembly_success,
+            "generated_output_paths": sorted(generated_output_paths(assembly_report_for_coverage)),
         },
         "input_reports": input_reports,
         "summary": {},
