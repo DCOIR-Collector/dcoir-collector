@@ -675,6 +675,14 @@ def finding_matches_suppression(finding: Finding, suppression: dict[str, Any]) -
     )
 
 
+def path_prefix_matches(path: str, prefix: str) -> bool:
+    normalized_path = slash_path(path)
+    normalized_prefix = slash_path(prefix).rstrip("/")
+    if not normalized_prefix:
+        return False
+    return normalized_path == normalized_prefix or normalized_path.startswith(f"{normalized_prefix}/")
+
+
 def finding_matches_rule(finding: Finding, rule: dict[str, Any]) -> bool:
     prefixes = [scalar(prefix).strip() for prefix in rule.get("path_prefixes", []) if scalar(prefix).strip()]
     paths = [scalar(path).strip() for path in rule.get("paths", []) if scalar(path).strip()]
@@ -682,7 +690,7 @@ def finding_matches_rule(finding: Finding, rule: dict[str, Any]) -> bool:
     check_ids = [scalar(check_id).strip() for check_id in rule.get("check_ids", []) if scalar(check_id).strip()]
     source_schemas = [scalar(schema).strip() for schema in rule.get("source_schema_versions", []) if scalar(schema).strip()]
     severities = [scalar(severity).strip().casefold() for severity in rule.get("severities", []) if scalar(severity).strip()]
-    if prefixes and not any(finding.path.startswith(prefix) for prefix in prefixes):
+    if prefixes and not any(path_prefix_matches(finding.path, prefix) for prefix in prefixes):
         return False
     if paths and finding.path not in paths:
         return False
