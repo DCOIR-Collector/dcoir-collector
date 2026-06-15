@@ -260,6 +260,40 @@ class PowerShellAssemblyParityTests(unittest.TestCase):
                 self.assertFalse(report["validation"]["success"])
                 self.assertTrue(any(scenario["expected_fragment"] in error for error in errors), errors)
 
+    def test_symlinked_harness_part_fails_before_part_entry_or_read(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp).resolve()
+            outside = root.parent / "outside_harness_part.ps1.txt"
+            write(outside, 'function Invoke-OutsideHarness { Write-Output "outside" }\n')
+            harness_link = root / "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-000.ps1.txt"
+            try:
+                harness_link.unlink()
+                harness_link.symlink_to(outside)
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            original_part_entry = parity.part_entry
+            original_read_part_text = parity.read_part_text
+
+            def assert_repo_contained(path: Path) -> None:
+                try:
+                    path.resolve().relative_to(root)
+                except ValueError as exc:
+                    raise AssertionError(f"unsafe harness source read attempted: {path}") from exc
+
+            def guarded_part_entry(path: Path, repo_root: Path) -> dict[str, object]:
+                assert_repo_contained(path)
+                return original_part_entry(path, repo_root)
+
+            def guarded_read_part_text(path: Path) -> str:
+                assert_repo_contained(path)
+                return original_read_part_text(path)
+
+            with unittest.mock.patch.object(parity, "part_entry", side_effect=guarded_part_entry), unittest.mock.patch.object(parity, "read_part_text", side_effect=guarded_read_part_text):
+                report, errors, _warnings = parity.build_report(self.args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("harness source part must resolve inside the repository root" in error for error in errors), errors)
+
     def test_missing_source_output_mapping_fails(self) -> None:
         with self.make_repo(manifest_parts=[]) as temp:
             report, errors, _warnings = parity.build_report(self.args(Path(temp)))

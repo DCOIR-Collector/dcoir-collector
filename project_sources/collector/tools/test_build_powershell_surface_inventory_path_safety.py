@@ -138,6 +138,42 @@ class PowerShellSurfaceInventoryPathSafetyTests(unittest.TestCase):
                 self.assertFalse(Path(path).is_absolute())
                 self.assertIsNone(re.match(r"^[A-Za-z]:", path.replace("\\", "/")))
 
+    def test_symlinked_inventory_file_fails_closed_before_hashing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            outside = root.parent / "outside_inventory.ps1"
+            outside.write_text('Write-Output "outside"\n', encoding="utf-8")
+            rel = "operator_tools/linked.ps1"
+            link = root / rel
+            link.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                link.symlink_to(outside)
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+
+            surface = inventory.make_surface(
+                root,
+                rel,
+                "operator_tooling",
+                "tooling",
+                "include",
+                "test symlink surface",
+                True,
+            )
+            validation = inventory.validate_inventory(
+                [surface],
+                "changed",
+                {},
+                {"input_paths": [rel], "rules": []},
+            )
+
+        self.assertIsNone(surface["sha256"])
+        self.assertFalse(validation["success"])
+        self.assertTrue(
+            any("file facts could not be collected safely inside the repository root" in error for error in validation["errors"]),
+            validation["errors"],
+        )
+
     def test_manifest_paths_preserve_valid_repo_relative_inputs(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp).resolve()

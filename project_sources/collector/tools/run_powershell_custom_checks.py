@@ -111,8 +111,7 @@ def normalize_repo_path(value: str) -> str:
 def is_absolute_repo_input(value: str) -> bool:
     raw = value.strip()
     slash_path = raw.replace("\\", "/")
-    return slash_path.startswith("/") or re.match(r"^[A-Za-z]:/", slash_path) is not None or Path(raw).is_absolute()
-
+    return slash_path.startswith("/") or re.match(r"^[A-Za-z]:", slash_path) is not None or Path(raw).is_absolute()
 
 def safe_fixture_path(value: str, label: str, errors: list[str]) -> str:
     raw = value.strip()
@@ -124,6 +123,25 @@ def safe_fixture_path(value: str, label: str, errors: list[str]) -> str:
         return rel
     if not rel.startswith("project_sources/collector/fixtures/powershell_analysis/"):
         errors.append(f"{label}: fixture path must stay under project_sources/collector/fixtures/powershell_analysis")
+    return rel
+
+
+def safe_inventory_path(value: str, label: str, repo_root: Path, errors: list[str]) -> str:
+    raw = value.strip()
+    rel = normalize_repo_path(raw)
+    slash_path = raw.replace("\\", "/")
+    raw_parts = tuple(part for part in slash_path.split("/") if part)
+    parts = Path(rel).parts
+    if not raw or is_absolute_repo_input(raw) or ".." in raw_parts or rel.startswith("../") or ".." in parts or Path(rel).is_absolute():
+        errors.append(f"{label}: path must be a repo-relative path without traversal")
+        return ""
+    root = repo_root.resolve()
+    try:
+        resolved = (root / rel).resolve()
+        resolved.relative_to(root)
+    except (OSError, ValueError):
+        errors.append(f"{label}: path must resolve inside the repository root")
+        return ""
     return rel
 
 
@@ -267,7 +285,7 @@ def validate_check_definitions(
     return check_map, errors, warnings
 
 
-def validate_inventory(inventory: dict[str, Any]) -> tuple[set[str], list[str], list[str]]:
+def validate_inventory(inventory: dict[str, Any], repo_root: Path) -> tuple[set[str], list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
     if inventory.get("schema_version") != INVENTORY_SCHEMA_VERSION:
@@ -283,14 +301,15 @@ def validate_inventory(inventory: dict[str, Any]) -> tuple[set[str], list[str], 
         errors.append("PowerShell inventory must contain surfaces[]")
         return set(), errors, warnings
     surface_paths: set[str] = set()
-    for surface in surfaces:
+    for index, surface in enumerate(surfaces, start=1):
         if not isinstance(surface, dict):
             continue
-        path = scalar(surface.get("path")).strip()
-        if path:
-            surface_paths.add(path)
+        raw_path = scalar(surface.get("path")).strip()
+        if raw_path:
+            path = safe_inventory_path(raw_path, f"inventory surface #{index}", repo_root, errors)
+            if path:
+                surface_paths.add(path)
     return surface_paths, errors, warnings
-
 
 def inventory_targets(inventory: dict[str, Any]) -> list[str]:
     targets: list[str] = []
@@ -303,9 +322,8 @@ def inventory_targets(inventory: dict[str, Any]) -> list[str]:
             continue
         path = scalar(surface.get("path")).strip()
         if path:
-            targets.append(path)
+            targets.append(normalize_repo_path(path))
     return sorted(dict.fromkeys(targets))
-
 
 def validate_fixture_manifest(
     manifest: dict[str, Any],
@@ -751,7 +769,7 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
         check_map, check_errors, check_warnings = validate_check_definitions(checks_doc, matrix_checks)
         errors.extend(check_errors)
         warnings.extend(check_warnings)
-        surface_paths, inventory_errors, inventory_warnings = validate_inventory(inventory)
+        surface_paths, inventory_errors, inventory_warnings = validate_inventory(inventory, repo_root)
         errors.extend(inventory_errors)
         warnings.extend(inventory_warnings)
         fixture_map, fixture_errors, fixture_warnings = validate_fixture_manifest(manifest, check_map, surface_paths, repo_root)
@@ -765,12 +783,15 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
     findings: list[dict[str, Any]] = []
     if not errors:
         for target in targets:
-            target_path = repo_root / target
+            safe_target = safe_inventory_path(target, f"selected target {target}", repo_root, errors)
+            if not safe_target:
+                continue
+            target_path = repo_root / safe_target
             if not target_path.is_file():
-                errors.append(f"selected PowerShell source missing: {target}")
+                errors.append(f"selected PowerShell source missing: {safe_target}")
                 continue
             text = target_path.read_text(encoding="utf-8", errors="ignore")
-            findings.extend(run_checks_for_text(text, target, check_map))
+            findings.extend(run_checks_for_text(text, safe_target, check_map))
 
     fixture_paths = {fixture["path"] for fixture in fixture_map.values()}
     scanned_fixture_paths = fixture_paths.intersection(targets)

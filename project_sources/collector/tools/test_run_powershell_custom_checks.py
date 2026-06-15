@@ -217,6 +217,45 @@ class PowerShellCustomCheckTests(unittest.TestCase):
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("custom checks missing" in error for error in errors))
 
+    def test_inventory_targets_must_be_safe_before_reading(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp).resolve()
+            outside = root.parent / "outside_custom_check.ps1"
+            write(outside, '$Rows += [pscustomobject]@{ Check = "Outside"; Status = "FAIL" }\n')
+            inventory_path = root / custom.DEFAULT_INVENTORY
+            inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+            inventory["surfaces"].extend([
+                surface(outside.as_posix()),
+                surface("../outside_custom_check.ps1"),
+                surface("C:outside/custom_check.ps1"),
+            ])
+            inventory_path.write_text(json.dumps(inventory, indent=2) + "\n", encoding="utf-8")
+            report, errors, _warnings = custom.build_report(self.args(root, target_scope="inventory"))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("path must be a repo-relative path without traversal" in error for error in errors), errors)
+
+    def test_symlinked_inventory_target_fails_before_reading(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp).resolve()
+            outside = root.parent / "outside_custom_check_symlink.ps1"
+            write(outside, '$Rows += [pscustomobject]@{ Check = "Outside"; Status = "FAIL" }\n')
+            rel = "project_sources/collector/fixtures/powershell_analysis/bad/symlink_escape.ps1"
+            link = root / rel
+            link.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                link.symlink_to(outside)
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            inventory_path = root / custom.DEFAULT_INVENTORY
+            inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+            inventory["surfaces"].append(surface(rel))
+            inventory_path.write_text(json.dumps(inventory, indent=2) + "\n", encoding="utf-8")
+            report, errors, _warnings = custom.build_report(self.args(root, target_scope="inventory"))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("path must resolve inside the repository root" in error for error in errors), errors)
+
     def test_real_custom_contract_has_negative_and_control_for_each_check(self) -> None:
         repo_root = Path(__file__).resolve().parents[3]
         report, errors, _warnings = custom.build_report(self.args(repo_root))

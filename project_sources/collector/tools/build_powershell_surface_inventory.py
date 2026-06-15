@@ -261,6 +261,14 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
     return None
 
 
+def path_resolves_inside_repo(path: Path, repo_root: Path) -> bool:
+    try:
+        path.resolve().relative_to(repo_root.resolve())
+    except (OSError, ValueError):
+        return False
+    return True
+
+
 def file_facts(repo_root: Path, rel: str, exists: bool) -> dict[str, Any]:
     if not exists:
         return {
@@ -269,6 +277,12 @@ def file_facts(repo_root: Path, rel: str, exists: bool) -> dict[str, Any]:
             "sha256": None,
         }
     path = repo_root / rel
+    if not path_resolves_inside_repo(path, repo_root):
+        return {
+            "size_bytes": None,
+            "line_count": None,
+            "sha256": None,
+        }
     try:
         data = path.read_bytes()
     except OSError:
@@ -283,7 +297,6 @@ def file_facts(repo_root: Path, rel: str, exists: bool) -> dict[str, Any]:
         "line_count": fact_data.count(b"\n") + (1 if fact_data and not fact_data.endswith(b"\n") else 0),
         "sha256": hashlib.sha256(fact_data).hexdigest(),
     }
-
 
 def source_type_for(rel: str) -> str:
     lowered = rel.casefold()
@@ -1528,12 +1541,14 @@ def filesystem_files(repo_root: Path) -> list[str]:
     for path in repo_root.rglob("*"):
         if not path.is_file():
             continue
-        rel = relpath(path, repo_root)
+        try:
+            rel = path.relative_to(repo_root).as_posix()
+        except (OSError, ValueError):
+            continue
         if is_ignored_discovery_path(rel):
             continue
         files.append(rel)
     return sorted(files)
-
 
 def discover_repo_files(repo_root: Path) -> tuple[list[str], str]:
     tracked = git_tracked_files(repo_root)
@@ -1668,8 +1683,15 @@ def harness_source_part_paths(repo_root: Path) -> list[str]:
     root = repo_root / HARNESS_PARTS_ROOT
     if not root.is_dir():
         return []
-    return sorted(relpath(path, repo_root) for path in root.glob("*.ps1.txt") if path.is_file())
-
+    paths: list[str] = []
+    for path in root.glob("*.ps1.txt"):
+        if not path.is_file():
+            continue
+        try:
+            paths.append(path.relative_to(repo_root).as_posix())
+        except (OSError, ValueError):
+            continue
+    return sorted(paths)
 
 def read_required_profile_harness_paths(repo_root: Path) -> tuple[list[str], str | None]:
     path = repo_root / REQUIRED_SURFACE_PROFILES_PATH
@@ -1914,6 +1936,8 @@ def validate_inventory(
             errors.append(f"{entry['path']}: excluded surface is missing a documented reason")
         if entry["source_type"] not in REQUIRED_SOURCE_TYPES:
             errors.append(f"{entry['path']}: unsupported source type {entry['source_type']}")
+        if entry.get("exists") and entry.get("size_bytes") is None:
+            errors.append(f"{entry['path']}: file facts could not be collected safely inside the repository root")
         if (
             entry["source_type"] != "workflow_yaml"
             and entry["inclusion_decision"] != "exclude"

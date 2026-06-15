@@ -78,6 +78,14 @@ def relpath(path: Path, repo_root: Path) -> str:
     return path.resolve().relative_to(repo_root.resolve()).as_posix()
 
 
+def path_resolves_inside_repo(path: Path, repo_root: Path) -> bool:
+    try:
+        path.resolve().relative_to(repo_root.resolve())
+    except (OSError, ValueError):
+        return False
+    return True
+
+
 def safe_relpath(path: Path, repo_root: Path) -> str:
     try:
         return relpath(path, repo_root)
@@ -86,7 +94,7 @@ def safe_relpath(path: Path, repo_root: Path) -> str:
 
 
 def file_facts(path: Path, repo_root: Path) -> dict[str, Any]:
-    if not path.is_file():
+    if not path.is_file() or not path_resolves_inside_repo(path, repo_root):
         return {
             "path": safe_relpath(path, repo_root),
             "exists": False,
@@ -102,7 +110,6 @@ def file_facts(path: Path, repo_root: Path) -> dict[str, Any]:
         "line_count": data.count(b"\n") + (1 if data and not data.endswith(b"\n") else 0),
         "sha256": hashlib.sha256(data).hexdigest(),
     }
-
 
 def normalize_repo_path(value: str) -> str:
     slash_path = value.replace("\\", "/")
@@ -452,13 +459,21 @@ def build_collector_output(
     return generated_text, source_entries, output
 
 
-def harness_part_paths(repo_root: Path) -> list[Path]:
+def harness_part_paths(repo_root: Path, errors: list[str] | None = None) -> list[Path]:
     root = repo_root / HARNESS_PARTS_ROOT
-    return sorted(root.glob("run_DCOIR_Tests.part-*.ps1.txt"))
-
+    paths: list[Path] = []
+    for path in sorted(root.glob("run_DCOIR_Tests.part-*.ps1.txt")):
+        if not path.is_file():
+            continue
+        if not path_resolves_inside_repo(path, repo_root):
+            if errors is not None:
+                errors.append(f"{safe_relpath(path, repo_root)}: harness source part must resolve inside the repository root")
+            continue
+        paths.append(path)
+    return paths
 
 def build_harness_output(repo_root: Path, errors: list[str]) -> tuple[str, list[dict[str, Any]], dict[str, Any]]:
-    parts = harness_part_paths(repo_root)
+    parts = harness_part_paths(repo_root, errors)
     source_entries: list[dict[str, Any]] = []
     if not parts:
         errors.append(f"{HARNESS_PARTS_ROOT.as_posix()}: no harness source parts found")
