@@ -351,6 +351,25 @@ class PowerShellReportIngestionSafetyTests(unittest.TestCase):
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("path_prefixes[1] prefix must be a repo-relative prefix without traversal" in error for error in errors))
 
+    def test_finding_governance_classification_prefix_respects_path_boundary(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            write_governance_repo(
+                root,
+                finding_path="project_sources/collector/tools/finding.ps1",
+                classification_path_prefixes=["project_sources/collector/tool"],
+            )
+            report, errors, _warnings = governance.build_report(governance_args(root))
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(
+            any(
+                "new unclassified PowerShell finding: project_sources/collector/tools/finding.ps1"
+                in error
+                for error in errors
+            )
+        )
+
     def test_finding_governance_rejects_traversing_classification_path(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
