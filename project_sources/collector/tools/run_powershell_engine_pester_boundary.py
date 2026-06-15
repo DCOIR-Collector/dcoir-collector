@@ -543,8 +543,16 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
     repo_root = Path(args.repo_root).resolve()
     errors: list[str] = []
     warnings: list[str] = []
+    boundary_policy_path = str(args.boundary)
     try:
-        boundary = read_json(repo_root / args.boundary, "PowerShell engine/Pester boundary")
+        boundary_path, boundary_policy_path, boundary_path_error = resolve_repo_input_path(
+            str(args.boundary), repo_root, "PowerShell engine/Pester boundary"
+        )
+        if boundary_path_error:
+            raise EngineBoundaryError(f"PowerShell engine/Pester boundary {boundary_path_error}: {args.boundary}")
+        if boundary_path is None:
+            raise EngineBoundaryError(f"PowerShell engine/Pester boundary path could not be resolved: {args.boundary}")
+        boundary = read_json(boundary_path, "PowerShell engine/Pester boundary")
     except EngineBoundaryError as exc:
         boundary = {}
         errors.append(str(exc))
@@ -595,7 +603,7 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
         "schema_version": SCHEMA_VERSION,
         "issue": ISSUE_NUMBER,
         "parent_issue": PARENT_ISSUE_NUMBER,
-        "boundary_policy_path": safe_repo_path(repo_root / args.boundary, repo_root),
+        "boundary_policy_path": boundary_policy_path,
         "summary": {
             "matrix_row_count": len(matrix_rows),
             "required_category_count": len(required_categories_covered),
