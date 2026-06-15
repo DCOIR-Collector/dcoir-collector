@@ -10,7 +10,6 @@ on:
 permissions:
   contents: read
   pull-requests: write
-  id-token: write      # <-- REQUIRED for the container to inherit permissions
 
 jobs:
   kimi-review:
@@ -21,7 +20,7 @@ jobs:
     steps:
       - name: Get PR ref (for comments)
         id: get-pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const prNumber = context.issue?.number || context.payload.pull_request?.number;
@@ -35,7 +34,7 @@ jobs:
 
       - name: Add Eyes Reaction
         id: add-reaction
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const reaction = await github.rest.reactions.createForIssueComment({
@@ -49,20 +48,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.get-pr.outputs.ref }}
-          persist-credentials: 'true'  # <-- FIXED: Persists git credentials for Kimi
-          with_id_token: 'true'        # <-- FIXED: Generates the OIDC token for container access
+          persist-credentials: 'true' # <-- FIXED: Correct way to preserve credentials for git commands
 
       - name: Run Kimi Review
         uses: xiaoju111a/kimi-actions@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # <-- Pass token to the runner environment
         with:
           kimi_api_key: ${{ secrets.KIMI_API_KEY }}
-          kimi_base_url: ${{ secrets.KIMI_BASE_URL }}  # Optional
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          kimi_base_url: ${{ secrets.KIMI_BASE_URL }}  
+          github_token: ${{ secrets.GITHUB_TOKEN }} # <-- Pass token directly into the Kimi custom action block
           auto_review: 'false'
 
       - name: Remove Eyes Reaction
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const reactionId = '${{ steps.add-reaction.outputs.reaction_id }}';
