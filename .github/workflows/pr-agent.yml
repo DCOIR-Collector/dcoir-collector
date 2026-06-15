@@ -18,51 +18,68 @@ jobs:
       github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/')
     steps:
-      # 1. Add "Eyes" Emoji to your comment immediately
+      # 1. IMMEDIATE FEEDBACK: Adds "Eyes" Emoji to your comment
       - name: Add Eyes Reaction
         id: add-reaction
         uses: actions/github-script@v7
         with:
           script: |
-            const reaction = await github.rest.reactions.createForIssueComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: context.payload.comment.id,
-              content: 'eyes'
-            });
-            core.setOutput('reaction_id', reaction.data.id);
+            try {
+              const reaction = await github.rest.reactions.createForIssueComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: context.payload.comment.id,
+                content: 'eyes'
+              });
+              core.setOutput('reaction_id', reaction.data.id);
+            } catch (error) {
+              console.log('Failed to add reaction: ' + error.message);
+            }
 
-      # 2. Run the Powerful PR Agent
+      # 2. EXECUTION: Run the PR Agent (Waits for completion automatically)
       - id: pr-agent
         uses: Codium-ai/pr-agent@main
         env:
-          # --- Authentication ---
+          # --- CONNECTION SETTINGS ---
+          # We force the internal OpenAI handler to point to OpenRouter
           OPENAI_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENAI.API_BASE: "https://openrouter.ai/api/v1"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-          # --- Model Config ---
-          # We use the 'openrouter/' prefix to route correctly
+          # --- MODEL INTELLIGENCE ---
+          # We use the 'openrouter/' prefix so LiteLLM knows how to route it
           CONFIG.MODEL: "openrouter/anthropic/claude-3.5-sonnet"
-          CONFIG.FALLBACK_MODELS: '["openrouter/meta-llama/llama-3-70b-instruct"]'
+          CONFIG.FALLBACK_MODELS: '["openrouter/meta-llama/llama-3.1-70b-instruct:free", "openrouter/meta-llama/llama-3-70b-instruct"]'
           
-          # --- Behavior Config ---
-          # Stops it from running automatically on opened PRs (Double safety)
-          GITHUB_ACTION_CONFIG.AUTO_REVIEW: "false"
-          GITHUB_ACTION_CONFIG.AUTO_DESCRIBE: "false"
+          # --- "BEST DAMN REVIEWER" SETTINGS ---
+          # These flags empower the agent to be more thorough and useful
+          PR_REVIEWER.REQUIRE_SCORE_REVIEW: "true"         # Gives you a 0-100 quality score
+          PR_REVIEWER.REQUIRE_TESTS_REVIEW: "true"         # checks if you missed testing
+          PR_REVIEWER.REQUIRE_SECURITY_REVIEW: "true"      # Hunts for vulnerabilities
+          PR_REVIEWER.INLINE_CODE_COMMENTS: "true"         # Comments fixes directly on the code lines
+          PR_REVIEWER.NUM_CODE_SUGGESTIONS: "4"            # content density
+          PR_DESCRIPTION.PUBLISH_LABELS: "true"            # Auto-labels the PR (e.g. 'bug', 'feature')
+          
+          # --- SAFETY & AUTOMATION ---
+          GITHUB_ACTION_CONFIG.AUTO_REVIEW: "false"        # Manual trigger only (via /review)
+          GITHUB_ACTION_CONFIG.AUTO_DESCRIBE: "false"      # Manual trigger only (via /describe)
 
-      # 3. Remove "Eyes" Emoji when done
+      # 3. CLEANUP: Remove "Eyes" Emoji (Runs even if the review fails)
       - name: Remove Eyes Reaction
-        if: always()
+        if: always() 
         uses: actions/github-script@v7
         with:
           script: |
             const reactionId = '${{ steps.add-reaction.outputs.reaction_id }}';
             if (reactionId) {
-              await github.rest.reactions.deleteForIssueComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: context.payload.comment.id,
-                reaction_id: parseInt(reactionId)
-              });
+              try {
+                await github.rest.reactions.deleteForIssueComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: context.payload.comment.id,
+                  reaction_id: parseInt(reactionId)
+                });
+              } catch (error) {
+                console.log('Failed to remove reaction: ' + error.message);
+              }
             }
