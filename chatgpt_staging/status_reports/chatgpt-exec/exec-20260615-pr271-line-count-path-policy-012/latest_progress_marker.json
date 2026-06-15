@@ -1,0 +1,15 @@
+{
+  "artifact_name": "",
+  "exit_code": "",
+  "github_ref": "refs/heads/main",
+  "github_run_attempt": "1",
+  "github_run_id": "27556637534",
+  "github_sha": "4fbf1122fae320dc9ebcc29c1c6d70df2a7003fb",
+  "phase": "request-resolved",
+  "request_id": "exec-20260615-pr271-line-count-path-policy-012",
+  "request_path": "chatgpt_staging/exec_requests/exec-20260615-pr271-line-count-path-policy-012.json",
+  "result": "running",
+  "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
+  "updated_utc": "2026-06-15T15:19:56Z",
+  "workflow": "chatgpt-exec"
+}
