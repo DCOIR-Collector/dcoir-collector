@@ -104,15 +104,35 @@ def file_facts(path: Path, repo_root: Path) -> dict[str, Any]:
     }
 
 
+def normalize_repo_path(value: str) -> str:
+    slash_path = value.replace("\\", "/")
+    while slash_path.startswith("./"):
+        slash_path = slash_path[2:]
+    return Path(slash_path).as_posix()
+
+
+def is_absolute_repo_input(value: str) -> bool:
+    raw = value.strip()
+    slash_path = raw.replace("\\", "/")
+    return slash_path.startswith("/") or re.match(r"^[A-Za-z]:/", slash_path) is not None or Path(raw).is_absolute()
+
+
+def validate_manifest_repo_path(value: str, key: str, label: str, errors: list[str]) -> str:
+    raw = value.strip()
+    rel = normalize_repo_path(raw)
+    raw_parts = Path(raw.replace("\\", "/")).parts
+    parts = Path(rel).parts
+    if not raw or is_absolute_repo_input(raw) or ".." in raw_parts or rel.startswith("../") or ".." in parts or Path(rel).is_absolute():
+        errors.append(f"{label}: {key} must be a repo-relative path without traversal")
+    return rel
+
+
 def require_non_empty_string(mapping: dict[str, Any], key: str, label: str, errors: list[str]) -> str:
     value = mapping.get(key)
     if not isinstance(value, str) or not value.strip():
         errors.append(f"{label}: {key} must be a non-empty string")
         return ""
-    normalized = Path(value.replace("\\", "/")).as_posix().lstrip("./")
-    if Path(normalized).is_absolute() or ".." in Path(normalized).parts:
-        errors.append(f"{label}: {key} must be a repo-relative path without traversal")
-    return normalized
+    return validate_manifest_repo_path(value, key, label, errors)
 
 
 def require_non_empty_string_list(mapping: dict[str, Any], key: str, label: str, errors: list[str]) -> list[str]:
@@ -122,13 +142,11 @@ def require_non_empty_string_list(mapping: dict[str, Any], key: str, label: str,
         return []
     normalized: list[str] = []
     for index, raw_item in enumerate(value, start=1):
+        item_key = f"{key}[{index}]"
         if not isinstance(raw_item, str) or not raw_item.strip():
-            errors.append(f"{label}: {key}[{index}] must be a non-empty string")
+            errors.append(f"{label}: {item_key} must be a non-empty string")
             continue
-        item = Path(raw_item.replace("\\", "/")).as_posix().lstrip("./")
-        if Path(item).is_absolute() or ".." in Path(item).parts:
-            errors.append(f"{label}: {key}[{index}] must be a repo-relative path without traversal")
-        normalized.append(item)
+        normalized.append(validate_manifest_repo_path(raw_item, item_key, label, errors))
     return normalized
 
 
