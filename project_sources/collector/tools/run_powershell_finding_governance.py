@@ -137,7 +137,7 @@ def validate_governance_path(value: str, repo_root: Path, label: str) -> str:
         raise GovernanceError(f"{label} path must be a bounded repo-relative path")
     _candidate, repo_path, path_error = resolve_repo_input_path(path_value, repo_root, label)
     if path_error:
-        raise GovernanceError(f"{label} {path_error}: {path_value}")
+        raise GovernanceError(f"{path_error}: {path_value}")
     if not repo_path:
         raise GovernanceError(f"{label} path could not be resolved: {path_value}")
     return repo_path
