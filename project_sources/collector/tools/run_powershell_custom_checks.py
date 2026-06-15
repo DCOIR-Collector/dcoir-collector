@@ -102,7 +102,10 @@ def require_string_list(mapping: dict[str, Any], key: str, label: str, errors: l
 
 
 def normalize_repo_path(value: str) -> str:
-    return Path(value.replace("\\", "/")).as_posix().lstrip("./")
+    slash_path = value.replace("\\", "/")
+    while slash_path.startswith("./"):
+        slash_path = slash_path[2:]
+    return Path(slash_path).as_posix()
 
 
 def is_absolute_repo_input(value: str) -> bool:
@@ -114,8 +117,9 @@ def is_absolute_repo_input(value: str) -> bool:
 def safe_fixture_path(value: str, label: str, errors: list[str]) -> str:
     raw = value.strip()
     rel = normalize_repo_path(raw)
+    raw_parts = Path(raw.replace("\\", "/")).parts
     parts = Path(rel).parts
-    if not raw or is_absolute_repo_input(raw) or rel.startswith("../") or ".." in parts or Path(rel).is_absolute():
+    if not raw or is_absolute_repo_input(raw) or ".." in raw_parts or rel.startswith("../") or ".." in parts or Path(rel).is_absolute():
         errors.append(f"{label}: path must be a repo-relative path without traversal")
         return rel
     if not rel.startswith("project_sources/collector/fixtures/powershell_analysis/"):
