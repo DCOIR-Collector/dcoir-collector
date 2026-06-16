@@ -151,6 +151,44 @@ The ChatGPT webUI agent core-instruction reference snapshot lives at `.github/ag
 
 Do not claim the ChatGPT webUI agent can automatically update this repository on session boot. If webUI instruction parity matters, require explicit current-core readback from the operator or live configured surface, then update/read back the repo reference and any related Supabase `ircore` records.
 
+## Replit Agent adapter
+
+Replit Agent accesses this repository using the `GITHUB_PAT` secret available
+in the Replit environment. There is no staging lane, no apply-in workflow, and
+no `chatgpt_staging/` lane involvement when Replit Agent is the working agent.
+Replit Agent reads files by cloning a fresh copy of the repository at session
+start via `gh repo clone`; the clone is ephemeral and does not persist between
+sessions, so it is always current at session start. Replit Agent writes changes
+by pushing branches or committing directly to `main` through the `gh` CLI. If
+`main` changes mid-session (for example, a PR is merged while a task is in
+progress), Replit Agent pulls the latest state before touching any affected files.
+
+Replit Agent does not treat `ircore` as a startup dependency. `AGENTS.md` and
+the live GitHub issue or PR are the primary authority surfaces for each task.
+Replit Agent may optionally consult `ircore` research or guidance surfaces —
+such as `ircore.get_gemini_research_consultation` for Gemini instruction work —
+when relevant context is available and the operator directs it, but this is not
+required at session start. Absent `ircore` work-item receipts when Replit Agent
+is working a task are expected and do not represent a governance gap.
+
+One agent owns a task to completion before switching. When Replit Agent picks up
+a task, ChatGPT and Codex should not be asked to continue that same task until
+Replit Agent has finished and the operator has confirmed the handoff. The same
+rule applies in reverse. Mid-task agent switches create unresolvable state
+divergence.
+
+For Windows PowerShell 5.1 validation, Replit Agent runs on Linux and cannot
+validate Windows PS5.1 behavior locally. The same `windows-powershell-51.yml`
+GitHub Actions workflow used by Codex applies. Replit Agent pushes the branch
+and reads back the workflow run results through the GitHub API.
+
+For internal review passes, Replit Agent performs `Prog` and `Adva` passes
+internally and invokes its `code_review` subagent when an independent
+adversarial review is warranted. The Codi gate before external `@codex` review
+applies on PRs unless the operator explicitly waives it for the current task.
+
+
+
 ## Codex cloud PR automation adapter
 
 The Codex cloud environment for this repository may install helper commands that support authenticated GitHub operations through the operator-approved Codex environment secret.
