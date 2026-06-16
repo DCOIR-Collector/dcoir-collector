@@ -20,6 +20,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_powershell_analyzer as analyzer
+from powershell_analyzer_contract import AnalyzerContractError, repo_relative_input_path
 
 SCHEMA_VERSION = "dcoir_powershell_rule_risk_fixture_report_v1"
 MATRIX_SCHEMA_VERSION = "dcoir_powershell_rule_risk_matrix_v1"
@@ -70,8 +71,16 @@ def relpath(path: Path, repo_root: Path) -> str:
 def safe_relpath(path: Path, repo_root: Path) -> str:
     try:
         return relpath(path, repo_root)
-    except ValueError:
+    except (OSError, RuntimeError, ValueError):
         return path.as_posix()
+
+
+def repo_relative_path_or_error(repo_root: Path, value: str | Path, label: str, errors: list[str]) -> Path | None:
+    try:
+        return repo_relative_input_path(repo_root, value, label)
+    except AnalyzerContractError as exc:
+        errors.append(str(exc))
+        return None
 
 
 def scalar(value: Any) -> str:
@@ -600,7 +609,7 @@ def write_temp_inventory(repo_root: Path, fixtures: list[dict[str, Any]], temp_r
 def wrapper_args(repo_root: Path, inventory_path: Path, fixture_paths: list[str], timeout_seconds: int) -> argparse.Namespace:
     return argparse.Namespace(
         repo_root=str(repo_root),
-        inventory=inventory_path.as_posix(),
+        inventory=safe_relpath(inventory_path, repo_root),
         settings=analyzer.DEFAULT_SETTINGS.as_posix(),
         json_output=(Path("project_sources/collector") / "_fixture_wrapper_report.json").as_posix(),
         markdown_output=(Path("project_sources/collector") / "_fixture_wrapper_report.md").as_posix(),
@@ -793,6 +802,30 @@ def render_report_markdown(report: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def output_path(repo_root: Path, requested: Path, label: str) -> Path:
+    try:
+        return repo_relative_input_path(repo_root, requested, label)
+    except AnalyzerContractError as exc:
+        raise RuleRiskFixtureError(str(exc)) from exc
+
+
+def ensure_distinct_output_paths(paths: list[tuple[str, Path]]) -> None:
+    seen: dict[Path, str] = {}
+    for label, path in paths:
+        prior = seen.get(path)
+        if prior is not None:
+            raise RuleRiskFixtureError(f"{label} output path must be different from {prior} output path")
+        seen[path] = label
+
+
+def mark_output_failure(report: dict[str, Any], error: str) -> None:
+    validation = report.setdefault("validation", {})
+    validation["success"] = False
+    errors = validation.setdefault("errors", [])
+    if error not in errors:
+        errors.append(error)
+
+
 def write_outputs(
     repo_root: Path,
     report: dict[str, Any],
@@ -801,41 +834,64 @@ def write_outputs(
     markdown_output: Path,
     matrix_markdown_output: Path,
 ) -> None:
+    json_path = output_path(repo_root, json_output, "fixture report JSON output path")
+    markdown_path = output_path(repo_root, markdown_output, "fixture report Markdown output path")
+    matrix_markdown_path = output_path(repo_root, matrix_markdown_output, "rule-risk matrix Markdown output path")
+    output_paths = [("JSON", json_path), ("Markdown", markdown_path), ("matrix Markdown", matrix_markdown_path)]
+    ensure_distinct_output_paths(output_paths)
     outputs = [
-        (repo_root / json_output, json.dumps(report, indent=2) + "\n"),
-        (repo_root / markdown_output, render_report_markdown(report)),
-        (repo_root / matrix_markdown_output, render_matrix_markdown(matrix)),
+        ("JSON", json_path, json.dumps(report, indent=2) + "\n"),
+        ("Markdown", markdown_path, render_report_markdown(report)),
+        ("matrix Markdown", matrix_markdown_path, render_matrix_markdown(matrix)),
     ]
-    for path, text in outputs:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text, encoding="utf-8")
-        if not path.exists() or path.stat().st_size == 0:
-            raise RuleRiskFixtureError(f"missing output: {path}")
+    try:
+        for _label, path, text in outputs:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+        for label, path in output_paths:
+            if not path.exists() or path.stat().st_size == 0:
+                raise RuleRiskFixtureError(f"missing output: {label} report was not written to {path}")
+    except RuleRiskFixtureError as exc:
+        error = str(exc)
+    except (TypeError, OSError) as exc:
+        error = f"report write failure: {exc}"
+    else:
+        return
+
+    mark_output_failure(report, error)
+    try:
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+        json_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    except (TypeError, OSError) as exc:
+        mark_output_failure(report, f"failed to rewrite failed JSON report after output error: {exc}")
+    raise RuleRiskFixtureError(error)
 
 
 def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], list[str], dict[str, Any]]:
     repo_root = Path(args.repo_root).resolve()
-    matrix_path = (repo_root / args.matrix).resolve()
-    manifest_path = (repo_root / args.manifest).resolve()
     errors: list[str] = []
     warnings: list[str] = []
+    matrix_path = repo_relative_path_or_error(repo_root, args.matrix, "rule-to-risk matrix path", errors)
+    manifest_path = repo_relative_path_or_error(repo_root, args.manifest, "fixture manifest path", errors)
     matrix: dict[str, Any] = {}
     manifest: dict[str, Any] = {}
     fixture_results: list[dict[str, Any]] = []
     wrapper_report: dict[str, Any] | None = None
 
-    try:
-        matrix = read_json(matrix_path, "rule-to-risk matrix")
-        if not isinstance(matrix, dict):
-            raise RuleRiskFixtureError("rule-to-risk matrix must be a JSON object")
-    except RuleRiskFixtureError as exc:
-        errors.append(str(exc))
-    try:
-        manifest = read_json(manifest_path, "fixture manifest")
-        if not isinstance(manifest, dict):
-            raise RuleRiskFixtureError("fixture manifest must be a JSON object")
-    except RuleRiskFixtureError as exc:
-        errors.append(str(exc))
+    if matrix_path is not None:
+        try:
+            matrix = read_json(matrix_path, "rule-to-risk matrix")
+            if not isinstance(matrix, dict):
+                raise RuleRiskFixtureError("rule-to-risk matrix must be a JSON object")
+        except RuleRiskFixtureError as exc:
+            errors.append(str(exc))
+    if manifest_path is not None:
+        try:
+            manifest = read_json(manifest_path, "fixture manifest")
+            if not isinstance(manifest, dict):
+                raise RuleRiskFixtureError("fixture manifest must be a JSON object")
+        except RuleRiskFixtureError as exc:
+            errors.append(str(exc))
 
     check_map: dict[str, dict[str, Any]] = {}
     fixture_map: dict[str, dict[str, Any]] = {}
@@ -897,14 +953,16 @@ def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list
         "source_of_truth": "#263 rule-to-risk matrix and fixture manifest",
         "scope": "Matrix and fixture harness only. No workflow YAML, SARIF, required-check, PR, or external-agent invocation.",
         "matrix": {
-            "path": safe_relpath(matrix_path, repo_root),
+            "path": safe_relpath(matrix_path, repo_root) if matrix_path is not None else Path(args.matrix).as_posix(),
             "schema_version": matrix.get("schema_version"),
-            "sha256": sha256_file(matrix_path) if matrix_path.exists() and matrix_path.is_file() else None,
+            "sha256": sha256_file(matrix_path) if matrix_path is not None and matrix_path.exists() and matrix_path.is_file() else None,
         },
         "manifest": {
-            "path": safe_relpath(manifest_path, repo_root),
+            "path": safe_relpath(manifest_path, repo_root) if manifest_path is not None else Path(args.manifest).as_posix(),
             "schema_version": manifest.get("schema_version"),
-            "sha256": sha256_file(manifest_path) if manifest_path.exists() and manifest_path.is_file() else None,
+            "sha256": sha256_file(manifest_path)
+            if manifest_path is not None and manifest_path.exists() and manifest_path.is_file()
+            else None,
         },
         "analyzer_wrapper": {
             "path": "project_sources/collector/tools/run_powershell_analyzer.py",
@@ -985,7 +1043,11 @@ def main() -> int:
                 Path(args.matrix_markdown_output),
             )
         except RuleRiskFixtureError as exc:
-            errors.append(str(exc))
+            error = str(exc)
+            if error not in errors:
+                errors.append(error)
+            report["validation"]["success"] = False
+            report["validation"]["errors"] = errors
     print(json.dumps(report["summary"], indent=2))
     for error in errors:
         print(error, file=sys.stderr)
