@@ -565,6 +565,101 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
         self.assertTrue(any("fixture path must be a file" in error for error in errors))
         self.assertTrue(any("matrix references missing fixture ids: directory-fixture" in error for error in errors))
 
+    def test_fixture_findings_ignore_non_code_skip_success_mentions(self) -> None:
+        cases = {
+            "comment": "# Analyzed = $false; Validation = 'success'",
+            "quoted": '$message = "Analyzed = $false; Validation = \'success\'"',
+            "here_string": "\n".join(
+                [
+                    '$message = @"',
+                    "Analyzed = $false",
+                    "Validation = 'success'",
+                    '"@',
+                ]
+            ),
+        }
+        for name, text in cases.items():
+            with self.subTest(name=name):
+                findings = harness.fixture_findings(
+                    text,
+                    "project_sources/collector/fixtures/powershell_analysis/good/control.ps1",
+                )
+
+                self.assertFalse(
+                    any(finding["rule_name"] == "DCOIR.NoAnalyzerSkipSuccess" for finding in findings)
+                )
+
+    def test_fixture_findings_keep_skip_success_evidence_local(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Safe"',
+                "    Analyzed = $false",
+                '    Validation = "success"',
+                "}",
+                'throw "safe row failed closed"',
+                "",
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Unsafe"',
+                "    Skipped = $true",
+                '    Validation = "success"',
+                "}",
+                "",
+            ]
+        )
+        findings = harness.fixture_findings(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+        )
+        matching = [finding for finding in findings if finding["rule_name"] == "DCOIR.NoAnalyzerSkipSuccess"]
+
+        self.assertEqual(len(matching), 1)
+        self.assertEqual(matching[0]["line"], 10)
+
+    def test_fixture_findings_ignore_non_code_fail_rows(self) -> None:
+        cases = {
+            "comment": "# $Rows += [pscustomobject]@{ Check = 'Fixture'; Status = 'FAIL' }",
+            "quoted": '$message = "$Rows += [pscustomobject]@{ Check = \'Fixture\'; Status = \'FAIL\' }"',
+            "here_string": "\n".join(
+                [
+                    '$message = @"',
+                    "$Rows += [pscustomobject]@{ Check = 'Fixture'; Status = 'FAIL' }",
+                    '"@',
+                ]
+            ),
+        }
+        for name, text in cases.items():
+            with self.subTest(name=name):
+                findings = harness.fixture_findings(
+                    text,
+                    "project_sources/collector/fixtures/powershell_analysis/good/control.ps1",
+                )
+
+                self.assertFalse(
+                    any(finding["rule_name"] == "DCOIR.FailOutputMustFailValidation" for finding in findings)
+                )
+
+    def test_fixture_findings_bind_fail_rows_to_local_failure_action(self) -> None:
+        text = "\n".join(
+            [
+                '$Rows += [pscustomobject]@{ Check = "Safe"; Status = "FAIL" }',
+                'throw "safe row failed closed"',
+                "",
+                '$Rows += [pscustomobject]@{ Check = "Unsafe"; Status = "FAIL" }',
+                "",
+                "exit 1",
+                "",
+            ]
+        )
+        findings = harness.fixture_findings(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+        )
+        matching = [finding for finding in findings if finding["rule_name"] == "DCOIR.FailOutputMustFailValidation"]
+
+        self.assertEqual(len(matching), 1)
+        self.assertEqual(matching[0]["line"], 4)
+
     def test_plaintext_password_fixture_uses_parameter_default_shape(self) -> None:
         fixture = Path(__file__).resolve().parents[1] / "fixtures/powershell_analysis/bad/plaintext_password.ps1"
         text = fixture.read_text(encoding="utf-8")
