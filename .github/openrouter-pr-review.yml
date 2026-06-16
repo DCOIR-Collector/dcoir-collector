@@ -1,0 +1,44 @@
+# OpenRouter PR Review configuration for DCOIR-Collector/dcoir-collector.
+# This reviewer never pushes commits and never edits PR branches.
+# It only responds when a PR comment begins with one of the commands below.
+
+commands:
+  - /or-review
+  - /openrouter-review
+
+# Use the free router for first-pass testing. OpenRouter may select different
+# free models over time. After validation, switch this to a paid model slug.
+model: openrouter/free
+
+# Optional paid candidates for later:
+# model: anthropic/claude-sonnet-4.5
+# model: openai/gpt-5.1
+# model: google/gemini-2.5-pro
+
+max_prompt_chars: 60000
+max_files: 30
+max_inline_comments: 12
+
+# Keep v1 conservative. Set request_changes_on_findings to true only after you trust it.
+request_changes_on_findings: false
+
+# A finding needs at least this confidence to become an inline review comment.
+minimum_confidence: 0.70
+
+# These are shown in the review summary and pushed into the model context.
+validation_commands:
+  - bash scripts/validate-codex-local.sh
+  - pwsh -NoProfile -File scripts/validate-windows-powershell-51.ps1 -AllowPowerShell7 -AllowEmpty
+  - python3 scripts/validate-codeql-security-workflow.py
+
+# Files used as repository-local guidance when present on the default branch.
+guidance_files:
+  - AGENTS.md
+  - docs/review/codex-pr-review-playbook.md
+  - README.md
+
+# The workflow job skips bot comments, but this denylist is checked again in code.
+ignored_authors:
+  - github-actions[bot]
+  - dependabot[bot]
+  - chatgpt-codex-connector[bot]

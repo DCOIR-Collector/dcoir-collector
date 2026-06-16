@@ -1,0 +1,54 @@
+name: OpenRouter PR Review
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: openrouter-pr-review-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  review:
+    name: OpenRouter PR review
+    if: >-
+      ${{
+        github.event.issue.pull_request &&
+        github.event.comment.user.type != 'Bot' &&
+        (
+          startsWith(github.event.comment.body, '/or-review') ||
+          startsWith(github.event.comment.body, '/openrouter-review')
+        )
+      }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out trusted default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run OpenRouter PR review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          TRIGGER_COMMENT_ID: ${{ github.event.comment.id }}
+          TRIGGER_COMMENT_BODY: ${{ github.event.comment.body }}
+          TRIGGER_AUTHOR: ${{ github.event.comment.user.login }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          OPENROUTER_REVIEW_CONFIG: .github/openrouter-pr-review.yml
+        run: python scripts/openrouter_pr_review.py

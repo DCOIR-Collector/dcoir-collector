@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenRouter PR Review Findings",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["summary", "findings"],
+  "properties": {
+    "summary": {
+      "type": "string",
+      "description": "Brief review summary for the PR review body."
+    },
+    "findings": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "severity",
+          "confidence",
+          "path",
+          "line",
+          "body",
+          "suggested_replacement",
+          "validation"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "path": {
+            "type": "string",
+            "description": "Repository-relative path for the finding."
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Line number on the RIGHT side of the PR diff when possible."
+          },
+          "body": {
+            "type": "string",
+            "description": "Concise explanation of the problem and why it matters."
+          },
+          "suggested_replacement": {
+            "type": "string",
+            "description": "Exact replacement code for a GitHub suggestion block. Empty string if no safe small replacement is possible."
+          },
+          "validation": {
+            "type": "string",
+            "description": "Exact validation command or commands that should pass after the fix."
+          }
+        }
+      }
+    }
+  }
+}
