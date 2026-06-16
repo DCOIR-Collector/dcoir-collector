@@ -2320,9 +2320,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 4735,
+      "size_bytes": 4738,
       "line_count": 113,
-      "sha256": "b422122d5c07f840e3359477460b5b9a19e38484d3272ab45c6a9363d937e452"
+      "sha256": "bdd255a3e2e4ac12e3ea962a941c5b8168e2e3bb2dc214a33bc57d0aff94e03c"
     },
     {
       "path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirWbs09ManifestSchemaAudit.ps1",
