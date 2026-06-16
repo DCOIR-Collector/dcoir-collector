@@ -802,19 +802,12 @@ def render_report_markdown(report: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def output_path(repo_root: Path, requested: Path, label: str) -> Path:
-    try:
-        return repo_relative_input_path(repo_root, requested, label)
-    except AnalyzerContractError as exc:
-        raise RuleRiskFixtureError(str(exc)) from exc
-
-
-def ensure_distinct_output_paths(paths: list[tuple[str, Path]]) -> None:
+def ensure_distinct_output_paths(paths: list[tuple[str, Path]], errors: list[str]) -> None:
     seen: dict[Path, str] = {}
     for label, path in paths:
         prior = seen.get(path)
         if prior is not None:
-            raise RuleRiskFixtureError(f"{label} output path must be different from {prior} output path")
+            errors.append(f"{label} output path must be different from {prior} output path")
         seen[path] = label
 
 
@@ -826,6 +819,17 @@ def mark_output_failure(report: dict[str, Any], error: str) -> None:
         errors.append(error)
 
 
+def rewrite_failed_json_report(json_path: Path | None, report: dict[str, Any], error: str) -> None:
+    mark_output_failure(report, error)
+    if json_path is None:
+        return
+    try:
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+        json_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    except (TypeError, OSError) as exc:
+        mark_output_failure(report, f"failed to rewrite failed JSON report after output error: {exc}")
+
+
 def write_outputs(
     repo_root: Path,
     report: dict[str, Any],
@@ -834,11 +838,28 @@ def write_outputs(
     markdown_output: Path,
     matrix_markdown_output: Path,
 ) -> None:
-    json_path = output_path(repo_root, json_output, "fixture report JSON output path")
-    markdown_path = output_path(repo_root, markdown_output, "fixture report Markdown output path")
-    matrix_markdown_path = output_path(repo_root, matrix_markdown_output, "rule-risk matrix Markdown output path")
+    path_errors: list[str] = []
+    json_path = repo_relative_path_or_error(repo_root, json_output, "fixture report JSON output path", path_errors)
+    markdown_path = repo_relative_path_or_error(repo_root, markdown_output, "fixture report Markdown output path", path_errors)
+    matrix_markdown_path = repo_relative_path_or_error(
+        repo_root,
+        matrix_markdown_output,
+        "rule-risk matrix Markdown output path",
+        path_errors,
+    )
+    if json_path is not None and markdown_path is not None and matrix_markdown_path is not None:
+        ensure_distinct_output_paths(
+            [("JSON", json_path), ("Markdown", markdown_path), ("matrix Markdown", matrix_markdown_path)],
+            path_errors,
+        )
+    if path_errors:
+        error = "; ".join(path_errors)
+        rewrite_failed_json_report(json_path, report, error)
+        raise RuleRiskFixtureError(error)
+
+    if json_path is None or markdown_path is None or matrix_markdown_path is None:
+        raise RuleRiskFixtureError("output path validation failed unexpectedly")
     output_paths = [("JSON", json_path), ("Markdown", markdown_path), ("matrix Markdown", matrix_markdown_path)]
-    ensure_distinct_output_paths(output_paths)
     outputs = [
         ("JSON", json_path, json.dumps(report, indent=2) + "\n"),
         ("Markdown", markdown_path, render_report_markdown(report)),
@@ -858,12 +879,7 @@ def write_outputs(
     else:
         return
 
-    mark_output_failure(report, error)
-    try:
-        json_path.parent.mkdir(parents=True, exist_ok=True)
-        json_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    except (TypeError, OSError) as exc:
-        mark_output_failure(report, f"failed to rewrite failed JSON report after output error: {exc}")
+    rewrite_failed_json_report(json_path, report, error)
     raise RuleRiskFixtureError(error)
 
 
