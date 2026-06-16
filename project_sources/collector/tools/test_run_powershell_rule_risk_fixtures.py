@@ -139,6 +139,42 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
         self.assertEqual(report["summary"]["expected_finding_count"], 1)
         self.assertEqual(report["summary"]["observed_finding_count"], 1)
 
+    def test_temp_inventory_path_passed_repo_relative_to_wrapper(self) -> None:
+        captured: dict[str, str] = {}
+
+        def fake_build_report(args: argparse.Namespace) -> tuple[dict[str, object], list[str], list[str]]:
+            captured["inventory"] = args.inventory
+            return (
+                {
+                    "schema_version": harness.analyzer.SCHEMA_VERSION,
+                    "findings": [
+                        {
+                            "path": "project_sources/collector/fixtures/powershell_analysis/bad/write_host.ps1",
+                            "line": 1,
+                            "column": 1,
+                            "symbol": "",
+                            "rule_name": "PSAvoidUsingWriteHost",
+                            "severity": "Warning",
+                            "observed_problem": "host output",
+                            "recommended_fix": "use durable output",
+                        }
+                    ],
+                },
+                [],
+                [],
+            )
+
+        with self.make_repo() as temp:
+            root = Path(temp)
+            with unittest.mock.patch.object(harness.analyzer, "build_report", side_effect=fake_build_report):
+                report, errors, _warnings, _matrix = harness.build_fixture_report(self.args(root))
+
+        self.assertEqual(errors, [])
+        self.assertTrue(report["validation"]["success"])
+        self.assertIn("inventory", captured)
+        self.assertFalse(Path(captured["inventory"]).is_absolute())
+        self.assertTrue(captured["inventory"].startswith(".dcoir-rule-risk-fixtures-"))
+
     def test_fixture_report_accepts_crlf_fixture_inventory_hashes(self) -> None:
         with self.make_repo(
             bad_text='Write-Host "bad output"\r\n',
@@ -177,6 +213,139 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
 
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("duplicate check id" in error for error in errors))
+
+    def test_matrix_and_manifest_paths_reject_absolute_and_traversal_before_read(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            outside = root.parent / f"{root.name}-outside-rule-risk-input.json"
+            write(outside, "{not-json\n")
+            try:
+                cases = [
+                    ("matrix", outside.as_posix(), "rule-to-risk matrix path"),
+                    ("matrix", f"../{outside.name}", "rule-to-risk matrix path"),
+                    ("manifest", outside.as_posix(), "fixture manifest path"),
+                    ("manifest", f"../{outside.name}", "fixture manifest path"),
+                ]
+                for attr, value, label in cases:
+                    with self.subTest(attr=attr, value=value):
+                        args = self.args(root)
+                        setattr(args, attr, value)
+                        report, errors, _warnings, _matrix = harness.build_fixture_report(args)
+
+                    self.assertFalse(report["validation"]["success"])
+                    self.assertTrue(
+                        any(f"{label} must be a repo-relative path without traversal" in error for error in errors)
+                    )
+                    self.assertFalse(any("invalid JSON" in error for error in errors))
+            finally:
+                outside.unlink(missing_ok=True)
+
+    def test_output_paths_reject_absolute_and_traversal_before_write(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            report, errors, _warnings, matrix = harness.build_fixture_report(self.args(root))
+            self.assertEqual(errors, [])
+            outside = root.parent / f"{root.name}-outside-rule-risk-output.json"
+            cases = [
+                (
+                    Path(f"../{outside.name}"),
+                    Path("project_sources/collector/safe-report.md"),
+                    Path("project_sources/collector/safe-matrix.md"),
+                    "fixture report JSON output path",
+                ),
+                (
+                    Path("project_sources/collector/safe-report.json"),
+                    outside,
+                    Path("project_sources/collector/safe-matrix.md"),
+                    "fixture report Markdown output path",
+                ),
+                (
+                    Path("project_sources/collector/safe-report.json"),
+                    Path("project_sources/collector/safe-report.md"),
+                    Path(f"../{outside.name}"),
+                    "rule-risk matrix Markdown output path",
+                ),
+            ]
+            for json_output, markdown_output, matrix_output, label in cases:
+                with self.subTest(label=label):
+                    with self.assertRaises(harness.RuleRiskFixtureError) as caught:
+                        harness.write_outputs(root, report, matrix, json_output, markdown_output, matrix_output)
+                    self.assertIn(label, str(caught.exception))
+                    self.assertFalse(outside.exists())
+
+    def test_output_symlink_resolving_outside_repo_is_rejected(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            report, errors, _warnings, matrix = harness.build_fixture_report(self.args(root))
+            self.assertEqual(errors, [])
+            outside_dir = root.parent / f"{root.name}-outside-rule-risk-output-dir"
+            outside_dir.mkdir(exist_ok=True)
+            link = root / "project_sources/collector/linked-output"
+            try:
+                link.symlink_to(outside_dir, target_is_directory=True)
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            try:
+                with self.assertRaises(harness.RuleRiskFixtureError) as caught:
+                    harness.write_outputs(
+                        root,
+                        report,
+                        matrix,
+                        Path("project_sources/collector/linked-output/report.json"),
+                        Path("project_sources/collector/safe-report.md"),
+                        Path("project_sources/collector/safe-matrix.md"),
+                    )
+                self.assertIn("must resolve inside the repository root", str(caught.exception))
+                self.assertFalse((outside_dir / "report.json").exists())
+            finally:
+                (outside_dir / "report.json").unlink(missing_ok=True)
+                try:
+                    outside_dir.rmdir()
+                except OSError:
+                    pass
+
+    def test_output_paths_must_be_distinct(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            report, errors, _warnings, matrix = harness.build_fixture_report(self.args(root))
+            self.assertEqual(errors, [])
+            with self.assertRaises(harness.RuleRiskFixtureError) as caught:
+                harness.write_outputs(
+                    root,
+                    report,
+                    matrix,
+                    Path("project_sources/collector/same-output.md"),
+                    Path("project_sources/collector/same-output.md"),
+                    Path("project_sources/collector/safe-matrix.md"),
+                )
+
+        self.assertIn("must be different", str(caught.exception))
+
+    def test_main_rewrites_json_report_failed_when_later_output_write_fails(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            blocked_markdown = root / "project_sources/collector/blocked-report.md"
+            blocked_markdown.mkdir()
+            json_output = Path("project_sources/collector/stale-success-report.json")
+            argv = [
+                "run_powershell_rule_risk_fixtures.py",
+                "--repo-root",
+                root.as_posix(),
+                "--skip-minimum-risk-class-check",
+                "--json-output",
+                json_output.as_posix(),
+                "--markdown-output",
+                "project_sources/collector/blocked-report.md",
+                "--matrix-markdown-output",
+                "project_sources/collector/stale-success-matrix.md",
+            ]
+            with unittest.mock.patch.object(sys, "argv", argv):
+                exit_code = harness.main()
+            written = json.loads((root / json_output).read_text(encoding="utf-8"))
+
+        self.assertEqual(exit_code, 1)
+        self.assertFalse(written["validation"]["success"])
+        self.assertTrue(any("report write failure" in error for error in written["validation"]["errors"]))
 
     def test_unsafe_absolute_fixture_path_is_not_hashed(self) -> None:
         with self.make_repo(matrix_fixtures=["bad-write-host", "outside-fixture"]) as temp:
