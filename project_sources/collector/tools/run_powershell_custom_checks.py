@@ -178,6 +178,39 @@ def line_window(lines: list[str], index: int, before: int = 0, after: int = 4) -
     return "\n".join(lines[start:end])
 
 
+def local_result_context_bounds(lines: list[str], index: int, after: int = 4) -> tuple[int, int]:
+    start = index
+    for cursor in range(index, max(-1, index - 8), -1):
+        if "[pscustomobject]@{" in lines[cursor].casefold():
+            start = cursor
+            break
+
+    end = index
+    if start != index or "[pscustomobject]@{" in lines[index].casefold():
+        for cursor in range(start, min(len(lines), start + 25)):
+            if "}" in lines[cursor] and cursor >= index:
+                end = cursor
+                break
+
+    for cursor in range(end + 1, min(len(lines), end + after + 1)):
+        stripped = lines[cursor].strip()
+        if not stripped:
+            break
+        if re.search(r"\[pscustomobject\]@\{|^\s*(?:function|if|elseif|else|switch|foreach|for|while)\b", stripped, re.IGNORECASE):
+            break
+        end = cursor
+    return start, end
+
+
+def local_result_context(lines: list[str], index: int, after: int = 4) -> str:
+    start, end = local_result_context_bounds(lines, index, after=after)
+    return "\n".join(lines[start : end + 1])
+
+
+def local_failure_action(context: str) -> bool:
+    return re.search(r"\bthrow\b|\bexit\s+[1-9]\d*\b|\breturn\s+\$false\b", context, re.IGNORECASE) is not None
+
+
 def code_without_full_line_comments(text: str) -> str:
     kept: list[str] = []
     for line in text.splitlines():
@@ -433,14 +466,25 @@ def validate_fixture_manifest(
 
 
 def check_analyzer_skip_success(text: str, path: str, check: dict[str, Any]) -> list[dict[str, Any]]:
-    line = line_number_for(text, r"\b(?:analyzed|skipped)\s*=\s*\$(?:false|true)\b")
-    if not line:
-        return []
-    success_like = re.search(r"\b(?:validation|status)\s*=\s*['\"](?:success|pass|passed|ok)['\"]|\bexit\s+0\b", text, re.IGNORECASE)
-    fail_closed = re.search(r"\bthrow\b|\bexit\s+[1-9]\d*\b|\bFAIL\b", text, re.IGNORECASE)
-    if success_like and not fail_closed:
-        return [make_finding(check, path, line)]
-    return []
+    findings: list[dict[str, Any]] = []
+    lines = text.splitlines()
+    seen_contexts: set[tuple[int, int]] = set()
+    skip_re = re.compile(r"\b(?:analyzed\s*=\s*\$false|skipped\s*=\s*\$true)\b", re.IGNORECASE)
+    success_re = re.compile(
+        r"\b(?:validation|status)\s*=\s*['\"](?:success|pass|passed|ok)['\"]|\bexit\s+0\b",
+        re.IGNORECASE,
+    )
+    for index, line_text in enumerate(lines):
+        if not skip_re.search(line_text):
+            continue
+        context_bounds = local_result_context_bounds(lines, index)
+        if context_bounds in seen_contexts:
+            continue
+        seen_contexts.add(context_bounds)
+        context = local_result_context(lines, index)
+        if success_re.search(context) and not local_failure_action(context):
+            findings.append(make_finding(check, path, index + 1))
+    return findings
 
 
 def check_external_exit(text: str, path: str, check: dict[str, Any]) -> list[dict[str, Any]]:
@@ -464,17 +508,21 @@ def check_external_exit(text: str, path: str, check: dict[str, Any]) -> list[dic
 
 
 def check_fail_output(text: str, path: str, check: dict[str, Any]) -> list[dict[str, Any]]:
-    line = line_number_for(text, r"\bStatus\s*=\s*['\"]FAIL['\"]|\bFAIL\b")
-    if not line:
-        return []
-    fail_closed = re.search(
-        r"\bthrow\b|\bexit\s+[1-9]\d*\b|\breturn\s+\$false\b|\bvalidation\s*=\s*['\"]FAIL['\"]",
-        text,
-        re.IGNORECASE,
-    )
-    if not fail_closed:
-        return [make_finding(check, path, line)]
-    return []
+    findings: list[dict[str, Any]] = []
+    lines = text.splitlines()
+    seen_contexts: set[tuple[int, int]] = set()
+    fail_row_re = re.compile(r"\bStatus\s*=\s*['\"]FAIL['\"]", re.IGNORECASE)
+    for index, line_text in enumerate(lines):
+        if not fail_row_re.search(line_text):
+            continue
+        context_bounds = local_result_context_bounds(lines, index)
+        if context_bounds in seen_contexts:
+            continue
+        seen_contexts.add(context_bounds)
+        context = local_result_context(lines, index)
+        if not local_failure_action(context):
+            findings.append(make_finding(check, path, index + 1))
+    return findings
 
 
 def check_source_part_drift(text: str, path: str, check: dict[str, Any]) -> list[dict[str, Any]]:

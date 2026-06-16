@@ -34,6 +34,20 @@ def surface(path: str) -> dict[str, object]:
     }
 
 
+def check_def(check_id: str, rule_name: str, risk_class: str) -> dict[str, object]:
+    return {
+        "id": check_id,
+        "rule_name": rule_name,
+        "matrix_check_id": check_id,
+        "expected_severity": "Error",
+        "risk_classes": [risk_class],
+        "target_surfaces": ["validation tooling"],
+        "intent": "Local fail-closed evidence must be tied to the risky row.",
+        "failure_impact": "Unrelated failure handling can hide unsafe validation output.",
+        "recommended_fix": "Fail the same local path that emits unsafe validation evidence.",
+    }
+
+
 class PowerShellCustomCheckTests(unittest.TestCase):
     def make_repo(
         self,
@@ -176,6 +190,146 @@ class PowerShellCustomCheckTests(unittest.TestCase):
 
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("control fixture produced unexpected findings" in error for error in errors))
+
+    def test_fail_output_ignores_unrelated_throw_elsewhere(self) -> None:
+        text = 'throw "unrelated guard"\n\n$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }\n'
+        findings = custom.check_fail_output(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+            check_def(
+                "dcoir-fail-output-must-fail",
+                "DCOIR.FailOutputMustFailValidation",
+                "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 3)
+
+    def test_fail_output_ignores_unrelated_validation_fail_elsewhere(self) -> None:
+        text = '$validation = "FAIL"\n\n$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }\n'
+        findings = custom.check_fail_output(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+            check_def(
+                "dcoir-fail-output-must-fail",
+                "DCOIR.FailOutputMustFailValidation",
+                "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 3)
+
+    def test_fail_output_flags_only_unsafe_mixed_rows(self) -> None:
+        text = "\n".join(
+            [
+                '$Rows += [pscustomobject]@{ Check = "Safe"; Status = "FAIL" }',
+                'throw "safe row failed closed"',
+                "",
+                '$Rows += [pscustomobject]@{ Check = "Unsafe"; Status = "FAIL" }',
+                "",
+                'exit 1',
+                "",
+            ]
+        )
+        findings = custom.check_fail_output(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+            check_def(
+                "dcoir-fail-output-must-fail",
+                "DCOIR.FailOutputMustFailValidation",
+                "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 4)
+
+    def test_analyzer_skip_success_ignores_unrelated_throw_elsewhere(self) -> None:
+        text = "\n".join(
+            [
+                'throw "unrelated guard"',
+                "",
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Analyzer"',
+                "    Analyzed = $false",
+                "    Skipped = $true",
+                '    Status = "PASS"',
+                "}",
+                "",
+            ]
+        )
+        findings = custom.check_analyzer_skip_success(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+            check_def(
+                "dcoir-analyzer-skip-success",
+                "DCOIR.AnalyzerSkipMustFailClosed",
+                "analyzer_or_validation_skip_treated_success",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 5)
+
+    def test_analyzer_skip_success_accepts_local_throw(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Analyzer"',
+                "    Analyzed = $false",
+                "    Skipped = $true",
+                '    Status = "PASS"',
+                "}",
+                'throw "skip is not allowed"',
+                "",
+            ]
+        )
+        findings = custom.check_analyzer_skip_success(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/good/custom_analyzer_skip_fails_closed.ps1",
+            check_def(
+                "dcoir-analyzer-skip-success",
+                "DCOIR.AnalyzerSkipMustFailClosed",
+                "analyzer_or_validation_skip_treated_success",
+            ),
+        )
+
+        self.assertEqual(findings, [])
+
+    def test_analyzer_skip_success_flags_only_unsafe_mixed_rows(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Safe"',
+                "    Analyzed = $false",
+                '    Status = "PASS"',
+                "}",
+                'throw "safe row failed closed"',
+                "",
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Unsafe"',
+                "    Skipped = $true",
+                '    Status = "PASS"',
+                "}",
+                "",
+                'exit 1',
+                "",
+            ]
+        )
+        findings = custom.check_analyzer_skip_success(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+            check_def(
+                "dcoir-analyzer-skip-success",
+                "DCOIR.AnalyzerSkipMustFailClosed",
+                "analyzer_or_validation_skip_treated_success",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 10)
 
     def test_target_path_limits_fixture_assertions_to_selected_fixture(self) -> None:
         with self.make_repo() as temp:
