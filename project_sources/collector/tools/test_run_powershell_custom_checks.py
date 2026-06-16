@@ -360,6 +360,32 @@ class PowerShellCustomCheckTests(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0]["line"], 1)
 
+    def test_fail_output_ignores_non_code_fail_mentions(self) -> None:
+        cases = {
+            "comment": "# $Rows += [pscustomobject]@{ Check = 'Fixture'; Status = 'FAIL' }",
+            "quoted": '$message = "$Rows += [pscustomobject]@{ Check = \'Fixture\'; Status = \'FAIL\' }"',
+            "here_string": "\n".join(
+                [
+                    '$message = @"',
+                    "$Rows += [pscustomobject]@{ Check = 'Fixture'; Status = 'FAIL' }",
+                    '"@',
+                ]
+            ),
+        }
+        for name, text in cases.items():
+            with self.subTest(name=name):
+                findings = custom.check_fail_output(
+                    text,
+                    "project_sources/collector/fixtures/powershell_analysis/good/custom_fail_row_fails_command.ps1",
+                    check_def(
+                        "dcoir-fail-output-must-fail",
+                        "DCOIR.FailOutputMustFailValidation",
+                        "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+                    ),
+                )
+
+                self.assertEqual(findings, [])
+
     def test_analyzer_skip_success_ignores_unrelated_throw_elsewhere(self) -> None:
         text = "\n".join(
             [
@@ -547,6 +573,33 @@ class PowerShellCustomCheckTests(unittest.TestCase):
 
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0]["line"], 3)
+
+    def test_analyzer_skip_success_ignores_non_code_skip_success_mentions(self) -> None:
+        cases = {
+            "comment": "# Analyzed = $false; Validation = 'success'",
+            "quoted": '$message = "Analyzed = $false; Validation = \'success\'"',
+            "here_string": "\n".join(
+                [
+                    '$message = @"',
+                    "Analyzed = $false",
+                    "Validation = 'success'",
+                    '"@',
+                ]
+            ),
+        }
+        for name, text in cases.items():
+            with self.subTest(name=name):
+                findings = custom.check_analyzer_skip_success(
+                    text,
+                    "project_sources/collector/fixtures/powershell_analysis/good/custom_analyzer_skip_fails_closed.ps1",
+                    check_def(
+                        "dcoir-analyzer-skip-success",
+                        "DCOIR.AnalyzerSkipMustFailClosed",
+                        "analyzer_or_validation_skip_treated_success",
+                    ),
+                )
+
+                self.assertEqual(findings, [])
 
     def test_analyzer_skip_success_flags_only_unsafe_mixed_rows(self) -> None:
         text = "\n".join(
