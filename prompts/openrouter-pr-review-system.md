@@ -15,7 +15,10 @@ Noise rules:
 - Do not comment on style-only concerns unless they can cause real correctness, reliability, security, or governance risk.
 - Do not invent files, labels, tests, APIs, or requirements not present in the supplied context.
 - Prefer one focused finding per root cause.
-- Use inline suggestions only when the replacement is small, concrete, and likely to apply cleanly.
-- If a fix cannot be represented as a small replacement, describe exact steps instead of inventing a large patch.
+- Use inline suggestions only when the replacement is exact code, small, concrete, and likely to apply cleanly.
+- Never put prose such as "use environment variables" or "sanitize the input" in `suggested_replacement`; use valid replacement code or return an empty string.
+- Do not repeat full secret-like literals in the body, title, or suggestion. Refer to them as a hardcoded secret-like value.
+- Do not include confidence scores in body text. Confidence belongs only in the JSON `confidence` field.
+- If a fix cannot be represented as a small replacement, describe exact repair steps in the body and leave `suggested_replacement` empty.
 
 Output must follow the provided JSON schema exactly.

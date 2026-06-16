@@ -25,7 +25,13 @@ request_changes_on_findings: false
 # A finding needs at least this confidence to become an inline review comment.
 minimum_confidence: 0.70
 
-# These are shown in the review summary and pushed into the model context.
+# Keep the GitHub thread quiet. Inline findings include the model name.
+# A top-level summary is posted only when no inline findings are generated.
+post_summary_when_findings: false
+include_confidence: false
+redact_secret_literals: true
+
+# These are pushed into the model context and shown inside individual findings when relevant.
 validation_commands:
   - bash scripts/validate-codex-local.sh
   - pwsh -NoProfile -File scripts/validate-windows-powershell-51.ps1 -AllowPowerShell7 -AllowEmpty
