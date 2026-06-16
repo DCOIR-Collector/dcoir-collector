@@ -118,6 +118,8 @@ def normalize_repo_path(value: str, repo_root: Path, target: dict[str, Any] | No
                     if Path(analysis_path).resolve() == candidate.resolve():
                         return str(target.get("path", ""))
                 except (OSError, RuntimeError):
+                    # Intentionally ignore resolution failures here and fall back
+                    # to the normalized candidate path below.
                     pass
             return candidate.as_posix()
     return candidate.as_posix()
