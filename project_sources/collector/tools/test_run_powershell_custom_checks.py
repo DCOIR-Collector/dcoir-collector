@@ -246,6 +246,120 @@ class PowerShellCustomCheckTests(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0]["line"], 4)
 
+    def test_fail_output_ignores_commented_local_failure_action(self) -> None:
+        text = "\n".join(
+            [
+                '$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }',
+                "# TODO throw when wired",
+                "",
+            ]
+        )
+        findings = custom.check_fail_output(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+            check_def(
+                "dcoir-fail-output-must-fail",
+                "DCOIR.FailOutputMustFailValidation",
+                "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 1)
+
+    def test_fail_output_ignores_quoted_local_failure_action(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Fixture"',
+                '    Status = "FAIL"',
+                '    RecommendedFix = "throw when this fails"',
+                "}",
+                "",
+            ]
+        )
+        findings = custom.check_fail_output(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+            check_def(
+                "dcoir-fail-output-must-fail",
+                "DCOIR.FailOutputMustFailValidation",
+                "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 3)
+
+    def test_fail_output_accepts_indented_local_failure_actions(self) -> None:
+        actions = ['throw "failed"', "exit 1", "return $false"]
+        for action in actions:
+            with self.subTest(action=action):
+                text = "\n".join(
+                    [
+                        '$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }',
+                        f"    {action}",
+                        "",
+                    ]
+                )
+                findings = custom.check_fail_output(
+                    text,
+                    "project_sources/collector/fixtures/powershell_analysis/good/custom_fail_row_fails_command.ps1",
+                    check_def(
+                        "dcoir-fail-output-must-fail",
+                        "DCOIR.FailOutputMustFailValidation",
+                        "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+                    ),
+                )
+
+                self.assertEqual(findings, [])
+
+    def test_fail_output_ignores_block_comment_failure_action(self) -> None:
+        text = "\n".join(
+            [
+                '$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }',
+                "<#",
+                "throw later",
+                "#>",
+                "",
+            ]
+        )
+        findings = custom.check_fail_output(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+            check_def(
+                "dcoir-fail-output-must-fail",
+                "DCOIR.FailOutputMustFailValidation",
+                "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 1)
+
+    def test_fail_output_ignores_here_string_failure_action(self) -> None:
+        text = "\n".join(
+            [
+                '$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }',
+                '$message = @"',
+                "throw later",
+                '"@',
+                "",
+            ]
+        )
+        findings = custom.check_fail_output(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+            check_def(
+                "dcoir-fail-output-must-fail",
+                "DCOIR.FailOutputMustFailValidation",
+                "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 1)
+
     def test_analyzer_skip_success_ignores_unrelated_throw_elsewhere(self) -> None:
         text = "\n".join(
             [
@@ -297,6 +411,142 @@ class PowerShellCustomCheckTests(unittest.TestCase):
         )
 
         self.assertEqual(findings, [])
+
+    def test_analyzer_skip_success_ignores_commented_local_failure_action(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Analyzer"',
+                "    Analyzed = $false",
+                "    Skipped = $true",
+                '    Status = "PASS"',
+                "}",
+                "# TODO exit 1 after wiring",
+                "",
+            ]
+        )
+        findings = custom.check_analyzer_skip_success(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+            check_def(
+                "dcoir-analyzer-skip-success",
+                "DCOIR.AnalyzerSkipMustFailClosed",
+                "analyzer_or_validation_skip_treated_success",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 3)
+
+    def test_analyzer_skip_success_accepts_indented_local_failure_actions(self) -> None:
+        actions = ['throw "skip is not allowed"', "exit 1", "return $false"]
+        for action in actions:
+            with self.subTest(action=action):
+                text = "\n".join(
+                    [
+                        "$Rows += [pscustomobject]@{",
+                        '    Check = "Analyzer"',
+                        "    Analyzed = $false",
+                        "    Skipped = $true",
+                        '    Status = "PASS"',
+                        "}",
+                        f"    {action}",
+                        "",
+                    ]
+                )
+                findings = custom.check_analyzer_skip_success(
+                    text,
+                    "project_sources/collector/fixtures/powershell_analysis/good/custom_analyzer_skip_fails_closed.ps1",
+                    check_def(
+                        "dcoir-analyzer-skip-success",
+                        "DCOIR.AnalyzerSkipMustFailClosed",
+                        "analyzer_or_validation_skip_treated_success",
+                    ),
+                )
+
+                self.assertEqual(findings, [])
+
+    def test_analyzer_skip_success_ignores_block_comment_failure_action(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Analyzer"',
+                "    Analyzed = $false",
+                "    Skipped = $true",
+                '    Status = "PASS"',
+                "}",
+                "<#",
+                "throw later",
+                "#>",
+                "",
+            ]
+        )
+        findings = custom.check_analyzer_skip_success(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+            check_def(
+                "dcoir-analyzer-skip-success",
+                "DCOIR.AnalyzerSkipMustFailClosed",
+                "analyzer_or_validation_skip_treated_success",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 3)
+
+    def test_analyzer_skip_success_ignores_here_string_failure_action(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Analyzer"',
+                "    Analyzed = $false",
+                "    Skipped = $true",
+                '    Status = "PASS"',
+                "}",
+                '$message = @"',
+                "throw later",
+                '"@',
+                "",
+            ]
+        )
+        findings = custom.check_analyzer_skip_success(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+            check_def(
+                "dcoir-analyzer-skip-success",
+                "DCOIR.AnalyzerSkipMustFailClosed",
+                "analyzer_or_validation_skip_treated_success",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 3)
+
+    def test_analyzer_skip_success_ignores_quoted_local_failure_action(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Analyzer"',
+                "    Analyzed = $false",
+                "    Skipped = $true",
+                '    Status = "PASS"',
+                '    Message = "throw if skipped"',
+                "}",
+                "",
+            ]
+        )
+        findings = custom.check_analyzer_skip_success(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+            check_def(
+                "dcoir-analyzer-skip-success",
+                "DCOIR.AnalyzerSkipMustFailClosed",
+                "analyzer_or_validation_skip_treated_success",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 3)
 
     def test_analyzer_skip_success_flags_only_unsafe_mixed_rows(self) -> None:
         text = "\n".join(

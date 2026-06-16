@@ -207,8 +207,75 @@ def local_result_context(lines: list[str], index: int, after: int = 4) -> str:
     return "\n".join(lines[start : end + 1])
 
 
+def line_without_powershell_comments_or_strings(line: str) -> str:
+    chars: list[str] = []
+    quote: str | None = None
+    index = 0
+    while index < len(line):
+        char = line[index]
+        if quote is not None:
+            chars.append(" ")
+            if quote == "'" and char == "'" and index + 1 < len(line) and line[index + 1] == "'":
+                chars.append(" ")
+                index += 2
+                continue
+            if quote == '"' and char == "`" and index + 1 < len(line):
+                chars.append(" ")
+                index += 2
+                continue
+            if char == quote:
+                quote = None
+            index += 1
+            continue
+        if char == "#":
+            break
+        if char in {"'", '"'}:
+            quote = char
+            chars.append(" ")
+            index += 1
+            continue
+        chars.append(char)
+        index += 1
+    return "".join(chars)
+
+
+def powershell_code_lines(context: str) -> list[str]:
+    code_lines: list[str] = []
+    in_block_comment = False
+    here_string_quote: str | None = None
+    for raw_line in context.splitlines():
+        line = raw_line
+        if here_string_quote is not None:
+            if re.match(rf"^\s*{re.escape(here_string_quote)}@\s*$", line):
+                here_string_quote = None
+            continue
+        if in_block_comment:
+            end = line.find("#>")
+            if end == -1:
+                continue
+            line = line[end + 2 :]
+            in_block_comment = False
+        while True:
+            start = line.find("<#")
+            if start == -1:
+                break
+            end = line.find("#>", start + 2)
+            if end == -1:
+                line = line[:start]
+                in_block_comment = True
+                break
+            line = line[:start] + " " * (end + 2 - start) + line[end + 2 :]
+        here_start = re.search(r"@(['\"])\s*$", line)
+        if here_start:
+            here_string_quote = here_start.group(1)
+            line = line[: here_start.start()]
+        code_lines.append(line)
+    return code_lines
+
+
 def local_failure_action(context: str) -> bool:
-    return re.search(r"\bthrow\b|\bexit\s+[1-9]\d*\b|\breturn\s+\$false\b", context, re.IGNORECASE) is not None
+    action_re = re.compile(r"(?:^\s*|[;{}]\s*)(?:throw\b|exit\s+[1-9]\d*\b|return\s+\$false\b)", re.IGNORECASE)
+    return any(action_re.search(line_without_powershell_comments_or_strings(line)) for line in powershell_code_lines(context))
 
 
 def code_without_full_line_comments(text: str) -> str:
