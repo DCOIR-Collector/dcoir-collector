@@ -40,6 +40,9 @@ class Config:
     guidance_files: list[str]
     ignored_authors: list[str]
     allowed_authors: list[str]
+    post_summary_when_findings: bool
+    include_confidence: bool
+    redact_secret_literals: bool
 
 
 def die(message: str, exit_code: int = 1) -> None:
@@ -91,6 +94,9 @@ def load_yaml_like_config(path: str) -> Config:
         guidance_files=list(data.get("guidance_files", [])),
         ignored_authors=list(data.get("ignored_authors", [])),
         allowed_authors=list(data.get("allowed_authors", [])),
+        post_summary_when_findings=bool(data.get("post_summary_when_findings", False)),
+        include_confidence=bool(data.get("include_confidence", False)),
+        redact_secret_literals=bool(data.get("redact_secret_literals", True)),
     )
 
 
@@ -185,7 +191,9 @@ class GitHubClient:
         return self.request("DELETE", f"/repos/{self.repo}/issues/comments/{comment_id}/reactions/{reaction_id}")
 
     def create_review(self, number: int, body: str, event: str, comments: list[dict[str, Any]], commit_id: str) -> dict[str, Any]:
-        payload: dict[str, Any] = {"body": body, "event": event, "comments": comments, "commit_id": commit_id}
+        payload: dict[str, Any] = {"event": event, "comments": comments, "commit_id": commit_id}
+        if body.strip():
+            payload["body"] = body
         return self.request("POST", f"/repos/{self.repo}/pulls/{number}/reviews", payload)
 
 
@@ -357,51 +365,95 @@ def normalize_findings(result: dict[str, Any], config: Config, line_index: dict[
     return findings[: config.max_inline_comments]
 
 
-def build_inline_comment(finding: dict[str, Any]) -> str:
-    title = str(finding.get("title", "Finding")).strip()
+SECRET_PATTERNS = [
+    re.compile(r"sk_live_[A-Za-z0-9_\-]{8,}"),
+    re.compile(r"gh[pousr]_[A-Za-z0-9_]{20,}"),
+    re.compile(r"github_pat_[A-Za-z0-9_]{20,}"),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"(?i)(token|secret|password|api[_-]?key)([\s:=]+)[\"'][^\"']{8,}[\"']"),
+]
+
+
+def sanitize_text(text: str, config: Config) -> str:
+    if not config.redact_secret_literals:
+        return text
+    cleaned = text
+    for pattern in SECRET_PATTERNS:
+        def repl(match: re.Match[str]) -> str:
+            if match.lastindex and match.lastindex >= 2:
+                return f"{match.group(1)}{match.group(2)}[redacted-secret]"
+            return "[redacted-secret]"
+        cleaned = pattern.sub(repl, cleaned)
+    return cleaned
+
+
+def is_safe_suggestion(suggestion: str) -> bool:
+    text = suggestion.strip()
+    if not text:
+        return False
+    prose_prefixes = (
+        "use ",
+        "replace ",
+        "remove ",
+        "avoid ",
+        "store ",
+        "validate ",
+        "sanitize ",
+        "consider ",
+        "e.g.",
+        "for example",
+    )
+    lowered = text.lower()
+    if lowered.startswith(prose_prefixes):
+        return False
+    if " should " in lowered or " you should " in lowered:
+        return False
+    code_signals = ("=", "(", ")", "{", "}", "[", "]", ":", ";", "return ", "throw ", "raise ", "if ", "for ", "while ")
+    return any(signal in text for signal in code_signals)
+
+
+def build_inline_comment(finding: dict[str, Any], model_used: str, config: Config) -> str:
+    title = sanitize_text(str(finding.get("title", "Finding")).strip(), config)
     severity = str(finding.get("severity", "medium")).upper()
     confidence = float(finding.get("confidence", 0))
-    body = str(finding.get("body", "")).strip()
-    validation = str(finding.get("validation", "")).strip()
-    suggestion = str(finding.get("suggested_replacement", "")).rstrip()
+    body = sanitize_text(str(finding.get("body", "")).strip(), config)
+    validation = sanitize_text(str(finding.get("validation", "")).strip(), config)
+    suggestion = sanitize_text(str(finding.get("suggested_replacement", "")).rstrip(), config)
     parts = [
         f"**{severity}: {title}**",
         "",
         body,
-        "",
-        f"Confidence: `{confidence:.2f}`",
     ]
+    if config.include_confidence:
+        parts.extend(["", f"Confidence: `{confidence:.2f}`"])
     if suggestion:
-        parts.extend(["", "Suggested fix:", "", "```suggestion", suggestion, "```"])
+        if is_safe_suggestion(suggestion):
+            parts.extend(["", "Suggested fix:", "", "```suggestion", suggestion, "```"])
+        else:
+            parts.extend(["", "Suggested fix guidance:", "", "```text", suggestion, "```"])
     if validation:
         parts.extend(["", "Validation expected after fix:", "", "```text", validation, "```"])
+    parts.extend(["", f"<sub>Model: `{model_used}`</sub>"])
     return github_safe_body("\n".join(parts), limit=12000)
 
 
 def build_review_body(result: dict[str, Any], findings: list[dict[str, Any]], model_used: str, config: Config) -> str:
-    summary = str(result.get("summary", "OpenRouter review completed.")).strip()
+    if findings and not config.post_summary_when_findings:
+        return MARKER
+    summary = sanitize_text(str(result.get("summary", "OpenRouter review completed.")).strip(), config)
     if findings:
         event_text = "Review posted with inline findings."
     else:
         event_text = "No high-confidence inline findings were found in the changed diff."
-    commands = "\n".join(f"- `{cmd}`" for cmd in config.validation_commands) or "- No validation commands configured."
     return github_safe_body(
         f"""{MARKER}
-### OpenRouter PR review
+OpenRouter PR review completed.
 
 {summary}
 
 Result: {event_text}
 
-Model used: `{model_used}`
-
-Validation guidance:
-{commands}
-
-Notes:
-- This bot does not push commits or auto-fix branches.
-- Inline suggestions are proposed patches for a human reviewer to apply.
-- The job reads PR diffs through the GitHub API and checks out only the trusted default branch.
+Model: `{model_used}`
 """.strip()
     )
 
@@ -429,19 +481,12 @@ def main() -> None:
     schema = json.loads(read_text("schemas/openrouter-pr-review.schema.json"))
     gh = GitHubClient(token, repo)
     eyes_reaction_id = 0
-    status_comment_id = 0
 
     try:
         reaction = gh.create_issue_comment_reaction(trigger_comment_id, "eyes")
         eyes_reaction_id = int(reaction.get("id", 0))
     except Exception as exc:
         print(f"WARN: unable to add eyes reaction: {exc}", file=sys.stderr)
-
-    status_comment = gh.create_issue_comment(
-        pr_number,
-        f"{MARKER}\nPreparing OpenRouter PR review for `{repo}` PR #{pr_number}...",
-    )
-    status_comment_id = int(status_comment.get("id", 0))
 
     try:
         pr = gh.get_pr(pr_number)
@@ -460,7 +505,7 @@ def main() -> None:
                 {
                     "path": path,
                     "position": line_index[(path, line)],
-                    "body": build_inline_comment(finding),
+                    "body": build_inline_comment(finding, model_used, config),
                 }
             )
 
@@ -468,16 +513,6 @@ def main() -> None:
         review_body = build_review_body(result, findings, model_used, config)
         gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
 
-        final = f"""{MARKER}
-OpenRouter PR review completed.
-
-- Model used: `{model_used}`
-- Inline findings posted: `{len(comments)}`
-- Event: `{event}`
-- Auto-fix: `disabled`
-""".strip()
-        if status_comment_id:
-            gh.update_issue_comment(status_comment_id, final)
     except Exception as exc:
         error_body = f"""{MARKER}
 OpenRouter PR review failed.
@@ -486,8 +521,10 @@ OpenRouter PR review failed.
 {str(exc)[:4000]}
 ```
 """.strip()
-        if status_comment_id:
-            gh.update_issue_comment(status_comment_id, error_body)
+        try:
+            gh.create_issue_comment(pr_number, error_body)
+        except Exception as comment_exc:
+            print(f"WARN: unable to post failure comment: {comment_exc}", file=sys.stderr)
         raise
     finally:
         if eyes_reaction_id:
