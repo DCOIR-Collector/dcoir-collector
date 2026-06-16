@@ -39,6 +39,7 @@ class Config:
     validation_commands: list[str]
     guidance_files: list[str]
     ignored_authors: list[str]
+    allowed_authors: list[str]
 
 
 def die(message: str, exit_code: int = 1) -> None:
@@ -89,6 +90,7 @@ def load_yaml_like_config(path: str) -> Config:
         validation_commands=list(data.get("validation_commands", [])),
         guidance_files=list(data.get("guidance_files", [])),
         ignored_authors=list(data.get("ignored_authors", [])),
+        allowed_authors=list(data.get("allowed_authors", [])),
     )
 
 
@@ -175,6 +177,12 @@ class GitHubClient:
 
     def update_issue_comment(self, comment_id: int, body: str) -> dict[str, Any]:
         return self.request("PATCH", f"/repos/{self.repo}/issues/comments/{comment_id}", {"body": body})
+
+    def create_issue_comment_reaction(self, comment_id: int, content: str) -> dict[str, Any]:
+        return self.request("POST", f"/repos/{self.repo}/issues/comments/{comment_id}/reactions", {"content": content})
+
+    def delete_issue_comment_reaction(self, comment_id: int, reaction_id: int) -> dict[str, Any]:
+        return self.request("DELETE", f"/repos/{self.repo}/issues/comments/{comment_id}/reactions/{reaction_id}")
 
     def create_review(self, number: int, body: str, event: str, comments: list[dict[str, Any]], commit_id: str) -> dict[str, Any]:
         payload: dict[str, Any] = {"body": body, "event": event, "comments": comments, "commit_id": commit_id}
@@ -402,6 +410,7 @@ def main() -> None:
     repo = env_required("GITHUB_REPOSITORY")
     pr_number = int(env_required("PR_NUMBER"))
     token = env_required("GITHUB_TOKEN")
+    trigger_comment_id = int(env_required("TRIGGER_COMMENT_ID"))
     comment_body = os.environ.get("TRIGGER_COMMENT_BODY", "")
     author = os.environ.get("TRIGGER_AUTHOR", "")
     config_path = os.environ.get("OPENROUTER_REVIEW_CONFIG", ".github/openrouter-pr-review.yml")
@@ -410,12 +419,23 @@ def main() -> None:
     if author in config.ignored_authors:
         print(f"Ignoring denied author {author}")
         return
+    if config.allowed_authors and author not in config.allowed_authors:
+        print(f"Ignoring unauthorized author {author}")
+        return
     if not command_matches(comment_body, config.commands):
         print("Comment does not match configured review commands")
         return
 
     schema = json.loads(read_text("schemas/openrouter-pr-review.schema.json"))
     gh = GitHubClient(token, repo)
+    eyes_reaction_id = 0
+    status_comment_id = 0
+
+    try:
+        reaction = gh.create_issue_comment_reaction(trigger_comment_id, "eyes")
+        eyes_reaction_id = int(reaction.get("id", 0))
+    except Exception as exc:
+        print(f"WARN: unable to add eyes reaction: {exc}", file=sys.stderr)
 
     status_comment = gh.create_issue_comment(
         pr_number,
@@ -469,6 +489,12 @@ OpenRouter PR review failed.
         if status_comment_id:
             gh.update_issue_comment(status_comment_id, error_body)
         raise
+    finally:
+        if eyes_reaction_id:
+            try:
+                gh.delete_issue_comment_reaction(trigger_comment_id, eyes_reaction_id)
+            except Exception as exc:
+                print(f"WARN: unable to remove eyes reaction: {exc}", file=sys.stderr)
 
 
 if __name__ == "__main__":

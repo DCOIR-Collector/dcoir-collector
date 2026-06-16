@@ -35,6 +35,7 @@ assert ("calculator.js", 2) in line_index, line_index
 config = mod.load_yaml_like_config(str(ROOT / ".github" / "openrouter-pr-review.yml"))
 assert "/or-review" in config.commands
 assert config.model == "openrouter/free"
+assert config.allowed_authors == ["malwaredevil"]
 assert mod.command_matches("/or-review", config.commands)
 assert mod.command_matches("/or-review security", config.commands)
 assert not mod.command_matches("looks good", config.commands)
