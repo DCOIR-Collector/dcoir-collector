@@ -39,6 +39,10 @@ assert config.allowed_authors == ["malwaredevil"]
 assert config.post_summary_when_findings is False
 assert config.include_confidence is False
 assert config.redact_secret_literals is True
+assert config.openrouter_max_attempts == 4
+assert config.openrouter_retry_max_seconds == 45
+assert config.ignored_providers == []
+assert mod.provider_slug("Venice") == "venice"
 assert mod.command_matches("/or-review", config.commands)
 assert mod.command_matches("/or-review security", config.commands)
 assert not mod.command_matches("looks good", config.commands)
@@ -65,6 +69,10 @@ comment = mod.build_inline_comment(
 assert "Confidence:" not in comment
 assert "sk_live_demo" not in comment
 assert "Model: `openrouter/free`" in comment
+
+err = mod.parse_openrouter_error('{"error":{"message":"Provider returned error","metadata":{"provider_name":"Venice","retry_after_seconds":21}}}')
+assert err["provider"] == "Venice"
+assert err["retry_after"] == 21
 
 assert mod.is_safe_suggestion('token = os.getenv("OPENROUTER_TOKEN")')
 assert not mod.is_safe_suggestion('Use environment variables for secrets.')

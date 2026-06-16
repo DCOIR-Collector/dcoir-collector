@@ -31,6 +31,15 @@ post_summary_when_findings: false
 include_confidence: false
 redact_secret_literals: true
 
+# Free OpenRouter routes can hit upstream provider throttles. Retry temporary
+# 429/5xx failures and skip a provider that reports rate limiting during retry.
+openrouter_max_attempts: 4
+openrouter_retry_max_seconds: 45
+
+# Optional provider denylist. Leave empty by default; the script also adds
+# temporarily failing providers to the retry ignore list automatically.
+ignored_providers:
+
 # These are pushed into the model context and shown inside individual findings when relevant.
 validation_commands:
   - bash scripts/validate-codex-local.sh

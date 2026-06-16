@@ -43,6 +43,9 @@ class Config:
     post_summary_when_findings: bool
     include_confidence: bool
     redact_secret_literals: bool
+    openrouter_max_attempts: int
+    openrouter_retry_max_seconds: int
+    ignored_providers: list[str]
 
 
 def die(message: str, exit_code: int = 1) -> None:
@@ -97,6 +100,9 @@ def load_yaml_like_config(path: str) -> Config:
         post_summary_when_findings=bool(data.get("post_summary_when_findings", False)),
         include_confidence=bool(data.get("include_confidence", False)),
         redact_secret_literals=bool(data.get("redact_secret_literals", True)),
+        openrouter_max_attempts=int(data.get("openrouter_max_attempts", 4)),
+        openrouter_retry_max_seconds=int(data.get("openrouter_retry_max_seconds", 45)),
+        ignored_providers=list(data.get("ignored_providers", [])),
     )
 
 
@@ -298,10 +304,39 @@ Find only high-signal issues in the PR diff. For each finding, give the exact ch
     return content
 
 
-def openrouter_review(prompt: str, schema: dict[str, Any], config: Config) -> tuple[dict[str, Any], str]:
-    api_key = env_required("OPENROUTER_API_KEY")
+def parse_openrouter_error(detail: str) -> dict[str, Any]:
+    try:
+        payload = json.loads(detail)
+    except json.JSONDecodeError:
+        return {"message": detail.strip()[:1000]}
+    error = payload.get("error", {}) if isinstance(payload, dict) else {}
+    metadata = error.get("metadata", {}) if isinstance(error, dict) else {}
+    message = str(error.get("message", "OpenRouter request failed")) if isinstance(error, dict) else "OpenRouter request failed"
+    provider = str(metadata.get("provider_name", "")).strip() if isinstance(metadata, dict) else ""
+    retry_after = metadata.get("retry_after_seconds") if isinstance(metadata, dict) else None
+    if retry_after is None and isinstance(metadata, dict):
+        retry_after = metadata.get("retry_after_seconds_raw")
+    return {
+        "message": message,
+        "provider": provider,
+        "retry_after": retry_after,
+    }
+
+
+def provider_slug(name: str) -> str:
+    return re.sub(r"[^a-z0-9_-]+", "-", name.strip().lower()).strip("-")
+
+
+def build_openrouter_payload(prompt: str, schema: dict[str, Any], config: Config, ignored_providers: list[str]) -> dict[str, Any]:
     system_prompt = read_text("prompts/openrouter-pr-review-system.md")
-    payload = {
+    provider: dict[str, Any] = {
+        "allow_fallbacks": True,
+        "require_parameters": True,
+    }
+    clean_ignored = [item for item in ignored_providers if item]
+    if clean_ignored:
+        provider["ignore"] = clean_ignored
+    return {
         "model": config.model,
         "messages": [
             {"role": "system", "content": system_prompt},
@@ -315,8 +350,14 @@ def openrouter_review(prompt: str, schema: dict[str, Any], config: Config) -> tu
                 "schema": schema,
             },
         },
+        "provider": provider,
         "temperature": 0.2,
     }
+
+
+def openrouter_request_once(prompt: str, schema: dict[str, Any], config: Config, ignored_providers: list[str]) -> tuple[dict[str, Any], str]:
+    api_key = env_required("OPENROUTER_API_KEY")
+    payload = build_openrouter_payload(prompt, schema, config, ignored_providers)
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -324,12 +365,8 @@ def openrouter_review(prompt: str, schema: dict[str, Any], config: Config) -> tu
         "X-OpenRouter-Title": "DCOIR OpenRouter PR Review",
     }
     req = urllib.request.Request(OPENROUTER_API, data=json.dumps(payload).encode("utf-8"), method="POST", headers=headers)
-    try:
-        with urllib.request.urlopen(req, timeout=180) as response:
-            raw = response.read().decode("utf-8")
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"OpenRouter API failed: {exc.code} {detail}") from exc
+    with urllib.request.urlopen(req, timeout=180) as response:
+        raw = response.read().decode("utf-8")
     data = json.loads(raw)
     model_used = str(data.get("model", config.model))
     content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
@@ -345,6 +382,54 @@ def openrouter_review(prompt: str, schema: dict[str, Any], config: Config) -> tu
         parsed = json.loads(match.group(1))
     return parsed, model_used
 
+
+def openrouter_review(prompt: str, schema: dict[str, Any], config: Config) -> tuple[dict[str, Any], str]:
+    attempts = max(1, config.openrouter_max_attempts)
+    retry_cap = max(1, config.openrouter_retry_max_seconds)
+    ignored_providers = [provider_slug(item) for item in config.ignored_providers]
+    last_error = "OpenRouter request failed"
+
+    for attempt in range(1, attempts + 1):
+        try:
+            return openrouter_request_once(prompt, schema, config, ignored_providers)
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")
+            parsed_error = parse_openrouter_error(detail)
+            provider = provider_slug(str(parsed_error.get("provider", "")))
+            if provider and provider not in ignored_providers:
+                ignored_providers.append(provider)
+            retry_after = parsed_error.get("retry_after")
+            try:
+                delay = float(retry_after) if retry_after is not None else float(exc.headers.get("Retry-After", ""))
+            except (TypeError, ValueError):
+                delay = min(2 ** attempt, retry_cap)
+            delay = min(max(delay, 1.0), float(retry_cap))
+            last_error = f"OpenRouter API failed with HTTP {exc.code}: {parsed_error.get('message', 'request failed')}"
+            if provider:
+                last_error += f" Provider skipped for retry: {provider}."
+            if exc.code in {408, 409, 425, 429, 500, 502, 503, 504} and attempt < attempts:
+                print(f"WARN: {last_error} Retrying in {delay:.0f}s ({attempt}/{attempts})", file=sys.stderr)
+                time.sleep(delay)
+                continue
+            raise RuntimeError(last_error) from exc
+        except RuntimeError as exc:
+            last_error = str(exc)
+            if "empty response" in last_error.lower() and attempt < attempts:
+                delay = min(2 ** attempt, retry_cap)
+                print(f"WARN: {last_error}. Retrying in {delay:.0f}s ({attempt}/{attempts})", file=sys.stderr)
+                time.sleep(delay)
+                continue
+            raise
+        except json.JSONDecodeError as exc:
+            last_error = "OpenRouter returned invalid JSON"
+            if attempt < attempts:
+                delay = min(2 ** attempt, retry_cap)
+                print(f"WARN: {last_error}. Retrying in {delay:.0f}s ({attempt}/{attempts})", file=sys.stderr)
+                time.sleep(delay)
+                continue
+            raise RuntimeError(last_error) from exc
+
+    raise RuntimeError(last_error)
 
 def normalize_findings(result: dict[str, Any], config: Config, line_index: dict[tuple[str, int], int]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
