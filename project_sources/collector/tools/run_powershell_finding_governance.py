@@ -134,7 +134,7 @@ def resolve_repo_input_path(value: str, repo_root: Path, label: str) -> tuple[Pa
 def validate_governance_path(value: str, repo_root: Path, label: str) -> str:
     path_value = scalar(value).strip()
     if is_blanket_selector(path_value):
-        raise GovernanceError(f"{label} path must be a bounded repo-relative path")
+        raise GovernanceError(f"{label} uses a blanket or wildcard path; path must be a bounded repo-relative path")
     _candidate, repo_path, path_error = resolve_repo_input_path(path_value, repo_root, label)
     if path_error:
         raise GovernanceError(f"{path_error}: {path_value}")
@@ -146,7 +146,7 @@ def validate_governance_path(value: str, repo_root: Path, label: str) -> str:
 def validate_governance_path_prefix(value: str, repo_root: Path, label: str) -> str:
     prefix_value = slash_path(scalar(value).strip())
     if is_blanket_selector(prefix_value):
-        raise GovernanceError(f"{label} prefix must be a bounded repo-relative prefix")
+        raise GovernanceError(f"{label} uses a blanket or wildcard prefix; prefix must be a bounded repo-relative prefix")
     parts = tuple(part for part in prefix_value.split("/") if part)
     if prefix_value.startswith("/") or is_windows_drive_path(prefix_value) or ".." in parts:
         raise GovernanceError(f"{label} prefix must be a repo-relative prefix without traversal: {prefix_value}")
