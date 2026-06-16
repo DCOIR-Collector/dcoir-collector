@@ -239,6 +239,66 @@ def line_without_powershell_comments_or_strings(line: str) -> str:
     return "".join(chars)
 
 
+def line_without_powershell_line_comment(line: str) -> str:
+    quote: str | None = None
+    index = 0
+    while index < len(line):
+        char = line[index]
+        if quote is not None:
+            if quote == "'" and char == "'" and index + 1 < len(line) and line[index + 1] == "'":
+                index += 2
+                continue
+            if quote == '"' and char == "`" and index + 1 < len(line):
+                index += 2
+                continue
+            if char == quote:
+                quote = None
+            index += 1
+            continue
+        if char == "#":
+            return line[:index]
+        if char in {"'", '"'}:
+            quote = char
+        index += 1
+    return line
+
+
+def powershell_code_lines_preserving_positions(lines: list[str]) -> list[str]:
+    code_lines: list[str] = []
+    in_block_comment = False
+    here_string_quote: str | None = None
+    for raw_line in lines:
+        line = raw_line
+        if here_string_quote is not None:
+            if re.match(rf"^\s*{re.escape(here_string_quote)}@\s*$", line):
+                here_string_quote = None
+            code_lines.append("")
+            continue
+        if in_block_comment:
+            end = line.find("#>")
+            if end == -1:
+                code_lines.append("")
+                continue
+            line = " " * (end + 2) + line[end + 2 :]
+            in_block_comment = False
+        while True:
+            start = line.find("<#")
+            if start == -1:
+                break
+            end = line.find("#>", start + 2)
+            if end == -1:
+                line = line[:start]
+                in_block_comment = True
+                break
+            line = line[:start] + " " * (end + 2 - start) + line[end + 2 :]
+        here_start = re.search(r"@(['\"])\s*$", line)
+        if here_start:
+            here_string_quote = here_start.group(1)
+            line = line[: here_start.start()]
+        code_lines.append(line_without_powershell_line_comment(line))
+    return code_lines
+
+
 def powershell_code_lines(context: str) -> list[str]:
     code_lines: list[str] = []
     in_block_comment = False
@@ -271,6 +331,108 @@ def powershell_code_lines(context: str) -> list[str]:
             line = line[: here_start.start()]
         code_lines.append(line)
     return code_lines
+
+
+def string_spans(line: str) -> list[tuple[int, int]]:
+    spans: list[tuple[int, int]] = []
+    quote: str | None = None
+    start = 0
+    index = 0
+    while index < len(line):
+        char = line[index]
+        if quote is None:
+            if char in {"'", '"'}:
+                quote = char
+                start = index
+            index += 1
+            continue
+        if quote == "'" and char == "'" and index + 1 < len(line) and line[index + 1] == "'":
+            index += 2
+            continue
+        if quote == '"' and char == "`" and index + 1 < len(line):
+            index += 2
+            continue
+        if char == quote:
+            spans.append((start, index + 1))
+            quote = None
+        index += 1
+    if quote is not None:
+        spans.append((start, len(line)))
+    return spans
+
+
+def position_in_spans(position: int, spans: list[tuple[int, int]]) -> bool:
+    return any(start <= position < end for start, end in spans)
+
+
+def parse_powershell_scalar_value(line: str, start: int) -> tuple[str, int] | None:
+    index = start
+    while index < len(line) and line[index].isspace():
+        index += 1
+    if index >= len(line):
+        return None
+    quote = line[index] if line[index] in {"'", '"'} else None
+    if quote is None:
+        end = index
+        while end < len(line) and not line[end].isspace() and line[end] not in ";|})]":
+            end += 1
+        return line[index:end], end
+    index += 1
+    value_chars: list[str] = []
+    while index < len(line):
+        char = line[index]
+        if quote == "'" and char == "'" and index + 1 < len(line) and line[index + 1] == "'":
+            value_chars.append("'")
+            index += 2
+            continue
+        if quote == '"' and char == "`" and index + 1 < len(line):
+            value_chars.append(line[index + 1])
+            index += 2
+            continue
+        if char == quote:
+            return "".join(value_chars), index + 1
+        value_chars.append(char)
+        index += 1
+    return "".join(value_chars), index
+
+
+def line_assignment_value(line: str, names: set[str]) -> tuple[str, str] | None:
+    spans = string_spans(line)
+    name_re = re.compile(r"\b(" + "|".join(re.escape(name) for name in sorted(names)) + r")\b", re.IGNORECASE)
+    for match in name_re.finditer(line):
+        if position_in_spans(match.start(), spans):
+            continue
+        cursor = match.end()
+        while cursor < len(line) and line[cursor].isspace():
+            cursor += 1
+        if cursor >= len(line) or line[cursor] != "=":
+            continue
+        parsed = parse_powershell_scalar_value(line, cursor + 1)
+        if parsed is not None:
+            return match.group(1).casefold(), parsed[0]
+    return None
+
+
+def line_has_assignment_value(line: str, expected: dict[str, set[str]]) -> bool:
+    assignment = line_assignment_value(line, set(expected))
+    if assignment is None:
+        return False
+    name, value = assignment
+    return value.casefold() in {candidate.casefold() for candidate in expected[name]}
+
+
+def line_has_executable_exit_zero(line: str) -> bool:
+    code = line_without_powershell_comments_or_strings(line)
+    return re.search(r"(?:^\s*|[;{}]\s*)exit\s+0\b", code, re.IGNORECASE) is not None
+
+
+def context_has_skip_success_trigger(context: str) -> bool:
+    code_lines = powershell_code_lines_preserving_positions(context.splitlines())
+    return any(
+        line_has_assignment_value(line, {"validation": {"success", "pass", "passed", "ok"}, "status": {"success", "pass", "passed", "ok"}})
+        or line_has_executable_exit_zero(line)
+        for line in code_lines
+    )
 
 
 def local_failure_action(context: str) -> bool:
@@ -535,21 +697,17 @@ def validate_fixture_manifest(
 def check_analyzer_skip_success(text: str, path: str, check: dict[str, Any]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     lines = text.splitlines()
+    code_lines = powershell_code_lines_preserving_positions(lines)
     seen_contexts: set[tuple[int, int]] = set()
-    skip_re = re.compile(r"\b(?:analyzed\s*=\s*\$false|skipped\s*=\s*\$true)\b", re.IGNORECASE)
-    success_re = re.compile(
-        r"\b(?:validation|status)\s*=\s*['\"](?:success|pass|passed|ok)['\"]|\bexit\s+0\b",
-        re.IGNORECASE,
-    )
-    for index, line_text in enumerate(lines):
-        if not skip_re.search(line_text):
+    for index, line_text in enumerate(code_lines):
+        if not line_has_assignment_value(line_text, {"analyzed": {"$false"}, "skipped": {"$true"}}):
             continue
         context_bounds = local_result_context_bounds(lines, index)
         if context_bounds in seen_contexts:
             continue
         seen_contexts.add(context_bounds)
         context = local_result_context(lines, index)
-        if success_re.search(context) and not local_failure_action(context):
+        if context_has_skip_success_trigger(context) and not local_failure_action(context):
             findings.append(make_finding(check, path, index + 1))
     return findings
 
@@ -577,10 +735,10 @@ def check_external_exit(text: str, path: str, check: dict[str, Any]) -> list[dic
 def check_fail_output(text: str, path: str, check: dict[str, Any]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     lines = text.splitlines()
+    code_lines = powershell_code_lines_preserving_positions(lines)
     seen_contexts: set[tuple[int, int]] = set()
-    fail_row_re = re.compile(r"\bStatus\s*=\s*['\"]FAIL['\"]", re.IGNORECASE)
-    for index, line_text in enumerate(lines):
-        if not fail_row_re.search(line_text):
+    for index, line_text in enumerate(code_lines):
+        if not line_has_assignment_value(line_text, {"status": {"fail"}}):
             continue
         context_bounds = local_result_context_bounds(lines, index)
         if context_bounds in seen_contexts:
