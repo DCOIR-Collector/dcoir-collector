@@ -347,6 +347,38 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
         self.assertFalse(written["validation"]["success"])
         self.assertTrue(any("report write failure" in error for error in written["validation"]["errors"]))
 
+    def test_main_rewrites_status_reports_failed_when_matrix_output_write_fails(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            blocked_matrix = root / "project_sources/collector/blocked-matrix.md"
+            blocked_matrix.mkdir()
+            json_output = Path("project_sources/collector/matrix-failure-report.json")
+            markdown_output = Path("project_sources/collector/matrix-failure-report.md")
+            write(root / json_output, json.dumps({"validation": {"success": True}}) + "\n")
+            write(root / markdown_output, "# Old Report\n\n- Validation: `pass`\n")
+            argv = [
+                "run_powershell_rule_risk_fixtures.py",
+                "--repo-root",
+                root.as_posix(),
+                "--skip-minimum-risk-class-check",
+                "--json-output",
+                json_output.as_posix(),
+                "--markdown-output",
+                markdown_output.as_posix(),
+                "--matrix-markdown-output",
+                "project_sources/collector/blocked-matrix.md",
+            ]
+            with unittest.mock.patch.object(sys, "argv", argv):
+                exit_code = harness.main()
+            written_json = json.loads((root / json_output).read_text(encoding="utf-8"))
+            written_markdown = (root / markdown_output).read_text(encoding="utf-8")
+
+        self.assertEqual(exit_code, 1)
+        self.assertFalse(written_json["validation"]["success"])
+        self.assertTrue(any("report write failure" in error for error in written_json["validation"]["errors"]))
+        self.assertIn("Validation: `fail`", written_markdown)
+        self.assertNotIn("Validation: `pass`", written_markdown)
+
     def test_unsafe_absolute_fixture_path_is_not_hashed(self) -> None:
         with self.make_repo(matrix_fixtures=["bad-write-host", "outside-fixture"]) as temp:
             root = Path(temp)
