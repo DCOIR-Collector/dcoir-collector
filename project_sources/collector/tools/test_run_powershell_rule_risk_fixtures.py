@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sys
 import tempfile
 import textwrap
@@ -299,10 +300,7 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
                 self.assertFalse((outside_dir / "report.json").exists())
             finally:
                 (outside_dir / "report.json").unlink(missing_ok=True)
-                try:
-                    outside_dir.rmdir()
-                except OSError:
-                    pass
+                shutil.rmtree(outside_dir, ignore_errors=True)
 
     def test_output_paths_must_be_distinct(self) -> None:
         with self.make_repo() as temp:
